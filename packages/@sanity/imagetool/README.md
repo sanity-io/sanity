@@ -4,5 +4,6 @@
 ## Getting started (testbed)
 
     git clone git@github.com:bengler/sanity-imagetool
+    cd sanity-imagetool
     npm install
     npm start
