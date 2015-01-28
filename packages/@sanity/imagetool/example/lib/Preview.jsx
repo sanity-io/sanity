@@ -66,11 +66,13 @@ module.exports = React.createClass({
 
     return (
       <div style={{outline: '1px solid #eee'}}>
-        <pre style={{width: 200, overflow: 'auto'}}>{JSON.stringify(styles.debug, null, 2)}</pre>
+        <pre style={{width: 200, overflow: 'auto'}}>{JSON.stringify(styles, null, 2)}</pre>
         <div {...this.props} style={{width: this.props.width || '100%'}}>
           <div style={styles.container}>
             <div style={{paddingTop: styles.container.height}}/>
-            <img src={this.props.imageUrl} style={styles.image} />
+            <div style={styles.crop}>
+              <img src={this.props.imageUrl} style={styles.image} />
+            </div>
           </div>
         </div>
       </div>
