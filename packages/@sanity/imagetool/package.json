@@ -12,5 +12,19 @@
   "dependencies": {
     "react": "^0.12.2",
     "rx": "^2.3.23"
+  },
+  "devDependencies": {
+    "6to5-core": "^3.0.9",
+    "6to5ify": "^3.1.0",
+    "browserify": "^8.0.3",
+    "error-capture-middleware": "0.0.2",
+    "express": "^4.10.7",
+    "image-hotspot": "git+ssh://git@github.com:bengler/image-hotspot.js",
+    "node-sass": "^2.0.0-beta",
+    "proxyreload": "git://github.com/bjoerge/proxyreload",
+    "quickreload": "^1.0.0-alpha.3",
+    "rebundler": "0.0.4",
+    "rx-dom": "^4.0.2",
+    "staticr": "^1.0.8"
   }
 }
