@@ -1,0 +1,16 @@
+{
+  "name": "rxjs-minimal-autocomplete",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A minimal autocomplete example using RxJS",
+  "main": "index.js",
+  "scripts": {
+    "start": "proxyreload ./example/app.js"
+  },
+  "author": "Bjørge Næss",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^0.12.2",
+    "rx": "^2.3.23"
+  }
+}

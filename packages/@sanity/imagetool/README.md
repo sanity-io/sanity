@@ -1,0 +1,1 @@
+# The all awesome Image tool used in sanity

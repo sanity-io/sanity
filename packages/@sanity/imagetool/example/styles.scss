@@ -1,0 +1,19 @@
+body {
+  font-family: "Helvetica", sans-serif;
+}
+
+ul.previews {
+  width: 500px;
+  margin: 0;
+  padding: 0;
+  li {
+    width: 220px;
+    float: left;
+    list-style: none;
+    margin: 5px;
+    padding:0;
+    pre {
+      font-size: 80%;
+    }
+  }
+}
