@@ -272,7 +272,7 @@ export default React.createClass({
       context.globalAlpha = 0.8;
       context.arc(bbox.x, (bbox.y / scaleY), Math.abs(bbox.width / 2), 0, 2 * Math.PI, false);
       context.strokeStyle = "white";
-      context.lineWidth = 1.5*this.getScale();
+      context.lineWidth = 1.5 * this.getScale();
       context.stroke();
       context.closePath();
       context.restore();
@@ -381,6 +381,7 @@ export default React.createClass({
     context.stroke();
     context.restore();
   },
+
   paintBackground(context) {
     var {image} = this.props;
     context.fillStyle = 'white';
@@ -390,6 +391,7 @@ export default React.createClass({
       left: 0, top: 0, height: image.height, width: image.width
     });
   },
+
   paint(context) {
     context.save();
 
