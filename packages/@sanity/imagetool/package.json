@@ -10,7 +10,7 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "react": "^0.12.2",
+    "react": ">=0.12.0 <0.13.0",
     "rx": "^2.3.23"
   },
   "devDependencies": {
@@ -26,5 +26,10 @@
     "rebundler": "0.0.4",
     "rx-dom": "^4.0.2",
     "staticr": "^1.0.8"
+  },
+  "browserify": {
+    "transform": [
+      "6to5ify"
+    ]
   }
 }
