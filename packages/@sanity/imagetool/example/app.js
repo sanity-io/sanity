@@ -1,4 +1,4 @@
-require("6to5-core/register")({
+require("babel-core/register")({
   experimental: true
 });
 

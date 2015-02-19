@@ -1,4 +1,4 @@
-import '6to5-core/polyfill'
+import 'babel-core/polyfill'
 import React from "react"
 import Demo from "./lib/Demo.jsx"
 import querystring from "querystring"

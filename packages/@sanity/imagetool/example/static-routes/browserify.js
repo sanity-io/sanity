@@ -1,10 +1,8 @@
 var browserify = require('browserify');
 var rebundler = require("rebundler");
+var babelify = require("babelify");
 
 var browser = rebundler(function(cache, pkgCache) {
-
-  var to5ify = require("6to5ify");
-
   return browserify(require.resolve('../browser.js'), {
     cache:         cache,
     packageCache:  pkgCache,
@@ -12,7 +10,7 @@ var browser = rebundler(function(cache, pkgCache) {
     debug:         true,
     fullPaths:     true
   })
-    .transform(to5ify.configure({
+    .transform(babelify.configure({
       experimental: true
     }))
 });
