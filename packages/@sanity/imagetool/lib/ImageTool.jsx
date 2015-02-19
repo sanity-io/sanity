@@ -1,10 +1,13 @@
 import React from "react";
 import getBackingStoreRatio from "./getBackingStoreRatio";
 import DraggableMixin from "./DraggableMixin";
+import * as utils2d from "./2d/utils";
+import {Size, Rect, Point} from "./2d/shapes";
 
 // The margin available in all directions for drawing the crop tool
-const MARGIN_PX = 0;
+const MARGIN_PX = 6;
 const CROP_HOT_AREA = 10;
+const CROP_HANDLE_SIZE = 8;
 
 const CURSORS = require("./cursors.json");
 
@@ -12,94 +15,71 @@ export default React.createClass({
   displayName: 'ImageTool',
   mixins: [DraggableMixin],
 
-  getHotspotBounds() {
-    const {hotspot} = this.props.value;
-    const {image} = this.props;
-    const margin = MARGIN_PX * this.getScale();
+  getHotspotRect() {
+    const {value, image} = this.props;
 
-    const innerHeight = (image.height - margin * 2);
-    const innerWidth = (image.width - margin * 2);
-    const height = hotspot.height * innerHeight;
-    const width = hotspot.width * innerWidth;
+    const hotspot = new Rect()
+        .setSize(value.hotspot)
+        .setCenter(value.hotspot);
 
-    const x = margin + hotspot.x * innerWidth;
-    const y = margin + hotspot.y * innerHeight;
-
-    const left = x - width / 2;
-    const top = y - height / 2;
-    const right = x + width / 2;
-    const bottom = y + height / 2;
-
-    return { x, y, height, width, left, top, right, bottom }
+    return new Rect()
+        .setSize(image)
+        .shrink(MARGIN_PX * this.getScale())
+        .multiply(hotspot);
   },
 
-  getCropRect(minThickness=0) {
-    const {crop} = this.props.value;
-    const {image} = this.props;
+  getCropRect() {
+    const {value, image} = this.props;
 
-    const margin = MARGIN_PX * this.getScale();
-
-    const innerHeight = image.height - margin*2;
-    const innerWidth = image.width - margin*2;
-
-    const top = Math.max(minThickness, crop.top * innerHeight);
-    const bottom = innerHeight - Math.max(minThickness, crop.bottom * innerHeight);
-    const left = Math.max(minThickness, crop.left * innerWidth);
-    const right = innerWidth - Math.max(minThickness, crop.right * innerWidth);
-    return {
-      top, bottom, left, right
-    }
+    return new Rect()
+        .setSize(image)
+        .shrink(MARGIN_PX * this.getScale())
+        .cropRelative(value.crop);
   },
 
-  getCropHandles(minThickness=0) {
-    const margin = MARGIN_PX * this.getScale();
+  getCropHandles() {
 
-    const {top, bottom, left, right} = this.getCropRect(minThickness);
     const {image} = this.props;
 
-    const innerHeight = image.height - margin*2;
-    const innerWidth = image.width - margin*2;
+    const inner = new Rect()
+        .setSize(image)
+        .shrink(MARGIN_PX * this.getScale());
 
+    const halfCropHandleSize = CROP_HANDLE_SIZE / 2;
+
+    const cropHandle = new Rect(0, 0, CROP_HANDLE_SIZE, CROP_HANDLE_SIZE);
     return {
-      left: {
-        left: 0, top: 0, width: margin + left, height: innerHeight + margin*2
-      },
-      right: {
-        left: right + margin, top: 0, width: innerWidth - right+margin, height: innerHeight + margin*2
-      },
-      top: {
-        left: 0, top: 0, width: innerWidth+margin*2, height: margin + top
-      },
-      bottom: {
-        left: 0, top: bottom + margin, width: innerWidth + margin * 2, height: innerHeight - bottom + margin
-      }
+      left:         cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.center.y - halfCropHandleSize),
+      right:        cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.center.y - halfCropHandleSize),
+
+      top:          cropHandle.setTopLeft(inner.center.x - halfCropHandleSize, inner.top - halfCropHandleSize),
+      topLeft:      cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.top - halfCropHandleSize),
+      topRight:     cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.top - halfCropHandleSize),
+
+      bottom:       cropHandle.setTopLeft(inner.center.x - halfCropHandleSize, inner.bottom - halfCropHandleSize),
+      bottomLeft:   cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.bottom - halfCropHandleSize),
+      bottomRight:  cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.bottom - halfCropHandleSize)
     };
   },
 
   getActiveCropHandlesFor({x, y}) {
-    const cropHandles = this.getCropHandles(CROP_HOT_AREA*this.getScale());
+    const cropHandles = this.getCropHandles(CROP_HOT_AREA * this.getScale());
     return Object.keys(cropHandles).reduce((handles, align)=> {
-      if (this.contains(cropHandles[align], {x, y})) {
+      if (utils2d.isPointInRect({x, y}, cropHandles[align])) {
         return handles.concat(align);
       }
       return handles;
     }, []);
   },
 
-  contains(rect, point) {
-    return point.x >= rect.left && point.x <= rect.left + rect.width && point.y >= rect.top && point.y <= rect.top + rect.height;
-  },
-
   componentDidDragStart({x, y}) {
-    const pos = {x: x * this.getScale(), y: y * this.getScale()};
-    const hotspot = this.getHotspotBounds();
-    const inHotspot = this.isPointInEllipse(pos, hotspot);
+    const mousePosition = {x: x * this.getScale(), y: y * this.getScale()};
 
-    const dragHandle = this.getDragHandleCoords();
+    const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect());
 
-    const inDragHandle = this.isPointInCircle(pos, dragHandle);
+    const inDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords());
 
-    const activeCropHandles = this.getActiveCropHandlesFor(pos);
+    const activeCropHandles = this.getActiveCropHandlesFor(mousePosition);
 
     if (activeCropHandles.length) {
       return this.setState({cropping: activeCropHandles});
@@ -114,13 +94,13 @@ export default React.createClass({
 
   componentDidDrag(pos) {
     if (this.state.cropping.length) {
-      return this.crop(this.state.cropping, pos);
+      return this.emitCrop(this.state.cropping, pos);
     }
     if (this.state.moving) {
-      return this.move(pos);
+      return this.emitMove(pos);
     }
     if (this.state.resizing) {
-      return this.resize(pos)
+      return this.emitResize(pos)
     }
   },
 
@@ -128,21 +108,7 @@ export default React.createClass({
     this.setState({moving: false, resizing: false, cropping: []})
   },
 
-  handleMouseMove(event) {
-    const clientRect = event.target.getBoundingClientRect();
-    this.setState({
-      mousePosition: {
-        x: (event.clientX - clientRect.left) * this.getScale(),
-        y: (event.clientY - clientRect.top) * this.getScale()
-      }
-    });
-  },
-
-  handleMouseOut() {
-    this.setState({mousePosition: null});
-  },
-
-  move(pos) {
+  emitMove(pos) {
     const {height, width} = this.props.image;
     const scale = this.getScale();
     const delta = {
@@ -151,8 +117,7 @@ export default React.createClass({
     };
     this.props.onMove(delta);
   },
-
-  crop(sides, pos) {
+  emitCrop(sides, pos) {
     const {height, width} = this.props.image;
     const scale = this.getScale();
     const delta = {};
@@ -174,7 +139,7 @@ export default React.createClass({
     this.props.onCrop(delta);
   },
 
-  resize(pos) {
+  emitResize(pos) {
     const {height, width} = this.props.image;
     const scale = this.getScale();
 
@@ -185,22 +150,18 @@ export default React.createClass({
     this.props.onResize({height: delta.y, width: delta.x});
   },
 
-  isPointInCircle({x, y}, circle) {
-    return Math.pow(x - circle.x, 2) + Math.pow(y - circle.y, 2) < Math.pow(circle.radius, 2);
+  handleMouseMove(event) {
+    const clientRect = event.target.getBoundingClientRect();
+    this.setState({
+      mousePosition: {
+        x: (event.clientX - clientRect.left) * this.getScale(),
+        y: (event.clientY - clientRect.top) * this.getScale()
+      }
+    });
   },
 
-  isPointInEllipse(point, ellipse) {
-    const center = {x: ellipse.x, y: ellipse.y};
-    const xradius = ellipse.width / 2;
-    const yradius = ellipse.height / 2;
-
-    if (xradius <= 0 || yradius <= 0) {
-      return false;
-    }
-
-    const normalized = {x: point.x - center.x, y: point.y - center.y};
-
-    return Math.pow(normalized.x, 2) / Math.pow(xradius, 2) + Math.pow(normalized.y, 2) / Math.pow(yradius, 2) <= 1;
+  handleMouseOut() {
+    this.setState({mousePosition: null});
   },
 
   getInitialState() {
@@ -227,7 +188,7 @@ export default React.createClass({
   paintDragHandle(context) {
     const {x, y, radius} = this.getDragHandleCoords();
     context.beginPath();
-    context.arc(x, y, radius + 1*this.getScale(), 0, 2 * Math.PI, false);
+    context.arc(x, y, radius + 1 * this.getScale(), 0, 2 * Math.PI, false);
     context.strokeStyle = "rgb(0, 0, 0)";
     context.lineWidth = 0.5 * this.getScale();
     context.stroke();
@@ -265,12 +226,12 @@ export default React.createClass({
 
     const drawEllipse = ()=> {
       context.save();
-      const bbox = this.getHotspotBounds();
+      const bbox = this.getHotspotRect();
       const scaleY = bbox.height / bbox.width;
       context.scale(1, scaleY);
       context.beginPath();
       context.globalAlpha = 0.8;
-      context.arc(bbox.x, (bbox.y / scaleY), Math.abs(bbox.width / 2), 0, 2 * Math.PI, false);
+      context.arc(bbox.center.x, (bbox.center.y / scaleY), Math.abs(bbox.width / 2), 0, 2 * Math.PI, false);
       context.strokeStyle = "white";
       context.lineWidth = 1.5 * this.getScale();
       context.stroke();
@@ -301,11 +262,11 @@ export default React.createClass({
   },
 
   getDragHandleCoords() {
-    const bbox = this.getHotspotBounds();
+    const bbox = this.getHotspotRect();
     return {
       x: bbox.right,
-      y: bbox.y,
-      radius: 8*this.getScale()
+      y: bbox.center.y,
+      radius: 8 * this.getScale()
     }
   },
 
@@ -314,19 +275,19 @@ export default React.createClass({
 
     const {image} = this.props;
 
-    const bbox = this.getHotspotBounds();
+    const bbox = this.getHotspotRect();
     const scale = this.getScale();
     const margin = MARGIN_PX * scale;
 
-    context.setLineDash([2*scale, 2*scale]);
-    context.lineWidth = 0.5*scale;
+    context.setLineDash([2 * scale, 2 * scale]);
+    context.lineWidth = 0.5 * scale;
 
     context.strokeStyle = 'rgba(200, 200, 200, 0.5)';
 
     // --- center line x
-    vline(bbox.x);
+    vline(bbox.center.x);
     // --- center line y
-    hline(bbox.y);
+    hline(bbox.center.y);
 
     context.strokeStyle = 'rgba(150, 150, 150, 0.5)';
     // --- line top
@@ -365,15 +326,15 @@ export default React.createClass({
     const scale = this.getScale();
     context.lineWidth = scale;
 
-    const step =  6 * scale;
+    const step = 6 * scale;
 
     const drawHatchedLine = (x)=> {
-      context.moveTo(rect.left+x+step, rect.top);
-      context.lineTo(rect.left+x, rect.top + rect.height);
+      context.moveTo(rect.left + x + step, rect.top);
+      context.lineTo(rect.left + x, rect.top + rect.height);
     };
     context.beginPath();
     let x = rect.left;
-    while (x < (rect.left + rect.width+step)){
+    while (x < (rect.left + rect.width + step)) {
       drawHatchedLine(x);
       x += step;
     }
@@ -416,7 +377,7 @@ export default React.createClass({
     const {x, y} = this.state.mousePosition;
     context.save();
     context.beginPath();
-    context.arc(x, y, 4*this.getScale(), 0, 2 * Math.PI, false);
+    context.arc(x, y, 4 * this.getScale(), 0, 2 * Math.PI, false);
     context.fillStyle = 'lightblue';
     context.fill();
     context.restore();
@@ -424,15 +385,20 @@ export default React.createClass({
 
   highlightCropHandles(context) {
     context.save();
-    const crophandles = this.getCropHandles(CROP_HOT_AREA*this.getScale());
+    const crophandles = this.getCropHandles(CROP_HOT_AREA * this.getScale());
 
-    //context.globalCompositeOperation = "difference";
+    context.globalCompositeOperation = "inverted";
 
     Object.keys(crophandles).forEach(handle => {
-      context.fillStyle = `rgba(200, 200, 200, 0.4)`;
+      context.fillStyle = `rgba(220, 220, 220, 0.9)`;
       const {left, top, height, width} = crophandles[handle];
-
       context.fillRect(left, top, width, height);
+      context.beginPath();
+      context.fillStyle = `rgba(66, 66, 66, 0.9)`;
+      context.rect(left, top, width, height)
+      context.closePath();
+      context.stroke();
+
     });
     context.restore();
 
@@ -473,7 +439,7 @@ export default React.createClass({
       return 'col-resize';
     }
 
-    const mouseOverDragHandle = this.isPointInCircle(mousePosition, this.getDragHandleCoords());
+    const mouseOverDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords());
 
     if (this.state.resizing || mouseOverDragHandle) {
       return 'move';
@@ -483,7 +449,7 @@ export default React.createClass({
       return `url(${CURSORS.closedhand}), move`;
     }
 
-    const mouseoverHotspot = this.isPointInEllipse(mousePosition, this.getHotspotBounds());
+    const mouseoverHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect());
     if (mouseoverHotspot) {
       return `url(${CURSORS.openhand}), move`;
     }
@@ -495,17 +461,17 @@ export default React.createClass({
 
     const style = {
       width: '100%',
-      cursor: this.getCursor(),
-      border: '1px solid gray'
+      cursor: this.getCursor()
+      //border: '1px solid gray'
     };
     return (
-      <canvas
-        onMouseMove={this.handleMouseMove}
-        onMouseOut={this.handleMouseOut}
-        style={style}
-        height={height * ratio}
-        width={width * ratio}
-      />
+        <canvas
+            onMouseMove={this.handleMouseMove}
+            onMouseOut={this.handleMouseOut}
+            style={style}
+            height={height * ratio}
+            width={width * ratio}
+        />
     );
   }
 });
