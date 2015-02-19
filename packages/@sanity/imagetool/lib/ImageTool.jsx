@@ -252,8 +252,8 @@ export default React.createClass({
     var sy = margin + cropRect.top;
     var sw = image.width - (image.width - cropRect.right) - cropRect.left;
     var sh = image.height - (image.height - cropRect.bottom) - cropRect.top;
-    var dx = cropRect.left;
-    var dy = cropRect.top;
+    var dx = margin + cropRect.left;
+    var dy = margin + cropRect.top;
     var dw = image.width - (image.width - cropRect.right) - cropRect.left;
     var dh = image.height - (image.height - cropRect.bottom) - cropRect.top;
 
