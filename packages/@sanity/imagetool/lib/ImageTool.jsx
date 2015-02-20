@@ -7,6 +7,7 @@ import {Size, Rect, Point} from "./2d/shapes";
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 28;
 const CROP_HANDLE_SIZE = 12;
+const HOTSPOT_HANDLE_SIZE = 10;
 
 const CURSORS = require("./cursors.json");
 
@@ -53,7 +54,7 @@ export default React.createClass({
     return new Rect()
         .setSize(image)
         .shrink(MARGIN_PX * this.getScale())
-        .cropRelative(value.crop);
+        .cropRelative(Rect.fromEdges(value.crop).clamp(new Rect(0, 0, 1, 1)));
   },
 
   getCropHandles() {
@@ -221,32 +222,22 @@ export default React.createClass({
     return devicePixelRatio / backingStoreRatio;
   },
 
-  paintDragHandle(context) {
-    const {x, y, radius} = this.getDragHandleCoords();
-    context.beginPath();
-    context.arc(x, y, radius + 1 * this.getScale(), 0, 2 * Math.PI, false);
-    context.strokeStyle = "rgb(0, 0, 0)";
-    context.lineWidth = 0.5 * this.getScale();
-    context.stroke();
-    context.closePath();
-
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI, false);
-    context.fillStyle = "rgb(255,255,255)";
-    context.fill();
-    context.closePath();
-  },
-
   paintHotspot(context) {
 
     const {image, value} = this.props;
-    const scale = this.getScale();
-    const margin = MARGIN_PX * scale;
+
     const imageRect = new Rect().setSize(image);
 
-    const hotspot = new Rect()
+    const crop = Rect.fromEdges(value.crop)
+        .clamp(new Rect(0, 0, 1, 1));
+
+    const hotspotRect = new Rect(0, 0, 1, 1)
       .setSize(value.hotspot)
-      .setCenter(value.hotspot);
+      .setCenter(value.hotspot)
+      .clamp(crop);
+
+    const scale = this.getScale();
+    const margin = MARGIN_PX * scale;
 
     context.save();
     drawBackdrop();
@@ -254,13 +245,14 @@ export default React.createClass({
     context.clip();
     drawHole();
     context.restore();
+    drawDragHandle();
 
     function drawEllipse() {
       context.save();
 
       const dest = imageRect
           .shrink(margin)
-          .multiply(hotspot);
+          .multiply(hotspotRect);
 
       const scaleY = dest.height / dest.width;
 
@@ -272,6 +264,7 @@ export default React.createClass({
       context.lineWidth = 1.5 * scale;
       context.stroke();
       context.closePath();
+
       context.restore();
     }
 
@@ -283,11 +276,11 @@ export default React.createClass({
 
     function drawHole() {
 
-      const src = imageRect.multiply(hotspot);
+      const src = imageRect.multiply(hotspotRect);
 
       const dest = imageRect
           .shrink(margin)
-          .multiply(hotspot);
+          .multiply(hotspotRect);
 
       drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height);
     }
@@ -295,11 +288,11 @@ export default React.createClass({
     function drawBackdrop() {
 
       const src = imageRect
-          .cropRelative(value.crop);
+          .cropRelative(crop);
 
       const dest = imageRect
           .shrink(margin)
-          .cropRelative(value.crop);
+          .cropRelative(crop);
 
       context.save();
       drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height);
@@ -307,6 +300,30 @@ export default React.createClass({
       context.fillStyle = 'black';
       context.fillRect(dest.left, dest.top, dest.width, dest.height);
       context.restore();
+    }
+
+    function drawDragHandle() {
+      context.save();
+
+      const radius = HOTSPOT_HANDLE_SIZE * scale;
+      const dest = imageRect
+          .shrink(margin)
+          .multiply(hotspotRect);
+
+      context.beginPath();
+      context.arc(dest.right, dest.center.y, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = "rgb(255,255,255)";
+      context.fill();
+      context.closePath();
+      context.restore();
+
+      context.beginPath();
+      context.arc(dest.right, dest.center.y, radius, 0, 2 * Math.PI, false);
+      context.strokeStyle = "rgb(0, 0, 0)";
+      context.lineWidth = 0.5 * scale;
+      context.stroke();
+      context.closePath();
+
     }
   },
 
@@ -399,7 +416,7 @@ export default React.createClass({
     this.paintBackground(context);
     //return context.restore();
     this.paintHotspot(context);
-    this.paintDragHandle(context);
+    //this.paintDragHandle(context);
     this.debug(context);
     this.paintCropBorder(context)
 
@@ -426,7 +443,7 @@ export default React.createClass({
     context.beginPath();
     context.fillStyle = `rgba(66, 66, 66, 0.9)`;
     context.lineWidth = 1;
-    context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
+    context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height);
     context.stroke();
     context.closePath();
     context.restore();

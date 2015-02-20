@@ -15,9 +15,11 @@ class Corners {
   constructor(rect) {
     this.rect = rect;
   }
+
   get top() {
     return new HLine(this.rect.top, this.rect.left, this.rect.right)
   }
+
   get bottom() {
     return new HLine(this.rect.bottom, this.rect.left, this.rect.right)
   }
@@ -29,18 +31,25 @@ class HLine {
     this._left = left;
     this._right = right;
   }
+
   get right() {
     return new Point(this._right, this.y)
   }
+
   get left() {
     return new Point(this._left, this.y)
   }
+
   get length() {
     return this._right - this._left;
   }
 }
 
 export class Rect {
+
+  static fromEdges({left, right, top, bottom}) {
+    return new Rect(left, top, 1 - left - right, 1 - top - bottom)
+  }
 
   constructor(left, top, width, height) {
     this.left = left;
@@ -84,7 +93,6 @@ export class Rect {
 
   multiply(rect) {
     return new Rect(
-
         (this.left || 0) + this.width * rect.left,
         (this.top || 0) + this.height * rect.top,
         this.width * rect.width,
@@ -99,16 +107,41 @@ export class Rect {
   shrink(delta) {
     return this.grow(-delta)
   }
-  crop(crop) {
-    const newLeft = this.left + crop.left;
-    const newTop = this.top + crop.top;
-    return new Rect(newLeft, newTop, this.width - crop.right, this.height - crop.top)
-  }
+
   cropRelative(crop) {
     const top = this.top + crop.top * this.height;
     const left = this.left + crop.left * this.width;
-    const height = this.height - crop.bottom * this.height - (top - this.top);
-    const width = this.width - crop.right * this.width - (left-this.left);
+    const height = this.height * crop.height;
+    const width = this.width * crop.width;
     return new Rect(left, top, width, height);
+  }
+
+  clamp(bounds) {
+    // always try to fit the whole rect inside given bounds
+    // adjust top, left if we can, resize if we must
+    let {left, top, width, height} = this;
+    if (bounds.width < width) {
+      width = bounds.width;
+      left = bounds.left;
+    }
+    if (bounds.height < height) {
+      height = bounds.height;
+      top = bounds.top;
+    }
+
+    if (left + width > bounds.left + bounds.width) {
+      left = bounds.right - width;
+    }
+
+    if (top + height > bounds.top + bounds.height) {
+      top = bounds.bottom - height;
+    }
+
+    return new Rect(
+        Math.max(left, bounds.left),
+        Math.max(top, bounds.top),
+        width,
+        height
+    );
   }
 }
