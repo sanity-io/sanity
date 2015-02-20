@@ -15,15 +15,16 @@ function getCropCursorForHandle(handle) {
     case 'left':
     case 'right':
       return 'col-resize';
+
     case 'top':
     case 'bottom':
       return 'row-resize';
-    case 'topLeft':
-      return 'nwse-resize';
+
     case 'topRight':
-      return 'nesw-resize';
     case 'bottomLeft':
-      return 'nesw-resize'
+      return 'nesw-resize';
+
+    case 'topLeft':
     case 'bottomRight':
       return 'nwse-resize';
   }
