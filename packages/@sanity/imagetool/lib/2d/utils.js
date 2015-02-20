@@ -17,7 +17,6 @@ export function isPointInCircle({x, y}, circle) {
   return Math.pow(x - circle.x, 2) + Math.pow(y - circle.y, 2) < Math.pow(circle.radius, 2);
 }
 
-
 export function isPointInRect(point, rect) {
   return point.x >= rect.left && point.x <= rect.left + rect.width && point.y >= rect.top && point.y <= rect.top + rect.height;
 }

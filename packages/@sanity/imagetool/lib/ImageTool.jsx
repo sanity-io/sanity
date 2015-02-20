@@ -5,7 +5,7 @@ import * as utils2d from "./2d/utils";
 import {Size, Rect, Point} from "./2d/shapes";
 
 // The margin available in all directions for drawing the crop tool
-const MARGIN_PX = 8;
+const MARGIN_PX = 28;
 const CROP_HANDLE_SIZE = 12;
 
 const CURSORS = require("./cursors.json");
@@ -95,6 +95,8 @@ export default React.createClass({
 
     const activeCropHandle = this.getActiveCropHandleFor(mousePosition);
 
+    const inCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect());
+
     if (activeCropHandle) {
       return this.setState({cropping: activeCropHandle});
     }
@@ -104,11 +106,17 @@ export default React.createClass({
     else if (inHotspot) {
       return this.setState({moving: true});
     }
+    else if (inCropRect) {
+      return this.setState({cropMoving: true});
+    }
   },
 
   componentDidDrag(pos) {
     if (this.state.cropping) {
       return this.emitCrop(this.state.cropping, pos);
+    }
+    if (this.state.cropMoving) {
+      return this.emitCropMove(pos);
     }
     if (this.state.moving) {
       return this.emitMove(pos);
@@ -119,7 +127,7 @@ export default React.createClass({
   },
 
   componentDidDragEnd(pos) {
-    this.setState({moving: false, resizing: false, cropping: false})
+    this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
   },
 
   emitMove(pos) {
@@ -130,6 +138,18 @@ export default React.createClass({
       y: pos.y * scale / height
     };
     this.props.onMove(delta);
+  },
+  emitCropMove(pos) {
+    const {height, width} = this.props.image;
+    const scale = this.getScale();
+    const delta = {};
+    delta.left = pos.x * scale / width;
+    delta.right = -pos.x * scale / width;
+
+    delta.top = pos.y * scale / height;
+    delta.bottom = -pos.y * scale / height;
+
+    this.props.onCrop(delta);
   },
   emitCrop(side, pos) {
     const {height, width} = this.props.image;
@@ -182,6 +202,7 @@ export default React.createClass({
     return {
       devicePixelVsBackingStoreRatio: null,
       cropping: false,
+      cropMoving: false,
       dragging: false,
       moving: false
     };
@@ -417,7 +438,7 @@ export default React.createClass({
     //context.globalCompositeOperation = "difference";
 
     Object.keys(crophandles).forEach(handle => {
-      context.fillStyle = this.state.cropping === handle ? `rgba(246, 253, 180, 0.9)` : `rgba(230, 230, 230, 0.9)`;
+      context.fillStyle = this.state.cropping === handle ? `rgba(202, 54, 53, 0.9)` : `rgba(230, 230, 230, 0.9)`;
       const {left, top, height, width} = crophandles[handle];
       context.fillRect(left, top, width, height);
       context.beginPath();
@@ -456,12 +477,13 @@ export default React.createClass({
       return 'move';
     }
 
-    if (this.state.moving) {
+    if (this.state.moving || this.state.cropMoving) {
       return `url(${CURSORS.closedhand}), move`;
     }
 
     const mouseoverHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect());
-    if (mouseoverHotspot) {
+    const mouseoverCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect());
+    if (mouseoverHotspot || mouseoverCropRect) {
       return `url(${CURSORS.openhand}), move`;
     }
     return 'auto';
