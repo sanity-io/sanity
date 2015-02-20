@@ -100,7 +100,7 @@ export default React.createClass({
               onMove={this.handleHotspotMove}
               onResize={this.handleHotspotResize}
               onCrop={this.handleCrop}/>
-            <div>
+          {/*<div>
               <label>
                 <input type="radio" name="strict" checked/> Innholdet i sirkelen kan kuttes for beste mulig visning
               </label>
@@ -110,6 +110,7 @@ export default React.createClass({
               <input type="radio" name="strict"/> Innholdet i sirkelen må alltid vises (nyttig for f.eks. grafikk)
             </label>
             </div>
+            */}
           </div>
           <div style={{width: HOTSPOT_WIDTH, outline: '1px dotted #aaa'}}>
             <ul style={{margin: 0, padding: 0, listStyle:'none', clear: 'both'}}>

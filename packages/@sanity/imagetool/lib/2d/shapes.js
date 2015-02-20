@@ -84,8 +84,9 @@ export class Rect {
 
   multiply(rect) {
     return new Rect(
-        this.left + this.width * rect.left,
-        this.top + this.height * rect.top,
+
+        (this.left || 0) + this.width * rect.left,
+        (this.top || 0) + this.height * rect.top,
         this.width * rect.width,
         this.height * rect.height
     );
@@ -104,10 +105,10 @@ export class Rect {
     return new Rect(newLeft, newTop, this.width - crop.right, this.height - crop.top)
   }
   cropRelative(crop) {
-    const top = crop.top * this.height;
-    const left = crop.left * this.width;
-    const height = this.height - crop.bottom * this.height - top;
-    const width = this.width - crop.right * this.width - left;
+    const top = this.top + crop.top * this.height;
+    const left = this.left + crop.left * this.width;
+    const height = this.height - crop.bottom * this.height - (top - this.top);
+    const width = this.width - crop.right * this.width - (left-this.left);
     return new Rect(left, top, width, height);
   }
 }
