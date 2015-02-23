@@ -135,9 +135,9 @@ export default React.createClass({
     this.emitChange({
       crop: {
         top: crop.top,
+        bottom: 1 - crop.bottom,
         left: crop.left,
-        right: 1 - crop.right,
-        bottom: 1 - crop.bottom
+        right: 1 - crop.right
       },
       hotspot: {
         x: hotspot.center.x,
@@ -544,7 +544,8 @@ export default React.createClass({
 
     const style = {
       width: '100%',
-      cursor: this.getCursor()
+      cursor: this.getCursor(),
+      userSelect: 'none'
       //outline: '1px dotted cyan'
     };
     return (
