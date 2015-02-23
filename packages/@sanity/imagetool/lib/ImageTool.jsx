@@ -245,7 +245,7 @@ export default React.createClass({
     context.clip();
     drawHole();
     context.restore();
-    drawDragHandle();
+    drawDragHandle(Math.PI*1.25);
 
     function drawEllipse() {
       context.save();
@@ -302,7 +302,7 @@ export default React.createClass({
       context.restore();
     }
 
-    function drawDragHandle() {
+    function drawDragHandle(radians) {
       context.save();
 
       const radius = HOTSPOT_HANDLE_SIZE * scale;
@@ -310,15 +310,17 @@ export default React.createClass({
           .shrink(margin)
           .multiply(hotspotRect);
 
+      const point = utils2d.getPointAtCircumference(radians, dest);
+
       context.beginPath();
-      context.arc(dest.right, dest.center.y, radius, 0, 2 * Math.PI, false);
+      context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false);
       context.fillStyle = "rgb(255,255,255)";
       context.fill();
       context.closePath();
       context.restore();
 
       context.beginPath();
-      context.arc(dest.right, dest.center.y, radius, 0, 2 * Math.PI, false);
+      context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false);
       context.strokeStyle = "rgb(0, 0, 0)";
       context.lineWidth = 0.5 * scale;
       context.stroke();
@@ -334,9 +336,10 @@ export default React.createClass({
 
   getDragHandleCoords() {
     const bbox = this.getHotspotRect();
+    const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox);
     return {
-      x: bbox.right,
-      y: bbox.center.y,
+      x: point.x,
+      y: point.y,
       radius: 8 * this.getScale()
     }
   },
@@ -431,7 +434,7 @@ export default React.createClass({
   paintMousePosition(context) {
     const {x, y} = this.state.mousePosition;
     context.beginPath();
-    context.arc(x, y, 4 * this.getScale(), 0, 2 * Math.PI, false);
+    context.arc(x, y, 14 * this.getScale(), 0, 2 * Math.PI, false);
     context.fillStyle = 'lightblue';
     context.fill();
     context.restore();

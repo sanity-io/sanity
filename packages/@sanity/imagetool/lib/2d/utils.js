@@ -21,3 +21,9 @@ export function isPointInRect(point, rect) {
   return point.x >= rect.left && point.x <= rect.left + rect.width && point.y >= rect.top && point.y <= rect.top + rect.height;
 }
 
+export function getPointAtCircumference(radians, ellipse) {
+  return {
+    x: ellipse.center.x - ellipse.width / 2 * Math.cos(radians),
+    y: ellipse.center.y - ellipse.height / 2 * Math.sin(radians)
+  };
+}
