@@ -71,6 +71,9 @@ export default React.createClass({
       this.setState({hotspot: newHotspot});
     }
   },
+  handleChange(newValue) {
+    this.setState(newValue);
+  },
   changeCrop(field) {
     return e => {
       var newCrop = Object.assign(this.state.crop, {
@@ -97,6 +100,7 @@ export default React.createClass({
             <LoadImageProxy
               value={value}
               imageUrl={imageUrl}
+              onChange={this.handleChange}
               onMove={this.handleHotspotMove}
               onResize={this.handleHotspotResize}
               onCrop={this.handleCrop}/>

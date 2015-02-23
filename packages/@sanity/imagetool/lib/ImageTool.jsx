@@ -129,9 +129,30 @@ export default React.createClass({
   },
 
   componentDidDragEnd(pos) {
-    this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
+    this.setState({moving: false, resizing: false, cropping: false, cropMoving: false});
+    const {hotspot, crop} = this.getClampedValue();
+
+    this.emitChange({
+      crop: {
+        top: crop.top,
+        left: crop.left,
+        right: 1 - crop.right,
+        bottom: 1 - crop.bottom
+      },
+      hotspot: {
+        x: hotspot.center.x,
+        y: hotspot.center.y,
+        height: hotspot.height,
+        width: hotspot.width
+      }
+    })
   },
 
+  emitChange(value) {
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    }
+  },
   emitMove(pos) {
     const {height, width} = this.props.image;
     const scale = this.getScale();
@@ -222,19 +243,27 @@ export default React.createClass({
     return devicePixelRatio / backingStoreRatio;
   },
 
-  paintHotspot(context) {
-
-    const {image, value} = this.props;
-
-    const imageRect = new Rect().setSize(image);
+  getClampedValue() {
+    const value = this.props.value;
 
     const crop = Rect.fromEdges(value.crop)
         .clamp(new Rect(0, 0, 1, 1));
 
-    const hotspotRect = new Rect(0, 0, 1, 1)
+    const hotspot = new Rect(0, 0, 1, 1)
       .setSize(value.hotspot)
       .setCenter(value.hotspot)
       .clamp(crop);
+
+    return {crop: crop, hotspot: hotspot}
+  },
+
+  paintHotspot(context) {
+
+    const {image} = this.props;
+
+    const imageRect = new Rect().setSize(image);
+
+    const {hotspot, crop} = this.getClampedValue();
 
     const scale = this.getScale();
     const margin = MARGIN_PX * scale;
@@ -252,7 +281,7 @@ export default React.createClass({
 
       const dest = imageRect
           .shrink(margin)
-          .multiply(hotspotRect);
+          .multiply(hotspot);
 
       const scaleY = dest.height / dest.width;
 
@@ -276,11 +305,11 @@ export default React.createClass({
 
     function drawHole() {
 
-      const src = imageRect.multiply(hotspotRect);
+      const src = imageRect.multiply(hotspot);
 
       const dest = imageRect
           .shrink(margin)
-          .multiply(hotspotRect);
+          .multiply(hotspot);
 
       drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height);
     }
@@ -308,7 +337,7 @@ export default React.createClass({
       const radius = HOTSPOT_HANDLE_SIZE * scale;
       const dest = imageRect
           .shrink(margin)
-          .multiply(hotspotRect);
+          .multiply(hotspot);
 
       const point = utils2d.getPointAtCircumference(radians, dest);
 
