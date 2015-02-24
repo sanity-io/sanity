@@ -1,6 +1,6 @@
 import React from "react";
 import Preview from "./Preview.jsx";
-import LoadImageProxy from "./LoadImageProxy.jsx";
+import ImageTool from "../../";
 
 const IMAGES = [
   `/hubble.jpg`,
@@ -97,7 +97,7 @@ export default React.createClass({
       <div style={{width: '100%', margin: 15, clear: 'both'}}>
         <div style={{float: 'left'}}>
           <div style={{width: HOTSPOT_WIDTH}}>
-            <LoadImageProxy
+            <ImageTool
               value={value}
               imageUrl={imageUrl}
               onChange={this.handleChange}
@@ -121,7 +121,7 @@ export default React.createClass({
             {
               IMAGES.map((image, i)=> {
                 return (
-                  <li style={{display: 'inline-block', padding: 2}}>
+                  <li key={image} style={{display: 'inline-block', padding: 2}}>
                     <a href={'?image='+i}> <img src={image} style={{verticalAlign: 'middle', width: thumbWidth}}/></a>
                   </li>
                 )

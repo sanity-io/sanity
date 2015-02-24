@@ -1,1 +1,1 @@
-export * from './lib/ImageTool.jsx'
+export * from './lib/LoadImageProxy.jsx'
