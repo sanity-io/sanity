@@ -1,6 +1,5 @@
 var React = require('react/addons');
 var cx = React.addons.classSet;
-//var getHotspotStyles = require("image-hotspot").getHotspotStyles;
 var getHotspotStyles = require("../../calculateStyles");
 
 /**
