@@ -1,4 +1,3 @@
-/** @jsx React.DOM */
 var React = require('react/addons');
 var cx = React.addons.classSet;
 //var getHotspotStyles = require("image-hotspot").getHotspotStyles;
