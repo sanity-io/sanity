@@ -2,7 +2,7 @@
 var React = require('react/addons');
 var cx = React.addons.classSet;
 //var getHotspotStyles = require("image-hotspot").getHotspotStyles;
-var getHotspotStyles = require("image-hotspot").getHotspotStyles;
+var getHotspotStyles = require("../../calculateStyles");
 
 /**
  * Takes an imageUrl and a hotspot object and returns an optimal previews of the image

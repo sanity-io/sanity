@@ -19,7 +19,6 @@
     "browserify": "^8.1.3",
     "error-capture-middleware": "0.0.2",
     "express": "^4.10.7",
-    "image-hotspot": "git+ssh://git@github.com:bengler/image-hotspot.js",
     "mocha": "^2.1.0",
     "node-sass": "^2.0.1",
     "proxyreload": "git://github.com/bjoerge/proxyreload",
