@@ -1,10 +1,11 @@
 {
-  "name": "@bengler/sanity-imagetool",
+  "name": "@sanity/imagetool",
   "version": "1.0.2",
   "description": "The image hotspot selector / cropper used in Sanity",
   "main": "index.js",
   "scripts": {
-    "start": "proxyreload ./example/app.js"
+    "start": "proxyreload ./example/app.js",
+    "test": "mocha -r babel-core/register test"
   },
   "author": "Bjørge Næss",
   "license": "MIT",
@@ -19,11 +20,13 @@
     "error-capture-middleware": "0.0.2",
     "express": "^4.10.7",
     "image-hotspot": "git+ssh://git@github.com:bengler/image-hotspot.js",
+    "mocha": "^2.1.0",
     "node-sass": "^2.0.1",
     "proxyreload": "git://github.com/bjoerge/proxyreload",
     "quickreload": "^1.0.0-alpha.3",
     "rebundler": "0.0.4",
     "rx-dom": "^4.0.2",
+    "should": "^5.0.1",
     "staticr": "^1.0.8"
   },
   "browserify": {

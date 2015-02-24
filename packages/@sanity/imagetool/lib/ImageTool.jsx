@@ -5,7 +5,7 @@ import * as utils2d from "./2d/utils";
 import {Size, Rect, Point} from "./2d/shapes";
 
 // The margin available in all directions for drawing the crop tool
-const MARGIN_PX = 28;
+const MARGIN_PX = 8;
 const CROP_HANDLE_SIZE = 12;
 const HOTSPOT_HANDLE_SIZE = 10;
 
