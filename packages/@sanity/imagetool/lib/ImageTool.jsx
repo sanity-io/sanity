@@ -10,6 +10,7 @@ const CROP_HANDLE_SIZE = 12;
 const HOTSPOT_HANDLE_SIZE = 10;
 
 const CURSORS = require("./cursors.json");
+const DEFAULT_CROP = {left: 0, right: 0, top: 0, bottom: 0};
 
 function getCropCursorForHandle(handle) {
   switch (handle) {
@@ -54,7 +55,7 @@ export default React.createClass({
     return new Rect()
         .setSize(image)
         .shrink(MARGIN_PX * this.getScale())
-        .cropRelative(Rect.fromEdges(value.crop).clamp(new Rect(0, 0, 1, 1)));
+        .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)));
   },
 
   getCropHandles() {
@@ -246,7 +247,7 @@ export default React.createClass({
   getClampedValue() {
     const value = this.props.value;
 
-    const crop = Rect.fromEdges(value.crop)
+    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP)
         .clamp(new Rect(0, 0, 1, 1));
 
     const hotspot = new Rect(0, 0, 1, 1)
