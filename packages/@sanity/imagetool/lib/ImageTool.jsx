@@ -384,7 +384,10 @@ export default React.createClass({
     const scale = this.getScale();
     const margin = MARGIN_PX * scale;
 
-    context.setLineDash([2 * scale, 2 * scale]);
+    // IE 10 doesn't support context.setLineDash
+    if (context.setLineDash) {
+      context.setLineDash([2 * scale, 2 * scale]);
+    }
     context.lineWidth = 0.5 * scale;
 
     context.strokeStyle = 'rgba(200, 200, 200, 0.5)';
