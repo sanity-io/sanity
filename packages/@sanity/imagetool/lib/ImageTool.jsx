@@ -144,8 +144,8 @@ export default React.createClass({
       hotspot: {
         x: hotspot.center.x,
         y: hotspot.center.y,
-        height: hotspot.height,
-        width: hotspot.width
+        height: Math.abs(hotspot.height),
+        width: Math.abs(hotspot.width)
       }
     })
   },
