@@ -63,9 +63,9 @@ module.exports = React.createClass({
     });
 
     return (
-      <div style={{outline: '1px solid #eee'}}>
+      <div style={{border: '1px solid #eee'}}>
         <pre style={{width: 200, overflow: 'auto'}}>{JSON.stringify(styles, null, 2)}</pre>
-        <div {...this.props} style={{width: this.props.width || '100%'}}>
+        <div {...this.props} style={{outline: '1px solid rgb(189, 240, 164)', width: this.props.width || '100%'}}>
           <div style={styles.container}>
             <div style={{paddingTop: styles.container.height}}/>
             <div style={styles.crop}>

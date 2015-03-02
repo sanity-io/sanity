@@ -20,8 +20,9 @@ function readHotspot(hotspot, imageAspect) {
   return hotspot;
 }
 
-function round(v) {
-  return Math.round(v*100)/100;
+function round(v, decimals=2) {
+  const multiplier = Math.pow(10, decimals);
+  return Math.round(v*multiplier) / multiplier;
 }
 
 function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
@@ -81,6 +82,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 
   // Do we have to letterbox this image in order to leave the hotspot area uncropped?
   if (minFullBleedScale > maxScale) {
+
     // Yes :-( There is no way to protect the hot spot and still have full bleed, so we are letterboxing it
     method = "letterbox";
     var letterboxScale;
@@ -92,37 +94,32 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       letterboxScale = 1.0;
     }
 
-    var height = letterboxScale / cropAspect * viewportAspect;
-    var width = letterboxScale;
-
-    var top = 0, left = 0;
-    switch(alignment.x){
-      case "left":
-        left = 0;
-        break;
-      case "right":
-        left = -(width - (outImg.width + outImg.left));
-        break;
-      case "center":
-        left = -(letterboxScale / 2 - outImg.width / 2 - outImg.left);
-        break;
-    }
-    switch(spec.align.y){
-      case "top":
-        top = 0;
-        break;
-      case "bottom":
-        top = -(height - (outImg.height + outImg.top));
-        break;
-      case "center":
-        top = -(height / 2 - outImg.height / 2 - outImg.top);
-        break;
-    }
     outCrop = {
       width: letterboxScale,
-      height: height,
-      top: top,
-      left: left
+      height: letterboxScale / cropAspect * viewportAspect
+    };
+
+    switch(alignment.x){
+      case "left":
+        outCrop.left = 0;
+        break;
+      case "right":
+        outCrop.right = 1 - outCrop.left;
+        break;
+      case "center":
+        outCrop.left = (1 - outCrop.width) / 2;
+        break;
+    }
+    switch(alignment.y) {
+      case "top":
+        outCrop.top = 0;
+        break;
+      case "bottom":
+        outCrop.bottom = 1 - outCrop.height;
+        break;
+      case "center":
+        outCrop.top = (1 - outCrop.height) / 2;
+        break;
     }
   }
   else {
@@ -190,31 +187,39 @@ module.exports = function calculateStyles(options) {
     align: align
   });
 
+  function styleFormat(n) {
+    return n === 0 ? 0 : n+'%'
+  }
+
+  function toStylePercentage(n) {
+    return styleFormat(round(n*100));
+  }
+
   return {
     debug: {
       result: result
     },
     image: {
       position: 'absolute',
-      height: round(result.image.height*100) + '%',
-      width: round(result.image.width*100) + '%',
-      top: round(result.image.top*100) + '%',
-      left: round(result.image.left*100) + '%'
+      height: toStylePercentage(result.image.height),
+      width: toStylePercentage(result.image.width),
+      top: toStylePercentage(result.image.top),
+      left: toStylePercentage(result.image.left)
     },
     crop: {
       position: 'absolute',
       overflow: 'hidden',
-      height: round(result.crop.height*100) + '%',
-      width: round(result.crop.width*100) + '%',
-      top: round(result.crop.top*100) + '%',
-      left: round(result.crop.left*100) + '%'
+      height: toStylePercentage(result.crop.height),
+      width: toStylePercentage(result.crop.width),
+      top: toStylePercentage(result.crop.top),
+      left: toStylePercentage(result.crop.left)
     },
     container: {
       //outline: '1px solid cyan',
       overflow: 'hidden',
       position: 'relative',
       width: '100%',
-      height: round(100 / containerAspect) + '%'
+      height: styleFormat(round(100 / containerAspect))
     }
   }
 };

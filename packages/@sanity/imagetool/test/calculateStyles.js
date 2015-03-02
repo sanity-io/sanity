@@ -1,22 +1,25 @@
-var calculateStyles = require('../calculateStyles');
-var should = require('should');
+const calculateStyles = require('../calculateStyles');
+const should = require('should');
 
-describe('calculateStyles', function() {
+// Todo: write test for cropping container too
 
-  describe('landscape oriented images', function() {
-    var image = {
+describe('calculateStyles', function () {
+
+  describe('landscape oriented images', function () {
+    const image = {
       height: 100,
       width: 150
     };
-    var hotspot = {
+
+    const hotspot = {
       height: 0.75,
       width: 0.5,
       x: 0.5,
       y: 0.5
     };
 
-    it('displays well in a portrait oriented container', function() {
-      var style = calculateStyles({
+    it('displays well in a portrait oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -26,10 +29,10 @@ describe('calculateStyles', function() {
       });
       style.image.should.containEql({
         position: 'absolute',
-        top: '-16.67%',
-        left: '-100%',
-        height: '133.33%',
-        width: '300%'
+        height: '100%',
+        width: '100%',
+        left: 0,
+        top: 0
       });
 
       style.container.should.containEql({
@@ -40,8 +43,8 @@ describe('calculateStyles', function() {
       });
     });
 
-    it('display in a landscape oriented container', function() {
-      var style = calculateStyles({
+    it('display in a landscape oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -52,22 +55,22 @@ describe('calculateStyles', function() {
 
       style.image.should.containEql({
         position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        height: '200%',
-        width: '200%'
+        height: '100%',
+        width: '100%',
+        left: 0,
+        top: 0
       });
 
       style.container.should.containEql({
+        height: '66.67%',
         overflow: 'hidden',
         position: 'relative',
-        width: '100%',
-        height: '66.67%'
+        width: '100%'
       });
     });
 
-    it('display as a square', function() {
-      var style = calculateStyles({
+    it('display as a square', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -78,10 +81,10 @@ describe('calculateStyles', function() {
 
       style.image.should.containEql({
         position: 'absolute',
-        top: '-16.67%',
-        left: '-50%',
-        height: '133.33%',
-        width: '200%'
+        height: '100%',
+        width: '100%',
+        top: 0 ,
+        left: 0
       });
 
       style.container.should.containEql({
@@ -93,21 +96,21 @@ describe('calculateStyles', function() {
     });
   });
 
-  describe('portrait oriented images', function() {
-    var image = {
+  describe('portrait oriented images', function () {
+    const image = {
       height: 150,
       width: 100
     };
 
-    var hotspot = {
+    const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
       y: 0.5
     };
 
-    it('display in a portrait oriented container', function() {
-      var style = calculateStyles({
+    it('display in a portrait oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -117,10 +120,10 @@ describe('calculateStyles', function() {
       });
       style.image.should.containEql({
         position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        height: '200%',
-        width: '200%'
+        height: '100%',
+        width: '100%',
+        left: 0,
+        top: 0
       });
 
       style.container.should.containEql({
@@ -131,8 +134,8 @@ describe('calculateStyles', function() {
       });
     });
 
-    it('display in a landscape oriented container', function() {
-      var style = calculateStyles({
+    it('display in a landscape oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -142,11 +145,11 @@ describe('calculateStyles', function() {
       });
 
       style.image.should.containEql({
+        top: 0,
+        left: 0,
         position: 'absolute',
-        top: '-175%',
-        left: '-50%',
-        height: '450%',
-        width: '200%'
+        height: '100%',
+        width: '100%'
       });
 
       style.container.should.containEql({
@@ -157,8 +160,8 @@ describe('calculateStyles', function() {
       });
     });
 
-    it('display as a square', function() {
-      var style = calculateStyles({
+    it('display as a square', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -169,10 +172,10 @@ describe('calculateStyles', function() {
 
       style.image.should.containEql({
         position: 'absolute',
-        top: '-100%',
-        left: '-50%',
-        height: '300%',
-        width: '200%'
+        height: '100%',
+        width: '100%',
+        top: 0,
+        left: 0
       });
 
       style.container.should.containEql({
@@ -184,21 +187,21 @@ describe('calculateStyles', function() {
     });
   });
 
-  describe('square images', function() {
-    var image = {
+  describe('square images', function () {
+    const image = {
       height: 100,
       width: 100
     };
 
-    var hotspot = {
+    const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
       y: 0.5
     };
 
-    it('display in a portrait oriented container', function() {
-      var style = calculateStyles({
+    it('display in a portrait oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -208,10 +211,10 @@ describe('calculateStyles', function() {
       });
       style.image.should.containEql({
         position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        height: '200%',
-        width: '200%'
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%'
       });
 
       style.container.should.containEql({
@@ -222,8 +225,8 @@ describe('calculateStyles', function() {
       });
     });
 
-    it('display in a landscape oriented container', function() {
-      var style = calculateStyles({
+    it('display in a landscape oriented container', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -234,10 +237,10 @@ describe('calculateStyles', function() {
 
       style.image.should.containEql({
         position: 'absolute',
-        top: '-100%',
-        left: '-50%',
-        height: '300%',
-        width: '200%'
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%'
       });
 
       style.container.should.containEql({
@@ -248,8 +251,8 @@ describe('calculateStyles', function() {
       });
     });
 
-    it('display as a square', function() {
-      var style = calculateStyles({
+    it('display as a square', function () {
+      const style = calculateStyles({
         hotspot: hotspot,
         image: image,
         container: {
@@ -259,11 +262,10 @@ describe('calculateStyles', function() {
       });
 
       style.image.should.containEql({
-        position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        height: '200%',
-        width: '200%'
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%'
       });
 
       style.container.should.containEql({
