@@ -86,12 +86,13 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     // Yes :-( There is no way to protect the hot spot and still have full bleed, so we are letterboxing it
     method = "letterbox";
     var letterboxScale;
+    var diff = minFullBleedScale - maxScale;
 
     // Determine a scale where the image fills one dimension of the container
     if (cropIsTaller) {
-      letterboxScale = cropAspect / viewportAspect;
+      letterboxScale = 1.0 - diff;
     } else {
-      letterboxScale = 1.0;
+      letterboxScale = maxScale;
     }
 
     outCrop = {
@@ -99,23 +100,27 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       height: letterboxScale / cropAspect * viewportAspect
     };
 
+    var hotspotLeft = (hotspot.x * outCrop.width) - (hotspot.width * outCrop.width)/2;
     switch(alignment.x){
       case "left":
-        outCrop.left = 0;
+        outCrop.left = cropIsTaller ? 0 : -hotspotLeft;
         break;
       case "right":
-        outCrop.right = 1 - outCrop.left;
+        // todo: broken atm
+        outCrop.left = cropIsTaller ? 1 - outCrop.width : hotspotLeft;
         break;
       case "center":
         outCrop.left = (1 - outCrop.width) / 2;
         break;
     }
+    var hotspotTop = (hotspot.y * outCrop.height) - (hotspot.height * outCrop.height)/2;
     switch(alignment.y) {
       case "top":
-        outCrop.top = 0;
+        outCrop.top = cropIsTaller ? -hotspotTop : 0;
         break;
       case "bottom":
-        outCrop.bottom = 1 - outCrop.height;
+          // todo: broken atm
+        outCrop.top = hotspotTop;
         break;
       case "center":
         outCrop.top = (1 - outCrop.height) / 2;
