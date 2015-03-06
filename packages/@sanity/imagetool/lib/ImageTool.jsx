@@ -548,7 +548,7 @@ export default React.createClass({
     const ratio = this.state.devicePixelVsBackingStoreRatio;
 
     const style = {
-      width: '100%',
+      maxWidth: '100%',
       cursor: this.getCursor(),
       userSelect: 'none'
       //outline: '1px dotted cyan'
