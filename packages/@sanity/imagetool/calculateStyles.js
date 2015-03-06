@@ -111,7 +111,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
         outCrop.left = cropIsTaller ? 1 - outCrop.width : hotspotLeft;
         break;
       case "center":
-        outCrop.left = (1 - outCrop.width) / 2;
+        outCrop.left = cropIsTaller ? -hotspotLeft : (1 - outCrop.width) / 2;
         break;
     }
     var hotspotTop = (hotspot.y * outCrop.height) - (hotspot.height * outCrop.height)/2;
@@ -124,7 +124,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
         outCrop.top = hotspotTop;
         break;
       case "center":
-        outCrop.top = (1 - outCrop.height) / 2;
+        outCrop.top = cropIsTaller ? -hotspotTop : (1 - outCrop.height) / 2;
         break;
     }
   }
