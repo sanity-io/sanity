@@ -20,8 +20,9 @@ function readHotspot(hotspot, imageAspect) {
   return hotspot;
 }
 
-function round(v, decimals=2) {
-  const multiplier = Math.pow(10, decimals);
+function round(v, decimals) {
+  var _decimals = typeof(decimals === 'undefined') ? 2 : decimals;
+  const multiplier = Math.pow(10, _decimals);
   return Math.round(v*multiplier) / multiplier;
 }
 
