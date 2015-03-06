@@ -549,6 +549,7 @@ export default React.createClass({
 
     const style = {
       maxWidth: '100%',
+      maxHeight: '100%',
       cursor: this.getCursor(),
       userSelect: 'none'
       //outline: '1px dotted cyan'
