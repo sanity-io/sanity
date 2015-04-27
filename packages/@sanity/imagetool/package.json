@@ -14,26 +14,26 @@
     "rx": "^2.3.23"
   },
   "devDependencies": {
-    "babel-core": "^4.6.5",
-    "babelify": "^5.0.3",
-    "browserify": "^8.1.3",
+    "babel-core": "^5.1.13",
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
     "error-capture-middleware": "0.0.2",
-    "express": "^4.10.7",
-    "mocha": "^2.1.0",
-    "node-sass": "^2.0.1",
+    "express": "^4.12.3",
+    "mocha": "^2.2.4",
+    "node-sass": "^2.1.1",
     "proxyreload": "git://github.com/bjoerge/proxyreload",
     "quickreload": "^1.0.0-alpha.3",
     "rebundler": "0.0.4",
-    "rx-dom": "^4.0.2",
-    "should": "^5.0.1",
-    "staticr": "^1.0.8"
+    "rx-dom": "^5.0.3",
+    "should": "^6.0.1",
+    "staticr": "^2.1.2"
   },
   "browserify": {
     "transform": [
       [
         "babelify",
         {
-          "experimental": true
+          "stage": 0
         }
       ]
     ]
