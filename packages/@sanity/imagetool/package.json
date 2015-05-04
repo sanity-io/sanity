@@ -10,7 +10,9 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "react": ">=0.12.0 <0.13.0",
+    "babel-core": "^5.2.9",
+    "babelify": "^6.0.2",
+    "react": ">=0.13.0 <0.14.0",
     "rx": "^2.3.23"
   },
   "devDependencies": {

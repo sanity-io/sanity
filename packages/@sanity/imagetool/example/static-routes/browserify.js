@@ -10,9 +10,7 @@ var browser = rebundler(function(cache, pkgCache) {
     debug:         true,
     fullPaths:     true
   })
-    .transform(babelify.configure({
-      experimental: true
-    }))
+    .transform(babelify)
 });
 
 
