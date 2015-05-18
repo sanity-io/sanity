@@ -1,1 +1,1 @@
-module.exports = require('./lib/LoadImageProxy.jsx');
+module.exports = require('./lib');

@@ -1,11 +1,11 @@
 require("babel-core/register");
 
-var express = require('express');
-var path = require('path');
-var serve = require('staticr/serve');
-var capture = require('error-capture-middleware');
+const express = require('express');
+const path = require('path');
+const serve = require('staticr/serve');
+const capture = require('error-capture-middleware');
 
-var app = express();
+const app = express();
 
 app.use(require("quickreload")());
 app.use(serve.js(require("./static-routes/browserify")));

@@ -11,45 +11,53 @@ function getPositionRelativeToRect(x, y, rect) {
 // TODO: Implement without using Rx
 import Rx from "rx";
 
-var mousedowns = Rx.Observable.fromEvent(window, 'mousedown').map(e => {
-  return SyntheticMouseEvent.getPooled({}, 'mousedown', e);
-});
 
-var mouseups = Rx.Observable.fromEvent(window, 'mouseup').map(e => {
-  return SyntheticMouseEvent.getPooled({}, 'mouseup', e);
-});
-
-var mousemoves = Rx.Observable.fromEvent(window, 'mousemove').map(e => {
-  return SyntheticMouseEvent.getPooled({}, 'mousemove', e);
-});
-
-var touchstarts = Rx.Observable.fromEvent(window, 'touchstart').map(e => {
-  return SyntheticTouchEvent.getPooled({}, 'touchstart', e);
-});
-
-var dragstarts = mousedowns.merge(touchstarts).throttle();
+function getWindow() {
+  /* global window */
+  return typeof window === 'undefined' ? null : window;
+}
 
 module.exports = {
   componentDidMount() {
-    var domNode = this.getDOMNode();
+    const win = getWindow();
 
-    var _dragstarts = dragstarts
+    const mousedowns = Rx.Observable.fromEvent(win, 'mousedown').map(e => {
+      return SyntheticMouseEvent.getPooled({}, 'mousedown', e);
+    });
+
+    const mouseups = Rx.Observable.fromEvent(win, 'mouseup').map(e => {
+      return SyntheticMouseEvent.getPooled({}, 'mouseup', e);
+    });
+
+    const mousemoves = Rx.Observable.fromEvent(win, 'mousemove').map(e => {
+      return SyntheticMouseEvent.getPooled({}, 'mousemove', e);
+    });
+
+    const touchstarts = Rx.Observable.fromEvent(win, 'touchstart').map(e => {
+      return SyntheticTouchEvent.getPooled({}, 'touchstart', e);
+    });
+
+    const dragstarts = mousedowns.merge(touchstarts).throttle();
+
+    const domNode = this.getDOMNode();
+
+    const _dragstarts = dragstarts
       .filter(e => e.target == domNode)
       .map(e => ({
         x: e.clientX,
         y: e.clientY
       }));
 
-    var _moves = mousemoves.map(e => ({
+    const _moves = mousemoves.map(e => ({
       x: e.clientX,
       y: e.clientY
     }));
 
-    var _drags = _dragstarts.flatMap(startPos => {
-      var prevPos = startPos;
+    const _drags = _dragstarts.flatMap(startPos => {
+      const prevPos = startPos;
       return _moves
         .map(pos => {
-          var delta = {x: pos.x - prevPos.x, y: pos.y - prevPos.y};
+          const delta = {x: pos.x - prevPos.x, y: pos.y - prevPos.y};
           prevPos.x = pos.x;
           prevPos.y = pos.y;
           return delta;
@@ -57,7 +65,7 @@ module.exports = {
         .takeUntil(mouseups);
     });
 
-    var _dragends = mouseups.map(e => ({
+    const _dragends = mouseups.map(e => ({
       x: e.clientX,
       y: e.clientY
     }));

@@ -11,20 +11,6 @@ export class Point {
   }
 }
 
-class Corners {
-  constructor(rect) {
-    this.rect = rect;
-  }
-
-  get top() {
-    return new HLine(this.rect.top, this.rect.left, this.rect.right)
-  }
-
-  get bottom() {
-    return new HLine(this.rect.bottom, this.rect.left, this.rect.right)
-  }
-}
-
 class HLine {
   constructor(y, left, right) {
     this.y = y;
@@ -42,6 +28,20 @@ class HLine {
 
   get length() {
     return this._right - this._left;
+  }
+}
+
+class Corners {
+  constructor(rect) {
+    this.rect = rect;
+  }
+
+  get top() {
+    return new HLine(this.rect.top, this.rect.left, this.rect.right)
+  }
+
+  get bottom() {
+    return new HLine(this.rect.bottom, this.rect.left, this.rect.right)
   }
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import Preview from "./Preview.jsx";
-import ImageTool from "../../";
+import ImageTool from "../../src";
 
 const IMAGES = [
   `/hubble.jpg`,

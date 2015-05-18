@@ -1,5 +1,5 @@
-const calculateStyles = require('../calculateStyles');
-const should = require('should');
+const calculateStyles = require('../src/calculateStyles');
+require('should');
 
 // Todo: write test for cropping container too
 
@@ -83,7 +83,7 @@ describe('calculateStyles', function () {
         position: 'absolute',
         height: '100%',
         width: '100%',
-        top: 0 ,
+        top: 0,
         left: 0
       });
 
