@@ -15,14 +15,11 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "babel-core": "^5.2.9",
-    "babelify": "^6.0.2",
     "react": ">=0.13.0 <0.14.0",
     "rx": "^2.3.23"
   },
   "devDependencies": {
-    "babel-core": "^5.1.13",
-    "babel-eslint": "^3.1.5",
+    "babel-core": "^5.2.9",
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "error-capture-middleware": "0.0.2",
