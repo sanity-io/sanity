@@ -2,14 +2,14 @@ import React from "react";
 import getBackingStoreRatio from "./getBackingStoreRatio";
 import DraggableMixin from "./DraggableMixin";
 import * as utils2d from "./2d/utils";
-import {Size, Rect, Point} from "./2d/shapes";
+import {Rect} from "./2d/shapes";
 
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 8;
 const CROP_HANDLE_SIZE = 12;
 const HOTSPOT_HANDLE_SIZE = 10;
 
-const CURSORS = require("./cursors.json");
+const CURSORS = require("./cursors");
 const DEFAULT_CROP = {left: 0, right: 0, top: 0, bottom: 0};
 const DEFAULT_HOTSPOT = {x: 0.5, y: 0.5, height: 1, width: 1};
 
