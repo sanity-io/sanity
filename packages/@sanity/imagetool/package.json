@@ -34,5 +34,9 @@
     "rx-dom": "^5.0.3",
     "should": "^6.0.1",
     "staticr": "^2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/bengler/sanity-imagetool.git"
   }
 }
