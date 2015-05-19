@@ -34,15 +34,5 @@
     "rx-dom": "^5.0.3",
     "should": "^6.0.1",
     "staticr": "^2.1.2"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "stage": 0
-        }
-      ]
-    ]
   }
 }
