@@ -1,4 +1,7 @@
-import 'babel-core/polyfill'
+import 'babel/polyfill'
+import Debug from "debug"
+Debug.disable('');
+Debug.enable(process.env.DEBUG);
 import React from "react"
 import Demo from "./lib/Demo.jsx"
 import querystring from "querystring"
