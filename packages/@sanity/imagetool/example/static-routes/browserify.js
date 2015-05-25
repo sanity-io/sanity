@@ -1,6 +1,7 @@
 var browserify = require('browserify');
 var rebundler = require("rebundler");
 var babelify = require("babelify");
+var envify = require("envify");
 
 var browser = rebundler(function(cache, pkgCache) {
   return browserify(require.resolve('../browser.js'), {
@@ -11,6 +12,7 @@ var browser = rebundler(function(cache, pkgCache) {
     fullPaths:     true
   })
     .transform(babelify)
+    .transform(envify)
 });
 
 

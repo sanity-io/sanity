@@ -15,8 +15,9 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "react": ">=0.13.0 <0.14.0",
-    "rx": "^2.3.23"
+    "debug": "^2.2.0",
+    "dom-event": "0.0.5",
+    "react": ">=0.13.0 <0.14.0"
   },
   "devDependencies": {
     "babel-core": "^5.2.9",
@@ -31,7 +32,6 @@
     "proxyreload": "git://github.com/bjoerge/proxyreload",
     "quickreload": "^1.0.0-alpha.3",
     "rebundler": "0.0.4",
-    "rx-dom": "^5.0.3",
     "should": "^6.0.1",
     "staticr": "^2.1.2"
   },
