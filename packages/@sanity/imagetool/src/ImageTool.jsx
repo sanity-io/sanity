@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react/addons";
 import getBackingStoreRatio from "./getBackingStoreRatio";
 import DraggableMixin from "./DraggableMixin";
 import * as utils2d from "./2d/utils";
@@ -35,7 +35,7 @@ function getCropCursorForHandle(handle) {
 
 export default React.createClass({
   displayName: 'ImageTool',
-  mixins: [DraggableMixin],
+  mixins: [DraggableMixin, React.addons.PureRenderMixin],
 
   getHotspotRect() {
     const {value, image} = this.props;
@@ -510,10 +510,6 @@ export default React.createClass({
     const actualSize = this.getActualSize();
     return this.props.image.width / actualSize.width
   },
-  componentDidUpdate() {
-    const context = this.getDOMNode().getContext('2d');
-    this.paint(context);
-  },
 
   getCursor() {
     const {mousePosition} = this.state;
@@ -546,11 +542,9 @@ export default React.createClass({
   render() {
     const {height, width} = this.props.image;
     const ratio = this.state.devicePixelVsBackingStoreRatio;
-
     const style = {
       maxWidth: '100%',
       maxHeight: '100%',
-      cursor: this.getCursor(),
       userSelect: 'none'
       //outline: '1px dotted cyan'
     };
@@ -563,5 +557,15 @@ export default React.createClass({
             width={width * ratio}
         />
     );
+  },
+  componentDidUpdate() {
+    var domNode = this.getDOMNode();
+    const context = domNode.getContext('2d');
+    this.paint(context);
+    const currentCursor = domNode.style.cursor;
+    const newCursor = this.getCursor();
+    if (currentCursor != newCursor) {
+      domNode.style.cursor = newCursor;
+    }
   }
 });
