@@ -101,7 +101,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     };
 
     const hotspotLeft = (hotspot.x * outCrop.width) - (hotspot.width * outCrop.width) / 2;
-    switch(alignment.x){
+    switch (alignment.x) {
       case "left":
         outCrop.left = cropIsTaller ? 0 : -hotspotLeft;
         break;
@@ -112,9 +112,12 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       case "center":
         outCrop.left = cropIsTaller ? (1 - outCrop.width) / 2 : -hotspotLeft;
         break;
+      default:
+        throw new Error("Invalid x alignment: '" + alignment.x + "'. Must be either 'left', 'right' or 'center'")
+
     }
     const hotspotTop = (hotspot.y * outCrop.height) - (hotspot.height * outCrop.height) / 2;
-    switch(alignment.y) {
+    switch (alignment.y) {
       case "top":
         outCrop.top = cropIsTaller ? -hotspotTop : 0;
         break;
@@ -125,6 +128,8 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       case "center":
         outCrop.top = cropIsTaller ? -hotspotTop : (1 - outCrop.height) / 2;
         break;
+      default:
+        throw new Error("Invalid y alignment: '" + alignment.y + "'. Must be either 'top', 'bottom' or 'center'")
     }
   }
   else {

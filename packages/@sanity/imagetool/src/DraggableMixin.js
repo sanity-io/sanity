@@ -1,5 +1,4 @@
 import SyntheticMouseEvent from 'react/lib/SyntheticMouseEvent';
-import SyntheticTouchEvent from 'react/lib/SyntheticTouchEvent';
 import {on, off} from "dom-event";
 import Debug from "debug";
 
@@ -15,12 +14,6 @@ function getPositionRelativeToRect(x, y, rect) {
 function getWindow() {
   /* global window */
   return typeof window === 'undefined' ? null : window;
-}
-
-function pool(type, handler) {
-  return function handle(e) {
-    handler(getPooledEvent(type, e))
-  }
 }
 
 function createSyntheticEvent(type, event) {
@@ -89,7 +82,7 @@ module.exports = {
         debug('Start cancelled, already a drag in progress');
         return;
       }
-      if  (event.target !== domNode) {
+      if (event.target !== domNode) {
         return;
       }
       dragging = true;
