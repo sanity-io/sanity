@@ -20,8 +20,8 @@ describe('calculateStyles', function () {
 
     it('displays well in a portrait oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 150,
           width: 100
@@ -45,8 +45,8 @@ describe('calculateStyles', function () {
 
     it('display in a landscape oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 150
@@ -71,8 +71,8 @@ describe('calculateStyles', function () {
 
     it('display as a square', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 100
@@ -111,8 +111,8 @@ describe('calculateStyles', function () {
 
     it('display in a portrait oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 150,
           width: 100
@@ -136,8 +136,8 @@ describe('calculateStyles', function () {
 
     it('display in a landscape oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 150
@@ -162,8 +162,8 @@ describe('calculateStyles', function () {
 
     it('display as a square', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 100
@@ -202,8 +202,8 @@ describe('calculateStyles', function () {
 
     it('display in a portrait oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 100
@@ -227,8 +227,8 @@ describe('calculateStyles', function () {
 
     it('display in a landscape oriented container', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 150
@@ -253,8 +253,8 @@ describe('calculateStyles', function () {
 
     it('display as a square', function () {
       const style = calculateStyles({
-        hotspot: hotspot,
-        image: image,
+        hotspot,
+        image,
         container: {
           height: 100,
           width: 100

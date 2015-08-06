@@ -49,6 +49,6 @@ export default React.createClass({
     if (!this.state.loaded) {
       return <div style={{display: 'inline-block'}}>...</div>;
     }
-    return <ImageTool {...this.props} image={this.state.image}/>
+    return <ImageTool {...this.props} image={this.state.image}/>;
   }
 });

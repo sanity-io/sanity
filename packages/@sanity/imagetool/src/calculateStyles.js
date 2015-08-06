@@ -14,7 +14,7 @@ function readHotspot(hotspot, imageAspect) {
   if (hotspot.size) {
     hotspot.width = hotspot.size;
     hotspot.height = imageAspect;
-    console.log("hotspot.size is deprecated. Should be hotspot.height and hotspot.width") //eslint-disable-line no-console
+    console.log("hotspot.size is deprecated. Should be hotspot.height and hotspot.width") // eslint-disable-line no-console
   }
   return hotspot;
 }
@@ -149,10 +149,10 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 
       outCrop = {
         width: minFullBleedScale,
-        height: height,
+        height,
         left: 0,
         // Place the Y center of the hotspot near the center of the viewport
-        top: top
+        top
       }
     }
     else { // crop is wider
@@ -167,17 +167,17 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       }
       // Clamp left so that we will not move the image off of the viewport.
       outCrop = {
-        width: width,
+        width,
         height: minFullBleedScale / cropAspect * viewportAspect,
         top: 0,
         // Place the X center of the hotspot at the center of the viewport
-        left: left
+        left
       }
     }
   }
 
   return {
-    method: method,
+    method,
     crop: outCrop,
     image: outImg
   }
@@ -192,9 +192,9 @@ module.exports = function calculateStyles(options) {
   const crop = options.crop || { top: 0, right: 0, bottom: 0, left: 0 };
   const align = options.align || { x: 'center', y: 'center' };
 
-  const result = calculateHotSpotCrop(imageAspect, {hotspot: hotspot, crop: crop}, {
+  const result = calculateHotSpotCrop(imageAspect, {hotspot, crop}, {
     aspect: containerAspect,
-    align: align
+    align
   });
 
   function styleFormat(n) {
@@ -207,7 +207,7 @@ module.exports = function calculateStyles(options) {
 
   return {
     debug: {
-      result: result
+      result
     },
     image: {
       position: 'absolute',
