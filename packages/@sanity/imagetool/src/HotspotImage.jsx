@@ -1,22 +1,9 @@
 import React, {PropTypes} from 'react';
 import calculateStyles from './calculateStyles';
 import Debug from "debug";
+import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants';
 
 const debug = Debug('sanity-imagetool');
-
-const DEFAULT_HOTSPOT = {
-  x: 0.5,
-  y: 0.38, // golden ratio
-  height: 0.1,
-  width: 0.1
-};
-
-const DEFAULT_CROP = {
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0
-};
 
 export default React.createClass({
   displayName: 'HotspotImage',
@@ -27,6 +14,7 @@ export default React.createClass({
     hotspot: React.PropTypes.object,
     crop: React.PropTypes.object,
     aspectRatio: PropTypes.number,
+    clipPerimeter: PropTypes.arrayOf(PropTypes.array),
     alignX: PropTypes.oneOf(['center', 'left', 'right']),
     alignY: PropTypes.oneOf(['center', 'top', 'bottom']),
     className: PropTypes.string,
@@ -56,6 +44,25 @@ export default React.createClass({
       hotspot: DEFAULT_HOTSPOT
     };
   },
+
+  renderPerimeter(styles, aspectRatio) {
+    const {clipPerimeter} = this.props;
+    if (!clipPerimeter) {
+      return null;
+    }
+
+    const points = clipPerimeter.map((point)=> `${point[0] * 2 - 1},${point[1] * 2 - 1}`).join(' L');
+
+    return (
+      <svg style={styles.image} viewBox={`-1 -1 2 2`}>
+        <g transform={`scale(${aspectRatio} 1)`} style={{fill: '#fff', strokeWidth: 0.1}}>
+          <path d={`M-2,-2 L-2,2 L2,2 L2,-2 z M${points} z`} style={{fillRule: 'evenodd'}}/>
+        </g>
+      </svg>
+    );
+  },
+
+
   render() {
     const {
       aspectRatio,
@@ -73,8 +80,8 @@ export default React.createClass({
     } = this.props;
 
     const targetStyles = calculateStyles({
-      container: { aspectRatio },
-      image: { aspectRatio: srcAspectRatio },
+      container: {aspectRatio},
+      image: {aspectRatio: srcAspectRatio},
       hotspot,
       crop,
       align: {
@@ -84,7 +91,7 @@ export default React.createClass({
     });
 
     return (
-      <div className={`${className || ''} sanity-image`} style={style}>
+      <div className={className} style={style}>
         <div className="sanity-image__container" style={targetStyles.container}>
           <div className="sanity-image__padding" style={{paddingTop: targetStyles.container.height}}/>
           <div className="sanity-image__crop-box" style={targetStyles.crop}>
@@ -98,6 +105,8 @@ export default React.createClass({
               style={targetStyles.image}
               />
           </div>
+          {/* todo: see if we can move this out of here */}
+          {this.renderPerimeter(targetStyles, aspectRatio)}
         </div>
       </div>
     );
