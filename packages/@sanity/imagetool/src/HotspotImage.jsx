@@ -96,7 +96,7 @@ export default React.createClass({
           <div className="sanity-image__padding" style={{paddingTop: targetStyles.container.height}}/>
           <div className="sanity-image__crop-box" style={targetStyles.crop}>
             <img
-              className="sanity-image__padding"
+              className="sanity-image__image"
               ref="image"
               src={src}
               srcSet={srcSet}
