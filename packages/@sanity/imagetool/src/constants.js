@@ -1,9 +1,9 @@
 
 export const DEFAULT_HOTSPOT = {
   x: 0.5,
-  y: 0.38, // golden ratio
-  height: 0.1,
-  width: 0.1
+  y: 0.5,
+  height: 1,
+  width: 1
 };
 
 export const DEFAULT_CROP = {
