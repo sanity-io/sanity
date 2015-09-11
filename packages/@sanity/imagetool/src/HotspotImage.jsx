@@ -24,7 +24,7 @@ export default React.createClass({
   },
 
   componentDidMount() {
-    const imageElement = this.refs.image.getDOMNode();
+    const imageElement = this.refs.image
     // Fixes issues that may happen if the component is mounted after the image is done loading
     // In these situations, neither the onLoad or the onError events will be called.
     // Derived from http://imagesloaded.desandro.com/

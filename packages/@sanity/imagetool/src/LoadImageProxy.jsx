@@ -1,10 +1,10 @@
 import React from "react";
 import ImageTool from "./ImageTool";
-import {addons} from 'react/addons';
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 export default React.createClass({
   displayName: 'LoadImageProxy',
-  mixins: [React.PureRenderMixin],
+  mixins: [PureRenderMixin],
 
   getInitialState() {
     return {

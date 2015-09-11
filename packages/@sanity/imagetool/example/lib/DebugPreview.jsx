@@ -1,4 +1,5 @@
-var React = require('react/addons');
+var React = require('react');
+var ReactDOM, {findDOMNode} = require('react-dom');
 var cx = React.addons.classSet;
 var getHotspotStyles = require("../../src/calculateStyles");
 
@@ -9,7 +10,7 @@ var getHotspotStyles = require("../../src/calculateStyles");
 var DebugPaint = React.createClass({
   displayName: 'DebugPaint',
   componentDidMount() {
-    this._ctx = this.getDOMNode().getContext('2d');
+    this._ctx = findDOMNode(this).getContext('2d');
     this.paint(this._ctx);
   },
   componentDidUpdate() {

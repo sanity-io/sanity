@@ -1,5 +1,7 @@
-import React from "react/addons";
+import React from 'react'
+import {findDOMNode} from 'react-dom'
 import getBackingStoreRatio from "./getBackingStoreRatio";
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 import DraggableMixin from "./DraggableMixin";
 import * as utils2d from "./2d/utils";
 import {Rect} from "./2d/shapes";
@@ -35,7 +37,7 @@ function getCropCursorForHandle(handle) {
 
 export default React.createClass({
   displayName: 'ImageTool',
-  mixins: [DraggableMixin, React.addons.PureRenderMixin],
+  mixins: [DraggableMixin, PureRenderMixin],
 
   getHotspotRect() {
     const {value, image} = this.props;
@@ -235,7 +237,7 @@ export default React.createClass({
 
   componentDidMount() {
     this.setState({
-      devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(this.getDOMNode().getContext('2d'))
+      devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(findDOMNode(this).getContext('2d'))
     });
   },
 
@@ -361,7 +363,7 @@ export default React.createClass({
   },
 
   getActualSize() {
-    const node = this.getDOMNode();
+    const node = findDOMNode(this)
     return {height: node.clientHeight, width: node.clientWidth};
   },
 
@@ -559,7 +561,7 @@ export default React.createClass({
     );
   },
   componentDidUpdate() {
-    var domNode = this.getDOMNode();
+    var domNode = findDOMNode(this);
     const context = domNode.getContext('2d');
     this.paint(context);
     const currentCursor = domNode.style.cursor;

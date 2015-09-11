@@ -1,5 +1,5 @@
-import SyntheticMouseEvent from 'react/lib/SyntheticMouseEvent';
 import {on, off} from "dom-event";
+import {findDOMNode} from 'react-dom';
 import Debug from "debug";
 
 const debug = Debug('sanity-imagetool');
@@ -14,10 +14,6 @@ function getPositionRelativeToRect(x, y, rect) {
 function getWindow() {
   /* global window */
   return typeof window === 'undefined' ? null : window;
-}
-
-function createSyntheticEvent(type, event) {
-  return SyntheticMouseEvent.getPooled({}, type, event);
 }
 
 // Todo: use symbol
@@ -38,16 +34,12 @@ function diffPos(pos, otherPos) {
 }
 
 function listen(element, type, handler) {
-  on(element, type, _handler);
+  on(element, type, handler);
 
   return {
     dispose() {
-      off(element, type, _handler);
+      off(element, type, handler);
     }
-  };
-
-  function _handler(e) {
-    handler(createSyntheticEvent(type, e));
   }
 }
 
@@ -56,7 +48,7 @@ module.exports = {
   componentDidMount() {
     debug('Draggable component did mount');
     const win = getWindow();
-    const domNode = this.getDOMNode();
+    const domNode = findDOMNode(this)
 
     const self = this;
 
@@ -83,6 +75,7 @@ module.exports = {
         return;
       }
       if (event.target !== domNode) {
+        debug('Event target (%o) was not my dom node (%o)', event.target, domNode);
         return;
       }
       dragging = true;
