@@ -1,6 +1,6 @@
 {
   "name": "@sanity/imagetool",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "The image hotspot selector / cropper used in Sanity",
   "main": "index.js",
   "scripts": {
