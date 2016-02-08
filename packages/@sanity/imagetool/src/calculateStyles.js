@@ -1,12 +1,21 @@
+const DEFAULT_HOTSPOT = {x: 0.5, y: 0.5, height: 1, width: 1}
+const DEFAULT_CROP = {top: 0, right: 0, bottom: 0, left: 0}
+
 function readAspectRatio(opts) {
+  if (!opts) {
+    return null
+  }
   opts = opts || {};
   if (opts.hasOwnProperty('aspectRatio')) {
     return opts.aspectRatio;
   }
-  if (!opts.height || !opts.width) {
-    throw new Error("Please provide either aspect ratio or container dimensions (width, height)");
+  if (opts.hasOwnProperty('height') || opts.hasOwnProperty('width')) {
+    if (typeof opts.height !== 'number' && typeof opts.width !== 'number') {
+      throw new Error('Height and width must be numbers, got ' + JSON.stringify(opts))
+    }
+    return opts.width / opts.height
   }
-  return opts.width / opts.height;
+  return null
 }
 
 function readHotspot(hotspot, imageAspect) {
@@ -183,13 +192,22 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
   }
 }
 
-module.exports = function calculateStyles(options) {
+function readCropAspect(crop) {
+  const height = (1 - crop.top - crop.bottom)
+  const width = (1 - crop.left - crop.right)
+  return width / height
+}
 
-  options = options || {};
-  const containerAspect = readAspectRatio(options.container);
-  const imageAspect = readAspectRatio(options.image);
-  const hotspot = options.hotspot ? readHotspot(options.hotspot, imageAspect) : {x: 0.5, y: 0.5, height: 1, width: 1};
-  const crop = options.crop || { top: 0, right: 0, bottom: 0, left: 0 };
+module.exports = function calculateStyles(options) {
+  options = options || {}
+
+  const imageAspect = readAspectRatio(options.image)
+
+  const hotspot = options.hotspot ? readHotspot(options.hotspot, imageAspect) : DEFAULT_HOTSPOT
+
+  const crop = options.crop || DEFAULT_CROP
+  const containerAspect = readAspectRatio(options.container) || (imageAspect * readCropAspect(crop))
+
   const align = options.align || { x: 'center', y: 'center' };
 
   const result = calculateHotSpotCrop(imageAspect, {hotspot, crop}, {

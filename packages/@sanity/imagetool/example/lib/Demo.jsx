@@ -162,6 +162,7 @@ export default React.createClass({
         </div>
         <div style={{padding: 5, margin: 5, float: 'left'}}>
           <ul className="previews">
+
             <li>
               <h3>Liggende</h3>
               <Preview aspectRatio={16/9} hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl}/>
@@ -177,6 +178,10 @@ export default React.createClass({
             <li>
               <h3>Stående</h3>
               <Preview aspectRatio={9/16}  hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl}/>
+            </li>
+            <li>
+              <h3>Uoppgitt format</h3>
+              <Preview hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl}/>
             </li>
           </ul>
         </div>

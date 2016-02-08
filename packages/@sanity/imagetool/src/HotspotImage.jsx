@@ -37,7 +37,6 @@ export default React.createClass({
 
   getDefaultProps() {
     return {
-      aspectRatio: 4 / 3,
       alignX: 'center',
       alignY: 'center',
       crop: DEFAULT_CROP,

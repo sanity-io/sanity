@@ -5,6 +5,45 @@ require('should');
 
 describe('calculateStyles', function () {
 
+  describe('default aspect ratio', function () {
+    it('defaults to the source image aspect ratio when no crop is given', function () {
+      const style = calculateStyles({
+        image: {height: 100, width: 100}
+      })
+      style.image.should.containEql({
+        height: '100%',
+        width: '100%'
+      })
+    })
+    it('considers the cropping when calculating image aspect', function () {
+      const style = calculateStyles({
+        image: {height: 200, width: 100},
+        hotspot: {
+          x: 0.5,
+          y: 0.5,
+          height: 0.5,
+          width: 0.5
+        },
+        crop: {
+          top: 0.2,
+          bottom: 0.2,
+          left: 0.1,
+          right: 0.1
+        }
+      })
+      style.container.should.containEql({
+        height: '150%',
+        width: '100%'
+      })
+      style.image.should.containEql({
+        height: '166.67%',
+        left: '-12.5%',
+        position: 'absolute',
+        top: '-33.33%',
+        width: '125%'
+      })
+    })
+  })
   describe('landscape oriented images', function () {
     const image = {
       height: 100,

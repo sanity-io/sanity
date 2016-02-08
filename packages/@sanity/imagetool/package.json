@@ -35,7 +35,7 @@
     "eslint-plugin-react": "^3.2.0",
     "express": "^4.12.3",
     "mocha": "^2.2.4",
-    "node-sass": "^2.1.1",
+    "node-sass": "^3.4.2",
     "quickreload": "^1.0.6",
     "rebundler": "^0.1.0",
     "remon": "^1.0.1",
