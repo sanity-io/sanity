@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
 import {getCliRunner} from '../src/CommandRunner'
+import getProjectDefaults from '../src/util/getProjectDefaults'
 import commands from '../src/commands'
 import pkg from '../package.json'
 
@@ -17,7 +18,14 @@ export function run() {
   const cmdName = argv._[0]
   const cmdRunner = getCliRunner()
 
-  cmdRunner.runCommand(cmdName, argv)
+  getProjectDefaults(process.cwd()).then(defaults => {
+    cmdRunner.runCommand(
+      cmdName,
+      Object.assign({defaults}, argv)
+    )
+  }).catch(err => {
+    console.error(err.stack) // eslint-disable-line no-console
+  })
 }
 
 export const parse = input => program.parse(input)
