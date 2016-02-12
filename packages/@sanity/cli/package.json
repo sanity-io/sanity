@@ -1,5 +1,5 @@
 {
-  "name": "sanity-cli",
+  "name": "@sanity/cli",
   "version": "0.0.1",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "bin/cli.js",
@@ -26,7 +26,10 @@
   },
   "homepage": "https://github.com/sanity-io/sanity-cli#readme",
   "dependencies": {
-    "commander": "^2.9.0"
+    "inquirer": "^0.12.0",
+    "joi": "^7.3.0",
+    "thenify": "^3.2.0",
+    "yargs": "^3.32.0"
   },
   "devDependencies": {
     "babel-eslint": "^4.1.8",
