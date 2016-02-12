@@ -21,7 +21,7 @@ export default {
 
 function init({print, prompt, error, options}) {
   print('This utility will walk you through creating a new Sanity installation.')
-  print('It only covers the most basic configuration, and tries to guess sensible defaults.\n')
+  print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
   prompt([{
@@ -37,6 +37,7 @@ function init({print, prompt, error, options}) {
     type: 'input',
     name: 'description',
     message: 'Project description:',
+    default: options.defaults.description,
     validate: description => (
       (description || '').length < 1000
       || 'Project descriptions should be less than 1000 characters'
@@ -45,9 +46,15 @@ function init({print, prompt, error, options}) {
     type: 'input',
     name: 'gitRemote',
     message: 'Git repository URL:',
+    default: options.defaults.gitRemote,
     validate: url => {
       return (url ? isGitUrl(url) : true) || 'Invalid git url'
     }
+  }, {
+    type: 'input',
+    name: 'author',
+    message: 'Author:',
+    default: options.defaults.author
   }])
 }
 
