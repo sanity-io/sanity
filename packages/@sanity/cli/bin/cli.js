@@ -15,9 +15,9 @@ const argv = program.argv
 
 export function run() {
   const cmdName = argv._[0]
-  const runner = getCliRunner()
+  const cmdRunner = getCliRunner()
 
-  runner.runCommand(cmdName, argv)
+  cmdRunner.runCommand(cmdName, argv)
 }
 
 export const parse = input => program.parse(input)
