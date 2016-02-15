@@ -15,7 +15,7 @@ export default class CommandRunner {
   runCommand(cmdName, options) {
     const command = this.commands.find(cmd => cmd.name === cmdName)
     if (!command) {
-      return this.handlers.outputter.error(new Error(`Command '${cmdName} not defined`))
+      return this.handlers.outputter.error(new Error(`Command "${cmdName}" not defined`))
     }
 
     const {print, error} = this.handlers.outputter
