@@ -1,13 +1,15 @@
 {
   "name": "@sanity/cli",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
-  "main": "bin/cli.js",
+  "main": "lib/cli.js",
   "bin": {
     "sanity": "./bin/run.js"
   },
   "scripts": {
+    "compile": "babel -d lib/ src/",
     "test": "mocha",
+    "prepublish": "npm run compile",
     "posttest": "eslint ."
   },
   "repository": {
@@ -38,6 +40,7 @@
     "yargs": "^3.32.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.5.1",
     "babel-eslint": "^4.1.8",
     "babel-preset-es2015": "^6.5.0",
     "babel-register": "^6.5.1",

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
-import {getCliRunner} from '../src/CommandRunner'
-import getProjectDefaults from '../src/util/getProjectDefaults'
-import commands from '../src/commands'
+import {getCliRunner} from './CommandRunner'
+import getProjectDefaults from './util/getProjectDefaults'
+import commands from './commands'
 import pkg from '../package.json'
 
 const program = yargs
@@ -12,9 +12,8 @@ const program = yargs
 
 commands.forEach(cmd => program.command(cmd.signature, cmd.description))
 
-const argv = program.argv
-
-export function run() {
+export function run(args) {
+  const argv = program.parse(args)
   const cmdName = argv._[0]
   const cmdRunner = getCliRunner()
 
@@ -27,5 +26,3 @@ export function run() {
     console.error(err.stack) // eslint-disable-line no-console
   })
 }
-
-export const parse = input => program.parse(input)
