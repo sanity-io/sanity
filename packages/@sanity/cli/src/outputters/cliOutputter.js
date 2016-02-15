@@ -5,6 +5,10 @@ export default {
   },
 
   error(...args) {
-    console.error(...args)
+    if (args[0] instanceof Error) {
+      console.error(args[0].stack)
+    } else {
+      console.error(...args)
+    }
   }
 }

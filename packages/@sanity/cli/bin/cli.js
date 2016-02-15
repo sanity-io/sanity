@@ -21,7 +21,7 @@ export function run() {
   getProjectDefaults(process.cwd()).then(defaults => {
     cmdRunner.runCommand(
       cmdName,
-      Object.assign({defaults}, argv)
+      Object.assign({defaults, cwd: process.cwd()}, argv)
     )
   }).catch(err => {
     console.error(err.stack) // eslint-disable-line no-console

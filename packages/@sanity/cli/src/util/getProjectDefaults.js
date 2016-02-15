@@ -10,7 +10,7 @@ export default cwd =>
     projectName: path.basename(cwd),
     gitRemote: resolveGitRemote(cwd),
     description: getProjectDescription(cwd).replace(/\.$/, ''),
-    author: getUserInfo(),
+    author: getUserInfo()
   })
 
 const getGitConfig = thenify(gitConfigLocal)

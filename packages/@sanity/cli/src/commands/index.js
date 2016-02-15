@@ -1,4 +1,4 @@
-import initCommand from './initCommand'
+import initCommand from './init/initCommand'
 
 export default [
   initCommand
