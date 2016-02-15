@@ -1,5 +1,6 @@
 import gatherInput from './gatherInput'
 import bootstrap from './bootstrap'
+import npmInstall from '../../npm-bridge/install'
 
 export default {
   name: 'init',
@@ -26,6 +27,7 @@ function initSanity({print, prompt, error, options}) {
 
   gatherInput(prompt, options)
     .then(answers => bootstrap(options.cwd, answers))
+    .then(npmInstall)
     .then(() => print('Success!'))
     .catch(err => error(err))
 }

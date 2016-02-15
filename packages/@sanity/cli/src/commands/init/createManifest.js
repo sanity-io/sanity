@@ -1,3 +1,5 @@
+import cliPackage from '../../../package.json'
+
 export function createPackageManifest(data) {
   const pkg = {
     name: data.name,
@@ -12,7 +14,9 @@ export function createPackageManifest(data) {
     keywords: ['sanity'],
     author: data.author,
     license: 'UNLICENSED',
-    dependencies: {},
+    dependencies: {
+      [cliPackage.name]: `^${cliPackage.version}`
+    },
     devDependencies: {}
   }
 

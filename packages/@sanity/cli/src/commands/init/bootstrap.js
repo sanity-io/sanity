@@ -7,10 +7,6 @@ import promiseProps from 'promise-props-recursive'
 const readFile = thenify(fs.readFile)
 
 function bootstrap(targetPath, data) {
-  const manifest = createPackageManifest(data)
-  const sanity = createSanityManifest(data)
-  const readme = `# ${data.name}\n\n${data.description}\n`
-
   return Promise.all([
     mkdirIfNotExists(path.join(targetPath, 'config')),
     mkdirIfNotExists(path.join(targetPath, 'plugins'))
@@ -19,16 +15,19 @@ function bootstrap(targetPath, data) {
     pluginGitKeep: readTemplate('pluginGitKeep'),
     gitIgnore: readTemplate('gitignore'),
     checksums: readTemplate('checksums'),
-    schema: readTemplate('schema')
+    schema: readTemplate('schema'),
+    manifest: createPackageManifest(data),
+    sanity: createSanityManifest(data),
+    readme: `# ${data.name}\n\n${data.description}\n`
   }))
   .then(templates => Promise.all([
     writeIfNotExists(path.join(targetPath, 'plugins', '.gitkeep'), templates.pluginGitKeep),
     writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
     writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
     writeIfNotExists(path.join(targetPath, 'schema.js'), templates.schema),
-    writeIfNotExists(path.join(targetPath, 'package.json'), manifest),
-    writeIfNotExists(path.join(targetPath, 'sanity.json'), sanity),
-    writeIfNotExists(path.join(targetPath, 'README.md'), readme)
+    writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
+    writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
+    writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
   ]))
 }
 
