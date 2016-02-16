@@ -1,10 +1,13 @@
-import childProc from 'child_process'
-import thenify from 'thenify'
+/* eslint-disable no-process-env */
+import childProc from 'child-process-promise'
 import path from 'path'
 
 const npmPath = path.resolve(path.join(__dirname, '..', '..', 'node_modules', '.bin', 'npm'))
-const exec = thenify(childProc.execFile)
+const npmEnv = {env: Object.assign({}, process.env, {
+  NPM_CONFIG_LOGLEVEL: 'silent',
+  NPM_CONFIG_PARSEABLE: true
+})}
 
-export function execute(args) {
-  return exec(npmPath, args)
+export function execute(args, opts) {
+  return childProc.execFile(npmPath, args, opts || npmEnv)
 }

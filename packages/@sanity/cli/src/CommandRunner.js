@@ -1,6 +1,7 @@
 import defaultCommands from './commands'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
+import debug from './debug'
 
 export default class CommandRunner {
   constructor(handlers = {}, commands = defaultCommands) {
@@ -18,9 +19,11 @@ export default class CommandRunner {
       return this.handlers.outputter.error(new Error(`Command "${cmdName}" not defined`))
     }
 
+    debug(`Running command "${cmdName}"`)
+
     const {print, error} = this.handlers.outputter
     const {prompt} = this.handlers.prompter
-    command.action({print, error, prompt, options})
+    return command.action({print, error, prompt, options})
   }
 }
 

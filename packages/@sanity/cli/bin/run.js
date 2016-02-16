@@ -9,15 +9,18 @@ const stat = thenify(fs.stat)
 const devMode = isDevMode()
 const preferGlobal = devMode && process.argv[2] === '-g'
 const argv = process.argv.slice(2)
-
-// Remove the "global flag" in case any subcommands use the same option
-if (preferGlobal) {
-  argv.splice(0, 1)
-}
+const debug = require(devMode ? '../src/debug' : '../lib/debug')
 
 // If we're in development mode, compile ES6 on the fly
 if (devMode) {
   require('babel-register')
+  debug('CLI running in development mode')
+}
+
+// Remove the "global flag" in case any subcommands use the same option
+if (preferGlobal) {
+  argv.splice(0, 1)
+  debug('Global flag set, using global Sanity CLI regardless of any local version')
 }
 
 /**

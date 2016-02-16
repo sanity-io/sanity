@@ -16,7 +16,9 @@ export default {
       return initPlugin(args)
     }
 
-    return args.error(new Error(`Unknown init type "${type}"`))
+    const error = new Error(`Unknown init type "${type}"`)
+    args.error(error)
+    return Promise.reject(error)
   }
 }
 
@@ -25,7 +27,7 @@ function initSanity({print, prompt, error, options}) {
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
-  gatherInput(prompt, options)
+  return gatherInput(prompt, options)
     .then(answers => bootstrap(options.cwd, answers))
     .then(npmInstall)
     .then(() => print('Success!'))
@@ -33,5 +35,5 @@ function initSanity({print, prompt, error, options}) {
 }
 
 function initPlugin() {
-  throw new Error('Plugin initialization not yet implemented')
+  return Promise.reject(new Error('Plugin initialization not yet implemented'))
 }

@@ -8,9 +8,9 @@
   },
   "scripts": {
     "compile": "babel -d lib/ src/",
-    "test": "mocha",
+    "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
-    "prepublish": "npm run compile",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
     "posttest": "eslint ."
   },
   "repository": {
@@ -29,13 +29,18 @@
   },
   "homepage": "https://github.com/sanity-io/sanity-cli#readme",
   "dependencies": {
+    "child-process-promise": "^1.1.0",
+    "configstore": "^1.4.0",
+    "debug": "^2.2.0",
     "git-user-info": "^1.0.0",
     "gitconfiglocal": "^2.0.1",
+    "in-publish": "^2.0.0",
     "inquirer": "^0.12.0",
     "is-git-url": "^0.2.3",
     "joi": "^7.3.0",
     "npm": "^3.7.2",
     "promise-props-recursive": "^1.0.0",
+    "semver-compare": "^1.0.0",
     "thenify": "^3.2.0",
     "validate-npm-package-name": "^2.2.2",
     "yargs": "^3.32.0"
@@ -45,8 +50,10 @@
     "babel-eslint": "^4.1.8",
     "babel-preset-es2015": "^6.5.0",
     "babel-register": "^6.5.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
     "eslint": "^1.10.3",
-    "eslint-config-bengler": "^0.5.5",
+    "eslint-config-bengler": "^0.5.6",
     "mocha": "^2.4.5",
     "rimraf": "^2.5.2"
   }

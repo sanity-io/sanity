@@ -2,12 +2,12 @@ import fs from 'fs'
 import path from 'path'
 import thenify from 'thenify'
 import pkg from '../../package.json'
+import readLocalManifest from './readLocalManifest'
 
 const stat = thenify(fs.stat)
 
 function checkLocalCli(cwd) {
-  return readManifestIfExists(path.join(cwd, 'package.json'), {encoding: 'utf8'})
-    .then(parseManifest)
+  return readLocalManifest(cwd)
     .then(hasLocalCliDeclared)
     .then(isDeclared => hasLocalCliInstalled(cwd, isDeclared))
 }
@@ -30,28 +30,6 @@ function hasLocalCliInstalled(cwd, isDeclared) {
     }
 
     throw err
-  })
-}
-
-function parseManifest(content) {
-  try {
-    return JSON.parse(content)
-  } catch (err) {
-    throw new Error(`Error while attempting to read projects "package.json":\n${err.message}`)
-  }
-}
-
-function readManifestIfExists(manifestPath, opts) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(manifestPath, opts, (err, manifest) => {
-      if (manifest) {
-        return resolve(manifest)
-      } else if (err && err.code === 'ENOENT') {
-        return resolve('{}')
-      }
-
-      reject(err)
-    })
   })
 }
 
