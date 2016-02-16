@@ -9,6 +9,7 @@
   "scripts": {
     "compile": "babel -d lib/ src/",
     "test": "mocha",
+    "clean": "rimraf lib",
     "prepublish": "npm run compile",
     "posttest": "eslint ."
   },
@@ -46,6 +47,7 @@
     "babel-register": "^6.5.1",
     "eslint": "^1.10.3",
     "eslint-config-bengler": "^0.5.5",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "rimraf": "^2.5.2"
   }
 }
