@@ -1,7 +1,11 @@
 {
   "env": {
-    "node": true
+    "node": true,
+    "browser": true
   },
   "parser": "babel-eslint",
-  "extends": "bengler"
+  "extends": [
+    "bengler",
+    "bengler/react"
+  ]
 }
