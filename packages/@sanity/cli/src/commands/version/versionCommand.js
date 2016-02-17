@@ -7,7 +7,7 @@ export default {
   name: 'version',
   signature: 'version',
   description: 'Shows the installed versions of core Sanity components',
-  action: ({print}) => {
+  action: ({print}) =>
     promiseProps({
       local: getLocalVersion(pkg.name),
       global: getGlobalSanityCliVersion()
@@ -20,5 +20,4 @@ export default {
         print(`${pkg.name} (local): ${versions.local}`)
       }
     })
-  }
 }
