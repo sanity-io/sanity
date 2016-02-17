@@ -1,0 +1,54 @@
+{
+  "name": "@sanity/server",
+  "version": "0.0.1",
+  "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
+  "main": "lib/server.js",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "test": "mocha test/**/*.test.js",
+    "clean": "rimraf lib",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "posttest": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sanity-io/server.git"
+  },
+  "keywords": [
+    "sanity",
+    "webserver"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/server/issues"
+  },
+  "homepage": "https://github.com/sanity-io/server#readme",
+  "dependencies": {
+    "configstore": "^1.4.0",
+    "debug": "^2.2.0",
+    "in-publish": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-eslint": "^5.0.0-beta4",
+    "babel-loader": "^6.2.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-react-hmre": "^1.1.0",
+    "babel-register": "^6.5.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
+    "cross-env": "^1.0.7",
+    "eslint": "^1.10.3",
+    "eslint-config-bengler": "^0.5.6",
+    "isparta": "^4.0.0",
+    "mocha": "^2.4.5",
+    "react": "^0.14.7",
+    "rimraf": "^2.5.2",
+    "webpack": "^1.12.13",
+    "webpack-dev-middleware": "^1.5.1",
+    "webpack-hot-middleware": "^2.7.1"
+  }
+}
