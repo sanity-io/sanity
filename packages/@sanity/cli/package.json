@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/sanity-cli.git"
+    "url": "git+ssh://git@github.com/sanity-io/cli.git"
   },
   "keywords": [
     "sanity",
@@ -26,9 +26,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/sanity-cli/issues"
+    "url": "https://github.com/sanity-io/cli/issues"
   },
-  "homepage": "https://github.com/sanity-io/sanity-cli#readme",
+  "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
     "child-process-promise": "^1.1.0",
     "configstore": "^1.4.0",
