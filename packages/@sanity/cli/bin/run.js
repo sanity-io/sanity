@@ -94,12 +94,5 @@ function readManifestIfExists(manifestPath, opts) {
 
 // @todo Figure out a better way to detect if we're running in "development mode"
 function isDevMode() {
-  try {
-    fs.statSync(path.join(__dirname, '..', 'node_modules', 'babel-register'))
-    return true
-  } catch (err) {
-    // Allow failures, means we're in production mode
-  }
-
-  return false
+  return Boolean(pkg._id) === false
 }
