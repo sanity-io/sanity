@@ -48,6 +48,7 @@
     "webpack-hot-middleware": "^2.7.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.5.1",
     "babel-register": "^6.5.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
