@@ -9,10 +9,12 @@ const readFile = thenify(fs.readFile)
 function bootstrap(targetPath, data) {
   return Promise.all([
     mkdirIfNotExists(path.join(targetPath, 'config')),
-    mkdirIfNotExists(path.join(targetPath, 'plugins'))
+    mkdirIfNotExists(path.join(targetPath, 'plugins')),
+    mkdirIfNotExists(path.join(targetPath, 'static'))
   ])
   .then(() => promiseProps({
     pluginGitKeep: readTemplate('pluginGitKeep'),
+    staticGitKeep: readTemplate('staticGitKeep'),
     gitIgnore: readTemplate('gitignore'),
     checksums: readTemplate('checksums'),
     schema: readTemplate('schema'),
@@ -22,6 +24,7 @@ function bootstrap(targetPath, data) {
   }))
   .then(templates => Promise.all([
     writeIfNotExists(path.join(targetPath, 'plugins', '.gitkeep'), templates.pluginGitKeep),
+    writeIfNotExists(path.join(targetPath, 'static', '.gitkeep'), templates.staticGitKeep),
     writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
     writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
     writeIfNotExists(path.join(targetPath, 'schema.js'), templates.schema),
