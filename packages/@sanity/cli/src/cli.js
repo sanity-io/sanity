@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
 import {getCliRunner} from './CommandRunner'
-import getProjectDefaults from './util/getProjectDefaults'
 import checkForUpdates from './util/checkForUpdates'
 import commands from './commands'
 import pkg from '../package.json'
@@ -23,11 +22,7 @@ export function run(args) {
     return program.showHelp()
   }
 
-  getProjectDefaults(process.cwd())
-    .then(defaults => cmdRunner.runCommand(
-      cmdName,
-      Object.assign({defaults, cwd: process.cwd()}, argv)
-    ))
+  cmdRunner.runCommand(cmdName, Object.assign({cwd: process.cwd()}, argv))
     .then(() => outputVersionCheckResult())
     .catch(err => console.error(err.stack)) // eslint-disable-line no-console
 }

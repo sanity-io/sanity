@@ -1,6 +1,6 @@
 import {execute} from './execute'
 
-function install(pkg) {
+function install() {
   return execute(['install', '--quiet'])
 }
 

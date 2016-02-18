@@ -1,12 +1,12 @@
 import validateNpmPackageName from 'validate-npm-package-name'
 import isGitUrl from 'is-git-url'
 
-export default function gatherInput(prompt, options) {
+export default function gatherInput(prompt, defaults) {
   return prompt([{
     type: 'input',
     name: 'name',
     message: 'Project name:',
-    default: options.defaults.projectName || '',
+    default: defaults.projectName || '',
     validate: name => {
       const {validForNewPackages, errors} = validateNpmPackageName(name)
       return validForNewPackages ? true : errors[0]
@@ -15,7 +15,7 @@ export default function gatherInput(prompt, options) {
     type: 'input',
     name: 'description',
     message: 'Project description:',
-    default: options.defaults.description,
+    default: defaults.description,
     validate: description => (
       (description || '').length < 1000
       || 'Project descriptions should be less than 1000 characters'
@@ -24,7 +24,7 @@ export default function gatherInput(prompt, options) {
     type: 'input',
     name: 'gitRemote',
     message: 'Git repository URL:',
-    default: options.defaults.gitRemote,
+    default: defaults.gitRemote,
     validate: url => {
       return (url ? isGitUrl(url) : true) || 'Invalid git url'
     }
@@ -32,6 +32,6 @@ export default function gatherInput(prompt, options) {
     type: 'input',
     name: 'author',
     message: 'Author:',
-    default: options.defaults.author
+    default: defaults.author
   }])
 }

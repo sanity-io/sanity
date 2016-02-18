@@ -1,6 +1,7 @@
 import gatherInput from './gatherInput'
 import bootstrap from './bootstrap'
 import npmInstall from '../../npm-bridge/install'
+import getProjectDefaults from '../../util/getProjectDefaults'
 
 export default {
   name: 'init',
@@ -27,8 +28,10 @@ function initSanity({print, prompt, error, options}) {
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
-  return gatherInput(prompt, options)
+  return getProjectDefaults(options.cwd)
+    .then(defaults => gatherInput(prompt, defaults))
     .then(answers => bootstrap(options.cwd, answers))
+    .then(() => print('Installing dependencies...'))
     .then(npmInstall)
     .then(() => print('Success!'))
     .catch(err => error(err))
