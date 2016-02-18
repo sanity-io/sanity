@@ -24,7 +24,10 @@ export function run(args) {
 
   cmdRunner.runCommand(cmdName, Object.assign({cwd: process.cwd()}, argv))
     .then(() => outputVersionCheckResult())
-    .catch(err => console.error(err.stack)) // eslint-disable-line no-console
+    .catch(err => {
+      console.error(err.stack) // eslint-disable-line no-console
+      process.exit(err.code || 1) // eslint-disable-line no-process-exit
+    })
 }
 
 function outputVersionCheckResult() {

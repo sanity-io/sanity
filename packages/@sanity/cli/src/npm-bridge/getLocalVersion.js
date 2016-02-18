@@ -1,5 +1,5 @@
 import {execute} from './execute'
-import safeJson from '../util/safeJson'
+import {parseJson} from '../util/safeJson'
 
 const npmEnv = {
   env: Object.assign({}, process.env, { // eslint-disable-line no-process-env
@@ -11,7 +11,7 @@ const npmEnv = {
 
 function getLocalVersion(pkg) {
   return execute(['ls'], npmEnv)
-    .then(res => safeJson(res, {}))
+    .then(res => parseJson(res, {}))
     .then(mani => (
       mani
       && mani.dependencies

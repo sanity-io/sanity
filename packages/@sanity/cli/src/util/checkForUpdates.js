@@ -1,10 +1,11 @@
 import semverCompare from 'semver-compare'
 import getVersion from '../npm-bridge/getVersion'
 import pkg from '../../package.json'
-import config from '../config'
+import getConfig from './getConfig'
 import debug from '../debug'
 
 function checkForUpdates() {
+  const config = getConfig()
   const interval = config.get('cli.update.interval')
   const lastCheck = config.get('cli.update.lastcheck') || 0
 
