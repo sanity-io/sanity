@@ -1,11 +1,11 @@
 {
   "name": "@sanity/server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
     "clean": "rimraf lib",
-    "compile": "babel -d lib/ src/",
+    "compile": "babel -d lib/ src/ && cp -r src/templates lib/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile || not-in-publish",
