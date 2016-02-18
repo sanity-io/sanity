@@ -28,19 +28,25 @@ if (preferGlobal) {
  * a @sanity/cli-dependency. If so, use that over the globally installed version, in order
  * to do things in line with the Sanity version currently being used by this project
  */
-checkLocalCli(process.cwd()).then(function (localCli) {
-  if (!preferGlobal && localCli) {
+if (preferGlobal) {
+  loadCli()
+} else {
+  checkLocalCli(process.cwd()).then(loadCli).catch(function (err) {
+    console.error(err.stack)
+    process.exit(1)
+  })
+}
+
+function loadCli(localCliPath) {
+  if (localCliPath) {
     // The local CLI exists, warn the user that we are using it and run it
     console.log(`[Sanity] Local "${pkg.name}"-dependency found, using that over global version`)
-    require(localCli).run(argv)
+    require(localCliPath).run(argv)
   } else {
     // No local CLI found, use global version
     require(devMode ? '../src/cli.js' : '../lib/cli.js').run(argv)
   }
-}).catch(function (err) {
-  console.error(err.stack)
-  process.exit(1)
-})
+}
 
 function checkLocalCli(cwd) {
   return readManifestIfExists(path.join(cwd, 'package.json'), {encoding: 'utf8'})
