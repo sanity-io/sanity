@@ -1,5 +1,5 @@
 import {getBaseServer, applyStaticRoutes} from './baseServer'
 
-export default function getProdServer() {
-  return applyStaticRoutes(getBaseServer())
+export default function getProdServer(config) {
+  return applyStaticRoutes(getBaseServer(), config)
 }

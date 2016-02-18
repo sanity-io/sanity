@@ -2,19 +2,19 @@ import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes} from './baseServer'
-import webpackConfig from './configs/webpack.config.dev'
+import webpackDevConfig from './configs/webpack.config.dev'
 
-export default function getDevServer(conf) {
-  const config = conf || webpackConfig
+export default function getDevServer(config = {}) {
   const app = getBaseServer()
-  const compiler = webpack(config)
+  const webpackConfig = config.webpack || webpackDevConfig
+  const compiler = webpack(webpackConfig)
 
   app.use(webpackDevMiddleware(compiler, {
     noInfo: true,
-    publicPath: config.output.publicPath
+    publicPath: webpackConfig.output.publicPath
   }))
 
   app.use(webpackHotMiddleware(compiler))
 
-  return applyStaticRoutes(app)
+  return applyStaticRoutes(app, config)
 }
