@@ -1,12 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import thenify from 'thenify'
-import {createPackageManifest, createSanityManifest} from './createManifest'
 import promiseProps from 'promise-props-recursive'
+import {
+  createPackageManifest,
+  createSanityManifest,
+  createPluginManifest
+} from './createManifest'
 
 const readFile = thenify(fs.readFile)
 
-function bootstrap(targetPath, data) {
+export function bootstrapSanity(targetPath, data) {
   return Promise.all([
     mkdirIfNotExists(path.join(targetPath, 'config')),
     mkdirIfNotExists(path.join(targetPath, 'plugins')),
@@ -28,6 +32,28 @@ function bootstrap(targetPath, data) {
     writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
     writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
     writeIfNotExists(path.join(targetPath, 'schema.js'), templates.schema),
+    writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
+    writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
+    writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
+  ]))
+}
+
+export function bootstrapPlugin(targetPath, data) {
+  return promiseProps({
+    pluginConfig: readTemplate('plugin-config'),
+    gitIgnore: readTemplate('gitignore'),
+    manifest: createPluginManifest(data),
+    sanity: createSanityManifest(data, {isPlugin: true}),
+    readme: `# ${data.name}\n\n${data.description}\n`
+  }).then(templates => {
+    if (!data.createConfig) {
+      return templates
+    }
+
+    const confPath = path.join(targetPath, 'config.dist.json')
+    return writeIfNotExists(confPath, templates.pluginConfig).then(() => templates)
+  }).then(templates => Promise.all([
+    writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
     writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
     writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
     writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
@@ -77,5 +103,3 @@ function mkdirIfNotExists(dir) {
     })
   })
 }
-
-export default bootstrap

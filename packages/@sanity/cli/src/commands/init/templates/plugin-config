@@ -1,0 +1,4 @@
+{
+  "description": "This configuration file holds the default configuration values for your plugin. You only need to have this file in your repository if your plugin has values that should be configurable by users.",
+  "howItWorks": "See https://docs.sanity.io/plugins/configuration for details on how plugin configuration is handled in Sanity."
+}

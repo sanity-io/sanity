@@ -36,6 +36,7 @@
     "debug": "^2.2.0",
     "git-user-info": "^1.0.0",
     "gitconfiglocal": "^2.0.1",
+    "github-url-to-object": "^2.1.0",
     "in-publish": "^2.0.0",
     "inquirer": "^0.12.0",
     "is-git-url": "^0.2.3",

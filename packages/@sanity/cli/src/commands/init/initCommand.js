@@ -1,5 +1,5 @@
 import gatherInput from './gatherInput'
-import bootstrap from './bootstrap'
+import {bootstrapSanity, bootstrapPlugin} from './bootstrap'
 import npmInstall from '../../npm-bridge/install'
 import getProjectDefaults from '../../util/getProjectDefaults'
 
@@ -30,13 +30,33 @@ function initSanity({print, prompt, error, options}) {
 
   return getProjectDefaults(options.cwd)
     .then(defaults => gatherInput(prompt, defaults))
-    .then(answers => bootstrap(options.cwd, answers))
+    .then(answers => bootstrapSanity(options.cwd, answers))
     .then(() => print('Installing dependencies...'))
     .then(npmInstall)
     .then(() => print('Success!'))
-    .catch(err => error(err))
+    .catch(error)
 }
 
-function initPlugin() {
-  return Promise.reject(new Error('Plugin initialization not yet implemented'))
+function initPlugin({print, prompt, error, options}) {
+  print('This utility will walk you through creating a new Sanity plugin.')
+  print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
+  print('Press ^C at any time to quit.')
+
+  return getProjectDefaults(options.cwd)
+    .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
+    .then(answers => warnOnNonStandardPluginName(answers, print))
+    .then(answers => bootstrapPlugin(options.cwd, answers))
+    .then(() => print('Success!'))
+    .catch(error)
+}
+
+function warnOnNonStandardPluginName(answers, print) {
+  if (answers.name.indexOf('sanity-plugin-') !== 0) {
+    print([
+      '[Warning] If you intend to publish the plugin for reuse by others, ',
+      'it is recommended that the plugin name is prefixed with `sanity-plugin-`'
+    ].join(''))
+  }
+
+  return answers
 }

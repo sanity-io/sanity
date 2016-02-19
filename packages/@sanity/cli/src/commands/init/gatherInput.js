@@ -1,8 +1,8 @@
 import validateNpmPackageName from 'validate-npm-package-name'
 import isGitUrl from 'is-git-url'
 
-export default function gatherInput(prompt, defaults) {
-  return prompt([{
+export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
+  const questions = [{
     type: 'input',
     name: 'name',
     message: 'Project name:',
@@ -33,5 +33,21 @@ export default function gatherInput(prompt, defaults) {
     name: 'author',
     message: 'Author:',
     default: defaults.author
-  }])
+  }, {
+    type: 'input',
+    name: 'license',
+    message: 'License:',
+    default: 'UNLICENSED'
+  }]
+
+  if (isPlugin) {
+    questions.push({
+      type: 'confirm',
+      name: 'createConfig',
+      message: 'Create sample configuration file?',
+      default: true
+    })
+  }
+
+  return prompt(questions)
 }
