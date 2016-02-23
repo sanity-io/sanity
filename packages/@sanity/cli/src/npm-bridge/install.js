@@ -1,7 +1,7 @@
 import {execute} from './execute'
 
-function install() {
-  return execute(['install', '--quiet'])
+function install(args) {
+  return execute(['install'].concat(args || [], '--quiet'))
 }
 
 export default install
