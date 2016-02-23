@@ -1,6 +1,6 @@
 import gatherInput from './gatherInput'
 import {bootstrapSanity, bootstrapPlugin} from './bootstrap'
-import npmInstall from '../../npm-bridge/install'
+import {install as npmInstall} from '../../npm-bridge/install'
 import getProjectDefaults from '../../util/getProjectDefaults'
 
 export default {

@@ -1,7 +1,9 @@
 import {execute} from './execute'
 
-function install(args) {
+export function install(args) {
   return execute(['install'].concat(args || [], '--quiet'))
 }
 
-export default install
+export function uninstall(args) {
+  return execute(['uninstall'].concat(args || [], '--quiet'))
+}

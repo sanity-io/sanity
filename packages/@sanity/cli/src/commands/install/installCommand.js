@@ -1,6 +1,6 @@
 import fsp from 'fs-promise'
 import path from 'path'
-import npmInstall from '../../npm-bridge/install'
+import {install as npmInstall} from '../../npm-bridge/install'
 import readLocalManifest from '../../util/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
@@ -41,10 +41,9 @@ function handleNpmError(err, printError, pluginName) {
 function saveToSanityManifest(cwd, pluginName) {
   return readLocalManifest(cwd, 'sanity.json')
     .then(manifest => {
-      const shortName = pluginName.replace(/^sanity-plugin-/i, '')
       manifest.plugins = manifest.plugins || []
-      if (manifest.plugins.indexOf(shortName) === -1) {
-        manifest.plugins.push(shortName)
+      if (manifest.plugins.indexOf(pluginName) === -1) {
+        manifest.plugins.push(pluginName)
       }
       return manifest
     })
