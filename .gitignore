@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+npm-shrinkwrap.json
+.DS_Store
+coverage
+.idea
+npm-shrinkwrap.json
+dist

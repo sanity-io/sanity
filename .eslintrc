@@ -1,0 +1,23 @@
+{
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "extends": [
+    "bengler",
+    "bengler/react",
+    "bengler/import"
+  ],
+  "rules": {
+    "sort-imports": [1, {
+      "ignoreCase": true,
+      "ignoreMemberSort": true,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }]
+  }
+}
