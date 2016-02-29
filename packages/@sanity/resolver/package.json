@@ -2,7 +2,7 @@
   "name": "@sanity/resolver",
   "version": "0.0.1",
   "description": "Resolves roles and plugins from a Sanity configuration",
-  "main": "lib/index.js",
+  "main": "lib/resolver.js",
   "scripts": {
     "compile": "babel -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
@@ -35,13 +35,17 @@
     "eslint": "^2.2.0",
     "eslint-config-sanity": "^1.0.5",
     "isparta": "^4.0.0",
+    "lodash": "^4.5.1",
     "mocha": "^2.4.5",
+    "mock-fs": "^3.7.0",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
     "debug": "^2.2.0",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "joi": "^8.0.3",
+    "promise-props-recursive": "^1.0.0"
   }
 }
