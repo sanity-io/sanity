@@ -10,6 +10,61 @@ export default function resolveTree(options = {}) {
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
+export function resolveRoles({basePath} = {}) {
+  return resolveTree({basePath})
+    .then(plugins => {
+      const result = {provided: {}, fulfilled: {}}
+
+      result.provided = plugins.reduceRight(assignRoles, result.provided)
+      result.fulfilled = plugins.reduceRight(
+        (fulfilled, plugin) => reduceRoles(fulfilled, plugin, result)
+      , result.fulfilled)
+
+      return result
+    })
+}
+
+function assignRoles(provided, plugin) {
+  (plugin.manifest.provides || []).forEach(provider => {
+    const existingProvider = provided[provider.role]
+    if (!existingProvider) {
+      provided[provider.role] = {
+        plugin: plugin.name,
+        path: plugin.path,
+        multi: Boolean(provider.multiple)
+      }
+    } else if (existingProvider.multi !== Boolean(provider.multiple)) {
+      const existing = `"${existingProvider.plugin}" (${existingProvider.path})`
+      const current = `"${plugin.name}" (${plugin.path})`
+      const base = `Plugins ${existing} and "${current} both provide ${provider.role}"`
+      throw new Error(`${base}, but expects different shape (single vs multiple fulfillers)`)
+    }
+  })
+
+  return provided
+}
+
+function reduceRoles(fulfilled, plugin, roles) {
+  (plugin.manifest.fulfills || []).forEach(fulfiller => {
+    const role = fulfiller.role
+    const rolePath = fulfiller.path
+    const provided = roles.provided[role]
+    const details = {
+      plugin: plugin.name,
+      path: path.resolve(path.join(plugin.path, rolePath))
+    }
+
+    if (provided && provided.multi) {
+      fulfilled[role] = fulfilled[role] || []
+      fulfilled[role].push(details)
+    } else if (provided && !fulfilled[role]) {
+      fulfilled[role] = details
+    }
+  })
+
+  return fulfilled
+}
+
 function flattenTree(target, plugin, index) {
   if (!plugin.plugins && plugin.plugins.length) {
     return target
@@ -56,6 +111,8 @@ function readManifest(options = {}) {
     .catch(err => {
       if (err.code === 'ENOENT' && options.plugin) {
         throw new Error(`No "sanity.json" file found in plugin "${options.plugin}"`)
+      } else if (err.name === 'ValidationError') {
+        err.message = `Error while reading "${options.plugin}" manifest:\n${err.message}`
       }
 
       throw err

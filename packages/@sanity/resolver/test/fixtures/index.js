@@ -16,11 +16,18 @@ function pluginManifest(props) {
 function instagramManifest() {
   return pluginManifest({
     provides: [{
-      role: 'commentsListComponent',
+      role: 'instagram/commentsListComponent',
       path: './src/components/CommentsList',
     }, {
-      role: 'commentComponent',
+      role: 'instagram/commentComponent',
       path: './src/components/Comment'
+    }],
+    fulfills: [{
+      role: 'standard-layout/tool',
+      path: './src/components/InstagramTool'
+    }, {
+      role: 'standard-layout/tool',
+      path: './src/components/InstaDiscoverTool'
     }]
   })
 }
@@ -29,14 +36,14 @@ function standardLayout() {
   return {
     'sanity.json': pluginManifest({
       provides: [{
-        role: 'standard-layout.tool',
+        role: 'standard-layout/tool',
         multiple: true
       }, {
-        role: 'standard-layout.settings-pane',
+        role: 'standard-layout/settings-pane',
         multiple: true
       }],
       fulfills: [{
-        role: 'core.mainComponent',
+        role: 'core/mainComponent',
         path: './src/components/Main'
       }]
     })
@@ -49,7 +56,8 @@ function sanityCore() {
       'sanity.json': pluginManifest({
         plugins: [
           '@sanity/standard-layout'
-        ]
+        ],
+        provides: [{role: 'core/mainComponent'}]
       })
     },
     'standard-layout': standardLayout()
@@ -105,7 +113,7 @@ export function getDeepTree({missingPlugin, missingManifest} = {}) {
         'sanity.json': pluginManifest({
           plugins: ['bar'],
           fulfills: [{
-            role: 'bar.baz',
+            role: 'bar/baz',
             path: './someFile'
           }]
         })
@@ -113,7 +121,7 @@ export function getDeepTree({missingPlugin, missingManifest} = {}) {
       'sanity-plugin-bar': {
         'sanity.json': pluginManifest({
           plugins: ['baz'],
-          provides: [{role: 'bar.baz'}]
+          provides: [{role: 'bar/baz'}]
         })
       },
       'sanity-plugin-baz': !missingManifest && {

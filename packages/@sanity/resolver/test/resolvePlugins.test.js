@@ -1,7 +1,7 @@
 import {afterEach, describe, it} from 'mocha'
-import {getDeepTree, getInvalidJson, getInvalidManifest, getResolutionOrderFixture} from './fixtures'
+import {getBasicTree, getDeepTree, getInvalidJson, getInvalidManifest, getResolutionOrderFixture} from './fixtures'
+import resolvePlugins, {resolveRoles} from '../src/resolver'
 import mockFs from 'mock-fs'
-import resolvePlugins from '../src/resolver'
 
 describe('plugin resolver', () => {
   afterEach(() => {
@@ -78,6 +78,28 @@ describe('plugin resolver', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
       return resolvePlugins({basePath: '/sanity'}).then(plugins => {
         plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
+      })
+    })
+  })
+
+  it('can resolve roles for a basic setup', () => {
+    mockFs(getBasicTree())
+    resolveRoles({basePath: '/sanity'}).then(res => {
+      const settings = res.provided['standard-layout/settings-pane']
+      settings.path.should.equal('/sanity/node_modules/@sanity/standard-layout')
+      settings.multi.should.equal(true)
+
+      const tool = res.fulfilled['standard-layout/tool']
+      tool.should.have.length(2)
+      tool[0].should.eql({
+        plugin: 'instagram',
+        path: '/sanity/node_modules/sanity-plugin-instagram/src/components/InstagramTool'
+      })
+
+      const main = res.fulfilled['core/mainComponent']
+      main.should.eql({
+        plugin: '@sanity/standard-layout',
+        path: '/sanity/node_modules/@sanity/standard-layout/src/components/Main'
       })
     })
   })
