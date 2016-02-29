@@ -1,2 +1,3 @@
 # resolver
-Resolves roles and plugins from a Sanity configuration  
+
+Resolves roles and plugins from a Sanity configuration
