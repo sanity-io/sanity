@@ -1,7 +1,7 @@
 import {afterEach, describe, it} from 'mocha'
 import {getBasicTree, getDeepTree, getInvalidJson, getInvalidManifest, getResolutionOrderFixture} from './fixtures'
-import resolvePlugins, {resolveRoles} from '../src/resolver'
 import mockFs from 'mock-fs'
+import resolvePlugins, {resolveRoles} from '../src/resolver'
 
 describe('plugin resolver', () => {
   afterEach(() => {
@@ -101,16 +101,6 @@ describe('plugin resolver', () => {
         plugin: '@sanity/standard-layout',
         path: '/sanity/node_modules/@sanity/standard-layout/src/components/Main'
       })
-    })
-  })
-
-  it.skip('does something', () => {
-    mockFs(getDeepTree())
-    return resolvePlugins({basePath: '/sanity'}).then(res => {
-      console.log(require('util').inspect(res, {
-        depth: 10,
-        colors: true
-      }))
     })
   })
 })

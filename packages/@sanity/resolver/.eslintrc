@@ -5,6 +5,7 @@
   "parser": "babel-eslint",
   "extends": "sanity",
   "rules": {
-    "newline-per-chained-call": 0
+    "newline-per-chained-call": 0,
+    "sort-imports": 0
   }
 }
