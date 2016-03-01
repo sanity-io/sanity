@@ -103,4 +103,16 @@ describe('plugin resolver', () => {
       })
     })
   })
+
+  it('resolves plugins as well as roles', () => {
+    mockFs(getBasicTree())
+    resolveRoles({basePath: '/sanity'}).then(res => {
+      res.plugins.should.have.length(3)
+      res.plugins.map(plugin => plugin.path).should.eql([
+        '/sanity/node_modules/@sanity/standard-layout',
+        '/sanity/node_modules/@sanity/core',
+        '/sanity/node_modules/sanity-plugin-instagram'
+      ])
+    })
+  })
 })

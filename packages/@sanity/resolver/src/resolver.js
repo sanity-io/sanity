@@ -13,7 +13,7 @@ export default function resolveTree(options = {}) {
 export function resolveRoles({basePath} = {}) {
   return resolveTree({basePath})
     .then(plugins => {
-      const result = {provided: {}, fulfilled: {}}
+      const result = {provided: {}, fulfilled: {}, plugins}
 
       result.provided = plugins.reduceRight(assignRoles, result.provided)
       result.fulfilled = plugins.reduceRight(
