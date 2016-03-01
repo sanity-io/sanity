@@ -1,8 +1,8 @@
 {
-  "name": "@sanity/core",
+  "name": "@sanity/base",
   "version": "0.0.1",
-  "description": "Sanity plugin containing the core components and roles for a Sanity configuration",
-  "main": "lib/core.js",
+  "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
+  "main": "lib/index.js",
   "scripts": {
     "compile": "babel -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
@@ -13,18 +13,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/core.git"
+    "url": "git+https://github.com/sanity-io/base.git"
   },
   "keywords": [
     "sanity",
-    "core"
+    "base"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/core/issues"
+    "url": "https://github.com/sanity-io/base/issues"
   },
-  "homepage": "https://github.com/sanity-io/core#readme",
+  "homepage": "https://github.com/sanity-io/base#readme",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-eslint": "^5.0.0",
@@ -39,7 +39,11 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
+    "@sanity/plugin-loader": "0.0.2",
     "debug": "^2.2.0",
     "in-publish": "^2.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=0.14.0"
   }
 }

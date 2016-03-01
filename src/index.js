@@ -1,2 +1,5 @@
-const foo = 'bar'
-export default foo
+import Sanity from './Sanity'
+
+export {
+  Sanity
+}

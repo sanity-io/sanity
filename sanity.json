@@ -1,0 +1,5 @@
+{
+  "provides": [{
+    "role": "@sanity/base/rootComponent"
+  }]
+}
