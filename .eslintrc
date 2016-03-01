@@ -3,7 +3,10 @@
     "node": true
   },
   "parser": "babel-eslint",
-  "extends": "sanity",
+  "extends": [
+    "sanity",
+    "sanity/react"
+  ],
   "rules": {
     "newline-per-chained-call": 0,
     "sort-imports": 0

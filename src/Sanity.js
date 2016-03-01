@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import plugins from '@sanity/plugin-loader/plugins'
 import DefaultRootComponent from './Components/DefaultRootComponent'
+import createSanity from './createSanity'
 
 class Sanity extends Component {
   constructor(props) {
@@ -17,6 +18,10 @@ class Sanity extends Component {
     const Root = this.sanity.getRole('@sanity/base/rootComponent') || DefaultRootComponent
     return <Root />
   }
+}
+
+Sanity.propTypes = {
+  roles: React.PropTypes.object // eslint-disable-line react/forbid-prop-types
 }
 
 Sanity.defaultProps = {
