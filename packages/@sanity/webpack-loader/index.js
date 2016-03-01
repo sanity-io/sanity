@@ -1,32 +1,42 @@
 /* eslint-env node */
 const path = require('path')
 const loaderUtils = require('loader-utils')
-const resolvedRoles = require('./resolved-roles') // @todo remove
+const resolver = require('@sanity/resolver')
 
 const banner = '/* This file has been dynamically modified by the Sanity plugin loader */'
 const mapBanner = '/* The following role map is dynamically built by the Sanity plugin loader */'
 const rolesVarMatcher = /\n(var|let) roles = {'#': '#'}/
 
 module.exports = function sanityPluginLoader(input) {
+  const callback = this.async()
   const query = loaderUtils.parseQuery(this.query)
 
   if (this.cacheable) {
     this.cacheable()
   }
 
-  // @todo see if we should add the sanity.json of plugins as dependencies as well
   this.addDependency(path.join(query.basePath, 'sanity.json'))
 
-  const baseMap = JSON.stringify(resolvedRoles, null, 2)
-  const pluginMap = baseMap
-    .replace(/"path": "(.*)?"/g, '"path": require("$1")') // "path" => require("path")
-    .replace(/"/g, '\'') // double quotes (") => single quotes (')
-    .replace(/"([a-zA-Z]+)":/g, '$1:') // "safeIdentifiers" => safeIdentifiers
+  resolver
+    .resolveRoles({basePath: query.basePath})
+    .then(roles => {
+      // Also add plugin manifests as dependencies
+      roles.plugins.forEach(plugin => {
+        this.addDependency(path.join(plugin.path, 'sanity.json'))
+      })
 
-  const content = input.replace(
-    rolesVarMatcher,
-    `${mapBanner}\n$1 roles = ${pluginMap}`
-  )
+      const baseMap = JSON.stringify(roles.fulfilled, null, 2)
+      const pluginMap = baseMap
+        .replace(/"path": "(.*)?"/g, '"path": require("$1")') // "path" => require("path")
+        .replace(/"/g, '\'') // double quotes (") => single quotes (')
+        .replace(/"([a-zA-Z]+)":/g, '$1:') // "safeIdentifiers" => safeIdentifiers
 
-  return `${banner}\n${content}`
+      const content = input.replace(
+        rolesVarMatcher,
+        `${mapBanner}\n$1 roles = ${pluginMap}`
+      )
+
+      callback(null, `${banner}\n${content}`)
+    })
+    .catch(callback)
 }
