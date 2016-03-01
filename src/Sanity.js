@@ -20,6 +20,12 @@ class Sanity extends Component {
   }
 }
 
+Sanity.childContextTypes = {
+  sanity: React.PropTypes.shape({
+    getRole: React.PropTypes.func.isRequired
+  })
+}
+
 Sanity.propTypes = {
   roles: React.PropTypes.object // eslint-disable-line react/forbid-prop-types
 }
