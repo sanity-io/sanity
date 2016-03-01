@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
+    "@sanity/base": "0.0.1",
     "babel-core": "^6.5.2",
     "babel-eslint": "^5.0.0-beta4",
     "babel-loader": "^6.2.2",

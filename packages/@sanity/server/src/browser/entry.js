@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Sanity from '../core/Sanity'
+import {Sanity} from '@sanity/base'
 
 ReactDOM.render(
   <Sanity />,
