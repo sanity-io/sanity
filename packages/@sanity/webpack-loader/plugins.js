@@ -11,10 +11,4 @@ if (roles['#']) {
   throw new Error(noRolesError)
 }
 
-export function setRoles(roleMap) {
-  roles = roleMap
-}
-
-export function getRole(role) {
-  return roles[role]
-}
+export default roles
