@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/sanity-io/plugin-loader#readme",
   "dependencies": {
-    "@sanity/resolver": "0.0.2",
+    "@sanity/resolver": "0.0.3",
     "loader-utils": "^0.2.12"
   },
   "devDependencies": {
