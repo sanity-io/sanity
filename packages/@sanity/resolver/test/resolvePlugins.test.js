@@ -1,7 +1,14 @@
-import {afterEach, describe, it} from 'mocha'
-import {getBasicTree, getDeepTree, getInvalidJson, getInvalidManifest, getResolutionOrderFixture} from './fixtures'
 import mockFs from 'mock-fs'
 import resolvePlugins, {resolveRoles} from '../src/resolver'
+import {afterEach, describe, it} from 'mocha'
+import {
+  getBasicTree,
+  getDeepTree,
+  getInvalidJson,
+  getInvalidManifest,
+  getResolutionOrderFixture,
+  getScopedPluginsTree
+} from './fixtures'
 
 describe('plugin resolver', () => {
   afterEach(() => {
@@ -84,7 +91,7 @@ describe('plugin resolver', () => {
 
   it('can resolve roles for a basic setup', () => {
     mockFs(getBasicTree())
-    resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles({basePath: '/sanity'}).then(res => {
       const settings = res.provided['standard-layout/settings-pane']
       settings.path.should.equal('/sanity/node_modules/@sanity/standard-layout')
       settings.multi.should.equal(true)
@@ -106,13 +113,22 @@ describe('plugin resolver', () => {
 
   it('resolves plugins as well as roles', () => {
     mockFs(getBasicTree())
-    resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles({basePath: '/sanity'}).then(res => {
       res.plugins.should.have.length(3)
       res.plugins.map(plugin => plugin.path).should.eql([
         '/sanity/node_modules/@sanity/standard-layout',
         '/sanity/node_modules/@sanity/core',
         '/sanity/node_modules/sanity-plugin-instagram'
       ])
+    })
+  })
+
+  it('doesnt try to look up the same location twice', () => {
+    mockFs(getScopedPluginsTree())
+    return resolveRoles({basePath: '/sanity'}).catch(err => {
+      err.locations.some((location, index) =>
+        err.locations.indexOf(location, index + 1) !== -1
+      ).should.equal(false)
     })
   })
 })

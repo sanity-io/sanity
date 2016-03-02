@@ -1,5 +1,6 @@
 import fsp from 'fs-promise'
 import path from 'path'
+import uniq from 'lodash/uniq'
 import promiseProps from 'promise-props-recursive'
 import validateManifest from './validateManifest'
 
@@ -121,7 +122,8 @@ function readManifest(options = {}) {
 
 function resolvePluginPath(plugin) {
   const pluginDir = plugin.name[0] === '@' ? plugin.name : `sanity-plugin-${plugin.name}`
-  const locations = [
+
+  let locations = [
     path.join(plugin.basePath, 'plugins', pluginDir),
     path.join(plugin.basePath, 'plugins', plugin.name),
     path.join(plugin.basePath, 'node_modules', pluginDir)
@@ -131,15 +133,22 @@ function resolvePluginPath(plugin) {
     locations.splice(2, 0, path.join(plugin.parentPluginPath, 'node_modules', pluginDir))
   }
 
+  locations = uniq(locations)
+
   return Promise.all(locations.map(forgiveNonExistance))
     .then(matches => matches.findIndex(Boolean))
     .then(index => {
       if (index === -1) {
-        throw new Error([
+        const err = new Error([
           `Plugin "${plugin.name}" not found.\n`,
           'Locations tried:\n  * ',
           locations.join('\n  * ')
         ].join(''))
+
+        err.plugin = plugin.name
+        err.locations = locations
+
+        throw err
       }
 
       return locations[index]

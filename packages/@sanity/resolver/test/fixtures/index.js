@@ -100,6 +100,15 @@ export function getBasicTree() {
   }
 }
 
+export function getScopedPluginsTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['@sanity/core', '@sanity/foo']),
+    '/sanity/node_modules': {
+      '@sanity': sanityCore()
+    }
+  }
+}
+
 export function getDeepTree({missingPlugin, missingManifest} = {}) {
   const plugins = ['@sanity/core', 'foo']
   if (missingPlugin) {
