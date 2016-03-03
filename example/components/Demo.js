@@ -5,63 +5,18 @@ import FormBuilderPropTypes from '../../src/FormBuilderPropTypes'
 import {pick} from 'lodash'
 import inspect from 'object-inspect'
 
-import rawSchema from '../../schema-format'
+import schema from '../../schema-format'
 import String from '../../src/field-builders/String'
 import Number from '../../src/field-builders/Number'
 import Image from '../../src/field-builders/Image'
 import StringList from '../../src/field-builders/StringList'
 import RichText from '../../src/field-builders/RichText'
-import Compound from '../../src/field-builders/Compound'
-
-
-function linkSchema(inputSchema) {
-  return inputSchema.map(type => {
-    if (type.isPrimitive) {
-      return type
-    }
-    if (type.fields) {
-      return Object.assign({}, type, {
-        fields: linkFields(type.fields)
-      })
-    }
-    return type
-  })
-
-  function linkFields(fields) {
-    return Object.keys(fields).reduce((linkedFields, fieldName) => {
-      linkedFields[fieldName] = linkFieldType(fields[fieldName])
-      return linkedFields
-    }, {})
-  }
-  function linkFieldType(field) {
-    const linkedField = Object.assign({}, field, {type: Object.assign({}, findTypeByName(field.type))})
-    if (linkedField.type.name === 'list') {
-      // Link items too
-      linkedField.of = field.of.map(linkFieldType)
-    }
-    if (linkedField.type.name === 'reference') {
-      // Link items too
-      linkedField.to = field.to.map(linkFieldType)
-    }
-    if (linkedField.type.fields) {
-      // Link fields too
-      linkedField.type.fields = linkFields(linkedField.type.fields)
-    }
-    return linkedField
-  }
-  function findTypeByName(typeName) {
-    return inputSchema.find(type => type.name === typeName)
-  }
-}
-
-
-const schema = linkSchema(rawSchema)
-
-console.log(schema)
+//import Obj from '../../src/field-builders/Object'
 
 const fieldInputs = {
   richText: () => RichText,
   string: () => String,
+  tag: () => String,
   number: () => Number,
   list: field => {
     if (field.of.every(type => type.name === 'string')) {
@@ -75,9 +30,16 @@ const fieldInputs = {
 function resolveFieldInput(field) {
   // todo: smarter resolution algorithm
 
-  const resolver = fieldInputs[field.type.alias || field.type.name]
+  const type = field.type
+  const resolver = fieldInputs[type]
 
-  return resolver ? resolver(field) : Compound
+  if (!resolver) {
+    return null
+  }
+
+  const resolved = resolver(field);
+  console.log('resolved field builder %s => %s:', field.type, type)
+  return resolved
 }
 //
 //function DefaultFieldRenderer(props) {
@@ -142,8 +104,6 @@ export default React.createClass({
   render() {
     const {value} = this.state
 
-    const story = schema.find(type => type.name === 'story')
-
     return (
       <div className="content">
         <form className="form-container">
@@ -154,7 +114,7 @@ export default React.createClass({
             schema={schema}
           >
             <FormBuilder
-              fields={story.fields}
+              typeName="story"
               value={value}
               onChange={this.handleChange}
             />

@@ -3,7 +3,7 @@ import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
 export default React.createClass({
   propTypes: {
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     value: PropTypes.string,
     onChange: PropTypes.func
   },
@@ -20,10 +20,10 @@ export default React.createClass({
   },
 
   render() {
-    const {field, value} = this.props
+    const {type, value} = this.props
     return (
       <textarea
-        placeholder={field.placeholder}
+        placeholder={type.placeholder}
         onChange={this.handleChange}
         value={value}
       />

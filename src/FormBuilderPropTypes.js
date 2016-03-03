@@ -17,13 +17,12 @@ const field = PropTypes.shape({
 })
 
 type = PropTypes.shape({
-  name: PropTypes.string.isRequired,
   fields: PropTypes.objectOf(field),
   alias: PropTypes.string,
   isPrimitive: PropTypes.bool
 })
 
-const schema = PropTypes.arrayOf(type)
+const schema = PropTypes.objectOf(type)
 
 export default {
   type,

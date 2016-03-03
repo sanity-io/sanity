@@ -1,42 +1,31 @@
 //import {atLeast, atMost, required} from './sanity/validations'
 //import {image, imageVersion, richText} from './sanity/types/bundled'
 
-const types = [
-  {
-    name: 'string',
-    isPrimitive: true
-  },
-  {
-    name: 'boolean',
-    isPrimitive: true
-  },
-  {
-    name: 'number',
-    isPrimitive: true
-  },
-  {
-    name: 'list',
-    isPrimitive: true
-  },
-  {
-    name: 'reference',
-    isPrimitive: true
-  },
-  {
-    name: 'image',
-    isPrimitive: true
-  },
-  {
-    name: 'imageVersion',
-    fields: {
-      width: {type: 'number'},
-      square: {type: 'boolean'},
-      url: {type: 'string'}
+export default {
+  //string: {},
+  //object: {},
+  //boolean: {},
+  //number: {},
+  latlon: {
+    properties: {
+      lat: {type: 'number'},
+      lon: {type: 'number'}
     }
   },
-  {
-    name: 'image',
-    fields: {
+  relation: {
+    type: 'object',
+    properties: {
+      meta: {
+        type: 'object'
+      }
+    }
+  },
+  //list: {
+  //},
+  //reference: {
+  //},
+  image: {
+    properties: {
       fullsize: {type: 'string'},
       aspectRatio: {type: 'number'},
       versions: {
@@ -45,13 +34,21 @@ const types = [
       }
     }
   },
-  {name: 'richText', alias: 'string'},
-  {name: 'person', alias: 'string'},
-  {name: 'placeholder', alias: 'string'},
-  {name: 'tag', alias: 'string'},
-  {
-    name: 'client',
-    fields: {
+  imageVersion: {
+    properties: {
+      width: {type: 'number'},
+      square: {type: 'boolean'},
+      url: {type: 'string'}
+    }
+  },
+  //richText: {
+  //},
+  //person: {
+  //},
+  //tag: {
+  //},
+  client: {
+    properties: {
       name: {
         type: 'string',
         title: 'Tittel',
@@ -69,9 +66,8 @@ const types = [
       }
     }
   },
-  {
-    name: 'story',
-    fields: {
+  story: {
+    properties: {
       title: {
         type: 'string',
         title: 'Tittel',
@@ -80,6 +76,9 @@ const types = [
       ingress: {
         type: 'richText',
         title: 'Ingress'
+      },
+      location: {
+        type: 'latlon'
       },
       image: {
         type: 'image',
@@ -97,7 +96,7 @@ const types = [
           {
             type: 'reference',
             to: [{type: 'image'}],
-            meta: 'imageMetadata'
+            meta: {type: 'imageMetadata'}
           },
           {type: 'tag'},
           {type: 'placeholder'},
@@ -109,6 +108,4 @@ const types = [
       }
     }
   }
-]
-
-export default types
+}
