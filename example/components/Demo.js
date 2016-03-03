@@ -38,35 +38,8 @@ function resolveFieldInput(field) {
   }
 
   const resolved = resolver(field);
-  console.log('resolved field builder %s => %s:', field.type, type)
+  //console.log('resolved field builder %s => %s:', field.type, type)
   return resolved
-}
-//
-//function DefaultFieldRenderer(props) {
-//  const {value, field, onChange, InputComponent} = props
-//  return (
-//    <fieldset>
-//      <div>
-//        <label>
-//          {field.title}
-//        </label>
-//
-//        {field.description && <div>{field.description}</div>}
-//
-//        <div>
-//          <InputComponent
-//            field={field}
-//            onChange={onChange}
-//            value={value}
-//          />
-//        </div>
-//      </div>
-//    </fieldset>
-//  )
-//}
-//
-function resolveFieldRenderer(field) {
-  //return DefaultFieldRenderer
 }
 
 const FormBuilderProvider = React.createClass({
