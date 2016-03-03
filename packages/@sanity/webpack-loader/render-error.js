@@ -20,7 +20,7 @@ setTimeout(function () {
   }
 
   var header = document.createElement('h2');
-  header.appendChild(document.createTextNode('%ERR.MESSAGE%'));
+  header.innerHTML = '%ERR.MESSAGE%';
 
   var stack = document.createElement('pre');
   var code = document.createElement('code');
