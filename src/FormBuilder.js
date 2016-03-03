@@ -12,7 +12,6 @@ const FormBuilder = React.createClass({
 
   contextTypes: {
     resolveFieldInput: PropTypes.func,
-    resolveFieldRenderer: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   },
 

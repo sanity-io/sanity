@@ -5,7 +5,7 @@ import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'd
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
-    value: PropTypes.string,
+    value: PropTypes.object,
     onChange: PropTypes.func
   },
 

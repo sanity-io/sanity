@@ -45,19 +45,17 @@ function resolveFieldInput(field) {
 const FormBuilderProvider = React.createClass({
   propTypes: {
     resolveFieldInput: PropTypes.func.isRequired,
-    resolveFieldRenderer: PropTypes.func.isRequired,
     children: PropTypes.node,
     editType: FormBuilderPropTypes.type,
     schema: FormBuilderPropTypes.schema
   },
   childContextTypes: {
     resolveFieldInput: PropTypes.func.isRequired,
-    resolveFieldRenderer: PropTypes.func.isRequired,
     schema: FormBuilderPropTypes.schema
   },
 
   getChildContext() {
-    return pick(this.props, 'schema', 'resolveFieldInput', 'resolveFieldRenderer')
+    return pick(this.props, 'schema', 'resolveFieldInput')
   },
 
   render() {
@@ -94,7 +92,7 @@ export default React.createClass({
             <code>
               {inspect(FormBuilderUtils.unwrap(value))}
             </code>
-            Check the console for the internal representation of the form builder value(s)
+            <p>Check the console for the internal representation of the form builder value(s)</p>
           </div>
         )}
 
@@ -103,7 +101,6 @@ export default React.createClass({
 
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
-            resolveFieldRenderer={resolveFieldRenderer}
             schema={schema}
           >
             <FormBuilder
