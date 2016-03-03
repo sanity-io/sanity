@@ -1,3 +1,6 @@
 {
-  "extends": "sanity"
+  "extends": "sanity",
+  "env": {
+    "node": true
+  }
 }
