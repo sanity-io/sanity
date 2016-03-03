@@ -4,7 +4,7 @@ import {eq} from 'lodash'
 
 export default React.createClass({
   propTypes: {
-    type: PropTypes.object,// FormBuilderPropTypes.field,
+    field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
   },
@@ -25,11 +25,11 @@ export default React.createClass({
   },
 
   render() {
-    const {value, type} = this.props
+    const {value, field} = this.props
     return (
       <input
         type="text"
-        placeholder={type.placeholder}
+        placeholder={field.placeholder}
         onChange={this.handleChange}
         value={value}
       />

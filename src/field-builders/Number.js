@@ -1,11 +1,24 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
+import update from 'react-addons-update'
 
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field,
-    value: PropTypes.number,
+    value: PropTypes.shape({stringValue: PropTypes.string}),
     onChange: PropTypes.func
+  },
+
+  statics: {
+    valueContainer: {
+      wrap(value) {
+        return {stringValue: String(value)}
+      },
+      unwrap(value) {
+        const stringValue = value.stringValue.trim()
+        return stringValue === '' ? null : Number(stringValue)
+      }
+    }
   },
 
   getDefaultProps() {
@@ -16,7 +29,7 @@ export default React.createClass({
   },
 
   handleChange(e) {
-    this.props.onChange(e.target.value)
+    this.props.onChange(update(this.props.value, {stringValue: {$set: e.target.value}}))
   },
 
   render() {
@@ -24,7 +37,7 @@ export default React.createClass({
     return (
       <input type="number"
         onChange={this.handleChange}
-        value={value}
+        value={value.stringValue}
       />
     )
   }

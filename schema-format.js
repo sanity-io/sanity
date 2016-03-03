@@ -7,14 +7,14 @@ export default {
   //boolean: {},
   //number: {},
   latlon: {
-    properties: {
+    fields: {
       lat: {type: 'number'},
       lon: {type: 'number'}
     }
   },
   relation: {
     type: 'object',
-    properties: {
+    fields: {
       meta: {
         type: 'object'
       }
@@ -25,7 +25,7 @@ export default {
   //reference: {
   //},
   image: {
-    properties: {
+    fields: {
       fullsize: {type: 'string'},
       aspectRatio: {type: 'number'},
       versions: {
@@ -35,7 +35,7 @@ export default {
     }
   },
   imageVersion: {
-    properties: {
+    fields: {
       width: {type: 'number'},
       square: {type: 'boolean'},
       url: {type: 'string'}
@@ -48,7 +48,7 @@ export default {
   //tag: {
   //},
   client: {
-    properties: {
+    fields: {
       name: {
         type: 'string',
         title: 'Tittel',
@@ -67,7 +67,7 @@ export default {
     }
   },
   story: {
-    properties: {
+    fields: {
       title: {
         type: 'string',
         title: 'Tittel',

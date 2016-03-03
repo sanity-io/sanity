@@ -36,6 +36,7 @@
     "staticr": "^4.0.1"
   },
   "dependencies": {
+    "draft-js": "^0.1.0",
     "eslint-plugin-react": "^4.1.0",
     "object-inspect": "^1.1.0",
     "react": "^0.14.7",

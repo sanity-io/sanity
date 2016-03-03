@@ -1,11 +1,25 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
+import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'draft-js'
 
 export default React.createClass({
   propTypes: {
-    type: FormBuilderPropTypes.type,
+    field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
+  },
+
+  statics: {
+    valueContainer: {
+      wrap(raw) {
+        return raw
+          ? EditorState.crateFromBlockArray(convertFromRaw(raw))
+          : EditorState.createEmpty()
+      },
+      unwrap(editorState) {
+        return convertToRaw(editorState.getCurrentContent())
+      }
+    }
   },
 
   getDefaultProps() {
@@ -15,17 +29,17 @@ export default React.createClass({
     }
   },
 
-  handleChange(e) {
-    this.props.onChange(e.target.value)
+  handleChange(editorState) {
+    this.props.onChange(editorState)
   },
 
   render() {
-    const {type, value} = this.props
+    const {field, value} = this.props
     return (
-      <textarea
-        placeholder={type.placeholder}
+      <Editor
+        placeholder={field.placeholder}
         onChange={this.handleChange}
-        value={value}
+        editorState={value}
       />
     )
   }

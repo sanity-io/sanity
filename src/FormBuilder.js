@@ -1,15 +1,11 @@
 import React, {PropTypes} from 'react'
-import inspect from 'object-inspect'
-//import inspect from 'object-inspect'
 import update from 'react-addons-update'
-//import cx from 'classnames'
-import {omit, assign} from 'lodash'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
-//import Field from './Field'
+import * as FormBuilderUtils from './FormBuilderUtils'
 
 const FormBuilder = React.createClass({
   propTypes: {
-    typeName: PropTypes.string,
+    typeName: PropTypes.string.isRequired,
     value: PropTypes.any,
     onChange: PropTypes.func
   },
@@ -18,6 +14,13 @@ const FormBuilder = React.createClass({
     resolveFieldInput: PropTypes.func,
     resolveFieldRenderer: PropTypes.func,
     schema: FormBuilderPropTypes.schema
+  },
+
+  getDefaultProps() {
+    return {
+      value: {},
+      onChange() {}
+    }
   },
 
   findTypeInSchema(typeName) {
@@ -35,33 +38,42 @@ const FormBuilder = React.createClass({
 
     const type = this.findTypeInSchema(typeName)
 
-    const properties = type.properties
+    const {fields} = type
     return (
       <div>
-        {Object.keys(properties).map(propName => {
-          const prop = properties[propName]
-
-          const wrap = el => (
-            <fieldset key={propName}>
-              <h1>{prop.title} ({propName})</h1>
+        {Object.keys(fields).map(fieldName => {
+          const field = fields[fieldName]
+          const renderField = el => (
+            <fieldset key={fieldName}>
+              <h1>{field.title} ({fieldName})</h1>
               {el}
             </fieldset>
           )
-          const fieldVal = value[propName]
-          const handleChange = newVal => this.handleFieldChange(newVal, propName)
 
-          const FieldBuilder = this.context.resolveFieldInput(prop)
-          const schemaType = this.findTypeInSchema(prop.type)
+          const handleFieldChange = newVal => this.handleFieldChange(newVal, fieldName)
+
+          const FieldBuilder = this.context.resolveFieldInput(field)
+
+          const schemaType = this.findTypeInSchema(field.type)
 
           if (schemaType && !FieldBuilder) {
-            return wrap(<FormBuilder typeName={prop.type} value={fieldVal} onChange={handleChange} />)
+            return renderField(<FormBuilder typeName={field.type} value={value[fieldName]} onChange={handleFieldChange} />)
           }
 
-          return wrap(
+          const wrappedVal = FieldBuilder.valueContainer
+            ? FormBuilderUtils.maybeWrapValue(value[fieldName], FieldBuilder.valueContainer)
+            : value[fieldName]
+
+          const wrappedOnChange = FieldBuilder.valueContainer
+            // Todo: validate against primitive values
+            ? newVal => handleFieldChange(FormBuilderUtils.markWrapped(newVal, FieldBuilder.valueContainer))
+            : handleFieldChange
+
+          return renderField(
             <FieldBuilder
-              value={fieldVal}
-              type={prop}
-              onChange={handleChange}
+              value={wrappedVal}
+              field={field}
+              onChange={wrappedOnChange}
             />
           )
         })}

@@ -11,7 +11,7 @@ import Number from '../../src/field-builders/Number'
 import Image from '../../src/field-builders/Image'
 import StringList from '../../src/field-builders/StringList'
 import RichText from '../../src/field-builders/RichText'
-//import Obj from '../../src/field-builders/Object'
+import * as FormBuilderUtils from '../../src/FormBuilderUtils'
 
 const fieldInputs = {
   richText: () => RichText,
@@ -95,19 +95,39 @@ const FormBuilderProvider = React.createClass({
 export default React.createClass({
   getInitialState() {
     return {
-      value: {}
+      value: {},
+      shouldInspect: true
     }
   },
   handleChange(newVal) {
-    this.setState({value: newVal})
+    this.setState({
+      shouldInspect: false,
+      value: newVal
+    })
   },
   render() {
-    const {value} = this.state
+    const {value, shouldInspect} = this.state
 
+    if (shouldInspect) {
+      console.log('CURRENT VALUE', value)
+    }
     return (
       <div className="content">
+        <h2>Form value</h2>
+        {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>INSPECT VALUE</button>}
+        {shouldInspect && (
+          <div>
+            The unwrapped value is serialized here:
+            <code>
+              {inspect(FormBuilderUtils.unwrap(value))}
+            </code>
+            Check the console for the internal representation of the form builder value(s)
+          </div>
+        )}
+
         <form className="form-container">
           <h2>Generated form</h2>
+
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
             resolveFieldRenderer={resolveFieldRenderer}
@@ -120,7 +140,6 @@ export default React.createClass({
             />
           </FormBuilderProvider>
         </form>
-        {inspect(value)}
       </div>
     )
   }
