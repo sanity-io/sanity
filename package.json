@@ -38,7 +38,9 @@
   "dependencies": {
     "draft-js": "^0.1.0",
     "eslint-plugin-react": "^4.1.0",
+    "json-markup": "^0.1.6",
     "object-inspect": "^1.1.0",
+    "prosemirror": "^0.4.0",
     "react": "^0.14.7",
     "react-addons-update": "^0.14.7",
     "react-domcontentloaded": "^1.0.1"

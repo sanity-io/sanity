@@ -2,28 +2,25 @@
 //import {image, imageVersion, richText} from './sanity/types/bundled'
 
 export default {
-  //string: {},
-  //object: {},
-  //boolean: {},
-  //number: {},
   latlon: {
     fields: {
-      lat: {type: 'number'},
-      lon: {type: 'number'}
+      lat: {
+        title: 'Latitude',
+        type: 'number'
+      },
+      lon: {
+        title: 'Longitude',
+        type: 'number'
+      }
     }
   },
   relation: {
-    type: 'object',
     fields: {
       meta: {
         type: 'object'
       }
     }
   },
-  //list: {
-  //},
-  //reference: {
-  //},
   image: {
     fields: {
       fullsize: {type: 'string'},
@@ -41,12 +38,6 @@ export default {
       url: {type: 'string'}
     }
   },
-  //richText: {
-  //},
-  //person: {
-  //},
-  //tag: {
-  //},
   client: {
     fields: {
       name: {
@@ -55,8 +46,8 @@ export default {
         placeholder: 'Hva heter kunden?'
       },
       names: {
-        type: 'list',
         title: 'Names',
+        type: 'list',
         of: [{type: 'string'}]
       },
       tags: {

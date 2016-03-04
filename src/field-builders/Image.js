@@ -10,8 +10,7 @@ export default React.createClass({
 
   getDefaultProps() {
     return {
-      onChange() {
-      }
+      onChange() {}
     }
   },
 
