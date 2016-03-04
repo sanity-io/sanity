@@ -14,7 +14,7 @@ export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
     defaultValue: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.object,
     onChange: PropTypes.func
   },
 
