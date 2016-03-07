@@ -27,7 +27,9 @@ module.exports = function sanityPluginLoader(input) {
       })
 
       const baseMap = JSON.stringify(roles.fulfilled, null, 2)
-      const pluginMap = baseMap.replace(/"path": "(.*)?"/g, '"path": require("$1")') // "path" => require("path")
+
+      // { "path": "/some/path" } => { "module": require("/some/path") }
+      const pluginMap = baseMap.replace(/"path": "(.*)?"/g, '"module": require("$1")')
 
       const content = input.replace(
         rolesVarMatcher,
