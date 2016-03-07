@@ -11,7 +11,9 @@ export default function getDevServer(config = {}) {
 
   app.use(webpackDevMiddleware(compiler, {
     noInfo: true,
-    publicPath: webpackConfig.output.publicPath
+    publicPath: webpackConfig.output.publicPath,
+    stats: true,
+    debug: true
   }))
 
   app.use(webpackHotMiddleware(compiler))
