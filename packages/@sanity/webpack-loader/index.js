@@ -40,10 +40,6 @@ module.exports = function sanityPluginLoader(input) {
       callback(null, `${banner}\n${content}`)
     })
     .catch(err => {
-      if (this.cacheable) {
-        this.cacheable(false)
-      }
-
       this.emitWarning(err.message)
       callback(null, serializeError(err))
     })
