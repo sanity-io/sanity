@@ -1,6 +1,7 @@
 import ghUrl from 'github-url-to-object'
 import cliPackage from '../../../package.json'
 import versionRanges from '../../versionRanges'
+import sortObject from 'deep-sort-object'
 
 const manifestPropOrder = [
   'name', 'private', 'version', 'description', 'main', 'author', 'license', 'scripts',
@@ -47,9 +48,11 @@ export function createPackageManifest(data) {
       start: 'sanity start',
       test: 'sanity test'
     },
-    dependencies: Object.assign(
-      {[cliPackage.name]: `^${cliPackage.version}`},
-      versionRanges
+    dependencies: sortObject(
+      Object.assign(
+        {[cliPackage.name]: `^${cliPackage.version}`},
+        versionRanges
+      )
     )
   })
 
