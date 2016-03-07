@@ -12,7 +12,8 @@ export default {
     const config = getConfig(options.cwd).get('server')
     const getServer = isProduction ? getProdServer : getDevServer
     const server = getServer({
-      staticPath: resolveStaticPath(options.cwd, config)
+      staticPath: resolveStaticPath(options.cwd, config),
+      basePath: options.cwd
     })
 
     const {port, hostname} = config

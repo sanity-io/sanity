@@ -1,5 +1,6 @@
-import cliPackage from '../../../package.json'
 import ghUrl from 'github-url-to-object'
+import cliPackage from '../../../package.json'
+import versionRanges from '../../versionRanges'
 
 const manifestPropOrder = [
   'name', 'private', 'version', 'description', 'main', 'author', 'license', 'scripts',
@@ -46,9 +47,10 @@ export function createPackageManifest(data) {
       start: 'sanity start',
       test: 'sanity test'
     },
-    dependencies: {
-      [cliPackage.name]: `^${cliPackage.version}`
-    }
+    dependencies: Object.assign(
+      {[cliPackage.name]: `^${cliPackage.version}`},
+      versionRanges
+    )
   })
 
   return serializeManifest(pkg)
@@ -66,8 +68,14 @@ export function createPluginManifest(data) {
 }
 
 export function createSanityManifest(data) {
-  const manifest = {}
-  return JSON.stringify(manifest, null, 2)
+  const manifest = {
+    plugins: [
+      '@sanity/base',
+      '@sanity/default-layout'
+    ]
+  }
+
+  return `${JSON.stringify(manifest, null, 2)}\n`
 }
 
 function serializeManifest(src) {
@@ -80,5 +88,5 @@ function serializeManifest(src) {
     return target
   }, {})
 
-  return JSON.stringify(ordered, null, 2)
+  return `${JSON.stringify(ordered, null, 2)}\n`
 }
