@@ -4,15 +4,16 @@ import uniq from 'lodash/uniq'
 import promiseProps from 'promise-props-recursive'
 import validateManifest from './validateManifest'
 
-export default function resolveTree(options = {}) {
-  const basePath = options.basePath || process.cwd()
+export default function resolveTree(opts = {}) {
+  const options = Object.assign({basePath: process.cwd()}, opts)
+
   return readManifest(options)
-    .then(manifest => resolvePlugins(manifest.plugins || [], {basePath}))
+    .then(manifest => resolvePlugins(manifest.plugins || [], options))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
-export function resolveRoles({basePath} = {}) {
-  return resolveTree({basePath})
+export function resolveRoles(options = {}) {
+  return resolveTree(options)
     .then(plugins => {
       const result = {provided: {}, fulfilled: {}, plugins}
 
