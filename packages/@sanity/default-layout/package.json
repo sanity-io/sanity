@@ -1,0 +1,49 @@
+{
+  "name": "@sanity/default-layout",
+  "version": "1.0.0",
+  "description": "The default layout components for Sanity",
+  "main": "lib/default-layout.js",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "test": "mocha test/**/*.test.js",
+    "clean": "rimraf lib",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "posttest": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/default-layout.git"
+  },
+  "keywords": [
+    "sanity",
+    "layout"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/default-layout/issues"
+  },
+  "homepage": "https://github.com/sanity-io/default-layout#readme",
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-eslint": "^5.0.0",
+    "babel-register": "^6.5.2",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
+    "eslint": "^2.2.0",
+    "eslint-config-sanity": "^1.0.5",
+    "isparta": "^4.0.0",
+    "mocha": "^2.4.5",
+    "rimraf": "^2.5.2"
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "in-publish": "^2.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=0.14.0",
+    "react-dom": ">=0.14.0"
+  }
+}
