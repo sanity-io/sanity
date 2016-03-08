@@ -49,7 +49,7 @@ describe('plugin resolver', () => {
     mockFs(getDeepTree())
     return resolvePlugins({basePath: '/sanity'}).then(plugins => {
       plugins.map(plugin => plugin.name).should.eql([
-        '@sanity/standard-layout',
+        '@sanity/default-layout',
         '@sanity/core',
         'baz',
         'bar',
@@ -92,21 +92,23 @@ describe('plugin resolver', () => {
   it('can resolve roles for a basic setup', () => {
     mockFs(getBasicTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
-      const settings = res.provided['standard-layout/settings-pane']
-      settings.path.should.equal('/sanity/node_modules/@sanity/standard-layout')
+      const settings = res.provided['default-layout/settings-pane']
+      settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
       settings.multi.should.equal(true)
 
-      const tool = res.fulfilled['standard-layout/tool']
+      const tool = res.fulfilled['default-layout/tool']
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/src/components/InstagramTool'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
+        srcPath: '/sanity/node_modules/sanity-plugin-instagram/src/components/InstagramTool'
       })
 
       const main = res.fulfilled['core/mainComponent']
       main.should.eql({
-        plugin: '@sanity/standard-layout',
-        path: '/sanity/node_modules/@sanity/standard-layout/src/components/Main'
+        plugin: '@sanity/default-layout',
+        path: '/sanity/node_modules/@sanity/default-layout/src/components/Main',
+        srcPath: '/sanity/node_modules/@sanity/default-layout/src/components/Main'
       })
     })
   })
@@ -116,7 +118,7 @@ describe('plugin resolver', () => {
     return resolveRoles({basePath: '/sanity'}).then(res => {
       res.plugins.should.have.length(3)
       res.plugins.map(plugin => plugin.path).should.eql([
-        '/sanity/node_modules/@sanity/standard-layout',
+        '/sanity/node_modules/@sanity/default-layout',
         '/sanity/node_modules/@sanity/core',
         '/sanity/node_modules/sanity-plugin-instagram'
       ])

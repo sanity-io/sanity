@@ -53,7 +53,8 @@ function reduceRoles(fulfilled, plugin, roles) {
     const provided = roles.provided[role]
     const details = {
       plugin: plugin.name,
-      path: path.resolve(path.join(plugin.path, rolePath))
+      path: path.resolve(path.join(plugin.path, rolePath)),
+      srcPath: path.resolve(path.join(plugin.path, fulfiller.srcPath || rolePath))
     }
 
     if (provided && provided.multi) {

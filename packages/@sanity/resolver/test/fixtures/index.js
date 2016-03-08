@@ -17,29 +17,33 @@ function instagramManifest() {
   return pluginManifest({
     provides: [{
       role: 'instagram/commentsListComponent',
-      path: './src/components/CommentsList',
+      path: './lib/components/CommentsList',
+      srcPath: './src/components/CommentsList'
     }, {
       role: 'instagram/commentComponent',
-      path: './src/components/Comment'
+      path: './lib/components/Comment',
+      srcPath: './src/components/Comment'
     }],
     fulfills: [{
-      role: 'standard-layout/tool',
-      path: './src/components/InstagramTool'
+      role: 'default-layout/tool',
+      path: './lib/components/InstagramTool',
+      srcPath: './src/components/InstagramTool'
     }, {
-      role: 'standard-layout/tool',
-      path: './src/components/InstaDiscoverTool'
+      role: 'default-layout/tool',
+      path: './lib/components/InstaDiscoverTool',
+      srcPath: './src/components/InstaDiscoverTool'
     }]
   })
 }
 
-function standardLayout() {
+function defaultLayout() {
   return {
     'sanity.json': pluginManifest({
       provides: [{
-        role: 'standard-layout/tool',
+        role: 'default-layout/tool',
         multiple: true
       }, {
-        role: 'standard-layout/settings-pane',
+        role: 'default-layout/settings-pane',
         multiple: true
       }],
       fulfills: [{
@@ -55,12 +59,12 @@ function sanityCore() {
     'core': {
       'sanity.json': pluginManifest({
         plugins: [
-          '@sanity/standard-layout'
+          '@sanity/default-layout'
         ],
         provides: [{role: 'core/mainComponent'}]
       })
     },
-    'standard-layout': standardLayout()
+    'default-layout': defaultLayout()
   }
 }
 
