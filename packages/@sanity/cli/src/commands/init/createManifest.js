@@ -70,8 +70,8 @@ export function createPluginManifest(data) {
   return serializeManifest(pkg)
 }
 
-export function createSanityManifest(data) {
-  const manifest = {
+export function createSanityManifest(data, {isPlugin}) {
+  const manifest = isPlugin ? {} : {
     plugins: [
       '@sanity/base',
       '@sanity/default-layout'
