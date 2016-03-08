@@ -23,17 +23,20 @@ export default {
   }
 }
 
-function initSanity({print, prompt, error, options}) {
+function initSanity({print, prompt, spinner, error, options}) {
   print('This utility will walk you through creating a new Sanity installation.')
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
+  const spin = spinner('Installing dependencies...')
+
   return getProjectDefaults(options.cwd)
     .then(defaults => gatherInput(prompt, defaults))
     .then(answers => bootstrapSanity(options.cwd, answers))
-    .then(() => print('Installing dependencies...'))
+    .then(() => spin.start())
     .then(npmInstall)
-    .then(() => print('Success!'))
+    .then(() => spin.stop())
+    .then(() => print('Success! You can now run `sanity start`'))
     .catch(error)
 }
 

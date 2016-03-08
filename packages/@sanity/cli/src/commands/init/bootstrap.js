@@ -23,7 +23,7 @@ export function bootstrapSanity(targetPath, data) {
     checksums: readTemplate('checksums'),
     schema: readTemplate('schema'),
     manifest: createPackageManifest(data),
-    sanity: createSanityManifest(data),
+    sanity: createSanityManifest(data, {}),
     readme: `# ${data.name}\n\n${data.description}\n`
   }))
   .then(templates => Promise.all([

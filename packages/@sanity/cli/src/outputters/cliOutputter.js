@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import ora from 'ora'
+
 export default {
   print(...args) {
     console.log(...args)
@@ -10,5 +12,9 @@ export default {
     } else {
       console.error(...args)
     }
+  },
+
+  spinner(...args) {
+    return ora(...args)
   }
 }

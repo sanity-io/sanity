@@ -22,9 +22,9 @@ export default class CommandRunner {
 
     debug(`Running command "${cmdName}"`)
 
-    const {print, error} = this.handlers.outputter
+    const {print, error, spinner} = this.handlers.outputter
     const {prompt} = this.handlers.prompter
-    return command.action({print, error, prompt, options})
+    return command.action({print, error, spinner, prompt, options})
   }
 }
 

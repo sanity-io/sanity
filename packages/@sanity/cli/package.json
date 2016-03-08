@@ -46,6 +46,7 @@
     "joi": "^7.3.0",
     "lodash": "^4.5.0",
     "npm": "^3.7.2",
+    "ora": "^0.2.0",
     "promise-props-recursive": "^1.0.0",
     "semver-compare": "^1.0.0",
     "thenify": "^3.2.0",
