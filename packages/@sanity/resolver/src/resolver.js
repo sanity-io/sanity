@@ -49,12 +49,12 @@ function assignRoles(provided, plugin) {
 function reduceRoles(fulfilled, plugin, roles) {
   (plugin.manifest.fulfills || []).forEach(fulfiller => {
     const role = fulfiller.role
-    const rolePath = fulfiller.path
     const provided = roles.provided[role]
+    const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
+    const rolePath = isLib ? fulfiller.path : (fulfiller.srcPath || fulfiller.path)
     const details = {
       plugin: plugin.name,
-      path: path.resolve(path.join(plugin.path, rolePath)),
-      srcPath: path.resolve(path.join(plugin.path, fulfiller.srcPath || rolePath))
+      path: path.resolve(path.join(plugin.path, rolePath))
     }
 
     if (provided && provided.multi) {

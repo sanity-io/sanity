@@ -6,6 +6,7 @@ import {
   getDeepTree,
   getInvalidJson,
   getInvalidManifest,
+  getMixedPluginTree,
   getResolutionOrderFixture,
   getScopedPluginsTree
 } from './fixtures'
@@ -100,15 +101,13 @@ describe('plugin resolver', () => {
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
-        srcPath: '/sanity/node_modules/sanity-plugin-instagram/src/components/InstagramTool'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
 
       const main = res.fulfilled['core/mainComponent']
       main.should.eql({
         plugin: '@sanity/default-layout',
-        path: '/sanity/node_modules/@sanity/default-layout/src/components/Main',
-        srcPath: '/sanity/node_modules/@sanity/default-layout/src/components/Main'
+        path: '/sanity/node_modules/@sanity/default-layout/src/components/Main'
       })
     })
   })
@@ -131,6 +130,21 @@ describe('plugin resolver', () => {
       err.locations.some((location, index) =>
         err.locations.indexOf(location, index + 1) !== -1
       ).should.equal(false)
+    })
+  })
+
+  it('resolves path to lib for node_modules, src for plugins', () => {
+    mockFs(getMixedPluginTree())
+    return resolveRoles({basePath: '/sanity'}).then(res => {
+      res.fulfilled['default-layout/tool'][0].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/src/File'
+      })
+
+      res.fulfilled['default-layout/tool'][1].should.eql({
+        plugin: 'instagram',
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+      })
     })
   })
 })

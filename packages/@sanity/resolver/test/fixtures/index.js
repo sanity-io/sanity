@@ -104,6 +104,29 @@ export function getBasicTree() {
   }
 }
 
+export function getMixedPluginTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['@sanity/core', 'instagram', 'foo']),
+    '/sanity/node_modules': {
+      'sanity-plugin-instagram': {
+        'sanity.json': instagramManifest(),
+      },
+      '@sanity': sanityCore(),
+    },
+    '/sanity/plugins': {
+      foo: {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'default-layout/tool',
+            path: './lib/File',
+            srcPath: './src/File'
+          }]
+        })
+      }
+    }
+  }
+}
+
 export function getScopedPluginsTree() {
   return {
     '/sanity/sanity.json': sanityManifest(['@sanity/core', '@sanity/foo']),

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/resolver",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Resolves roles and plugins from a Sanity configuration",
   "main": "lib/resolver.js",
   "scripts": {
