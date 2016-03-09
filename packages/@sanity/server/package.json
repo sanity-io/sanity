@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
-    "@sanity/plugin-loader": "0.0.8",
+    "@sanity/plugin-loader": "1.0.0",
     "babel-core": "^6.5.2",
     "babel-eslint": "^5.0.0-beta4",
     "babel-loader": "^6.2.2",
