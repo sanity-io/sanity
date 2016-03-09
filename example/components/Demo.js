@@ -6,7 +6,7 @@ import {pick} from 'lodash'
 import inspect from 'object-inspect'
 import jsonMarkup from 'json-markup'
 
-import schema from '../../schema-format'
+import schema from '../../example-schema'
 import String from '../../src/field-builders/String'
 import Number from '../../src/field-builders/Number'
 import Image from '../../src/field-builders/Image'

@@ -1,5 +1,8 @@
 # Form Builder
 
+# Big fat disclaimer: Work in progress
+
+There is an example of a consumer in the `./example` that can be started with `npm start`
 
 # Input fields
 
