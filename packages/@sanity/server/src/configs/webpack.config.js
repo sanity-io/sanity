@@ -1,9 +1,11 @@
+import fs from 'fs'
 import path from 'path'
 
 const pluginLoaderPath = require.resolve('@sanity/plugin-loader')
 
 export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
+  const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
   const resolvePaths = [
     path.resolve(basePath),
@@ -29,11 +31,25 @@ export default (config = {}) => {
     module: {
       loaders: [{
         test: /\.jsx?/,
-        loaders: ['babel']
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: babelConfig || {
+          presets: ['react', 'es2015'],
+          cacheDirectory: true
+        }
       }, {
         test: /\/@?sanity\/plugin-loader\/plugins/,
         loaders: [`${pluginLoaderPath}?basePath=${basePath}&env=${env}`]
       }]
     }
+  }
+}
+
+function tryRead(filePath) {
+  try {
+    const content = fs.readFileSync(filePath)
+    return JSON.parse(content)
+  } catch (err) {
+    return null
   }
 }
