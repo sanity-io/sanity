@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "@sanity/plugin-loader": "0.0.7",
+    "@sanity/plugin-loader": "1.0.0",
     "debug": "^2.2.0",
     "in-publish": "^2.0.0"
   },
