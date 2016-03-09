@@ -120,6 +120,10 @@ export function getMixedPluginTree() {
             role: 'default-layout/tool',
             path: './lib/File',
             srcPath: './src/File'
+          }, {
+            role: 'instagram/commentsListComponent',
+            path: './lib/InstaComments',
+            srcPath: './src/InstaComments'
           }]
         })
       }

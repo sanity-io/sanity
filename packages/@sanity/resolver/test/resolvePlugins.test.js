@@ -109,6 +109,12 @@ describe('plugin resolver', () => {
         plugin: '@sanity/default-layout',
         path: '/sanity/node_modules/@sanity/default-layout/src/components/Main'
       })
+
+      const comments = res.fulfilled['instagram/commentsListComponent']
+      comments.should.eql({
+        plugin: 'instagram',
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
+      })
     })
   })
 
@@ -144,6 +150,16 @@ describe('plugin resolver', () => {
       res.fulfilled['default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+      })
+    })
+  })
+
+  it('late-defined plugins override default implementations of roles', () => {
+    mockFs(getMixedPluginTree())
+    return resolveRoles({basePath: '/sanity'}).then(res => {
+      res.fulfilled['instagram/commentsListComponent'].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/src/InstaComments'
       })
     })
   })

@@ -47,11 +47,19 @@ function assignRoles(provided, plugin) {
 }
 
 function reduceRoles(fulfilled, plugin, roles) {
-  (plugin.manifest.fulfills || []).forEach(fulfiller => {
+  [].concat(
+    plugin.manifest.fulfills,
+    plugin.manifest.provides
+  ).filter(Boolean).forEach(fulfiller => {
     const role = fulfiller.role
     const provided = roles.provided[role]
     const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
     const rolePath = isLib ? fulfiller.path : (fulfiller.srcPath || fulfiller.path)
+
+    if (!rolePath) {
+      return
+    }
+
     const details = {
       plugin: plugin.name,
       path: path.resolve(path.join(plugin.path, rolePath))
