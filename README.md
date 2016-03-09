@@ -17,3 +17,4 @@ Considerations / todo
  - Powerful validation rules
  - i18n
  - List item edit modality
+ - Styling
