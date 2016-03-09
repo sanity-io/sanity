@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -12,6 +12,7 @@
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
     "prepublish": "in-publish && npm run compile || not-in-publish",
+    "postpublish": "npm run clean",
     "posttest": "eslint ."
   },
   "repository": {
