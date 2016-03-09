@@ -30,7 +30,7 @@
     "postcss": "^5.0.16",
     "postcss-import": "^8.0.2",
     "postcss-nested": "^1.0.0",
-    "quickreload": "^1.1.0",
+    "quickreload": "^2.0.0",
     "react-dom": "^0.14.7",
     "rebundler": "^0.3.0",
     "staticr": "^4.0.1"
