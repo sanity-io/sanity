@@ -1,20 +1,47 @@
-function createSanity({roles}) {
-  return {
-    getRole(roleName) {
-      const fulfiller = roles[roleName]
-      if (!fulfiller) {
-        return null
-      }
+import {PropTypes} from 'react'
+import {getUnfulfilledRoleComponent} from './components/UnfulfilledRole'
 
-      return fulfiller.module.__esModule && fulfiller.module.default
-        ? fulfiller.module.default
-        : fulfiller.module
-    },
-
-    getPluginForRole(roleName) {
-      return roles[roleName] && roles[roleName].plugin
+function Sanity({roles}) {
+  function getRole(roleName) {
+    const fulfiller = roles[roleName]
+    if (!fulfiller) {
+      return null
     }
+
+    return fulfiller.module.__esModule && fulfiller.module.default
+      ? fulfiller.module.default
+      : fulfiller.module
+  }
+
+  function getComponents(wanted) {
+    return Object.keys(wanted).reduce((target, key) => {
+      const role = typeof wanted[key] === 'string'
+        ? {name: wanted[key]}
+        : wanted[key]
+
+      target[key] = getRole(role.name) || getUnfulfilledRoleComponent(role)
+
+      return target
+    }, {})
+  }
+
+  function getPluginForRole(roleName) {
+    return roles[roleName] && roles[roleName].plugin
+  }
+
+  return {
+    getRole,
+    getComponents,
+    getPluginForRole
   }
 }
 
-export default createSanity
+export const sanityShape = {
+  sanity: PropTypes.shape({
+    getRole: PropTypes.func.isRequired,
+    getComponents: PropTypes.func.isRequired,
+    getPluginForRole: PropTypes.func.isRequired
+  })
+}
+
+export default Sanity
