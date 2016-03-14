@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import plugins from '@sanity/plugin-loader/plugins'
 import DefaultRootComponent from './DefaultRootComponent'
 import createSanity, {sanityShape} from '../createSanity'
 
@@ -33,11 +32,7 @@ class Sanity extends Component {
 Sanity.childContextTypes = sanityShape
 
 Sanity.propTypes = {
-  roles: React.PropTypes.object // eslint-disable-line react/forbid-prop-types
-}
-
-Sanity.defaultProps = {
-  roles: plugins
+  roles: React.PropTypes.object.isRequired // eslint-disable-line react/forbid-prop-types
 }
 
 export default Sanity
