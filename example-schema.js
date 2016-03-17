@@ -1,4 +1,4 @@
-//import {atLeast, atMost, required} from './sanity/validations'
+//import {atLeast, atMost, required} from './sanity/validates'
 //import {image, imageVersion, richText} from './sanity/types/bundled'
 
 export default {
@@ -38,8 +38,22 @@ export default {
       url: {type: 'string'}
     }
   },
-  client: {
+  person: {
+    is: 'object',
     fields: {
+      name: {
+        type: 'string',
+        title: 'Name'
+      }
+    }
+  },
+  client: {
+    is: 'object',
+    fields: {
+      contactPerson: {
+        type: 'person',
+        title: 'Kontakt person'
+      },
       name: {
         type: 'string',
         title: 'Tittel',
@@ -57,7 +71,34 @@ export default {
       }
     }
   },
+  personName: {
+    is: 'string',
+    autocompletes: {
+      scope: 'person'
+    }
+  },
+  contentList: {
+    is: 'list',
+    of: [
+      {
+        type: 'reference',
+        to: [{type: 'image'}],
+        meta: {type: 'imageMetadata'}
+      },
+      {type: 'tag'},
+      {type: 'placeholder'},
+      {
+        type: 'list',
+        of: [{type: 'string'}]
+      }
+    ],
+    validates: {
+      maxLength: 4
+    }
+  },
   story: {
+    is: 'object',
+    name: 'story',
     fields: {
       title: {
         type: 'string',
@@ -66,10 +107,18 @@ export default {
       },
       ingress: {
         type: 'richText',
-        title: 'Ingress'
+        title: 'Ingress',
+        validates: {
+          maxLen: 10
+        }
       },
       location: {
-        type: 'latlon'
+        type: {
+          is: 'object',
+          fields: {
+            lat: {type: 'string'}
+          }
+        }
       },
       image: {
         type: 'image',
@@ -79,23 +128,13 @@ export default {
         type: 'client',
         title: 'Klient'
       },
-      mainImages: {
-        title: 'Hovedbilder',
-        description: 'Ett eller flere bilder som egner som til å fylle skjermen. NB: Kun første bilde vises foreløpig.',
-        type: 'list',
-        of: [
-          {
-            type: 'reference',
-            to: [{type: 'image'}],
-            meta: {type: 'imageMetadata'}
-          },
-          {type: 'tag'},
-          {type: 'placeholder'},
-          {
-            type: 'list',
-            of: [{type: 'string'}]
-          }
-        ]
+      content: {
+        title: 'Innhold',
+        description: 'Innholdet på siden',
+        type: {
+          is: 'list',
+          of: [/*...*/]
+        }
       }
     }
   }
