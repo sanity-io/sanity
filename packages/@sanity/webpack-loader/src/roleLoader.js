@@ -2,7 +2,7 @@
 const path = require('path')
 const loaderUtils = require('loader-utils')
 const resolver = require('@sanity/resolver')
-const serializeError = require('./serialize-error')
+const serializeError = require('./serializeError')
 
 const banner = '/* This file has been dynamically modified by the Sanity plugin loader */'
 const mapBanner = '/* The following role map is dynamically built by the Sanity plugin loader */'

@@ -1,3 +1,4 @@
+/* eslint-disable */
 setTimeout(function () {
   var styles = {
     background: '#cc0000',

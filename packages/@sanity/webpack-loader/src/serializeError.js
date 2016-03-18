@@ -3,7 +3,7 @@ const path = require('path')
 
 module.exports = function serializeError(srcErr) {
   const content = fs.readFileSync(
-    path.join(__dirname, 'render-error.js'),
+    path.join(__dirname, 'renderError.js'),
     {encoding: 'utf8'}
   )
 
