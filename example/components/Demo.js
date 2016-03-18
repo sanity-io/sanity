@@ -32,7 +32,7 @@ const fieldInputs = {
 function resolveFieldInput(field) {
   // todo: smarter resolution algorithm
 
-  const type = field.type
+  const type = field.fieldType
   const resolver = fieldInputs[type]
 
   if (!resolver) {

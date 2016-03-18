@@ -1,14 +1,14 @@
-import React, {PropTypes} from 'react'
-import update from 'react-addons-update'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
 import * as FormBuilderUtils from './FormBuilderUtils'
+import React, {PropTypes} from 'react'
+import FormBuilderPropTypes from './FormBuilderPropTypes'
 import {union} from 'lodash'
+import update from 'react-addons-update'
 
 const RenderField = React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
     fieldName: PropTypes.string.isRequired,
-    builder: PropTypes.func,
+    inputComponent: PropTypes.func,
     value: PropTypes.any,
     onChange: PropTypes.func
   },
@@ -39,39 +39,40 @@ const RenderField = React.createClass({
       </fieldset>
     )
   },
-  handleChange(newVal) {
-    const {fieldName, builder, onChange} = this.props
 
-    const wrappedVal = (builder && builder.valueContainer)
+  handleChange(newVal) {
+    const {fieldName, inputComponent, onChange} = this.props
+
+    const wrappedVal = inputComponent.valueContainer
       // Todo: throw if primitive value
-      ? FormBuilderUtils.markWrapped(newVal, builder.valueContainer)
+      ? FormBuilderUtils.markWrapped(newVal, inputComponent.valueContainer)
       : newVal
 
     onChange(wrappedVal, fieldName)
   },
 
   render() {
-    const {value, field, builder} = this.props
-    const schemaType = this.findTypeInSchema(field.type)
+    const {value, field, inputComponent} = this.props
+    const schemaType = this.findTypeInSchema(field.fieldType)
 
-    if (schemaType && !builder) {
+    if (schemaType && !inputComponent) {
       return this.renderField(
         <FormBuilder
-          typeName={field.type}
+          typeName={field.fieldType}
           value={value}
           onChange={this.handleChange}
         />
       )
     }
 
-    const wrappedVal = builder.valueContainer
-      ? FormBuilderUtils.maybeWrapValue(value, builder.valueContainer)
+    const wrappedVal = inputComponent.valueContainer
+      ? FormBuilderUtils.maybeWrapValue(value, inputComponent.valueContainer)
       : value
 
+    const FieldInput = inputComponent
 
-    const FieldBuilder = builder
     return this.renderField(
-      <FieldBuilder
+      <FieldInput
         value={wrappedVal}
         field={field}
         onChange={this.handleChange}
@@ -80,6 +81,7 @@ const RenderField = React.createClass({
   }
 })
 
+// eslint-disable-next-line react/no-multi-comp
 const FormBuilder = React.createClass({
   propTypes: {
     typeName: PropTypes.string.isRequired,
@@ -111,7 +113,8 @@ const FormBuilder = React.createClass({
 
   renderField(fieldName, field) {
     const {value = {}} = this.props
-    const FieldBuilder = this.context.resolveFieldInput(field)
+    const FieldInput = this.context.resolveFieldInput(field)
+    console.log(fieldName, FieldInput)
     return (
       <RenderField
         key={fieldName}
@@ -119,7 +122,8 @@ const FormBuilder = React.createClass({
         field={field}
         value={value[fieldName]}
         onChange={this.handleFieldChange}
-        builder={FieldBuilder} />
+        inputComponent={FieldInput}
+      />
     )
   },
 

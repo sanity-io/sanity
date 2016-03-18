@@ -7,11 +7,11 @@ export default {
     fields: {
       lat: {
         title: 'Latitude',
-        type: 'number'
+        fieldType: 'number'
       },
       lon: {
         title: 'Longitude',
-        type: 'number'
+        fieldType: 'number'
       }
     }
   },
@@ -19,34 +19,34 @@ export default {
     is: 'object',
     fields: {
       meta: {
-        type: 'object'
+        fieldType: 'object'
       }
     }
   },
   image: {
     is: 'object',
     fields: {
-      fullsize: {type: 'string'},
-      aspectRatio: {type: 'number'},
+      fullsize: {fieldType: 'string'},
+      aspectRatio: {fieldType: 'number'},
       versions: {
-        type: 'list',
-        of: [{type: 'imageVersion'}]
+        fieldType: 'list',
+        of: [{fieldType: 'imageVersion'}]
       }
     }
   },
   imageVersion: {
     is: 'object',
     fields: {
-      width: {type: 'number'},
-      square: {type: 'boolean'},
-      url: {type: 'string'}
+      width: {fieldType: 'number'},
+      square: {fieldType: 'boolean'},
+      url: {fieldType: 'string'}
     }
   },
   person: {
     is: 'object',
     fields: {
       name: {
-        type: 'string',
+        fieldType: 'string',
         title: 'Name'
       }
     }
@@ -55,21 +55,21 @@ export default {
     is: 'object',
     fields: {
       contactPerson: {
-        type: 'person',
+        fieldType: 'person',
         title: 'Kontakt person'
       },
       name: {
-        type: 'string',
+        fieldType: 'string',
         title: 'Tittel',
         placeholder: 'Hva heter kunden?'
       },
       names: {
         title: 'Names',
-        type: 'list',
-        of: [{type: 'string'}]
+        fieldType: 'list',
+        of: [{fieldType: 'string'}]
       },
       tags: {
-        type: 'tag',
+        fieldType: 'tag',
         title: 'Tag',
         placeholder: 'Hva heter kunden?'
       }
@@ -85,15 +85,15 @@ export default {
     is: 'list',
     of: [
       {
-        type: 'reference',
-        to: [{type: 'image'}],
-        meta: {type: 'imageMetadata'}
+        fieldType: 'reference',
+        to: [{fieldType: 'image'}],
+        meta: {fieldType: 'imageMetadata'}
       },
-      {type: 'tag'},
-      {type: 'placeholder'},
+      {fieldType: 'tag'},
+      {fieldType: 'placeholder'},
       {
-        type: 'list',
-        of: [{type: 'string'}]
+        fieldType: 'list',
+        of: [{fieldType: 'string'}]
       }
     ],
     validates: {
@@ -105,40 +105,36 @@ export default {
     name: 'story',
     fields: {
       title: {
-        type: 'string',
+        fieldType: 'string',
         title: 'Tittel',
         placeholder: 'Slik får du tettere bart enn Poirot'
       },
       ingress: {
-        type: 'richText',
+        fieldType: 'richText',
         title: 'Ingress',
         validates: {
           maxLen: 10
         }
       },
       location: {
-        type: {
-          is: 'object',
-          fields: {
-            lat: {type: 'string'}
-          }
-        }
+        title: 'Where is the bear',
+        fieldType: 'latlon'
       },
       image: {
-        type: 'image',
+        fieldType: 'image',
         title: 'Image'
       },
       client: {
-        type: 'client',
+        fieldType: 'client',
         title: 'Klient'
       },
       content: {
         title: 'Innhold',
         description: 'Innholdet på siden',
-        type: {
-          is: 'list',
-          of: [/*...*/]
-        }
+        fieldType: 'list',
+        of: [
+          {fieldType: 'person'}
+        ]
       }
     }
   }
