@@ -53,12 +53,12 @@ const RenderField = React.createClass({
 
   render() {
     const {value, field, inputComponent} = this.props
-    const schemaType = this.findTypeInSchema(field.fieldType)
+    const schemaType = this.findTypeInSchema(field.type)
 
     if (schemaType && !inputComponent) {
       return this.renderField(
         <FormBuilder
-          typeName={field.fieldType}
+          typeName={field.type}
           value={value}
           onChange={this.handleChange}
         />
@@ -114,7 +114,7 @@ const FormBuilder = React.createClass({
   renderField(fieldName, field) {
     const {value = {}} = this.props
     const FieldInput = this.context.resolveFieldInput(field)
-    console.log(fieldName, FieldInput)
+    //console.log(fieldName, FieldInput)
     return (
       <RenderField
         key={fieldName}
@@ -129,18 +129,21 @@ const FormBuilder = React.createClass({
 
   render() {
     const {typeName} = this.props
-
-    const type = this.findTypeInSchema(typeName)
-
-    const {fields} = type
-    return (
-      <div>
-        {Object.keys(fields).map(fieldName => {
-          const field = fields[fieldName]
-          return this.renderField(fieldName, field)
-        })}
-      </div>
-    )
+    const schemaType = this.findTypeInSchema(typeName)
+    const {fields} = schemaType
+    if (fields) {
+      // type is an object
+      return (
+        <div>
+          {Object.keys(fields).map(fieldName => {
+            const field = fields[fieldName]
+            return this.renderField(fieldName, field)
+          })}
+        </div>
+      )
+    }
+    // type is something else (list, string, etc)
+    return (<pre>{JSON.stringify(schemaType, null, 2)}</pre>)
   }
 })
 

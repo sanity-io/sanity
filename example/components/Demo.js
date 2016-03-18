@@ -31,8 +31,7 @@ const fieldInputs = {
 
 function resolveFieldInput(field) {
   // todo: smarter resolution algorithm
-
-  const type = field.fieldType
+  const type = field.type
   const resolver = fieldInputs[type]
 
   if (!resolver) {
@@ -45,6 +44,7 @@ function resolveFieldInput(field) {
 }
 
 const FormBuilderProvider = React.createClass({
+
   propTypes: {
     resolveFieldInput: PropTypes.func.isRequired,
     children: PropTypes.node,
@@ -66,6 +66,7 @@ const FormBuilderProvider = React.createClass({
 })
 
 export default React.createClass({
+
   getInitialState() {
     return {
       value: this.read() || {},
@@ -73,6 +74,7 @@ export default React.createClass({
       shouldInspect: false
     }
   },
+
   handleChange(newVal) {
     this.setState({
       shouldInspect: false,
@@ -80,6 +82,7 @@ export default React.createClass({
       value: newVal
     })
   },
+
   read() {
     try {
       return JSON.parse(localStorage.getItem('form-builder-demo'))
@@ -88,17 +91,20 @@ export default React.createClass({
     }
     return null
   },
+
   save() {
     const {value} = this.state
     localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderUtils.unwrap(value)))
     this.setState({saved: true})
   },
+
   render() {
     const {value, saved, shouldInspect} = this.state
 
     if (shouldInspect) {
       console.log('CURRENT VALUE', value)
     }
+
     return (
       <div className="content">
         <h2>Form value</h2>

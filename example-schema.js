@@ -1,99 +1,94 @@
 //import {atLeast, atMost, required} from './sanity/validates'
 //import {image, imageVersion, richText} from './sanity/types/bundled'
 
+//
+
 export default {
+  itemz: {
+    type: 'list',
+    of: [
+      {type: 'latlon'}
+    ]
+  },
   latlon: {
-    is: 'object',
     fields: {
       lat: {
         title: 'Latitude',
-        fieldType: 'number'
+        type: 'number'
       },
       lon: {
         title: 'Longitude',
-        fieldType: 'number'
-      }
-    }
-  },
-  relation: {
-    is: 'object',
-    fields: {
-      meta: {
-        fieldType: 'object'
+        type: 'number'
       }
     }
   },
   image: {
-    is: 'object',
     fields: {
-      fullsize: {fieldType: 'string'},
-      aspectRatio: {fieldType: 'number'},
+      fullsize: {type: 'string'},
+      aspectRatio: {type: 'number'},
       versions: {
-        fieldType: 'list',
-        of: [{fieldType: 'imageVersion'}]
+        type: 'list',
+        of: [{type: 'imageVersion'}]
       }
     }
   },
   imageVersion: {
-    is: 'object',
     fields: {
-      width: {fieldType: 'number'},
-      square: {fieldType: 'boolean'},
-      url: {fieldType: 'string'}
+      width: {type: 'number'},
+      square: {type: 'boolean'},
+      url: {type: 'string'}
     }
   },
   person: {
-    is: 'object',
     fields: {
       name: {
-        fieldType: 'string',
+        type: 'string',
         title: 'Name'
       }
     }
   },
   client: {
-    is: 'object',
     fields: {
       contactPerson: {
-        fieldType: 'person',
+        type: 'person',
         title: 'Kontakt person'
       },
       name: {
-        fieldType: 'string',
+        type: 'string',
         title: 'Tittel',
         placeholder: 'Hva heter kunden?'
       },
       names: {
         title: 'Names',
-        fieldType: 'list',
-        of: [{fieldType: 'string'}]
+        type: 'list',
+        of: [{type: 'string'}]
       },
       tags: {
-        fieldType: 'tag',
+        type: 'tag',
         title: 'Tag',
         placeholder: 'Hva heter kunden?'
       }
     }
   },
   personName: {
-    is: 'string',
+    type: 'string',
     autocompletes: {
       scope: 'person'
     }
   },
   contentList: {
-    is: 'list',
+    type: 'list',
     of: [
       {
-        fieldType: 'reference',
-        to: [{fieldType: 'image'}],
-        meta: {fieldType: 'imageMetadata'}
+        type: 'reference',
+        to: [{type: 'image'}],
+        meta: {type: 'imageMetadata'}
       },
-      {fieldType: 'tag'},
-      {fieldType: 'placeholder'},
+      {type: 'tag'},
+      {type: 'placeholder'},
       {
-        fieldType: 'list',
-        of: [{fieldType: 'string'}]
+        type: 'list',
+        of: [{type: 'string'}]
       }
     ],
     validates: {
@@ -101,16 +96,14 @@ export default {
     }
   },
   story: {
-    is: 'object',
-    name: 'story',
     fields: {
       title: {
-        fieldType: 'string',
+        type: 'string',
         title: 'Tittel',
         placeholder: 'Slik får du tettere bart enn Poirot'
       },
       ingress: {
-        fieldType: 'richText',
+        type: 'richText',
         title: 'Ingress',
         validates: {
           maxLen: 10
@@ -118,23 +111,27 @@ export default {
       },
       location: {
         title: 'Where is the bear',
-        fieldType: 'latlon'
+        type: 'latlon'
       },
       image: {
-        fieldType: 'image',
+        type: 'image',
         title: 'Image'
       },
       client: {
-        fieldType: 'client',
+        type: 'client',
         title: 'Klient'
       },
       content: {
         title: 'Innhold',
         description: 'Innholdet på siden',
-        fieldType: 'list',
+        type: 'list',
         of: [
-          {fieldType: 'person'}
+          {type: 'person'}
         ]
+      },
+      shrooms: {
+        title: 'Yummy shrooms',
+        type: 'itemz'
       }
     }
   }
