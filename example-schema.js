@@ -3,6 +3,7 @@
 
 export default {
   latlon: {
+    is: 'object',
     fields: {
       lat: {
         title: 'Latitude',
@@ -15,6 +16,7 @@ export default {
     }
   },
   relation: {
+    is: 'object',
     fields: {
       meta: {
         type: 'object'
@@ -22,6 +24,7 @@ export default {
     }
   },
   image: {
+    is: 'object',
     fields: {
       fullsize: {type: 'string'},
       aspectRatio: {type: 'number'},
@@ -32,6 +35,7 @@ export default {
     }
   },
   imageVersion: {
+    is: 'object',
     fields: {
       width: {type: 'number'},
       square: {type: 'boolean'},
