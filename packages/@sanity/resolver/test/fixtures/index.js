@@ -190,3 +190,41 @@ export function getInvalidManifest({atRoot}) {
     })
   }
 }
+
+export function getStyleTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest([
+      '@sanity/default-layout',
+      'material-design',
+      'screaming-dev-badge'
+    ]),
+    '/sanity/node_modules': {
+      'sanity-plugin-material-design': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'style:@sanity/default-layout/header',
+            path: './css/header.css'
+          }]
+        }),
+      },
+      '@sanity': {
+        'default-layout': {
+          'sanity.json': pluginManifest({
+            provides: [{
+              role: 'style:@sanity/default-layout/header',
+              path: './css/header.css'
+            }]
+          })
+        }
+      },
+      'sanity-plugin-screaming-dev-badge': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'style:@sanity/default-layout/header',
+            path: './css/scream.css'
+          }]
+        })
+      }
+    }
+  }
+}

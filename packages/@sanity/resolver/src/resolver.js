@@ -33,7 +33,7 @@ function assignRoles(provided, plugin) {
       provided[provider.role] = {
         plugin: plugin.name,
         path: plugin.path,
-        multi: Boolean(provider.multiple)
+        multi: Boolean(provider.multiple) || provider.role.indexOf('style:') === 0
       }
     } else if (existingProvider.multi !== Boolean(provider.multiple)) {
       const existing = `"${existingProvider.plugin}" (${existingProvider.path})`

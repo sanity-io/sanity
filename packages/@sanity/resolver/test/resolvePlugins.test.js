@@ -8,7 +8,8 @@ import {
   getInvalidManifest,
   getMixedPluginTree,
   getResolutionOrderFixture,
-  getScopedPluginsTree
+  getScopedPluginsTree,
+  getStyleTree
 } from './fixtures'
 
 describe('plugin resolver', () => {
@@ -161,6 +162,26 @@ describe('plugin resolver', () => {
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/InstaComments'
       })
+    })
+  })
+
+  it('treats all style roles as multi-fulfiller roles', () => {
+    mockFs(getStyleTree())
+    return resolveRoles({basePath: '/sanity'}).then(res => {
+      res.fulfilled['style:@sanity/default-layout/header'].should.eql([
+        {
+          path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
+          plugin: 'screaming-dev-badge'
+        },
+        {
+          path: '/sanity/node_modules/sanity-plugin-material-design/css/header.css',
+          plugin: 'material-design'
+        },
+        {
+          path: '/sanity/node_modules/@sanity/default-layout/css/header.css',
+          plugin: '@sanity/default-layout'
+        }
+      ])
     })
   })
 })
