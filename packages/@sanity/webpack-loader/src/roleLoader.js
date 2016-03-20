@@ -1,6 +1,3 @@
-/* eslint-env node */
-'use strict' // eslint-disable-line strict
-
 import path from 'path'
 import getBaseLoader from './getBaseLoader'
 

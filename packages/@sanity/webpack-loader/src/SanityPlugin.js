@@ -29,14 +29,6 @@ SanityPlugin.prototype.apply = function (compiler) {
   })
 
   compiler.plugin('normal-module-factory', nmf => {
-    nmf.plugin('before-resolve', (data, callback) => {
-      if (data.request.indexOf('sibling') !== -1) {
-        console.log('\n[=== CONTEXT ===]\n', data.context, '\n[/CONTEXT]\n')
-      }
-
-      callback(null, data)
-    })
-
     nmf.plugin('after-resolve', (data, callback) => {
       const match = data.rawRequest.match(roleMatcher)
       const role = match && match[1]

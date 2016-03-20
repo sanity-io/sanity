@@ -1,6 +1,3 @@
-/* eslint-env node */
-'use strict' // eslint-disable-line strict
-
 const path = require('path')
 const loaderUtils = require('loader-utils')
 const resolver = require('@sanity/resolver')
