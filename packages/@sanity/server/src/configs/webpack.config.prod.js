@@ -1,11 +1,12 @@
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
 
-export default config =>
-  Object.assign({}, getBaseConfig(Object.assign({}, config, {env: 'production'})), {
+export default config => {
+  const baseConfig = getBaseConfig(Object.assign({}, config, {env: 'production'}))
+
+  return Object.assign({}, baseConfig, {
     devtool: 'source-map',
-    plugins: [
-      new webpack.optimize.OccurenceOrderPlugin(),
+    plugins: (baseConfig.plugins || []).concat([
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify('production')
@@ -16,5 +17,6 @@ export default config =>
           warnings: false
         }
       })
-    ]
+    ])
   })
+}

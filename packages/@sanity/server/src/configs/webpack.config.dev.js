@@ -1,9 +1,6 @@
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
 
-// Webpack 2 vs 1
-const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
-
 export default config => {
   const baseConfig = getBaseConfig(config)
 
@@ -13,11 +10,10 @@ export default config => {
       'eventsource-polyfill',
       'webpack-hot-middleware/client'
     ].concat(baseConfig.entry),
-    plugins: [
-      new OccurrenceOrderPlugin(),
+    plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoErrorsPlugin()
-    ]
+    ])
   })
 }
 

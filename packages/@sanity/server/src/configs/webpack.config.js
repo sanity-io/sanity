@@ -1,5 +1,10 @@
 import fs from 'fs'
 import path from 'path'
+import webpack from 'webpack'
+import SanityPlugin from '@sanity/plugin-loader/lib/SanityPlugin'
+
+// Webpack 2 vs 1
+const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
 
 const pluginLoaderPath = require.resolve('@sanity/plugin-loader')
 
@@ -7,6 +12,7 @@ export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
+  const loaderPath = path.join(__dirname, '..', '..', 'node_modules')
   const resolvePaths = [
     path.resolve(basePath),
     path.resolve(path.join(basePath, 'node_modules'))
@@ -41,7 +47,12 @@ export default (config = {}) => {
         test: /\/@?sanity\/plugin-loader\/plugins/,
         loaders: [`${pluginLoaderPath}?basePath=${basePath}&env=${env}`]
       }]
-    }
+    },
+    plugins: [
+      new OccurrenceOrderPlugin(),
+      new SanityPlugin({loaderPath, basePath})
+    ],
+    postcss: () => []
   }
 }
 
