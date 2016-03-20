@@ -1,15 +1,58 @@
-/* eslint-env node */
-const fs = require('fs')
-const path = require('path')
-const qs = require('querystring')
+import path from 'path'
+import fsp from 'fs-promise'
+import promiseProps from 'promise-props-recursive'
+import getBaseLoader from './getBaseLoader'
+import rewriteCss from './rewriteCss'
 
-module.exports = function sanityStyleLoader(input) {
-  const query = qs.parse(this.query.substring(1))
-  const filePath = path.join(__dirname, 'components', `${query.style}.css`)
+const getPath = item => item.srcPath || item.path
 
-  let css = `/**\n * Role: ${query.style}\n */\n\n`
-  css += `/* ${filePath} */\n`
-  css += fs.readFileSync(filePath)
+function sanityStyleLoader(options, callback) {
+  const {roles, query} = options
+  const roleName = `style:${query.style}`
 
-  return css
+  // Add plugin manifests as dependencies
+  roles.plugins.forEach(plugin => {
+    this.addDependency(path.join(plugin.path, 'sanity.json'))
+  })
+
+  // Do we have this role defined?
+  const fulfillers = roles.fulfilled[roleName]
+  if (!fulfillers || fulfillers.length === 0) {
+    callback(new Error(
+      `No plugins have fulfilled the "${roleName}" role`
+    ))
+    return
+  }
+
+  // Add CSS files as dependencies
+  fulfillers.forEach(fulfiller => {
+    this.addDependency(getPath(fulfiller))
+  })
+
+  // Build CSS header
+  const css = `/**\n * Role: "${roleName}"\n */\n\n`
+
+  // Load all CSS files
+  Promise.all(fulfillers.map(
+    fulfiller => promiseProps({
+      css: fsp.readFile(getPath(fulfiller), {encoding: 'utf8'}),
+      path: getPath(fulfiller),
+      plugin: fulfiller.plugin,
+      relativeTo: __dirname,
+      role: roleName
+    }).then(rewriteCss)
+  )).then(files => {
+    // Reverse order here, because we want items sorted in the
+    // same order as they're defined in the Sanity manifest
+    callback(null, files.reduceRight(reduceCss, css))
+  }).catch(callback)
 }
+
+function reduceCss(currentCss, fulfiller) {
+  let css = `/* ${fulfiller.plugin} */\n`
+  css += fulfiller.css
+
+  return `${currentCss}${css}`
+}
+
+module.exports = getBaseLoader(sanityStyleLoader)

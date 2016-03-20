@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
-module.exports = function serializeError(srcErr) {
+export default function serializeError(srcErr) {
   const content = fs.readFileSync(
     path.join(__dirname, 'renderError.js'),
     {encoding: 'utf8'}
