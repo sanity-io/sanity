@@ -29,12 +29,15 @@
   "dependencies": {
     "@sanity/resolver": "^1.0.1",
     "chai": "^3.5.0",
+    "css-loader": "^0.23.1",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
     "loader-utils": "^0.2.12",
     "lodash": "^4.6.1",
     "postcss": "^5.0.19",
-    "promise-props-recursive": "^1.0.0"
+    "postcss-loader": "^0.8.2",
+    "promise-props-recursive": "^1.0.0",
+    "style-loader": "^0.13.0"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
