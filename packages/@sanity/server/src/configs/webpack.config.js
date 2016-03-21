@@ -13,7 +13,6 @@ export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
-  const loaderPath = path.join(__dirname, '..', '..', 'node_modules')
   const resolvePaths = [
     path.resolve(basePath),
     path.resolve(path.join(basePath, 'node_modules'))
@@ -51,7 +50,7 @@ export default (config = {}) => {
     },
     plugins: [
       new OccurrenceOrderPlugin(),
-      new SanityPlugin({loaderPath, basePath})
+      new SanityPlugin({basePath})
     ],
     postcss: () => [postcssUse({modules: '*'})]
   }
