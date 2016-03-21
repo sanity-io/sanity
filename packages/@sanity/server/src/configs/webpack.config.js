@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
 import SanityPlugin from '@sanity/plugin-loader/lib/SanityPlugin'
+import postcssUse from 'postcss-use'
 
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
@@ -52,7 +53,7 @@ export default (config = {}) => {
       new OccurrenceOrderPlugin(),
       new SanityPlugin({loaderPath, basePath})
     ],
-    postcss: () => []
+    postcss: () => [postcssUse({modules: '*'})]
   }
 }
 

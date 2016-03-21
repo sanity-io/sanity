@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
-    "@sanity/plugin-loader": "1.1.1",
+    "@sanity/plugin-loader": "^1.1.2",
     "babel-core": "^6.5.2",
     "babel-eslint": "^5.0.0-beta4",
     "babel-loader": "^6.2.2",
@@ -47,6 +47,7 @@
     "in-publish": "^2.0.0",
     "lodash": "^4.5.0",
     "postcss-loader": "^0.8.2",
+    "postcss-use": "^2.0.2",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
