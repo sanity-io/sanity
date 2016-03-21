@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/sanity-io/plugin-loader#readme",
   "dependencies": {
-    "@sanity/resolver": "1.0.0",
+    "@sanity/resolver": "^1.0.1",
     "chai": "^3.5.0",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
