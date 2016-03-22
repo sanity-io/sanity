@@ -1,6 +1,11 @@
-import path from 'path'
-import {describe, it} from 'mocha'
-import rewriteCss from '../src/rewriteCss'
+'use strict'
+
+const path = require('path')
+const mocha = require('mocha')
+const rewriteCss = require('../src/rewriteCss')
+
+const it = mocha.it
+const describe = mocha.describe
 
 const rewrite = opts => rewriteCss(opts).then(res => res.css)
 

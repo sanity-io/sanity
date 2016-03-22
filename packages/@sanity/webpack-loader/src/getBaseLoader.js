@@ -1,9 +1,10 @@
+'use strict'
+
 const path = require('path')
 const loaderUtils = require('loader-utils')
-const resolver = require('@sanity/resolver')
 const serializeError = require('./serializeError')
 
-module.exports = function getBaseLoader(loader) {
+module.exports = function getBaseLoader(loader, resolver) {
   return function sanityRoleLoader(input) {
     const callback = this.async()
     const query = loaderUtils.parseQuery(this.query)

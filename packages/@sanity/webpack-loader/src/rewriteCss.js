@@ -1,6 +1,8 @@
-import path from 'path'
-import escapeRegExp from 'lodash/escapeRegExp'
-import postcss from 'postcss'
+'use strict'
+
+const path = require('path')
+const escapeRegExp = require('lodash/escapeRegExp')
+const postcss = require('postcss')
 
 const fromMatcher = /^(.+?\s+from\s+)["'](\..*?)["']$/
 
@@ -32,11 +34,11 @@ function makePathsRelativeToConfiguredPath(file) {
     fromMatcher,
     {props: ['composes']},
     value => {
-      const [/* match */, selector, location] = value.match(fromMatcher)
+      const match = value.match(fromMatcher)
       const originDir = path.dirname(file.path)
-      const relative = path.join(originDir, location)
+      const relative = path.join(originDir, match[2])
       const absolute = path.resolve(originDir, relative)
-      return `${selector}"${path.relative(file.relativeTo, absolute)}"`
+      return `${match[1]}"${path.relative(file.relativeTo, absolute)}"`
     }
   )
 }
@@ -53,4 +55,4 @@ function rewriteCss(item) {
     .then(res => Object.assign({}, item, {css: res.css}))
 }
 
-export default rewriteCss
+module.exports = rewriteCss

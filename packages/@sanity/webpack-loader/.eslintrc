@@ -2,9 +2,8 @@
   "env": {
     "node": true
   },
-  "parser": "babel-eslint",
   "extends": "sanity",
   "rules": {
-    "sort-imports": 0
+    "strict": 0
   }
 }

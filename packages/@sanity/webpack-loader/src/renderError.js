@@ -1,3 +1,5 @@
+'use strict'
+
 /* eslint-disable */
 setTimeout(function () {
   var styles = {
