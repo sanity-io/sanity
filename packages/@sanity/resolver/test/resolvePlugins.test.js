@@ -9,7 +9,8 @@ import {
   getMixedPluginTree,
   getResolutionOrderFixture,
   getScopedPluginsTree,
-  getStyleTree
+  getStyleTree,
+  getMultiTree
 } from './fixtures'
 
 describe('plugin resolver', () => {
@@ -162,6 +163,15 @@ describe('plugin resolver', () => {
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/InstaComments'
       })
+    })
+  })
+
+  it('resolves multi-fulfiller roles correctly', () => {
+    mockFs(getMultiTree())
+    return resolveRoles({basePath: '/sanity'}).then(res => {
+      res.provided.should.have.property('components:@sanity/base/absolutes')
+      res.fulfilled.should.have.property('components:@sanity/base/absolutes')
+      res.fulfilled['components:@sanity/base/absolutes'].should.have.length(2)
     })
   })
 

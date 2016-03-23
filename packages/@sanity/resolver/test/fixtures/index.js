@@ -228,3 +228,38 @@ export function getStyleTree() {
     }
   }
 }
+
+export function getMultiTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['@sanity/base', 'absolute-thing', 'another-thing']),
+    '/sanity/node_modules/@sanity': {
+      base: {
+        'sanity.json': pluginManifest({
+          provides: [
+            {role: '@sanity/base/rootComponent'},
+            {role: 'components:@sanity/base/absolutes', multiple: true}
+          ]
+        })
+      }
+    },
+    '/sanity/plugins': {
+      'sanity-plugin-absolute-thing': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'components:@sanity/base/absolutes',
+            path: './lib/DevBadge.js',
+            srcPath: './src/DevBadge.js'
+          }]
+        })
+      },
+      'another-thing': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'components:@sanity/base/absolutes',
+            path: './foo/bar.js'
+          }]
+        })
+      }
+    }
+  }
+}
