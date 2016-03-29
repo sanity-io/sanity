@@ -26,7 +26,7 @@ function DefaultRootComponent() {
 
       <p>
         If you're seeing this, it means that no plugin has fulfilled
-        the <code>@sanity/base/rootComponent</code> role.
+        the <code>component:@sanity/base/rootComponent</code> role.
       </p>
 
       <p>
