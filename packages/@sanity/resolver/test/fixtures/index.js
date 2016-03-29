@@ -263,3 +263,37 @@ export function getMultiTree() {
     }
   }
 }
+
+export function getStyleVarTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['@sanity/base', 'some-overrider']),
+    '/sanity/node_modules/@sanity': {
+      base: {
+        'sanity.json': pluginManifest({
+          provides: [
+            {role: 'component:@sanity/base/root'},
+            {role: 'style-variables', multiple: true, path: './styleVariables.js'}
+          ]
+        })
+      }
+    },
+    '/sanity/plugins': {
+      'some-overrider': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'style-variables',
+            path: './css/vars.js'
+          }]
+        })
+      },
+      'another-thing': {
+        'sanity.json': pluginManifest({
+          fulfills: [{
+            role: 'component:@sanity/base/root',
+            path: './foo/bar.js'
+          }]
+        })
+      }
+    }
+  }
+}

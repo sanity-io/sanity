@@ -4,12 +4,13 @@
   "description": "Resolves roles and plugins from a Sanity configuration",
   "main": "lib/resolver.js",
   "scripts": {
+    "clean": "rimraf lib",
     "compile": "babel -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib",
+    "postpublish": "npm run clean",
+    "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile || not-in-publish",
-    "posttest": "eslint ."
+    "test": "mocha test/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "lodash": "^4.5.1",
     "mocha": "^2.4.5",
     "mock-fs": "^3.7.0",
+    "proxyquire": "^1.7.4",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
@@ -46,6 +48,7 @@
     "fs-promise": "^0.4.1",
     "in-publish": "^2.0.0",
     "joi": "^8.0.3",
+    "lodash": "^4.6.1",
     "promise-props-recursive": "^1.0.0"
   }
 }
