@@ -57,7 +57,7 @@
     "chai-as-promised": "^5.2.0",
     "cross-env": "^1.0.7",
     "eslint": "^2.5.3",
-    "eslint-config-sanity": "^1.0.6",
+    "eslint-config-sanity": "^1.0.7",
     "eslint-plugin-react": "^4.2.3",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
