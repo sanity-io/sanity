@@ -5,7 +5,7 @@
   },
   "parser": "babel-eslint",
   "extends": [
-    "bengler",
-    "bengler/react"
+    "sanity",
+    "sanity/react"
   ]
 }
