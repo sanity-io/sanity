@@ -1,6 +1,6 @@
 {
   "fulfills": [{
-    "role": "@sanity/base/rootComponent",
+    "role": "component:@sanity/base/rootComponent",
     "srcPath": "./src/components/DefaultLayout",
     "path": "./lib/components/DefaultLayout"
   }]
