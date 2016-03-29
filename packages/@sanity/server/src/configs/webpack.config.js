@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
-import SanityPlugin from '@sanity/plugin-loader/lib/SanityPlugin'
+import SanityPlugin from '@sanity/plugin-loader/src/SanityPlugin'
 import postcssUse from 'postcss-use'
 
 // Webpack 2 vs 1
