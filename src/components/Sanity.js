@@ -24,7 +24,7 @@ class Sanity extends Component {
   }
 
   render() {
-    const Root = this.sanity.getRole('@sanity/base/rootComponent') || DefaultRootComponent
+    const Root = this.sanity.getRole('component:@sanity/base/root') || DefaultRootComponent
     return <Root />
   }
 }

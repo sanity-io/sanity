@@ -1,6 +1,6 @@
 {
   "provides": [
-    {"role": "component:@sanity/base/rootComponent"},
+    {"role": "component:@sanity/base/root"},
     {"role": "components:@sanity/base/absolutes", "multiple": true}
   ]
 }

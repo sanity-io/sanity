@@ -26,7 +26,7 @@ function DefaultRootComponent() {
 
       <p>
         If you're seeing this, it means that no plugin has fulfilled
-        the <code>component:@sanity/base/rootComponent</code> role.
+        the <code>component:@sanity/base/root</code> role.
       </p>
 
       <p>
@@ -37,7 +37,7 @@ function DefaultRootComponent() {
       <h2>How do I fix it?</h2>
       <p>
         In the <code>sanity.json</code> file of your Sanity configuration,
-        add a plugin that fulfills the <code>@sanity/base/rootComponent</code> role.
+        add a plugin that fulfills the <code>component:@sanity/base/root</code> role.
         For instance:
       </p>
       <pre>
