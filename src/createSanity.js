@@ -8,9 +8,9 @@ function Sanity({roles}) {
       return null
     }
 
-    return fulfiller.module.__esModule && fulfiller.module.default
-      ? fulfiller.module.default
-      : fulfiller.module
+    return Array.isArray(fulfiller)
+      ? fulfiller.map(getModule)
+      : getModule(fulfiller)
   }
 
   function getComponents(wanted) {
@@ -34,6 +34,12 @@ function Sanity({roles}) {
     getComponents,
     getPluginForRole
   }
+}
+
+function getModule(fulfiller) {
+  return fulfiller.module.__esModule && fulfiller.module.default
+    ? fulfiller.module.default
+    : fulfiller.module
 }
 
 export const sanityShape = {
