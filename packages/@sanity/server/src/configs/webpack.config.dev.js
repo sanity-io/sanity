@@ -7,8 +7,8 @@ export default config => {
   return Object.assign({}, baseConfig, {
     devtool: 'cheap-module-eval-source-map',
     entry: [
-      'eventsource-polyfill',
-      'webpack-hot-middleware/client'
+      require.resolve('eventsource-polyfill'),
+      require.resolve('webpack-hot-middleware/client')
     ].concat(baseConfig.entry),
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
