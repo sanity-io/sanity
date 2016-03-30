@@ -1,7 +1,11 @@
 'use strict'
 
-const cssQs = '?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
+const kebabCase = require('lodash/kebabCase')
 const roleMatcher = /(?:^|!)+style:(.*?)$/
+
+function getCssQs(role) {
+  return `?modules&importLoaders=1&localIdentName=${kebabCase(role)}__[local]___[hash:base64:5]`
+}
 
 function SanityPlugin(opts) {
   this.options = opts || {}
@@ -37,7 +41,7 @@ SanityPlugin.prototype.apply = function (compiler) {
       const styleQs = `?style=${role}&basePath=${basePath}`
       data.loaders = [
         require.resolve('style-loader'),
-        require.resolve('css-loader') + cssQs,
+        require.resolve('css-loader') + getCssQs(role),
         require.resolve('postcss-loader'),
         require.resolve('./styleLoader') + styleQs
       ]

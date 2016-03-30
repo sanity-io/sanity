@@ -38,7 +38,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
     "eslint": "^2.4.0",
-    "eslint-config-sanity": "^1.0.5",
+    "eslint-config-sanity": "^1.0.7",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "mock-fs": "^3.8.0",

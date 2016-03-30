@@ -58,7 +58,7 @@ describe('SanityPlugin', () => {
         expect(err).to.equal(null)
         expect(req.loaders).to.eql([
           require.resolve('style-loader'),
-          require.resolve('css-loader') + '?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
+          require.resolve('css-loader') + '?modules&importLoaders=1&localIdentName=foo-bar__[local]___[hash:base64:5]',
           require.resolve('postcss-loader'),
           require.resolve('../src/styleLoader') + '?style=foo/bar&basePath=/sanity'
         ])
