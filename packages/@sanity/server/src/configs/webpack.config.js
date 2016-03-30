@@ -40,7 +40,10 @@ export default (config = {}) => {
         exclude: /node_modules/,
         loader: 'babel',
         query: babelConfig || {
-          presets: ['react', 'es2015'],
+          presets: [
+            require.resolve('babel-preset-react'),
+            require.resolve('babel-preset-es2015')
+          ],
           cacheDirectory: true
         }
       }, {

@@ -15,7 +15,11 @@ export default function getDevServer(config = {}) {
   if (babelLoader) {
     const presets = get(babelLoader, 'query.env.development.presets', [])
     if (presets.indexOf('react-hmre') === -1) {
-      set(babelLoader, 'query.env.development.presets', presets.concat('react-hmre'))
+      set(
+        babelLoader,
+        'query.env.development.presets',
+        presets.concat(require.resolve('babel-preset-react-hmre'))
+      )
     }
   }
 
