@@ -10,7 +10,8 @@ import {
   getResolutionOrderFixture,
   getScopedPluginsTree,
   getStyleTree,
-  getMultiTree
+  getMultiTree,
+  getDuplicateRoleTree
 } from './fixtures'
 
 describe('plugin resolver', () => {
@@ -40,12 +41,17 @@ describe('plugin resolver', () => {
 
   it('rejects on missing plugin', () => {
     mockFs(getDeepTree({missingPlugin: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(/Error/, /"missing"/)
+    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(Error, /"missing"/)
   })
 
   it('rejects on missing plugin manifest', () => {
     mockFs(getDeepTree({missingManifest: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(/Error/, /"sanity\.json"/)
+    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(Error, /"sanity\.json"/)
+  })
+
+  it('rejects if two plugins define the same role', () => {
+    mockFs(getDuplicateRoleTree())
+    return resolveRoles({basePath: '/sanity'}).should.be.rejectedWith(Error, 'both provide "component:snarkel/foo"')
   })
 
   it('resolves plugins in the right order', () => {

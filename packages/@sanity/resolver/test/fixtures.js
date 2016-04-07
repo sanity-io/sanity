@@ -101,6 +101,20 @@ export function getResolutionOrderFixture({chosenMethod}) {
   return Object.assign({}, base, extendWith)
 }
 
+export function getDuplicateRoleTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['snarkel', 'snuffel']),
+    '/sanity/plugins': {
+      snarkel: {
+        'sanity.json': pluginManifest({roles: [{name: 'component:snarkel/foo'}]})
+      },
+      snuffel: {
+        'sanity.json': pluginManifest({roles: [{name: 'component:snarkel/foo'}]})
+      }
+    }
+  }
+}
+
 export function getBasicTree() {
   return {
     '/sanity/sanity.json': sanityManifest(['@sanity/core', 'instagram']),

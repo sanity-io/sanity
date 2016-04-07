@@ -37,7 +37,7 @@ function assignRoles(definitions, plugin) {
     if (existingDefinition) {
       const existing = `"${existingDefinition.plugin}" (${existingDefinition.path})`
       const current = `"${plugin.name}" (${plugin.path})`
-      const base = `Plugins ${existing} and ${current} both provide ${role.name}`
+      const base = `Plugins ${existing} and ${current} both provide "${role.name}"`
       const help = 'did you mean to use "implements"?'
       throw new Error(`${base} - ${help}`)
     }
