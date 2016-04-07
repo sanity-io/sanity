@@ -95,25 +95,25 @@ describe('plugin resolver', () => {
   it('can resolve roles for a basic setup', () => {
     mockFs(getBasicTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
-      const settings = res.provided['default-layout/settings-pane']
+      const settings = res.definitions['component:@sanity/default-layout/settingsPane']
       settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
-      settings.multi.should.equal(true)
 
-      const tool = res.fulfilled['default-layout/tool']
+      const tool = res.fulfilled['component:@sanity/default-layout/tool']
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
 
-      const main = res.fulfilled['core/mainComponent']
-      main.should.eql({
+      const main = res.fulfilled['component:@sanity/core/root']
+      main.should.have.length(1)
+      main[0].should.eql({
         plugin: '@sanity/default-layout',
-        path: '/sanity/node_modules/@sanity/default-layout/src/components/Main'
+        path: '/sanity/node_modules/@sanity/default-layout/src/components/Root'
       })
 
-      const comments = res.fulfilled['instagram/commentsListComponent']
-      comments.should.eql({
+      const comments = res.fulfilled['component:instagram/commentsList']
+      comments[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
       })
@@ -144,22 +144,24 @@ describe('plugin resolver', () => {
   it('resolves path to lib for node_modules, src for plugins', () => {
     mockFs(getMixedPluginTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
-      res.fulfilled['default-layout/tool'][0].should.eql({
+      res.fulfilled['component:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/File'
       })
 
-      res.fulfilled['default-layout/tool'][1].should.eql({
+      res.fulfilled['component:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
     })
   })
 
-  it('late-defined plugins override default implementations of roles', () => {
+  it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
-      res.fulfilled['instagram/commentsListComponent'].should.eql({
+      const fulfillers = res.fulfilled['component:instagram/commentsList']
+      fulfillers.should.have.length(2)
+      fulfillers[0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/InstaComments'
       })
@@ -169,13 +171,13 @@ describe('plugin resolver', () => {
   it('resolves multi-fulfiller roles correctly', () => {
     mockFs(getMultiTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
-      res.provided.should.have.property('components:@sanity/base/absolutes')
-      res.fulfilled.should.have.property('components:@sanity/base/absolutes')
-      res.fulfilled['components:@sanity/base/absolutes'].should.have.length(2)
+      res.definitions.should.have.property('component:@sanity/base/absolute')
+      res.fulfilled.should.have.property('component:@sanity/base/absolute')
+      res.fulfilled['component:@sanity/base/absolute'].should.have.length(2)
     })
   })
 
-  it('treats all style roles as multi-fulfiller roles', () => {
+  it('handles style roles as regular roles', () => {
     mockFs(getStyleTree())
     return resolveRoles({basePath: '/sanity'}).then(res => {
       res.fulfilled['style:@sanity/default-layout/header'].should.eql([

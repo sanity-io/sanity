@@ -8,7 +8,7 @@ import {
   getStyleVarTree
 } from './fixtures'
 
-describe('style variables resolver', () => {
+describe.skip('style variables resolver', () => {
   afterEach(() => {
     mockFs.restore()
   })

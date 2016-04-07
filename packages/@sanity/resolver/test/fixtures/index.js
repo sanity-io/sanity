@@ -15,21 +15,28 @@ function pluginManifest(props) {
 
 function instagramManifest() {
   return pluginManifest({
-    provides: [{
-      role: 'instagram/commentsListComponent',
+    roles: [{ // Definitions
+      name: 'component:instagram/commentsList',
+      description: 'List of comments...'
+    }, {
+      name: 'component:instagram/comment',
+      description: 'A comment on instagram'
+    }, { // Implementations
+      implements: 'component:instagram/commentsList',
       path: './lib/components/CommentsList',
       srcPath: './src/components/CommentsList'
     }, {
-      role: 'instagram/commentComponent',
+      implements: 'component:instagram/comment',
       path: './lib/components/Comment',
       srcPath: './src/components/Comment'
-    }],
-    fulfills: [{
-      role: 'default-layout/tool',
+    }, {
+      name: 'component:instagram/instagramTool',
+      implements: 'component:@sanity/default-layout/tool',
       path: './lib/components/InstagramTool',
       srcPath: './src/components/InstagramTool'
     }, {
-      role: 'default-layout/tool',
+      name: 'component:instagram/instagramDiscoverTool',
+      implements: 'component:@sanity/default-layout/tool',
       path: './lib/components/InstaDiscoverTool',
       srcPath: './src/components/InstaDiscoverTool'
     }]
@@ -39,16 +46,15 @@ function instagramManifest() {
 function defaultLayout() {
   return {
     'sanity.json': pluginManifest({
-      provides: [{
-        role: 'default-layout/tool',
-        multiple: true
+      roles: [{
+        name: 'component:@sanity/default-layout/tool',
+        description: 'A generic UI tool'
       }, {
-        role: 'default-layout/settings-pane',
-        multiple: true
-      }],
-      fulfills: [{
-        role: 'core/mainComponent',
-        path: './src/components/Main'
+        name: 'component:@sanity/default-layout/settingsPane',
+        description: 'One "tab" of the default layout settings'
+      }, {
+        implements: 'component:@sanity/core/root',
+        path: './src/components/Root'
       }]
     })
   }
@@ -61,7 +67,10 @@ function sanityCore() {
         plugins: [
           '@sanity/default-layout'
         ],
-        provides: [{role: 'core/mainComponent'}]
+        roles: [{
+          name: 'component:@sanity/core/root',
+          description: 'The main component in the UI hierarchy. Usually a layout.'
+        }]
       })
     },
     'default-layout': defaultLayout()
@@ -116,12 +125,12 @@ export function getMixedPluginTree() {
     '/sanity/plugins': {
       foo: {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'default-layout/tool',
+          roles: [{
+            implements: 'component:@sanity/default-layout/tool',
             path: './lib/File',
             srcPath: './src/File'
           }, {
-            role: 'instagram/commentsListComponent',
+            implements: 'component:instagram/commentsList',
             path: './lib/InstaComments',
             srcPath: './src/InstaComments'
           }]
@@ -152,8 +161,8 @@ export function getDeepTree({missingPlugin, missingManifest} = {}) {
       'sanity-plugin-foo': {
         'sanity.json': pluginManifest({
           plugins: ['bar'],
-          fulfills: [{
-            role: 'bar/baz',
+          roles: [{
+            implements: 'component:bar/baz',
             path: './someFile'
           }]
         })
@@ -161,12 +170,15 @@ export function getDeepTree({missingPlugin, missingManifest} = {}) {
       'sanity-plugin-bar': {
         'sanity.json': pluginManifest({
           plugins: ['baz'],
-          provides: [{role: 'bar/baz'}]
+          roles: [{
+            name: 'component:bar/baz',
+            description: 'The baz of the bar'
+          }]
         })
       },
       'sanity-plugin-baz': !missingManifest && {
         'sanity.json': pluginManifest({
-          provides: []
+          roles: []
         })
       }
     }
@@ -184,9 +196,9 @@ export function getInvalidManifest({atRoot}) {
   return {
     '/sanity/sanity.json': atRoot ? '{"plugins":"foo"}' : sanityManifest('instagram'),
     '/sanity/node_modules/sanity-plugin-instagram/sanity.json': pluginManifest({
-      provides: {
-        role: 'path'
-      }
+      roles: [{
+        name: 'path'
+      }]
     })
   }
 }
@@ -201,8 +213,8 @@ export function getStyleTree() {
     '/sanity/node_modules': {
       'sanity-plugin-material-design': {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'style:@sanity/default-layout/header',
+          roles: [{
+            implements: 'style:@sanity/default-layout/header',
             path: './css/header.css'
           }]
         }),
@@ -210,8 +222,11 @@ export function getStyleTree() {
       '@sanity': {
         'default-layout': {
           'sanity.json': pluginManifest({
-            provides: [{
-              role: 'style:@sanity/default-layout/header',
+            roles: [{
+              name: 'style:@sanity/default-layout/header',
+              description: 'Styling for the header'
+            }, {
+              implements: 'style:@sanity/default-layout/header',
               path: './css/header.css'
             }]
           })
@@ -219,8 +234,8 @@ export function getStyleTree() {
       },
       'sanity-plugin-screaming-dev-badge': {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'style:@sanity/default-layout/header',
+          roles: [{
+            implements: 'style:@sanity/default-layout/header',
             path: './css/scream.css'
           }]
         })
@@ -235,18 +250,21 @@ export function getMultiTree() {
     '/sanity/node_modules/@sanity': {
       base: {
         'sanity.json': pluginManifest({
-          provides: [
-            {role: '@sanity/base/rootComponent'},
-            {role: 'components:@sanity/base/absolutes', multiple: true}
-          ]
+          roles: [{
+            name: 'component:@sanity/base/root',
+            description: 'Root component...',
+          }, {
+            name: 'component:@sanity/base/absolute',
+            description: 'UI elements that position themselves statically'
+          }]
         })
       }
     },
     '/sanity/plugins': {
       'sanity-plugin-absolute-thing': {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'components:@sanity/base/absolutes',
+          roles: [{
+            implements: 'component:@sanity/base/absolute',
             path: './lib/DevBadge.js',
             srcPath: './src/DevBadge.js'
           }]
@@ -254,8 +272,8 @@ export function getMultiTree() {
       },
       'another-thing': {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'components:@sanity/base/absolutes',
+          roles: [{
+            implements: 'component:@sanity/base/absolute',
             path: './foo/bar.js'
           }]
         })
@@ -270,25 +288,31 @@ export function getStyleVarTree() {
     '/sanity/node_modules/@sanity': {
       base: {
         'sanity.json': pluginManifest({
-          provides: [
-            {role: 'component:@sanity/base/root'},
-            {role: 'style-variables', multiple: true, path: './styleVariables.js'}
-          ]
+          roles: [{
+            name: 'component:@sanity/base/root',
+            description: 'Root component of the system'
+          }, {
+            name: 'style-variables',
+            description: 'All style variables available in CSS-context'
+          }, {
+            name: 'style-variables',
+            path: './styleVariables.js'
+          }]
         })
       }
     },
     '/sanity/plugins': {
       'some-overrider': {
         'sanity.json': pluginManifest({
-          fulfills: [{
-            role: 'style-variables',
+          roles: [{
+            name: 'style-variables',
             path: './css/vars.js'
           }]
         })
       },
       'another-thing': {
         'sanity.json': pluginManifest({
-          fulfills: [{
+          roles: [{
             role: 'component:@sanity/base/root',
             path: './foo/bar.js'
           }]

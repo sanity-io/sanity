@@ -15,62 +15,66 @@ export default function resolveTree(opts = {}) {
 export function resolveRoles(options = {}) {
   return resolveTree(options)
     .then(plugins => {
-      const result = {provided: {}, fulfilled: {}, plugins}
+      const result = {definitions: {}, fulfilled: {}, plugins}
 
-      result.provided = plugins.reduceRight(assignRoles, result.provided)
+      result.definitions = plugins.reduceRight(assignRoles, result.definitions)
       result.fulfilled = plugins.reduceRight(
-        (fulfilled, plugin) => reduceRoles(fulfilled, plugin, result)
-      , result.fulfilled)
+        (fulfilled, plugin) => reduceRoles(fulfilled, plugin, result),
+        result.fulfilled
+      )
 
       return result
     })
 }
 
-function assignRoles(provided, plugin) {
-  (plugin.manifest.provides || []).forEach(provider => {
-    const existingProvider = provided[provider.role]
-    if (!existingProvider) {
-      provided[provider.role] = {
-        plugin: plugin.name,
-        path: plugin.path,
-        multi: Boolean(provider.multiple) || provider.role.indexOf('style:') === 0
-      }
-    } else if (existingProvider.multi !== Boolean(provider.multiple)) {
-      const existing = `"${existingProvider.plugin}" (${existingProvider.path})`
-      const current = `"${plugin.name}" (${plugin.path})`
-      const base = `Plugins ${existing} and "${current} both provide ${provider.role}"`
-      throw new Error(`${base}, but expects different shape (single vs multiple fulfillers)`)
-    }
-  })
-
-  return provided
-}
-
-function reduceRoles(fulfilled, plugin, roles) {
-  [].concat(
-    plugin.manifest.fulfills,
-    plugin.manifest.provides
-  ).filter(Boolean).forEach(fulfiller => {
-    const role = fulfiller.role
-    const provided = roles.provided[role]
-    const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
-    const rolePath = isLib ? fulfiller.path : (fulfiller.srcPath || fulfiller.path)
-
-    if (!rolePath) {
+function assignRoles(definitions, plugin) {
+  (plugin.manifest.roles || []).forEach(role => {
+    if (!role.name) {
       return
     }
 
-    const details = {
-      plugin: plugin.name,
-      path: path.resolve(path.join(plugin.path, rolePath))
+    const existingDefinition = definitions[role.name]
+    if (existingDefinition) {
+      const existing = `"${existingDefinition.plugin}" (${existingDefinition.path})`
+      const current = `"${plugin.name}" (${plugin.path})`
+      const base = `Plugins ${existing} and ${current} both provide ${role.name}`
+      const help = 'did you mean to use "implements"?'
+      throw new Error(`${base} - ${help}`)
     }
 
-    if (provided && provided.multi) {
-      fulfilled[role] = fulfilled[role] || []
-      fulfilled[role].push(details)
-    } else if (provided && !fulfilled[role]) {
-      fulfilled[role] = details
+    definitions[role.name] = {
+      plugin: plugin.name,
+      path: plugin.path
     }
+  })
+
+  return definitions
+}
+
+function reduceRoles(fulfilled, plugin, roles) {
+  (plugin.manifest.roles || []).forEach(role => {
+    if (!role.path && !role.srcPath) {
+      return
+    }
+
+    const roleName = role.implements
+    if (!roles.definitions[roleName]) {
+      throw new Error(
+        `Plugin "${plugin.name}" tried to implement role "${roleName}", which is not defined. Missing a plugin?`
+      )
+    }
+
+    const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
+    const rolePath = isLib ? role.path : (role.srcPath || role.path)
+
+    if (!fulfilled[roleName]) {
+      fulfilled[roleName] = fulfilled[roleName] || []
+    }
+
+    fulfilled[roleName].push({
+      plugin: plugin.name,
+      path: path.resolve(path.join(plugin.path, rolePath))
+    })
   })
 
   return fulfilled
@@ -82,8 +86,16 @@ function flattenTree(target, plugin, index) {
   }
 
   const children = plugin.plugins.reduce(flattenTree, plugin.plugins)
+
+  // Clone the target (because mutation is bad, right?)
   const newTarget = target.slice()
-  Array.prototype.splice.apply(newTarget, [target.indexOf(plugin), 0].concat(children))
+
+  // Add all the plugins that this plugin depend on,
+  // before the current plugin in the chain
+  Array.prototype.splice.apply(
+    newTarget,
+    [target.indexOf(plugin), 0].concat(children)
+  )
 
   return newTarget
 }
@@ -131,7 +143,9 @@ function readManifest(options = {}) {
 }
 
 function resolvePluginPath(plugin) {
-  const pluginDir = plugin.name[0] === '@' ? plugin.name : `sanity-plugin-${plugin.name}`
+  const pluginDir = plugin.name[0] === '@'
+    ? plugin.name
+    : `sanity-plugin-${plugin.name}`
 
   let locations = [
     path.join(plugin.basePath, 'plugins', pluginDir),
@@ -145,7 +159,7 @@ function resolvePluginPath(plugin) {
 
   locations = uniq(locations)
 
-  return Promise.all(locations.map(forgiveNonExistance))
+  return Promise.all(locations.map(forgiveNonExistence))
     .then(matches => matches.findIndex(Boolean))
     .then(index => {
       if (index === -1) {
@@ -165,6 +179,6 @@ function resolvePluginPath(plugin) {
     })
 }
 
-function forgiveNonExistance(location) {
+function forgiveNonExistence(location) {
   return fsp.stat(location).catch(() => false)
 }
