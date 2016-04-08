@@ -57,23 +57,31 @@ function reduceRoles(fulfilled, plugin, roles) {
       return
     }
 
-    const roleName = role.implements
-    if (!roles.definitions[roleName]) {
+    const implRoleName = role.implements || role.name
+    if (!roles.definitions[implRoleName]) {
       throw new Error(
-        `Plugin "${plugin.name}" tried to implement role "${roleName}", which is not defined. Missing a plugin?`
+        `Plugin "${plugin.name}" tried to implement role "${implRoleName}", which is not defined. Missing a plugin?`
       )
     }
 
     const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
-    const rolePath = isLib ? role.path : (role.srcPath || role.path)
+    const rolePath = isLib ? role.path : (role.srcPath || role.path);
 
-    if (!fulfilled[roleName]) {
-      fulfilled[roleName] = fulfilled[roleName] || []
-    }
+    // A role can both implement a role and define a new one
+    ['implements', 'name'].forEach(key => {
+      const roleName = role[key]
+      if (!roleName) {
+        return
+      }
 
-    fulfilled[roleName].push({
-      plugin: plugin.name,
-      path: path.resolve(path.join(plugin.path, rolePath))
+      if (!fulfilled[roleName]) {
+        fulfilled[roleName] = fulfilled[roleName] || []
+      }
+
+      fulfilled[roleName].push({
+        plugin: plugin.name,
+        path: path.resolve(path.join(plugin.path, rolePath))
+      })
     })
   })
 

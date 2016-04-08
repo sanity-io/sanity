@@ -13,7 +13,8 @@ import {
   getStyleTree,
   getMultiTree,
   getDuplicateRoleTree,
-  getInvalidRoleDeclaration
+  getInvalidRoleDeclaration,
+  getStyleOverriderTree
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -142,7 +143,7 @@ describe('plugin resolver', () => {
 
   it('rejects if two plugins define the same role', () => {
     mockFs(getDuplicateRoleTree())
-    return resolveRoles({basePath: '/sanity'}).should.be.rejectedWith(Error, 'both provide "component:snarkel/foo"')
+    return resolveRoles(opts).should.be.rejectedWith(Error, 'both provide "component:snarkel/foo"')
   })
 
   it('resolves plugins in the right order', () => {
@@ -191,7 +192,7 @@ describe('plugin resolver', () => {
 
   it('can resolve roles for a basic setup', () => {
     mockFs(getBasicTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       const settings = res.definitions['component:@sanity/default-layout/settingsPane']
       settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
 
@@ -219,7 +220,7 @@ describe('plugin resolver', () => {
 
   it('resolves plugins as well as roles', () => {
     mockFs(getBasicTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       res.plugins.should.have.length(3)
       res.plugins.map(plugin => plugin.path).should.eql([
         '/sanity/node_modules/@sanity/default-layout',
@@ -231,7 +232,7 @@ describe('plugin resolver', () => {
 
   it('doesnt try to look up the same location twice', () => {
     mockFs(getScopedPluginsTree())
-    return resolveRoles({basePath: '/sanity'}).catch(err => {
+    return resolveRoles(opts).catch(err => {
       err.locations.some((location, index) =>
         err.locations.indexOf(location, index + 1) !== -1
       ).should.equal(false)
@@ -240,7 +241,7 @@ describe('plugin resolver', () => {
 
   it('resolves path to lib for node_modules, src for plugins', () => {
     mockFs(getMixedPluginTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       res.fulfilled['component:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/File'
@@ -255,7 +256,7 @@ describe('plugin resolver', () => {
 
   it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       const fulfillers = res.fulfilled['component:instagram/commentsList']
       fulfillers.should.have.length(2)
       fulfillers[0].should.eql({
@@ -267,7 +268,7 @@ describe('plugin resolver', () => {
 
   it('resolves multi-fulfiller roles correctly', () => {
     mockFs(getMultiTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       res.definitions.should.have.property('component:@sanity/base/absolute')
       res.fulfilled.should.have.property('component:@sanity/base/absolute')
       res.fulfilled['component:@sanity/base/absolute'].should.have.length(2)
@@ -276,7 +277,7 @@ describe('plugin resolver', () => {
 
   it('handles style roles as regular roles', () => {
     mockFs(getStyleTree())
-    return resolveRoles({basePath: '/sanity'}).then(res => {
+    return resolveRoles(opts).then(res => {
       res.fulfilled['style:@sanity/default-layout/header'].should.eql([
         {
           path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
@@ -291,6 +292,17 @@ describe('plugin resolver', () => {
           plugin: '@sanity/default-layout'
         }
       ])
+    })
+  })
+
+  it('allows a role to both implement a role and define a new one', () => {
+    mockFs(getStyleOverriderTree())
+    return resolveRoles(opts).then(res => {
+      res.definitions.should.have.property('style:foo/button')
+      res.definitions.should.have.property('style:foo/button-default')
+
+      res.fulfilled.should.have.property('style:foo/button')
+      res.fulfilled.should.have.property('style:foo/button-default')
     })
   })
 })

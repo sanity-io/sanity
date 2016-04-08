@@ -355,6 +355,34 @@ export function getMultiTree() {
   }
 }
 
+export function getStyleOverriderTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['foo', 'bar']),
+    '/sanity/plugins': {
+      foo: {
+        'sanity.json': pluginManifest({
+          roles: [{
+            name: 'style:foo/button',
+            description: 'Styles for the foo button'
+          }, {
+            name: 'style:foo/button-default',
+            implements: 'style:foo/button',
+            path: './components/Button.css'
+          }]
+        })
+      },
+      bar: {
+        'sanity.json': pluginManifest({
+          roles: [{
+            implements: 'style:foo/button',
+            path: './bar/button.css'
+          }]
+        })
+      }
+    }
+  }
+}
+
 export function getStyleVarTree() {
   return {
     '/sanity/sanity.json': sanityManifest(['@sanity/base', 'some-overrider']),
