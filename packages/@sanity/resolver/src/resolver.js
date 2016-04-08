@@ -17,9 +17,9 @@ export function resolveRoles(options = {}) {
     .then(plugins => {
       const result = {definitions: {}, fulfilled: {}, plugins}
 
-      result.definitions = plugins.reduceRight(assignRoles, result.definitions)
+      result.definitions = plugins.reduceRight(assignDefinitions, result.definitions)
       result.fulfilled = plugins.reduceRight(
-        (fulfilled, plugin) => reduceRoles(fulfilled, plugin, result),
+        (fulfilled, plugin) => assignFulfillers(fulfilled, plugin, result),
         result.fulfilled
       )
 
@@ -27,7 +27,7 @@ export function resolveRoles(options = {}) {
     })
 }
 
-function assignRoles(definitions, plugin) {
+function assignDefinitions(definitions, plugin) {
   (plugin.manifest.roles || []).forEach(role => {
     if (!role.name) {
       return
@@ -44,14 +44,15 @@ function assignRoles(definitions, plugin) {
 
     definitions[role.name] = {
       plugin: plugin.name,
-      path: plugin.path
+      path: plugin.path,
+      isAbstract: typeof role.path === 'undefined'
     }
   })
 
   return definitions
 }
 
-function reduceRoles(fulfilled, plugin, roles) {
+function assignFulfillers(fulfilled, plugin, roles) {
   (plugin.manifest.roles || []).forEach(role => {
     if (!role.path && !role.srcPath) {
       return
@@ -62,6 +63,13 @@ function reduceRoles(fulfilled, plugin, roles) {
       throw new Error(
         `Plugin "${plugin.name}" tried to implement role "${implRoleName}", which is not defined. Missing a plugin?`
       )
+    }
+
+    if (role.implements && !roles.definitions[role.implements].isAbstract) {
+      throw new Error([
+        `Plugin "${plugin.name}" tried to implement role "${implRoleName}", which is not `,
+        'an abstract role (a path was specified when defining it, which disallows overriding)'
+      ].join(''))
     }
 
     const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1

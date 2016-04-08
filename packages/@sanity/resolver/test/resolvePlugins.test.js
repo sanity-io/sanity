@@ -14,7 +14,8 @@ import {
   getMultiTree,
   getDuplicateRoleTree,
   getInvalidRoleDeclaration,
-  getStyleOverriderTree
+  getStyleOverriderTree,
+  getNonAbstractRoleTree
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -36,12 +37,12 @@ describe('plugin resolver', () => {
 
   it('rejects on invalid root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: true}))
-    return resolvePlugins(opts).should.be.rejectedWith(/ValidationError/, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/)
   })
 
   it('rejects on invalid non-root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: false}))
-    return resolvePlugins(opts).should.be.rejectedWith(/ValidationError/, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/)
   })
 
   describe('rejects on invalid roles declaration', () => {
@@ -304,6 +305,11 @@ describe('plugin resolver', () => {
       res.fulfilled.should.have.property('style:foo/button')
       res.fulfilled.should.have.property('style:foo/button-default')
     })
+  })
+
+  it('does not allow a non-abstract role to be implemented by others', () => {
+    mockFs(getNonAbstractRoleTree())
+    return resolveRoles(opts).should.be.rejectedWith(Error, 'not an abstract role')
   })
 })
 

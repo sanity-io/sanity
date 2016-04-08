@@ -422,3 +422,36 @@ export function getStyleVarTree() {
     }
   }
 }
+
+export function getNonAbstractRoleTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['base', 'overrider']),
+    '/sanity/plugins': {
+      base: {
+        'sanity.json': pluginManifest({
+          roles: [{
+            // Abstract
+            name: 'component:base/thing',
+            description: 'Root component of the system'
+          }, {
+            // Non-abstract
+            name: 'component:base/specific',
+            description: 'Specific thingyjane',
+            path: './base/specific'
+          }]
+        })
+      },
+      overrider: {
+        'sanity.json': pluginManifest({
+          roles: [{
+            implements: 'component:base/thing',
+            path: './thing.js'
+          }, {
+            implements: 'component:base/specific',
+            path: './specific'
+          }]
+        })
+      }
+    }
+  }
+}
