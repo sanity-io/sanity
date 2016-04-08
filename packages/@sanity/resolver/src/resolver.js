@@ -130,7 +130,6 @@ function readManifest(options = {}) {
   const manifestPath = path.join(options.manifestDir || basePath, 'sanity.json')
 
   return fsp.readJson(manifestPath)
-    //.then(mani => {console.log(mani); return mani;})
     .then(manifest => validateManifest(manifest, options.plugin))
     .catch(err => {
       if (err.code === 'ENOENT' && options.plugin) {
