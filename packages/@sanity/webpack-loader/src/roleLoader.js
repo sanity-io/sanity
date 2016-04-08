@@ -3,25 +3,26 @@
 const path = require('path')
 const loaderUtils = require('loader-utils')
 const resolver = require('@sanity/resolver')
-const serializeError = require('./serializeError')
-
-const banner = '/* This file has been dynamically modified by the Sanity plugin loader */'
-const mapBanner = '/* The following role map is dynamically built by the Sanity plugin loader */'
-const rolesVarMatcher = /\n(var|let) roles = {'#': '#'}/
+const multiFulfillerHandler = require('./multiFulfillerHandler')
 
 function sanityRoleLoader(input) {
   const callback = this.async()
-  const query = loaderUtils.parseQuery(this.query)
 
-  if (!query.basePath) {
-    callback(new Error('`basePath` property must be passed to role loader'))
-    return
+  const role = this.data.sanityRole
+  const basePath = this.data.basePath
+
+  if (!role) {
+    return callback(new Error('`sanityRole` property must be passed to the role loader'))
   }
 
-  this.addDependency(path.join(query.basePath, 'sanity.json'))
+  if (!basePath) {
+    return callback(new Error('`basePath` property must be passed to role loader'))
+  }
 
-  resolver
-    .resolveRoles({basePath: query.basePath})
+  this.addDependency(path.join(basePath, 'sanity.json'))
+
+  return resolver
+    .resolveRoles({basePath: basePath})
     .then(roles => {
       if (this.cacheable) {
         this.cacheable()
@@ -32,33 +33,26 @@ function sanityRoleLoader(input) {
         this.addDependency(path.join(plugin.path, 'sanity.json'))
       })
 
-      const map = Object.keys(roles.fulfilled).reduce((target, role) => {
-        if (role.indexOf('style:') !== 0) {
-          target[role] = roles.fulfilled[role]
-        }
-
-        return target
-      }, {})
-
-      const baseMap = JSON.stringify(map, null, 2)
-
-      // { "path": "/some/path" } => { "module": require("/some/path") }
-      const pluginMap = baseMap.replace(/"path": "(.*)?"/g, (match, filePath) => {
-        const relPath = loaderUtils.stringifyRequest(this, filePath)
-        return `"module": require(${relPath})`
-      })
-
-      const content = input.replace(
-        rolesVarMatcher,
-        `${mapBanner}\n$1 roles = ${pluginMap}`
-      )
-
-      setImmediate(callback, null, `${banner}\n${content}`)
+      const loadAll = role.indexOf('all:') === 0
+      const roleName = loadAll ? role.substr(4) : role
+      const opts = {role: roleName, input, roles}
+      return loadAll
+        ? setImmediate(multiFulfillerHandler, opts, callback)
+        : callback(null, input)
     })
     .catch(err => {
       this.emitWarning(err.message)
-      serializeError(err, callback)
+      throw err
     })
+}
+
+sanityRoleLoader.pitch = function (remaining, preceding, data) {
+  if (remaining.indexOf('sanityRole=') === -1) {
+    return
+  }
+
+  const qs = remaining.substring(remaining.indexOf('?'))
+  Object.assign(data, loaderUtils.parseQuery(qs) || {})
 }
 
 module.exports = sanityRoleLoader

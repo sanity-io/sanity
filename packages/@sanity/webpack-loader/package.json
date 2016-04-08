@@ -2,7 +2,7 @@
   "name": "@sanity/plugin-loader",
   "version": "1.2.2",
   "description": "Plugin loader for Sanity. Resolves roles based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
-  "main": "src/roleLoader.js",
+  "main": "src/legacyRoleLoader.js",
   "scripts": {
     "coverage": "istanbul cover _mocha -- test/**/*.test.js",
     "posttest": "eslint .",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/sanity-io/plugin-loader#readme",
   "dependencies": {
-    "@sanity/resolver": "^1.0.1",
+    "@sanity/resolver": "^2.0.0",
     "css-loader": "^0.23.1",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
@@ -44,6 +44,7 @@
     "mock-fs": "^3.8.0",
     "proxyquire": "^1.7.4",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "webpack": "^1.12.14"
   }
 }
