@@ -106,10 +106,20 @@ export function getDuplicateRoleTree() {
     '/sanity/sanity.json': sanityManifest(['snarkel', 'snuffel']),
     '/sanity/plugins': {
       snarkel: {
-        'sanity.json': pluginManifest({roles: [{name: 'component:snarkel/foo'}]})
+        'sanity.json': pluginManifest({
+          roles: [{
+            name: 'component:snarkel/foo',
+            description: 'Foo'
+          }]
+        })
       },
       snuffel: {
-        'sanity.json': pluginManifest({roles: [{name: 'component:snarkel/foo'}]})
+        'sanity.json': pluginManifest({
+          roles: [{
+            name: 'component:snarkel/foo',
+            description: 'Dupe'
+          }]
+        })
       }
     }
   }
@@ -213,6 +223,55 @@ export function getInvalidManifest({atRoot}) {
       roles: [{
         name: 'path'
       }]
+    })
+  }
+}
+
+export function getInvalidRoleDeclaration(opts) {
+  return {
+    '/sanity/sanity.json': sanityManifest(['foo']),
+    '/sanity/plugins/foo/sanity.json': pluginManifest({
+      roles: [
+        opts.missingDescription
+          ? {name: 'component:foo/thing'}
+          : {name: 'component:foo/thing', description: 'Thing'},
+
+        opts.unprefixed
+          ? {name: 'foo/bar', description: 'Bar'}
+          : {name: 'component:foo/bar', description: 'Bar'},
+
+        opts.allPrefixed
+          ? {name: 'all:component:foo/baz', description: 'Baz'}
+          : {name: 'component:foo/baz', description: 'Baz'},
+
+        opts.doublePrefix
+          ? {name: 'component:foo/baz:foo', description: 'Baz'}
+          : {name: 'component:foo/baz', description: 'Baz'},
+
+        opts.noPluginName
+          ? {name: 'component:foo-bar', description: 'Baz'}
+          : {name: 'component:foo/baz', description: 'Baz'},
+
+        opts.noRoleName
+          ? {name: 'component:foo/', description: 'Baz'}
+          : {name: 'component:foo/bar', description: 'Baz'},
+
+        opts.missingImplements
+          ? {path: './file.js'}
+          : {path: './file.js', implements: 'component:foo/thing'},
+
+        opts.missingName
+          ? {path: './file.js'}
+          : {path: './file.js', name: 'component:foo/thingie'},
+
+        opts.missingPath
+          ? {implements: 'component:foo/bar'}
+          : {path: './bar.js', implements: 'component:foo/bar'},
+
+        opts.missingLibPath
+          ? {implements: 'component:foo/baz', srcPath: './src/baz'}
+          : {implements: 'component:foo/baz', srcPath: './src/baz', path: './lib/baz'}
+      ]
     })
   }
 }

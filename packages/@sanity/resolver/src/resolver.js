@@ -130,12 +130,15 @@ function readManifest(options = {}) {
   const manifestPath = path.join(options.manifestDir || basePath, 'sanity.json')
 
   return fsp.readJson(manifestPath)
-    .then(validateManifest)
+    //.then(mani => {console.log(mani); return mani;})
+    .then(manifest => validateManifest(manifest, options.plugin))
     .catch(err => {
       if (err.code === 'ENOENT' && options.plugin) {
         throw new Error(`No "sanity.json" file found in plugin "${options.plugin}"`)
-      } else if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError' && options.plugin) {
         err.message = `Error while reading "${options.plugin}" manifest:\n${err.message}`
+      } else if (err.name === 'ValidationError') {
+        err.message = `Error while reading "${options.basePath}/sanity.json":\n${err.message}`
       }
 
       throw err

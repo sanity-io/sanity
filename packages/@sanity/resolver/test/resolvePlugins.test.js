@@ -1,3 +1,4 @@
+import assert from 'assert'
 import mockFs from 'mock-fs'
 import resolvePlugins, {resolveRoles} from '../src/resolver'
 import {afterEach, describe, it} from 'mocha'
@@ -11,8 +12,11 @@ import {
   getScopedPluginsTree,
   getStyleTree,
   getMultiTree,
-  getDuplicateRoleTree
+  getDuplicateRoleTree,
+  getInvalidRoleDeclaration
 } from './fixtures'
+
+const opts = {basePath: '/sanity'}
 
 describe('plugin resolver', () => {
   afterEach(() => {
@@ -21,32 +25,119 @@ describe('plugin resolver', () => {
 
   it('rejects on invalid root-level JSON', () => {
     mockFs(getInvalidJson({atRoot: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(SyntaxError)
+    return resolvePlugins(opts).should.be.rejectedWith(SyntaxError)
   })
 
   it('rejects on invalid non-root-level JSON', () => {
     mockFs(getInvalidJson({atRoot: false}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(SyntaxError)
+    return resolvePlugins(opts).should.be.rejectedWith(SyntaxError)
   })
 
   it('rejects on invalid root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(/ValidationError/, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(/ValidationError/, /must be an array/)
   })
 
   it('rejects on invalid non-root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: false}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(/ValidationError/, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(/ValidationError/, /must be an array/)
+  })
+
+  describe('rejects on invalid roles declaration', () => {
+    it('roles with no path needs a description', () => {
+      mockFs(getInvalidRoleDeclaration({missingDescription: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 0')
+        err.message.should.contain('`description`')
+      })
+    })
+
+    it('role names need a prefix', () => {
+      mockFs(getInvalidRoleDeclaration({unprefixed: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 1')
+        err.message.should.contain('needs a prefix')
+        err.message.should.contain('xamples')
+      })
+    })
+
+    it('role names should not include reserved keywords', () => {
+      mockFs(getInvalidRoleDeclaration({allPrefixed: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 2')
+        err.message.should.contain('"all:"')
+        err.message.should.contain('xamples')
+      })
+    })
+
+    it('role names should not have more than one prefix', () => {
+      mockFs(getInvalidRoleDeclaration({doublePrefix: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 3')
+        err.message.should.contain('":"')
+        err.message.should.contain('xamples')
+      })
+    })
+
+    it('role names should include plugin name', () => {
+      mockFs(getInvalidRoleDeclaration({noPluginName: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 4')
+        err.message.should.contain('plugin name')
+        err.message.should.contain('xamples')
+      })
+    })
+
+    it('role names should include role name after plugin name', () => {
+      mockFs(getInvalidRoleDeclaration({noRoleName: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 5')
+        err.message.should.contain('after the plugin name')
+        err.message.should.contain('xamples')
+      })
+    })
+
+    it('roles with `path` should contain `implements` or `name`', () => {
+      mockFs(getInvalidRoleDeclaration({missingImplements: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 6')
+        err.message.should.contain('either `name` or `implements`')
+      })
+    })
+
+    it('roles with `path` should contain `implements` or `name`', () => {
+      mockFs(getInvalidRoleDeclaration({missingName: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 7')
+        err.message.should.contain('either `name` or `implements`')
+      })
+    })
+
+    it('roles with `implements` should contain `path`', () => {
+      mockFs(getInvalidRoleDeclaration({missingPath: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 8')
+      })
+    })
+
+    it('roles with `srcPath` should also contain `path`', () => {
+      mockFs(getInvalidRoleDeclaration({missingLibPath: true}))
+      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
+        err.message.should.contain('index 9')
+        err.message.should.contain('`srcPath`')
+        err.message.should.contain('compiled')
+      })
+    })
   })
 
   it('rejects on missing plugin', () => {
     mockFs(getDeepTree({missingPlugin: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(Error, /"missing"/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /"missing"/)
   })
 
   it('rejects on missing plugin manifest', () => {
     mockFs(getDeepTree({missingManifest: true}))
-    return resolvePlugins({basePath: '/sanity'}).should.be.rejectedWith(Error, /"sanity\.json"/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /"sanity\.json"/)
   })
 
   it('rejects if two plugins define the same role', () => {
@@ -56,7 +147,7 @@ describe('plugin resolver', () => {
 
   it('resolves plugins in the right order', () => {
     mockFs(getDeepTree())
-    return resolvePlugins({basePath: '/sanity'}).then(plugins => {
+    return resolvePlugins(opts).then(plugins => {
       plugins.map(plugin => plugin.name).should.eql([
         '@sanity/default-layout',
         '@sanity/core',
@@ -70,14 +161,14 @@ describe('plugin resolver', () => {
   describe('respects the sanity plugin resolution order', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
-      return resolvePlugins({basePath: '/sanity'}).then(plugins => {
+      return resolvePlugins(opts).then(plugins => {
         plugins[0].path.should.equal('/sanity/plugins/sanity-plugin-bar')
       })
     })
 
     it('prefers short-named, local path as 2nd option (/plugins/<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'shortLocalPath'}))
-      return resolvePlugins({basePath: '/sanity'}).then(plugins => {
+      return resolvePlugins(opts).then(plugins => {
         plugins[0].path.should.equal('/sanity/plugins/bar')
       })
     })
@@ -85,14 +176,14 @@ describe('plugin resolver', () => {
     const subPath = '/node_modules/sanity-plugin-<parent>/node_modules/sanity-plugin-<name>'
     it(`prefers fully qualified in parent plugin node_modules as 3rd option (${subPath})`, () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
-      return resolvePlugins({basePath: '/sanity'}).then(plugins => {
+      return resolvePlugins(opts).then(plugins => {
         plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
       })
     })
 
     it('prefers fully qualified in root node_modules as 4th option (/node_modules/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
-      return resolvePlugins({basePath: '/sanity'}).then(plugins => {
+      return resolvePlugins(opts).then(plugins => {
         plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
       })
     })
@@ -203,3 +294,7 @@ describe('plugin resolver', () => {
     })
   })
 })
+
+function shouldHaveThrown() {
+  assert.fail('Result', 'Error', 'Test should have fail, instead succeeded', '!=')
+}
