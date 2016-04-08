@@ -5,7 +5,7 @@
   "main": "lib/resolver.js",
   "scripts": {
     "clean": "rimraf lib && rimraf coverage",
-    "compile": "babel -d lib/ src/",
+    "compile": "npm run clean && babel -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
