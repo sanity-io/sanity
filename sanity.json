@@ -1,6 +1,17 @@
 {
-  "provides": [
-    {"role": "component:@sanity/base/root"},
-    {"role": "components:@sanity/base/absolutes", "multiple": true}
+  "roles": [
+    {
+      "name": "component:@sanity/base/root",
+      "description": "The root component in the DOM-tree. Usually a layout."
+    },
+    {
+      "name": "component:@sanity/base/absolutes",
+      "description": "Statically positioned elements that should live on the page regardless of routing."
+    },
+    {
+      "implements": "component:@sanity/base/root",
+      "srcPath": "./src/components/DefaultRootComponent",
+      "path": "./lib/components/DefaultRootComponent"
+    }
   ]
 }

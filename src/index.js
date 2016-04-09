@@ -1,7 +1,5 @@
-import Sanity from './components/Sanity'
-import {sanityShape} from './createSanity'
+import DefaultRootComponent from './components/DefaultRootComponent'
 
 export {
-  Sanity,
-  sanityShape
+  DefaultRootComponent
 }
