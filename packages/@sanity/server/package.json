@@ -10,6 +10,7 @@
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile || not-in-publish",
+    "postpublish": "in-publish && npm run clean || not-in-publish",
     "start": "node bin/sanity-server.js",
     "start-dev": "node bin/sanity-server.js --dev",
     "test": "mocha test/**/*.test.js"
@@ -67,7 +68,7 @@
     "rimraf": "^2.5.2"
   },
   "peerDependencies": {
-    "@sanity/base": "*",
+    "@sanity/base": ">=2.0.0",
     "react": ">=0.14.0",
     "react-dom": ">=0.14.0"
   }
