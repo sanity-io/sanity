@@ -4,6 +4,12 @@ const qs = require('querystring')
 const roleResolver = require('@sanity/resolver')
 
 const RoleResolverPlugin = function (options) {
+  if (!options || !options.basePath) {
+    throw new Error(
+      '`basePath` option must be specified in role resolver plugin constructor'
+    )
+  }
+
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
       if (!request.request.match(/^(all:)?(component|style):/)) {
@@ -16,13 +22,13 @@ const RoleResolverPlugin = function (options) {
       roleResolver
         .resolveRoles({basePath: options.basePath})
         .then(roles => {
-          if (!roles.fulfilled[sanityRole]) {
+          const role = roles.fulfilled[sanityRole]
+          if (request.request.indexOf('all:') !== 0 && !role) {
             return callback(new Error(
               `Role "${sanityRole}" not fulfilled by any plugins`
             ))
           }
 
-          const role = roles.fulfilled[sanityRole]
           const file = (Array.isArray(role) ? role[0] : role).path
 
           const reqQuery = (request.query || '').replace(/^\?/, '')
