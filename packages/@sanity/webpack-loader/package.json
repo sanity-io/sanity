@@ -1,6 +1,6 @@
 {
   "name": "@sanity/plugin-loader",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Plugin loader for Sanity. Resolves roles based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
   "main": "src/legacyRoleLoader.js",
   "scripts": {
