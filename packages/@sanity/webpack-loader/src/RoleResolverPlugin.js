@@ -28,9 +28,7 @@ const RoleResolverPlugin = function (options) {
             return callback(new Error(
               `Role "${sanityRole}" not fulfilled by any plugins`
             ))
-          }
-
-          if (role.length === 0) {
+          } else if (!role) {
             return this.doResolve(['file'], {request: emptyRole}, callback)
           }
 
