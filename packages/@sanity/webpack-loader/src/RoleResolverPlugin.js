@@ -2,6 +2,7 @@
 
 const qs = require('querystring')
 const roleResolver = require('@sanity/resolver')
+const emptyRole = require.resolve('./emptyRole')
 
 const RoleResolverPlugin = function (options) {
   if (!options || !options.basePath) {
@@ -29,7 +30,9 @@ const RoleResolverPlugin = function (options) {
             ))
           }
 
-          const file = (Array.isArray(role) ? role[0] : role).path
+          if (role.length === 0) {
+            return this.doResolve(['file'], {request: emptyRole}, callback)
+          }
 
           const reqQuery = (request.query || '').replace(/^\?/, '')
           const query = Object.assign({}, qs.parse(reqQuery) || {}, {
@@ -38,7 +41,7 @@ const RoleResolverPlugin = function (options) {
           })
 
           return this.doResolve(['file'], Object.assign({}, request, {
-            request: file,
+            request: role[0].path,
             query: `?${qs.stringify(query)}`
           }), callback)
         })
