@@ -5,10 +5,4 @@ const DefaultLayout = () =>
     <h1>Sanity default layout!</h1>
   </div>
 
-DefaultLayout.childContextTypes = {
-  sanity: React.PropTypes.shape({
-    getRole: React.PropTypes.func.isRequired
-  })
-}
-
 export default DefaultLayout
