@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/server": "^1.1.10",
+    "@sanity/server": "^1.2.1",
     "child-process-promise": "^1.1.0",
     "configstore": "^1.4.0",
     "debug": "^2.2.0",
