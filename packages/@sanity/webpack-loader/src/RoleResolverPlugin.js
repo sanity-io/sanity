@@ -3,6 +3,7 @@
 const qs = require('querystring')
 const roleResolver = require('@sanity/resolver')
 const emptyRole = require.resolve('./emptyRole')
+const roleMatcher = /^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
 
 const RoleResolverPlugin = function (options) {
   if (!options || !options.basePath) {
@@ -13,7 +14,7 @@ const RoleResolverPlugin = function (options) {
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
-      if (!request.request.match(/^(all:)?(component|style):/)) {
+      if (!roleMatcher.test(request.request)) {
         callback()
         return
       }

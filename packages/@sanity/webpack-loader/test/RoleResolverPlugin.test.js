@@ -30,7 +30,7 @@ describe('RoleResolverPlugin', () => {
 })
 
 function getResolver(opts) {
-  const noop = () => {}
+  const noop = () => {} // eslint-disable-line no-empty-function
   return {
     plugin: (selector, resolve) => {
       resolve({
