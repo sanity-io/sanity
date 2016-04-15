@@ -64,8 +64,8 @@ function hasLocalCliInstalled(cwd, isDeclared) {
     return false
   }
 
-  const fullFath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
-  return stat(fullFath).then(() => fullFath).catch(err => {
+  const fullPath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
+  return stat(fullPath).then(() => fullPath).catch(err => {
     if (err.code === 'ENOENT') {
       throw new Error(
         `Local ${pkg.name} dependency declared, but not installed, run \`npm install\``
