@@ -25,6 +25,21 @@
       "implements": "variables:@sanity/base/style",
       "srcPath": "./src/styleVariables.js",
       "path": "./lib/styleVariables.js"
+    },
+    {
+      "name": "datastore:@sanity/base/location",
+      "srcPath": "./src/datastores/location/index.js",
+      "path": "./lib/datastores/location/index.js"
+    },
+    {
+      "name": "component:@sanity/base/link",
+      "srcPath": "./src/components/Link.js",
+      "path": "./lib/components/Link.js"
+    },
+    {
+      "name": "router:@sanity/base",
+      "srcPath": "./src/router/index.js",
+      "path": "./lib/router/index.js"
     }
   ]
 }
