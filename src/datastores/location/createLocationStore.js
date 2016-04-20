@@ -1,12 +1,12 @@
 import Observable from './utils/SanityStoreObservable'
-import url from './utils/url'
+import Location from './utils/Location'
 import {createHistory} from 'history'
 import createActions from './utils/createActions'
 
 const history = createHistory()
 
 function readLocation() {
-  return url.parse(document.location.href)
+  return Location.parse(document.location.href)
 }
 
 const interceptors = []

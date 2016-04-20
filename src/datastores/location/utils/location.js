@@ -1,8 +1,8 @@
-// Url implementation which keeps overlapping props in sync, e.g. host / hostname, and search / query
+// Location implementation which keeps overlapping props in sync, e.g. host / hostname, and search / query
 import url from 'url'
 
 export function configure({qsImpl} = {qsImpl: require('querystring')}) {
-  class Url {
+  class Location {
     get search() {
       const stringified = qsImpl.stringify(this.query || {})
       return stringified.length > 1 ? `?${stringified}` : null
@@ -51,11 +51,18 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
         hash: parsed.hash
       })
     }
+
+    clone() {
+      Object.assign(new Location(), this)
+    }
+    extend(properties) {
+      return Object.assign(new Location(), this, properties)
+    }
   }
 
   return {
     parse(urlToParse) {
-      return Object.assign(new Url(), {
+      return Object.assign(new Location(), {
         href: urlToParse
       })
     },
