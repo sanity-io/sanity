@@ -13,6 +13,10 @@
       "description": "Variables for styling. Implementers will be merged in definition order."
     },
     {
+      "name": "tool:@sanity/base/tool",
+      "description": "Tools available for use within a Sanity configuration"
+    },
+    {
       "implements": "component:@sanity/base/root",
       "srcPath": "./src/components/DefaultRootComponent.js",
       "path": "./lib/components/DefaultRootComponent.js"
