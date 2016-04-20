@@ -10,7 +10,7 @@ const currentPath = locationStore.state.map(event => {
   }
 })
 
-function createSystemRouter() {
+function createRouter() {
   return {
     route: currentPath.map(event => {
       return {
@@ -26,4 +26,4 @@ function createSystemRouter() {
   }
 }
 
-export default createSystemRouter()
+export default createRouter()
