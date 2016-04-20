@@ -1,0 +1,12 @@
+.header {
+  border-bottom: 1px solid #ccc;
+  padding-left: 12px;
+  line-height: 48px;
+
+  composes: clear from "./clear.css";
+}
+
+.brand {
+  float: left;
+  margin: 0px;
+}

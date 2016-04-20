@@ -1,0 +1,31 @@
+.switcher {
+  border-right: 1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 64px;
+  height: 100%;
+  position: absolute;
+}
+
+.item {
+  text-align: center;
+  color: #999;
+}
+
+.item img {
+  width: 100%;
+}
+
+.activeItem {
+  composes: item;
+  color: #0d0d0d;
+}
+
+.toolLink {
+  color: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+  display: block;
+  font-size: 0.8rem;
+}

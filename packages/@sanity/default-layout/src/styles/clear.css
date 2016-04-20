@@ -1,0 +1,6 @@
+/* @todo Move into @sanity/base, mayhaps? */
+.clear:after {
+  content: '';
+  display: table;
+  clear: both;
+}
