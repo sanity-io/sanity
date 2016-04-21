@@ -10,7 +10,7 @@ const NoTools = () =>
 
 class DefaultLayout extends React.Component {
   render() {
-    const ActiveTool = tools.length ? tools[0] : NoTools
+    const ActiveTool = tools.length ? tools[0].component : NoTools
 
     return (
       <div className="default-layout">

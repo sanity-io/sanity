@@ -11,7 +11,7 @@ const ToolSwitcher = ({tools, activeTool}) =>
       const ToolIcon = tool.icon
 
       return (
-        <li className={itemClass}>
+        <li key={tool.name} className={itemClass}>
           <a href="#" className={styles.toolLink}>
             <ToolIcon />
             {tool.name}
