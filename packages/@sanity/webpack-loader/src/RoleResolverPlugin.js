@@ -39,7 +39,7 @@ const RoleResolverPlugin = function (options) {
             basePath: options.basePath
           })
 
-          return this.doResolve(['file'], Object.assign({}, request, {
+          return this.doResolve(['file', 'directory'], Object.assign({}, request, {
             request: role[0].path,
             query: `?${qs.stringify(query)}`
           }), callback)
