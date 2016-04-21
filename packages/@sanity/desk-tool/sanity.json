@@ -1,0 +1,9 @@
+{
+  "roles": [
+    {
+      "implements": "tool:@sanity/base/tool",
+      "srcPath": "./src/",
+      "path": "./lib/"
+    }
+  ]
+}
