@@ -1,7 +1,7 @@
 import {PropTypes} from 'react'
 
 // Just a placeholder, never actually rendered
-export default function Route(props) {
+export default function Route() {
   return null
 }
 
