@@ -17,6 +17,12 @@ if (devMode) {
   debug('CLI running in development mode')
 }
 
+if (devMode) {
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at: Promise ', promise, ' reason: ', reason)
+  })
+}
+
 // Remove the "global flag" in case any subcommands use the same option
 if (preferGlobal) {
   argv.splice(0, 1)
