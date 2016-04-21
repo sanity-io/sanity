@@ -1,3 +1,4 @@
+import path from 'path'
 import assert from 'assert'
 import mockFs from 'mock-fs'
 import resolvePlugins, {resolveRoles} from '../src/resolver'
@@ -15,7 +16,8 @@ import {
   getDuplicateRoleTree,
   getInvalidRoleDeclaration,
   getStyleOverriderTree,
-  getNonAbstractRoleTree
+  getNonAbstractRoleTree,
+  getRootLevelRolesTree
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -151,6 +153,7 @@ describe('plugin resolver', () => {
     mockFs(getDeepTree())
     return resolvePlugins(opts).then(plugins => {
       plugins.map(plugin => plugin.name).should.eql([
+        '(project root)',
         '@sanity/default-layout',
         '@sanity/core',
         'baz',
@@ -164,14 +167,14 @@ describe('plugin resolver', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[0].path.should.equal('/sanity/plugins/sanity-plugin-bar')
+        plugins[1].path.should.equal('/sanity/plugins/sanity-plugin-bar')
       })
     })
 
     it('prefers short-named, local path as 2nd option (/plugins/<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'shortLocalPath'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[0].path.should.equal('/sanity/plugins/bar')
+        plugins[1].path.should.equal('/sanity/plugins/bar')
       })
     })
 
@@ -179,14 +182,14 @@ describe('plugin resolver', () => {
     it(`prefers fully qualified in parent plugin node_modules as 3rd option (${subPath})`, () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
+        plugins[1].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
       })
     })
 
     it('prefers fully qualified in root node_modules as 4th option (/node_modules/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
+        plugins[1].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
       })
     })
   })
@@ -222,8 +225,9 @@ describe('plugin resolver', () => {
   it('resolves plugins as well as roles', () => {
     mockFs(getBasicTree())
     return resolveRoles(opts).then(res => {
-      res.plugins.should.have.length(3)
+      res.plugins.should.have.length(4)
       res.plugins.map(plugin => plugin.path).should.eql([
+        process.cwd(),
         '/sanity/node_modules/@sanity/default-layout',
         '/sanity/node_modules/@sanity/core',
         '/sanity/node_modules/sanity-plugin-instagram'
@@ -310,6 +314,22 @@ describe('plugin resolver', () => {
   it('does not allow a non-abstract role to be implemented by others', () => {
     mockFs(getNonAbstractRoleTree())
     return resolveRoles(opts).should.be.rejectedWith(Error, 'not an abstract role')
+  })
+
+  it('should include roles defined in base manifest', () => {
+    mockFs(getRootLevelRolesTree())
+    return resolveRoles(opts).then(res => {
+      res.definitions.should.have.property('config:@sanity/config/schema')
+      res.definitions['config:@sanity/config/schema'].path.should.eql(process.cwd())
+
+      res.fulfilled.should.have.property('config:@sanity/config/schema')
+      res.fulfilled['config:@sanity/config/schema'][0].path.should.eql(
+        path.join(process.cwd(), 'schema', 'schema.js')
+      )
+
+      res.plugins[0].name.should.eql('(project root)')
+      res.plugins[0].path.should.eql(process.cwd())
+    })
   })
 })
 

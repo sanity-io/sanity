@@ -1,11 +1,12 @@
 import merge from 'lodash/merge'
 
-function sanityManifest(plugins) {
+function sanityManifest(plugins, roles) {
   return JSON.stringify({
     server: {
       port: 7777
     },
-    plugins: plugins || []
+    plugins: plugins || [],
+    roles: roles
   }, null, 2)
 }
 
@@ -454,4 +455,19 @@ export function getNonAbstractRoleTree() {
       }
     }
   }
+}
+
+export function getRootLevelRolesTree() {
+  return Object.assign({}, getBasicTree(), {
+    '/sanity/sanity.json': sanityManifest(
+      ['@sanity/core', 'instagram'],
+      [{
+        name: 'config:@sanity/config/schema',
+        path: './schema/schema.js'
+      }, {
+        implements: 'component:@sanity/core/root',
+        path: './myRootComponent.js'
+      }]
+    )
+  })
 }

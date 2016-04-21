@@ -6,9 +6,21 @@ import validateManifest from './validateManifest'
 
 export default function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
+  let projectManifest = null
 
   return readManifest(options)
-    .then(manifest => resolvePlugins(manifest.plugins || [], options))
+    .then(manifest => {
+      projectManifest = manifest
+      return resolvePlugins(manifest.plugins || [], options)
+    })
+    .then(plugins =>
+      [{
+        name: '(project root)',
+        path: process.cwd(),
+        manifest: projectManifest,
+        plugins: []
+      }].concat(plugins)
+    )
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
