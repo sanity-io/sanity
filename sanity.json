@@ -28,13 +28,13 @@
     },
     {
       "name": "datastore:@sanity/base/location",
-      "srcPath": "./src/datastores/location/index.js",
-      "path": "./lib/datastores/location/index.js"
+      "description": "Provides a location store"
     },
     {
-      "name": "datastore:@sanity/base/toolLocation",
-      "srcPath": "./src/datastores/location/toolLocationStore.js",
-      "path": "./lib/datastores/location/toolLocationStore.js"
+      "name": "datastore:@sanity/base/location/default",
+      "implements": "datastore:@sanity/base/location",
+      "srcPath": "./src/datastores/location/index.js",
+      "path": "./lib/datastores/location/index.js"
     },
     {
       "name": "component:@sanity/base/router",

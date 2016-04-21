@@ -1,4 +1,4 @@
-import locationStore from 'datastore:@sanity/base/toolLocation'
+import locationStore from 'datastore:@sanity/base/location'
 import React, {PropTypes} from 'react'
 
 export default class Link extends React.Component {
