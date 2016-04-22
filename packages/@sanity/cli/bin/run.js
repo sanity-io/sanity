@@ -19,7 +19,7 @@ if (devMode) {
 
 if (devMode) {
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at: Promise ', promise, ' reason: ', reason)
+    console.error('Unhandled Rejection:', reason.stack)
   })
 }
 
