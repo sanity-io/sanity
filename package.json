@@ -44,7 +44,8 @@
   "dependencies": {
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "zen-observable": "^0.2.1"
   },
   "peerDependencies": {
     "react": ">=0.14.0"
