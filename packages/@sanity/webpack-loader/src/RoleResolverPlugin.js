@@ -3,6 +3,7 @@
 const qs = require('querystring')
 const roleResolver = require('@sanity/resolver')
 const emptyRole = require.resolve('./emptyRole')
+const debugRole = require.resolve('./debugRole')
 const roleMatcher = /^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
 
 const RoleResolverPlugin = function (options) {
@@ -14,6 +15,17 @@ const RoleResolverPlugin = function (options) {
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
+      if (request.request === 'sanity:debug') {
+        this.doResolve(['file'], {
+          request: debugRole,
+          query: `?${qs.stringify({
+            sanityRole: request.request,
+            basePath: options.basePath
+          })}`
+        }, callback)
+        return
+      }
+
       if (!roleMatcher.test(request.request)) {
         callback()
         return

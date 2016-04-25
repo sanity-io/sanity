@@ -28,7 +28,7 @@ function sanityRoleLoader(input) {
         this.cacheable()
       }
 
-      // Also add plugin manifests as dependencies
+      // Also add plugin manifests as dependencies, as roles and paths may change
       roles.plugins.forEach(plugin => {
         this.addDependency(path.join(plugin.path, 'sanity.json'))
       })
@@ -36,6 +36,15 @@ function sanityRoleLoader(input) {
       const loadAll = role.indexOf('all:') === 0
       const roleName = loadAll ? role.substr(4) : role
       const opts = {role: roleName, input, roles}
+
+      if (roleName === 'sanity:debug') {
+        return setImmediate(
+          callback,
+          null,
+          `module.exports = ${JSON.stringify(roles, null, 2)}\n`
+        )
+      }
+
       return loadAll
         ? setImmediate(multiFulfillerHandler, opts, callback)
         : callback(null, input)
