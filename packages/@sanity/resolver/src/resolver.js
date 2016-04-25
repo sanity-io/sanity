@@ -57,6 +57,7 @@ function assignDefinitions(definitions, plugin) {
     definitions[role.name] = {
       plugin: plugin.name,
       path: plugin.path,
+      description: role.description,
       isAbstract: typeof role.path === 'undefined'
     }
   })
