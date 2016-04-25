@@ -4,7 +4,7 @@
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
-    "compile": "babel -d lib/ src/",
+    "compile": "babel --copy-files -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
