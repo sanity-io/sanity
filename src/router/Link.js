@@ -12,27 +12,16 @@ export default class Link extends React.Component {
     this.subscribe()
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.to !== nextProps.to) {
-      this.resubscribe()
-    }
-  }
-
   componentWillUnmount() {
     this.unsubscribe()
   }
 
-  resubscribe() {
-    this.unsubscribe()
-    this.subscribe()
-  }
-
   subscribe() {
-    this.subscription = locationStore
-      .urlTo(this.props.to)
+    this.subscription = locationStore.state
+      .map(event => event.location)
       .subscribe({
-        next: url => {
-          this.setState({href: url})
+        next: location => {
+          this.setState({location: location})
         }
       })
   }
@@ -43,13 +32,22 @@ export default class Link extends React.Component {
 
   handleClick(e) {
     e.preventDefault()
-    locationStore.actions.navigate(this.state.href)
+    locationStore.actions.navigate(this.getHrefInContext())
+  }
+
+  getHrefInContext() {
+    const {parentRouter} = this.context
+    return parentRouter.urlTo(this.props.to)
   }
 
   render() {
-    const {href} = this.state
+    const href = this.getHrefInContext()
     return <a {...this.props} href={href} onClick={this.handleClick} />
   }
+}
+
+Link.contextTypes = {
+  parentRouter: PropTypes.object
 }
 
 Link.propTypes = {

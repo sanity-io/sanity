@@ -28,11 +28,6 @@
     },
     {
       "name": "datastore:@sanity/base/location",
-      "description": "Provides a location store"
-    },
-    {
-      "name": "datastore:@sanity/base/location/default",
-      "implements": "datastore:@sanity/base/location",
       "srcPath": "./src/datastores/location/index.js",
       "path": "./lib/datastores/location/index.js"
     },
