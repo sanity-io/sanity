@@ -1,10 +1,11 @@
 import React from 'react'
+
 import styles from '../styles/ToolSwitcher.css'
 
-const ToolSwitcher = ({tools, activeTool}) =>
+const ToolSwitcher = ({tools, activeToolName}) =>
   <ul className={styles.switcher}>
     {tools.map(tool => {
-      const itemClass = activeTool === tool.name
+      const itemClass = activeToolName === tool.name
         ? styles.activeItem
         : styles.item
 
@@ -12,7 +13,7 @@ const ToolSwitcher = ({tools, activeTool}) =>
 
       return (
         <li key={tool.name} className={itemClass}>
-          <a href="#" className={styles.toolLink}>
+          <a href={`/some-site/${tool.name}`} className={styles.toolLink}>
             <ToolIcon />
             {tool.name}
           </a>
