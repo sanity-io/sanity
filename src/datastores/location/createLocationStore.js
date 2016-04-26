@@ -3,6 +3,7 @@ import Location from './utils/Location'
 import {createHistory} from 'history'
 import createActions from './utils/createActions'
 
+const noop = () => {} // eslint-disable-line no-empty-function
 const history = createHistory()
 
 function readLocation() {
@@ -20,29 +21,30 @@ function navigate(nextUrl) {
         cancelled = true
       }
     }
+
     interceptors.some(interceptor => {
       interceptor(nextNavigation)
-      if (cancelled) {
-        // console.log('Action was cancelled by ', interceptor)
-        return false
-      }
-      return true
+      return !cancelled
     })
+
     if (cancelled) {
-      return {progress: new Observable(() => {})}
+      return {progress: new Observable(noop)}
     }
   }
+
   history.push(nextUrl)
-  return {progress: new Observable(() => {})}
+  return {progress: new Observable(noop)}
 }
 
 export default function createLocationStore(options = {}) {
-
   const eventStream = new Observable(observer => {
     let firstEmitted = false
     return history.listen(() => {
-      observer.next({type: firstEmitted ? 'change' : 'snapshot', location: readLocation()})
       firstEmitted = true
+      observer.next({
+        type: firstEmitted ? 'change' : 'snapshot',
+        location: readLocation()
+      })
     })
   })
 
