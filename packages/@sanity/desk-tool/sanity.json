@@ -1,6 +1,17 @@
 {
   "roles": [
     {
+      "name": "config:desk-tool/pane-resolver",
+      "description": "Function that resolves the different panes in the desk tool"
+    },
+
+    {
+      "implements": "config:desk-tool/pane-resolver",
+      "srcPath": "./src/schemaPaneResolver",
+      "path": "./lib/schemaPaneResolver"
+    },
+
+    {
       "implements": "tool:@sanity/base/tool",
       "srcPath": "./src/",
       "path": "./lib/"

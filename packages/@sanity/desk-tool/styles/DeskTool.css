@@ -1,0 +1,25 @@
+.panesContainer {
+  display: flex;
+  align-items: stretch;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.pane {
+  float: left;
+  padding: 0;
+  margin: 0;
+  border-right: 1px solid #ccc;
+  list-style-type: none;
+}
+
+.paneItem {
+  border-bottom: 1px solid #ccc;
+}
+
+.paneItemLink {
+  padding: 0 5px;
+  line-height: 48px;
+  display: block;
+  text-decoration: none;
+}
