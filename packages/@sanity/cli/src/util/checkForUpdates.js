@@ -24,6 +24,8 @@ function checkForUpdates() {
     debug('Update check complete, setting "last check" timestamp')
     config.set('cli.update.lastcheck', Date.now())
     return info
+  }).catch(err => {
+    throw err
   })
 }
 

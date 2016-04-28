@@ -4,7 +4,7 @@ import without from 'lodash/without'
 import {uninstall as npmUninstall} from '../../npm-bridge/install'
 import readLocalManifest from '../../util/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
-import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
+import {hasSameChecksum} from '../../util/pluginChecksumManifest'
 
 export default {
   name: 'uninstall',
