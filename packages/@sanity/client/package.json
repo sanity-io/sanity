@@ -1,0 +1,56 @@
+{
+  "name": "@sanity/client",
+  "version": "1.0.0",
+  "description": "Client for retrieving data from Sanity",
+  "main": "lib/client.js",
+  "scripts": {
+    "clean": "rimraf lib && rimraf coverage",
+    "compile": "npm run clean && BABEL_ENV=production babel -d lib/ src/",
+    "coverage": "nyc --reporter=html ava",
+    "postpublish": "npm run clean",
+    "posttest": "eslint .",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "test": "ava"
+  },
+  "dependencies": {
+    "@sanity/gradient-client": "^1.0.4",
+    "in-publish": "^2.0.0",
+    "pify": "^2.3.0"
+  },
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "babel-cli": "^6.7.5",
+    "babel-eslint": "^6.0.2",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-register": "^6.7.2",
+    "eslint": "^2.7.0",
+    "eslint-config-sanity": "^1.0.7",
+    "nock": "^8.0.0",
+    "nyc": "^6.4.0",
+    "rimraf": "^2.5.2"
+  },
+  "ava": {
+    "babel": "inherit",
+    "require": [
+      "babel-register"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sanity-io/client.git"
+  },
+  "keywords": [
+    "sanity",
+    "client",
+    "fetch",
+    "api",
+    "gradient"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/client/issues"
+  },
+  "homepage": "https://github.com/sanity-io/client#readme"
+}
