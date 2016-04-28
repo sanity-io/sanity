@@ -2,7 +2,7 @@
   "roles": [{
     "implements": "component:@sanity/base/root",
     "name": "component:@sanity/default-layout/root",
-    "srcPath": "./src/components/DefaultLayout",
-    "path": "./lib/components/DefaultLayout"
+    "srcPath": "./src/components/DefaultLayoutRouter",
+    "path": "./lib/components/DefaultLayoutRouter"
   }]
 }

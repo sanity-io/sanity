@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from 'router:@sanity/base/router'
 
 import styles from '../styles/ToolSwitcher.css'
 
@@ -13,10 +14,10 @@ const ToolSwitcher = ({tools, activeToolName}) =>
 
       return (
         <li key={tool.name} className={itemClass}>
-          <a href={`/some-site/${tool.name}`} className={styles.toolLink}>
+          <Link href={`/${tool.name}`} className={styles.toolLink}>
             <ToolIcon />
             {tool.name}
-          </a>
+          </Link>
         </li>
       )
     })}
