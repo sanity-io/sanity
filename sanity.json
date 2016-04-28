@@ -32,19 +32,9 @@
       "path": "./lib/datastores/location/index.js"
     },
     {
-      "name": "component:@sanity/base/router",
-      "srcPath": "./src/router/Router.js",
-      "path": "./lib/router/Router.js"
-    },
-    {
-      "name": "component:@sanity/base/route",
-      "srcPath": "./src/router/Route.js",
-      "path": "./lib/router/Route.js"
-    },
-    {
-      "name": "component:@sanity/base/link",
-      "srcPath": "./src/router/Link.js",
-      "path": "./lib/router/Link.js"
+      "name": "router:@sanity/base/router",
+      "srcPath": "./src/router/index.js",
+      "path": "./lib/router/index.js"
     }
   ]
 }
