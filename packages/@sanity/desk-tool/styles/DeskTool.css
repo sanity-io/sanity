@@ -1,4 +1,4 @@
-.panesContainer {
+.deskTool {
   display: flex;
   align-items: stretch;
   flex-direction: row;
@@ -22,4 +22,18 @@
   line-height: 48px;
   display: block;
   text-decoration: none;
+}
+
+.panes {
+  float: left;
+}
+
+.panes:after {
+  display: table;
+  content: '';
+  clear: both;
+}
+
+.editorContainer {
+  float: left;
 }

@@ -6,15 +6,32 @@
     },
 
     {
+      "name": "style:desk-tool/styles",
+      "description": "Styling for the desk tool"
+    },
+
+    {
       "implements": "config:desk-tool/pane-resolver",
-      "srcPath": "./src/schemaPaneResolver",
-      "path": "./lib/schemaPaneResolver"
+      "srcPath": "./src/schemaPaneResolver.js",
+      "path": "./lib/schemaPaneResolver.js"
+    },
+
+    {
+      "name": "style:desk-tool/default",
+      "implements": "style:desk-tool/styles",
+      "path": "./styles/DeskTool.css"
     },
 
     {
       "implements": "tool:@sanity/base/tool",
       "srcPath": "./src/",
       "path": "./lib/"
+    },
+
+    {
+      "name": "component:desk-tool/pane-container",
+      "srcPath": "./src/pane/PaneContainer.js",
+      "path": "./lib/PaneContainer.js"
     }
   ]
 }

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import Pane from './Pane'
 import styles from '../../styles/DeskTool.css'
+import client from 'client:@sanity/base/client'
 
 class QueryPane extends React.Component {
   constructor() {
@@ -12,10 +13,8 @@ class QueryPane extends React.Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.setState({
-      loading: false,
-      items: (new Array(15)).join('.').split('.').map((item, index) => ({title: '(' + this.props.previousPathSegment + ') Item ' + index, pathSegment: index}))
-    }), 750)
+    client.fetch(this.props.query)
+      .then(items => this.setState({loading: false, items}))
   }
 
   render() {
@@ -23,6 +22,7 @@ class QueryPane extends React.Component {
       <Pane
         items={this.state.items}
         loading={this.state.loading}
+        basePath={this.props.basePath}
         activeItem={this.props.activeItem}
       />
     )
