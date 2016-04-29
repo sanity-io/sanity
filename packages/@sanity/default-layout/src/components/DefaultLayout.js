@@ -5,6 +5,7 @@ import RenderTool from './RenderTool'
 import {Router, Route, NotFound, Redirect} from 'router:@sanity/base/router'
 import styles from '../styles/DefaultLayout.css'
 import tools from 'all:tool:@sanity/base/tool'
+import absolutes from 'all:component:@sanity/base/absolutes'
 
 class DefaultLayout extends React.Component {
   render() {
@@ -20,6 +21,8 @@ class DefaultLayout extends React.Component {
             <Route path="/:tool/*" component={RenderTool} />
           </Router>
         </div>
+
+        {absolutes.map((Abs, i) => <Abs key={i} />)}
       </div>
     )
   }
