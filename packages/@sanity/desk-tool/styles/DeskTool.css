@@ -24,6 +24,16 @@
   text-decoration: none;
 }
 
+.paneItemLink:hover {
+  background: #fafafa;
+}
+
+.activePaneItemLink {
+  composes: paneItemLink;
+
+  background: #eee;
+}
+
 .panes {
   float: left;
 }
