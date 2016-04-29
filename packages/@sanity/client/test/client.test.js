@@ -6,8 +6,14 @@ const baseUrl = 'https://gradient.url'
 const client = sanityClient({url: baseUrl, dataset: 'foo'})
 
 test('can do simple requests', t => {
-  nock(baseUrl).post('/q/foo', {query: 'query'}).reply(200, {})
-  return client.fetch('query')
+  nock(baseUrl).post('/q/foo', {query: 'query'}).reply(200, {
+    ms: 123,
+    result: [{foo: 'bar'}, {bar: 'foo'}]
+  })
+  return client.fetch('query').then(res => {
+    t.is(res[0].foo, 'bar')
+    t.is(res[1].bar, 'foo')
+  })
 })
 
 test('request errors are captured as errors', t => {

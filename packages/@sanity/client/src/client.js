@@ -11,7 +11,7 @@ class SanityClient {
   }
 
   fetch(query, opts) {
-    return this.gradient.fetch(query, opts)
+    return this.gradient.fetch(query, opts).then(res => res.result)
   }
 
   observe(query, opts) {
