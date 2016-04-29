@@ -54,6 +54,9 @@ export default (config = {}) => {
           cacheDirectory: true
         }
       }, {
+        test: /\.json$/,
+        loader: 'json'
+      }, {
         test: /\.css(\?|$)/,
         loaders: env === 'production'
           ? [ExtractTextPlugin.extract('style-loader', `${cssLoader}!postcss-loader`)]

@@ -46,6 +46,7 @@
     "express": "^4.13.4",
     "extract-text-webpack-plugin": "^1.0.1",
     "in-publish": "^2.0.0",
+    "json-loader": "^0.5.4",
     "lodash": "^4.5.0",
     "postcss-simple-vars-async": "^1.2.0",
     "postcss-use": "^2.0.2",
