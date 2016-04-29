@@ -28,13 +28,18 @@
     },
     {
       "name": "datastore:@sanity/base/location",
-      "srcPath": "./src/datastores/location/index.js",
-      "path": "./lib/datastores/location/index.js"
+      "srcPath": "./src/datastores/location",
+      "path": "./lib/datastores/location"
     },
     {
       "name": "router:@sanity/base/router",
-      "srcPath": "./src/router/index.js",
-      "path": "./lib/router/index.js"
+      "srcPath": "./src/router",
+      "path": "./lib/router"
+    },
+    {
+      "name": "client:@sanity/base/client",
+      "srcPath": "./src/client",
+      "path": "./lib/client"
     }
   ]
 }
