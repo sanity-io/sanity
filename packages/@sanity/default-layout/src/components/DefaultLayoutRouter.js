@@ -31,7 +31,7 @@ class DefaultLayoutRouter extends React.Component {
       return null
     }
     return (
-      <Router location={location} onNavigate={this.handleNavigate}>
+      <Router location={location} navigate={this.handleNavigate}>
         <Route path="/:site/*" component={DefaultLayout} />
         <Redirect path="/" to="/some-site" />
         <NotFound component={() => <div>Not found</div>} />

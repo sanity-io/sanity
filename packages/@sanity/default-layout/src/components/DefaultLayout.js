@@ -15,7 +15,8 @@ class DefaultLayout extends React.Component {
         <Header />
         <ToolSwitcher tools={tools} activeToolName={activeToolName} />
         <div className={styles.toolContainer}>
-          <Router location={this.props.location}>
+          <Router>
+            <Redirect path="/" to={`/${tools[0].name}`} />
             <Route path="/:tool/*" component={RenderTool} />
           </Router>
         </div>
