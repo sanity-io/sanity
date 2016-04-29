@@ -1,10 +1,15 @@
 'use strict'
 
 const qs = require('querystring')
+const path = require('path')
 const roleResolver = require('@sanity/resolver')
 const emptyRole = require.resolve('./emptyRole')
 const debugRole = require.resolve('./debugRole')
 const roleMatcher = /^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
+const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
+
+const isSanityRole = request =>
+  roleMatcher.test(request.request) || configMatcher.test(request.request)
 
 const RoleResolverPlugin = function (options) {
   if (!options || !options.basePath) {
@@ -12,6 +17,8 @@ const RoleResolverPlugin = function (options) {
       '`basePath` option must be specified in role resolver plugin constructor'
     )
   }
+
+  const configPath = path.join(options.basePath, 'config')
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
@@ -26,7 +33,7 @@ const RoleResolverPlugin = function (options) {
         return
       }
 
-      if (!roleMatcher.test(request.request)) {
+      if (!isSanityRole(request)) {
         callback()
         return
       }
@@ -36,6 +43,17 @@ const RoleResolverPlugin = function (options) {
       roleResolver
         .resolveRoles({basePath: options.basePath})
         .then(roles => {
+          const configMatch = request.request.match(configMatcher)
+          if (configMatch) {
+            const configFor = configMatch[1]
+            const req = Object.assign({}, request, {
+              request: configFor === 'sanity'
+                ? path.join(options.basePath, 'sanity.json')
+                : path.join(configPath, `${configMatch[1]}.json`)
+            })
+            return this.doResolve(['file'], req, callback)
+          }
+
           const role = roles.fulfilled[sanityRole]
           if (request.request.indexOf('all:') !== 0 && !role) {
             return callback(new Error(
