@@ -153,12 +153,12 @@ describe('plugin resolver', () => {
     mockFs(getDeepTree())
     return resolvePlugins(opts).then(plugins => {
       plugins.map(plugin => plugin.name).should.eql([
-        '(project root)',
         '@sanity/default-layout',
         '@sanity/core',
         'baz',
         'bar',
-        'foo'
+        'foo',
+        '(project root)'
       ])
     })
   })
@@ -167,14 +167,14 @@ describe('plugin resolver', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[1].path.should.equal('/sanity/plugins/sanity-plugin-bar')
+        plugins[0].path.should.equal('/sanity/plugins/sanity-plugin-bar')
       })
     })
 
     it('prefers short-named, local path as 2nd option (/plugins/<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'shortLocalPath'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[1].path.should.equal('/sanity/plugins/bar')
+        plugins[0].path.should.equal('/sanity/plugins/bar')
       })
     })
 
@@ -182,14 +182,14 @@ describe('plugin resolver', () => {
     it(`prefers fully qualified in parent plugin node_modules as 3rd option (${subPath})`, () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[1].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
+        plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
       })
     })
 
     it('prefers fully qualified in root node_modules as 4th option (/node_modules/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[1].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
+        plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
       })
     })
   })
@@ -227,10 +227,10 @@ describe('plugin resolver', () => {
     return resolveRoles(opts).then(res => {
       res.plugins.should.have.length(4)
       res.plugins.map(plugin => plugin.path).should.eql([
-        process.cwd(),
         '/sanity/node_modules/@sanity/default-layout',
         '/sanity/node_modules/@sanity/core',
-        '/sanity/node_modules/sanity-plugin-instagram'
+        '/sanity/node_modules/sanity-plugin-instagram',
+        process.cwd()
       ])
     })
   })
@@ -327,8 +327,22 @@ describe('plugin resolver', () => {
         path.join(process.cwd(), 'schema', 'schema.js')
       )
 
-      res.plugins[0].name.should.eql('(project root)')
-      res.plugins[0].path.should.eql(process.cwd())
+      const last = res.plugins[res.plugins.length - 1]
+      last.name.should.eql('(project root)')
+      last.path.should.eql(process.cwd())
+    })
+  })
+
+  it('should treat base manifest roles as most significant', () => {
+    mockFs(getRootLevelRolesTree({}))
+    return resolveRoles(opts).then(res => {
+      res.definitions.should.have.property('component:@sanity/core/root')
+      res.definitions['component:@sanity/core/root'].plugin.should.eql('@sanity/core')
+
+      res.fulfilled.should.have.property('component:@sanity/core/root')
+      res.fulfilled['component:@sanity/core/root'][0].path.should.eql(
+        path.join(process.cwd(), 'myRootComponent.js')
+      )
     })
   })
 })

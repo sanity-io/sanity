@@ -13,14 +13,12 @@ export default function resolveTree(opts = {}) {
       projectManifest = manifest
       return resolvePlugins(manifest.plugins || [], options)
     })
-    .then(plugins =>
-      [{
-        name: '(project root)',
-        path: process.cwd(),
-        manifest: projectManifest,
-        plugins: []
-      }].concat(plugins)
-    )
+    .then(plugins => plugins.concat([{
+      name: '(project root)',
+      path: process.cwd(),
+      manifest: projectManifest,
+      plugins: []
+    }]))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
