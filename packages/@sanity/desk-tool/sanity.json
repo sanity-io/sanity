@@ -31,19 +31,19 @@
     {
       "name": "component:desk-tool/pane-container",
       "srcPath": "./src/pane/PaneContainer.js",
-      "path": "./lib/PaneContainer.js"
+      "path": "./lib/pane/PaneContainer.js"
     },
 
     {
       "name": "component:desk-tool/pane",
       "srcPath": "./src/pane/Pane.js",
-      "path": "./lib/Pane.js"
+      "path": "./lib/pane/Pane.js"
     },
 
     {
       "name": "component:desk-tool/query-pane",
       "srcPath": "./src/pane/QueryPane.js",
-      "path": "./lib/QueryPane.js"
+      "path": "./lib/pane/QueryPane.js"
     }
   ]
 }
