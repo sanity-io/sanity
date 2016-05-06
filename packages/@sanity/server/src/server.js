@@ -3,10 +3,10 @@ import getProdServer from './prodServer'
 import getWebpackProdConfig from './configs/webpack.config.prod'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 
-const getWebpackConfig = env => {
-  return env === 'production'
-    ? getWebpackProdConfig()
-    : getWebpackDevConfig()
+const getWebpackConfig = baseConfig => {
+  return baseConfig.env === 'production'
+    ? getWebpackProdConfig(baseConfig)
+    : getWebpackDevConfig(baseConfig)
 }
 
 export {
