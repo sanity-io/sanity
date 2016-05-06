@@ -5,7 +5,9 @@ class LoginStatus extends React.Component {
   render() {
     return (
       <div className={styles.loginStatus}>
-        You are logged in as [someone]
+        <span className={styles.text}>
+          You are logged in as <span className={styles.userName}>[someone]</span>
+        </span>
         <a href="#" className={styles.logout}>Log out</a>
       </div>
     )

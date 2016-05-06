@@ -1,3 +1,43 @@
+@import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700&subset=latin,latin-ext);
+
+.defaultLayout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  align-items: stretch;
+}
+
 .toolContainer {
-  margin-left: 64px;
+  display: flex;
+  overflow: hidden;
+  flex-grow: 1;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.header {
+  border-bottom: 1px solid #ccc;
+  padding: .5rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.header {
+  height: 50px;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "News Cycle", sans-serif;
 }

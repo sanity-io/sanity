@@ -12,16 +12,17 @@ class DefaultLayout extends React.Component {
     const activeToolName = this.props.params.tool
 
     return (
-      <div className="default-layout">
-        <Header />
-        <ToolSwitcher tools={tools} activeToolName={activeToolName} />
-        <div className={styles.toolContainer}>
-          <Router>
-            <Redirect path="/" to={`/${tools[0].name}`} />
-            <Route path="/:tool/*" component={RenderTool} />
-          </Router>
+      <div className={styles.defaultLayout}>
+        <Header className={styles.header} />
+        <div className={styles.content}>
+          <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
+          <div className={styles.toolContainer}>
+            <Router>
+              <Redirect path="/" to={`/${tools[0].name}`} />
+              <Route path="/:tool/*" component={RenderTool} />
+            </Router>
+          </div>
         </div>
-
         {absolutes.map((Abs, i) => <Abs key={i} />)}
       </div>
     )

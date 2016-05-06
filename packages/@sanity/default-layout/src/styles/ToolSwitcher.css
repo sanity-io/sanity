@@ -1,21 +1,42 @@
-.switcher {
+.toolSwitcher {
   border-right: 1px solid #ccc;
-  list-style-type: none;
   padding: 0;
   margin: 0;
-  width: 64px;
+  width: 4em;
+  position: relative;
+}
+
+
+.toolList {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
   height: 100%;
-  position: absolute;
+
 }
 
 .item {
   text-align: center;
   color: #999;
+  margin: 0;
+  padding: 1rem 0;
 }
 
-.item img {
+.iconContainer {
+  height: 2em;
+  width: 2em;
+  margin: 0 auto;
+}
+.iconContainer img {
   width: 100%;
 }
+
+
+.toolName {
+
+}
+
 
 .activeItem {
   composes: item;
