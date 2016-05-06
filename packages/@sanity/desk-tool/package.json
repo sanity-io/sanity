@@ -27,6 +27,7 @@
     "babel-preset-react": "^6.5.0",
     "eslint": "^2.8.0",
     "eslint-config-sanity": "^1.0.7",
+    "eslint-plugin-react": "^5.0.1",
     "rimraf": "^2.5.2"
   },
   "peerDependencies": {

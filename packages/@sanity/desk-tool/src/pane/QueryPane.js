@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import Pane from 'component:desk-tool/pane'
-import styles from '../../styles/DeskTool.css'
+// import styles from '../../styles/DeskTool.css'
 import client from 'client:@sanity/base/client'
 
 class QueryPane extends React.Component {

@@ -1,0 +1,50 @@
+.panes {
+  display: flex;
+  flex-grow: 1;
+  box-sizing: border-box;
+  position: relative;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.pane {
+  overflow: hidden;
+  flex-grow: 1;
+  position: relative;
+  overflow: scroll;
+  border-right: 1px solid #ccc;
+}
+
+.paneItems {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: scroll;
+}
+
+.paneItem {
+  line-height: 3em;
+  border-bottom: 1px solid #ccc;
+}
+
+.paneItemLink {
+  display: block;
+  padding: 0 1em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.paneItemLink:hover {
+
+}
+
+.activePaneItemLink {
+  composes: paneItemLink;
+  font-weight: 700;
+  background-color: #ccc;
+}
+
+.panes {
+
+}

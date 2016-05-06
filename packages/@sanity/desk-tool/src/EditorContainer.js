@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:desk-tool/styles'
+import styles from '../styles/EditorContainer.css'
 
 const EditorContainer = ({children}) =>
-  <main className={styles.editorContainer}>
+  <div className={styles.editorContainer}>
     {children}
-  </main>
+  </div>
 
-export default PaneContainer
+export default EditorContainer

@@ -6,16 +6,15 @@
     },
 
     {
-      "name": "style:desk-tool/styles",
-      "description": "Styling for the desk tool"
-    },
-
-    {
       "implements": "config:desk-tool/pane-resolver",
       "srcPath": "./src/schemaPaneResolver.js",
       "path": "./lib/schemaPaneResolver.js"
     },
 
+    {
+      "name": "style:desk-tool/styles",
+      "description": "Styling for the desk tool"
+    },
     {
       "name": "style:desk-tool/default",
       "implements": "style:desk-tool/styles",

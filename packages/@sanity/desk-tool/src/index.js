@@ -1,4 +1,3 @@
-import React from 'react'
 import DeskTool from './DeskTool'
 import Icon from './Icon'
 

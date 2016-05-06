@@ -2,8 +2,8 @@ import React from 'react'
 import Pane from 'component:desk-tool/pane'
 import QueryPane from 'component:desk-tool/query-pane'
 import schema from 'schema:@sanity/base/schema'
-import styles from 'style:desk-tool/styles'
 import PaneContainer from 'component:desk-tool/pane-container'
+import styles from '../styles/DeskTool.css'
 
 function getTypeItems() {
   return Object.keys(schema.types || {}).map(type => ({
@@ -37,10 +37,11 @@ function SchemaPaneResolver({segments}) {
   }
 
   return (
-    <div className={styles.deskTool}>
-      <PaneContainer>{panes}</PaneContainer>
-
-      <main className={styles.editorContainer}>
+    <div className={styles.container}>
+      <PaneContainer className={styles.paneContainer}>
+        {panes}
+      </PaneContainer>
+      <main className={styles.main}>
         {selectedItem && <div>{selectedItem}</div>}
       </main>
     </div>

@@ -1,49 +1,24 @@
 .deskTool {
+  overflow: hidden;
+  box-sizing: border-box;
+  flex-flow: nowrap;
+  flex-grow: 1;
   display: flex;
-  align-items: stretch;
-  flex-direction: row;
-  justify-content: flex-start;
+  align-self: stretch;
 }
 
-.pane {
-  float: left;
-  padding: 0;
-  margin: 0;
-  border-right: 1px solid #ccc;
-  list-style-type: none;
+.container {
+  align-self: stretch;
+  flex-grow: 1;
+  display: flex;
 }
 
-.paneItem {
-  border-bottom: 1px solid #ccc;
+.paneContainer {
+  border: 5px solid blue;
+  align-self: stretch;
+  flex-grow: 0;
 }
 
-.paneItemLink {
-  padding: 0 5px;
-  line-height: 48px;
-  display: block;
-  text-decoration: none;
-}
-
-.paneItemLink:hover {
-  background: #fafafa;
-}
-
-.activePaneItemLink {
-  composes: paneItemLink;
-
-  background: #eee;
-}
-
-.panes {
-  float: left;
-}
-
-.panes:after {
-  display: table;
-  content: '';
-  clear: both;
-}
-
-.editorContainer {
-  float: left;
+.main {
+  flex-grow: 10;
 }
