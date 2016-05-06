@@ -11,6 +11,7 @@ export default function getDevServer(config = {}) {
   const app = getBaseServer()
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
 
+  // Inject hot module reloading preset if not present already
   const babelLoader = find(webpackConfig.module.loaders, {loader: 'babel'})
   if (babelLoader) {
     const presets = get(babelLoader, 'query.env.development.presets', [])
@@ -23,8 +24,8 @@ export default function getDevServer(config = {}) {
     }
   }
 
+  // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
-
   app.use(webpackDevMiddleware(compiler, {
     noInfo: true,
     publicPath: webpackConfig.output.publicPath,
@@ -34,6 +35,8 @@ export default function getDevServer(config = {}) {
 
   app.use(webpackHotMiddleware(compiler))
 
+  // Serve an empty CSS file for the main stylesheet,
+  // as they are injected dynamically in development mode
   app.get('/static/stylesheets/main.css', (req, res) => {
     res.set('Content-Type', 'text/css')
     res.send()
