@@ -34,5 +34,10 @@ export default function getDevServer(config = {}) {
 
   app.use(webpackHotMiddleware(compiler))
 
+  app.get('/static/stylesheets/main.css', (req, res) => {
+    res.set('Content-Type', 'text/css')
+    res.send()
+  })
+
   return applyStaticRoutes(app, config)
 }
