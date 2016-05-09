@@ -19,6 +19,8 @@
   ],
   "dependencies": {
     "in-publish": "^2.0.0",
+    "postcss-cssnext": "^2.5.2",
+    "postcss-nested": "^1.0.0",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {

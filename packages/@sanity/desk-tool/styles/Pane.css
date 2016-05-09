@@ -1,3 +1,7 @@
+@use postcss-cssnext;
+@use postcss-nested;
+
+
 .panes {
   display: flex;
   flex-grow: 1;
@@ -5,6 +9,7 @@
   position: relative;
   flex-direction: row;
   align-items: stretch;
+  max-height: 100%;
 }
 
 .pane {
@@ -12,7 +17,7 @@
   flex-grow: 1;
   position: relative;
   overflow-y: auto;
-  border-right: 1px solid #ccc;
+  max-height: 100%;
 }
 
 .paneItems {
@@ -23,8 +28,7 @@
 }
 
 .paneItem {
-  line-height: 3em;
-  border-bottom: 1px solid #ccc;
+  line-height: 2em;
 }
 
 .paneItemLink {
@@ -32,6 +36,22 @@
   padding: 0 1em;
   text-decoration: none;
   color: inherit;
+  &:after {
+    float: right;
+    content: "\232A";
+    opacity: .2;
+  }
+  &:active {
+    opacity: .5;
+  }
+  &:hover {
+    opacity: .8;
+    color: red;
+    &:after {
+      opacity: .8;
+      color: red;
+    }
+  }
 }
 
 .paneItemLink:hover {
@@ -41,7 +61,14 @@
 .activePaneItemLink {
   composes: paneItemLink;
   font-weight: 700;
-  background-color: #ccc;
+  color: red;
+  &:after {
+    opacity: 1;
+    color: red;
+    font-weight: 700;
+    font-size: 2em;
+    margin-right: -.35em;
+  }
 }
 
 .panes {
