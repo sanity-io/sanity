@@ -4,12 +4,6 @@
 //
 
 export default {
-  itemz: {
-    type: 'list',
-    of: [
-      {type: 'latlon'}
-    ]
-  },
   latlon: {
     fields: {
       lat: {
@@ -106,7 +100,7 @@ export default {
         type: 'richText',
         title: 'Ingress',
         validates: {
-          maxLen: 10
+          maxLength: 10
         }
       },
       location: {
@@ -134,5 +128,11 @@ export default {
         type: 'itemz'
       }
     }
+  },
+  itemz: {
+    type: 'list',
+    of: [
+      {type: 'latlon'}
+    ]
   }
 }
