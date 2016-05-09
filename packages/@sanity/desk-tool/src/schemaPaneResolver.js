@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import Pane from 'component:desk-tool/pane'
 import QueryPane from 'component:desk-tool/query-pane'
 import schema from 'schema:@sanity/base/schema'
@@ -12,40 +12,51 @@ function getTypeItems() {
   }))
 }
 
-function SchemaPaneResolver({segments}) {
-  const selectedType = segments[0]
-  const selectedItem = segments[1]
-  const panes = [
-    <Pane
-      key="types"
-      items={getTypeItems()}
-      activeItem={selectedType}
-    />
-  ]
-
-  if (selectedType) {
-    panes.push(
-      <QueryPane
-        key={selectedType}
-        basePath={`/${selectedType}`}
-        segments={segments}
-        query={`${schema.name}.${selectedType} {"pathSegment": .$id, "title": .name}`}
-        activeItem={segments[1]}
-        previousPathSegment={segments[0]}
-      />
-    )
+class SchemaPaneResolver extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.location !== nextProps.location
   }
 
-  return (
-    <div className={styles.container}>
-      <PaneContainer className={styles.paneContainer}>
-        {panes}
-      </PaneContainer>
-      <main className={styles.main}>
-        {selectedItem && <div>{selectedItem}</div>}
-      </main>
-    </div>
-  )
+  render() {
+    const segments = this.props.location.split('/').slice(1)
+    const selectedType = segments[0]
+    const selectedItem = segments[1]
+    const panes = [
+      <Pane
+        key="types"
+        items={getTypeItems()}
+        activeItem={selectedType}
+      />
+    ]
+
+    if (selectedType) {
+      panes.push(
+        <QueryPane
+          key={selectedType}
+          basePath={`/${selectedType}`}
+          segments={segments}
+          query={`${schema.name}.${selectedType} {"pathSegment": .$id, "title": .name}`}
+          activeItem={segments[1]}
+          previousPathSegment={segments[0]}
+        />
+      )
+    }
+
+    return (
+      <div className={styles.container}>
+        <PaneContainer className={styles.paneContainer}>
+          {panes}
+        </PaneContainer>
+        <main className={styles.main}>
+          {selectedItem && <div>{selectedItem}</div>}
+        </main>
+      </div>
+    )
+  }
+}
+
+SchemaPaneResolver.propTypes = {
+  location: PropTypes.string.isRequired
 }
 
 export default SchemaPaneResolver

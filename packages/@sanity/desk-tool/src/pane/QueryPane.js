@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import Pane from 'component:desk-tool/pane'
-// import styles from '../../styles/DeskTool.css'
 import client from 'client:@sanity/base/client'
+import equals from 'shallow-equals'
 
 class QueryPane extends React.Component {
   constructor() {
@@ -10,6 +10,10 @@ class QueryPane extends React.Component {
     this.state = {
       loading: true
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !equals(this.props, nextProps) || !equals(this.state, nextState)
   }
 
   componentDidMount() {
@@ -31,9 +35,9 @@ class QueryPane extends React.Component {
 
 QueryPane.propTypes = {
   loading: PropTypes.bool,
-  items: PropTypes.array,
+  query: PropTypes.string.isRequired,
   activeItem: PropTypes.any,
-  previousPathSegment: PropTypes.string
+  basePath: PropTypes.string
 }
 
 export default QueryPane
