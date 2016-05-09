@@ -1,47 +1,55 @@
+@use postcss-cssnext;
+@use postcss-nested;
+
 .toolSwitcher {
-  border-right: 1px solid #ccc;
   padding: 0;
   margin: 0;
-  width: 4em;
+  margin-left: 1rem;
   position: relative;
 }
-
 
 .toolList {
   display: block;
   list-style: none;
   margin: 0;
   padding: 0;
-  height: 100%;
-
 }
 
 .item {
+  display: block;
+  position: relative;
   text-align: center;
-  color: #999;
+  color: #000;
   margin: 0;
-  padding: 1rem 0;
+  padding: 1rem;
+  border-bottom: 1px solid transparent;
+  transition: border .1s linear;
+
+  &:hover {
+    border-bottom: 3px solid #666;
+  }
+}
+
+.activeItem {
+  composes: item;
+  border-bottom: 2px solid var(--brand-color);
 }
 
 .iconContainer {
   height: 2em;
   width: 2em;
   margin: 0 auto;
+  display: none;
 }
+
 .iconContainer img {
   width: 100%;
 }
-
 
 .toolName {
 
 }
 
-
-.activeItem {
-  composes: item;
-  color: #0d0d0d;
-}
 
 .toolLink {
   color: inherit;

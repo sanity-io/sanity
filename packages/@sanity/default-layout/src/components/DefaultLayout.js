@@ -1,11 +1,12 @@
 import React from 'react'
-import Header from './Header'
 import ToolSwitcher from './ToolSwitcher'
 import RenderTool from './RenderTool'
 import {Router, Route, NotFound, Redirect} from 'router:@sanity/base/router'
 import styles from '../styles/DefaultLayout.css'
 import tools from 'all:tool:@sanity/base/tool'
 import absolutes from 'all:component:@sanity/base/absolutes'
+import LoginStatus from './LoginStatus'
+import Logo from './Logo'
 
 class DefaultLayout extends React.Component {
   render() {
@@ -13,16 +14,24 @@ class DefaultLayout extends React.Component {
 
     return (
       <div className={styles.defaultLayout}>
-        <Header className={styles.header} />
-        <div className={styles.content}>
-          <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
-          <div className={styles.toolContainer}>
-            <Router>
-              <Redirect path="/" to={`/${tools[0].name}`} />
-              <Route path="/:tool/*" component={RenderTool} />
-            </Router>
+
+        <div className={styles.top}>
+          <div className={styles.logoContainer}>
+            <Logo />
           </div>
+          <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
+          <LoginStatus />
         </div>
+
+
+        <div className={styles.toolContainer}>
+          <Router>
+            <Redirect path="/" to={`/${tools[0].name}`} />
+            <Route path="/:tool/*" component={RenderTool} />
+          </Router>
+        </div>
+
+
         {absolutes.map((Abs, i) => <Abs key={i} />)}
       </div>
     )
