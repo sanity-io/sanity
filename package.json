@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/sanity-io/form-builder.git"
+  },
   "scripts": {
     "start": "babel-node example/server.js"
   },
