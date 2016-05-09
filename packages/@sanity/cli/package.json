@@ -36,6 +36,7 @@
     "configstore": "^1.4.0",
     "debug": "^2.2.0",
     "deep-sort-object": "^1.0.1",
+    "filesize": "^3.3.0",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
     "git-user-info": "^1.0.0",
