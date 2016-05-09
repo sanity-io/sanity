@@ -11,7 +11,7 @@
   overflow: hidden;
   flex-grow: 1;
   position: relative;
-  overflow: scroll;
+  overflow-y: auto;
   border-right: 1px solid #ccc;
 }
 
@@ -20,7 +20,6 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow: scroll;
 }
 
 .paneItem {
