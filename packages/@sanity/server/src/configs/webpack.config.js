@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
 import RoleResolverPlugin from '@sanity/plugin-loader'
-import postcssUse from 'postcss-use'
+import postcssUse from '@sanity/postcss-use'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import simpleVarsAsync from 'postcss-simple-vars-async'
 import getStyleVariables from '../getStyleVariables'
@@ -76,7 +76,7 @@ export default (config = {}) => {
       new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
     ],
     postcss: () => [
-      //postcssUse({modules: '*'}),
+      postcssUse({modules: '*', resolvePluginsRelativeToFile: true}),
       simpleVarsAsync({variables: getStyleVariables(basePath)})
     ]
   }

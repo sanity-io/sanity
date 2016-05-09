@@ -34,6 +34,7 @@
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
     "@sanity/plugin-loader": "^1.2.5",
+    "@sanity/postcss-use": "^2.0.2",
     "@sanity/resolver": "^2.0.2",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
