@@ -1,27 +1,42 @@
 import React, {PropTypes} from 'react'
 import styles from '../../styles/Pane.css'
-import {Link} from 'router:@sanity/base/router'
+import PaneItem from './PaneItem'
+import equals from 'shallow-equals'
 
-const Pane = ({basePath, loading, items, activeItem}) =>
-  <div className={styles.pane}>
-    <ul className={styles.paneItems}>
-      {loading
-        ? <li>Loading...</li>
-        : items && items.map(item => {
-          const href = `${basePath}/${item.pathSegment}`.replace(/^\/+/, '/')
-          const className = activeItem === item.pathSegment
-            ? styles.activePaneItemLink
-            : styles.paneItemLink
+class Pane extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return !equals(this.props, nextProps)
+  }
 
-          return (
-            <li key={item.pathSegment} className={styles.paneItem}>
-              <Link className={className} href={href}>{item.title}</Link>
-            </li>
-          )
-        })
-      }
-    </ul>
-  </div>
+  render() {
+    const {basePath, loading, items, activeItem} = this.props
+
+    return (
+      <div className={styles.pane}>
+        <ul className={styles.paneItems}>
+        {loading
+          ? <li>Loading...</li>
+          : items && items.map(item => {
+            const href = `${basePath}/${item.pathSegment}`.replace(/^\/+/, '/')
+            const className = activeItem === item.pathSegment
+              ? styles.activePaneItemLink
+              : styles.paneItemLink
+
+            return (
+              <PaneItem
+                key={item.pathSegment}
+                title={item.title}
+                className={className}
+                href={href}
+              />
+            )
+          })
+        }
+        </ul>
+      </div>
+    )
+  }
+}
 
 Pane.defaultProps = {
   basePath: '/'

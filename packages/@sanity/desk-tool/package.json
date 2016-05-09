@@ -18,7 +18,8 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "shallow-equals": "0.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.7",
