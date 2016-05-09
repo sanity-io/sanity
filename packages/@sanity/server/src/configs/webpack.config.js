@@ -26,12 +26,13 @@ export default (config = {}) => {
     : 'css-loader?modules&localIdentName=[path]_[name]_[local]_[hash:base64:5]&importLoaders=1'
 
   return {
-    entry: [
-      path.join(__dirname, '..', 'browser', 'entry')
-    ],
+    entry: {
+      app: path.join(__dirname, '..', 'browser', 'entry'),
+      vendor: ['react', 'react-dom']
+    },
     output: {
-      path: path.join(__dirname, '..', '..', 'dist'),
-      filename: 'bundle.js',
+      path: config.outputPath || path.join(__dirname, '..', '..', 'dist'),
+      filename: '[name].bundle.js',
       publicPath: '/static/'
     },
     resolve: {
@@ -71,7 +72,8 @@ export default (config = {}) => {
     },
     plugins: [
       new OccurrenceOrderPlugin(),
-      new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal'])
+      new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
+      new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
     ],
     postcss: () => [
       //postcssUse({modules: '*'}),
