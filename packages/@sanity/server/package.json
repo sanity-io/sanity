@@ -34,7 +34,6 @@
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
     "@sanity/plugin-loader": "^1.2.5",
-    "@sanity/postcss-use": "^2.0.2",
     "@sanity/resolver": "^2.0.2",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
@@ -50,7 +49,7 @@
     "json-loader": "^0.5.4",
     "lodash": "^4.5.0",
     "postcss-simple-vars-async": "^1.2.0",
-    "postcss-use": "^2.0.2",
+    "postcss-use": "^2.1.0",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
     "webpack-hot-middleware": "^2.9.1"
