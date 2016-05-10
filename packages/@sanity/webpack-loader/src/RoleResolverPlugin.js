@@ -22,6 +22,7 @@ const RoleResolverPlugin = function (options) {
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
+      // The debug role should return the whole role/plugin tree
       if (request.request === 'sanity:debug') {
         this.doResolve(['file'], {
           request: debugRole,
@@ -43,6 +44,8 @@ const RoleResolverPlugin = function (options) {
       roleResolver
         .resolveRoles({basePath: options.basePath})
         .then(roles => {
+          // Configuration files resolve to a specific path
+          // Either the root sanity.json or a plugins JSON config
           const configMatch = request.request.match(configMatcher)
           if (configMatch) {
             const configFor = configMatch[1]
@@ -54,6 +57,9 @@ const RoleResolverPlugin = function (options) {
             return this.doResolve(['file'], req, callback)
           }
 
+          // Imports throw if they are not fulfilled, except if they
+          // are prefixed with `all:` (returns an empty array) or they
+          // are postfixed with `?` (returns undefined)
           const role = roles.fulfilled[sanityRole]
           if (request.request.indexOf('all:') !== 0 && !role) {
             return callback(new Error(
