@@ -1,6 +1,6 @@
 import {resolveRoles} from '@sanity/resolver'
 import isPlainObject from 'lodash/isPlainObject'
-import merge from 'lodash/merge'
+import requireUncached from 'require-uncached'
 
 let resolving = false
 const waiting = []
@@ -17,8 +17,8 @@ function getStyleVariables(basePath) {
   return resolveRoles({basePath})
     .then(result => {
       const role = result.fulfilled[roleName] || []
-      const implementations = role.map(impl => {
-        const implementer = require(impl.path)
+      const res = role.reduceRight((vars, impl) => {
+        const implementer = requireUncached(impl.path)
         const implementation = implementer.__esModule && implementer.default || implementer
 
         if (!isPlainObject(implementation)) {
@@ -27,10 +27,8 @@ function getStyleVariables(basePath) {
           )
         }
 
-        return implementation
-      })
-
-      const res = merge({}, ...implementations)
+        return Object.assign(vars, implementation)
+      }, {})
 
       while (waiting.length) {
         waiting.shift().resolve(res)
