@@ -9,7 +9,7 @@
       "description": "Statically positioned elements that should live on the page regardless of routing."
     },
     {
-      "name": "variables:@sanity/base/style",
+      "name": "variables:@sanity/base/theme",
       "description": "Variables for styling. Implementers will be merged in definition order."
     },
     {
@@ -22,7 +22,7 @@
       "path": "./lib/components/DefaultRootComponent.js"
     },
     {
-      "implements": "variables:@sanity/base/style",
+      "implements": "variables:@sanity/base/theme",
       "srcPath": "./src/styleVariables.js",
       "path": "./lib/styleVariables.js"
     },
