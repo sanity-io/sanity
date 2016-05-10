@@ -77,7 +77,7 @@ export default (config = {}) => {
     ],
     postcss: () => [
       postcssUse({modules: '*', resolvePluginsRelativeToFile: true}),
-      simpleVarsAsync({variables: getStyleVariables(basePath)})
+      simpleVarsAsync({variables: () => getStyleVariables(basePath)})
     ]
   }
 }
