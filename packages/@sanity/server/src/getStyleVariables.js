@@ -4,7 +4,7 @@ import merge from 'lodash/merge'
 
 let resolving = false
 const waiting = []
-const roleName = 'variables:@sanity/base/style'
+const roleName = 'variables:@sanity/base/theme'
 
 function getStyleVariables(basePath) {
   if (resolving) {
