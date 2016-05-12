@@ -11,6 +11,7 @@ export default React.createClass({
 
   getDefaultProps() {
     return {
+      value: '',
       onChange() {}
     }
   },
@@ -34,5 +35,4 @@ export default React.createClass({
       />
     )
   }
-
 })

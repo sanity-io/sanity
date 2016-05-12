@@ -4,6 +4,21 @@
 
 There is an example of a consumer app in the `./example` that can be started with `npm start`
 
+## Limitations
+
+Polymorphic arrays may only contain elements of one primitive type. Thus, this is invalid:
+
+```json
+{
+  "myType": {
+    "type": "array",
+    "of": [
+      {"type": "string", "title": "Street"},
+      {"type": "string", "title": "E-mail"}
+    ]
+  }
+}
+```
 
 ## Input fields
 

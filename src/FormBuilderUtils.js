@@ -17,6 +17,10 @@ export function unwrap(value) {
   return value
 }
 
+export function isWrapped(value) {
+  return !!(value && value[valueContainerSymbol])
+}
+
 export function markWrapped(value, valueContainer) {
   value[valueContainerSymbol] = valueContainer
   return value

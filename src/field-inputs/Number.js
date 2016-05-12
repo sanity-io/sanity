@@ -12,7 +12,7 @@ export default React.createClass({
   statics: {
     valueContainer: {
       wrap(value) {
-        return {stringValue: String(value)}
+        return {stringValue: String(value || '')}
       },
       unwrap(value) {
         const stringValue = value.stringValue.trim()

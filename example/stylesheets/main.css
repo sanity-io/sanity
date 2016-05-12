@@ -2,7 +2,7 @@
   line-height: 17px;
   font-size: 13px;
   font-family: monospace;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 .json-markup-key {
   font-weight: bold;

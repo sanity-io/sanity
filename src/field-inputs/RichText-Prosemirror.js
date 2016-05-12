@@ -21,7 +21,7 @@ export default React.createClass({
   statics: {
     valueContainer: {
       wrap(htmlValue) {
-        return parseFrom(defaultSchema, htmlValue, 'html')
+        return parseFrom(defaultSchema, htmlValue || '', 'html')
       },
       unwrap(doc) {
         return serializeTo(doc, 'html')
@@ -41,10 +41,6 @@ export default React.createClass({
     ReactDOM.findDOMNode(this).appendChild(this._prosemirror.wrapper)
     this.setContent(this.props.value)
     this._prosemirror.on('change', this.handleProseMirrorChange)
-  },
-
-  shouldComponentUpdate() {
-    return false
   },
 
   componentWillUpdate(nextProps) {

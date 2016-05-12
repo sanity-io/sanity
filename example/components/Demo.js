@@ -1,69 +1,51 @@
 import React, {PropTypes} from 'react'
 
-import FormBuilder from '../../src/FormBuilder'
-import FormBuilderPropTypes from '../../src/FormBuilderPropTypes'
-import {pick} from 'lodash'
-import inspect from 'object-inspect'
+import FormBuilderProvider from '../../src/FormBuilderProvider'
+import {FormBuilder} from '../../src/FormBuilder'
 import jsonMarkup from 'json-markup'
 
-import schema from '../../example-schema'
-import String from '../../src/field-builders/String'
-import Number from '../../src/field-builders/Number'
-import Image from '../../src/field-builders/Image'
-import StringList from '../../src/field-builders/StringList'
-import RichText from '../../src/field-builders/RichText'
 import * as FormBuilderUtils from '../../src/FormBuilderUtils'
 
+import schema from '../../example-schema'
+import Obj from '../../src/field-inputs/Object'
+import Arr from '../../src/field-inputs/Array'
+import Num from '../../src/field-inputs/Number'
+import RichText from '../../src/field-inputs/RichText'
+import Str from '../../src/field-inputs/String'
+import {compile} from '../../src/compileSchema'
 
-const fieldInputs = {
-  richText: () => RichText,
-  string: () => String,
-  tag: () => String,
-  number: () => Number,
-  list: field => {
-    if (field.of.every(type => type.name === 'string')) {
-      return StringList
-    }
-    return StringList // todo: better list
-  },
-  image: () => Image
+const compiledSchema = compile(schema)
+
+const inputs = {
+  object: Obj,
+  string: Str,
+  number: Num,
+  array: Arr,
+  text: RichText
 }
 
-function resolveFieldInput(field) {
-  // todo: smarter resolution algorithm
-  const type = field.type
-  const resolver = fieldInputs[type]
-
-  if (!resolver) {
-    return null
-  }
-
-  const resolved = resolver(field);
-  //console.log('resolved field builder %s => %s:', field.type, type)
-  return resolved
-}
-
-const FormBuilderProvider = React.createClass({
-
-  propTypes: {
-    resolveFieldInput: PropTypes.func.isRequired,
-    children: PropTypes.node,
-    editType: FormBuilderPropTypes.type,
-    schema: FormBuilderPropTypes.schema
-  },
-  childContextTypes: {
-    resolveFieldInput: PropTypes.func.isRequired,
-    schema: FormBuilderPropTypes.schema
-  },
-
-  getChildContext() {
-    return pick(this.props, 'schema', 'resolveFieldInput')
-  },
-
-  render() {
-    return this.props.children
+Object.keys(compiledSchema.types).forEach(typeName => {
+  const typeDef = compiledSchema.types[typeName]
+  if (inputs[typeDef.type]) {
+    inputs[typeName] = inputs[typeDef.type]
   }
 })
+
+function resolveFieldInput(field, type) {
+  return inputs[field.type]
+}
+
+const DEBUG_JSON_STYLE = {
+  zIndex: 10000,
+  overflow: 'scroll',
+  padding: 50,
+  backgroundColor: 'white',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0
+}
 
 export default React.createClass({
 
@@ -92,10 +74,20 @@ export default React.createClass({
     return null
   },
 
+  clear() {
+    this.setState({value: {}})
+  },
+
   save() {
     const {value} = this.state
     localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderUtils.unwrap(value)))
     this.setState({saved: true})
+  },
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.shouldInspect !== this.state.shouldInspect) {
+      document.body.style.overflow = this.state.shouldInspect ? 'hidden' : ''
+    }
   },
 
   render() {
@@ -109,9 +101,10 @@ export default React.createClass({
       <div className="content">
         <h2>Form value</h2>
         <button onClick={() => this.save()}>{saved ? 'Saved' : 'Save'} to local storage</button>
-        {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>INSPECT VALUE</button>}
+        <button onClick={() => this.clear()}>Clear value</button>
+        {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>Inspect</button>}
         {shouldInspect && (
-          <div style={{overflow: 'scroll', padding: 50, backgroundColor: 'white', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0}}>
+          <div style={DEBUG_JSON_STYLE}>
             <button onClick={() => this.setState({shouldInspect: false})}>Close</button>
             <h3>The unwrapped value is serialized here:</h3>
             <pre>
@@ -128,15 +121,18 @@ export default React.createClass({
 
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
-            schema={schema}
+            schema={compiledSchema.types}
           >
             <FormBuilder
-              typeName="story"
+              type={compiledSchema.types.story}
               value={value}
               onChange={this.handleChange}
             />
+
           </FormBuilderProvider>
         </form>
+
+        <pre>{JSON.stringify(compiledSchema.types, null, 2)}</pre>
       </div>
     )
   }

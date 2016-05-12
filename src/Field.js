@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import {eq} from 'lodash'
 
-const Field = React.createClass({
+export default React.createClass({
   propTypes: {
-    builder: PropTypes.func.isRequired, // react element
+    fieldInput: PropTypes.func.isRequired, // react element
     field: FormBuilderPropTypes.field.isRequired,
     name: PropTypes.string,
     value: PropTypes.any,
@@ -24,15 +24,13 @@ const Field = React.createClass({
   },
 
   render() {
-    const {field, name, value, builder} = this.props
-    const FieldBuilder = builder
+    const {field, name, value, fieldInput} = this.props
+    const FieldInput = fieldInput
     return (
       <div key={name}>
         {/* <pre>{JSON.stringify(field, null, 2)}</pre> */}
-        <FieldBuilder value={value} onChange={this.handleChange} field={field} />
+        <FieldInput value={value} onChange={this.handleChange} field={field} />
       </div>
     )
   }
 })
-
-export default Field

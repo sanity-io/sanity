@@ -2,9 +2,10 @@ import browserify from 'browserify'
 import babelify from 'babelify'
 import path from 'path'
 import rebundler from 'rebundler'
+import envify from 'loose-envify'
 
 const main = rebundler((cache, pkgCache) => {
-  return browserify(require.resolve('../browser/main.js'), {
+  return browserify(require.resolve('../browser-main.js'), {
     cache: cache,
     packageCache: pkgCache,
     extensions: ['.jsx'],
@@ -12,6 +13,7 @@ const main = rebundler((cache, pkgCache) => {
     fullPaths: true,
     basedir: path.dirname(path.resolve('../..'))
   })
+    .transform(envify)
     .transform(babelify)
 })
 

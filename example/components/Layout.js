@@ -16,6 +16,7 @@ export default React.createClass({
         <body>
           <h2>Form builder playground</h2>
           <div id="main" />
+          <div id="debug" />
         </body>
       </html>
     )
