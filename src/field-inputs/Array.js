@@ -1,12 +1,9 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import {FormBuilder} from '../FormBuilder'
+import RenderListItem from '../RenderListItem'
 import {resolveJSType} from '../types/utils'
 import update from 'react-addons-update'
 
-const DELETE_BUTTON_STYLE = {fontSize: 10, border: '1px solid #aaa', backgroundColor: 'transparent'}
-
-// Just a stub for now
 export default React.createClass({
   propTypes: {
     type: FormBuilderPropTypes.type,
@@ -76,17 +73,18 @@ export default React.createClass({
   handleAddItemChange(newVal) {
     this.setState({addItem: newVal})
   },
-  handleItemChange(index, newVal) {
+  handleItemChange(newVal, index) {
     const {value} = this.props
+    const spliceArgs = newVal ? [index, 1, newVal] : [index, 1]
     this.props.onChange(update(value, {
-      $splice: [[index, 1, newVal]]
+      $splice: [spliceArgs]
     }))
   },
   renderAddItemForm(addItemType) {
     return (
       <div>
         <h3>Add {addItemType.title}</h3>
-        <FormBuilder type={{name: addItemType.type}} value={this.state.addItem} onChange={this.handleAddItemChange} />
+        <RenderListItem index={-1} field={addItemType} value={this.state.addItem} onChange={this.handleAddItemChange} />
         <button type="button" onClick={this.handleOK}>OK</button>
       </div>
     )
@@ -96,7 +94,7 @@ export default React.createClass({
     const {selectType, addItemType} = this.state
     return (
       <div>
-        <button type="button" onClick={this.handleAddBtnClick}>Add item</button>
+        <button type="button" onClick={this.handleAddBtnClick}>+</button>
         {selectType && this.renderSelectType()}
         {addItemType && this.renderAddItemForm(addItemType)}
         {value.map((item, i) => {
@@ -106,8 +104,7 @@ export default React.createClass({
           const typeFromField = type.of.find(ofType => ofType.type === itemType)
           return (
             <div key={i}>
-              <FormBuilder type={{name: typeFromField.type}} value={item} onChange={newVal => this.handleItemChange(i, newVal)} />
-              <button type="button" style={DELETE_BUTTON_STYLE} onClick={() => this.handleRemoveItem(i)}>x</button>
+              <RenderListItem index={i} field={typeFromField} value={item} onChange={this.handleItemChange} />
             </div>
           )
         })}
