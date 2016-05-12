@@ -6,6 +6,7 @@ import basicTypes from './types'
 import {resolveJSType} from './types/utils'
 
 const BASIC_TYPE_NAMES = Object.keys(basicTypes)
+const CLEAR_BUTTON_STYLES = {fontSize: 10, border: '1px solid #aaa', backgroundColor: 'transparent'}
 
 export default React.createClass({
   propTypes: {
@@ -28,8 +29,17 @@ export default React.createClass({
     const {field, fieldName} = this.props
     return (
       <fieldset key={fieldName}>
-        <h1>{field.title} ({fieldName})</h1>
-        <button type="button" onClick={() => this.handleChange()}>Clear</button>
+        <h1>
+          {field.title} ({fieldName})
+        </h1>
+        <button
+          style={CLEAR_BUTTON_STYLES}
+          type="button"
+          title="Clear value"
+          onClick={() => this.handleChange()}
+        >
+          x
+        </button>
         {el}
       </fieldset>
     )
