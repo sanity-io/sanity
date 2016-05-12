@@ -15,9 +15,7 @@ export const FormBuilder = React.createClass({
 
   getDefaultProps() {
     return {
-      value: {},
-      onChange() {
-      }
+      onChange() {}
     }
   },
 
