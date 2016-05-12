@@ -1,6 +1,10 @@
 @use postcss-cssnext;
 @use postcss-nested;
 
+:root {
+  --brand-color: red;
+}
+
 .toolSwitcher {
   padding: 0;
   margin: 0;
