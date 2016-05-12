@@ -22,6 +22,9 @@ export function isWrapped(value) {
 }
 
 export function markWrapped(value, valueContainer) {
+  if (!value || typeof value !== 'object') {
+    return value
+  }
   value[valueContainerSymbol] = valueContainer
   return value
 }
