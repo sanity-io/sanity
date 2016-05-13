@@ -50,7 +50,7 @@ export default React.createClass({
   },
 
   handleOK() {
-    const item = this.state.addItem
+    const item = this.state.addItem || {$type: this.state.addItemType.type}
     const {value} = this.props
     this.setState({selectType: false, addItemType: null, addItem: void 0})
     this.props.onChange([item].concat(value || []))
@@ -83,7 +83,7 @@ export default React.createClass({
   renderAddItemForm(addItemType) {
     return (
       <div>
-        <h3>Add {addItemType.title}</h3>
+        <b>Add {addItemType.title}</b>
         <RenderListItem index={-1} field={addItemType} value={this.state.addItem} onChange={this.handleAddItemChange} />
         <button type="button" onClick={this.handleOK}>OK</button>
       </div>

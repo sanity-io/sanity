@@ -9,6 +9,7 @@ import * as FormBuilderUtils from '../../src/FormBuilderUtils'
 import schema from '../../example-schema'
 import Obj from '../../src/field-inputs/Object'
 import Arr from '../../src/field-inputs/Array'
+import Bool from '../../src/field-inputs/Boolean'
 import Num from '../../src/field-inputs/Number'
 import RichText from '../../src/field-inputs/RichText'
 import Str from '../../src/field-inputs/String'
@@ -20,6 +21,7 @@ const inputs = {
   object: Obj,
   string: Str,
   number: Num,
+  boolean: Bool,
   array: Arr,
   text: RichText
 }
