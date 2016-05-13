@@ -12,6 +12,7 @@ import Arr from '../../src/field-inputs/Array'
 import Bool from '../../src/field-inputs/Boolean'
 import Num from '../../src/field-inputs/Number'
 import RichText from '../../src/field-inputs/RichText'
+import Reference from '../../src/field-inputs/Reference'
 import Str from '../../src/field-inputs/String'
 import {compile} from '../../src/compileSchema'
 
@@ -23,6 +24,7 @@ const inputs = {
   number: Num,
   boolean: Bool,
   array: Arr,
+  reference: Reference,
   text: RichText
 }
 
