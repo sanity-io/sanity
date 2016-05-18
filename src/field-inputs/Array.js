@@ -61,7 +61,7 @@ export default React.createClass({
     return type.of.map(itemType => {
       return (
         <button
-          key={itemType}
+          key={itemType.type}
           onClick={() => this.handleAddItem(itemType)}
           type="button"
         >
