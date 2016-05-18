@@ -188,7 +188,7 @@ $font-size-base:        16px;
 }
 
 body {
-  border: 10px solid $brand-primary;
+
   color: var(--text-color);
   font-family: var(--font-family-sans-serif) !important;
 }
@@ -203,9 +203,12 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
+  align-content: stretch;
   box-sizing: border-box;
   overflow: hidden;
+  height: 100vh;
   max-height: 100vh;
+  border: 10px solid $brand-primary;
   padding: .5rem;
 }
 
@@ -227,6 +230,8 @@ body {
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+  align-self: stretch;
+  flex-grow: 2;
 }
 
 .logoContainer {
