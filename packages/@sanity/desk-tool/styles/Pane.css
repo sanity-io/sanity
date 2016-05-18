@@ -1,23 +1,34 @@
 @use postcss-cssnext;
 @use postcss-nested;
 
+:root {
+  @custom-media --screen-medium (min-width: 32em);
+  @custom-media --screen-default (min-width: 40em);
+  @custom-media --screen-large (min-width: 60em);
+  @custom-media --screen-xlarge (min-width: 100em);
+}
 
 .panes {
-  display: flex;
-  flex-grow: 1;
-  box-sizing: border-box;
-  position: relative;
-  flex-direction: row;
-  align-items: stretch;
-  max-height: 100%;
+  @media (--screen-medium) {
+    display: flex;
+    flex-grow: 1;
+    box-sizing: border-box;
+    position: relative;
+    flex-direction: row;
+    overflow: hidden;
+    align-self: stretch;
+  }
+
 }
 
 .pane {
-  overflow: hidden;
-  flex-grow: 1;
-  position: relative;
-  overflow-y: auto;
-  max-height: 100%;
+  @media (--screen-medium) {
+    flex-grow: 1;
+    position: relative;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+  align-self: stretch;
 }
 
 .paneItems {
@@ -25,32 +36,52 @@
   list-style: none;
   margin: 0;
   padding: 0;
+
+  @media (--screen-medium) {
+    padding-top: 1rem;
+  }
 }
 
 .paneItem {
+  display: block;
   line-height: 2em;
 }
 
 .paneItemLink {
+  width: 100%;
   display: block;
+  position: relative;
   padding: 0 1em;
   text-decoration: none;
   color: inherit;
+
+
+  @media (--screen-medium) {
+    max-width: 15em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+
   &:after {
-    float: right;
+    position: absolute;
+    right: 0;
     content: "\232A";
     opacity: .2;
   }
+
   &:active {
-    opacity: .5;
+    /*opacity: .5;*/
   }
+
   &:hover {
-    opacity: .8;
+    /*opacity: .8;*/
     color: red;
-    &:after {
+    /*&:after {
       opacity: .8;
       color: red;
-    }
+    }*/
   }
 }
 

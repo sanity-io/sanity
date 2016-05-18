@@ -1,24 +1,43 @@
+@use postcss-cssnext;
+@use postcss-nested;
+
+:root {
+  @custom-media --screen-medium (min-width: 32em);
+  @custom-media --screen-default (min-width: 40em);
+  @custom-media --screen-large (min-width: 60em);
+  @custom-media --screen-xlarge (min-width: 100em);
+}
+
 .deskTool {
-  overflow: hidden;
-  box-sizing: border-box;
-  flex-flow: nowrap;
-  flex-grow: 1;
-  display: flex;
-  align-self: stretch;
+  @media (--screen-medium) {
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-flow: nowrap;
+    flex-grow: 1;
+    display: flex;
+    align-self: stretch;
+  }
 }
 
 .container {
-  align-self: stretch;
-  flex-grow: 1;
-  display: flex;
+  @media (--screen-medium) {
+    align-self: stretch;
+    flex-grow: 1;
+    display: flex;
+  }
 }
 
 .paneContainer {
-  border: 5px solid blue;
-  align-self: stretch;
-  flex-grow: 0;
+
+  @media (--screen-medium) {
+
+    align-self: stretch;
+    flex-grow: 0;
+  }
 }
 
 .main {
-  flex-grow: 10;
+  @media (--screen-medium) {
+    flex-grow: 10;
+  }
 }
