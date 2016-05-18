@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import update from 'react-addons-update'
+import applyPatch from '../utils/applyPatch'
 
 export default React.createClass({
   propTypes: {
@@ -28,7 +28,7 @@ export default React.createClass({
   },
 
   handleChange(e) {
-    this.props.onChange(update(this.props.value, {stringValue: {$set: e.target.value}}))
+    this.props.onChange(applyPatch(this.props.value, {$set: e.target.value}))
   },
 
   render() {

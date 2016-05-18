@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderListItem from '../RenderListItem'
 import {resolveJSType} from '../types/utils'
-import update from 'react-addons-update'
+import applyPatch from '../utils/applyPatch'
 
 export default React.createClass({
   propTypes: {
@@ -44,7 +44,7 @@ export default React.createClass({
 
   handleRemoveItem(index) {
     const {value} = this.props
-    this.props.onChange(update(value, {
+    this.props.onChange(applyPatch(value, {
       $splice: [[index, 1]]
     }))
   },

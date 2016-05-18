@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderField from '../RenderField'
-import update from 'react-addons-update'
+import applyPatch from '../utils/applyPatch'
 
 export default React.createClass({
   propTypes: {
@@ -24,7 +24,7 @@ export default React.createClass({
 
   handleFieldChange(newVal, fieldName) {
     const {field} = this.props
-    this.props.onChange(update(this.props.value || {}, {
+    this.props.onChange(applyPatch(this.props.value || {}, {
       $type: {$set: field.type},
       [fieldName]: {$set: newVal}
     }))
