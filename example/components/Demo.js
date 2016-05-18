@@ -51,11 +51,24 @@ const DEBUG_JSON_STYLE = {
   bottom: 0
 }
 
+function restore() {
+  try {
+    return JSON.parse(localStorage.getItem('form-builder-demo'))
+  } catch (e) {
+    console.log('Error reading from local storage: ', e)
+  }
+  return null
+}
+
+function save(editorValue) {
+  localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderUtils.unwrap(editorValue)))
+}
+
 export default React.createClass({
 
   getInitialState() {
     return {
-      value: this.read() || {},
+      value: restore() || {},
       saved: false,
       shouldInspect: false
     }
@@ -84,7 +97,7 @@ export default React.createClass({
 
   save() {
     const {value} = this.state
-    localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderUtils.unwrap(value)))
+    save(value)
     this.setState({saved: true})
   },
 
