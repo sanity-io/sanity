@@ -1,33 +1,22 @@
-// Simple Variables that must be declared
-$gray-base:             #000;
-$brand-primary:         #c00;
-$brand-success:         #5cb85c;
-$brand-info:            #5bc0de;
-$brand-warning:         #f0ad4e;
-$brand-danger:          #d9534f;
-$body-bg:               #fff;
-$font-size-base:        16px;
+@use postcss-cssnext;
 
 /* Colors */
 :root  {
-  --brandPrimary:  $brand-primary;
-  --brandSuccess:  $brand-success;
-  --brandInfo:     $brand-info;
-  --brandWarning:  $brand-warning;
-  --brandDanger:   $brand-danger;
-  --bodyBg:        $body-bg;
+  --header-height: 3rem;
+  --brandPrimary:  #c00;
+  --brandSuccess:  #5cb85c;
+  --brandInfo:     #5bc0de;
+  --brandWarning:  #f0ad4e;
+  --brandDanger:   #d9534f;
+  --bodyBg:        #fff;
   --grayBase:      rgb(0,0,0);
-}
 
-:root {
   --grayDarker:    color(var(--grayBase) lightness(+12.5%));
   --grayDark:      color(var(--grayBase) lightness(+20%));
   --gray:          color(var(--grayBase) lightness(+33.5%));
   --grayLight:     color(var(--grayBase) lightness(+46.7%));
   --grayLighter:   color(var(--grayBase) lightness(+93.5%));
-}
 
-:root {
   --textColor:            rgb(0,0,0);
   --linkColor:            var(--brandPrimary);
   --linkHoverColor:       color(var(--linkColor) lightness(+25%));
@@ -333,11 +322,4 @@ $badge-border-radius:         10px;
   --blockquote-border-color:    var(--grayLighter);
   --page-header-border-color:   var(--grayLighter);
   --hr-border:                  var(--grayLighter);*/
-}
-
-
-body {
-  border: 10px solid red;
-  border-color: $brand-primary;
-  border-color: var(--grayLight);
 }
