@@ -5,6 +5,13 @@
 
 export default {
   types: {
+    simple: {
+      type: 'object',
+      fields: {
+        someString: {type: 'string'},
+        someNumber: {type: 'number'}
+      }
+    },
     pets: {
       type: 'array',
       of: [
