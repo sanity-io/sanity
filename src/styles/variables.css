@@ -2,7 +2,7 @@
   --header-height: 3rem;
 
   /* Colors */
-  --brand-primary:  #c00;
+  --brand-primary:  #0099aa;
   --brand-success:  #5cb85c;
   --brand-info:     #5bc0de;
   --brand-warning:  #f0ad4e;
@@ -10,16 +10,22 @@
   --body-bg:        #fff;
   --gray-base:      #000;
 
-  --gray-darker:    color(var(--gray-base) lightness(+12.5%));
-  --gray-dark:      color(var(--gray-base) lightness(+20%));
-  --gray:           color(var(--gray-base) lightness(+20%));;
-  --gray-light:     color(var(--gray-base) lightness(+46.7%));
-  --gray-lighter:   color(var(--gray-base) lightness(+93.7.5%));
+  --gray-darker:    color(var(--gray-base) lightness(+12.5%) saturation(-12%));
+  --gray-dark:      color(var(--gray-base) lightness(+20%) saturation(-20%));
+  --gray:           color(var(--gray-base) lightness(+30%) saturation(-20%));;
+  --gray-light:     color(var(--gray-base) lightness(+46.7%) saturation(-46%));
+  --gray-lighter:   color(var(--gray-base) lightness(+93.7.5%) saturation(-97%));
 
   --text-color:               var(--gray-darker);
   --link-color:               var(--brand-primary);
   --link-hover-color:         color(var(--brand-success) lightness(+25%));
   --link-hover-decoration:    underline;
+
+  --selectable-item-color:          var(--gray-darker);
+  --selectable-item-color-hover:    var(--gray);
+  --selected-item-color:            var(--brand-primary);
+  --selected-item-color-hover:      color(var(--brand-primary) lightness(+10%));
+
 
   /* State colors */
   --state-success-text:             #3c763d;
@@ -37,6 +43,11 @@
   --state-danger-text:              #a94442;
   --state-danger-bg:                #f2dede;
   --state-danger-border:            var(--state-danger-bg);
+
+  /* Padding */
+  --small-padding:            .5rem;
+  --medium-padding:           1rem;
+  --large-padding:            1.5rem;
 
   /* Typography */
   --font-family-sans-serif:   "Helvetica Neue";
@@ -169,4 +180,9 @@
   --blockquote-border-color:    var(---gray-lighter);
   --page-header-border-color:   var(--gray-lighter);
   --hr-border:                  var(--gray-lighter);
+
+  @custom-media --screen-medium (min-width: 32em);
+  @custom-media --screen-default (min-width: 40em);
+  @custom-media --screen-large (min-width: 60em);
+  @custom-media --screen-xlarge (min-width: 100em);
 }
