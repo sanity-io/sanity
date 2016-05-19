@@ -6,3 +6,4 @@ coverage
 .idea
 npm-shrinkwrap.json
 dist
+form-builder-old
