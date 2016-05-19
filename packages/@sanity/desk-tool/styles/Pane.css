@@ -48,7 +48,7 @@
   position: relative;
   padding: 0 1em;
   text-decoration: none;
-  color: var(--text-color);
+  color: var(--selectable-item-color);
 
   @media (--screen-medium) {
     max-width: 15em;
@@ -68,7 +68,7 @@
   }
 
   &:hover {
-    color: color(var(--text-color) lightness(+20%));
+    color: var(--selectable-item-color-hover);
   }
 }
 
@@ -79,14 +79,20 @@
 .activePaneItemLink {
   composes: paneItemLink;
   font-weight: 700;
-  color: var(--link-color);
+  color: var(--selected-item-color);
   @media (--screen-medium) {
     &:after {
       opacity: 1;
-      color: var(--link-hover-color);
+      color: var(--selected-item-color);
       font-weight: 700;
       font-size: 2em;
       margin-right: -.35em;
+    }
+  }
+  &:hover {
+    color: var(--selected-item-color-hover);
+    &:after {
+      color: var(--selected-item-color-hover);
     }
   }
 
