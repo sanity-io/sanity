@@ -24,7 +24,7 @@
     },
     {
       "implements": "style:@sanity/base/theme",
-      "srcPath": "./src/styles/variables.css"
+      "path": "./src/styles/variables.css"
     },
     {
       "name": "datastore:@sanity/base/location",
