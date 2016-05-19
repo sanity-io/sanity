@@ -67,5 +67,11 @@ export default {
     options: {
       title: PropTypes.string
     }
+  },
+  blocks: {
+    primitive: 'array',
+    options: {
+      title: PropTypes.string
+    }
   }
 }
