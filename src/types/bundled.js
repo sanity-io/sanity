@@ -29,6 +29,11 @@ export default {
       const toTypeDefs = Array.isArray(options.to) ? options.to : [options.to]
       const toTypes = toTypeDefs.map(typeDef => {
         const typeBuilder = typeBuilders[typeDef.type]
+        if (!typeBuilder) {
+          throw new Error(
+            `Missing type builder for ${typeDef.type}. Did you forget to declare the type "${typeDef.type}" in the schema?`
+          )
+        }
         return typeBuilder(typeDef, typeBuilders, schema)
       })
       return {to: toTypes}
