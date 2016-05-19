@@ -49,5 +49,23 @@ export default {
     defaultOptions: {
       format: 'plain'
     }
+  },
+  url: {
+    primitive: 'string',
+    options: {
+      title: PropTypes.string
+    }
+  },
+  email: {
+    primitive: 'string',
+    options: {
+      title: PropTypes.string
+    }
+  },
+  telephone: {
+    primitive: 'string',
+    options: {
+      title: PropTypes.string
+    }
   }
 }
