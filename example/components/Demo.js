@@ -5,17 +5,19 @@ import {FormBuilder} from '../../src/FormBuilder'
 import jsonMarkup from 'json-markup'
 
 import * as FormBuilderUtils from '../../src/FormBuilderUtils'
+import {compile} from '../../src/compileSchema'
 
-import schema from '../../example-schema'
-import Obj from '../../src/field-inputs/Object'
 import Arr from '../../src/field-inputs/Array'
 import Bool from '../../src/field-inputs/Boolean'
+import Email from '../../src/field-inputs/Email'
 import Num from '../../src/field-inputs/Number'
-import RichText from '../../src/field-inputs/RichText'
+import Obj from '../../src/field-inputs/Object'
 import Reference from '../../src/field-inputs/Reference'
+import RichText from '../../src/field-inputs/RichText'
+import schema from '../../example-schema'
 import Str from '../../src/field-inputs/String'
+import Telephone from '../../src/field-inputs/Telephone'
 import Url from '../../src/field-inputs/Url'
-import {compile} from '../../src/compileSchema'
 
 const compiledSchema = compile(schema)
 
@@ -27,7 +29,9 @@ const inputs = {
   array: Arr,
   reference: Reference,
   text: RichText,
-  url: Url
+  url: Url,
+  telephone: Telephone,
+  email: Email
 }
 
 Object.keys(compiledSchema.types).forEach(typeName => {
