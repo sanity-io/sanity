@@ -1,13 +1,16 @@
+@import 'all:style:@sanity/base/theme';
+
+@use postcss-cssnext;
+
 .loginStatus {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: var(--medium-padding);
+  right: var(--medium-padding);
 }
 
 .userImage {
-  height: 2.5rem;
-  width: 2.5rem;
+  height: calc(var(--header-height) - var(--medium-padding));
+  width: calc(var(--header-height) - var(--medium-padding));
   border-radius: 50%;
   background-color: #ccc;
-
 }

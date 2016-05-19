@@ -1,9 +1,6 @@
-@use postcss-cssnext;
-@use postcss-nested;
+@import 'all:style:@sanity/base/theme';
 
-:root {
-  --brand-color: red;
-}
+@use postcss-cssnext;
 
 .toolSwitcher {
   padding: 0;
@@ -23,20 +20,24 @@
   display: block;
   position: relative;
   text-align: center;
-  color: #000;
+  color: var(--selectable-item-color);
   margin: 0;
   padding: 1rem;
   border-bottom: 1px solid transparent;
   transition: border .1s linear;
+  float: left;
 
   &:hover {
-    border-bottom: 3px solid #666;
+    color: var(--selectable-item-color-hover);
+    border-bottom: 1px solid var(--selectable-item-color-hover);
   }
 }
 
 .activeItem {
   composes: item;
-  border-bottom: 2px solid var(--brand-color);
+  color: var(--selected-item-color);
+  border-color: var(--selected-item-color);
+
 }
 
 .iconContainer {

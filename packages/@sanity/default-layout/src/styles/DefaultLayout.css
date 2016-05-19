@@ -1,7 +1,7 @@
+@import 'all:style:@sanity/base/theme';
+
 @use postcss-cssnext;
-:root {
-  --header-height: 3rem;
-}
+
 .defaultLayout {
   display: flex;
   flex-direction: column;
