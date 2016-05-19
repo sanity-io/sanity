@@ -4,6 +4,7 @@
 //
 
 export default {
+  name: 'vega',
   types: {
     simple: {
       type: 'object',

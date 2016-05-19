@@ -4,6 +4,7 @@
 //
 
 export default {
+  name: 'celery',
   types: {
     simple: {
       type: 'object',

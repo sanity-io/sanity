@@ -7,7 +7,6 @@ import Demo from './components/Demo'
 import Debug from 'debug'
 import {whyDidYouUpdate} from 'why-did-you-update'
 import schemas from './schemas'
-console.log(schemas)
 import {
   compileSchema,
   fieldInputs
@@ -21,28 +20,71 @@ if (process.env.DEBUG) {
   Debug.enable(process.env.DEBUG)
 }
 
-const [, schemaName, typeName] = document.location.pathname.split('/')
+domready(init)
 
-const compiledSchema = compileSchema(schemas[schemaName || 'default'])
+const VALID_SCHEMA_NAMES = Object.keys(schemas)
 
-Object.keys(compiledSchema.types).forEach(typeName => {
-  const typeDef = compiledSchema.types[typeName]
-  if (!fieldInputs[typeName] && fieldInputs[typeDef.type]) {
-    fieldInputs[typeName] = fieldInputs[typeDef.type]
+const [schemaName, typeName] = document.location.pathname.split('/').filter(Boolean)
+
+function init() {
+
+  function renderSchemas() {
+    return (
+      <ul className="schemas">
+        {VALID_SCHEMA_NAMES.map(name => (
+          <li key={name} className={name === schemaName && 'selected'}>
+            <a href={`/${name}`}>{name}</a>
+          </li>
+        ))}
+      </ul>
+    )
   }
-})
 
-function resolveFieldInput(field, type) {
-  console.log(field.type, fieldInputs[field.type].displayName)
-  return fieldInputs[field.type]
-}
 
-domready(() => {
+  function renderTypes(compiledSchema) {
+    const typeNames = Object.keys(compiledSchema.types)
+
+    return (
+      <ul className="types">
+        {typeNames.map(name => (
+          <li className={name === typeName && 'selected'} key={name}>
+            <a href={`/${schemaName}/${name}`}>{name}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  const compiledSchema = schemaName && compileSchema(schemas[schemaName])
+
+  function renderDemo(compiledSchema) {
+    Object.keys(compiledSchema.types).forEach(typeName => {
+      const typeDef = compiledSchema.types[typeName]
+      if (!fieldInputs[typeName] && fieldInputs[typeDef.type]) {
+        fieldInputs[typeName] = fieldInputs[typeDef.type]
+      }
+    })
+
+    function resolveFieldInput(field, type) {
+      return fieldInputs[field.type]
+    }
+
+    return (
+      <Demo
+        schema={compiledSchema}
+        type={compiledSchema.types[typeName]}
+        resolveFieldInput={resolveFieldInput}
+      />
+    )
+  }
+
   ReactDOM.render((
-    <Demo
-      schema={compiledSchema}
-      type={compiledSchema.types[typeName || 'story']}
-      resolveFieldInput={resolveFieldInput}
-    />
+    <div>
+      <header>
+        Schemas: {renderSchemas()}
+        Types: {compiledSchema && renderTypes(compiledSchema)}
+      </header>
+      {typeName && compiledSchema && renderDemo(compiledSchema)}
+    </div>
   ), document.getElementById('main'))
-})
+}

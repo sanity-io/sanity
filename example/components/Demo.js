@@ -20,17 +20,16 @@ const DEBUG_JSON_STYLE = {
   bottom: 0
 }
 
-function restore() {
+function restore(schema, type) {
   try {
-    return JSON.parse(localStorage.getItem('form-builder-demo'))
+    return JSON.parse(localStorage.getItem(`form-builder-demo-${schema.name}-${type.name}`))
   } catch (error) {
     console.log('Error reading from local storage: ', error)
   }
-  return null
 }
 
-function save(editorValue) {
-  localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderValue.unwrap(editorValue)))
+function save(schema, type, editorValue) {
+  localStorage.setItem(`form-builder-demo-${schema.name}-${type.name}`, JSON.stringify(FormBuilderValue.unwrap(editorValue)))
 }
 
 export default React.createClass({
@@ -42,8 +41,9 @@ export default React.createClass({
   },
 
   getInitialState() {
+    const {schema, type} = this.props
     return {
-      value: {}, //restore() || {},
+      value: restore(schema, type) || void 0,
       saved: false,
       shouldInspect: false
     }
@@ -67,12 +67,13 @@ export default React.createClass({
   },
 
   clear() {
-    this.setState({value: {}})
+    this.setState({value: void 0})
   },
 
   save() {
     const {value} = this.state
-    save(value)
+    const {schema, type} = this.props
+    save(schema, type, value)
     this.setState({saved: true})
   },
 
@@ -125,7 +126,8 @@ export default React.createClass({
           </FormBuilderProvider>
         </form>
 
-        <pre>{JSON.stringify(schema.types, null, 2)}</pre>
+        <h2>Parsed type</h2>
+        <pre>{JSON.stringify(type, null, 2)}</pre>
       </div>
     )
   }

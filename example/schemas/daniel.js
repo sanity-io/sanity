@@ -4,6 +4,7 @@
 //
 
 export default {
+  name: 'daniel',
   types: {
     document: {
       type: 'object',
