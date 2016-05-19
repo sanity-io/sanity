@@ -1,49 +1,12 @@
 import React, {PropTypes} from 'react'
 
-import FormBuilderProvider from '../../src/FormBuilderProvider'
-import {FormBuilder} from '../../src/FormBuilder'
 import jsonMarkup from 'json-markup'
 
-import * as FormBuilderUtils from '../../src/FormBuilderUtils'
-import {compile} from '../../src/compileSchema'
-
-import Arr from '../../src/field-inputs/Array'
-import Bool from '../../src/field-inputs/Boolean'
-import Email from '../../src/field-inputs/Email'
-import Num from '../../src/field-inputs/Number'
-import Obj from '../../src/field-inputs/Object'
-import Reference from '../../src/field-inputs/Reference'
-import RichText from '../../src/field-inputs/RichText'
-import schema from '../../example-schema'
-import Str from '../../src/field-inputs/String'
-import Telephone from '../../src/field-inputs/Telephone'
-import Url from '../../src/field-inputs/Url'
-
-const compiledSchema = compile(schema)
-
-const inputs = {
-  object: Obj,
-  string: Str,
-  number: Num,
-  boolean: Bool,
-  array: Arr,
-  reference: Reference,
-  text: RichText,
-  url: Url,
-  telephone: Telephone,
-  email: Email
-}
-
-Object.keys(compiledSchema.types).forEach(typeName => {
-  const typeDef = compiledSchema.types[typeName]
-  if (inputs[typeDef.type]) {
-    inputs[typeName] = inputs[typeDef.type]
-  }
-})
-
-function resolveFieldInput(field, type) {
-  return inputs[field.type]
-}
+import {
+  FormBuilderValue,
+  FormBuilder,
+  FormBuilderProvider
+} from '../../src'
 
 const DEBUG_JSON_STYLE = {
   zIndex: 10000,
@@ -67,14 +30,20 @@ function restore() {
 }
 
 function save(editorValue) {
-  localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderUtils.unwrap(editorValue)))
+  localStorage.setItem('form-builder-demo', JSON.stringify(FormBuilderValue.unwrap(editorValue)))
 }
 
 export default React.createClass({
 
+  propTypes: {
+    schema: PropTypes.object.isRequired,
+    resolveFieldInput: PropTypes.func.isRequired,
+    type: PropTypes.object.isRequired
+  },
+
   getInitialState() {
     return {
-      value: restore() || {},
+      value: {}, //restore() || {},
       saved: false,
       shouldInspect: false
     }
@@ -115,6 +84,7 @@ export default React.createClass({
 
   render() {
     const {value, saved, shouldInspect} = this.state
+    const {schema, type, resolveFieldInput} = this.props
 
     if (shouldInspect) {
       console.log('CURRENT VALUE', value)
@@ -132,7 +102,7 @@ export default React.createClass({
             <h3>The unwrapped value is serialized here:</h3>
             <pre>
               <code
-                dangerouslySetInnerHTML={{__html: jsonMarkup(FormBuilderUtils.unwrap(value))}}>
+                dangerouslySetInnerHTML={{__html: jsonMarkup(FormBuilderValue.unwrap(value))}}>
               </code>
             </pre>
             <p>Check the console for the internal representation of the form builder value(s)</p>
@@ -144,10 +114,10 @@ export default React.createClass({
 
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
-            schema={compiledSchema.types}
+            schema={schema.types}
           >
             <FormBuilder
-              type={compiledSchema.types.venue}
+              type={type}
               value={value}
               onChange={this.handleChange}
             />
@@ -155,7 +125,7 @@ export default React.createClass({
           </FormBuilderProvider>
         </form>
 
-        <pre>{JSON.stringify(compiledSchema.types, null, 2)}</pre>
+        <pre>{JSON.stringify(schema.types, null, 2)}</pre>
       </div>
     )
   }

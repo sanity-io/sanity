@@ -1,4 +1,4 @@
-import * as FormBuilderUtils from './FormBuilderUtils'
+import * as FormBuilderValue from './FormBuilderValue'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import equals from 'shallow-equals'
@@ -51,7 +51,7 @@ export default React.createClass({
     const fieldInput = this.resolveFieldInput(field, this.getFieldType(field))
     const wrappedVal = (fieldInput && fieldInput.valueContainer)
       // Todo: throw if primitive value
-      ? FormBuilderUtils.markWrapped(newVal, fieldInput.valueContainer)
+      ? FormBuilderValue.markWrapped(newVal, fieldInput.valueContainer)
       : newVal
 
     onChange(wrappedVal, fieldName)
@@ -83,7 +83,7 @@ export default React.createClass({
     const fieldType = this.getFieldType(field)
 
     // wont check wrapped field values since unwrapping may be costly
-    if (value && !FormBuilderUtils.isWrapped(value)) {
+    if (value && !FormBuilderValue.isWrapped(value)) {
 
       const basicType = basicTypes[fieldType.type]
 
@@ -110,7 +110,7 @@ export default React.createClass({
     }
 
     const wrappedVal = (FieldInput && FieldInput.valueContainer)
-      ? FormBuilderUtils.maybeWrapValue(value, FieldInput.valueContainer)
+      ? FormBuilderValue.maybeWrapValue(value, FieldInput.valueContainer)
       : value
 
     return this.renderField(
