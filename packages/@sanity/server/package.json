@@ -48,9 +48,9 @@
     "in-publish": "^2.0.0",
     "json-loader": "^0.5.4",
     "lodash": "^4.5.0",
-    "postcss-simple-vars-async": "^1.2.1",
+    "postcss-import": "^8.1.0",
     "postcss-use": "^2.1.0",
-    "require-uncached": "^1.0.2",
+    "resolve": "^1.1.7",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
     "webpack-hot-middleware": "^2.9.1"
