@@ -19,15 +19,29 @@ export default {
   }
 }
 
-function installPlugin(plugin, {print, error, options}) {
-  const isFullName = plugin.indexOf('sanity-plugin-') === 0
-  const shortName = isFullName ? plugin.substr(14) : plugin
-  const fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
+function installPlugin(plugin, {print, spinner, error, options}) {
+  const isNamespaced = plugin[0] === '@'
+  let shortName = plugin
+  let fullName = plugin
+
+  if (!isNamespaced) {
+    const isFullName = plugin.indexOf('sanity-plugin-') === 0
+    shortName = isFullName ? plugin.substr(14) : plugin
+    fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
+  }
+
+  const spin = spinner('Installing plugin...')
+  spin.start()
 
   return npmInstall(['--save', fullName])
     .then(() => saveToSanityManifest(options.cwd, shortName))
     .then(() => copyConfiguration(options.cwd, fullName, shortName, print))
-    .catch(err => handleNpmError(err, error, fullName))
+    .then(() => spin.stop())
+    .then(() => print(`Plugin '${fullName}' installed`))
+    .catch(err => {
+      spin.stop()
+      handleNpmError(err, error, fullName)
+    })
 }
 
 function handleNpmError(err, printError, pluginName) {
