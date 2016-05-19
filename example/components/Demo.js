@@ -60,8 +60,8 @@ const DEBUG_JSON_STYLE = {
 function restore() {
   try {
     return JSON.parse(localStorage.getItem('form-builder-demo'))
-  } catch (e) {
-    console.log('Error reading from local storage: ', e)
+  } catch (error) {
+    console.log('Error reading from local storage: ', error)
   }
   return null
 }
@@ -91,8 +91,8 @@ export default React.createClass({
   read() {
     try {
       return JSON.parse(localStorage.getItem('form-builder-demo'))
-    } catch (e) {
-      console.log('Error reading from local storage: ', e)
+    } catch (error) {
+      console.log('Error reading from local storage: ', error)
     }
     return null
   },
