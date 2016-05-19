@@ -82,7 +82,12 @@ function init() {
     <div>
       <header>
         Schemas: {renderSchemas()}
-        Types: {compiledSchema && renderTypes(compiledSchema)}
+        {compiledSchema && (
+          <span>
+            {typeName ? 'Types:' : 'Select type:'}
+            {renderTypes(compiledSchema)}
+          </span>
+        )}
       </header>
       {typeName && compiledSchema && renderDemo(compiledSchema)}
     </div>

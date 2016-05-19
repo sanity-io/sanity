@@ -4,7 +4,7 @@
 //
 
 export default {
-  name: 'celery',
+  name: 'messyDevSchema',
   types: {
     simple: {
       type: 'object',

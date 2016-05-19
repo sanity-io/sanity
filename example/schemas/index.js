@@ -1,11 +1,11 @@
 
-import celery from './celery'
+import messyDevSchema from './messy-dev'
 import daniel from './daniel'
 import vega from './vega'
 import exampleBlog from './example-blog'
 
 export default {
-  default: celery,
+  messyDevSchema: messyDevSchema,
   vega,
   daniel,
   exampleBlog
