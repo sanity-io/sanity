@@ -1,12 +1,6 @@
-@use postcss-cssnext;
-@use postcss-nested;
+@import 'all:style:@sanity/base/theme';
 
-:root {
-  @custom-media --screen-medium (min-width: 32em);
-  @custom-media --screen-default (min-width: 40em);
-  @custom-media --screen-large (min-width: 60em);
-  @custom-media --screen-xlarge (min-width: 100em);
-}
+@use postcss-cssnext;
 
 .deskTool {
   @media (--screen-medium) {
@@ -28,9 +22,7 @@
 }
 
 .paneContainer {
-
   @media (--screen-medium) {
-
     align-self: stretch;
     flex-grow: 0;
   }

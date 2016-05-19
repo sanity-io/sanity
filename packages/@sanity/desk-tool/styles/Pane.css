@@ -1,12 +1,7 @@
+@import 'all:style:@sanity/base/theme';
+
 @use postcss-cssnext;
 @use postcss-nested;
-
-:root {
-  @custom-media --screen-medium (min-width: 32em);
-  @custom-media --screen-default (min-width: 40em);
-  @custom-media --screen-large (min-width: 60em);
-  @custom-media --screen-xlarge (min-width: 100em);
-}
 
 .panes {
   @media (--screen-medium) {
@@ -53,22 +48,19 @@
   position: relative;
   padding: 0 1em;
   text-decoration: none;
-  color: inherit;
-
+  color: var(--text-color);
 
   @media (--screen-medium) {
     max-width: 15em;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-
-
-  &:after {
-    position: absolute;
-    right: 0;
-    content: "\232A";
-    opacity: .2;
+    &:after {
+      position: absolute;
+      right: 0;
+      content: "\232A";
+      opacity: .2;
+    }
   }
 
   &:active {
@@ -76,12 +68,7 @@
   }
 
   &:hover {
-    /*opacity: .8;*/
-    color: red;
-    /*&:after {
-      opacity: .8;
-      color: red;
-    }*/
+    color: color(var(--text-color) lightness(+20%));
   }
 }
 
@@ -92,14 +79,17 @@
 .activePaneItemLink {
   composes: paneItemLink;
   font-weight: 700;
-  color: red;
-  &:after {
-    opacity: 1;
-    color: red;
-    font-weight: 700;
-    font-size: 2em;
-    margin-right: -.35em;
+  color: var(--link-color);
+  @media (--screen-medium) {
+    &:after {
+      opacity: 1;
+      color: var(--link-hover-color);
+      font-weight: 700;
+      font-size: 2em;
+      margin-right: -.35em;
+    }
   }
+
 }
 
 .panes {
