@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import {eq} from 'lodash'
+import Str from './String'
 
 export default React.createClass({
   propTypes: {
@@ -16,10 +16,6 @@ export default React.createClass({
     }
   },
 
-  shouldComponentUpdate(nextProps) {
-    return !eq(this.props, nextProps)
-  },
-
   handleChange(event) {
     this.props.onChange(event.target.value)
   },
@@ -27,12 +23,7 @@ export default React.createClass({
   render() {
     const {value, field} = this.props
     return (
-      <input
-        type="text"
-        placeholder={field.placeholder}
-        onChange={this.handleChange}
-        value={value}
-      />
+      <Str field={field} value={value} onChange={this.handleChange} />
     )
   }
 })

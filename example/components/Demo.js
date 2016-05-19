@@ -14,6 +14,7 @@ import Num from '../../src/field-inputs/Number'
 import RichText from '../../src/field-inputs/RichText'
 import Reference from '../../src/field-inputs/Reference'
 import Str from '../../src/field-inputs/String'
+import Url from '../../src/field-inputs/Url'
 import {compile} from '../../src/compileSchema'
 
 const compiledSchema = compile(schema)
@@ -25,7 +26,8 @@ const inputs = {
   boolean: Bool,
   array: Arr,
   reference: Reference,
-  text: RichText
+  text: RichText,
+  url: Url
 }
 
 Object.keys(compiledSchema.types).forEach(typeName => {
@@ -141,7 +143,7 @@ export default React.createClass({
             schema={compiledSchema.types}
           >
             <FormBuilder
-              type={compiledSchema.types.story}
+              type={compiledSchema.types.venue}
               value={value}
               onChange={this.handleChange}
             />
