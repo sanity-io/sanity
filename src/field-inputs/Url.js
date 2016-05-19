@@ -23,7 +23,7 @@ export default React.createClass({
   render() {
     const {value, field} = this.props
     return (
-      <Str field={field} value={value} onChange={this.handleChange} />
+      <Str type="url" field={field} value={value} onChange={this.handleChange} />
     )
   }
 })
