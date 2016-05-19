@@ -5,8 +5,8 @@ import vega from './vega'
 import exampleBlog from './example-blog'
 
 export default {
-  messyDevSchema: messyDevSchema,
+  exampleBlog,
   vega,
   daniel,
-  exampleBlog
+  messyDevSchema: messyDevSchema
 }
