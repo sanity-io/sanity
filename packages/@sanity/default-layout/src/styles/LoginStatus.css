@@ -6,6 +6,7 @@
   position: absolute;
   top: var(--medium-padding);
   right: var(--medium-padding);
+
 }
 
 .userImage {
@@ -13,4 +14,10 @@
   width: calc(var(--header-height) - var(--medium-padding));
   border-radius: 50%;
   background-color: #ccc;
+  @media (--screen-medium) {
+    height: calc(var(--header-height) - var(--medium-padding));
+    width: calc(var(--header-height) - var(--medium-padding));
+    border-radius: 50%;
+    background-color: #ccc;
+  }
 }

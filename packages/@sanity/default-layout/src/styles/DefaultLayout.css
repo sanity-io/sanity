@@ -3,38 +3,44 @@
 @use postcss-cssnext;
 
 .defaultLayout {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
-  box-sizing: border-box;
-  overflow: hidden;
-  height: 100vh;
-  max-height: 100vh;
   padding: .5rem;
+  @media (--screen-medium) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100vh;
+    max-height: 100vh;
+  }
 }
 
 .top {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  /*justify-content: space-between;*/
-  flex-basis: var(--header-height);
-  min-height: var(--header-height);
-  border-bottom: 1px solid #ccc;
-  order: 1;
+  @media (--screen-medium) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /*justify-content: space-between;*/
+    flex-basis: var(--header-height);
+    min-height: var(--header-height);
+    border-bottom: 1px solid #ccc;
+    order: 1;
+  }
 }
 
 .toolContainer {
-  display: flex;
-  flex-direction: row;
-  order: 2;
-  box-sizing: border-box;
-  overflow: hidden;
-  position: relative;
-  align-self: stretch;
-  flex-grow: 2;
+  @media (--screen-medium) {
+    display: flex;
+    flex-direction: row;
+    order: 2;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    align-self: stretch;
+    flex-grow: 2;
+  }
 }
 
 .logoContainer {
@@ -47,10 +53,15 @@
 }
 
 body {
-  max-height: 100%;
+
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  font-family: "Neue Haas Grotesk", "Helvetica Neue", helvetica, sans-serif;
+
+  font-family: var(--font-family-sans-serif);
+
+  @media (--screen-medium) {
+    max-height: 100%;
+    overflow: hidden;
+  }
 }

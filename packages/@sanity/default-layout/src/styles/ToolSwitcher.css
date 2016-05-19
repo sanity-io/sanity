@@ -23,13 +23,19 @@
   color: var(--selectable-item-color);
   margin: 0;
   padding: 1rem;
-  border-bottom: 1px solid transparent;
+
   transition: border .1s linear;
-  float: left;
+  @media (--screen-medium) {
+    border-bottom: 1px solid transparent;
+    float: left;
+  }
 
   &:hover {
     color: var(--selectable-item-color-hover);
-    border-bottom: 1px solid var(--selectable-item-color-hover);
+    @media (--screen-medium) {
+      border-bottom: 1px solid var(--selectable-item-color-hover);
+    }
+
   }
 }
 
