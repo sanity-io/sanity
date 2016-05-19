@@ -93,7 +93,6 @@ export default React.createClass({
 
     return (
       <div className="content">
-        <h2>Form value</h2>
         <button onClick={() => this.save()}>{saved ? 'Saved' : 'Save'} to local storage</button>
         <button onClick={() => this.clear()}>Clear value</button>
         {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>Inspect</button>}
