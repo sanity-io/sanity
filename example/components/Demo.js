@@ -20,6 +20,10 @@ const DEBUG_JSON_STYLE = {
   bottom: 0
 }
 
+function preventDefault(e) {
+  e.preventDefault()
+}
+
 function restore(schema, type) {
   try {
     return JSON.parse(localStorage.getItem(`form-builder-demo-${schema.name}-${type.name}`))
@@ -109,7 +113,7 @@ export default React.createClass({
           </div>
         )}
 
-        <form className="form-container">
+        <form className="form-container" onSubmit={preventDefault}>
           <h2>Generated form</h2>
 
           <FormBuilderProvider
