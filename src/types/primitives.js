@@ -30,7 +30,9 @@ export default {
 
         const typeBuilder = typeBuilders[field.type]
         if (!typeBuilder) {
-          throw new Error(`Invalid type "${field.type}" for field "${fieldName}".`)
+          throw new Error(
+            `Invalid type "${field.type}" for field "${fieldName}". Did you forget to declare the type ${field.type} in the schema?`
+          )
         }
         fields[fieldName] = typeBuilder(field, typeBuilders, schema)
       })
