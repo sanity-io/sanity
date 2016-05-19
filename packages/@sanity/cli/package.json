@@ -7,7 +7,7 @@
     "sanity": "./bin/run.js"
   },
   "scripts": {
-    "compile": "babel -d lib/ src/",
+    "compile": "babel --copy-files -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
@@ -67,7 +67,6 @@
     "eslint-config-bengler": "^0.5.6",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
-    "rimraf": "^2.5.2",
-    "which": "^1.2.4"
+    "rimraf": "^2.5.2"
   }
 }

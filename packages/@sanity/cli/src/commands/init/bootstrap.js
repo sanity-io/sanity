@@ -61,7 +61,7 @@ export function bootstrapPlugin(targetPath, data) {
 }
 
 function readTemplate(file) {
-  return readFile(path.join(__dirname, '..', '..', '..', 'templates', file))
+  return readFile(path.join(__dirname, 'templates', file))
 }
 
 function writeIfNotExists(filePath, content) {

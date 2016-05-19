@@ -34,7 +34,7 @@ function initSanity({print, prompt, spinner, error, options}) {
     .then(defaults => gatherInput(prompt, defaults))
     .then(answers => bootstrapSanity(options.cwd, answers))
     .then(() => spin.start())
-    .then(npmInstall)
+    .then(() => npmInstall())
     .then(() => spin.stop())
     .then(() => print('Success! You can now run `sanity start`'))
     .catch(error)
