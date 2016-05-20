@@ -17,7 +17,7 @@
     "lodash": "^4.12.0",
     "object-inspect": "^1.2.1",
     "proptypes": "^0.14.3",
-    "prosemirror": "^0.6.1",
+    "prosemirror": "^0.7.0",
     "react": "^15.0.2",
     "react-addons-update": "^15.0.2",
     "shallow-equals": "0.0.0",
