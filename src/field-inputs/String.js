@@ -20,8 +20,8 @@ export default React.createClass({
     return !eq(this.props, nextProps)
   },
 
-  handleChange(event) {
-    this.props.onChange(event.target.value)
+  handleChange(e) {
+    this.props.onChange({patch: {$set: e.target.value}})
   },
 
   render() {
@@ -31,7 +31,7 @@ export default React.createClass({
         type="text"
         placeholder={field.placeholder}
         onChange={this.handleChange}
-        value={value}
+        value={value && value.unwrap()}
       />
     )
   }

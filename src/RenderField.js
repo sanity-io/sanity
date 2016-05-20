@@ -1,9 +1,9 @@
-import * as FormBuilderValue from './FormBuilderValue'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import basicTypes from './types'
 import {resolveJSType} from './types/utils'
+import {getFieldType} from './utils/getFieldType'
 
 const BASIC_TYPE_NAMES = Object.keys(basicTypes)
 const CLEAR_BUTTON_STYLES = {fontSize: 10, border: '1px solid #aaa', backgroundColor: 'transparent'}
@@ -45,16 +45,9 @@ export default React.createClass({
     )
   },
 
-  handleChange(newVal) {
-    const {fieldName, field, onChange} = this.props
-
-    const fieldInput = this.resolveFieldInput(field, this.getFieldType(field))
-    const wrappedVal = (fieldInput && fieldInput.valueContainer)
-      // Todo: throw if primitive value
-      ? FormBuilderValue.markWrapped(newVal, fieldInput.valueContainer)
-      : newVal
-
-    onChange(wrappedVal, fieldName)
+  handleChange(event) {
+    const {fieldName, onChange} = this.props
+    onChange(event, fieldName)
   },
 
   resolveFieldInput(field, fieldType) {
@@ -62,19 +55,7 @@ export default React.createClass({
   },
 
   getFieldType(field) {
-    const fieldType = this.context.schema[field.type]
-    if (fieldType) {
-      return fieldType
-    }
-    if (!BASIC_TYPE_NAMES.includes(field.type)) {
-      // todo: this will normally fail during schema compilation, but keep it here for now and consider remove later
-      const {fieldName} = this.props
-      console.warn('Invalid field type of field "%s". Must be one of %s', fieldName, BASIC_TYPE_NAMES.join(', '))
-    }
-    // Treat as "anonymous"/inline type where type parameters are defined in field
-    // todo: consider validate that the needed params are defined in field (currently also taken
-    // care of during schema compilation)
-    return field
+    return getFieldType(this.context.schema, field)
   },
 
   render() {
@@ -83,22 +64,22 @@ export default React.createClass({
     const fieldType = this.getFieldType(field)
 
     // wont check wrapped field values since unwrapping may be costly
-    if (value && !FormBuilderValue.isWrapped(value)) {
-
-      const basicType = basicTypes[fieldType.type]
-
-      const valueType = resolveJSType(value)
-
-      if (valueType !== fieldType.type && valueType !== basicType.primitive) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          'Value of field %s is of type %s which is incompatible with the basic type %s',
-          fieldName,
-          fieldType.type,
-          valueType
-        )
-      }
-    }
+    // if (value) {
+    //
+    //   const basicType = basicTypes[fieldType.type]
+    //
+    //   const valueType = resolveJSType(value)
+    //
+    //   if (valueType !== fieldType.type && valueType !== basicType.primitive) {
+    //     // eslint-disable-next-line no-console
+    //     console.warn(
+    //       'Value of field %s is of type %s which is incompatible with the basic type %s',
+    //       fieldName,
+    //       fieldType.type,
+    //       valueType
+    //     )
+    //   }
+    // }
 
     const FieldInput = this.context.resolveFieldInput(field, fieldType)
     if (!FieldInput) {
@@ -109,13 +90,9 @@ export default React.createClass({
       )
     }
 
-    const wrappedVal = (FieldInput && FieldInput.valueContainer)
-      ? FormBuilderValue.maybeWrapValue(value, FieldInput.valueContainer)
-      : value
-
     return this.renderField(
       <FieldInput
-        value={wrappedVal}
+        value={value}
         field={field}
         type={fieldType}
         onChange={this.handleChange}

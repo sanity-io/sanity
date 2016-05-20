@@ -65,7 +65,7 @@ function init() {
       }
     })
 
-    function resolveFieldInput(field, type) {
+    function resolveFieldInput(field) {
       return fieldInputs[field.type]
     }
 

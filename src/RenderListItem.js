@@ -1,4 +1,3 @@
-import * as FormBuilderValue from './FormBuilderValue'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import equals from 'shallow-equals'
@@ -26,7 +25,7 @@ export default React.createClass({
   },
 
   renderField(el) {
-    const {field, index} = this.props
+    const {index} = this.props
     return (
       <div key={index}>
         <button
@@ -42,16 +41,10 @@ export default React.createClass({
     )
   },
 
-  handleChange(newVal) {
-    const {index, field, onChange} = this.props
+  handleChange(event) {
+    const {index, onChange} = this.props
 
-    const fieldInput = this.resolveFieldInput(field, this.getFieldType(field))
-    const wrappedVal = (fieldInput && fieldInput.valueContainer)
-      // Todo: throw if primitive value
-      ? FormBuilderValue.markWrapped(newVal, fieldInput.valueContainer)
-      : newVal
-
-    onChange(wrappedVal, index)
+    onChange(event, index)
   },
 
   resolveFieldInput(field, fieldType) {
@@ -59,7 +52,7 @@ export default React.createClass({
   },
 
   getFieldType(field) {
-    const fieldType = this.context.schema[field.type]
+    const fieldType = this.context.schema.types[field.type]
     if (fieldType) {
       return fieldType
     }
@@ -79,23 +72,23 @@ export default React.createClass({
 
     const fieldType = this.getFieldType(field)
 
-    // wont check wrapped field values since unwrapping may be costly
-    if (value && !FormBuilderValue.isWrapped(value)) {
-
-      const basicType = basicTypes[fieldType.type]
-
-      const valueType = resolveJSType(value)
-
-      if (valueType !== fieldType.type && valueType !== basicType.primitive) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          'Value of field %s is of type %s which is incompatible with the basic type %s',
-          index,
-          fieldType.type,
-          valueType
-        )
-      }
-    }
+    // // wont check wrapped field values since unwrapping may be costly
+    // if (value) {
+    //
+    //   const basicType = basicTypes[fieldType.type]
+    //
+    //   const valueType = resolveJSType(value)
+    //
+    //   if (valueType !== fieldType.type && valueType !== basicType.primitive) {
+    //     // eslint-disable-next-line no-console
+    //     console.warn(
+    //       'Value of field %s is of type %s which is incompatible with the basic type %s',
+    //       index,
+    //       fieldType.type,
+    //       valueType
+    //     )
+    //   }
+    // }
 
     const FieldInput = this.context.resolveFieldInput(field, fieldType)
     if (!FieldInput) {
@@ -106,13 +99,9 @@ export default React.createClass({
       )
     }
 
-    const wrappedVal = (FieldInput && FieldInput.valueContainer)
-      ? FormBuilderValue.maybeWrapValue(value, FieldInput.valueContainer)
-      : value
-
     return this.renderField(
       <FieldInput
-        value={wrappedVal}
+        value={value}
         field={field}
         type={fieldType}
         onChange={this.handleChange}

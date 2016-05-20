@@ -24,7 +24,7 @@ export default React.createClass({
   },
 
   getSchemaType(typeName) {
-    return this.context.schema[typeName]
+    return this.context.schema.types[typeName]
   },
 
   resolveFieldInput(field) {

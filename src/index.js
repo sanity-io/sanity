@@ -8,7 +8,6 @@ import Url from './field-inputs/Url'
 import RichText from './field-inputs/RichText'
 import Reference from './field-inputs/Reference'
 import Str from './field-inputs/String'
-import * as fbv from './FormBuilderValue'
 
 const bundledFieldInputs = {
   object: Obj,
@@ -27,5 +26,3 @@ export {compile as compileSchema} from './compileSchema'
 
 export {default as FormBuilderProvider} from './FormBuilderProvider'
 export {FormBuilder} from './FormBuilder'
-
-export const FormBuilderValue = fbv

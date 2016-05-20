@@ -9,6 +9,27 @@ import 'prosemirror/dist/inputrules/autoinput'
 import {parseFrom, serializeTo} from 'prosemirror/dist/format'
 import {defaultSchema} from 'prosemirror/dist/model'
 
+class ProseMirrorValueContainer {
+  constructor(doc) {
+    this.doc = doc
+  }
+
+  patch(patch) {
+    console.log('received patch for document: ', patch)
+    /* this.doc.transform( ... ) */
+    return new ProseMirrorValueContainer(this.doc)
+  }
+
+  unwrap() {
+    return serializeTo(this.doc, 'html')
+  }
+}
+
+ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
+  console.log('WRAP', htmlValue)
+  return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
+}
+
 export default React.createClass({
 
   propTypes: {
@@ -19,19 +40,16 @@ export default React.createClass({
   },
 
   statics: {
-    valueContainer: {
-      wrap(htmlValue) {
-        return parseFrom(defaultSchema, htmlValue || '', 'html')
-      },
-      unwrap(doc) {
-        return serializeTo(doc, 'html')
-      }
+    container: ProseMirrorValueContainer
+  },
+
+  getDefaultProps() {
+    return {
+      onChange() {}
     }
   },
 
   componentWillMount() {
-    const {value, defaultValue} = this.props
-    this._lastValue = value || defaultValue
     this._prosemirror = new ProseMirror({
       menuBar: true
     })
@@ -39,35 +57,35 @@ export default React.createClass({
 
   componentDidMount() {
     ReactDOM.findDOMNode(this).appendChild(this._prosemirror.wrapper)
-    this.setContent(this.props.value)
-    this._prosemirror.on('change', this.handleProseMirrorChange)
-  },
-
-  componentWillUpdate(nextProps) {
-    if ('value' in nextProps) {
-      const value = nextProps.value
-      if (value !== this._lastValue) {
-        this.setContent(value)
-      }
+    if (this.props.value) {
+      this.setContent(this.props.value.doc)
     }
+
+    this._prosemirror.on('transform', this.handleProseMirrorTransform)
   },
 
   componentDidUpdate({options: previous}) {
   },
 
   componentWillUnmount() {
-    this._prosemirror.off('change', this.handleProseMirrorChange)
+    this._prosemirror.off('change', this.handleProseMirrorTransform)
   },
 
-  setContent(value) {
-    this._prosemirror.setContent(value)
-  },
-  handleProseMirrorChange() {
-    const {onChange} = this.props
-    if (onChange) {
-      this._lastValue = this._prosemirror.getContent()
-      onChange(this._lastValue)
+  handleProseMirrorTransform(transform) {
+    // todo: figure out how this patch should be
+    const steps = []
+    const maps = []
+    for (let i = 0; i < transform.steps.length; i++) {
+      steps.push(transform.steps[i])
+      maps.push(transform.maps[i])
     }
+
+    this.props.onChange({
+      patch: {
+        $maps: maps,
+        $steps: steps
+      }
+    })
   },
 
   render() {

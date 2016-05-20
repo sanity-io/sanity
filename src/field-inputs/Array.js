@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderListItem from '../RenderListItem'
+import {createFormBuilderState} from '../FormBuilderState'
 import {resolveJSType} from '../types/utils'
 import applyPatch from '../utils/applyPatch'
 
@@ -11,7 +12,9 @@ export default React.createClass({
     value: PropTypes.array,
     onChange: PropTypes.func
   },
-
+  statics: {
+    /* valueContainer: ArrayContainer */
+  },
   contextTypes: {
     resolveFieldInput: PropTypes.func,
     schema: PropTypes.object
@@ -35,50 +38,71 @@ export default React.createClass({
       this.setState({selectType: true})
       return
     }
-    this.handleAddItem(this.props.type.of[0])
+    this.handleAddItem(this.getFieldType(this.props.type.of[0]))
   },
 
   handleAddItem(itemType) {
-    this.setState({selectType: false, addItemType: itemType})
+    const addItemValue = createFormBuilderState(void 0, {
+      type: itemType,
+      schema: this.context.schema,
+      resolveFieldInput: this.context.resolveFieldInput
+    })
+
+    this.setState({
+      selectType: false,
+      addItemType: itemType,
+      addItem: addItemValue
+    })
   },
 
   handleRemoveItem(index) {
-    const {value} = this.props
-    this.props.onChange(applyPatch(value, {
-      $splice: [[index, 1]]
-    }))
+    this.props.onChange({
+      patch: {
+        $splice: [[index, 1]]
+      }
+    })
   },
 
   handleOK() {
-    const item = this.state.addItem || {$type: this.state.addItemType.type}
-    const {value} = this.props
+    const itemValue = this.state.addItem
     this.setState({selectType: false, addItemType: null, addItem: void 0})
-    this.props.onChange([item].concat(value || []))
+    this.props.onChange({patch: {$unshift: [itemValue]}})
   },
-
+  getFieldType(field) {
+    const fieldType = this.context.schema.types[field.type]
+    if (fieldType) {
+      return fieldType
+    }
+    if (!BASIC_TYPE_NAMES.includes(field.type)) {
+      // todo: this will normally fail during schema compilation, but keep it here for now and consider remove later
+      const {fieldName} = this.props
+      console.warn('Invalid field type of field "%s". Must be one of %s', fieldName, BASIC_TYPE_NAMES.join(', '))
+    }
+    // Treat as "anonymous"/inline type where type parameters are defined in field
+    // todo: consider validate that the needed params are defined in field (currently also taken
+    // care of during schema compilation)
+    return field
+  },
   renderSelectType() {
     const {type} = this.props
-    return type.of.map(itemType => {
+    return type.of.map(field => {
       return (
         <button
-          key={itemType.type}
-          onClick={() => this.handleAddItem(itemType)}
+          key={field.type}
+          onClick={() => this.handleAddItem(this.getFieldType(field))}
           type="button"
         >
-          {itemType.title || itemType.type}
+          {field.title || field.type}
         </button>
       )
     })
   },
-  handleAddItemChange(newVal) {
-    this.setState({addItem: newVal})
+  handleAddItemChange(event) {
+    this.setState({addItem: applyPatch(this.state.addItem, event.patch)})
   },
-  handleItemChange(newVal, index) {
-    const {value} = this.props
-    const spliceArgs = newVal ? [index, 1, newVal] : [index, 1]
-    this.props.onChange(update(value, {
-      $splice: [spliceArgs]
-    }))
+  handleItemChange(event, index) {
+    const patch = {[index]: event.patch}
+    this.props.onChange({patch})
   },
   renderAddItemForm(addItemType) {
     return (

@@ -14,29 +14,30 @@ export default {
       }
       const fieldNames = Object.keys(options.fields)
 
-      const fields = {}
+      const fields = fieldNames.map(fieldName => {
+        return Object.assign(options.fields[fieldName], {name: fieldName})
+      })
 
-      fieldNames.forEach(fieldName => {
+      const keyedFields = {}
+      fields.forEach(field => {
 
-        if (fieldName === '$type') {
+        if (field.name === '$type') {
           throw new Error('`$type` is reserved and cannot be used as field name.')
         }
 
-        const field = options.fields[fieldName]
-
         if (!(field || {}).type) {
-          throw new Error(`Missing .type property for field "${fieldName}".`)
+          throw new Error(`Missing .type property for field "${field.name}".`)
         }
 
         const typeBuilder = typeBuilders[field.type]
         if (!typeBuilder) {
           throw new Error(
-            `Invalid type "${field.type}" for field "${fieldName}". Did you forget to declare the type ${field.type} in the schema?`
+            `Invalid type "${field.type}" for field "${field.name}". Did you forget to declare the type ${field.type} in the schema?`
           )
         }
-        fields[fieldName] = typeBuilder(field, typeBuilders, schema)
+        keyedFields[field.name] = typeBuilder(field, typeBuilders, schema)
       })
-      return {fields}
+      return {fields: keyedFields}
     }
   },
   boolean: {

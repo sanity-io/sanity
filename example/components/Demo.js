@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 
 import jsonMarkup from 'json-markup'
+import {createFormBuilderState} from '../../src/FormBuilderState'
 
 import {
-  FormBuilderValue,
   FormBuilder,
   FormBuilderProvider
 } from '../../src'
@@ -33,7 +33,7 @@ function restore(schema, type) {
 }
 
 function save(schema, type, editorValue) {
-  localStorage.setItem(`form-builder-demo-${schema.name}-${type.name}`, JSON.stringify(FormBuilderValue.unwrap(editorValue)))
+  localStorage.setItem(`form-builder-demo-${schema.name}-${type.name}`, JSON.stringify(editorValue))
 }
 
 export default React.createClass({
@@ -45,39 +45,46 @@ export default React.createClass({
   },
 
   getInitialState() {
-    const {schema, type} = this.props
+    const {schema, type, resolveFieldInput} = this.props
+    const resolveContainer = (field, fieldType) => {
+      const input = resolveFieldInput(field, fieldType)
+      return input.container
+    }
+    const value = restore(schema, type) || void 0
     return {
-      value: restore(schema, type) || void 0,
+      value: createFormBuilderState(value, {
+        type: type,
+        schema: schema,
+        resolveContainer
+      }),
       saved: false,
       shouldInspect: false
     }
   },
 
-  handleChange(newVal) {
+  handleChange(event) {
+    const {value} = this.state
     this.setState({
       shouldInspect: false,
       saved: false,
-      value: newVal
+      value: value.patch(event.patch)
     })
   },
 
-  read() {
-    try {
-      return JSON.parse(localStorage.getItem('form-builder-demo'))
-    } catch (error) {
-      console.log('Error reading from local storage: ', error)
-    }
-    return null
-  },
-
   clear() {
-    this.setState({value: void 0})
+    const {schema, type, resolveFieldInput} = this.props
+    const newValue = createFormBuilderState(void 0, {
+      type: type,
+      schema: schema,
+      resolveFieldInput
+    })
+    this.setState({value: newValue})
   },
 
   save() {
     const {value} = this.state
     const {schema, type} = this.props
-    save(schema, type, value)
+    save(schema, type, value.unwrap())
     this.setState({saved: true})
   },
 
@@ -106,7 +113,7 @@ export default React.createClass({
             <h3>The unwrapped value is serialized here:</h3>
             <pre>
               <code
-                dangerouslySetInnerHTML={{__html: jsonMarkup(FormBuilderValue.unwrap(value))}}>
+                dangerouslySetInnerHTML={{__html: jsonMarkup(value.unwrap())}}>
               </code>
             </pre>
             <p>Check the console for the internal representation of the form builder value(s)</p>
@@ -118,7 +125,7 @@ export default React.createClass({
 
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
-            schema={schema.types}
+            schema={schema}
           >
             <FormBuilder
               type={type}

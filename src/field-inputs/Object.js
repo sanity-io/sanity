@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderField from '../RenderField'
-import applyPatch from '../utils/applyPatch'
 
 export default React.createClass({
   propTypes: {
@@ -9,6 +8,10 @@ export default React.createClass({
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     onChange: PropTypes.func
+  },
+
+  statics: {
+    // valueContainer: DefaultValueContainer
   },
 
   contextTypes: {
@@ -22,21 +25,18 @@ export default React.createClass({
     }
   },
 
-  handleFieldChange(newVal, fieldName) {
-    const {field} = this.props
-    this.props.onChange(applyPatch(this.props.value || {}, {
-      $type: {$set: field.type},
-      [fieldName]: {$set: newVal}
-    }))
+  handleFieldChange(event, fieldName) {
+    const {onChange} = this.props
+    const patch = {[fieldName]: event.patch}
+    onChange({patch})
   },
 
   render() {
-    const {type} = this.props
+    const {type, value} = this.props
     return (
       <div>
         {Object.keys(type.fields).map(fieldName => {
-          const {value = {}} = this.props
-          const fieldValue = value[fieldName]
+          const fieldValue = value && value.getFieldValue(fieldName)
           return (
             <RenderField
               key={fieldName}

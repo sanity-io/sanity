@@ -10,7 +10,13 @@ export default {
       type: 'object',
       fields: {
         someString: {type: 'string'},
-        someNumber: {type: 'number'}
+        home: {type: 'homeAddress'}
+      }
+    },
+    homeAddress: {
+      type: 'object',
+      fields: {
+        zip: {type: 'string'}
       }
     },
     pets: {

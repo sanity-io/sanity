@@ -69,6 +69,7 @@ function invariantArrayCase(value, spec, command) {
  * See https://facebook.github.io/react/docs/update.html for details.
  */
 export default function applyPatch(value, patch) {
+
   invariant(
     typeof patch === 'object',
     'applyPatch(): You provided a key path to applyPatch() that did not contain one '
