@@ -50,7 +50,7 @@
   --large-padding:            1.5rem;
 
   /* Typography */
-  --font-family-sans-serif:   "Helvetica Neue";
+  --font-family-sans-serif:   "Helvetica Neue", helvetica, arial, sans-serif;
   --font-family-serif:        Georgia, "Times New Roman", Times, serif;
   --font-family-monospace:    Menlo, Monaco, Consolas, "Courier New", monospace;
   --font-family-base:         var(--font-family-sans-serif);
