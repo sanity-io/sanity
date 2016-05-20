@@ -10,7 +10,7 @@ import Logo from './Logo'
 
 class DefaultLayout extends React.Component {
   render() {
-    const activeToolName = this.props.params.tool
+    const activeToolName = this.props.location.pathname.split('/', 2)[1]
 
     return (
       <div className={styles.defaultLayout}>
