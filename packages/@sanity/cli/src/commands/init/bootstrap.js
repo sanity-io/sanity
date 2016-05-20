@@ -14,7 +14,8 @@ export function bootstrapSanity(targetPath, data) {
   return Promise.all([
     mkdirIfNotExists(path.join(targetPath, 'config')),
     mkdirIfNotExists(path.join(targetPath, 'plugins')),
-    mkdirIfNotExists(path.join(targetPath, 'static'))
+    mkdirIfNotExists(path.join(targetPath, 'static')),
+    mkdirIfNotExists(path.join(targetPath, 'schemas'))
   ])
   .then(() => promiseProps({
     pluginGitKeep: readTemplate('pluginGitKeep'),
@@ -30,8 +31,8 @@ export function bootstrapSanity(targetPath, data) {
     writeIfNotExists(path.join(targetPath, 'plugins', '.gitkeep'), templates.pluginGitKeep),
     writeIfNotExists(path.join(targetPath, 'static', '.gitkeep'), templates.staticGitKeep),
     writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
+    writeIfNotExists(path.join(targetPath, 'schemas', 'schema.js'), templates.schema),
     writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
-    writeIfNotExists(path.join(targetPath, 'schema.js'), templates.schema),
     writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
     writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
     writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)

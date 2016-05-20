@@ -51,6 +51,7 @@
     "ora": "^0.2.0",
     "promise-props-recursive": "^1.0.0",
     "semver-compare": "^1.0.0",
+    "speakingurl": "^9.0.0",
     "thenify": "^3.2.0",
     "validate-npm-package-name": "^2.2.2",
     "which": "^1.2.4",

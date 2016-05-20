@@ -72,9 +72,22 @@ export function createPluginManifest(data) {
 
 export function createSanityManifest(data, {isPlugin}) {
   const manifest = isPlugin ? {} : {
+    api: {
+      dataset: data.dataset,
+    },
+
     plugins: [
       '@sanity/base',
-      '@sanity/default-layout'
+      '@sanity/default-layout',
+      '@sanity/desk-tool'
+    ],
+
+    roles: [
+      {
+        name: 'schema:@sanity/base/schema',
+        srcPath: './schemas/schema.js',
+        path: './schemas/schema.js'
+      }
     ]
   }
 
