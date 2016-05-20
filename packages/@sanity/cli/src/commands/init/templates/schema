@@ -1,0 +1,67 @@
+export default {
+  types: {
+    blogpost: {
+      type: 'object',
+      fields: {
+        title: {
+          title: 'Title',
+          type: 'string'
+        },
+        lead: {
+          title: 'Lead',
+          type: 'string'
+        },
+        content: {
+          type: 'array',
+          of: [
+            {
+              title: 'Image',
+              type: 'reference',
+              to: [{type: 'image'}],
+              meta: {type: 'imageMetadata'}
+            },
+            {
+              title: 'Text',
+              type: 'text'
+            }
+          ]
+        },
+        authors: {
+          title: 'Authors',
+          type: 'array',
+          of: [
+            {type: 'author'}
+          ]
+        }
+      }
+    },
+    author: {
+      type: 'object',
+      fields: {
+        name: {
+          title: 'Name',
+          type: 'string'
+        }
+      }
+    },
+    image: {
+      type: 'object',
+      fields: {
+        fullsize: {type: 'string'},
+        aspectRatio: {type: 'number'},
+        versions: {
+          type: 'array',
+          of: [{type: 'imageVersion'}]
+        }
+      }
+    },
+    imageVersion: {
+      type: 'object',
+      fields: {
+        width: {type: 'number'},
+        square: {type: 'boolean'},
+        url: {type: 'string'}
+      }
+    }
+  }
+}
