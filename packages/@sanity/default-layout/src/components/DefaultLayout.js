@@ -26,7 +26,7 @@ class DefaultLayout extends React.Component {
 
         <div className={styles.toolContainer}>
           <Router>
-            <Redirect path="/" to={`/${tools[0].name}`} />
+            <Redirect path="/" to={`/${tools.length ? tools[0].name : ''}`} />
             <Route path="/:tool/*" component={RenderTool} />
           </Router>
         </div>
