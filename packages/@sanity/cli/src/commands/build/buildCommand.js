@@ -3,8 +3,12 @@ import path from 'path'
 import thenify from 'thenify'
 import filesize from 'filesize'
 import getConfig from '../../util/getConfig'
-import {getWebpackCompiler} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
+import {
+  getWebpackCompiler,
+  getDocumentElement,
+  ReactDOM
+} from '@sanity/server'
 
 export default {
   name: 'build',
@@ -13,42 +17,66 @@ export default {
   action: ({print, spinner, error, options}) => {
     const outputDir = options._[1] || path.join(options.cwd, 'dist')
     const config = getConfig(options.cwd).get('server')
-    const compiler = getWebpackCompiler({
+    const compilationConfig = {
       env: 'production',
       staticPath: resolveStaticPath(options.cwd, config),
       basePath: options.cwd,
-      outputPath: outputDir
-    })
+      outputPath: path.join(outputDir, 'static', 'js')
+    }
 
+    const compiler = getWebpackCompiler(compilationConfig)
     const compile = thenify(compiler.run.bind(compiler))
 
     const spin = spinner('Building Sanity...')
     spin.start()
 
+    const bundle = {}
+
     return compile()
       .then(statistics => {
-        spin.stop();
-
         const stats = statistics.toJson()
         const chunkMap = {}
-        const hashes = stats.chunks.forEach(chunk =>
+        stats.chunks.forEach(chunk =>
           chunk.files.forEach(file => {
             chunkMap[file] = chunk.hash
           })
         )
 
-        stats.warnings.forEach(print)
+        bundle.stats = stats
+        return chunkMap
+      })
+      .then(chunkMap => {
+        spin.text = 'Building index document'
+        return getDocumentElement(compilationConfig, {
+          scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => ({
+            path: `js/${asset}`,
+            hash: chunkMap[asset]
+          }))
+        })
+      })
+      .then(doc =>
+        fsp.writeFile(
+          path.join(outputDir, 'index.html'),
+          `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
+        )
+      )
+      .then(() => spin.stop())
+      .then(() => {
+        bundle.stats.warnings.forEach(print)
 
-        print(`Build complete, time spent: ${stats.time}ms`)
+        print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
 
         if (options.stats) {
           print('\nLargest modules (unminified, uncompressed sizes):')
-          sortModulesBySize(stats.modules).slice(0, 10).forEach(module =>
+          sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
             print(`[${filesize(module.size)}] ${module.name}`)
           )
         }
       })
-      .catch(error)
+      .catch(err => {
+        spin.stop()
+        error(err)
+      })
   }
 }
 
