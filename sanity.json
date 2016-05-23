@@ -1,6 +1,10 @@
 {
   "roles": [
     {
+      "name": "component:@sanity/base/document",
+      "description": "The document component wrapping the root component. Statically built for production, Rendered dynamically on the server in development."
+    },
+    {
       "name": "component:@sanity/base/root",
       "description": "The root component in the DOM-tree. Usually a layout."
     },
@@ -41,6 +45,12 @@
       "name": "client:@sanity/base/client",
       "srcPath": "./src/client",
       "path": "./lib/client"
+    },
+    {
+      "name": "component:@sanity/base/document-default",
+      "implements": "component:@sanity/base/document",
+      "srcPath": "./src/components/Document",
+      "path": "./lib/components/Document"
     }
   ]
 }
