@@ -4,6 +4,7 @@ const BASIC_TYPE_NAMES = Object.keys(basicTypes)
 
 export function getFieldType(schema, field) {
   const schemaType = schema.types[field.type]
+  console.log(schema)
   if (schemaType) {
     return schemaType
   }
@@ -14,5 +15,5 @@ export function getFieldType(schema, field) {
   // Treat as "anonymous"/inline type where type parameters are defined in field
   // todo: consider validate that the needed params are defined in field (currently also taken
   // care of during schema compilation)
-  return {name: field.type}
+  return field
 }

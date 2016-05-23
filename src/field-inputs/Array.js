@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderListItem from '../RenderListItem'
-import {createFormBuilderState} from '../FormBuilderState'
+import ArrayContainer from '../state/ArrayContainer'
+import {createFormBuilderState} from '../state/FormBuilderState'
 import {resolveJSType} from '../types/utils'
-import applyPatch from '../utils/applyPatch'
+import {getFieldType} from '../utils/getFieldType'
 
 export default React.createClass({
   propTypes: {
@@ -13,7 +14,7 @@ export default React.createClass({
     onChange: PropTypes.func
   },
   statics: {
-    /* valueContainer: ArrayContainer */
+    valueContainer: ArrayContainer
   },
   contextTypes: {
     resolveFieldInput: PropTypes.func,
@@ -29,7 +30,6 @@ export default React.createClass({
   },
   getDefaultProps() {
     return {
-      value: [],
       onChange() {}
     }
   },
@@ -38,7 +38,7 @@ export default React.createClass({
       this.setState({selectType: true})
       return
     }
-    this.handleAddItem(this.getFieldType(this.props.type.of[0]))
+    this.handleAddItem(getFieldType(this.context.schema, this.props.type.of[0]))
   },
 
   handleAddItem(itemType) {
@@ -68,28 +68,13 @@ export default React.createClass({
     this.setState({selectType: false, addItemType: null, addItem: void 0})
     this.props.onChange({patch: {$unshift: [itemValue]}})
   },
-  getFieldType(field) {
-    const fieldType = this.context.schema.types[field.type]
-    if (fieldType) {
-      return fieldType
-    }
-    if (!BASIC_TYPE_NAMES.includes(field.type)) {
-      // todo: this will normally fail during schema compilation, but keep it here for now and consider remove later
-      const {fieldName} = this.props
-      console.warn('Invalid field type of field "%s". Must be one of %s', fieldName, BASIC_TYPE_NAMES.join(', '))
-    }
-    // Treat as "anonymous"/inline type where type parameters are defined in field
-    // todo: consider validate that the needed params are defined in field (currently also taken
-    // care of during schema compilation)
-    return field
-  },
   renderSelectType() {
     const {type} = this.props
     return type.of.map(field => {
       return (
         <button
           key={field.type}
-          onClick={() => this.handleAddItem(this.getFieldType(field))}
+          onClick={() => this.handleAddItem(getFieldType(this.context.schema, field))}
           type="button"
         >
           {field.title || field.type}
@@ -98,7 +83,7 @@ export default React.createClass({
     })
   },
   handleAddItemChange(event) {
-    this.setState({addItem: applyPatch(this.state.addItem, event.patch)})
+    this.setState({addItem: this.state.addItem.patch(event.patch)})
   },
   handleItemChange(event, index) {
     const patch = {[index]: event.patch}
@@ -121,11 +106,22 @@ export default React.createClass({
         <button type="button" onClick={this.handleAddBtnClick}>+</button>
         {selectType && this.renderSelectType()}
         {addItemType && this.renderAddItemForm(addItemType)}
-        {value.map((item, i) => {
-          const itemType = (item && item.$type) || resolveJSType(item)
+        {value && value.map((item, i) => {
+          const itemValue = item.unwrap()
+          const itemType = (itemValue && itemValue.$type) || resolveJSType(itemValue)
           // find type in of
 
           const typeFromField = type.of.find(ofType => ofType.type === itemType)
+
+          if (!typeFromField) {
+            return (
+              <div>
+                <p>Invalid type: <pre>{JSON.stringify(itemType)}</pre></p>
+                <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
+
+              </div>
+            )
+          }
           return (
             <div key={i}>
               <RenderListItem index={i} field={typeFromField} value={item} onChange={this.handleItemChange} />

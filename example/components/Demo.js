@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 
 import jsonMarkup from 'json-markup'
-import {createFormBuilderState} from '../../src/FormBuilderState'
+import {createFormBuilderState} from '../../src/state/FormBuilderState'
 
 import {
   FormBuilder,

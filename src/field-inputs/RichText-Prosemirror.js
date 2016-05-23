@@ -26,7 +26,6 @@ class ProseMirrorValueContainer {
 }
 
 ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
-  console.log('WRAP', htmlValue)
   return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
 }
 

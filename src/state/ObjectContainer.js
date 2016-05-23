@@ -1,32 +1,8 @@
+import {createFieldValue} from './FormBuilderState'
 import {clone} from 'lodash'
-import {getFieldType} from './utils/getFieldType'
+import {getFieldType} from '../utils/getFieldType'
 
-// function createValueNode(value, valueWrappper) {
-//   return {
-//     value: value,
-//     wrapper: valueWrappper
-//   }
-// }
-
-class DefaultContainer {
-  constructor(value, context) {
-    this.value = value
-    this.context = context
-  }
-
-  patch(patch) {
-    if (patch.hasOwnProperty('$set')) {
-      return new DefaultContainer(patch.$set, this.context)
-    }
-    throw new Error(`Only $set is supported by default value container, got: ${JSON.stringify(patch)}`)
-  }
-
-  unwrap() {
-    return this.value
-  }
-}
-
-class ObjectContainer {
+export default class ObjectContainer {
   constructor(value, context) {
     this.context = context
     this.value = value
@@ -101,42 +77,3 @@ ObjectContainer.wrap = function wrap(value, context) {
   return new ObjectContainer(wrappedValue, context)
 }
 
-
-function createFieldValue(value, context) {
-
-  const {schema, field, resolveContainer} = context
-
-  if (!field) {
-    throw new Error('Missing field')
-  }
-
-  const fieldType = getFieldType(schema, field)
-
-  const ResolvedContainer = resolveContainer(field, fieldType)
-
-  if (ResolvedContainer) {
-    return new ResolvedContainer.wrap(value, context)
-  }
-
-  if (fieldType.type === 'object') {
-    // create value nodes for each field in schema type
-    return ObjectContainer.wrap(value, {field, schema, resolveContainer})
-  }
-
-  if (fieldType.type === 'array') {
-    // create value nodes for each item in value
-  }
-
-  return new DefaultContainer(value, context)
-}
-
-const noop = () => {}
-
-export function createFormBuilderState(value, {type, schema, resolveContainer}) {
-  const context = {
-    schema: schema,
-    field: {type: type.name},
-    resolveContainer: resolveContainer || noop
-  }
-  return createFieldValue(value, context)
-}

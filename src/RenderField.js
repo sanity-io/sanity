@@ -59,27 +59,9 @@ export default React.createClass({
   },
 
   render() {
-    const {value, field, fieldName} = this.props
+    const {value, field} = this.props
 
     const fieldType = this.getFieldType(field)
-
-    // wont check wrapped field values since unwrapping may be costly
-    // if (value) {
-    //
-    //   const basicType = basicTypes[fieldType.type]
-    //
-    //   const valueType = resolveJSType(value)
-    //
-    //   if (valueType !== fieldType.type && valueType !== basicType.primitive) {
-    //     // eslint-disable-next-line no-console
-    //     console.warn(
-    //       'Value of field %s is of type %s which is incompatible with the basic type %s',
-    //       fieldName,
-    //       fieldType.type,
-    //       valueType
-    //     )
-    //   }
-    // }
 
     const FieldInput = this.context.resolveFieldInput(field, fieldType)
     if (!FieldInput) {

@@ -16,14 +16,8 @@ export default {
           type: 'array',
           of: [
             {
-              title: 'Bilde',
-              type: 'reference',
-              to: [{type: 'image'}],
-              meta: {type: 'imageMetadata'}
-            },
-            {
-              title: 'Tekst',
-              type: 'text'
+              title: 'String',
+              type: 'string'
             }
           ]
         },
@@ -42,6 +36,13 @@ export default {
         name: {
           title: 'Title',
           type: 'string'
+        },
+        awards: {
+          title: 'Awards',
+          type: 'array',
+          of: [
+            {type: 'string'}
+          ]
         }
       }
     },
