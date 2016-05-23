@@ -1,8 +1,40 @@
 import path from 'path'
 import express from 'express'
+import React from 'react'
+import ReactDOM from 'react-dom/server'
+import {resolveRoles} from '@sanity/resolver'
+import requireUncached from 'require-uncached'
+
+const docRole = 'component:@sanity/base/document'
+const assetify = assetPath => ({path: assetPath})
+const getDefaultModule = mod => {
+  return mod && mod.__esModule ? mod.default : mod
+}
+
+const getDocumentComponent = basePath =>
+  resolveRoles({basePath}).then(res => {
+    const role = res.fulfilled[docRole]
+    if (!role) {
+      throw new Error(`Role '${docRole}' is not fulfilled by any plugins, are you missing @sanity/base?`)
+    }
+
+    return getDefaultModule(
+      requireUncached(role[0].path)
+    )
+  })
 
 export function getBaseServer() {
   return express()
+}
+
+export function getDocumentElement({basePath}, props = {}) {
+  return getDocumentComponent(basePath)
+    .then(Document =>
+      React.createElement(Document, Object.assign({
+        stylesheets: ['css/main.css'].map(assetify),
+        scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map(assetify)
+      }, props))
+    )
 }
 
 export function applyStaticRoutes(app, config = {}) {
@@ -11,10 +43,21 @@ export function applyStaticRoutes(app, config = {}) {
 
   app.get('*', (req, res) => {
     if (req.url.indexOf('/static') === 0) {
-      res.status(404).send('File not found')
-    } else {
-      res.sendFile(path.join(__dirname, 'templates', 'layout.html'))
+      return res.status(404).send('File not found')
     }
+
+    return getDocumentElement(config)
+      .then(doc => {
+        res.send(`<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`)
+      })
+      .catch(err => {
+        console.error(err.stack) // eslint-disable-line no-console
+
+        res
+          .set('Content-Type', 'text/plain')
+          .status(500)
+          .send(err.stack)
+      })
   })
 
   return app

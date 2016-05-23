@@ -50,6 +50,9 @@
     "lodash": "^4.5.0",
     "postcss-import": "^8.1.0",
     "postcss-use": "^2.1.0",
+    "react": "^15.0.0",
+    "react-dom": "^15.0.0",
+    "require-uncached": "^1.0.2",
     "resolve": "^1.1.7",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
@@ -67,13 +70,11 @@
     "eslint-plugin-react": "^4.2.3",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
-    "react": "^0.14.7",
-    "react-dom": "^0.14.7",
     "rimraf": "^2.5.2"
   },
   "peerDependencies": {
     "@sanity/base": ">=2.0.0",
-    "react": ">=0.14.0",
-    "react-dom": ">=0.14.0"
+    "react": "^15.0.0",
+    "react-dom": "^15.0.0"
   }
 }

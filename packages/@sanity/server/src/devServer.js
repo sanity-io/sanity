@@ -37,7 +37,7 @@ export default function getDevServer(config = {}) {
 
   // Serve an empty CSS file for the main stylesheet,
   // as they are injected dynamically in development mode
-  app.get('/static/stylesheets/main.css', (req, res) => {
+  app.get('/static/css/main.css', (req, res) => {
     res.set('Content-Type', 'text/css')
     res.send()
   })

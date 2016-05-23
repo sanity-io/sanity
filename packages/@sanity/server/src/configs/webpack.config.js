@@ -21,9 +21,12 @@ export default (config = {}) => {
     path.resolve(path.join(basePath, 'node_modules'))
   ]
 
+  const cssExtractor = env === 'production'
+    && new ExtractTextPlugin('all.bundle.css', {allChunks: true})
+
   const cssLoader = env === 'production'
     ? 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
-    : 'css-loader?modules&localIdentName=[path]_[name]_[local]_[hash:base64:5]&importLoaders=1'
+    : 'css-loader?modules&sourceMap&localIdentName=[path]_[name]_[local]_[hash:base64:5]&importLoaders=1'
 
   return {
     entry: {
@@ -33,7 +36,7 @@ export default (config = {}) => {
     output: {
       path: config.outputPath || path.join(__dirname, '..', '..', 'dist'),
       filename: '[name].bundle.js',
-      publicPath: '/static/'
+      publicPath: '/static/js'
     },
     resolve: {
       modules: resolvePaths, // Webpack 2
@@ -63,7 +66,7 @@ export default (config = {}) => {
       }, {
         test: /\.css(\?|$)/,
         loaders: env === 'production'
-          ? [ExtractTextPlugin.extract('style-loader', `${cssLoader}!postcss-loader`)]
+          ? [cssExtractor.extract(`${cssLoader}!postcss-loader`)]
           : ['style-loader', cssLoader, 'postcss-loader']
       }, {
         test: /[?&]sanityRole=/,
@@ -71,10 +74,11 @@ export default (config = {}) => {
       }]
     },
     plugins: [
+      cssExtractor,
       new OccurrenceOrderPlugin(),
       new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
       new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
-    ],
+    ].filter(Boolean),
     postcss: wp => [
       postcssImport({
         addDependencyTo: wp,
