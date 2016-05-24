@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderField from '../RenderField'
+import ObjectContainer from '../state/ObjectContainer'
 
 export default React.createClass({
   propTypes: {
@@ -11,7 +12,7 @@ export default React.createClass({
   },
 
   statics: {
-    // valueContainer: DefaultValueContainer
+    valueContainer: ObjectContainer
   },
 
   contextTypes: {
