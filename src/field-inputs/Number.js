@@ -16,7 +16,7 @@ class NumberContainer {
   }
 
   unwrap() {
-    return Number(this.stringValue)
+    return this.stringValue.trim() === '' ? void 0 : Number(this.stringValue)
   }
 }
 
@@ -47,11 +47,10 @@ export default React.createClass({
 
   render() {
     const {value} = this.props
-    console.log(value)
     return (
       <input type="number"
         onChange={this.handleChange}
-        value={value && value.stringValue}
+        value={value ? value.unwrap() : void 0}
       />
     )
   }

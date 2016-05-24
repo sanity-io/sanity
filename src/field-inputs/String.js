@@ -31,7 +31,7 @@ export default React.createClass({
         type="text"
         placeholder={field.placeholder}
         onChange={this.handleChange}
-        value={value && value.unwrap()}
+        value={value}
       />
     )
   }

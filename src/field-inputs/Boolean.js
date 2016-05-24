@@ -15,7 +15,7 @@ export default React.createClass({
   },
 
   handleChange(e) {
-    this.props.onChange(e.target.checked)
+    this.props.onChange({patch: {$set: e.target.checked}})
   },
 
   render() {

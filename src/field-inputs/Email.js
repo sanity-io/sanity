@@ -17,7 +17,7 @@ export default React.createClass({
   },
 
   handleChange(event) {
-    this.props.onChange(event.target.value)
+    this.props.onChange({$set: event.target.value})
   },
 
   render() {
