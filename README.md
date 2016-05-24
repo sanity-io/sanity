@@ -20,7 +20,36 @@ Polymorphic arrays may only contain elements of one primitive type. Thus, this i
 }
 ```
 
-## Input fields
+## Terminology
+
+### Type
+Types are the building blocks for your schema. A type defines the structure and behavior of your data model.
+
+There is a distiction between _primitive types_ and _container types_.
+
+A container type is a type that contains data of other types, e.g. `array` or `object`. A primitive type only represents one simple value, like the number `3` or the string `foobar`
+
+
+### Field
+If you define an object type, you must also define its fields. E.g. if you are defining a `person` type, it may look like this:
+
+```json
+{
+  "type": "object",
+  "fields": {
+    "firstName": {
+      "title": "First name",
+      "type": "string"
+    },
+    "lastName": {
+      "title": "Last name",
+      "type": "string"
+    }
+  }
+}
+```
+
+## Input widgets
 
 All input fields must follow a simple convention based protocol.
 Every input field must:
