@@ -20,6 +20,14 @@
       "name": "style:@sanity/base/theme",
       "description": "Base theme variables for Sanity"
     },
+    {
+      "name": "locale:@sanity/base/nb-NO",
+      "description": "Norwegian Bokmål"
+    },
+    {
+      "name": "locale:@sanity/base/en-US",
+      "description": "English US"
+    },
 
     {
       "implements": "component:@sanity/base/root",
