@@ -48,7 +48,7 @@ export default React.createClass({
     const {schema, type, resolveFieldInput} = this.props
     const resolveContainer = (field, fieldType) => {
       const input = resolveFieldInput(field, fieldType)
-      return input.container
+      return input.valueContainer
     }
     const value = restore(schema, type) || void 0
     return {

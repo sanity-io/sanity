@@ -46,7 +46,7 @@ export default React.createClass({
       field: field,
       schema: this.context.schema,
       // not too elegant atm.
-      resolveContainer: (_field, type) => this.context.resolveFieldInput(_field, type).container
+      resolveContainer: (_field, type) => this.context.resolveFieldInput(_field, type).valueContainer
     })
 
     this.setState({

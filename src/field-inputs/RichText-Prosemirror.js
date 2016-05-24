@@ -39,7 +39,7 @@ export default React.createClass({
   },
 
   statics: {
-    container: ProseMirrorValueContainer
+    valueContainer: ProseMirrorValueContainer
   },
 
   getDefaultProps() {

@@ -1,5 +1,3 @@
-import ObjectContainer from './ObjectContainer'
-import ArrayContainer from './ArrayContainer'
 import DefaultContainer from './DefaultContainer'
 import {getFieldType} from '../utils/getFieldType'
 const noop = () => {}
@@ -18,16 +16,6 @@ export function createFieldValue(value, context) {
 
   if (ResolvedContainer) {
     return ResolvedContainer.wrap(value, context)
-  }
-
-  if (fieldType.type === 'object') {
-    // create value nodes for each field in schema type
-    return ObjectContainer.wrap(value, {field, schema, resolveContainer})
-  }
-
-  if (fieldType.type === 'array') {
-    // create value nodes for each item in value
-    return ArrayContainer.wrap(value, {field, schema, resolveContainer})
   }
 
   return new DefaultContainer(value, context)
