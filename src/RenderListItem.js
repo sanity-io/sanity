@@ -66,9 +66,11 @@ export default React.createClass({
       )
     }
 
+    const passUnwrapped = value.constructor.passUnwrapped
+
     return this.renderField(
       <FieldInput
-        value={value}
+        value={passUnwrapped ? value.unwrap() : value}
         field={field}
         type={fieldType}
         onChange={this.handleChange}

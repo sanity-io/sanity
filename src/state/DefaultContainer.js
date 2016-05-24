@@ -15,3 +15,5 @@ export default class DefaultContainer {
     return this.value
   }
 }
+
+DefaultContainer.passUnwrapped = true

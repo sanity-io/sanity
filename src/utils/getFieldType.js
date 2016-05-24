@@ -4,7 +4,6 @@ const BASIC_TYPE_NAMES = Object.keys(basicTypes)
 
 export function getFieldType(schema, field) {
   const schemaType = schema.types[field.type]
-  console.log(schema)
   if (schemaType) {
     return schemaType
   }

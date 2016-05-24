@@ -33,8 +33,11 @@ export const FormBuilder = React.createClass({
     if (!FieldInput) {
       return <div>No field input resolved for field {JSON.stringify(field)}</div>
     }
+
+    const passUnwrapped = value && value.constructor.passUnwrapped
+
     return (
-      <FieldInput field={field} type={type} onChange={onChange} value={value} />
+      <FieldInput field={field} type={type} onChange={onChange} value={passUnwrapped ? value.unwrap() : value} />
     )
   }
 })
