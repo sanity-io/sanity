@@ -58,5 +58,17 @@
     "rimraf": "^2.5.2",
     "staticr": "^4.0.2",
     "tap": "^5.7.1"
-  }
+  },
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/form-builder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/form-builder/issues"
+  },
+  "homepage": "https://github.com/sanity-io/form-builder#readme"
 }
