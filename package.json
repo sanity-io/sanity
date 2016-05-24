@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "babel src --out-dir dist",
+    "prepublish": "in-publish && babel src --out-dir dist || not-in-publish",
     "postpublish": "rimraf dist",
     "test": "tap --node-arg -r --node-arg ./.init.js test/*.js",
     "start": "babel-node example/server.js"
@@ -46,6 +46,7 @@
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-react": "^5.1.1",
     "express": "^4.13.4",
+    "in-publish": "^2.0.0",
     "loose-envify": "^1.1.0",
     "postcss": "^5.0.21",
     "postcss-import": "^8.1.2",
