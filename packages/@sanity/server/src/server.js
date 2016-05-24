@@ -11,7 +11,6 @@ const getWebpackCompiler = baseConfig => {
     ? getWebpackProdConfig(baseConfig)
     : getWebpackDevConfig(baseConfig)
 
-  console.log(require('util').inspect(config, {colors: true, depth: +Infinity}))
   return webpack(config)
 }
 

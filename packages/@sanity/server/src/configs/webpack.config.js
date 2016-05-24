@@ -16,16 +16,17 @@ export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
+  const isProd = env === 'production'
   const resolvePaths = [
     path.resolve(basePath),
     path.resolve(path.join(basePath, 'node_modules'))
   ]
 
-  const cssExtractor = env === 'production'
-    && new ExtractTextPlugin('all.bundle.css', {allChunks: true})
+  const cssExtractor = isProd
+    && new ExtractTextPlugin('../css/main.css', {allChunks: true})
 
-  const cssLoader = env === 'production'
-    ? 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
+  const cssLoader = isProd
+    ? 'css-loader?modules&minimize&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
     : 'css-loader?modules&sourceMap&localIdentName=[path]_[name]_[local]_[hash:base64:5]&importLoaders=1'
 
   return {
@@ -65,9 +66,8 @@ export default (config = {}) => {
         loader: 'json'
       }, {
         test: /\.css(\?|$)/,
-        loaders: env === 'production'
-          ? [cssExtractor.extract(`${cssLoader}!postcss-loader`)]
-          : ['style-loader', cssLoader, 'postcss-loader']
+        loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
+        loaders: !isProd && ['style-loader', cssLoader, 'postcss-loader']
       }, {
         test: /[?&]sanityRole=/,
         loader: roleLoaderPath
