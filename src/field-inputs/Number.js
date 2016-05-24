@@ -2,37 +2,11 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import update from 'react-addons-update'
 
-class NumberContainer {
-  constructor(value, context) {
-    this.stringValue = value
-    this.context = context
-  }
-
-  patch(patch) {
-    if (patch.hasOwnProperty('$set')) {
-      return new NumberContainer(patch.$set)
-    }
-    throw new Error(`Only $set is supported by NumberContainer, got: ${JSON.stringify(patch)}`)
-  }
-
-  unwrap() {
-    return this.stringValue.trim() === '' ? void 0 : Number(this.stringValue)
-  }
-}
-
-NumberContainer.wrap = function wrap(numberValue) {
-  return new NumberContainer(numberValue)
-}
-
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field,
     value: PropTypes.shape({stringValue: PropTypes.string}),
     onChange: PropTypes.func
-  },
-
-  statics: {
-    container: NumberContainer
   },
 
   getDefaultProps() {
@@ -42,7 +16,8 @@ export default React.createClass({
   },
 
   handleChange(e) {
-    this.props.onChange({patch: {$set: e.target.value}})
+    const val = e.target.value.trim()
+    this.props.onChange({patch: {$set: val === '' ? void 0 : Number(e.target.value)}})
   },
 
   render() {
@@ -50,7 +25,7 @@ export default React.createClass({
     return (
       <input type="number"
         onChange={this.handleChange}
-        value={value ? value.unwrap() : void 0}
+        value={value}
       />
     )
   }
