@@ -35,6 +35,12 @@ export default {
     return compile()
       .then(statistics => {
         const stats = statistics.toJson()
+        if (stats.errors && stats.errors.length > 0) {
+          throw new Error(
+            `Errors while building:\n\n${stats.errors.join('\n\n')}`
+          )
+        }
+
         const chunkMap = {}
         stats.chunks.forEach(chunk =>
           chunk.files.forEach(file => {
