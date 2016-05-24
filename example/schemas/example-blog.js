@@ -12,6 +12,10 @@ export default {
           title: 'Lead',
           type: 'text'
         },
+        priority: {
+          title: 'Priority',
+          type: 'number'
+        },
         content: {
           type: 'array',
           of: [
@@ -44,25 +48,6 @@ export default {
             {type: 'string'}
           ]
         }
-      }
-    },
-    image: {
-      type: 'object',
-      fields: {
-        fullsize: {type: 'string'},
-        aspectRatio: {type: 'number'},
-        versions: {
-          type: 'array',
-          of: [{type: 'imageVersion'}]
-        }
-      }
-    },
-    imageVersion: {
-      type: 'object',
-      fields: {
-        width: {type: 'number'},
-        square: {type: 'boolean'},
-        url: {type: 'string'}
       }
     }
   }
