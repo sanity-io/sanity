@@ -5,7 +5,7 @@ import update from 'react-addons-update'
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field,
-    value: PropTypes.shape({stringValue: PropTypes.string}),
+    value: PropTypes.number,
     onChange: PropTypes.func
   },
 
