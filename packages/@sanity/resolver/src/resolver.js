@@ -23,18 +23,17 @@ export default function resolveTree(opts = {}) {
 }
 
 export function resolveRoles(options = {}) {
-  return resolveTree(options)
-    .then(plugins => {
-      const result = {definitions: {}, fulfilled: {}, plugins}
+  return resolveTree(options).then(plugins => {
+    const result = {definitions: {}, fulfilled: {}, plugins}
 
-      result.definitions = plugins.reduceRight(assignDefinitions, result.definitions)
-      result.fulfilled = plugins.reduceRight(
-        (fulfilled, plugin) => assignFulfillers(fulfilled, plugin, result),
-        result.fulfilled
-      )
+    result.definitions = plugins.reduceRight(assignDefinitions, result.definitions)
+    result.fulfilled = plugins.reduceRight(
+      (fulfilled, plugin) => assignFulfillers(fulfilled, plugin, result),
+      result.fulfilled
+    )
 
-      return result
-    })
+    return result
+  })
 }
 
 function assignDefinitions(definitions, plugin) {
