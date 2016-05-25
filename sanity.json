@@ -21,13 +21,22 @@
       "description": "Base theme variables for Sanity"
     },
     {
-      "name": "locale:@sanity/base/nb-NO",
-      "description": "Norwegian Bokmål"
+      "name": "locale:@sanity/base/locale-messages",
+      "description": "Messages across all known locales"
     },
     {
-      "name": "locale:@sanity/base/en-US",
-      "description": "English US"
+      "name": "machine:@sanity/base/language-resolver",
+      "description": "Figures out which locale the client should use"
     },
+    {
+      "name": "machine:@sanity/base/locale-message-fetcher",
+      "description": "Fetches locale messages for the given locale"
+    },
+    {
+      "name": "component:@sanity/base/locale",
+      "description": "Wraps react-intl components, flavoured with the resolved locale"
+    },
+
 
     {
       "implements": "component:@sanity/base/root",
@@ -59,6 +68,22 @@
       "implements": "component:@sanity/base/document",
       "srcPath": "./src/components/Document",
       "path": "./lib/components/Document"
+    },
+
+    {
+      "implements": "machine:@sanity/base/language-resolver",
+      "srcPath": "./src/locale/languageResolver.js",
+      "path": "./lib/locale/languageResolver.js"
+    },
+    {
+      "implements": "machine:@sanity/base/locale-message-fetcher",
+      "srcPath": "./src/locale/localeMessageFetcher.js",
+      "path": "./lib/locale/localeMessageFetcher.js"
+    },
+    {
+      "implements": "component:@sanity/base/locale",
+      "srcPath": "./src/locale",
+      "path": "./lib/locale"
     }
   ]
 }
