@@ -43,6 +43,12 @@
       "name": "component:desk-tool/query-pane",
       "srcPath": "./src/pane/QueryPane.js",
       "path": "./lib/pane/QueryPane.js"
+    },
+
+    {
+      "name": "component:desk-tool/editor-container",
+      "srcPath": "./src/editor/EditorContainer.js",
+      "path": "./lib/editor/EditorContainer.js"
     }
   ]
 }

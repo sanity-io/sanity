@@ -29,6 +29,8 @@
 }
 
 .main {
+  overflow-y: auto;
+
   @media (--screen-medium) {
     flex-grow: 10;
   }

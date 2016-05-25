@@ -3,6 +3,7 @@ import Pane from 'component:desk-tool/pane'
 import QueryPane from 'component:desk-tool/query-pane'
 import schema from 'schema:@sanity/base/schema'
 import PaneContainer from 'component:desk-tool/pane-container'
+import EditorContainer from 'component:desk-tool/editor-container'
 import styles from '../styles/DeskTool.css'
 
 function getTypeItems() {
@@ -42,13 +43,21 @@ class SchemaPaneResolver extends React.Component {
       )
     }
 
+    const editor = selectedItem && (
+      <EditorContainer
+        documentId={selectedItem}
+        schema={schema}
+        typeName={selectedType}
+      />
+    )
+
     return (
       <div className={styles.container}>
         <PaneContainer className={styles.paneContainer}>
           {panes}
         </PaneContainer>
         <main className={styles.main}>
-          {selectedItem && <div>{selectedItem}</div>}
+          {editor}
         </main>
       </div>
     )
