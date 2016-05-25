@@ -18,6 +18,12 @@ class SchemaPaneResolver extends React.Component {
     return this.props.location !== nextProps.location
   }
 
+  getPaneQuery(type) {
+    const displayField = schema.types[type].displayField || 'title'
+    const selection = `{"pathSegment": .$id, "title": .${displayField}}`
+    return `${schema.name}.${type} ${selection}`
+  }
+
   render() {
     const segments = this.props.location.split('/').slice(1)
     const selectedType = segments[0]
@@ -36,7 +42,7 @@ class SchemaPaneResolver extends React.Component {
           key={selectedType}
           basePath={`/${selectedType}`}
           segments={segments}
-          query={`${schema.name}.${selectedType} {"pathSegment": .$id, "title": .name}`}
+          query={this.getPaneQuery(selectedType)}
           activeItem={segments[1]}
           previousPathSegment={segments[0]}
         />
