@@ -58,15 +58,16 @@ function init() {
   const compiledSchema = schemaName && compileSchema(schemas[schemaName])
 
   function renderDemo(compiledSchema) {
+    const schemaFieldInputs = Object.assign({}, fieldInputs)
     Object.keys(compiledSchema.types).forEach(typeName => {
       const typeDef = compiledSchema.types[typeName]
       if (!fieldInputs[typeName] && fieldInputs[typeDef.type]) {
-        fieldInputs[typeName] = fieldInputs[typeDef.type]
+        schemaFieldInputs[typeName] = fieldInputs[typeDef.type]
       }
     })
 
     function resolveFieldInput(field) {
-      return fieldInputs[field.type]
+      return schemaFieldInputs[field.type]
     }
 
     return (
