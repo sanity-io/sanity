@@ -70,6 +70,10 @@ export default React.createClass({
     this._prosemirror.off('change', this.handleProseMirrorTransform)
   },
 
+  setContent(doc) {
+    this._prosemirror.setContent(doc)
+  },
+
   handleProseMirrorTransform(transform) {
     // todo: figure out how this patch should be
     const steps = []
