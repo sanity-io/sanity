@@ -30,8 +30,23 @@
 
 .main {
   overflow-y: auto;
+  position: relative;
 
   @media (--screen-medium) {
     flex-grow: 10;
   }
+
+}
+
+.nothingSelected {
+  position: absolute;
+  box-sizing: border-box;
+  height: 50%;
+  width: 100%;
+  top: 50%;
+  text-align: center;
+  vertical-align: middle;
+  color: var(--text-muted);
+  transform: translateY(-50%);
+  font-size: 2em;
 }

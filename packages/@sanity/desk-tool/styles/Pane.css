@@ -17,6 +17,7 @@
 }
 
 .pane {
+  max-width: 100%;
   @media (--screen-medium) {
     flex-grow: 1;
     position: relative;
@@ -43,28 +44,26 @@
 }
 
 .paneItemLink {
-  width: 100%;
   display: block;
   position: relative;
   padding: 0 1em;
   text-decoration: none;
   color: var(--selectable-item-color);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  &:after {
+    position: absolute;
+    right: 0;
+    content: "\232A";
+    opacity: .2;
+    color: var(--selectable-item-color);
+  }
 
   @media (--screen-medium) {
     max-width: 15em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    &:after {
-      position: absolute;
-      right: 0;
-      content: "\232A";
-      opacity: .2;
-    }
-  }
 
-  &:active {
-    /*opacity: .5;*/
   }
 
   &:hover {
@@ -72,9 +71,6 @@
   }
 }
 
-.paneItemLink:hover {
-
-}
 
 .activePaneItemLink {
   composes: paneItemLink;
