@@ -9,13 +9,13 @@ export default {
           title: 'Title',
           type: 'string'
         },
-        lead: {
-          title: 'Lead',
-          type: 'text'
-        },
         priority: {
           title: 'Priority',
           type: 'number'
+        },
+        lead: {
+          title: 'Lead',
+          type: 'text'
         },
         content: {
           type: 'array',
