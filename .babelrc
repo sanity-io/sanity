@@ -1,4 +1,7 @@
 {
-  "presets": ["es2015-node6", "react"],
-  "plugins": ["lodash"]
+  "presets": ["es2015", "react"],
+  "plugins": [
+    "lodash",
+    "css-modules-transform"
+  ]
 }

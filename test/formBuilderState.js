@@ -1,8 +1,6 @@
 import {test} from 'tap'
-import {createFormBuilderState} from '../src/FormBuilderState'
-import {
-  compileSchema,
-} from '../src'
+import {createFormBuilderState} from '../src/state/FormBuilderState'
+import {compileSchema} from '../src'
 
 import schema from './fixtures/schema'
 
