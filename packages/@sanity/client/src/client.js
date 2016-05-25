@@ -6,12 +6,17 @@ class SanityClient {
     const client = gradient(config)
 
     this.gradient = pify({
-      fetch: client.fetch.bind(client)
+      fetch: client.fetch.bind(client),
+      update: client.update.bind(client)
     })
   }
 
-  fetch(query, opts) {
-    return this.gradient.fetch(query, opts).then(res => res.result)
+  fetch(query, params) {
+    return this.gradient.fetch(query, params).then(res => res.result)
+  }
+
+  update(documentId, patch, opts) {
+    return this.gradient.update(documentId, patch, opts)
   }
 
   observe(query, opts) {

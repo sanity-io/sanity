@@ -16,6 +16,22 @@ test('can do simple requests', t => {
   })
 })
 
+test('can do update mutations', t => {
+  const patch = {
+    merge: {
+      attributes: {
+        description: 'Blah'
+      }
+    }
+  }
+
+  nock(baseUrl)
+    .post('/m/foo?returnIds=true', [{update: {id: 'foo:raptor', patch}}])
+    .reply(200, {})
+
+  return client.update('foo:raptor', patch)
+})
+
 test('request errors are captured as errors', t => {
   nock(baseUrl)
     .post('/q/foo', {query: 'some invalid query'})
