@@ -1,6 +1,5 @@
-import browserifyBundles from './static-routes/browserify-bundles'
+import browserifyBundles from './browserify-bundles'
 import capture from 'error-capture-middleware'
-import cssBundles from './static-routes/css-bundles'
 import devErrorHandler from 'dev-error-handler'
 import express from 'express'
 import Layout from './components/Layout'
@@ -15,8 +14,7 @@ const app = express()
 app.use(quickreload({root: '../'}))
 
 app.use(serve([
-  browserifyBundles,
-  cssBundles
+  browserifyBundles
 ]))
 
 app.use(capture.css())

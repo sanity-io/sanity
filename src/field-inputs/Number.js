@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import update from 'react-addons-update'
+import styles from './styles/Number.css'
 
 export default React.createClass({
   propTypes: {
@@ -23,7 +23,7 @@ export default React.createClass({
   render() {
     const {value} = this.props
     return (
-      <input type="number"
+      <input className={styles.input} type="number"
         onChange={this.handleChange}
         value={value}
       />

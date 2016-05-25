@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
+import JSONView from './JSONView'
 
-import jsonMarkup from 'json-markup'
 import {createFormBuilderState} from '../../src/state/FormBuilderState'
 
 import {
@@ -111,11 +111,7 @@ export default React.createClass({
           <div style={DEBUG_JSON_STYLE}>
             <button onClick={() => this.setState({shouldInspect: false})}>Close</button>
             <h3>The unwrapped value is serialized here:</h3>
-            <pre>
-              <code
-                dangerouslySetInnerHTML={{__html: jsonMarkup(value.unwrap())}}>
-              </code>
-            </pre>
+            <JSONView json={value.unwrap()} />
             <p>Check the console for the internal representation of the form builder value(s)</p>
           </div>
         )}

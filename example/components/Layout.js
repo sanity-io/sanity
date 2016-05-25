@@ -10,7 +10,8 @@ export default React.createClass({
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
           <title>Form builder demo</title>
           <script src="/browser/main.js" async />
-          <link rel="stylesheet" href="/stylesheets/main.css" />
+          <link rel="stylesheet" href="/stylesheets/global.css" />
+          <link rel="stylesheet" href="/stylesheets/modules.css" />
           <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1" />
         </head>
         <body>

@@ -25,8 +25,8 @@ export default {
     latlon: {
       type: 'object',
       fields: {
-        lat: {type: 'string'},
-        lon: {type: 'string'},
+        lat: {type: 'number'},
+        lon: {type: 'number'},
       }
     },
     paragraph: {

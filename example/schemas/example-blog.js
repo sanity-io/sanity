@@ -3,6 +3,7 @@ export default {
   types: {
     blogpost: {
       type: 'object',
+      displayField: 'author',
       fields: {
         title: {
           title: 'Title',

@@ -7,22 +7,20 @@
     "prepublish": "in-publish && babel src --out-dir dist || not-in-publish",
     "postpublish": "rimraf dist",
     "test": "tap --node-arg -r --node-arg ./.init.js test/*.js",
-    "start": "babel-node example/server.js"
+    "start": "remon --require .init.js example/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "draft-js": "^0.7.0",
-    "json-markup": "^0.1.7",
     "lodash": "^4.12.0",
     "object-inspect": "^1.2.1",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.7.0",
     "react": "^15.0.2",
     "react-addons-update": "^15.0.2",
-    "shallow-equals": "0.0.0",
-    "why-did-you-update": "0.0.2"
+    "shallow-equals": "0.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
@@ -37,8 +35,11 @@
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
     "classnames": "^2.2.5",
+    "css-modulesify": "^0.24.0",
     "debug": "^2.2.0",
+    "deferred-stream": "^0.2.0",
     "dev-error-handler": "^1.2.0",
+    "dev-null": "^0.1.1",
     "domready": "^1.0.8",
     "error-capture-middleware": "0.0.2",
     "eslint": "^2.9.0",
@@ -47,17 +48,17 @@
     "eslint-plugin-react": "^5.1.1",
     "express": "^4.13.4",
     "in-publish": "^2.0.0",
+    "json-markup": "^0.1.7",
     "loose-envify": "^1.1.0",
-    "postcss": "^5.0.21",
-    "postcss-import": "^8.1.2",
-    "postcss-nested": "^1.0.0",
     "quickreload": "^2.0.0",
     "react-dom": "^15.0.2",
     "react-domcontentloaded": "^1.0.2",
     "rebundler": "^0.3.0",
+    "remon": "^1.0.2",
     "rimraf": "^2.5.2",
     "staticr": "^4.0.2",
-    "tap": "^5.7.1"
+    "tap": "^5.7.1",
+    "why-did-you-update": "0.0.2"
   },
   "directories": {
     "example": "example",
