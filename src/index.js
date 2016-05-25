@@ -22,6 +22,7 @@ const bundledFieldInputs = {
 }
 
 export const fieldInputs = bundledFieldInputs
+export {createFormBuilderState} from './state/FormBuilderState'
 export {compile as compileSchema} from './compileSchema'
 
 export {default as FormBuilderProvider} from './FormBuilderProvider'
