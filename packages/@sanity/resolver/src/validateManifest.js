@@ -59,7 +59,7 @@ export default function validateManifest(manifest, plugin) {
     }
   })
 
-  return Promise.resolve(manifest)
+  return manifest
 }
 
 function validateDescription(desc, baseError) {
