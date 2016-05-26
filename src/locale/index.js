@@ -10,9 +10,11 @@ function wrappedReactIntlProvider(language, localizedMessages) {
   }
 }
 
-const SanityIntlProviderPromise = languageResolver.then(language => {
+const SanityIntlPromise = languageResolver.then(language => {
   return messagesFetcher.fetchLocalizedMessages(language).then(localizedMessages => {
-    // TODO: ReactIntl.addLocaleData()
+    const languagePrexif = language.split('-')[0]
+    const localeData = require(`react-intl/locale-data/${languagePrexif}`)
+    ReactIntl.addLocaleData(localeData)
     return {
       ReactIntl,
       SanityIntlProvider: wrappedReactIntlProvider(language, localizedMessages)
@@ -20,4 +22,4 @@ const SanityIntlProviderPromise = languageResolver.then(language => {
   })
 })
 
-module.exports = SanityIntlProviderPromise
+module.exports = SanityIntlPromise
