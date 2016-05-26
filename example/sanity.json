@@ -1,15 +1,6 @@
 {
-  "server": {
-    "port": "3002"
-  },
   "plugins": [
-    "@sanity/base"
-  ],
-  "roles": [
-    {
-      "implements": "component:@sanity/base/root",
-      "srcPath": "./components/Main",
-      "path": "./components/Main"
-    }
+    "@sanity/base",
+    "example"
   ]
 }

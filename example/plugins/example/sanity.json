@@ -1,0 +1,9 @@
+{
+  "roles": [
+    {
+      "implements": "component:@sanity/base/root",
+      "srcPath": "./Main",
+      "path": "./Main"
+    }
+  ]
+}
