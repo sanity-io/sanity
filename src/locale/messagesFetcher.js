@@ -6,9 +6,16 @@ const mergedMessages = rawMessages.reduce((prev, curr) => {
 })
 
 
-function fetchMessages(locale) {
+function fetchLocalizedMessages(locale) {
   return Promise.resolve(mergedMessages[locale])
 }
 
+function fetchAllMessages() {
+  return Promise.resolve(mergedMessages)
+}
 
-module.exports = fetchMessages
+
+module.exports = {
+  fetchLocalizedMessages,
+  fetchAllMessages
+}
