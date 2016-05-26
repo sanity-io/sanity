@@ -21,6 +21,7 @@ import {
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
+const syncOpts = Object.assign({}, opts, {sync: true})
 
 describe('plugin resolver', () => {
   afterEach(() => {
@@ -163,6 +164,19 @@ describe('plugin resolver', () => {
     })
   })
 
+  it('allows resolving plugins synchronously', () => {
+    mockFs(getDeepTree())
+    const plugins = resolvePlugins(syncOpts)
+    plugins.map(plugin => plugin.name).should.eql([
+      '@sanity/default-layout',
+      '@sanity/core',
+      'baz',
+      'bar',
+      'foo',
+      '(project root)'
+    ])
+  })
+
   describe('respects the sanity plugin resolution order', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
@@ -233,6 +247,19 @@ describe('plugin resolver', () => {
         process.cwd()
       ])
     })
+  })
+
+  it('can resolve roles synchronously', () => {
+    mockFs(getBasicTree())
+
+    const res = resolveRoles(syncOpts)
+    res.plugins.should.have.length(4)
+    res.plugins.map(plugin => plugin.path).should.eql([
+      '/sanity/node_modules/@sanity/default-layout',
+      '/sanity/node_modules/@sanity/core',
+      '/sanity/node_modules/sanity-plugin-instagram',
+      process.cwd()
+    ])
   })
 
   it('doesnt try to look up the same location twice', () => {

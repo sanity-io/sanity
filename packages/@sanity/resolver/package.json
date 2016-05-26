@@ -36,7 +36,6 @@
     "eslint": "^2.4.0",
     "eslint-config-sanity": "^1.0.6",
     "isparta": "^4.0.0",
-    "lodash": "^4.5.1",
     "mocha": "^2.4.5",
     "mock-fs": "^3.7.0",
     "proxyquire": "^1.7.4",
@@ -48,7 +47,8 @@
     "fs-promise": "^0.4.1",
     "in-publish": "^2.0.0",
     "joi": "^8.0.3",
-    "lodash": "^4.6.1",
+    "lodash": "^4.13.1",
+    "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"
   }
 }
