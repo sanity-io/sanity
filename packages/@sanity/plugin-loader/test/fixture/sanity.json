@@ -10,5 +10,9 @@
       "description": "Returns 'bar' when called",
       "path": "./getBar.js"
     }
-  ]
+  ],
+
+  "locale": {
+    "supportedLanguages": ["en-US", "no-NB"]
+  }
 }

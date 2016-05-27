@@ -4,6 +4,7 @@ const Module = require('module')
 const interopRequire = require('interop-require')
 const resolver = require('@sanity/resolver')
 
+const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveRoles = resolver.resolveRoles
 const defaultResult = {
   definitions: {},
@@ -21,6 +22,12 @@ function registerLoader(options) {
   const roles = options.basePath
     ? resolveRoles({basePath: options.basePath, sync: true})
     : Object.assign({}, defaultResult)
+
+  // Configuration files are loaded with a custom prefix
+  const configPath = path.join(
+    options.basePath || process.cwd(),
+    'config'
+  )
 
   // Turn {"roleName": [{path: "/foo/bar.js"}]} into {"roleName": ["/foo/bar.js"]}
   roles.fulfilled = Object.keys(roles.fulfilled).reduce((fulfillers, role) => {
@@ -49,6 +56,14 @@ function registerLoader(options) {
     if (request === 'sanity:debug') {
       require.cache['sanity:debug'] = getModule('sanity:debug', roles)
       return request
+    }
+
+    const configMatch = request.match(configMatcher)
+    if (configMatch) {
+      const configFor = configMatch[1]
+      return configFor === 'sanity'
+        ? path.join(options.basePath, 'sanity.json')
+        : path.join(configPath, `${configFor}.json`)
     }
 
     // Should we load all the fulfillers or just a single one

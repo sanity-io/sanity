@@ -65,3 +65,17 @@ test('should be able to include the sanity debug role', t => {
     path.join(__dirname, 'fixture', 'getBar.js')
   )
 })
+
+test('should be able to load sanity instance config', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const config = require('config:sanity')
+  t.deepEqual(config.locale.supportedLanguages, ['en-US', 'no-NB'])
+})
+
+test('should be able to load config for a plugin', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const config = require('config:better-date')
+  t.true(config.superduper)
+})
