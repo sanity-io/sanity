@@ -1,0 +1,8 @@
+{
+  "roles": [
+    {
+      "implements": "function:date/timestamp",
+      "path": "./getBetterTimestamp.js"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "roles": [
+    {
+      "name": "function:date/timestamp",
+      "description": "Returns the current timestamp"
+    },
+    {
+      "name": "function:date/iso-date",
+      "description": "Returns the current date in ISO format"
+    },
+
+    {
+      "implements": "function:date/timestamp",
+      "path": "./getTimestamp.js"
+    },
+    {
+      "implements": "function:date/iso-date",
+      "path": "./getIsoDate.js"
+    }
+  ]
+}

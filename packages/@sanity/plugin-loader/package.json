@@ -1,0 +1,39 @@
+{
+  "name": "@sanity/plugin-loader",
+  "version": "1.0.0",
+  "description": "Monkey-patches node's require algorithm to allow requiring of Sanity roles",
+  "main": "loader.js",
+  "scripts": {
+    "test": "ava",
+    "coverage": "nyc --reporter=html ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/plugin-loader.git"
+  },
+  "keywords": [
+    "sanity",
+    "plugin",
+    "role",
+    "require"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/plugin-loader/issues"
+  },
+  "homepage": "https://github.com/sanity-io/plugin-loader#readme",
+  "dependencies": {
+    "@sanity/resolver": "^2.2.1",
+    "interop-require": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.15.1",
+    "nyc": "^6.4.4"
+  },
+  "ava": {
+    "files": [
+      "test/*.test.js"
+    ]
+  }
+}

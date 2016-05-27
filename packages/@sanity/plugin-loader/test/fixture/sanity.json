@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "date",
+    "better-date"
+  ],
+
+  "roles": [
+    {
+      "name": "function:base/bar",
+      "description": "Returns 'bar' when called",
+      "path": "./getBar.js"
+    }
+  ]
+}
