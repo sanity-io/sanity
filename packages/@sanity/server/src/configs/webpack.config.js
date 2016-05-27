@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
-import RoleResolverPlugin from '@sanity/plugin-loader'
+import RoleResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import postcssUse from 'postcss-use'
 import postcssImport from 'postcss-import'
@@ -10,7 +10,7 @@ import resolveStyleImport from '../resolveStyleImport'
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
 
-const roleLoaderPath = require.resolve('@sanity/plugin-loader/src/roleLoader')
+const roleLoaderPath = require.resolve('@sanity/webpack-loader/src/roleLoader')
 
 export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
