@@ -1,3 +1,4 @@
+import {eq} from 'lodash'
 import React, {PropTypes} from 'react'
 
 export default React.createClass({
@@ -8,7 +9,6 @@ export default React.createClass({
 
   getDefaultProps() {
     return {
-      value: '',
       onChange() {}
     }
   },
@@ -18,12 +18,13 @@ export default React.createClass({
   },
 
   render() {
+    const {onClick, className} = this.props
     return (
       <button
-        className={this.props.className}
+        className={className}
         type="button"
         title="Clear value"
-        onClick={() => this.handleChange()}
+        onClick={onClick}
       >
         ×
       </button>
