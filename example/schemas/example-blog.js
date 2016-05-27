@@ -17,6 +17,10 @@ export default {
           title: 'Lead',
           type: 'text'
         },
+        email: {
+          title: 'Email',
+          type: 'email'
+        },
         content: {
           type: 'array',
           of: [

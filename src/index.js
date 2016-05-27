@@ -4,6 +4,7 @@ import Arr from './field-inputs/Array'
 import Bool from './field-inputs/Boolean'
 import Num from './field-inputs/Number'
 import Blocks from './field-inputs/Blocks'
+import Email from './field-inputs/Email'
 import Url from './field-inputs/Url'
 import RichText from './field-inputs/RichText'
 import Reference from './field-inputs/Reference'
@@ -15,6 +16,7 @@ const bundledFieldInputs = {
   boolean: Bool,
   number: Num,
   text: RichText,
+  email: Email,
   reference: Reference,
   url: Url,
   string: Str,

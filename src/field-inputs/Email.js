@@ -1,6 +1,7 @@
+import ClearButton from '../buttons/ClearButton'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import Str from './String'
+import styles from './styles/Email.css'
 
 export default React.createClass({
   propTypes: {
@@ -23,7 +24,12 @@ export default React.createClass({
   render() {
     const {value, field} = this.props
     return (
-      <Str type="email" field={field} value={value} onChange={this.handleChange} />
+      <div className={styles.root}>
+        <div className={styles.inner}>
+          <ClearButton className={styles.clearButton} />
+          <input className={styles.input} type="email" field={field} value={value} onChange={this.handleChange} />
+        </div>
+      </div>
     )
   }
 })

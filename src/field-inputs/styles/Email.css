@@ -1,0 +1,17 @@
+@use postcss-cssnext;
+
+.root {
+  composes: formControlContainer from '../../styles/form-builder.css';
+}
+
+.inner {
+  composes: formControlInner from '../../styles/form-builder.css';
+}
+
+.input {
+  composes: textInput from '../../styles/form-builder.css';
+}
+
+.clearButton {
+  composes: clearButtonTextInput from '../../styles/form-builder.css';
+}

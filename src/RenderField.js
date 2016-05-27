@@ -1,12 +1,11 @@
-import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
+// import basicTypes from './types'
 import equals from 'shallow-equals'
-import basicTypes from './types'
-import {resolveJSType} from './types/utils'
+import FormBuilderPropTypes from './FormBuilderPropTypes'
 import {getFieldType} from './utils/getFieldType'
-import ClearButton from './buttons/ClearButton'
-
+import React, {PropTypes} from 'react'
+// import {resolveJSType} from './types/utils'
 import styles from './styles/form-builder.css'
+
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
@@ -28,7 +27,7 @@ export default React.createClass({
     const {field, fieldName} = this.props
     return (
       <div key={fieldName} className={styles.field}>
-        <label className={styles.fieldLabel}>
+        <label className={styles.fieldTitle}>
           {field.title} ({fieldName})
         </label>
         <div className={styles.formControlContainer}>
