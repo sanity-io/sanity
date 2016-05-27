@@ -45,13 +45,6 @@ function sanityRoleLoader(input) {
         )
       }
 
-      // Style roles often depend on style variables,
-      // so add all CSS variable fulfillers as dependencies
-      const styleVars = roles.fulfilled['variables:@sanity/base/theme']
-      if (roleName.indexOf('style:') === 0 && styleVars) {
-        styleVars.forEach(fulfiller => this.addDependency(fulfiller.path))
-      }
-
       return loadAll
         ? setImmediate(multiFulfillerHandler, opts, callback)
         : callback(null, input)
