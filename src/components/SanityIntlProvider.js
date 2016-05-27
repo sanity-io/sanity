@@ -1,5 +1,5 @@
 import React from 'react'
-import {addLocaleData, IntlProvider} from 'react-intl'
+import {addLocaleData, IntlProvider} from 'component:@sanity/base/locale/intl'
 
 import languageResolver from 'machine:@sanity/base/language-resolver'
 import messageFetcher from 'machine:@sanity/base/locale-message-fetcher'
@@ -45,7 +45,7 @@ class SanityIntlProvider extends React.Component {
 }
 
 SanityIntlProvider.propTypes = {
-  children: React.PropTypes.arrayOf(React.PropTypes.element)
+  children: React.PropTypes.node
 }
 
 export default SanityIntlProvider

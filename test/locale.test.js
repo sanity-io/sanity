@@ -33,12 +33,10 @@ const rawMessagesStub = [
 const messageFetcher = proxyquire('../src/locale/messageFetcher', {
   'all:locale:@sanity/base/locale-messages': rawMessagesStub
 })
-proxyquire('../src/components/SanityIntlProvider', {
+const SanityIntlProvider = proxyquire('../src/components/SanityIntlProvider', {
+  'component:@sanity/base/locale/intl': require('react'),
   'machine:@sanity/base/language-resolver': languageResolver,
   'machine:@sanity/base/locale-message-fetcher': require('../src/locale/messageFetcher')
-})
-proxyquire('../src/locale/index', {
-  'component:@sanity/base/sanity-intl-provider': require('../src/components/SanityIntlProvider')
 })
 
 
@@ -81,9 +79,9 @@ describe('messageFetcher', () => {
 describe('locale', () => {
 
   it('exposes the correct stuff', done => {
-    const locale = require('../src/locale')
-    assert.equal(typeof locale.ReactIntl.FormattedMessage, 'function')
-    assert.equal(typeof locale.SanityIntlProvider, 'function')
+    // const locale = require('../src/locale/intl')
+    // assert.equal(typeof locale.ReactIntl.FormattedMessage, 'function')
+    assert.equal(typeof SanityIntlProvider, 'object')
     done()
   })
 
