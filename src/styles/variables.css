@@ -109,8 +109,11 @@
   --input-border-radius-large:      var(--border-radius-large);
   --input-border-radius-small:      var(--border-radius-small);
   --input-border-focus:             #66afe9;
+  --input-border-active:            #66afe9;
+  --input-border-focus-color:       #66afe9;
+  --input-border-active-color:      #66afe9;
   --input-color-placeholder:        #999;
-  --form-group-margin-bottom:       1rem;
+  --form-group-margin-bottom:       1em;
   --legend-color:                   var(--gray-dark);
   --legend-border-color:            #e5e5e5;
   --input-group-addon-bg:           var(--gray-lighter);

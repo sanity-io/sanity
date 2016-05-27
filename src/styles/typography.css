@@ -1,0 +1,5 @@
+.base-typography {
+  font-size: 100%;
+  font-family: var(--font-family-sans-serif);
+  line-height: var(--line-height-base);
+}
