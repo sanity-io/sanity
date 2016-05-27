@@ -4,10 +4,9 @@ import equals from 'shallow-equals'
 import basicTypes from './types'
 import {resolveJSType} from './types/utils'
 import {getFieldType} from './utils/getFieldType'
+import ClearButton from './buttons/ClearButton'
 
-const BASIC_TYPE_NAMES = Object.keys(basicTypes)
-const CLEAR_BUTTON_STYLES = {fontSize: 10, border: '1px solid #aaa', backgroundColor: 'transparent'}
-
+import styles from './styles/form-builder.css'
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
@@ -25,23 +24,17 @@ export default React.createClass({
     return !equals(nextProps, this.props)
   },
 
-  renderField(el) {
+  renderDefaultField(el) {
     const {field, fieldName} = this.props
     return (
-      <fieldset key={fieldName}>
-        <h1>
+      <div key={fieldName} className={styles.field}>
+        <label className={styles.fieldLabel}>
           {field.title} ({fieldName})
-        </h1>
-        <button
-          style={CLEAR_BUTTON_STYLES}
-          type="button"
-          title="Clear value"
-          onClick={() => this.handleChange()}
-        >
-          x
-        </button>
-        {el}
-      </fieldset>
+        </label>
+        <div className={styles.formControlContainer}>
+          {el}
+        </div>
+      </div>
     )
   },
 
@@ -74,7 +67,7 @@ export default React.createClass({
 
     const passUnwrapped = value && value.constructor.passUnwrapped
 
-    return this.renderField(
+    return this.renderDefaultField(
       <FieldInput
         value={passUnwrapped ? value.unwrap() : value}
         field={field}

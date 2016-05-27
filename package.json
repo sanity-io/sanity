@@ -18,6 +18,7 @@
     "lodash": "^4.13.1",
     "loose-envify": "^1.2.0",
     "object-inspect": "^1.2.1",
+    "postcss-cssnext": "^2.5.2",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.7.0",
     "react": "^15.1.0",

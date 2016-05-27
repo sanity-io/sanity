@@ -1,0 +1,48 @@
+@use postcss-cssnext;
+
+:root {
+  --input-border: 1px solid red;
+  --active-color: green;
+}
+
+.field {
+  border: 1px solid green;
+  margin-bottom: 1em;
+}
+
+.fieldLabel {
+  font-weight: bold;
+}
+
+.formControlContainer {
+  padding: 1em;
+}
+
+.form-builder {
+  border: 1px solid red;
+}
+
+.textInputContainer {
+
+}
+
+.clearButton {
+  border: 1px solid red;
+}
+
+.textInput {
+  border: var(--input-border);
+  display: block;
+  width: 100%;
+  outline: none;
+  line-height: 2em;
+  &:hover {
+    background-color: #ccc;
+  }
+  &:focus {
+    border-color: var(--active-color);
+  }
+  &:active {
+    border-color: var(--active-color);
+  }
+}

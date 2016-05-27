@@ -1,0 +1,38 @@
+@use postcss-cssnext;
+
+.json-markup {
+  line-height: 17px;
+  font-size: 13px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.root {
+  composes: json-markup;
+}
+
+.code {
+  & .json-markup-key {
+    font-weight: bold;
+  }
+
+  & .json-markup-bool {
+    color: var(--code-color);
+  }
+
+  & .json-markup-string {
+    color: green;
+  }
+
+  & .json-markup-null {
+    color: gray;
+  }
+
+  & .json-markup-number {
+    color: blue;
+  }
+}
+
+.code :global .json-markup-key {
+  color: var(--code-color);
+}

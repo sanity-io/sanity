@@ -23,10 +23,12 @@ export default React.createClass({
   render() {
     const {value} = this.props
     return (
-      <input className={styles.input} type="number"
-        onChange={this.handleChange}
-        value={value}
-      />
+      <div className={styles.root}>
+        <input className={styles.input} type="number"
+          onChange={this.handleChange}
+          value={value}
+        />
+      </div>
     )
   }
 

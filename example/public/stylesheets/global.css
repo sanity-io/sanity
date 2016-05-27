@@ -1,6 +1,7 @@
 /* remove */
 header {
-  ul.schemas, ul.types {
+  ul.schemas,
+  ul.types {
     list-style: none;
     padding: 0;
     li {
@@ -15,25 +16,4 @@ header {
       }
     }
   }
-}
-.json-markup {
-  line-height: 17px;
-  font-size: 13px;
-  font-family: monospace;
-  white-space: pre-wrap;
-}
-.json-markup-key {
-  font-weight: bold;
-}
-.json-markup-bool {
-  color: firebrick;
-}
-.json-markup-string {
-  color: green;
-}
-.json-markup-null {
-  color: gray;
-}
-.json-markup-number {
-  color: blue;
 }

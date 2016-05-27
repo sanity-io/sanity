@@ -1,3 +1,13 @@
+@import 'all:style:@sanity/base/theme';
+@use postcss-cssnext;
+
+/* @import 'all:style:@sanity/form-builder/base'; */
+
+.root {
+  background-color: var(--brand-color);
+}
+
 .input {
-  background-color: #8ed1fa;
+  /* composes: inputText from 'all:style:@sanity/form-builder/base'; */
+  background-color: var(--brand-color);
 }
