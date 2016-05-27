@@ -33,7 +33,7 @@
       "description": "Fetches locale messages for the given locale"
     },
     {
-      "implements": "component:@sanity/base/locale/intl",
+      "name": "component:@sanity/base/locale/intl",
       "description": "Exposes the current ReactIntl module instance"
     },
     {
@@ -86,7 +86,8 @@
     },
     {
       "implements": "component:@sanity/base/locale/intl",
-      "path": "react-intl"
+      "srcPath": "./src/locale/intl.js",
+      "path": "./lib/locale/intl.js"
     },
     {
       "implements": "component:@sanity/base/sanity-intl-provider",
