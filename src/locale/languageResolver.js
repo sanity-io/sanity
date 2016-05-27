@@ -1,5 +1,5 @@
 // Figure out which locale the user prefers.
-// Return a promise in order to support asyncronous resolution.
+// Return a promise in order to support asynchronous resolution.
 
 const nav = typeof navigator === 'undefined' ? {} : navigator
 const defaultLanguage = 'en-US'
