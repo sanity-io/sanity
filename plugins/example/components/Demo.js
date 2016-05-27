@@ -41,6 +41,7 @@ export default React.createClass({
   propTypes: {
     schema: PropTypes.object.isRequired,
     resolveFieldInput: PropTypes.func.isRequired,
+    resolveFieldRenderer: PropTypes.func.isRequired,
     type: PropTypes.object.isRequired
   },
 
@@ -96,7 +97,7 @@ export default React.createClass({
 
   render() {
     const {value, saved, shouldInspect} = this.state
-    const {schema, type, resolveFieldInput} = this.props
+    const {schema, type, resolveFieldInput, resolveFieldRenderer} = this.props
 
     if (shouldInspect) {
       console.log('CURRENT VALUE', value)
@@ -121,6 +122,7 @@ export default React.createClass({
 
           <FormBuilderProvider
             resolveFieldInput={resolveFieldInput}
+            resolveFieldRenderer={resolveFieldRenderer}
             schema={schema}
           >
             <FormBuilder

@@ -5,7 +5,8 @@ import {whyDidYouUpdate} from 'why-did-you-update'
 import schemas from '../schemas'
 import {
   compileSchema,
-  fieldInputs
+  fieldInputs,
+  fieldRenderers
 } from '../../../src'
 
 Debug.disable('*')
@@ -61,12 +62,15 @@ function renderDemo(compiledSchema) {
   function resolveFieldInput(field) {
     return schemaFieldInputs[field.type]
   }
-
+  function resolveFieldRenderer(field) {
+    return fieldRenderers[field.type]
+  }
   return (
     <Demo
       schema={compiledSchema}
       type={compiledSchema.types[typeName]}
       resolveFieldInput={resolveFieldInput}
+      resolveFieldRenderer={resolveFieldRenderer}
     />
   )
 }

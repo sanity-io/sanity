@@ -10,7 +10,9 @@ import RichText from './field-inputs/RichText'
 import Reference from './field-inputs/Reference'
 import Str from './field-inputs/String'
 
-const bundledFieldInputs = {
+import BooleanFieldRenderer from './field-renderers/Boolean'
+
+export const fieldInputs = {
   object: Obj,
   array: Arr,
   boolean: Bool,
@@ -23,7 +25,10 @@ const bundledFieldInputs = {
   blocks: Blocks
 }
 
-export const fieldInputs = bundledFieldInputs
+export const fieldRenderers = {
+  boolean: BooleanFieldRenderer
+}
+
 export {createFormBuilderState} from './state/FormBuilderState'
 export {compile as compileSchema} from './compileSchema'
 

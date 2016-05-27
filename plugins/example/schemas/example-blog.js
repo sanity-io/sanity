@@ -13,6 +13,10 @@ export default {
           title: 'Priority',
           type: 'number'
         },
+        checked: {
+          title: 'Checked',
+          type: 'boolean'
+        },
         lead: {
           title: 'Lead',
           type: 'text'

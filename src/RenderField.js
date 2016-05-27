@@ -1,10 +1,9 @@
-// import basicTypes from './types'
 import equals from 'shallow-equals'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import {getFieldType} from './utils/getFieldType'
 import React, {PropTypes} from 'react'
 // import {resolveJSType} from './types/utils'
-import styles from './styles/form-builder.css'
+import DefaultFieldRenderer from './field-renderers/Default'
 
 export default React.createClass({
   propTypes: {
@@ -15,26 +14,13 @@ export default React.createClass({
   },
 
   contextTypes: {
+    resolveFieldRenderer: PropTypes.func,
     resolveFieldInput: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   },
 
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps, this.props)
-  },
-
-  renderDefaultField(el) {
-    const {field, fieldName} = this.props
-    return (
-      <div key={fieldName} className={styles.field}>
-        <label className={styles.fieldTitle}>
-          {field.title} ({fieldName})
-        </label>
-        <div className={styles.formControlContainer}>
-          {el}
-        </div>
-      </div>
-    )
   },
 
   handleChange(event) {
@@ -46,16 +32,21 @@ export default React.createClass({
     return this.context.resolveFieldInput(field, fieldType)
   },
 
+  resolveFieldRenderer(field, fieldType) {
+    return this.context.resolveFieldRenderer(field, fieldType) || DefaultFieldRenderer
+  },
+
   getFieldType(field) {
     return getFieldType(this.context.schema, field)
   },
 
   render() {
-    const {value, field} = this.props
+    const {value, field, fieldName} = this.props
 
     const fieldType = this.getFieldType(field)
 
     const FieldInput = this.context.resolveFieldInput(field, fieldType)
+
     if (!FieldInput) {
       return (
         <div>Field input not found for field of type "{field.type}"
@@ -64,15 +55,20 @@ export default React.createClass({
       )
     }
 
-    const passUnwrapped = value && value.constructor.passUnwrapped
 
-    return this.renderDefaultField(
+    const FieldRenderer = this.resolveFieldRenderer(field, fieldType)
+
+    const passValue = value && value.constructor.passUnwrapped ? value.unwrap() : value
+
+    const input = (
       <FieldInput
-        value={passUnwrapped ? value.unwrap() : value}
+        value={passValue}
         field={field}
         type={fieldType}
         onChange={this.handleChange}
       />
     )
+
+    return <FieldRenderer input={input} field={field} fieldName={fieldName} type={fieldType} />
   }
 })
