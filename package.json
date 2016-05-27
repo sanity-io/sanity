@@ -39,6 +39,8 @@
     "eslint-plugin-react": "^4.2.3",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
+    "proxyquire": "^1.7.9",
+    "react": "^15.1.0",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
@@ -47,9 +49,11 @@
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
     "in-publish": "^2.0.0",
+    "lodash": "^4.13.1",
+    "react-intl": "^2.1.2",
     "zen-observable": "^0.2.1"
   },
   "peerDependencies": {
-    "react": ">=0.14.0"
+    "react": ">=15.0"
   }
 }

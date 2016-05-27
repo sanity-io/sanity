@@ -21,13 +21,26 @@
       "description": "Base theme variables for Sanity"
     },
     {
-      "name": "locale:@sanity/base/nb-NO",
-      "description": "Norwegian Bokmål"
+      "name": "locale:@sanity/base/locale-messages",
+      "description": "Messages across all known locales"
     },
     {
-      "name": "locale:@sanity/base/en-US",
-      "description": "English US"
+      "name": "machine:@sanity/base/language-resolver",
+      "description": "Figures out which locale the client should use"
     },
+    {
+      "name": "machine:@sanity/base/locale-message-fetcher",
+      "description": "Fetches locale messages for the given locale"
+    },
+    {
+      "name": "component:@sanity/base/locale/intl",
+      "description": "Exposes the current ReactIntl module instance"
+    },
+    {
+      "name": "component:@sanity/base/sanity-intl-provider",
+      "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
+    },
+
 
     {
       "implements": "component:@sanity/base/root",
@@ -59,6 +72,27 @@
       "implements": "component:@sanity/base/document",
       "srcPath": "./src/components/Document",
       "path": "./lib/components/Document"
+    },
+
+    {
+      "implements": "machine:@sanity/base/language-resolver",
+      "srcPath": "./src/locale/languageResolver.js",
+      "path": "./lib/locale/languageResolver.js"
+    },
+    {
+      "implements": "machine:@sanity/base/locale-message-fetcher",
+      "srcPath": "./src/locale/messageFetcher.js",
+      "path": "./lib/locale/messageFetcher.js"
+    },
+    {
+      "implements": "component:@sanity/base/locale/intl",
+      "srcPath": "./src/locale/intl.js",
+      "path": "./lib/locale/intl.js"
+    },
+    {
+      "implements": "component:@sanity/base/sanity-intl-provider",
+      "srcPath": "./src/components/SanityIntlProvider",
+      "path": "./lib/components/SanityIntlProvider"
     }
   ]
 }
