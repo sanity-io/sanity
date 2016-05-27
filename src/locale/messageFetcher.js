@@ -3,7 +3,7 @@ import rawMessages from 'all:locale:@sanity/base/locale-messages'
 
 const mergedMessages = rawMessages.reduce((prev, curr) => {
   return merge(prev, curr)
-})
+}, {})
 
 
 function fetchLocalizedMessages(locale) {
