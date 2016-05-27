@@ -17,22 +17,23 @@ export default function resolveTree(opts = {}) {
       projectManifest = manifest
       return resolvePlugins(manifest.plugins || [], options)
     })
-    .then(plugins => plugins.concat([getProjectRootPlugin(projectManifest)]))
+    .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
 function resolveTreeSync(options) {
+  const basePath = options.basePath || process.cwd()
   const manifest = readManifest(options)
   const plugins = resolvePlugins(manifest.plugins || [], options)
-    .concat([getProjectRootPlugin(manifest)])
+    .concat([getProjectRootPlugin(basePath, manifest)])
 
   return plugins.reduce(flattenTree, plugins.slice())
 }
 
-function getProjectRootPlugin(manifest) {
+function getProjectRootPlugin(basePath, manifest) {
   return {
     name: '(project root)',
-    path: process.cwd(),
+    path: basePath,
     manifest: manifest,
     plugins: []
   }

@@ -244,7 +244,7 @@ describe('plugin resolver', () => {
         '/sanity/node_modules/@sanity/default-layout',
         '/sanity/node_modules/@sanity/core',
         '/sanity/node_modules/sanity-plugin-instagram',
-        process.cwd()
+        '/sanity'
       ])
     })
   })
@@ -258,7 +258,7 @@ describe('plugin resolver', () => {
       '/sanity/node_modules/@sanity/default-layout',
       '/sanity/node_modules/@sanity/core',
       '/sanity/node_modules/sanity-plugin-instagram',
-      process.cwd()
+      '/sanity'
     ])
   })
 
@@ -347,16 +347,16 @@ describe('plugin resolver', () => {
     mockFs(getRootLevelRolesTree())
     return resolveRoles(opts).then(res => {
       res.definitions.should.have.property('config:@sanity/config/schema')
-      res.definitions['config:@sanity/config/schema'].path.should.eql(process.cwd())
+      res.definitions['config:@sanity/config/schema'].path.should.eql('/sanity')
 
       res.fulfilled.should.have.property('config:@sanity/config/schema')
       res.fulfilled['config:@sanity/config/schema'][0].path.should.eql(
-        path.join(process.cwd(), 'schema', 'schema.js')
+        path.join('/sanity', 'schema', 'schema.js')
       )
 
       const last = res.plugins[res.plugins.length - 1]
       last.name.should.eql('(project root)')
-      last.path.should.eql(process.cwd())
+      last.path.should.eql('/sanity')
     })
   })
 
@@ -367,9 +367,7 @@ describe('plugin resolver', () => {
       res.definitions['component:@sanity/core/root'].plugin.should.eql('@sanity/core')
 
       res.fulfilled.should.have.property('component:@sanity/core/root')
-      res.fulfilled['component:@sanity/core/root'][0].path.should.eql(
-        path.join(process.cwd(), 'myRootComponent.js')
-      )
+      res.fulfilled['component:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
     })
   })
 })
