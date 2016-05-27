@@ -28,8 +28,17 @@ const rawMessagesStub = [
   }
 ]
 
-const messagesFetcher = proxyquire('../src/locale/messagesFetcher', {
+
+// proxy all require statements which use sanity plugin syntax
+const messageFetcher = proxyquire('../src/locale/messageFetcher', {
   'all:locale:@sanity/base/locale-messages': rawMessagesStub
+})
+proxyquire('../src/components/SanityIntlProvider', {
+  'machine:@sanity/base/language-resolver': languageResolver,
+  'machine:@sanity/base/locale-message-fetcher': require('../src/locale/messageFetcher')
+})
+proxyquire('../src/locale/index', {
+  'component:@sanity/base/sanity-intl-provider': require('../src/components/SanityIntlProvider')
 })
 
 
@@ -42,14 +51,14 @@ describe('languageResolver', () => {
 })
 
 
-describe('messagesFetcher', () => {
+describe('messageFetcher', () => {
 
   it('fetches localized messages', done => {
     const expected = {
       'foo.hello': 'Heya',
       'foo.goodbye': 'Goodbye'
     }
-    messagesFetcher.fetchLocalizedMessages('en-US').should.eventually.deep.equal(expected).notify(done)
+    messageFetcher.fetchLocalizedMessages('en-US').should.eventually.deep.equal(expected).notify(done)
   })
 
   it('fetches all messages', done => {
@@ -63,7 +72,7 @@ describe('messagesFetcher', () => {
         'foo.hello': 'Heisann'
       }
     }
-    messagesFetcher.fetchAllMessages().should.eventually.deep.equal(expected).notify(done)
+    messageFetcher.fetchAllMessages().should.eventually.deep.equal(expected).notify(done)
   })
 
 })
@@ -72,12 +81,10 @@ describe('messagesFetcher', () => {
 describe('locale', () => {
 
   it('exposes the correct stuff', done => {
-    const SanityIntlPromise = require('../src/locale')
-    SanityIntlPromise.then(result => {
-      assert.equal(typeof result.ReactIntl.FormattedMessage, 'function')
-      assert.equal(typeof result.SanityIntlProvider, 'function')
-      done()
-    })
+    const locale = require('../src/locale')
+    assert.equal(typeof locale.ReactIntl.FormattedMessage, 'function')
+    assert.equal(typeof locale.SanityIntlProvider, 'function')
+    done()
   })
 
 })

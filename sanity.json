@@ -34,7 +34,11 @@
     },
     {
       "name": "component:@sanity/base/locale",
-      "description": "Wraps react-intl components, flavoured with the resolved locale"
+      "description": "Exposes SanityIntlProvider and the current ReactIntl module instance"
+    },
+    {
+      "name": "component:@sanity/base/sanity-intl-provider",
+      "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
 
 
@@ -77,13 +81,18 @@
     },
     {
       "implements": "machine:@sanity/base/locale-message-fetcher",
-      "srcPath": "./src/locale/localeMessageFetcher.js",
-      "path": "./lib/locale/localeMessageFetcher.js"
+      "srcPath": "./src/locale/messageFetcher.js",
+      "path": "./lib/locale/messageFetcher.js"
     },
     {
       "implements": "component:@sanity/base/locale",
       "srcPath": "./src/locale",
       "path": "./lib/locale"
+    },
+    {
+      "implements": "component:@sanity/base/sanity-intl-provider",
+      "srcPath": "./src/components/SanityIntlProvider",
+      "path": "./lib/components/SanityIntlProvider"
     }
   ]
 }
