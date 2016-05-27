@@ -1,6 +1,7 @@
 import React from 'react'
 import Demo from '../components/Demo'
 import Debug from 'debug'
+import MyCustomLatLonInput from './MyCustomLatLonInput'
 import {whyDidYouUpdate} from 'why-did-you-update'
 import schemas from '../schemas'
 import {
@@ -60,6 +61,9 @@ function renderDemo(compiledSchema) {
   })
 
   function resolveFieldInput(field) {
+    if (field.type === 'latlon') {
+      return MyCustomLatLonInput
+    }
     return schemaFieldInputs[field.type]
   }
   function resolveFieldRenderer(field) {

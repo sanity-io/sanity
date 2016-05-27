@@ -25,6 +25,10 @@ export default {
           title: 'Email',
           type: 'email'
         },
+        location: {
+          title: 'Location',
+          type: 'latlon'
+        },
         content: {
           type: 'array',
           of: [
@@ -40,6 +44,19 @@ export default {
           of: [
             {type: 'author'}
           ]
+        }
+      }
+    },
+    latlon: {
+      type: 'object',
+      fields: {
+        lat: {
+          title: 'Latitude',
+          type: 'number'
+        },
+        lon: {
+          title: 'Longitude',
+          type: 'number'
         }
       }
     },
