@@ -6,7 +6,7 @@ import schemas from '../schemas'
 import {
   compileSchema,
   fieldInputs
-} from '../../src'
+} from '../../../src'
 
 Debug.disable('*')
 

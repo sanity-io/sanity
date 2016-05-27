@@ -1,12 +1,12 @@
 import React, {PropTypes} from 'react'
 import JSONView from './JSONView'
 
-import {createFormBuilderState} from '../../src/state/FormBuilderState'
+import {createFormBuilderState} from '../../../src/state/FormBuilderState'
 
 import {
   FormBuilder,
   FormBuilderProvider
-} from '../../src'
+} from '../../../src'
 
 const DEBUG_JSON_STYLE = {
   zIndex: 10000,
