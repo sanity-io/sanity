@@ -17,8 +17,9 @@ export default {
     })
 
     const {port, hostname} = config
-    return thenify(server.listen.bind(server))(port, hostname)
-      .then(() => print(`Server listening on ${hostname}:${port}`))
+    const httpPort = options.port || port
+    return thenify(server.listen.bind(server))(httpPort, hostname)
+      .then(() => print(`Server listening on ${hostname}:${httpPort}`))
       .catch(getGracefulDeathHandler(config))
   }
 }
