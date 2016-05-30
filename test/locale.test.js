@@ -25,6 +25,11 @@ const rawMessagesStub = [
     'nb-NO': {
       'foo.goodbye': 'Baya'
     }
+  },
+  {
+    somelanguage: {
+      'foo.hello': 'Hix'
+    }
   }
 ]
 
@@ -43,7 +48,12 @@ const SanityIntlProvider = proxyquire('../src/components/SanityIntlProvider', {
 describe('languageResolver', () => {
 
   it('has a sane default', done => {
-    languageResolver.should.eventually.equal('en-US').notify(done)
+    languageResolver.resolveLanguage().should.eventually.equal('en-US').notify(done)
+  })
+
+  it('delivers based on supportedLanguages', done => {
+    const supportedLanguages = ['nb-NO']
+    languageResolver.resolveLanguage(supportedLanguages).should.eventually.equal('nb-NO').notify(done)
   })
 
 })
@@ -59,6 +69,17 @@ describe('messageFetcher', () => {
     messageFetcher.fetchLocalizedMessages('en-US').should.eventually.deep.equal(expected).notify(done)
   })
 
+  it('returns empty for unknown language', done => {
+    messageFetcher.fetchLocalizedMessages('ka-BLING').should.eventually.deep.equal({}).notify(done)
+  })
+
+  it('falls back to using language prefix when full language is unknown', done => {
+    const expected = {
+      'foo.hello': 'Hix'
+    }
+    messageFetcher.fetchLocalizedMessages('somelanguage-UNKNOWNDIALECT').should.eventually.deep.equal(expected).notify(done)
+  })
+
   it('fetches all messages', done => {
     const expected = {
       'en-US': {
@@ -68,6 +89,9 @@ describe('messageFetcher', () => {
       'nb-NO': {
         'foo.goodbye': 'Baya',
         'foo.hello': 'Heisann'
+      },
+      'somelanguage': {
+        'foo.hello': 'Hix'
       }
     }
     messageFetcher.fetchAllMessages().should.eventually.deep.equal(expected).notify(done)

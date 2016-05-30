@@ -6,8 +6,13 @@ const mergedMessages = rawMessages.reduce((prev, curr) => {
 }, {})
 
 
-function fetchLocalizedMessages(locale) {
-  return Promise.resolve(mergedMessages[locale] || {})
+function fetchLocalizedMessages(language) {
+  const languagePrefix = language.split('-')[0]
+  const localizedMessages = mergedMessages[language] || mergedMessages[languagePrefix]
+  if (!localizedMessages) {
+    console.warn(`No localized messages for language ${language}`) // eslint-disable-line no-console
+  }
+  return Promise.resolve(localizedMessages || {})
 }
 
 function fetchAllMessages() {
