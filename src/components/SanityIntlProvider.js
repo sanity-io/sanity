@@ -1,7 +1,7 @@
 import React from 'react'
 import {addLocaleData, IntlProvider} from 'component:@sanity/base/locale/intl'
 
-import languageResolver from 'machine:@sanity/base/language-resolver'
+import {resolveLanguage} from 'machine:@sanity/base/language-resolver'
 import messageFetcher from 'machine:@sanity/base/locale-message-fetcher'
 
 class SanityIntlProvider extends React.Component {
@@ -10,20 +10,22 @@ class SanityIntlProvider extends React.Component {
     super(props)
     this.state = {
       messages: null,
-      locale: null
+      language: null
     }
   }
 
 
   componentDidMount() {
-    languageResolver.then(language => {
+    const {supportedLanguages} = this.props
+    resolveLanguage(supportedLanguages).then(language => {
       messageFetcher.fetchLocalizedMessages(language).then(localizedMessages => {
         const languagePrefix = language.split('-')[0]
         const localeData = require(`react-intl/locale-data/${languagePrefix}`)
         addLocaleData(localeData)
+
         this.setState({
           messages: localizedMessages,
-          locale: language
+          language: language
         })
       })
     })
@@ -31,13 +33,13 @@ class SanityIntlProvider extends React.Component {
 
 
   render() {
-    const {messages, locale} = this.state
+    const {messages, language} = this.state
     if (!messages) {
       return <div>Loading locale messages...</div>
     }
 
     return (
-      <IntlProvider locale={locale} messages={messages}>
+      <IntlProvider locale={language} messages={messages}>
         {this.props.children}
       </IntlProvider>
     )
@@ -45,7 +47,8 @@ class SanityIntlProvider extends React.Component {
 }
 
 SanityIntlProvider.propTypes = {
-  children: React.PropTypes.node
+  children: React.PropTypes.node,
+  supportedLanguages: React.PropTypes.arrayOf(React.PropTypes.string)
 }
 
 export default SanityIntlProvider
