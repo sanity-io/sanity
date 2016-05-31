@@ -25,6 +25,7 @@
   "homepage": "https://github.com/sanity-io/plugin-loader#readme",
   "dependencies": {
     "@sanity/resolver": "^2.2.1",
+    "css-modules-require-hook": "^4.0.1",
     "interop-require": "^1.0.0"
   },
   "devDependencies": {

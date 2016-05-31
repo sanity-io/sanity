@@ -79,3 +79,11 @@ test('should be able to load config for a plugin', t => {
   const config = require('config:better-date')
   t.true(config.superduper)
 })
+
+test('should be able to load CSS files through PostCSS', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const styles = require('style:date/datepicker')
+  t.is(styles.something, 'datepicker__something___2XYYD base__base___2r-NO')
+  t.is(styles.zebra, 'datepicker__zebra___3-rtJ')
+})

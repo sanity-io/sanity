@@ -8,6 +8,16 @@
       "name": "function:date/iso-date",
       "description": "Returns the current date in ISO format"
     },
+    {
+      "name": "style:date/datepicker",
+      "description": "Styles for a datepicker",
+      "path": "./datepicker.css"
+    },
+    {
+      "name": "style:date/base",
+      "description": "Some base styles",
+      "path": "./base.css"
+    },
 
     {
       "implements": "function:date/timestamp",

@@ -3,6 +3,7 @@ const util = require('util')
 const Module = require('module')
 const interopRequire = require('interop-require')
 const resolver = require('@sanity/resolver')
+const cssHook = require('css-modules-require-hook')
 
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveRoles = resolver.resolveRoles
@@ -103,6 +104,11 @@ function registerLoader(options) {
 
     return roles.fulfilled[request][0]
   }
+
+  // Register CSS hook
+  cssHook({
+    generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]'
+  })
 }
 
 function getModule(request, moduleExports) {
