@@ -41,18 +41,18 @@ function getProjectRootPlugin(basePath, manifest) {
 
 export function resolveRoles(options = {}) {
   if (options.sync) {
-    return mergeResult(resolveTree(options))
+    return mergeResult(resolveTree(options), options)
   }
 
-  return resolveTree(options).then(mergeResult)
+  return resolveTree(options).then(plugins => mergeResult(plugins, options))
 }
 
-function mergeResult(plugins) {
+function mergeResult(plugins, options = {}) {
   const result = {definitions: {}, fulfilled: {}, plugins}
 
   result.definitions = plugins.reduceRight(assignDefinitions, result.definitions)
   result.fulfilled = plugins.reduceRight(
-    (fulfilled, plugin) => assignFulfillers(fulfilled, plugin, result),
+    (fulfilled, plugin) => assignFulfillers(fulfilled, plugin, result, options),
     result.fulfilled
   )
 

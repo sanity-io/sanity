@@ -286,6 +286,25 @@ describe('plugin resolver', () => {
     })
   })
 
+  it('can be told to ignore srcPath (always using path)', () => {
+    mockFs(getMixedPluginTree())
+    const overrideOpts = Object.assign({}, opts, {
+      ignoreSrcPath: true
+    })
+
+    return resolveRoles(overrideOpts).then(res => {
+      res.fulfilled['component:@sanity/default-layout/tool'][0].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/lib/File'
+      })
+
+      res.fulfilled['component:@sanity/default-layout/tool'][1].should.eql({
+        plugin: 'instagram',
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+      })
+    })
+  })
+
   it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
     return resolveRoles(opts).then(res => {

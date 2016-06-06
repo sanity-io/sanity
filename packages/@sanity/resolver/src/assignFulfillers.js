@@ -1,6 +1,6 @@
 import path from 'path'
 
-function assignFulfillers(fulfilled, plugin, roles) {
+function assignFulfillers(fulfilled, plugin, roles, opts = {}) {
   (plugin.manifest.roles || []).forEach(role => {
     if (!role.path && !role.srcPath) {
       return
@@ -20,7 +20,7 @@ function assignFulfillers(fulfilled, plugin, roles) {
       ].join(''))
     }
 
-    const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
+    const isLib = opts.ignoreSrcPath || plugin.path.split(path.sep).indexOf('node_modules') !== -1
     const rolePath = isLib ? role.path : (role.srcPath || role.path);
 
     // A role can both implement a role and define a new one
