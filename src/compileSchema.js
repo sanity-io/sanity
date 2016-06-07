@@ -27,13 +27,14 @@ function createSchemaTypeBuilder(schemaTypeDef) {
 export function compile(schema) {
 
   // sanity checks
-  const typeDefs = schema.types.forEach(typeDef => {
+  schema.types.forEach(typeDef => {
     if (!typeDef.type) {
       throw new Error(`Missing type declaration for schema type "${typeDef.name}"`)
     }
   })
+
   ifNotUniqueProp(schema.types, 'name', dupe => {
-    throw new Error(`Duplicate field name: ${dupe.name} Please check the 'fields' property of schema type '${options.name}'`)
+    throw new Error(`Duplicate schema type: ${dupe.name}. Check schema definition file for "${schema.name}"'`)
   })
 
   const schemaTypeBuilders = {}

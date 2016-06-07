@@ -1,5 +1,5 @@
 export default {
-  name: 'grouping',
+  name: 'fieldsets',
   types: [
     {
       name: 'blogpost',

@@ -1,6 +1,6 @@
 import PropTypes from 'proptypes'
 import {keyBy} from 'lodash'
-import {ifNotUniqueProp} from "./utils";
+import {ifNotUniqueProp} from './utils'
 
 // primitive types are types that never needs type annotations, e.g their values maps directly to a
 // native javascript/json-serializable type
@@ -27,7 +27,9 @@ export default {
           fields: []
         })
       })
-
+      ifNotUniqueProp(fieldsets, 'name', dupe => {
+        throw new Error(`Duplicate fieldset found: ${dupe.name}. The field ${options.name} has two fieldsets with the same name.`)
+      })
       const fieldsetsByName = keyBy(fieldsets, 'name')
 
       const preparedFieldsets = preparedFields.map(field => {

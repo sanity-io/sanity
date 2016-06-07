@@ -2,12 +2,12 @@
 import messyDevSchema from './messy-dev'
 import daniel from './daniel'
 import vega from './vega'
-import grouping from './grouping'
+import fieldsets from './fieldsets'
 import exampleBlog from './example-blog'
 
 export default {
   exampleBlog,
-  grouping,
+  fieldsets,
   vega,
   daniel,
   messyDevSchema: messyDevSchema
