@@ -79,19 +79,23 @@ function renderDemo(compiledSchema) {
   )
 }
 
-export default function Main() {
-  return (
-    <div>
-      <header>
-        Schemas: {renderSchemas()}
-        {compiledSchema && (
-          <span>
-            {typeName ? 'Types:' : 'Select type:'}
-            {renderTypes(compiledSchema)}
-          </span>
-        )}
-      </header>
-      {typeName && compiledSchema && renderDemo(compiledSchema)}
-    </div>
-  )
+class Main extends React.Component {
+  render() {
+    return (
+      <div>
+        <header>
+          Schemas: {renderSchemas()}
+          {compiledSchema && (
+            <span>
+              {typeName ? 'Types:' : 'Select type:'}
+              {renderTypes(compiledSchema)}
+            </span>
+          )}
+        </header>
+        {typeName && compiledSchema && renderDemo(compiledSchema)}
+      </div>
+    )
+  }
 }
+
+export default Main
