@@ -25,9 +25,10 @@ export default (config = {}) => {
   const cssExtractor = isProd
     && new ExtractTextPlugin('../css/main.css', {allChunks: true})
 
+  const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
   const cssLoader = isProd
-    ? 'css-loader?modules&minimize&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
-    : 'css-loader?modules&sourceMap&localIdentName=[path]_[name]_[local]_[hash:base64:5]&importLoaders=1'
+    ? `${baseCssLoader}&minimize`
+    : `${baseCssLoader}&sourceMap`
 
   return {
     entry: {
