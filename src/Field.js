@@ -8,7 +8,7 @@ export default function Field(props) {
     <div className={styles.root}>
       <div className={styles.inner}>
         <label className={styles.label}>
-          {props.label || 'No label'}
+          {props.label}
         </label>
         {props.children}
       </div>

@@ -46,18 +46,18 @@ export default React.createClass({
     )
 
   },
-  renderGroup(group) {
+  renderFieldset(fieldset) {
     return (
       <fieldset>
-        <legend>{group.title}</legend>
-        {group.fields.map(this.renderField)}
+        <legend>{fieldset.title}</legend>
+        {fieldset.fields.map(this.renderField)}
       </fieldset>
     )
   },
 
-  renderGroups(groups) {
-    return groups.map(group => {
-      return group.ungrouped ? this.renderField(group.field) : this.renderGroup(group)
+  renderFieldsets(fieldsets) {
+    return fieldsets.map(fieldset => {
+      return fieldset.lonely ? this.renderField(fieldset.field) : this.renderFieldset(fieldset)
     })
   },
 
@@ -65,7 +65,7 @@ export default React.createClass({
     const {type} = this.props
     return (
       <div>
-        {this.renderGroups(type.fieldGroups)}
+        {this.renderFieldsets(type.fieldsets)}
       </div>
     )
   }

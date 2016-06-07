@@ -7,7 +7,6 @@ export default function BooleanFieldRenderer(props) {
   const {input, field} = props
   return (
     <Field>
-      <div>This is the title</div>
       <label>
         {input} {field.title}
       </label>

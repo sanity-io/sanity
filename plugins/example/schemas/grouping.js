@@ -5,11 +5,14 @@ export default {
       name: 'blogpost',
       type: 'object',
       displayField: 'author',
-      groups: [
+      fieldsets: [
         {
           name: 'headings',
-          title: 'Headings',
-          collapsed: true
+          title: 'Headings'
+        },
+        {
+          name: 'checkboxes',
+          title: 'Checkbox Mc. Checkboxface'
         }
       ],
       fields: [
@@ -17,13 +20,13 @@ export default {
           name: 'foo',
           title: 'Foo',
           type: 'string',
-          group: 'headings'
+          fieldset: 'headings'
         },
         {
           name: 'title',
           title: 'Title',
           type: 'string',
-          group: 'headings'
+          fieldset: 'headings'
         },
         {
           name: 'murgh',
@@ -36,6 +39,24 @@ export default {
           type: 'text'
         },
         {
+          name: 'check-one',
+          title: 'Check one?',
+          type: 'boolean',
+          fieldset: 'checkboxes'
+        },
+        {
+          name: 'check-two',
+          title: 'Check two?',
+          type: 'boolean',
+          fieldset: 'checkboxes'
+        },
+        {
+          name: 'check-three',
+          title: 'Check three?',
+          type: 'boolean',
+          fieldset: 'checkboxes'
+        },
+        {
           name: 'content',
           type: 'array',
           of: [
@@ -44,6 +65,11 @@ export default {
               type: 'string'
             }
           ]
+        },
+        {
+          name: 'standalone-check',
+          title: 'Standalone checkbox',
+          type: 'boolean'
         }
       ]
     }

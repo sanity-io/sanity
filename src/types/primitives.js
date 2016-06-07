@@ -9,10 +9,10 @@ export default {
     options: {
       title: PropTypes.string,
       fields: PropTypes.array.isRequired,
-      groups: PropTypes.array
+      fieldsets: PropTypes.array
     },
     defaultOptions: {
-      groups: []
+      fieldsets: []
     },
     parse(options, typeBuilders, schema) {
       if (!options.fields) {
@@ -21,31 +21,31 @@ export default {
 
       const preparedFields = prepareFields(options.fields)
 
-      const groups = options.groups.map(group => {
-        return Object.assign({}, group, {
-          group: true,
+      const fieldsets = options.fieldsets.map(fieldset => {
+        return Object.assign({}, fieldset, {
+          fieldset: true,
           fields: []
         })
       })
 
-      const groupsByName = keyBy(groups, 'name')
+      const fieldsetsByName = keyBy(fieldsets, 'name')
 
-      const fieldGroups = preparedFields.map(field => {
-        if (field.group) {
-          const group = groupsByName[field.group]
-          if (!group) {
-            throw new Error(`Group '${field.group}' is not defined in schema for type '${options.name}'`)
+      const preparedFieldsets = preparedFields.map(field => {
+        if (field.fieldset) {
+          const fieldset = fieldsetsByName[field.fieldset]
+          if (!fieldset) {
+            throw new Error(`Group '${field.fieldset}' is not defined in schema for type '${options.name}'`)
           }
-          group.fields.push(field)
-          // Return the group if its the first time we encounter a field in this group
-          return group.fields.length === 1 ? group : null
+          fieldset.fields.push(field)
+          // Return the fieldset if its the first time we encounter a field in this fieldset
+          return fieldset.fields.length === 1 ? fieldset : null
         }
-        return {ungrouped: true, field: field}
+        return {lonely: true, field: field}
       }).filter(Boolean)
 
       return {
         fields: preparedFields,
-        fieldGroups: fieldGroups
+        fieldsets: preparedFieldsets
       }
 
       function prepareFields(fields) {
@@ -58,7 +58,7 @@ export default {
             throw new Error('`$type` is reserved and cannot be used as field name.')
           }
 
-          if (field.group) {
+          if (field.fieldset) {
             return field
           }
           if (!(field || {}).type) {
