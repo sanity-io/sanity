@@ -1,13 +1,17 @@
-@import 'all:style:@sanity/base/theme';
 @use postcss-cssnext;
 
-/* @import 'all:style:@sanity/form-builder/base'; */
-
 .root {
-  background-color: var(--brand-color);
+  composes: root from '../../styles/Control.css';
+}
+
+.inner {
+  composes: inner from '../../styles/Control.css';
 }
 
 .input {
-  /* composes: inputText from 'all:style:@sanity/form-builder/base'; */
-  background-color: var(--brand-color);
+  composes: textInput from '../../styles/TextInput.css';
+}
+
+.clearButton {
+  composes: textInput from '../../styles/ClearButton.css';
 }

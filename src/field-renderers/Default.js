@@ -1,17 +1,18 @@
-import styles from '../styles/form-builder.css'
+import styles from './styles/Default.css'
+
 import React, {PropTypes} from 'react'
+import Field from '../Field.js'
 
 export default function DefaultFieldRenderer(props) {
   const {input, field} = props
   return (
-    <div className={styles.field}>
-      <label className={styles.fieldTitle}>
-        {field.title}
-      </label>
-      <div className={styles.formControlContainer}>
-        {input}
+    <Field label={field.title}>
+      <div className={styles.root}>
+        <div className={styles.formControl}>
+          {input}
+        </div>
       </div>
-    </div>
+    </Field>
   )
 }
 

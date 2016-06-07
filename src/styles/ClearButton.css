@@ -1,0 +1,24 @@
+@import 'all:style:@sanity/base/theme';
+
+@use postcss-cssnext;
+
+.root {
+  border: 1px solid red;
+}
+
+.textInput {
+  composes: root;
+  position: absolute;
+  right: 0;
+  top: 0;
+  appearance: none;
+  border: none;
+  background-color: transparent;
+  transition: all 0.1s linear;
+  color: var(--clear-button-color);
+
+  &:hover {
+    color: var(--clear-button-color-hover);
+    transform: scale(1.5);
+  }
+}

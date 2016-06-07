@@ -1,0 +1,23 @@
+@import 'all:style:@sanity/base/theme';
+
+@use postcss-cssnext;
+
+.textInput {
+  border: 1px solid var(--input-border);
+  display: block;
+  width: 100%;
+  outline: none;
+  line-height: 2em;
+  font-size: inherit;
+  padding: 0 0.4em;
+  box-sizing: border-box;
+  &:hover {
+    border-color: var(--hover-color);
+  }
+  &:focus {
+    border: 1px solid var(--input-border-focus);
+  }
+  &:active {
+    border: 1px solid var(--input-border-focus);
+  }
+}

@@ -1,0 +1,10 @@
+.root {
+  border-color: green;
+}
+.inner {
+
+}
+
+.content {
+  display: flex;  
+}

@@ -1,5 +1,8 @@
 import React, {PropTypes} from 'react'
 import ObjectContainer from '../../../src/state/ObjectContainer'
+import Field from '../../../src/Field'
+import Fieldset from '../../../src/Fieldset'
+
 
 export default React.createClass({
   propTypes: {
@@ -23,7 +26,7 @@ export default React.createClass({
   },
 
   handleLatChange(event) {
-    this.handleFieldChange('lon', event.target.value)
+    this.handleFieldChange('lat', event.target.value)
   },
 
   handleLonChange(event) {
@@ -41,10 +44,14 @@ export default React.createClass({
   render() {
     const {value} = this.props
     return (
-      <div>
-        <div>Lat: <input type="number" value={value && value.getFieldValue('lat')} onChange={this.handleLatChange} /></div>
-        <div>Lon: <input type="number" value={value && value.getFieldValue('lon')} onChange={this.handleLonChange} /></div>
-      </div>
+      <Fieldset title="Langitude and Latitude">
+        <Field label="Latitude" role="inFieldset">
+          <input type="number" value={value && value.getFieldValue('lat')} onChange={this.handleLatChange} />
+        </Field>
+        <Field label="Longitude" role="inFieldset">
+          <input type="number" value={value && value.getFieldValue('lon')} onChange={this.handleLonChange} />
+        </Field>
+      </Fieldset>
     )
   }
 })

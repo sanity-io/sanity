@@ -1,28 +1,17 @@
 @use postcss-cssnext;
 
 .root {
-  composes: formControlContainer from '../../styles/form-builder.css';
-}
-
-.input {
-  composes: textInput from '../../styles/form-builder.css';
+  composes: root from '../../styles/Control.css';
 }
 
 .inner {
-  composes: formControlInner from '../../styles/form-builder.css';
+  composes: inner from '../../styles/Control.css';
+}
+
+.input {
+  composes: textInput from '../../styles/TextInput.css';
 }
 
 .clearButton {
-  position: absolute;
-  right: 0;
-  top: 0;
-  appearance: none;
-  border: none;
-  background-color: transparent;
-  font-size: 1em;
-  transition: all .1s linear;
-  &:hover {
-    color: red;
-    transform: scale(1.5);
-  }
+
 }

@@ -1,78 +1,26 @@
+@import 'all:style:@sanity/base/theme';
 @use postcss-cssnext;
 
-:root {
-  --input-border: 1px solid #333;
-  --active-color: green;
-  --hover-color: #666;
-  --clear-button-color: #666;
-  --clear-button-color-hover: red;
+.root {
+  /* form-builder root element */
 }
 
 .field {
-  margin-bottom: 1em;
-  box-sizing: border-box;
+  composes: root from './Field.css';
 }
 
 .fieldLabel {
-  font-weight: bold;
+  composes: label from './Field.css';
 }
 
 .fieldTitle {
-  font-size: 2em;
-  font-weight: bold;
+  composes: title from './Field.css';
 }
 
 .formControlContainer {
-  padding: 1em 0;
-  box-sizing: border-box;
+  composes: container from './Control.css';
 }
 
 .formControlInner {
-  position: relative;
-}
-
-.form-builder {
-  border: 1px solid red;
-}
-
-.textInputContainer {
-  position: relative;
-  border: 1px solid blue;
-}
-
-.clearButtonTextInput {
-  position: absolute;
-  right: 0;
-  top: 0;
-  appearance: none;
-  border: none;
-  background-color: transparent;
-  font-size: 1em;
-  transition: all 0.1s linear;
-  color: var(--clear-button-color);
-  &:hover {
-    color: var(--clear-button-color-hover);
-    transform: scale(1.5);
-  }
-}
-
-.clearButton {
-  border: 1px solid red;
-}
-
-.textInput {
-  border: var(--input-border);
-  display: block;
-  width: 100%;
-  outline: none;
-  line-height: 2em;
-  &:hover {
-    border-color: var(--hover-color);
-  }
-  &:focus {
-    border-color: var(--active-color);
-  }
-  &:active {
-    border-color: var(--active-color);
-  }
+  composes: inner from './Control.css';
 }

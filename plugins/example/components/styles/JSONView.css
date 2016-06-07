@@ -34,5 +34,6 @@
 }
 
 .code :global .json-markup-key {
+  color: red;
   color: var(--code-color);
 }
