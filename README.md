@@ -10,13 +10,16 @@ Polymorphic arrays may only contain elements of one primitive type. Thus, this i
 
 ```json
 {
-  "myType": {
+  "types": [
+   {
+    "name": "myType",
     "type": "array",
     "of": [
       {"type": "string", "title": "Street"},
       {"type": "string", "title": "E-mail"}
     ]
-  }
+   }
+  ]
 }
 ```
 
@@ -35,6 +38,7 @@ If you define an object type, you must also define its fields. E.g. if you are d
 
 ```json
 {
+  "name": "person",
   "type": "object",
   "fields": {
     "firstName": {
@@ -63,7 +67,8 @@ When writing a schema, `type` is implicitly `object`, unless otherwise specified
 Only built-in types can take options. Below, `email.placeholder` is an option to `string` and `versions.of` is an option to `list`.
 
 ```
-user: {
+{
+  name: 'user',
   fields: {
     email: {
       type: 'string',
@@ -71,12 +76,12 @@ user: {
       placeholder: 'murgh@example.com'
     },
     profilePicture: {
-      'type', 'image'
+      type: 'image'
     },
   }
 },
-
-image: {
+{
+  name: 'image',
   fields: {
     fullSizeUrl: {type: 'string'},
     aspectRatio: {type: 'number'},
@@ -86,8 +91,8 @@ image: {
     }
   }
 },
-
-imageVersion: {
+{
+  name: 'imageVersion',
   fields: {
     width: {type: 'number'},
     square: {type: 'boolean'},
