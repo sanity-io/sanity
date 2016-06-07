@@ -11,6 +11,10 @@ export default {
           title: 'Headings'
         },
         {
+          name: 'author',
+          title: 'Author details'
+        },
+        {
           name: 'checkboxes',
           title: 'Checkbox Mc. Checkboxface'
         }
@@ -27,6 +31,11 @@ export default {
           title: 'Title',
           type: 'string',
           fieldset: 'headings'
+        },
+        {
+          name: 'author',
+          type: 'person',
+          fieldset: 'author'
         },
         {
           name: 'murgh',
@@ -71,6 +80,26 @@ export default {
           title: 'Standalone checkbox',
           type: 'boolean'
         }
+      ]
+    },
+    {
+      name: 'person',
+      type: 'object',
+      fieldsets: [
+        {
+          name: 'basics',
+          title: 'Basics'
+        },
+        {
+          name: 'address',
+          title: 'Address'
+        }
+      ],
+      fields: [
+        {name: 'firstname', type: 'string', title: 'First name', fieldset: 'basics'},
+        {name: 'lastname', type: 'string', title: 'Last name', fieldset: 'basics'},
+        {name: 'street', type: 'string', title: 'Street', fieldset: 'address'},
+        {name: 'zip', type: 'string', title: 'Zip', fieldset: 'address'}
       ]
     }
   ]
