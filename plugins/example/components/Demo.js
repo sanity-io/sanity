@@ -65,10 +65,13 @@ export default React.createClass({
 
   handleChange(event) {
     const {value} = this.state
+    const nextValue = value.patch(event.patch)
+    // const validation = nextValue.validate()
     this.setState({
       shouldInspect: false,
       saved: false,
-      value: value.patch(event.patch)
+      value: nextValue,
+      // validation: validation
     })
   },
 

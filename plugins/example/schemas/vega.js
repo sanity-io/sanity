@@ -5,196 +5,303 @@
 
 export default {
   name: 'vega',
-  types: {
-    simple: {
+  types: [
+    {
+      name: 'simple',
       type: 'object',
-      fields: {
-        someString: {type: 'string'},
-        someNumber: {type: 'number'}
-      }
-    },
-    pets: {
-      type: 'array',
-      of: [
-        {type: 'string', title: 'Pet'}
+      fields: [
+        {
+          name: 'someString',
+          type: 'string'
+        },
+        {
+          name: 'someNumber',
+          type: 'number'
+        }
       ]
     },
-    latlon: {
+    {
+      name: 'pets',
+      type: 'array',
+      of: [
+        {
+          type: 'string',
+          title: 'Pet'
+        }
+      ]
+    },
+    {
+      name: 'latlon',
       type: 'object',
-      fields: {
-        lat: {
+      fields: [
+        {
+          name: 'lat',
           title: 'Latitude',
           type: 'number'
         },
-        lon: {
+        {
+          name: 'lon',
           title: 'Longitude',
           type: 'number'
         }
-      }
+      ]
     },
-    image: {
+    {
+      name: 'image',
       type: 'object',
-      fields: {
-        fullsize: {type: 'string'},
-        aspectRatio: {type: 'number'},
-        versions: {
+      fields: [
+        {
+          name: 'fullsize',
+          type: 'string'
+        },
+        {
+          name: 'aspectRatio',
+          type: 'number'
+        },
+        {
+          name: 'versions',
           type: 'array',
-          of: [{type: 'imageVersion'}]
+          of: [
+            {
+              type: 'imageVersion'
+            }
+          ]
         }
-      }
+      ]
     },
-    imageVersion: {
+    {
+      name: 'imageVersion',
       type: 'object',
-      fields: {
-        width: {type: 'number'},
-        square: {type: 'boolean'},
-        url: {type: 'string'}
-      }
+      fields: [
+        {
+          name: 'width',
+          type: 'number'
+        },
+        {
+          name: 'square',
+          type: 'boolean'
+        },
+        {
+          name: 'url',
+          type: 'string'
+        }
+      ]
     },
-    person: {
+    {
+      name: 'person',
       type: 'object',
-      fields: {
-        name: {
+      fields: [
+        {
+          name: 'name',
           type: 'string',
           title: 'Name'
         },
-        contact: {
+        {
+          name: 'contact',
           type: 'object',
-          fields: {
-            type: {type: 'string'},
-            person: {type: 'reference', to: {type: 'person'}},
-            relation: {
+          fields: [
+            {
+              name: 'type',
+              type: 'string'
+            },
+            {
+              name: 'person',
+              type: 'reference',
+              to: {
+                type: 'person'
+              }
+            },
+            {
+              name: 'relation',
               type: 'string',
               placeholder: 'Fetter, mor, etc.'
             }
-          }
+          ]
         }
-      }
+      ]
     },
-    client: {
+    {
+      name: 'client',
       type: 'object',
-      fields: {
-        somethingInline: {
+      fields: [
+        {
+          name: 'somethingInline',
           type: 'object',
-          fields: {
-            foo: {
+          fields: [
+            {
+              name: 'foo',
               type: 'string'
             }
-          }
+          ]
         },
-        contactPerson: {
+        {
+          name: 'contactPerson',
           type: 'person',
           title: 'Kontaktperson'
         },
-        name: {
+        {
+          name: 'name',
           type: 'string',
           title: 'Tittel',
           placeholder: 'Hva heter kunden?'
         },
-        names: {
+        {
+          name: 'names',
           title: 'Names',
           type: 'array',
-          of: [{type: 'string'}, {type: 'number'}] /* note: should fail */
+          of: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
         },
-        tags: {
+        {
+          name: 'tags',
           type: 'tag',
           title: 'Tag',
           placeholder: 'Hva heter kunden?'
         }
-      }
+      ]
     },
-    placeholder: {
+    {
+      name: 'placeholder',
       type: 'string',
       value: 'placeholder'
     },
-    personName: {
+    {
+      name: 'personName',
       type: 'string',
       autocompletes: {
         scope: 'person'
       }
     },
-    something: {
+    {
+      name: 'something',
       type: 'any',
       of: [
-        {type: 'string'},
-        {type: 'person'},
+        {
+          type: 'string'
+        },
+        {
+          type: 'person'
+        },
         {
           type: 'reference',
-          to: {type: 'person', title: 'Person'},
+          to: {
+            type: 'person',
+            title: 'Person'
+          }
         },
         {
           type: 'object',
           title: 'Ettellerannet',
-          fields: {
-            field1: {type: 'string'},
-            field2: {type: 'string'}
-          }
+          fields: [
+            {
+              name: 'field1',
+              type: 'string'
+            },
+            {
+              name: 'field2',
+              type: 'string'
+            }
+          ]
         },
-        {type: 'person'}
+        {
+          type: 'person'
+        }
       ]
     },
-    contentList: {
+    {
+      name: 'contentList',
       type: 'array',
       of: [
         {
           type: 'reference',
-          to: [{type: 'image'}],
-          meta: {type: 'imageMetadata'}
+          to: [
+            {
+              type: 'image'
+            }
+          ],
+          meta: {
+            type: 'imageMetadata'
+          }
         },
-        {type: 'tag'},
-        {type: 'placeholder'},
+        {
+          type: 'tag'
+        },
+        {
+          type: 'placeholder'
+        },
         {
           type: 'array',
-          of: [{type: 'string'}]
+          of: [
+            {
+              type: 'string'
+            }
+          ]
         }
       ],
       validates: {
         maxLength: 4
       }
     },
-    tag: {
+    {
+      name: 'tag',
       type: 'string'
     },
-    story: {
+    {
+      name: 'story',
       type: 'object',
-      fields: {
-        pets: {
+      fields: [
+        {
+          name: 'pets',
           title: 'Pets',
           type: 'pets'
         },
-        title: {
+        {
+          name: 'title',
           type: 'string',
           title: 'Tittel',
           placeholder: 'Slik får du tettere bart enn Poirot'
         },
-        ingress: {
+        {
+          name: 'ingress',
           type: 'text',
           title: 'Ingress',
           validates: {
             maxLength: 10
           }
         },
-        location: {
+        {
+          name: 'location',
           title: 'Where is the bear',
           type: 'latlon'
         },
-        image: {
+        {
+          name: 'image',
           type: 'image',
           title: 'Image'
         },
-        client: {
+        {
+          name: 'client',
           type: 'client',
           title: 'Klient'
         },
-        content: {
+        {
+          name: 'content',
           title: 'Innhold',
           description: 'Innholdet på siden',
           type: 'array',
           of: [
-            {type: 'person'}
+            {
+              type: 'person'
+            }
           ]
         }
-      }
+      ]
     }
-  }
+  ]
 }

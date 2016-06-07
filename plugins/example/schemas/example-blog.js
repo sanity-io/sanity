@@ -1,80 +1,99 @@
 export default {
   name: 'example-blog',
-  types: {
-    blogpost: {
-      type: 'object',
-      displayField: 'author',
-      fields: {
-        title: {
-          title: 'Title',
-          type: 'string'
+  types: [
+    {
+      'name': 'blogpost',
+      'type': 'object',
+      'displayField': 'author',
+      'fields': [
+        {
+          'name': 'title',
+          'title': 'Title',
+          'type': 'string'
         },
-        priority: {
-          title: 'Priority',
-          type: 'number'
+        {
+          'name': 'priority',
+          'title': 'Priority',
+          'type': 'number'
         },
-        checked: {
-          title: 'Checked',
-          type: 'boolean'
+        {
+          'name': 'checked',
+          'title': 'Checked',
+          'type': 'boolean'
         },
-        lead: {
-          title: 'Lead',
-          type: 'text'
+        {
+          'name': 'lead',
+          'title': 'Lead',
+          'type': 'text'
         },
-        email: {
-          title: 'Email',
-          type: 'email'
+        {
+          'name': 'email',
+          'title': 'Email',
+          'type': 'email'
         },
-        location: {
-          title: 'Location',
-          type: 'latlon'
+        {
+          'name': 'location',
+          'title': 'Location',
+          'type': 'latlon'
         },
-        content: {
-          type: 'array',
-          of: [
+        {
+          'name': 'content',
+          'type': 'array',
+          'of': [
             {
-              title: 'String',
-              type: 'string'
+              'title': 'String',
+              'type': 'string'
             }
           ]
         },
-        authors: {
-          title: 'Authors',
-          type: 'array',
-          of: [
-            {type: 'author'}
+        {
+          'name': 'authors',
+          'title': 'Authors',
+          'type': 'array',
+          'of': [
+            {
+              'type': 'author'
+            }
           ]
         }
-      }
+      ]
     },
-    latlon: {
-      type: 'object',
-      fields: {
-        lat: {
-          title: 'Latitude',
-          type: 'number'
+    {
+      'name': 'latlon',
+      'type': 'object',
+      'fields': [
+        {
+          'name': 'lat',
+          'title': 'Latitude',
+          'type': 'number'
         },
-        lon: {
-          title: 'Longitude',
-          type: 'number'
+        {
+          'name': 'lon',
+          'title': 'Longitude',
+          'type': 'number'
         }
-      }
+      ]
     },
-    author: {
-      type: 'object',
-      fields: {
-        name: {
-          title: 'Title',
-          type: 'string'
+    {
+      'name': 'author',
+      'type': 'object',
+      'fields': [
+        {
+          'name': 'name',
+          'title': 'Title',
+          'type': 'string'
         },
-        awards: {
-          title: 'Awards',
-          type: 'array',
-          of: [
-            {type: 'string'}
+        {
+          'name': 'awards',
+          'title': 'Awards',
+          'type': 'array',
+          'of': [
+            {
+              'type': 'string'
+            }
           ]
         }
-      }
+      ]
     }
-  }
+  ]
 }

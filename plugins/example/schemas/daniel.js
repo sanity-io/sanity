@@ -3,47 +3,62 @@
 
 //
 
-export default {
-  name: 'daniel',
-  types: {
-    document: {
-      type: 'object',
-      fields: {
-        content: {
-          type: 'blocks',
-          title: 'Content'
-        }
+export default [
+  {
+    'name': 'document',
+    'type': 'object',
+    'fields': [
+      {
+        'name': 'content',
+        'type': 'blocks',
+        'title': 'Content'
       }
-    },
-    blocks: {
-      type: 'array',
-      of: [
-        {type: 'paragraph'},
-        {type: 'latlon'}
-      ]
-    },
-    latlon: {
-      type: 'object',
-      fields: {
-        lat: {type: 'number'},
-        lon: {type: 'number'},
+    ]
+  },
+  {
+    'name': 'blocks',
+    'type': 'array',
+    'of': [
+      {
+        'type': 'paragraph'
+      },
+      {
+        'type': 'latlon'
       }
-    },
-    paragraph: {
-      type: 'object',
-      fields: {
-        content: {
-          type: 'array',
-          of: [
-            {
-              type: 'object',
-              fields: {
-                type: {type: 'string'}
+    ]
+  },
+  {
+    'name': 'latlon',
+    'type': 'object',
+    'fields': [
+      {
+        'name': 'lat',
+        'type': 'number'
+      },
+      {
+        'name': 'lon',
+        'type': 'number'
+      }
+    ]
+  },
+  {
+    'name': 'paragraph',
+    'type': 'object',
+    'fields': [
+      {
+        'name': 'content',
+        'type': 'array',
+        'of': [
+          {
+            'type': 'object',
+            'fields': {
+              'type': {
+                'type': 'string'
               }
             }
-          ]
-        }
+          }
+        ]
       }
-    }
+    ]
   }
-}
+]

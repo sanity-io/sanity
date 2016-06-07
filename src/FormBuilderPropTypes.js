@@ -6,6 +6,7 @@ function lazy(fn) {
 }
 
 const field = PropTypes.shape({
+  name: PropTypes.string,
   title: PropTypes.string,
   description: PropTypes.string,
   placeholder: PropTypes.string,
@@ -15,7 +16,7 @@ const field = PropTypes.shape({
 })
 
 const type = PropTypes.shape({
-  fields: PropTypes.objectOf(field),
+  fields: PropTypes.arrayOf(field),
   alias: PropTypes.string,
   isPrimitive: PropTypes.bool
 })

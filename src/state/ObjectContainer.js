@@ -1,5 +1,5 @@
 import {createFieldValue} from './FormBuilderState'
-import {clone} from 'lodash'
+import {clone, keyBy} from 'lodash'
 import {getFieldType} from '../utils/getFieldType'
 
 export default class ObjectContainer {
@@ -23,12 +23,14 @@ export default class ObjectContainer {
       return ObjectContainer.wrap(patch.$set, context)
     }
 
+    const keyedFields = keyBy(type.fields, 'name')
+
     Object.keys(patch).forEach(keyName => {
-      if (!type.fields.hasOwnProperty(keyName)) {
+      if (!keyedFields.hasOwnProperty(keyName)) {
         throw new Error(`Type ${type.name} has no field named ${keyName}`)
       }
 
-      const fieldDef = type.fields[keyName]
+      const fieldDef = keyedFields[keyName]
 
       if (!newVal.hasOwnProperty(keyName)) {
         newVal[keyName] = createFieldValue(void 0, {field: fieldDef, schema: context.schema, resolveContainer})
@@ -67,7 +69,7 @@ ObjectContainer.wrap = function wrap(value, context) {
   const type = getFieldType(schema, field)
   const wrappedValue = {$type: field.type}
 
-  Object.keys(type.fields).forEach(fieldName => {
+  type.fields.forEach(fieldName => {
     if (value[fieldName] === void 0) {
       return
     }

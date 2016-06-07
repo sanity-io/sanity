@@ -1,4 +1,12 @@
-import {pick} from 'lodash'
+import {pick, uniqWith} from 'lodash'
+
+export function ifNotUniqueProp(array, property, notUniqueFn) {
+  uniqWith(array, (item, otherItem) => {
+    if (item[property] === otherItem[property]) {
+      notUniqueFn(item, otherItem)
+    }
+  })
+}
 
 export function checkSchemaType(schemaType, propTypes) {
   return Object.keys(propTypes).map(key => {

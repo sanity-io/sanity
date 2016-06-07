@@ -5,27 +5,40 @@
 
 export default {
   name: 'messyDevSchema',
-  types: {
-    simple: {
+  types: [
+    {
+      name: 'simple',
       type: 'object',
       fields: {
-        someString: {type: 'string'},
-        home: {type: 'homeAddress'}
+        someString: {
+          type: 'string'
+        },
+        home: {
+          type: 'homeAddress'
+        }
       }
     },
-    homeAddress: {
+    {
+      name: 'homeAddress',
       type: 'object',
       fields: {
-        zip: {type: 'string'}
+        zip: {
+          type: 'string'
+        }
       }
     },
-    pets: {
+    {
+      name: 'pets',
       type: 'array',
       of: [
-        {type: 'string', title: 'Pet'}
+        {
+          type: 'string',
+          title: 'Pet'
+        }
       ]
     },
-    latlon: {
+    {
+      name: 'latlon',
       type: 'object',
       fields: {
         lat: {
@@ -38,26 +51,43 @@ export default {
         }
       }
     },
-    image: {
+    {
+      name: 'image',
       type: 'object',
       fields: {
-        fullsize: {type: 'string'},
-        aspectRatio: {type: 'number'},
+        fullsize: {
+          type: 'string'
+        },
+        aspectRatio: {
+          type: 'number'
+        },
         versions: {
           type: 'array',
-          of: [{type: 'imageVersion'}]
+          of: [
+            {
+              type: 'imageVersion'
+            }
+          ]
         }
       }
     },
-    imageVersion: {
+    {
+      name: 'imageVersion',
       type: 'object',
       fields: {
-        width: {type: 'number'},
-        square: {type: 'boolean'},
-        url: {type: 'string'}
+        width: {
+          type: 'number'
+        },
+        square: {
+          type: 'boolean'
+        },
+        url: {
+          type: 'string'
+        }
       }
     },
-    person: {
+    {
+      name: 'person',
       type: 'object',
       fields: {
         name: {
@@ -67,8 +97,15 @@ export default {
         contact: {
           type: 'object',
           fields: {
-            type: {type: 'string'},
-            person: {type: 'reference', to: {type: 'person'}},
+            type: {
+              type: 'string'
+            },
+            person: {
+              type: 'reference',
+              to: {
+                type: 'person'
+              }
+            },
             relation: {
               type: 'string',
               placeholder: 'Fetter, mor, etc.'
@@ -77,7 +114,8 @@ export default {
         }
       }
     },
-    client: {
+    {
+      name: 'client',
       type: 'object',
       fields: {
         somethingInline: {
@@ -100,7 +138,14 @@ export default {
         names: {
           title: 'Names',
           type: 'array',
-          of: [{type: 'string'}, {type: 'number'}] /* note: should fail */
+          of: [
+            {
+              type: 'string'
+            },
+            {
+              type: 'number'
+            }
+          ]
         },
         tags: {
           type: 'tag',
@@ -109,98 +154,36 @@ export default {
         }
       }
     },
-    placeholder: {
+    {
+      name: 'placeholder',
       type: 'string',
       value: 'placeholder'
     },
-    personName: {
+    {
+      name: 'personName',
       type: 'string',
       autocompletes: {
         scope: 'person'
       }
     },
-    something: {
+    {
+      name: 'something',
       type: 'any',
       of: [
-        {type: 'string'},
-        {type: 'person'},
+        {
+          type: 'string'
+        },
+        {
+          type: 'person'
+        },
         {
           type: 'reference',
-          to: {type: 'person', title: 'Person'},
-        },
-        {
-          type: 'object',
-          title: 'Ettellerannet',
-          fields: {
-            field1: {type: 'string'},
-            field2: {type: 'string'}
+          to: {
+            type: 'person',
+            title: 'Person'
           }
-        },
-        {type: 'person'}
+        }
       ]
-    },
-    contentList: {
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: [{type: 'image'}],
-          meta: {type: 'imageMetadata'}
-        },
-        {type: 'tag'},
-        {type: 'placeholder'},
-        {
-          type: 'array',
-          of: [{type: 'string'}]
-        }
-      ],
-      validates: {
-        maxLength: 4
-      }
-    },
-    tag: {
-      type: 'string'
-    },
-    story: {
-      type: 'object',
-      fields: {
-        pets: {
-          title: 'Pets',
-          type: 'pets'
-        },
-        title: {
-          type: 'string',
-          title: 'Tittel',
-          placeholder: 'Slik får du tettere bart enn Poirot'
-        },
-        ingress: {
-          type: 'text',
-          title: 'Ingress',
-          validates: {
-            maxLength: 10
-          }
-        },
-        location: {
-          title: 'Where is the bear',
-          type: 'latlon'
-        },
-        image: {
-          type: 'image',
-          title: 'Image'
-        },
-        client: {
-          type: 'client',
-          title: 'Klient'
-        },
-        content: {
-          title: 'Innhold',
-          description: 'Innholdet på siden',
-          type: 'array',
-          of: [
-            {type: 'person'}
-          ]
-        }
-      }
     }
-  }
+  ]
 }

@@ -31,6 +31,7 @@
     "@sanity/base": "^2.1.16",
     "@sanity/cli": "^1.0.24",
     "babel-cli": "^6.9.0",
+    "babel-eslint": "^6.0.4",
     "babel-plugin-lodash": "^3.1.4",
     "babel-polyfill": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",

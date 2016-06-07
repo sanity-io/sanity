@@ -32,23 +32,40 @@ export default React.createClass({
     onChange({patch})
   },
 
+  renderField(field) {
+    const {value} = this.props
+    const fieldValue = value && value.getFieldValue(field.name)
+    return (
+      <RenderField
+        key={field.name}
+        fieldName={field.name}
+        field={field}
+        value={fieldValue}
+        onChange={this.handleFieldChange}
+      />
+    )
+
+  },
+  renderGroup(group) {
+    return (
+      <fieldset>
+        <legend>{group.title}</legend>
+        {group.fields.map(this.renderField)}
+      </fieldset>
+    )
+  },
+
+  renderGroups(groups) {
+    return groups.map(group => {
+      return group.ungrouped ? this.renderField(group.field) : this.renderGroup(group)
+    })
+  },
+
   render() {
-    const {type, value} = this.props
+    const {type} = this.props
     return (
       <div>
-        {Object.keys(type.fields).map(fieldName => {
-          const fieldValue = value && value.getFieldValue(fieldName)
-          return (
-            <RenderField
-              key={fieldName}
-              fieldName={fieldName}
-              field={type.fields[fieldName]}
-              fieldType={type.fields[fieldName]}
-              value={fieldValue}
-              onChange={this.handleFieldChange}
-            />
-          )
-        })}
+        {this.renderGroups(type.fieldGroups)}
       </div>
     )
   }
