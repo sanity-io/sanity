@@ -3,6 +3,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from '../../state/ObjectContainer'
 import Fieldset from '../../Fieldset'
+import equals from 'shallow-equals'
 
 export default class Obj extends React.Component {
   static displayName = 'Object'
@@ -35,6 +36,11 @@ export default class Obj extends React.Component {
     const {onChange} = this.props
     const patch = {[fieldName]: event.patch}
     onChange({patch})
+  }
+
+  shouldComponentUpdate(nextProps) {
+    console.log('Object update?', !equals(this.props, nextProps))
+    return !equals(this.props, nextProps)
   }
 
   renderField(field) {

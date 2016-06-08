@@ -23,7 +23,7 @@ export default class RenderField extends React.Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return !equals(nextProps, this.props)
+    return !equals(this.props, nextProps)
   }
 
   handleChange(event) {
