@@ -2,7 +2,9 @@ import React from 'react'
 import Demo from '../components/Demo'
 import Debug from 'debug'
 import MyCustomLatLonInput from './MyCustomLatLonInput'
-import {whyDidYouUpdate} from 'why-did-you-update'
+
+// Todo: figure out why it complains so much
+// import {whyDidYouUpdate} from 'why-did-you-update'
 import schemas from '../schemas'
 import {
   compileSchema,
@@ -13,7 +15,7 @@ import {
 
 Debug.disable('*')
 
-whyDidYouUpdate(React)
+// whyDidYouUpdate(React)
 
 if (process.env.DEBUG) {
   Debug.enable(process.env.DEBUG)
