@@ -13,5 +13,5 @@
 }
 
 .clearButton {
-
+  composes: textInput from '../../styles/ClearButton.css';
 }

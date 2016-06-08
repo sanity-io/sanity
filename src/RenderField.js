@@ -55,7 +55,6 @@ export default React.createClass({
       )
     }
 
-
     const FieldRenderer = this.resolveFieldRenderer(field, fieldType)
 
     const passValue = value && value.constructor.passUnwrapped ? value.unwrap() : value

@@ -66,8 +66,11 @@ function renderDemo(compiledSchema) {
     }
     return schemaFieldInputs[field.type]
   }
-  function resolveFieldRenderer(field) {
-    return fieldRenderers[field.type]
+  function resolveFieldRenderer(field, type) {
+    if (type.type === 'object') {
+      return fieldRenderers.object
+    }
+    return fieldRenderers[field.type || type.type]
   }
   return (
     <Demo

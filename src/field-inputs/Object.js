@@ -62,7 +62,7 @@ export default React.createClass({
   },
 
   render() {
-    const {type} = this.props
+    const {type, field} = this.props
     return (
       <div>
         {this.renderFieldsets(type.fieldsets)}

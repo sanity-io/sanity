@@ -37,7 +37,9 @@ export const FormBuilder = React.createClass({
     const passUnwrapped = value && value.constructor.passUnwrapped
 
     return (
+      <div style={{border: '1px solid red'}}>
       <FieldInput field={field} type={type} onChange={onChange} value={passUnwrapped ? value.unwrap() : value} />
+      </div>
     )
   }
 })

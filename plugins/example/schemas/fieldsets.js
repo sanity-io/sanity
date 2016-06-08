@@ -24,18 +24,19 @@ export default {
           name: 'foo',
           title: 'Foo',
           type: 'string',
-          fieldset: 'headings'
+          //fieldset: 'headings'
         },
         {
           name: 'title',
           title: 'Title',
           type: 'string',
-          fieldset: 'headings'
+          //fieldset: 'headings'
         },
         {
           name: 'author',
+          title: 'Author',
           type: 'person',
-          fieldset: 'author'
+          //fieldset: 'author'
         },
         {
           name: 'murgh',
@@ -51,19 +52,19 @@ export default {
           name: 'check-one',
           title: 'Check one?',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          //fieldset: 'checkboxes'
         },
         {
           name: 'check-two',
           title: 'Check two?',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          //fieldset: 'checkboxes'
         },
         {
           name: 'check-three',
           title: 'Check three?',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          //fieldset: 'checkboxes'
         },
         {
           name: 'content',
@@ -83,12 +84,37 @@ export default {
       ]
     },
     {
+      name: 'address',
+      type: 'object',
+      fieldsets: [
+        {
+          name: 'basics',
+          title: 'Basics',
+        },
+        {
+          name: 'street',
+          title: 'Address'
+        }
+      ],
+      fields: [
+        {name: 'street', type: 'string', title: 'Street',
+      fieldset: 'street'
+      },
+      {name: 'zip', type: 'string', title: 'Zip',
+        fieldset: 'basics'
+      },
+      {name: 'place', type: 'string', title: 'Place',
+        fieldset: 'basics'
+      }
+      ]
+    },
+    {
       name: 'person',
       type: 'object',
       fieldsets: [
         {
           name: 'basics',
-          title: 'Basics'
+          title: 'Basics',
         },
         {
           name: 'address',
@@ -96,11 +122,16 @@ export default {
         }
       ],
       fields: [
-        {name: 'firstname', type: 'string', title: 'First name', fieldset: 'basics'},
-        {name: 'lastname', type: 'string', title: 'Last name', fieldset: 'basics'},
-        {name: 'street', type: 'string', title: 'Street', fieldset: 'address'},
-        {name: 'zip', type: 'string', title: 'Zip', fieldset: 'address'}
+        {name: 'firstname', type: 'string', title: 'First name',
+      //   fieldset: 'basics'
+       },
+        {name: 'lastname', type: 'string', title: 'Last name',
+        //fieldset: 'basics'
+      },
+       {name: 'address', type: 'address', title: 'Address',
+       //fieldset: 'basics'
+     }
       ]
-    }
+    },
   ]
 }

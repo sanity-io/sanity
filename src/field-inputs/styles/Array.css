@@ -1,0 +1,11 @@
+.root {
+  border: 1px solid red;
+}
+
+.addItem {
+  border: 2px solid green;
+}
+
+.item {
+  border: 3px solid blue;
+}

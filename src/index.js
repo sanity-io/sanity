@@ -1,4 +1,3 @@
-
 import Obj from './field-inputs/Object'
 import Arr from './field-inputs/Array'
 import Bool from './field-inputs/Boolean'
@@ -11,6 +10,7 @@ import Reference from './field-inputs/Reference'
 import Str from './field-inputs/String'
 
 import BooleanFieldRenderer from './field-renderers/Boolean'
+import ObjectFieldRenderer from './field-renderers/Object'
 
 export const fieldInputs = {
   object: Obj,
@@ -26,7 +26,8 @@ export const fieldInputs = {
 }
 
 export const fieldRenderers = {
-  boolean: BooleanFieldRenderer
+  boolean: BooleanFieldRenderer,
+  object: ObjectFieldRenderer
 }
 
 export {createFormBuilderState} from './state/FormBuilderState'

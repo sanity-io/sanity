@@ -2,7 +2,6 @@ import styles from './styles/Field.css'
 
 import React, {PropTypes} from 'react'
 
-// Field renderer for boolean fields
 export default function Field(props) {
   return (
     <div className={styles.root}>

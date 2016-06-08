@@ -3,8 +3,6 @@ import FormBuilderPropTypes from './FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from './utils/getFieldType'
 
-const CLEAR_BUTTON_STYLES = {fontSize: 10, border: '1px solid #aaa', backgroundColor: 'transparent'}
-
 export default React.createClass({
   propTypes: {
     field: FormBuilderPropTypes.field.isRequired,
@@ -27,12 +25,11 @@ export default React.createClass({
     return (
       <div key={index}>
         <button
-          style={CLEAR_BUTTON_STYLES}
           type="button"
           title="delete"
           onClick={() => this.handleChange()}
         >
-          -
+          - Remove
         </button>
         {el}
       </div>

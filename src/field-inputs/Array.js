@@ -5,6 +5,7 @@ import ArrayContainer from '../state/ArrayContainer'
 import {createFieldValue} from '../state/FormBuilderState'
 import {resolveJSType} from '../types/utils'
 import {getFieldType} from '../utils/getFieldType'
+import styles from './styles/Array.css'
 
 export default React.createClass({
   propTypes: {
@@ -92,7 +93,7 @@ export default React.createClass({
   },
   renderAddItemForm(addItemField) {
     return (
-      <div>
+      <div className={styles.addItemForm}>
         <b>Add {addItemField.title}</b>
         <RenderListItem index={-1} field={addItemField} value={this.state.addItem} onChange={this.handleAddItemChange} />
         <button type="button" onClick={this.handleOK}>OK</button>
@@ -103,8 +104,8 @@ export default React.createClass({
     const {type, value} = this.props
     const {selectType, addItemField} = this.state
     return (
-      <div>
-        <button type="button" onClick={this.handleAddBtnClick}>+</button>
+      <div className={styles.array}>
+        <button type="button" onClick={this.handleAddBtnClick}>+ add</button>
         {selectType && this.renderSelectType()}
         {addItemField && this.renderAddItemForm(addItemField)}
         {value && value.map((item, i) => {
@@ -124,7 +125,7 @@ export default React.createClass({
           }
 
           return (
-            <div key={i}>
+            <div key={i} className={styles.item}>
               <RenderListItem index={i} field={typeFromField} value={item} onChange={this.handleItemChange} />
             </div>
           )

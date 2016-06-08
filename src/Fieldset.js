@@ -2,7 +2,6 @@ import styles from './styles/Fieldset.css'
 
 import React, {PropTypes} from 'react'
 
-// Field renderer for boolean fields
 export default function Fieldset(props) {
   return (
     <fieldset className={styles.root}>
