@@ -6,10 +6,7 @@ import styles from './styles/String.css'
 
 
 export default class Str extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
+  static displayName = 'String';
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
@@ -21,6 +18,11 @@ export default class Str extends React.Component {
     value: '',
     onChange() {}
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
   shouldComponentUpdate(nextProps) {
     return !equals(this.props, nextProps)

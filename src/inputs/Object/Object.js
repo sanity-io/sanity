@@ -5,11 +5,7 @@ import ObjectContainer from '../../state/ObjectContainer'
 import Fieldset from '../../Fieldset'
 
 export default class Obj extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleFieldChange = this.handleFieldChange.bind(this)
-    this.renderField = this.renderField.bind(this)
-  }
+  static displayName = 'Object'
 
   static valueContainer = ObjectContainer;
 
@@ -28,6 +24,12 @@ export default class Obj extends React.Component {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
+    this.renderField = this.renderField.bind(this)
+  }
 
   handleFieldChange(event, fieldName) {
     const {onChange} = this.props

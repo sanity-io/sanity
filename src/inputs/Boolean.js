@@ -2,10 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
 export default class Bool extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
+  static displayName = 'Boolean';
 
   static propTypes = {
     field: FormBuilderPropTypes.field,
@@ -16,6 +13,11 @@ export default class Bool extends React.Component {
   static defaultProps = {
     onChange() {}
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
   handleChange(e) {
     this.props.onChange({patch: {$set: e.target.checked}})

@@ -7,19 +7,7 @@ import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 
 export default class Arr extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
-    this.handleAddItemChange = this.handleAddItemChange.bind(this)
-    this.handleItemChange = this.handleItemChange.bind(this)
-    this.handleOK = this.handleOK.bind(this)
-
-    this.state = {
-      selecType: false,
-      addItemField: null,
-      addItem: void 0
-    }
-  }
+  static displayName = 'Array';
 
   static valueContainer = ArrayContainer;
 
@@ -38,6 +26,20 @@ export default class Arr extends React.Component {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
+    this.handleAddItemChange = this.handleAddItemChange.bind(this)
+    this.handleItemChange = this.handleItemChange.bind(this)
+    this.handleOK = this.handleOK.bind(this)
+
+    this.state = {
+      selecType: false,
+      addItemField: null,
+      addItem: void 0
+    }
+  }
 
   handleAddBtnClick() {
     if (this.props.type.of.length > 1) {

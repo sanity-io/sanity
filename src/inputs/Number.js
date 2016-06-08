@@ -3,10 +3,7 @@ import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import styles from './styles/Number.css'
 
 export default class Num extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
+  static displayName = 'Number';
 
   static propTypes = {
     field: FormBuilderPropTypes.field,
@@ -17,6 +14,11 @@ export default class Num extends React.Component {
   static defaultProps = {
     onChange() {}
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
   handleChange(e) {
     const val = e.target.value.trim()
