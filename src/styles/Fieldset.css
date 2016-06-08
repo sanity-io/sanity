@@ -1,10 +1,17 @@
 .root {
-  border-color: green;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
-.inner {
 
-}
+.inner {}
 
-.content {
-  display: flex;  
+.content {}
+
+.legend {
+  font-size: 2em;
+  display: block;
+  width: 100%;
+  border-bottom: 2px solid black;
+  font-weight: bold;
 }

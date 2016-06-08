@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
+import styles from './styles/FormBuilder.css'
 
 export const FormBuilder = React.createClass({
   propTypes: {
@@ -37,8 +38,8 @@ export const FormBuilder = React.createClass({
     const passUnwrapped = value && value.constructor.passUnwrapped
 
     return (
-      <div style={{border: '1px solid red'}}>
-      <FieldInput field={field} type={type} onChange={onChange} value={passUnwrapped ? value.unwrap() : value} />
+      <div className={styles.root}>
+        <FieldInput field={field} type={type} onChange={onChange} value={passUnwrapped ? value.unwrap() : value} />
       </div>
     )
   }

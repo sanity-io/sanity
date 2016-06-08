@@ -1,17 +1,16 @@
-import styles from './styles/Default.css'
+import styles from './styles/Object.css'
 
 import React, {PropTypes} from 'react'
-import Field from '../Field.js'
+import Fieldset from '../Fieldset.js'
 
 export default function ObjectFieldRenderer(props) {
   const {input, field} = props
   return (
-    <fieldset className={styles.root}>
-      <legend>{field.title}</legend>
-      <div className={styles.formControl}>
+    <Fieldset className={styles.root} legend={field.title || 'No legend is set'}>
+      <div className={styles.inner}>
         {input}
       </div>
-    </fieldset>
+    </Fieldset>
   )
 }
 

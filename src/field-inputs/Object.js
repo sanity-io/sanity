@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import RenderField from '../RenderField'
 import ObjectContainer from '../state/ObjectContainer'
+import Fieldset from '../Fieldset'
 
 export default React.createClass({
   propTypes: {
@@ -48,10 +49,9 @@ export default React.createClass({
   },
   renderFieldset(fieldset) {
     return (
-      <fieldset>
-        <legend>{fieldset.title}</legend>
+      <Fieldset legend={fieldset.title}>
         {fieldset.fields.map(this.renderField)}
-      </fieldset>
+      </Fieldset>
     )
   },
 

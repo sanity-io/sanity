@@ -3,6 +3,8 @@ import JSONView from './JSONView'
 
 import {createFormBuilderState} from '../../../src/state/FormBuilderState'
 
+import styles from './styles/Demo.css';
+
 import {
   FormBuilder,
   FormBuilderProvider
@@ -107,7 +109,7 @@ export default React.createClass({
     }
 
     return (
-      <div className="content">
+      <div className={styles.root}>
         <button onClick={() => this.save()}>{saved ? 'Saved' : 'Save'} to local storage</button>
         <button onClick={() => this.clear()}>Clear value</button>
         {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>Inspect</button>}

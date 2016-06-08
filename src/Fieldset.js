@@ -6,7 +6,7 @@ export default function Fieldset(props) {
   return (
     <fieldset className={styles.root}>
       <div className={styles.inner}>
-        <legend>Legend goes here / Fieldset title</legend>
+        <legend className={styles.legend}>{props.legend}</legend>
         <div className={styles.content}>
           {props.children}
         </div>
