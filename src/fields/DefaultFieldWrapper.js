@@ -6,9 +6,9 @@ export default function Field(props) {
   return (
     <div className={styles.root}>
       <div className={styles.inner}>
-        [field on nesting level {props.level}]
+        <span style={{float: 'right'}}>[field on nesting level {props.level}]</span>
         <label className={styles.label}>
-          {props.label}
+          {props.field.title}
         </label>
         {props.children}
       </div>
