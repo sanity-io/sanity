@@ -1,5 +1,6 @@
-@import 'all:style:@sanity/base/theme/variables';
-@import 'all:style:@sanity/base/theme/typography';
+@import 'style:@sanity/base/theme/variables';
+@import 'style:@sanity/base/theme/typography';
+
 @use postcss-cssnext;
 
 .root {
