@@ -24,9 +24,9 @@ export default class Telephone extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value} = this.props
     return (
-      <Str type="tel" field={field} value={value} onChange={this.handleChange} />
+      <input type="tel" value={value} onChange={this.handleChange} />
     )
   }
 }

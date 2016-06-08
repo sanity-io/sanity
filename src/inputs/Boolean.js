@@ -26,7 +26,8 @@ export default class Bool extends React.Component {
   render() {
     const {value} = this.props
     return (
-      <input type="checkbox"
+      <input
+        type="checkbox"
         onChange={this.handleChange}
         checked={!!value}
       />

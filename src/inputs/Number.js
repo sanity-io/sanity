@@ -29,7 +29,9 @@ export default class Num extends React.Component {
     const {value} = this.props
     return (
       <div className={styles.root}>
-        <input className={styles.input} type="number"
+        <input
+          type="number"
+          className={styles.input}
           onChange={this.handleChange}
           value={value}
         />

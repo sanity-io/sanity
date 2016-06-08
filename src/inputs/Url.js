@@ -24,9 +24,9 @@ export default class Url extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value} = this.props
     return (
-      <Str type="url" field={field} value={value} onChange={this.handleChange} />
+      <input type="url" value={value} onChange={this.handleChange} />
     )
   }
 }

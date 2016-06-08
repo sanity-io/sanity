@@ -25,12 +25,12 @@ export default class Email extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value} = this.props
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
           <ClearButton className={styles.clearButton} />
-          <input className={styles.input} type="email" field={field} value={value} onChange={this.handleChange} />
+          <input className={styles.input} type="email" value={value} onChange={this.handleChange} />
         </div>
       </div>
     )
