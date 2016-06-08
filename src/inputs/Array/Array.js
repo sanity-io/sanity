@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderListItem from './RenderListItem'
-import ArrayContainer from '../../state/ArrayContainer'
+import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'

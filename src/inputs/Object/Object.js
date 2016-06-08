@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
-import ObjectContainer from '../../state/ObjectContainer'
+import ObjectContainer from './ObjectContainer'
 import Fieldset from '../../Fieldset'
 import equals from 'shallow-equals'
 
@@ -54,7 +54,6 @@ export default class Obj extends React.Component {
         onChange={this.handleFieldChange}
       />
     )
-
   }
 
   renderFieldset(fieldset) {
@@ -72,7 +71,7 @@ export default class Obj extends React.Component {
   }
 
   render() {
-    const {type, field} = this.props
+    const {type} = this.props
     return (
       <div>
         {this.renderFieldsets(type.fieldsets)}

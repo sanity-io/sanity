@@ -33,7 +33,7 @@ export default class Num extends React.Component {
           type="number"
           className={styles.input}
           onChange={this.handleChange}
-          value={value}
+          value={value || ''}
         />
       </div>
     )

@@ -3,11 +3,9 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {getFieldType} from '../../utils/getFieldType'
 import React, {PropTypes} from 'react'
 
+// This component renders a single field in an object type. It emits onChange events telling the owner about the name of the field
+// that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
 export default class RenderField extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
@@ -21,6 +19,11 @@ export default class RenderField extends React.Component {
     resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
   shouldComponentUpdate(nextProps) {
     return !equals(this.props, nextProps)

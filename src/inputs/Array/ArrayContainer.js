@@ -1,7 +1,6 @@
-import {createFieldValue} from './FormBuilderState'
-import {clone} from 'lodash'
-import {getFieldType} from '../utils/getFieldType'
-import {resolveJSType} from '../types/utils'
+import {createFieldValue} from '../../state/FormBuilderState'
+import {getFieldType} from '../../utils/getFieldType'
+import {resolveJSType} from '../../types/utils'
 
 export default class ArrayContainer {
   constructor(value, context) {
@@ -15,9 +14,6 @@ export default class ArrayContainer {
 
   patch(patch) {
     const {value, context} = this
-    const {field, schema, resolveContainer} = context
-
-    const type = getFieldType(schema, field)
 
     if (patch.hasOwnProperty('$set')) {
       return ArrayContainer.wrap(patch.$set, context)

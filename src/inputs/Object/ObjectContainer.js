@@ -1,6 +1,6 @@
-import {createFieldValue} from './FormBuilderState'
 import {clone, keyBy} from 'lodash'
-import {getFieldType} from '../utils/getFieldType'
+import {createFieldValue} from '../../state/FormBuilderState'
+import {getFieldType} from '../../utils/getFieldType'
 
 export default class ObjectContainer {
   constructor(value, context) {
