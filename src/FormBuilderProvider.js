@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 
-export default class extends React.Component {
+export default class FormBuilderProvider extends React.Component {
   static propTypes = {
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
