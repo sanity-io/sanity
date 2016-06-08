@@ -9,23 +9,26 @@ export default {
     {
       name: 'simple',
       type: 'object',
-      fields: {
-        someString: {
+      fields: [
+        {
+          name: 'someString',
           type: 'string'
         },
-        home: {
+        {
+          name: 'home',
           type: 'homeAddress'
         }
-      }
+      ]
     },
     {
       name: 'homeAddress',
       type: 'object',
-      fields: {
-        zip: {
+      fields: [
+        {
+          name: 'zip',
           type: 'string'
         }
-      }
+      ]
     },
     {
       name: 'pets',
@@ -40,28 +43,33 @@ export default {
     {
       name: 'latlon',
       type: 'object',
-      fields: {
-        lat: {
+      fields: [
+        {
+          name: 'lat',
           title: 'Latitude',
           type: 'number'
         },
-        lon: {
+        {
+          name: 'lon',
           title: 'Longitude',
           type: 'number'
         }
-      }
+      ]
     },
     {
       name: 'image',
       type: 'object',
-      fields: {
-        fullsize: {
+      fields: [
+        {
+          name: 'fullsize',
           type: 'string'
         },
-        aspectRatio: {
+        {
+          name: 'aspectRatio',
           type: 'number'
         },
-        versions: {
+        {
+          name: 'versions',
           type: 'array',
           of: [
             {
@@ -69,73 +77,86 @@ export default {
             }
           ]
         }
-      }
+      ]
     },
     {
       name: 'imageVersion',
       type: 'object',
-      fields: {
-        width: {
+      fields: [
+        {
+          name: 'width',
           type: 'number'
         },
-        square: {
+        {
+          name: 'square',
           type: 'boolean'
         },
-        url: {
+        {
+          name: 'url',
           type: 'string'
         }
-      }
+      ]
     },
     {
       name: 'person',
       type: 'object',
-      fields: {
-        name: {
+      fields: [
+        {
+          name: 'name',
           type: 'string',
           title: 'Name'
         },
-        contact: {
+        {
+          name: 'contact',
           type: 'object',
-          fields: {
-            type: {
+          fields: [
+            {
+              name: 'type',
               type: 'string'
             },
-            person: {
+            {
+              name: 'person',
               type: 'reference',
               to: {
                 type: 'person'
               }
             },
-            relation: {
+            {
+              name: 'relation',
               type: 'string',
               placeholder: 'Fetter, mor, etc.'
             }
-          }
+          ]
         }
-      }
+      ]
     },
     {
       name: 'client',
       type: 'object',
-      fields: {
-        somethingInline: {
+      fields: [
+        {
+          name: 'somethingInline',
           type: 'object',
-          fields: {
-            foo: {
+          fields: [
+            {
+              name: 'foo',
               type: 'string'
             }
-          }
+          ]
         },
-        contactPerson: {
+        {
+          name: 'contactPerson',
           type: 'person',
           title: 'Kontaktperson'
         },
-        name: {
+        {
+          name: 'name',
           type: 'string',
           title: 'Tittel',
           placeholder: 'Hva heter kunden?'
         },
-        names: {
+        {
+          name: 'names',
           title: 'Names',
           type: 'array',
           of: [
@@ -147,12 +168,17 @@ export default {
             }
           ]
         },
-        tags: {
+        {
+          name: 'tags',
           type: 'tag',
           title: 'Tag',
           placeholder: 'Hva heter kunden?'
         }
-      }
+      ]
+    },
+    {
+      name: 'tag',
+      type: 'string'
     },
     {
       name: 'placeholder',
