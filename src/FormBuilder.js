@@ -33,7 +33,7 @@ export class FormBuilder extends React.Component {
       return <div>No field input resolved for field {JSON.stringify(field)}</div>
     }
 
-    const passUnwrapped = value && value.constructor.passUnwrapped
+    const passSerialized = value && value.constructor.passSerialized
 
     return (
       <div className={styles.root}>
@@ -41,7 +41,7 @@ export class FormBuilder extends React.Component {
           field={field}
           type={type}
           onChange={onChange}
-          value={passUnwrapped ? value.unwrap() : value}
+          value={passSerialized ? value.serialize() : value}
         />
       </div>
     )

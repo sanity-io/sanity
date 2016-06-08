@@ -10,6 +10,9 @@ import {parseFrom, serializeTo} from 'prosemirror/dist/format'
 import {defaultSchema} from 'prosemirror/dist/model'
 
 class ProseMirrorValueContainer {
+  static deserialize(htmlValue) {
+    return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
+  }
   constructor(doc) {
     this.doc = doc
   }
@@ -20,13 +23,9 @@ class ProseMirrorValueContainer {
     return new ProseMirrorValueContainer(this.doc)
   }
 
-  unwrap() {
+  serialize() {
     return serializeTo(this.doc, 'html')
   }
-}
-
-ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
-  return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
 }
 
 export default class RichTextProsemirror extends React.Component {

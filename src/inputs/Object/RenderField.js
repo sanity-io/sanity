@@ -68,11 +68,11 @@ export default class RenderField extends React.Component {
       console.log(FieldComponent)
     }
 
-    const passValue = value && value.constructor.passUnwrapped ? value.unwrap() : value
+    const passValue = value && value.constructor.passSerialized ? value.serialize() : value
 
     const input = (
       <FieldInput
-        level={level + 1}
+        level={level}
         value={passValue}
         field={field}
         type={fieldType}

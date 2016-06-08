@@ -68,11 +68,11 @@ export default class RenderListItem extends React.Component {
       )
     }
 
-    const passUnwrapped = value.constructor.passUnwrapped
+    const passSerialized = value.constructor.passSerialized
 
     return this.renderField(
       <FieldInput
-        value={passUnwrapped ? value.unwrap() : value}
+        value={passSerialized ? value.serialize() : value}
         field={field}
         type={fieldType}
         onChange={this.handleChange}

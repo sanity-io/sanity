@@ -36,7 +36,7 @@ export default {
           name: 'author',
           title: 'Author',
           type: 'person',
-          //fieldset: 'author'
+          fieldset: 'author'
         },
         {
           name: 'murgh',

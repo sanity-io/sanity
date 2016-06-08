@@ -3,6 +3,27 @@ import {getFieldType} from '../../utils/getFieldType'
 import {resolveJSType} from '../../types/utils'
 
 export default class ArrayContainer {
+
+  static deserialize(serializedArray, context) {
+    if (!serializedArray) {
+      return new ArrayContainer(serializedArray, context)
+    }
+    const {field, schema, resolveContainer} = context
+
+    const type = getFieldType(schema, field)
+
+    const deserialized = serializedArray.map(item => {
+
+      const itemType = (item && item.$type) || resolveJSType(item)
+      // find type in of
+
+      const fieldDef = type.of.find(ofType => ofType.type === itemType)
+
+      return createFieldValue(item, {field: fieldDef, schema, resolveContainer})
+    })
+    return new ArrayContainer(deserialized, context)
+  }
+
   constructor(value, context) {
     this.context = context
     this.value = value
@@ -40,27 +61,7 @@ export default class ArrayContainer {
     return new ArrayContainer(nextVal, context)
   }
 
-  unwrap() {
-    return this.value.map(val => val.unwrap())
+  serialize() {
+    return this.value.map(val => val.serialize())
   }
 }
-
-ArrayContainer.wrap = function wrap(value, context) {
-  if (!value) {
-    return new ArrayContainer(value, context)
-  }
-  const {field, schema, resolveContainer} = context
-  const type = getFieldType(schema, field)
-
-  const wrappedValue = value.map(item => {
-
-    const itemType = (item && item.$type) || resolveJSType(item)
-    // find type in of
-
-    const fieldDef = type.of.find(ofType => ofType.type === itemType)
-
-    return createFieldValue(item, {field: fieldDef, schema, resolveContainer})
-  })
-  return new ArrayContainer(wrappedValue, context)
-}
-

@@ -121,7 +121,7 @@ export default class Arr extends React.Component {
         {selectType && this.renderSelectType()}
         {addItemField && this.renderAddItemForm(addItemField)}
         {value && value.map((item, i) => {
-          const itemValue = item.unwrap()
+          const itemValue = item.serialize()
           const itemType = (itemValue && itemValue.$type) || resolveJSType(itemValue)
           // find type in of
 

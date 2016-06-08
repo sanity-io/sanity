@@ -12,13 +12,9 @@ export function createFieldValue(value, context) {
 
   const fieldType = getFieldType(schema, field)
 
-  const ResolvedContainer = resolveContainer(field, fieldType)
+  const ResolvedContainer = resolveContainer(field, fieldType) || DefaultContainer
 
-  if (ResolvedContainer) {
-    return ResolvedContainer.wrap(value, context)
-  }
-
-  return new DefaultContainer(value, context)
+  return ResolvedContainer.deserialize(value, context)
 }
 
 export function createFormBuilderState(value, {type, schema, resolveContainer}) {

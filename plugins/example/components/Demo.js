@@ -118,8 +118,8 @@ export default class Demo extends React.Component {
         {shouldInspect && (
           <div style={DEBUG_JSON_STYLE}>
             <button onClick={() => this.setState({shouldInspect: false})}>Close</button>
-            <h3>The unwrapped value is serialized here:</h3>
-            <JSONView json={value.unwrap()} />
+            <h3>The serialized value:</h3>
+            <JSONView json={value.serialize()} />
             <p>Check the console for the internal representation of the form builder value(s)</p>
           </div>
         )}

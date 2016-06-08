@@ -4,22 +4,26 @@ import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'd
 import htmlToDraft from './draft-utils/htmlToDraft'
 import draftToHtml from './draft-utils/draftToHtml'
 
-export default class RichTextDraft extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
+class DraftJSValueContainer {
+  static deserialize(rawValue) {
+    return new DraftJSValueContainer(
+      rawValue
+      ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(rawValue)))
+      : EditorState.createEmpty()
+    )
   }
 
-  static valueContainer = {
-    wrap(raw) {
-      return raw
-        ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(raw)))
-        : EditorState.createEmpty()
-    },
-    unwrap(editorState) {
-      return draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    }
-  };
+  constructor(value) {
+    this.editorState = value
+  }
+
+  serialize() {
+    return draftToHtml(convertToRaw(this.editorState.getCurrentContent()))
+  }
+}
+
+export default class extends React.Component {
+  static valueContainer = DraftJSValueContainer;
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
@@ -30,6 +34,11 @@ export default class RichTextDraft extends React.Component {
   static defaultProps = {
     onChange() {}
   };
+
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+  }
 
   handleChange(editorState) {
     this.props.onChange(editorState)

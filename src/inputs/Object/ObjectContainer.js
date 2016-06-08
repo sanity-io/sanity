@@ -3,6 +3,25 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../utils/getFieldType'
 
 export default class ObjectContainer {
+
+  static deserialize(serialized, context) {
+    if (!serialized) {
+      return new ObjectContainer(serialized, context)
+    }
+    const {field, schema, resolveContainer} = context
+    const type = getFieldType(schema, field)
+    const deserialized = {$type: field.type}
+
+    type.fields.forEach(fieldName => {
+      if (serialized[fieldName] === void 0) {
+        return
+      }
+      const fieldDef = type.fields[fieldName]
+      deserialized[fieldName] = createFieldValue(serialized[fieldName], {field: fieldDef, schema, resolveContainer})
+    })
+    return new ObjectContainer(deserialized, context)
+  }
+
   constructor(value, context) {
     this.context = context
     this.value = value
@@ -20,7 +39,7 @@ export default class ObjectContainer {
     const newVal = value ? clone(value) : {$type: type.name}
 
     if (patch.hasOwnProperty('$set')) {
-      return ObjectContainer.wrap(patch.$set, context)
+      return ObjectContainer.deserialize(patch.$set, context)
     }
 
     const keyedFields = keyBy(type.fields, 'name')
@@ -40,7 +59,7 @@ export default class ObjectContainer {
     return new ObjectContainer(newVal, context)
   }
 
-  unwrap() {
+  serialize() {
     if (!this.value) {
       return this.value
     }
@@ -52,7 +71,7 @@ export default class ObjectContainer {
       if (fieldName === '$type') {
         return
       }
-      const fieldVal = this.value[fieldName].unwrap()
+      const fieldVal = this.value[fieldName].serialize()
       if (fieldVal !== void 0) {
         result[fieldName] = fieldVal
       }
@@ -60,22 +79,3 @@ export default class ObjectContainer {
     return result
   }
 }
-
-ObjectContainer.wrap = function wrap(value, context) {
-  if (!value) {
-    return new ObjectContainer(value, context)
-  }
-  const {field, schema, resolveContainer} = context
-  const type = getFieldType(schema, field)
-  const wrappedValue = {$type: field.type}
-
-  type.fields.forEach(fieldName => {
-    if (value[fieldName] === void 0) {
-      return
-    }
-    const fieldDef = type.fields[fieldName]
-    wrappedValue[fieldName] = createFieldValue(value[fieldName], {field: fieldDef, schema, resolveContainer})
-  })
-  return new ObjectContainer(wrappedValue, context)
-}
-
