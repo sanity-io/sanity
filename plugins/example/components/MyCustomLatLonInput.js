@@ -43,6 +43,7 @@ export default class MyCustomLatLonInput extends React.Component {
     const {value} = this.props
     return (
       <div>
+        <h4>Custom lat lon input (e.g. a map or something)</h4>
         lat: <input type="number" value={value.lat || ''} onChange={this.handleLatChange} />
         lon: <input type="number" value={value.lon || ''} onChange={this.handleLonChange} />
       </div>
