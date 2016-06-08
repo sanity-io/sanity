@@ -6,8 +6,9 @@ import {whyDidYouUpdate} from 'why-did-you-update'
 import schemas from '../schemas'
 import {
   compileSchema,
-  fieldInputs,
-  fieldRenderers
+  inputComponents,
+  fieldComponents,
+  DefaultField
 } from '../../../src'
 
 Debug.disable('*')
@@ -52,32 +53,32 @@ function renderTypes(compiledSchema) {
 const compiledSchema = schemaName && compileSchema(schemas[schemaName])
 
 function renderDemo(compiledSchema) {
-  const schemaFieldInputs = Object.assign({}, fieldInputs)
+  const schemaFieldComponents= Object.assign({}, inputComponents)
   Object.keys(compiledSchema.types).forEach(typeName => {
     const typeDef = compiledSchema.types[typeName]
-    if (!fieldInputs[typeName] && fieldInputs[typeDef.type]) {
-      schemaFieldInputs[typeName] = fieldInputs[typeDef.type]
+    if (!inputComponents[typeName] && inputComponents[typeDef.type]) {
+      schemaFieldComponents[typeName] = inputComponents[typeDef.type]
     }
   })
 
-  function resolveFieldInput(field) {
+  function resolveInputComponent(field) {
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
     }
-    return schemaFieldInputs[field.type]
+    return schemaFieldComponents[field.type]
   }
-  function resolveFieldRenderer(field, type) {
+  function resolveFieldComponent(field, type) {
     if (type.type === 'object') {
-      return fieldRenderers.object
+      return fieldComponents.object
     }
-    return fieldRenderers[field.type || type.type]
+    return fieldComponents[field.type] || DefaultField
   }
   return (
     <Demo
       schema={compiledSchema}
       type={compiledSchema.types[typeName]}
-      resolveFieldInput={resolveFieldInput}
-      resolveFieldRenderer={resolveFieldRenderer}
+      resolveInputComponent={resolveInputComponent}
+      resolveFieldComponent={resolveFieldComponent}
     />
   )
 }

@@ -3,7 +3,7 @@ import styles from './styles/Object.css'
 import React, {PropTypes} from 'react'
 import Fieldset from '../Fieldset.js'
 
-export default function ObjectFieldRenderer(props) {
+export default function ObjectField(props) {
   const {input, field} = props
   return (
     <Fieldset className={styles.root} legend={field.title || 'No legend is set'}>
@@ -14,7 +14,7 @@ export default function ObjectFieldRenderer(props) {
   )
 }
 
-ObjectFieldRenderer.propTypes = {
+ObjectField.propTypes = {
   input: PropTypes.node,
   fieldName: PropTypes.string,
   field: PropTypes.shape({

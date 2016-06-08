@@ -10,7 +10,7 @@ export const FormBuilder = React.createClass({
   },
 
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   },
 
@@ -20,8 +20,8 @@ export const FormBuilder = React.createClass({
     }
   },
 
-  resolveFieldInput(field, type) {
-    return this.context.resolveFieldInput(field, type)
+  resolveInputComponent(field, type) {
+    return this.context.resolveInputComponent(field, type)
   },
 
   render() {
@@ -30,7 +30,7 @@ export const FormBuilder = React.createClass({
     // Create a proforma field from type
     const field = {type: type.name}
 
-    const FieldInput = this.resolveFieldInput(field, type)
+    const FieldInput = this.resolveInputComponent(field, type)
     if (!FieldInput) {
       return <div>No field input resolved for field {JSON.stringify(field)}</div>
     }

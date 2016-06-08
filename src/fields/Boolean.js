@@ -2,8 +2,8 @@ import styles from './styles/Boolean.css'
 import React, {PropTypes} from 'react'
 import Field from '../Field.js'
 
-// Field renderer for boolean fields
-export default function BooleanFieldRenderer(props) {
+// Field component for boolean fields
+export default function BooleanField(props) {
   const {input, field} = props
   return (
     <Field>
@@ -14,7 +14,7 @@ export default function BooleanFieldRenderer(props) {
   )
 }
 
-BooleanFieldRenderer.propTypes = {
+BooleanField.propTypes = {
   input: PropTypes.node,
   fieldName: PropTypes.string,
   field: PropTypes.shape({

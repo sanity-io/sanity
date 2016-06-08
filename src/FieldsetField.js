@@ -1,8 +1,8 @@
-import styles from './styles/FieldsetField.css'
+import styles from './styles/Fieldset.css'
 
 import React, {PropTypes} from 'react'
 
-// Field renderer for boolean fields
+// Field wrapper for boolean fields
 export default function Field(props) {
   return (
     <div className={styles.root}>
