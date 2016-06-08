@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Str from './String'
 
-export default class extends React.Component {
+export default class Telephone extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

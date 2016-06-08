@@ -2,7 +2,7 @@ import equals from 'shallow-equals'
 
 import React, {PropTypes} from 'react'
 
-export default class extends React.Component {
+export default class ClearButton extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func

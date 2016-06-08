@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
-export default class extends React.Component {
+export default class Blocks extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field,
     value: PropTypes.bool,

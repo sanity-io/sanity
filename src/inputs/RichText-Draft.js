@@ -4,7 +4,7 @@ import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'd
 import htmlToDraft from './draft-utils/htmlToDraft'
 import draftToHtml from './draft-utils/draftToHtml'
 
-export default class extends React.Component {
+export default class RichTextDraft extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

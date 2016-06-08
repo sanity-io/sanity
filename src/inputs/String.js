@@ -5,7 +5,7 @@ import equals from 'shallow-equals'
 import styles from './styles/String.css'
 
 
-export default class extends React.Component {
+export default class Str extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

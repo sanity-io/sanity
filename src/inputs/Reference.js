@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
-export default class extends React.Component {
+export default class Reference extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,

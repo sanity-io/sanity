@@ -4,7 +4,7 @@ import Field from '../../../src/Field'
 import Fieldset from '../../../src/Fieldset'
 
 
-export default class extends React.Component {
+export default class MyCustomLatLonInput extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleLatChange = this.handleLatChange.bind(this)

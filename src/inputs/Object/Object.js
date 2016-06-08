@@ -4,7 +4,7 @@ import RenderField from './RenderField'
 import ObjectContainer from '../../state/ObjectContainer'
 import Fieldset from '../../Fieldset'
 
-export default class extends React.Component {
+export default class Obj extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleFieldChange = this.handleFieldChange.bind(this)

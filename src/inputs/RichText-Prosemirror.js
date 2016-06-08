@@ -29,7 +29,7 @@ ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
   return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
 }
 
-export default class extends React.Component {
+export default class RichTextProsemirror extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleProseMirrorTransform = this.handleProseMirrorTransform.bind(this)

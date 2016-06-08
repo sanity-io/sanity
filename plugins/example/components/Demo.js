@@ -38,7 +38,7 @@ function save(schema, type, editorValue) {
   localStorage.setItem(`form-builder-demo-${schema.name}-${type.name}`, JSON.stringify(editorValue))
 }
 
-export default class extends React.Component {
+export default class Demo extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

@@ -3,7 +3,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import styles from './styles/Email.css'
 
-export default class extends React.Component {
+export default class Email extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

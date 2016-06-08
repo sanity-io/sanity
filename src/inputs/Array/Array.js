@@ -6,7 +6,7 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 
-export default class extends React.Component {
+export default class Arr extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
