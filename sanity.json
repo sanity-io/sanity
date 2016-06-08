@@ -22,7 +22,7 @@
     },
     {
       "name": "style:@sanity/base/theme/typography",
-      "description": "Base theme variables for Sanity"
+      "description": "Base theme typography for Sanity"
     },
     {
       "name": "locale:@sanity/base/locale-messages",
