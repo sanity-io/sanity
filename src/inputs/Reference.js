@@ -22,7 +22,7 @@ export default class Reference extends React.Component {
     const {type} = this.props
     return (
       <div>
-        <div>Show reference picker for {type.to.map(to => to.type).join(', ')}</div>
+        [todo: show reference picker for {type.to.map(to => to.type).join(', ')}]
       </div>
     )
   }

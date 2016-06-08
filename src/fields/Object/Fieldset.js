@@ -6,7 +6,7 @@ export default function Fieldset(props) {
   return (
     <fieldset className={styles.root} style={{outline: '1px solid #ee00ee'}}>
       <div className={styles.inner}>
-        [fieldset on nesting level {props.level}]
+        <span style={{float: 'right'}}>[fieldset on nesting level {props.level}]</span>
         <legend className={styles.legend}>{props.legend}</legend>
         <div className={styles.content}>
           {props.children}
