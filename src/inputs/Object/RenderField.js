@@ -64,10 +64,6 @@ export default class RenderField extends React.Component {
 
     const FieldComponent = this.resolveFieldComponent(field, fieldType)
 
-    if (fieldType.type === 'object') {
-      console.log(FieldComponent)
-    }
-
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
 
     const input = (
