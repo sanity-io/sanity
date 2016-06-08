@@ -7,8 +7,9 @@ import {ProseMirror} from 'prosemirror'
 import 'prosemirror/dist/menu/menubar'
 import 'prosemirror/dist/inputrules/autoinput'
 import {parseFrom, serializeTo} from 'prosemirror/dist/format'
-import {defaultSchema} from 'prosemirror/dist/model'
+import {defaultSchema, Node} from 'prosemirror/dist/model'
 
+// Just a rudimentary value container for prosemirror-produced html. Not meant for production.
 class ProseMirrorValueContainer {
   static deserialize(htmlValue) {
     return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
@@ -18,9 +19,13 @@ class ProseMirrorValueContainer {
   }
 
   patch(patch) {
-    console.log('received patch for document: ', patch)
+    // console.log('received patch for document: ', patch)
     /* this.doc.transform( ... ) */
-    return new ProseMirrorValueContainer(this.doc)
+    if (!patch.$setDoc || !(patch.$setDoc instanceof Node)) {
+      throw new Error('The only allowed patch operation are $setDoc and its value must be a new ProseMirror document')
+    }
+
+    return new ProseMirrorValueContainer(patch.$setDoc)
   }
 
   serialize() {
@@ -39,7 +44,7 @@ export default class RichTextProsemirror extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     defaultValue: PropTypes.string,
-    value: PropTypes.object,
+    value: PropTypes.instanceOf(ProseMirrorValueContainer),
     onChange: PropTypes.func
   };
 
@@ -74,20 +79,21 @@ export default class RichTextProsemirror extends React.Component {
   }
 
   handleProseMirrorTransform(transform) {
+    this.props.onChange({patch: {$setDoc: this._prosemirror.doc}})
     // todo: figure out how this patch should be
-    const steps = []
-    const maps = []
-    for (let i = 0; i < transform.steps.length; i++) {
-      steps.push(transform.steps[i])
-      maps.push(transform.maps[i])
-    }
-
-    this.props.onChange({
-      patch: {
-        $maps: maps,
-        $steps: steps
-      }
-    })
+    // const steps = []
+    // const maps = []
+    // for (let i = 0; i < transform.steps.length; i++) {
+    //   steps.push(transform.steps[i])
+    //   maps.push(transform.maps[i])
+    // }
+    //
+    // this.props.onChange({
+    //   patch: {
+    //     $maps: maps,
+    //     $steps: steps
+    //   }
+    // })
   }
 
   render() {

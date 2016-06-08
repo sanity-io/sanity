@@ -4,17 +4,27 @@ import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'd
 import htmlToDraft from './draft-utils/htmlToDraft'
 import draftToHtml from './draft-utils/draftToHtml'
 
+const EMPTY_EDITORSTATE = EditorState.createEmpty()
+
+// This is a very simple example that passes editor state around. Not not meant for production, just as an example
 class DraftJSValueContainer {
   static deserialize(rawValue) {
     return new DraftJSValueContainer(
       rawValue
       ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(rawValue)))
-      : EditorState.createEmpty()
+      : EMPTY_EDITORSTATE
     )
   }
 
-  constructor(value) {
-    this.editorState = value
+  patch(patch) {
+    if (!patch.$setState || !(patch.$setState instanceof EditorState)) {
+      throw new Error('The only allowed patch operation are $set and its value must be a new EditorState')
+    }
+    return new DraftJSValueContainer(patch.$setState)
+  }
+
+  constructor(editorState) {
+    this.editorState = editorState
   }
 
   serialize() {
@@ -27,7 +37,7 @@ export default class extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    value: PropTypes.object,
+    value: PropTypes.instanceOf(DraftJSValueContainer),
     onChange: PropTypes.func
   };
 
@@ -41,7 +51,7 @@ export default class extends React.Component {
   }
 
   handleChange(editorState) {
-    this.props.onChange(editorState)
+    this.props.onChange({patch: {$setState: editorState}})
   }
 
   render() {
@@ -51,7 +61,7 @@ export default class extends React.Component {
         <Editor
           placeholder={field.placeholder}
           onChange={this.handleChange}
-          editorState={value}
+          editorState={value ? value.editorState : EMPTY_EDITORSTATE}
         />
       </div>
     )
