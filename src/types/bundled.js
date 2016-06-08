@@ -27,7 +27,13 @@ export default {
     },
     parse(options, typeBuilders, schema) {
       const toTypeDefs = Array.isArray(options.to) ? options.to : [options.to]
+      if (!options.to) {
+        console.log(options)
+      }
       const toTypes = toTypeDefs.map(typeDef => {
+        if (!typeDef.type) {
+          throw new Error(`Missing type declaration on schema type "${typeDef.name}"`)
+        }
         const typeBuilder = typeBuilders[typeDef.type]
         if (!typeBuilder) {
           throw new Error(
