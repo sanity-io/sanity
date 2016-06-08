@@ -53,7 +53,7 @@ function renderTypes(compiledSchema) {
 const compiledSchema = schemaName && compileSchema(schemas[schemaName])
 
 function renderDemo(compiledSchema) {
-  const schemaFieldComponents= Object.assign({}, inputComponents)
+  const schemaFieldComponents = Object.assign({}, inputComponents)
   Object.keys(compiledSchema.types).forEach(typeName => {
     const typeDef = compiledSchema.types[typeName]
     if (!inputComponents[typeName] && inputComponents[typeDef.type]) {

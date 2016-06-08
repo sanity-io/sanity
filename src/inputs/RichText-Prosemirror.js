@@ -31,8 +31,8 @@ ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
 
 export default class extends React.Component {
   constructor(props, context) {
-    super(props, context);
-    this.handleProseMirrorTransform = this.handleProseMirrorTransform.bind(this);
+    super(props, context)
+    this.handleProseMirrorTransform = this.handleProseMirrorTransform.bind(this)
   }
 
   static valueContainer = ProseMirrorValueContainer;
@@ -94,4 +94,4 @@ export default class extends React.Component {
   render() {
     return <div />
   }
-};
+}

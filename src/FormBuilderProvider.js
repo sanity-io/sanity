@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
 
 export default class extends React.Component {
   static propTypes = {
@@ -30,4 +29,4 @@ export default class extends React.Component {
   render() {
     return this.props.children
   }
-};
+}

@@ -1,4 +1,4 @@
-import processInlineStylesAndEntities from './processInlineStylesAndEntities';
+import processInlineStylesAndEntities from './processInlineStylesAndEntities'
 
 let blockTagMap = {
   'header-one': `<h1>%content%</h1>\n`,
@@ -9,41 +9,41 @@ let blockTagMap = {
   'ordered-list-item': `<li>%content%</li>\n`,
   'unordered-list-item': `<li>%content%</li>\n`,
   'default': `<p>%content%</p>\n`
-};
+}
 
 let inlineTagMap = {
-  'BOLD': ['<strong>','</strong>'],
-  'ITALIC': ['<em>','</em>'],
-  'UNDERLINE': ['<u>','</u>'],
-  'CODE': ['<code>','</code>'],
-  'default': ['<span>','</span>']
-};
+  'BOLD': ['<strong>', '</strong>'],
+  'ITALIC': ['<em>', '</em>'],
+  'UNDERLINE': ['<u>', '</u>'],
+  'CODE': ['<code>', '</code>'],
+  'default': ['<span>', '</span>']
+}
 
 let entityTagMap = {
   'link': ['<a href="<%= href %>">', '</a>']
-};
+}
 
 let nestedTagMap = {
   'ordered-list-item': ['<ol>', '</ol>'],
   'unordered-list-item': ['<ul>', '</ul>']
-};
+}
 
-export default function(raw) {
-  let html = '';
-  let nestLevel = [];
+export default function (raw) {
+  let html = ''
+  let nestLevel = []
 
-  raw.blocks.forEach(function(block) {
+  raw.blocks.forEach(function (block) {
 
     // open tag if nested
     if (nestLevel.length > 0 && nestLevel[0] !== block.type) {
-      let type = nestLevel.shift();
-      html += nestedTagMap[type][1];
+      let type = nestLevel.shift()
+      html += nestedTagMap[type][1]
     }
 
     // close tag is note consecutive same nested
-    if ( nestedTagMap[block.type] && nestLevel[0] !== block.type) {
-      html += nestedTagMap[block.type][0];
-      nestLevel.unshift(block.type);
+    if (nestedTagMap[block.type] && nestLevel[0] !== block.type) {
+      html += nestedTagMap[block.type][0]
+      nestLevel.unshift(block.type)
     }
 
     html += blockTagMap[block.type] ?
@@ -54,8 +54,8 @@ export default function(raw) {
       blockTagMap['default'].replace(
         '%content%',
         processInlineStylesAndEntities(inlineTagMap, block)
-      );
-  });
-  return html;
+      )
+  })
+  return html
 
 }

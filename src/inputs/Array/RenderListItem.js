@@ -5,8 +5,8 @@ import {getFieldType} from '../../utils/getFieldType'
 
 export default class extends React.Component {
   constructor(props, context) {
-    super(props, context);
-    this.handleChange = this.handleChange.bind(this);
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   static propTypes = {
@@ -79,4 +79,4 @@ export default class extends React.Component {
       />
     )
   }
-};
+}

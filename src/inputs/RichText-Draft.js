@@ -6,8 +6,8 @@ import draftToHtml from './draft-utils/draftToHtml'
 
 export default class extends React.Component {
   constructor(props, context) {
-    super(props, context);
-    this.handleChange = this.handleChange.bind(this);
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   static valueContainer = {
@@ -47,4 +47,4 @@ export default class extends React.Component {
       </div>
     )
   }
-};
+}

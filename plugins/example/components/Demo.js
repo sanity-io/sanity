@@ -3,7 +3,7 @@ import JSONView from './JSONView'
 
 import {createFormBuilderState} from '../../../src/state/FormBuilderState'
 
-import styles from './styles/Demo.css';
+import styles from './styles/Demo.css'
 
 import {
   FormBuilder,
@@ -38,23 +38,18 @@ function save(schema, type, editorValue) {
   localStorage.setItem(`form-builder-demo-${schema.name}-${type.name}`, JSON.stringify(editorValue))
 }
 
-export default React.createClass({
-
-  propTypes: {
-    schema: PropTypes.object.isRequired,
-    resolveInputComponent: PropTypes.func.isRequired,
-    resolveFieldComponent: PropTypes.func.isRequired,
-    type: PropTypes.object.isRequired
-  },
-
-  getInitialState() {
-    const {schema, type, resolveInputComponent} = this.props
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+    const {schema, type, resolveInputComponent} = props
     const resolveContainer = (field, fieldType) => {
       const input = resolveInputComponent(field, fieldType)
       return input.valueContainer
     }
     const value = restore(schema, type) || void 0
-    return {
+
+    this.state = {
       value: createFormBuilderState(value, {
         type: type,
         schema: schema,
@@ -63,7 +58,14 @@ export default React.createClass({
       saved: false,
       shouldInspect: false
     }
-  },
+  }
+
+  static propTypes = {
+    schema: PropTypes.object.isRequired,
+    resolveInputComponent: PropTypes.func.isRequired,
+    resolveFieldComponent: PropTypes.func.isRequired,
+    type: PropTypes.object.isRequired
+  };
 
   handleChange(event) {
     const {value} = this.state
@@ -75,7 +77,7 @@ export default React.createClass({
       value: nextValue,
       // validation: validation
     })
-  },
+  }
 
   clear() {
     const {schema, type, resolveInputComponent} = this.props
@@ -85,20 +87,20 @@ export default React.createClass({
       resolveInputComponent
     })
     this.setState({value: newValue})
-  },
+  }
 
   save() {
     const {value} = this.state
     const {schema, type} = this.props
     save(schema, type, value.unwrap())
     this.setState({saved: true})
-  },
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.shouldInspect !== this.state.shouldInspect) {
       document.body.style.overflow = this.state.shouldInspect ? 'hidden' : ''
     }
-  },
+  }
 
   render() {
     const {value, saved, shouldInspect} = this.state
@@ -144,4 +146,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+}

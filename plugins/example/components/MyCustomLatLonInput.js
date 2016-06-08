@@ -4,34 +4,36 @@ import Field from '../../../src/Field'
 import Fieldset from '../../../src/Fieldset'
 
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context)
+    this.handleLatChange = this.handleLatChange.bind(this)
+    this.handleLonChange = this.handleLonChange.bind(this)
+  }
+
+  static valueContainer = ObjectContainer;
+
+  static propTypes = {
     value: PropTypes.object,
     onChange: PropTypes.func
-  },
+  };
 
-  statics: {
-    valueContainer: ObjectContainer
-  },
+  static defaultProps = {
+    onChange() {}
+  };
 
-  contextTypes: {
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  };
 
   handleLatChange(event) {
     this.handleFieldChange('lat', event.target.value)
-  },
+  }
 
   handleLonChange(event) {
     this.handleFieldChange('lon', event.target.value)
-  },
+  }
 
   handleFieldChange(fieldName, value) {
     this.props.onChange({
@@ -39,7 +41,7 @@ export default React.createClass({
         [fieldName]: {$set: value}
       }
     })
-  },
+  }
 
   render() {
     const {value} = this.props
@@ -54,4 +56,4 @@ export default React.createClass({
       </Fieldset>
     )
   }
-})
+}

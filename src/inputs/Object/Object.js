@@ -6,9 +6,9 @@ import Fieldset from '../../Fieldset'
 
 export default class extends React.Component {
   constructor(props, context) {
-    super(props, context);
-    this.handleFieldChange = this.handleFieldChange.bind(this);
-    this.renderField = this.renderField.bind(this);
+    super(props, context)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
+    this.renderField = this.renderField.bind(this)
   }
 
   static valueContainer = ObjectContainer;
@@ -72,4 +72,4 @@ export default class extends React.Component {
       </div>
     )
   }
-};
+}

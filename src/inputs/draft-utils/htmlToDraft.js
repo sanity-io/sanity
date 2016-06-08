@@ -1,7 +1,7 @@
-import DraftPasteProcessor from 'draft-js/lib/DraftPasteProcessor';
+import DraftPasteProcessor from 'draft-js/lib/DraftPasteProcessor'
 
-let { processHTML } = DraftPasteProcessor;
+let {processHTML} = DraftPasteProcessor
 
-export default function(html) {
-  return processHTML(html);
+export default function (html) {
+  return processHTML(html)
 }
