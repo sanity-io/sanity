@@ -6,40 +6,46 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
+    this.handleAddItemChange = this.handleAddItemChange.bind(this);
+    this.handleItemChange = this.handleItemChange.bind(this);
+    this.handleOK = this.handleOK.bind(this);
+
+    this.state = {
+      selecType: false,
+      addItemField: null,
+      addItem: void 0
+    };
+  }
+
+  static valueContainer = ArrayContainer;
+
+  static propTypes = {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
     onChange: PropTypes.func
-  },
-  statics: {
-    valueContainer: ArrayContainer
-  },
-  contextTypes: {
+  };
+
+  static defaultProps = {
+    onChange() {}
+  };
+
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
-  },
+  };
 
-  getInitialState() {
-    return {
-      selecType: false,
-      addItemField: null,
-      addItem: void 0
-    }
-  },
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
   handleAddBtnClick() {
     if (this.props.type.of.length > 1) {
       this.setState({selectType: true})
       return
     }
     this.handleAddItem(this.props.type.of[0])
-  },
+  }
 
   handleAddItem(field) {
     const addItemValue = createFieldValue(void 0, {
@@ -54,7 +60,7 @@ export default React.createClass({
       addItemField: field,
       addItem: addItemValue
     })
-  },
+  }
 
   handleRemoveItem(index) {
     this.props.onChange({
@@ -62,13 +68,14 @@ export default React.createClass({
         $splice: [[index, 1]]
       }
     })
-  },
+  }
 
   handleOK() {
     const itemValue = this.state.addItem
     this.setState({selectType: false, addItemField: null, addItem: void 0})
     this.props.onChange({patch: {$unshift: [itemValue]}})
-  },
+  }
+
   renderSelectType() {
     const {type} = this.props
     return type.of.map(field => {
@@ -82,14 +89,17 @@ export default React.createClass({
         </button>
       )
     })
-  },
+  }
+
   handleAddItemChange(event) {
     this.setState({addItem: this.state.addItem.patch(event.patch)})
-  },
+  }
+
   handleItemChange(event, index) {
     const patch = {[index]: event.patch}
     this.props.onChange({patch})
-  },
+  }
+
   renderAddItemForm(addItemField) {
     return (
       <div className={styles.addItemForm}>
@@ -98,7 +108,8 @@ export default React.createClass({
         <button type="button" onClick={this.handleOK}>OK</button>
       </div>
     )
-  },
+  }
+
   render() {
     const {type, value} = this.props
     const {selectType, addItemField} = this.state
@@ -132,4 +143,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+};

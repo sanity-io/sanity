@@ -3,23 +3,26 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import styles from './styles/Email.css'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
-  },
+  };
 
-  getDefaultProps() {
-    return {
-      value: '',
-      onChange() {}
-    }
-  },
+  static defaultProps = {
+    value: '',
+    onChange() {}
+  };
 
   handleChange(event) {
     this.props.onChange({$set: event.target.value})
-  },
+  }
 
   render() {
     const {value, field} = this.props
@@ -32,4 +35,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+};

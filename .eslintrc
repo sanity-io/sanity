@@ -2,12 +2,7 @@
   "env": {
     "node": true
   },
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true,
-      "experimentalObjectRestSpread": true
-    }
-  },
+  "parser": "babel-eslint",
   "extends": [
     "bengler",
     "bengler/react",

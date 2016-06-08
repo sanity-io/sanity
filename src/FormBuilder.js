@@ -2,27 +2,25 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 import styles from './styles/FormBuilder.css'
 
-export const FormBuilder = React.createClass({
-  propTypes: {
+export class FormBuilder extends React.Component {
+  static propTypes = {
     type: PropTypes.object.isRequired,
     value: PropTypes.any,
     onChange: PropTypes.func
-  },
+  };
 
-  contextTypes: {
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
-  },
+  };
 
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  static defaultProps = {
+    onChange() {}
+  }
 
   resolveInputComponent(field, type) {
     return this.context.resolveInputComponent(field, type)
-  },
+  }
 
   render() {
     const {type, onChange, value} = this.props
@@ -43,4 +41,4 @@ export const FormBuilder = React.createClass({
       </div>
     )
   }
-})
+}

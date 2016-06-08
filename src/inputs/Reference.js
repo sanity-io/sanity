@@ -1,24 +1,22 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  static propTypes = {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     onChange: PropTypes.func
-  },
+  };
 
-  contextTypes: {
+  static defaultProps = {
+    onChange() {}
+  };
+
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  };
 
   render() {
     const {type} = this.props
@@ -28,4 +26,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+};

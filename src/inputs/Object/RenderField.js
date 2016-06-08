@@ -3,40 +3,45 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {getFieldType} from '../../utils/getFieldType'
 import React, {PropTypes} from 'react'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     fieldName: PropTypes.string.isRequired,
     value: PropTypes.any,
     onChange: PropTypes.func
-  },
+  };
 
-  contextTypes: {
+  static contextTypes = {
     resolveFieldComponent: PropTypes.func,
     resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
-  },
+  };
 
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps, this.props)
-  },
+  }
 
   handleChange(event) {
     const {fieldName, onChange} = this.props
     onChange(event, fieldName)
-  },
+  }
 
   resolveInputComponent(field, fieldType) {
     return this.context.resolveInputComponent(field, fieldType)
-  },
+  }
 
   resolveFieldComponent(field, fieldType) {
     return this.context.resolveFieldComponent(field, fieldType)
-  },
+  }
 
   getFieldType(field) {
     return getFieldType(this.context.schema, field)
-  },
+  }
 
   render() {
     const {value, field, fieldName} = this.props
@@ -68,4 +73,4 @@ export default React.createClass({
 
     return <FieldComponent input={input} field={field} fieldName={fieldName} type={fieldType} />
   }
-})
+};

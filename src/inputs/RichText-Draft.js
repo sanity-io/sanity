@@ -4,35 +4,36 @@ import {Editor, EditorState, ContentState, convertToRaw, convertFromRaw} from 'd
 import htmlToDraft from './draft-utils/htmlToDraft'
 import draftToHtml from './draft-utils/draftToHtml'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  static valueContainer = {
+    wrap(raw) {
+      return raw
+        ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(raw)))
+        : EditorState.createEmpty()
+    },
+    unwrap(editorState) {
+      return draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    }
+  };
+
+  static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.object,
     onChange: PropTypes.func
-  },
+  };
 
-  statics: {
-    valueContainer: {
-      wrap(raw) {
-        return raw
-          ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(raw)))
-          : EditorState.createEmpty()
-      },
-      unwrap(editorState) {
-        return draftToHtml(convertToRaw(editorState.getCurrentContent()))
-      }
-    }
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  static defaultProps = {
+    onChange() {}
+  };
 
   handleChange(editorState) {
     this.props.onChange(editorState)
-  },
+  }
 
   render() {
     const {field, value} = this.props
@@ -46,5 +47,4 @@ export default React.createClass({
       </div>
     )
   }
-
-})
+};

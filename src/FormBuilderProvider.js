@@ -1,26 +1,23 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from './FormBuilderPropTypes'
 
-export default React.createClass({
-
-  propTypes: {
+export default class extends React.Component {
+  static propTypes = {
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
     schema: PropTypes.object.isRequired
-  },
+  };
 
-  childContextTypes: {
+  static defaultProps = {
+    children: null
+  };
+
+  static childContextTypes = {
     resolveFieldComponent: PropTypes.func.isRequired,
     resolveInputComponent: PropTypes.func.isRequired,
     schema: PropTypes.object
-  },
-
-  getDefaultProps() {
-    return {
-      children: null
-    }
-  },
+  };
 
   getChildContext() {
     return {
@@ -28,9 +25,9 @@ export default React.createClass({
       resolveInputComponent: this.props.resolveInputComponent,
       resolveFieldComponent: this.props.resolveFieldComponent
     }
-  },
+  }
 
   render() {
     return this.props.children
   }
-})
+};

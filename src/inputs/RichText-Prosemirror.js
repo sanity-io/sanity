@@ -29,30 +29,30 @@ ProseMirrorValueContainer.wrap = function wrap(htmlValue) {
   return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
 }
 
-export default React.createClass({
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleProseMirrorTransform = this.handleProseMirrorTransform.bind(this);
+  }
 
-  propTypes: {
+  static valueContainer = ProseMirrorValueContainer;
+
+  static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     defaultValue: PropTypes.string,
     value: PropTypes.object,
     onChange: PropTypes.func
-  },
+  };
 
-  statics: {
-    valueContainer: ProseMirrorValueContainer
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  static defaultProps = {
+    onChange() {}
+  };
 
   componentWillMount() {
     this._prosemirror = new ProseMirror({
       menuBar: true
     })
-  },
+  }
 
   componentDidMount() {
     ReactDOM.findDOMNode(this).appendChild(this._prosemirror.wrapper)
@@ -61,18 +61,18 @@ export default React.createClass({
     }
 
     this._prosemirror.on('transform', this.handleProseMirrorTransform)
-  },
+  }
 
   componentDidUpdate({options: previous}) {
-  },
+  }
 
   componentWillUnmount() {
     this._prosemirror.off('change', this.handleProseMirrorTransform)
-  },
+  }
 
   setContent(doc) {
     this._prosemirror.setContent(doc)
-  },
+  }
 
   handleProseMirrorTransform(transform) {
     // todo: figure out how this patch should be
@@ -89,9 +89,9 @@ export default React.createClass({
         $steps: steps
       }
     })
-  },
+  }
 
   render() {
     return <div />
   }
-})
+};

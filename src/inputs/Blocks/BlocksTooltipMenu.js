@@ -2,11 +2,11 @@ import React, {PropTypes} from 'react'
 import BlocksTooltipMenuItem from './BlocksTooltipMenuItem'
 import {map} from 'lodash'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  static propTypes = {
     items: PropTypes.array,
     position: PropTypes.object,
-  },
+  };
 
   render() {
     const {position} = this.props
@@ -34,4 +34,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+};

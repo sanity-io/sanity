@@ -4,34 +4,36 @@ import RenderField from './RenderField'
 import ObjectContainer from '../../state/ObjectContainer'
 import Fieldset from '../../Fieldset'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleFieldChange = this.handleFieldChange.bind(this);
+    this.renderField = this.renderField.bind(this);
+  }
+
+  static valueContainer = ObjectContainer;
+
+  static propTypes = {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     onChange: PropTypes.func
-  },
+  };
 
-  statics: {
-    valueContainer: ObjectContainer
-  },
+  static defaultProps = {
+    onChange() {}
+  };
 
-  contextTypes: {
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  };
 
   handleFieldChange(event, fieldName) {
     const {onChange} = this.props
     const patch = {[fieldName]: event.patch}
     onChange({patch})
-  },
+  }
 
   renderField(field) {
     const {value} = this.props
@@ -46,20 +48,21 @@ export default React.createClass({
       />
     )
 
-  },
+  }
+
   renderFieldset(fieldset) {
     return (
       <Fieldset legend={fieldset.title}>
         {fieldset.fields.map(this.renderField)}
       </Fieldset>
     )
-  },
+  }
 
   renderFieldsets(fieldsets) {
     return fieldsets.map(fieldset => {
       return fieldset.lonely ? this.renderField(fieldset.field) : this.renderFieldset(fieldset)
     })
-  },
+  }
 
   render() {
     const {type, field} = this.props
@@ -69,4 +72,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+};

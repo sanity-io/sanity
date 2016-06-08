@@ -1,35 +1,33 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 
-export default React.createClass({
-  propTypes: {
+export default class extends React.Component {
+  static propTypes = {
     field: FormBuilderPropTypes.field,
     value: PropTypes.bool,
     onChange: PropTypes.func
-  },
+  };
 
-  contextTypes: {
+  static defaultProps = {
+    onChange() {}
+  };
+
+  static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
-  },
-
-  getDefaultProps() {
-    return {
-      onChange() {}
-    }
-  },
+  };
 
   handleChange(e) {
     this.props.onChange(e.target.checked)
-  },
+  }
 
   getSchemaType(typeName) {
     return this.context.schema.types[typeName]
-  },
+  }
 
   resolveInputComponent(field) {
     return this.context.resolveInputComponent(field)
-  },
+  }
 
   render() {
     const {value} = this.props
@@ -42,5 +40,4 @@ export default React.createClass({
       </div>
     )
   }
-
-})
+};
