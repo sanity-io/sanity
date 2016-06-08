@@ -1,7 +1,7 @@
 import {pick, omit} from 'lodash'
-import basicTypeBuilders from './types/builders'
+import basicTypeBuilders from '../types/builders'
 import debug from './debug'
-import {ifNotUniqueProp} from './types/utils'
+import {ifNotUniqueProp} from '../types/utils'
 
 function createSchemaTypeBuilder(schemaTypeDef) {
   // maybe warn if toplevel type definition is different from the passed in typeDef
