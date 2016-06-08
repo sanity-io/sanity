@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import BlocksTooltipMenuItem from './BlocksTooltipMenuItem'
 import {map} from 'lodash'
 
-export default class extends React.Component {
+export default class BlocksTooltipMenu extends React.Component {
   static propTypes = {
     items: PropTypes.array,
     position: PropTypes.object,
