@@ -1,5 +1,6 @@
 import React from 'react'
 import Demo from '../components/Demo'
+import styles from './styles/Main.css'
 import Debug from 'debug'
 import MyCustomLatLonInput from './MyCustomLatLonInput'
 
@@ -27,10 +28,10 @@ const [schemaName, typeName] = document.location.pathname.split('/').filter(Bool
 
 function renderSchemas() {
   return (
-    <ul className="schemas">
+    <ul className={styles.nav}>
       {VALID_SCHEMA_NAMES.map(name => (
-        <li key={name} className={name === schemaName && 'selected'}>
-          <a href={`/${name}`}>{name}</a>
+        <li key={name} className={name === typeName ? styles.navItemSelected : styles.navItem}>
+          <a className={styles.navItemLink} href={`/${name}`}>{name}</a>
         </li>
       ))}
     </ul>
@@ -40,12 +41,11 @@ function renderSchemas() {
 
 function renderTypes(compiledSchema) {
   const typeNames = Object.keys(compiledSchema.types)
-
   return (
-    <ul className="types">
+    <ul className={styles.nav}>
       {typeNames.map(name => (
-        <li className={name === typeName && 'selected'} key={name}>
-          <a href={`/${schemaName}/${name}`}>{name}</a>
+        <li className={name === typeName ? styles.navItemSelected : styles.navItem} key={name}>
+          <a className={styles.navItemLink} href={`/${schemaName}/${name}`}>{name}</a>
         </li>
       ))}
     </ul>
