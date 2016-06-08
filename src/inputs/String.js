@@ -1,7 +1,7 @@
 import ClearButton from '../buttons/ClearButton'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import {eq} from 'lodash'
+import equals from 'shallow-equals'
 import styles from './styles/String.css'
 
 
@@ -23,7 +23,7 @@ export default class extends React.Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return !eq(this.props, nextProps)
+    return !equals(this.props, nextProps)
   }
 
   handleChange(e) {

@@ -1,4 +1,5 @@
-import {eq} from 'lodash'
+import equals from 'shallow-equals'
+
 import React, {PropTypes} from 'react'
 
 export default class extends React.Component {
@@ -12,7 +13,7 @@ export default class extends React.Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return !eq(this.props, nextProps)
+    return !equals(this.props, nextProps)
   }
 
   render() {
