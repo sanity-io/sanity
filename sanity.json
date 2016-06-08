@@ -17,7 +17,11 @@
       "description": "Tools available for use within a Sanity configuration"
     },
     {
-      "name": "style:@sanity/base/theme",
+      "name": "style:@sanity/base/theme/variables",
+      "description": "Base theme variables for Sanity"
+    },
+    {
+      "name": "style:@sanity/base/theme/typography",
       "description": "Base theme variables for Sanity"
     },
     {
@@ -48,9 +52,14 @@
       "path": "./lib/components/DefaultRootComponent.js"
     },
     {
-      "implements": "style:@sanity/base/theme",
+      "implements": "style:@sanity/base/theme/variables",
       "srcPath": "./src/styles/variables.css",
       "path": "./lib/styles/variables.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/typography",
+      "srcPath": "./src/styles/typography.css",
+      "path": "./lib/styles/typography.css"
     },
     {
       "name": "datastore:@sanity/base/location",
