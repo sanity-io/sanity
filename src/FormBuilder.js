@@ -37,7 +37,12 @@ export class FormBuilder extends React.Component {
 
     return (
       <div className={styles.root}>
-        <FieldInput field={field} type={type} onChange={onChange} value={passUnwrapped ? value.unwrap() : value} />
+        <FieldInput
+          field={field}
+          type={type}
+          onChange={onChange}
+          value={passUnwrapped ? value.unwrap() : value}
+        />
       </div>
     )
   }

@@ -1,18 +1,18 @@
 import styles from './styles/Default.css'
 
 import React, {PropTypes} from 'react'
-import Field from '../Field.js'
+import DefaultFieldWrapper from './DefaultFieldWrapper'
 
 export default function DefaultField(props) {
-  const {input, field} = props
+  const {input} = props
   return (
-    <Field label={field.title}>
+    <DefaultFieldWrapper {...props}>
       <div className={styles.root}>
         <div className={styles.formControl}>
           {input}
         </div>
       </div>
-    </Field>
+    </DefaultFieldWrapper>
   )
 }
 

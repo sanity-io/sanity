@@ -11,7 +11,8 @@ export default class RenderField extends React.Component {
     field: FormBuilderPropTypes.field.isRequired,
     fieldName: PropTypes.string.isRequired,
     value: PropTypes.any,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    level: PropTypes.number
   };
 
   static contextTypes = {
@@ -47,7 +48,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, fieldName} = this.props
+    const {value, field, fieldName, level} = this.props
 
     const fieldType = this.getFieldType(field)
 
@@ -63,10 +64,15 @@ export default class RenderField extends React.Component {
 
     const FieldComponent = this.resolveFieldComponent(field, fieldType)
 
+    if (fieldType.type === 'object') {
+      console.log(FieldComponent)
+    }
+
     const passValue = value && value.constructor.passUnwrapped ? value.unwrap() : value
 
     const input = (
       <FieldInput
+        level={level + 1}
         value={passValue}
         field={field}
         type={fieldType}
@@ -74,6 +80,6 @@ export default class RenderField extends React.Component {
       />
     )
 
-    return <FieldComponent input={input} field={field} fieldName={fieldName} type={fieldType} />
+    return <FieldComponent level={level} input={input} field={field} fieldName={fieldName} type={fieldType} />
   }
 }

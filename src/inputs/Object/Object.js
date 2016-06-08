@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
-import Fieldset from '../../Fieldset'
+import Fieldset from '../../fields/Object/Fieldset'
 import equals from 'shallow-equals'
 
 export default class Obj extends React.Component {
@@ -14,11 +14,13 @@ export default class Obj extends React.Component {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    level: PropTypes.number
   };
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    level: 0
   };
 
   static contextTypes = {
@@ -42,7 +44,7 @@ export default class Obj extends React.Component {
     return !equals(this.props, nextProps)
   }
 
-  renderField(field) {
+  renderField(field, level) {
     const {value} = this.props
     const fieldValue = value && value.getFieldValue(field.name)
     return (
@@ -52,21 +54,24 @@ export default class Obj extends React.Component {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
+        level={level}
       />
     )
   }
 
   renderFieldset(fieldset) {
+    const {level} = this.props
     return (
-      <Fieldset legend={fieldset.title}>
-        {fieldset.fields.map(this.renderField)}
+      <Fieldset key={fieldset.name} legend={fieldset.title} level={level}>
+        {fieldset.fields.map(field => this.renderField(field, level + 1))}
       </Fieldset>
     )
   }
 
   renderFieldsets(fieldsets) {
+    const {level} = this.props
     return fieldsets.map(fieldset => {
-      return fieldset.lonely ? this.renderField(fieldset.field) : this.renderFieldset(fieldset)
+      return fieldset.lonely ? this.renderField(fieldset.field, level) : this.renderFieldset(fieldset)
     })
   }
 

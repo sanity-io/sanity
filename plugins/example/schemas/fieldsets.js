@@ -93,7 +93,7 @@ export default {
         },
         {
           name: 'street',
-          title: 'Address'
+          title: 'Street'
         }
       ],
       fields: [

@@ -1,12 +1,12 @@
 import styles from './styles/Object.css'
 
 import React, {PropTypes} from 'react'
-import Fieldset from '../Fieldset.js'
+import Fieldset from './Fieldset.js'
 
 export default function ObjectField(props) {
-  const {input, field} = props
+  const {input, field, level} = props
   return (
-    <Fieldset className={styles.root} legend={field.title || 'No legend is set'}>
+    <Fieldset level={level} className={styles.root} legend={field.title || 'No legend is set'}>
       <div className={styles.inner}>
         {input}
       </div>
@@ -16,6 +16,7 @@ export default function ObjectField(props) {
 
 ObjectField.propTypes = {
   input: PropTypes.node,
+  level: PropTypes.number,
   fieldName: PropTypes.string,
   field: PropTypes.shape({
     title: PropTypes.string

@@ -1,16 +1,16 @@
 import styles from './styles/Boolean.css'
 import React, {PropTypes} from 'react'
-import Field from '../Field.js'
+import DefaultFieldWrapper from './DefaultFieldWrapper'
 
 // Field component for boolean fields
 export default function BooleanField(props) {
   const {input, field} = props
   return (
-    <Field>
+    <DefaultFieldWrapper {...props}>
       <label>
         {input} {field.title}
       </label>
-    </Field>
+    </DefaultFieldWrapper>
   )
 }
 
