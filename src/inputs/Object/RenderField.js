@@ -1,9 +1,7 @@
 import equals from 'shallow-equals'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
-import {getFieldType} from './utils/getFieldType'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import {getFieldType} from '../../utils/getFieldType'
 import React, {PropTypes} from 'react'
-// import {resolveJSType} from './types/utils'
-import DefaultFieldRenderer from './field-renderers/Default'
 
 export default React.createClass({
   propTypes: {
@@ -14,8 +12,8 @@ export default React.createClass({
   },
 
   contextTypes: {
-    resolveFieldRenderer: PropTypes.func,
-    resolveFieldInput: PropTypes.func,
+    resolveFieldComponent: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   },
 
@@ -28,12 +26,12 @@ export default React.createClass({
     onChange(event, fieldName)
   },
 
-  resolveFieldInput(field, fieldType) {
-    return this.context.resolveFieldInput(field, fieldType)
+  resolveInputComponent(field, fieldType) {
+    return this.context.resolveInputComponent(field, fieldType)
   },
 
-  resolveFieldRenderer(field, fieldType) {
-    return this.context.resolveFieldRenderer(field, fieldType) || DefaultFieldRenderer
+  resolveFieldComponent(field, fieldType) {
+    return this.context.resolveFieldComponent(field, fieldType)
   },
 
   getFieldType(field) {
@@ -45,7 +43,7 @@ export default React.createClass({
 
     const fieldType = this.getFieldType(field)
 
-    const FieldInput = this.context.resolveFieldInput(field, fieldType)
+    const FieldInput = this.context.resolveInputComponent(field, fieldType)
 
     if (!FieldInput) {
       return (
@@ -55,7 +53,7 @@ export default React.createClass({
       )
     }
 
-    const FieldRenderer = this.resolveFieldRenderer(field, fieldType)
+    const FieldComponent = this.resolveFieldComponent(field, fieldType)
 
     const passValue = value && value.constructor.passUnwrapped ? value.unwrap() : value
 
@@ -68,6 +66,6 @@ export default React.createClass({
       />
     )
 
-    return <FieldRenderer input={input} field={field} fieldName={fieldName} type={fieldType} />
+    return <FieldComponent input={input} field={field} fieldName={fieldName} type={fieldType} />
   }
 })

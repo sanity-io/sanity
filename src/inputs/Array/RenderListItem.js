@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from './utils/getFieldType'
+import {getFieldType} from '../../utils/getFieldType'
 
 export default React.createClass({
   propTypes: {
@@ -12,7 +12,7 @@ export default React.createClass({
   },
 
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: FormBuilderPropTypes.schema
   },
 
@@ -41,8 +41,8 @@ export default React.createClass({
     onChange(event, index)
   },
 
-  resolveFieldInput(field, fieldType) {
-    return this.context.resolveFieldInput(field, fieldType)
+  resolveInputComponent(field, fieldType) {
+    return this.context.resolveInputComponent(field, fieldType)
   },
 
   getFieldType(field) {
@@ -54,7 +54,7 @@ export default React.createClass({
 
     const fieldType = this.getFieldType(field)
 
-    const FieldInput = this.context.resolveFieldInput(field, fieldType)
+    const FieldInput = this.context.resolveInputComponent(field, fieldType)
     if (!FieldInput) {
       return (
         <div>Field input not found for field of type "{field.type}"

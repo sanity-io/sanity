@@ -10,7 +10,7 @@ export default React.createClass({
   },
 
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   },
 

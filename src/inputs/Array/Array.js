@@ -1,10 +1,9 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import RenderListItem from '../RenderListItem'
-import ArrayContainer from '../state/ArrayContainer'
-import {createFieldValue} from '../state/FormBuilderState'
-import {resolveJSType} from '../types/utils'
-import {getFieldType} from '../utils/getFieldType'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import RenderListItem from './RenderListItem'
+import ArrayContainer from '../../state/ArrayContainer'
+import {createFieldValue} from '../../state/FormBuilderState'
+import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 
 export default React.createClass({
@@ -18,7 +17,7 @@ export default React.createClass({
     valueContainer: ArrayContainer
   },
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   },
 
@@ -47,7 +46,7 @@ export default React.createClass({
       field: field,
       schema: this.context.schema,
       // not too elegant atm.
-      resolveContainer: (_field, type) => this.context.resolveFieldInput(_field, type).valueContainer
+      resolveContainer: (_field, type) => this.context.resolveInputComponent(_field, type).valueContainer
     })
 
     this.setState({

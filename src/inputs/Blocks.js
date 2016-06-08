@@ -9,7 +9,7 @@ export default React.createClass({
   },
 
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   },
 
@@ -27,14 +27,14 @@ export default React.createClass({
     return this.context.schema.types[typeName]
   },
 
-  resolveFieldInput(field) {
-    return this.context.resolveFieldInput(field)
+  resolveInputComponent(field) {
+    return this.context.resolveInputComponent(field)
   },
 
   render() {
     const {value} = this.props
     const latlonDef = this.getSchemaType('latlon')
-    const LatLonFieldInput = this.resolveFieldInput(latlonDef)
+    const LatLonFieldInput = this.resolveInputComponent(latlonDef)
     return (
       <div>
         <pre>{JSON.stringify(this.props, null, 2)}</pre>

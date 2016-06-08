@@ -42,15 +42,15 @@ export default React.createClass({
 
   propTypes: {
     schema: PropTypes.object.isRequired,
-    resolveFieldInput: PropTypes.func.isRequired,
-    resolveFieldRenderer: PropTypes.func.isRequired,
+    resolveInputComponent: PropTypes.func.isRequired,
+    resolveFieldComponent: PropTypes.func.isRequired,
     type: PropTypes.object.isRequired
   },
 
   getInitialState() {
-    const {schema, type, resolveFieldInput} = this.props
+    const {schema, type, resolveInputComponent} = this.props
     const resolveContainer = (field, fieldType) => {
-      const input = resolveFieldInput(field, fieldType)
+      const input = resolveInputComponent(field, fieldType)
       return input.valueContainer
     }
     const value = restore(schema, type) || void 0
@@ -78,11 +78,11 @@ export default React.createClass({
   },
 
   clear() {
-    const {schema, type, resolveFieldInput} = this.props
+    const {schema, type, resolveInputComponent} = this.props
     const newValue = createFormBuilderState(void 0, {
       type: type,
       schema: schema,
-      resolveFieldInput
+      resolveInputComponent
     })
     this.setState({value: newValue})
   },
@@ -102,10 +102,10 @@ export default React.createClass({
 
   render() {
     const {value, saved, shouldInspect} = this.state
-    const {schema, type, resolveFieldInput, resolveFieldRenderer} = this.props
+    const {schema, type, resolveInputComponent, resolveFieldComponent} = this.props
 
     if (shouldInspect) {
-      console.log('CURRENT VALUE', value)
+      console.log('CURRENT VALUE', value) // eslint-disable-line no-console
     }
 
     return (
@@ -126,8 +126,8 @@ export default React.createClass({
           <h2>Generated form</h2>
 
           <FormBuilderProvider
-            resolveFieldInput={resolveFieldInput}
-            resolveFieldRenderer={resolveFieldRenderer}
+            resolveInputComponent={resolveInputComponent}
+            resolveFieldComponent={resolveFieldComponent}
             schema={schema}
           >
             <FormBuilder

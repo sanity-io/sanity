@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import RenderField from '../RenderField'
-import ObjectContainer from '../state/ObjectContainer'
-import Fieldset from '../Fieldset'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import RenderField from './RenderField'
+import ObjectContainer from '../../state/ObjectContainer'
+import Fieldset from '../../Fieldset'
 
 export default React.createClass({
   propTypes: {
@@ -17,7 +17,7 @@ export default React.createClass({
   },
 
   contextTypes: {
-    resolveFieldInput: PropTypes.func,
+    resolveInputComponent: PropTypes.func,
     schema: PropTypes.object
   },
 

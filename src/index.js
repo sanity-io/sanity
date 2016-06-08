@@ -1,18 +1,18 @@
-import Obj from './field-inputs/Object'
-import Arr from './field-inputs/Array'
-import Bool from './field-inputs/Boolean'
-import Num from './field-inputs/Number'
-import Blocks from './field-inputs/Blocks'
-import Email from './field-inputs/Email'
-import Url from './field-inputs/Url'
-import RichText from './field-inputs/RichText'
-import Reference from './field-inputs/Reference'
-import Str from './field-inputs/String'
+import Obj from './inputs/Object'
+import Arr from './inputs/Array'
+import Bool from './inputs/Boolean'
+import Num from './inputs/Number'
+import Blocks from './inputs/Blocks'
+import Email from './inputs/Email'
+import Url from './inputs/Url'
+import RichText from './inputs/RichText'
+import Reference from './inputs/Reference'
+import Str from './inputs/String'
 
-import BooleanFieldRenderer from './field-renderers/Boolean'
-import ObjectFieldRenderer from './field-renderers/Object'
+import BooleanField from './fields/Boolean'
+import ObjectField from './fields/Object'
 
-export const fieldInputs = {
+export const inputComponents = {
   object: Obj,
   array: Arr,
   boolean: Bool,
@@ -25,10 +25,12 @@ export const fieldInputs = {
   blocks: Blocks
 }
 
-export const fieldRenderers = {
-  boolean: BooleanFieldRenderer,
-  object: ObjectFieldRenderer
+export const fieldComponents = {
+  boolean: BooleanField,
+  object: ObjectField
 }
+
+export {default as DefaultField} from './fields/Default'
 
 export {createFormBuilderState} from './state/FormBuilderState'
 export {compile as compileSchema} from './compileSchema'

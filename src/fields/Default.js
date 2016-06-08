@@ -3,7 +3,7 @@ import styles from './styles/Default.css'
 import React, {PropTypes} from 'react'
 import Field from '../Field.js'
 
-export default function DefaultFieldRenderer(props) {
+export default function DefaultField(props) {
   const {input, field} = props
   return (
     <Field label={field.title}>
@@ -16,7 +16,7 @@ export default function DefaultFieldRenderer(props) {
   )
 }
 
-DefaultFieldRenderer.propTypes = {
+DefaultField.propTypes = {
   input: PropTypes.node,
   fieldName: PropTypes.string,
   field: PropTypes.shape({
