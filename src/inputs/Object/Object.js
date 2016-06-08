@@ -39,7 +39,6 @@ export default class Obj extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    console.log('Object update?', !equals(this.props, nextProps))
     return !equals(this.props, nextProps)
   }
 
