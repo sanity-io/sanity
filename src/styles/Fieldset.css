@@ -8,6 +8,11 @@
   border: 0;
   border-left: 2px solid #666;
   margin-bottom: 1rem;
+  & .root {
+    & .legend {
+      border: 5px solid red;
+    }
+  }
 }
 
 .level_1 {

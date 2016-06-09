@@ -10,7 +10,7 @@ export default function Fieldset(props) {
   }
 
   return (
-    <fieldset className={className}>
+    <fieldset className={styles.root}>
       <div className={styles.inner}>
         <div className={styles.nestingLevel}>Fieldset, nesting level {props.level}</div>
         <legend className={styles.legend}>{props.legend}</legend>
