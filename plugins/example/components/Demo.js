@@ -92,7 +92,7 @@ export default class Demo extends React.Component {
   save() {
     const {value} = this.state
     const {schema, type} = this.props
-    save(schema, type, value.unwrap())
+    save(schema, type, value.serialize())
     this.setState({saved: true})
   }
 
