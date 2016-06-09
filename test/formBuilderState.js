@@ -1,7 +1,7 @@
 import {test} from 'tap'
 import {createFormBuilderState} from '../src/state/FormBuilderState'
-import ObjectContainer from '../src/state/ObjectContainer'
-import ArrayContainer from '../src/state/ArrayContainer'
+import ObjectContainer from '../src/inputs/Object/ObjectContainer'
+import ArrayContainer from '../src/inputs/Array/ArrayContainer'
 import {compileSchema} from '../src'
 
 import schema from './fixtures/schema'
