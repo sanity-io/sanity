@@ -4,7 +4,7 @@ import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import Button from '../../buttons/Default'
 
-export default class RenderListItem extends React.Component {
+export default class ItemForm extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)

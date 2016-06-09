@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import RenderListItem from './RenderListItem'
+import ItemForm from './ItemForm'
+import ItemPreview from './ItemPreview'
 import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
-import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 import Button from '../../buttons/Default'
 import AddItem from './AddItem'
@@ -33,7 +33,7 @@ export default class Arr extends React.Component {
     super(props, context)
     this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
     this.handleItemChange = this.handleItemChange.bind(this)
-    this.handleEditItem = this.handleEditItem.bind(this)
+    this.handleItemEdit = this.handleItemEdit.bind(this)
     this.handleRemoveItem = this.handleRemoveItem.bind(this)
     this.handleClose = this.handleClose.bind(this)
 
@@ -105,7 +105,7 @@ export default class Arr extends React.Component {
     this.props.onChange({patch})
   }
 
-  handleEditItem(index) {
+  handleItemEdit(index) {
     this.setState({editIndex: index})
   }
 
@@ -114,7 +114,7 @@ export default class Arr extends React.Component {
     const itemField = this.getItemField(itemValue)
     return (
       <AddItem title={itemField.title}>
-        <RenderListItem
+        <ItemForm
           index={index}
           field={itemField}
           value={itemValue}
@@ -156,13 +156,11 @@ export default class Arr extends React.Component {
 
           return (
             <div key={i} className={styles.item}>
-              <Button type="button" onClick={() => this.handleEditItem(i)}>Edit</Button>
-
-              <RenderListItem
+              <ItemPreview
                 index={i}
                 field={itemField}
                 value={item}
-                onChange={this.handleItemChange}
+                onEdit={this.handleItemEdit}
                 onRemove={this.handleRemoveItem}
               />
             </div>

@@ -95,4 +95,8 @@ export default class ObjectContainer {
 
     return Object.keys(serialized).length ? Object.assign({$type: field.type}, serialized) : void 0
   }
+
+  toJSON() {
+    return this.serialize()
+  }
 }

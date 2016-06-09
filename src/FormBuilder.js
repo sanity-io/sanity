@@ -11,7 +11,7 @@ export class FormBuilder extends React.Component {
 
   static contextTypes = {
     resolveInputComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema
+    schema: FormBuilderPropTypes.schema,
   };
 
   static defaultProps = {

@@ -39,26 +39,6 @@ function save(schema, type, editorValue) {
 }
 
 export default class Demo extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    const {schema, type, resolveInputComponent} = props
-    const resolveContainer = (field, fieldType) => {
-      const input = resolveInputComponent(field, fieldType)
-      return input.valueContainer
-    }
-    const value = restore(schema, type) || void 0
-
-    this.state = {
-      value: createFormBuilderState(value, {
-        type: type,
-        schema: schema,
-        resolveContainer
-      }),
-      saved: false,
-      shouldInspect: false
-    }
-  }
 
   static propTypes = {
     schema: PropTypes.object.isRequired,
@@ -79,14 +59,37 @@ export default class Demo extends React.Component {
     })
   }
 
-  clear() {
+  constructor(props, context) {
+    super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+    const {schema, type} = props
+
+    const serialized = restore(schema, type) || void 0
+
+    this.state = {
+      value: this.createFormBuilderStateFrom(serialized),
+      saved: false,
+      shouldInspect: false
+    }
+  }
+
+  createFormBuilderStateFrom(serialized) {
     const {schema, type, resolveInputComponent} = this.props
-    const newValue = createFormBuilderState(void 0, {
+
+    const resolveContainer = (field, fieldType) => {
+      const input = resolveInputComponent(field, fieldType)
+      return input.valueContainer
+    }
+
+    return createFormBuilderState(serialized, {
       type: type,
       schema: schema,
-      resolveInputComponent
+      resolveContainer
     })
-    this.setState({value: newValue})
+  }
+
+  clear() {
+    this.setState({value: this.createFormBuilderStateFrom(undefined)})
   }
 
   save() {
@@ -130,6 +133,7 @@ export default class Demo extends React.Component {
           <FormBuilderProvider
             resolveInputComponent={resolveInputComponent}
             resolveFieldComponent={resolveFieldComponent}
+            resolvePreviewComponent={() => {}}
             schema={schema}
           >
             <FormBuilder

@@ -27,4 +27,8 @@ export default class DefaultContainer {
   serialize() {
     return this.value
   }
+
+  toJSON() {
+    return this.serialize()
+  }
 }

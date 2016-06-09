@@ -99,4 +99,8 @@ export default class ArrayContainer {
     }
     return this.map(val => val.serialize())
   }
+
+  toJSON() {
+    return this.serialize()
+  }
 }
