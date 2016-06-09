@@ -1,41 +1,61 @@
+@import 'style:@sanity/base/theme/variables';
+
 @use postcss-cssnext;
 
 .root {
   margin: 0;
   padding: 0;
   border: 0;
+  border-left: 2px solid #666;
+  margin-bottom: 1rem;
 }
 
 .level_1 {
   composes: root;
-  border-left: 1em solid #666;
 
   & .legend {
     font-size: 1em;
-    border: 20px solid red;
+    border: 0;
   }
-
 }
 
 .level_2 {
   composes: root;
-  border-left: 1em solid #333;
+  & .legend {
+    font-size: 1em;
+    border: 0;
+  }
 }
 
 .level_3 {
   composes: root;
-  border-left: 1em solid #000;
+
+  & .legend {
+    font-size: 1em;
+    border: 0;
+  }
 }
 
+.inner {
+  display: block;
+}
 
-.inner {}
-
-.content {}
+.content {
+  display: block;
+}
 
 .legend {
   font-size: 2em;
   display: block;
   width: 100%;
-  border-bottom: 2px solid black;
+  margin-left: 1rem;
+  /*border-bottom: 2px solid black;*/
+  font-weight: bold;
+}
+
+.nestingLevel {
+  float: right;
+  font-size: 0.7rem;
+  font-family: var(--font-family-monospace);
   font-weight: bold;
 }

@@ -1,7 +1,3 @@
 .root {
-
-}
-
-.inner {
-
+  composes: root from '../../../styles/Fieldset.css';
 }

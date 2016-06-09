@@ -7,7 +7,7 @@
 
 .textInput {
   composes: root;
-  font-size: 1.5em;
+  font-size: inherit;
   position: absolute;
   right: 0;
   top: 0;
@@ -16,9 +16,14 @@
   background-color: transparent;
   transition: all 0.1s linear;
   color: var(--clear-cross-color);
+  outline: none;
 
   &:hover {
     color: var(--clear-cross-color-hover);
     transform: scale(1.5);
+  }
+
+  &:active {
+    transform: scale(2);
   }
 }

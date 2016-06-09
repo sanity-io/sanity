@@ -1,5 +1,4 @@
 import styles from './styles/Fieldset.css'
-
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {
@@ -11,10 +10,13 @@ export default function Fieldset(props) {
   }
 
   return (
-    <fieldset className={className} style={{outline: '1px solid #ee00ee'}}>
+    <fieldset className={className}>
       <div className={styles.inner}>
-        <span style={{float: 'right'}}>[fieldset on nesting level {props.level}]</span>
+        <div className={styles.nestingLevel}>Fieldset, nesting level {props.level}</div>
         <legend className={styles.legend}>{props.legend}</legend>
+        <p className={styles.description}>
+          {props.description}
+        </p>
         <div className={styles.content}>
           {props.children}
         </div>
@@ -25,6 +27,7 @@ export default function Fieldset(props) {
 
 Fieldset.propTypes = {
   title: PropTypes.string,
+  description: PropTypes.string,
   legend: PropTypes.string,
   children: PropTypes.node,
   level: PropTypes.number

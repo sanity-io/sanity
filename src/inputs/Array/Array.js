@@ -6,6 +6,7 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
 import Button from '../../buttons/Default'
+import AddItem from './AddItem'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -105,11 +106,10 @@ export default class Arr extends React.Component {
 
   renderAddItemForm(addItemField) {
     return (
-      <div className={styles.addItemForm}>
-        <b>Add {addItemField.title}</b>
+      <AddItem title={addItemField.title}>
         <RenderListItem index={-1} field={addItemField} value={this.state.addItem} onChange={this.handleAddItemChange} />
         <Button type="button" onClick={this.handleOK}>OK</Button>
-      </div>
+      </AddItem>
     )
   }
 

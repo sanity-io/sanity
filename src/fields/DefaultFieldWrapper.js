@@ -12,7 +12,7 @@ export default function Field(props) {
   return (
     <div className={className}>
       <div className={styles.inner}>
-        <span style={{float: 'right'}}>[field on nesting level {props.level}]</span>
+        <div className={styles.nestingLevel}>Field, nesting level {props.level}</div>
         <label className={styles.label}>
           {props.field.title}
         </label>
