@@ -19,13 +19,9 @@ export default class DefaultContainer {
 
   validate() {
     const {field} = this.context
-
-    if (field.required && this.value === void 0) {
+    if (field.required && this.value === undefined) {
       return [{id: 'required'}]
     }
-
-    return void 0
-
   }
 
   serialize() {

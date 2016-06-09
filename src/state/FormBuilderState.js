@@ -7,7 +7,7 @@ export function createFieldValue(value, context) {
   const {schema, field, resolveContainer} = context
 
   if (!field) {
-    throw new Error('Missing field')
+    throw new Error(`Missing field for value ${value}`)
   }
 
   const fieldType = getFieldType(schema, field)

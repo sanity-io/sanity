@@ -24,7 +24,8 @@ export default {
         {
           name: 'lead',
           title: 'Lead',
-          type: 'text'
+          type: 'text',
+          required: true
         },
         {
           name: 'email',

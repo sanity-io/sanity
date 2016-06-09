@@ -9,13 +9,26 @@ import 'prosemirror/dist/inputrules/autoinput'
 import {parseFrom, serializeTo} from 'prosemirror/dist/format'
 import {defaultSchema, Node} from 'prosemirror/dist/model'
 
+const EMPTY_VALUE = defaultSchema.node('doc', null, defaultSchema.node('paragraph'))
+
 // Just a rudimentary value container for prosemirror-produced html. Not meant for production.
 class ProseMirrorValueContainer {
-  static deserialize(htmlValue) {
-    return new ProseMirrorValueContainer(parseFrom(defaultSchema, htmlValue || '', 'html'))
+  static deserialize(htmlValue, context) {
+    const doc = htmlValue ? parseFrom(defaultSchema, htmlValue, 'html') : EMPTY_VALUE
+    return new ProseMirrorValueContainer(doc, context)
   }
-  constructor(doc) {
+
+  constructor(doc, context) {
     this.doc = doc
+    this.context = context
+  }
+
+  validate() {
+    const {field} = this.context
+    // todo: figure out a more robust way of checking if document is empty
+    if (field.required && this.doc === EMPTY_VALUE) {
+      return [{id: 'required'}]
+    }
   }
 
   patch(patch) {
@@ -25,7 +38,7 @@ class ProseMirrorValueContainer {
       throw new Error('The only allowed patch operation are $setDoc and its value must be a new ProseMirror document')
     }
 
-    return new ProseMirrorValueContainer(patch.$setDoc)
+    return new ProseMirrorValueContainer(patch.$setDoc, this.context)
   }
 
   serialize() {

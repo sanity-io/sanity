@@ -29,8 +29,7 @@ export default class Str extends React.Component {
   }
 
   handleChange(e) {
-    const val = e.target.value.trim() || void 0
-    console.log(val)
+    const val = e.target.value || undefined
     this.props.onChange({patch: {$set: val}})
   }
 

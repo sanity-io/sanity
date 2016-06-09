@@ -6,7 +6,7 @@ export default class ArrayContainer {
 
   static deserialize(serializedArray, context) {
     if (!serializedArray) {
-      return new ArrayContainer(serializedArray, context)
+      return new ArrayContainer([], context)
     }
     const {field, schema, resolveContainer} = context
 
@@ -29,20 +29,29 @@ export default class ArrayContainer {
     this.value = value
   }
 
+  at(index) {
+    return this.value[index]
+  }
+
+
   map(mapFn) {
-    return this.value.map(mapFn)
+    return this.value && this.value.map(mapFn)
   }
 
   validate() {
     const {field} = this.context
 
-    if (field.required && this.value === void 0 || !Array.isArray(this.value) || this.value.length === 0) {
+    if (field.required && this.value.length === 0) {
       return {errors: [{id: 'required'}]}
     }
 
+    const itemValidations = this.map(item => item.validate())
+    if (itemValidations.length === 0) {
+      return void 0
+    }
     return {
       errors: [],
-      items: this.map(item => item.validate())
+      items: itemValidations
     }
   }
 
@@ -62,8 +71,18 @@ export default class ArrayContainer {
       return new ArrayContainer(nextVal, context)
     }
 
+    if (patch.hasOwnProperty('$splice')) {
+      patch.$splice.forEach(args => {
+        nextVal.splice(...args)
+      })
+      return new ArrayContainer(nextVal, context)
+    }
+
     Object.keys(patch).forEach(index => {
       if (isNaN(index)) {
+        if (String(index).startsWith('$')) {
+          throw new Error(`Method "${index}" not (yet) supported for arrays`)
+        }
         throw new Error(`When patching array elements, the indices must be numbers, got ${index}`)
       }
       if (!nextVal.hasOwnProperty(index)) {
@@ -75,6 +94,9 @@ export default class ArrayContainer {
   }
 
   serialize() {
-    return this.value.map(val => val.serialize())
+    if (this.value.length === 0) {
+      return void 0
+    }
+    return this.map(val => val.serialize())
   }
 }

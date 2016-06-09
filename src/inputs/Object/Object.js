@@ -46,7 +46,7 @@ export default class Obj extends React.Component {
 
   renderField(field, level) {
     const {value} = this.props
-    const fieldValue = value && value.getFieldValue(field.name)
+    const fieldValue = value.getFieldValue(field.name)
     return (
       <RenderField
         key={field.name}

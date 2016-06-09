@@ -8,23 +8,32 @@ const EMPTY_EDITORSTATE = EditorState.createEmpty()
 
 // This is a very simple example that passes editor state around. Not not meant for production, just as an example
 class DraftJSValueContainer {
-  static deserialize(rawValue) {
+  static deserialize(rawValue, context) {
     return new DraftJSValueContainer(
       rawValue
       ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(rawValue)))
-      : EMPTY_EDITORSTATE
+      : EMPTY_EDITORSTATE,
+      context
     )
+  }
+
+  constructor(editorState, context) {
+    this.editorState = editorState
+    this.context = context
   }
 
   patch(patch) {
     if (!patch.$setState || !(patch.$setState instanceof EditorState)) {
       throw new Error('The only allowed patch operation are $set and its value must be a new EditorState')
     }
-    return new DraftJSValueContainer(patch.$setState)
+    return new DraftJSValueContainer(patch.$setState, this.context)
   }
 
-  constructor(editorState) {
-    this.editorState = editorState
+  validate() {
+    const {field} = this.context
+    if (field.required && !this.editorState.getCurrentContent().hasText()) {
+      return [{id: 'required'}]
+    }
   }
 
   serialize() {

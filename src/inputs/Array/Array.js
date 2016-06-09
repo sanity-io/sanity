@@ -32,14 +32,15 @@ export default class Arr extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
-    this.handleAddItemChange = this.handleAddItemChange.bind(this)
     this.handleItemChange = this.handleItemChange.bind(this)
-    this.handleOK = this.handleOK.bind(this)
+    this.handleEditItem = this.handleEditItem.bind(this)
+    this.handleRemoveItem = this.handleRemoveItem.bind(this)
+    this.handleClose = this.handleClose.bind(this)
 
     this.state = {
-      selecType: false,
+      selectType: false,
       addItemField: null,
-      addItem: void 0
+      editIndex: -1
     }
   }
 
@@ -59,14 +60,20 @@ export default class Arr extends React.Component {
       resolveContainer: (_field, type) => this.context.resolveInputComponent(_field, type).valueContainer
     })
 
+    this.props.onChange({
+      patch: {$unshift: [addItemValue]}
+    })
+
     this.setState({
       selectType: false,
-      addItemField: field,
-      addItem: addItemValue
+      editIndex: 0
     })
   }
 
   handleRemoveItem(index) {
+    if (index === this.state.editIndex) {
+      this.setState({editIndex: -1})
+    }
     this.props.onChange({
       patch: {
         $splice: [[index, 1]]
@@ -74,10 +81,8 @@ export default class Arr extends React.Component {
     })
   }
 
-  handleOK() {
-    const itemValue = this.state.addItem
-    this.setState({selectType: false, addItemField: null, addItem: void 0})
-    this.props.onChange({patch: {$unshift: [itemValue]}})
+  handleClose() {
+    this.setState({editIndex: -1})
   }
 
   renderSelectType() {
@@ -95,43 +100,55 @@ export default class Arr extends React.Component {
     })
   }
 
-  handleAddItemChange(event) {
-    this.setState({addItem: this.state.addItem.patch(event.patch)})
-  }
-
   handleItemChange(event, index) {
     const patch = {[index]: event.patch}
     this.props.onChange({patch})
   }
 
-  renderAddItemForm(addItemField) {
+  handleEditItem(index) {
+    this.setState({editIndex: index})
+  }
+
+  renderEditItemForm(index) {
+    const itemValue = this.props.value.at(index)
+    const itemField = this.getItemField(itemValue)
     return (
-      <AddItem title={addItemField.title}>
-        <RenderListItem index={-1} field={addItemField} value={this.state.addItem} onChange={this.handleAddItemChange} />
-        <Button type="button" onClick={this.handleOK}>OK</Button>
+      <AddItem title={itemField.title}>
+        <RenderListItem
+          index={index}
+          field={itemField}
+          value={itemValue}
+          onChange={this.handleItemChange}
+          onRemove={this.handleRemoveItem}
+        />
+        <Button type="button" onClick={this.handleClose}>Close</Button>
       </AddItem>
     )
   }
 
+  getItemField(item) {
+    const {type} = this.props
+    return type.of.find(ofType => ofType.type === item.context.field.type)
+  }
+
   render() {
     const {type, value} = this.props
-    const {selectType, addItemField} = this.state
+    const {selectType, editIndex} = this.state
     return (
       <div className={styles.array}>
         <Button type="button" onClick={this.handleAddBtnClick}>+ add</Button>
         {selectType && this.renderSelectType()}
-        {addItemField && this.renderAddItemForm(addItemField)}
+        {editIndex > -1 && this.renderEditItemForm(editIndex)}
         {value && value.map((item, i) => {
-          const itemValue = item.serialize()
-          const itemType = (itemValue && itemValue.$type) || resolveJSType(itemValue)
-          // find type in of
+          if (editIndex === i) {
+            return null
+          }
+          const itemField = this.getItemField(item)
 
-          const typeFromField = type.of.find(ofType => ofType.type === itemType)
-
-          if (!typeFromField) {
+          if (!itemField) {
             return (
               <div>
-                <p>Invalid type: <pre>{JSON.stringify(itemType)}</pre></p>
+                <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
                 <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
               </div>
             )
@@ -139,7 +156,15 @@ export default class Arr extends React.Component {
 
           return (
             <div key={i} className={styles.item}>
-              <RenderListItem index={i} field={typeFromField} value={item} onChange={this.handleItemChange} />
+              <Button type="button" onClick={() => this.handleEditItem(i)}>Edit</Button>
+
+              <RenderListItem
+                index={i}
+                field={itemField}
+                value={item}
+                onChange={this.handleItemChange}
+                onRemove={this.handleRemoveItem}
+              />
             </div>
           )
         })}

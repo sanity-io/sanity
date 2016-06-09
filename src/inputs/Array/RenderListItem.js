@@ -8,13 +8,15 @@ export default class RenderListItem extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
+    this.handleRemove = this.handleRemove.bind(this)
   }
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     index: PropTypes.number.isRequired,
     value: PropTypes.any,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onRemove: PropTypes.func
   };
 
   static contextTypes = {
@@ -33,7 +35,7 @@ export default class RenderListItem extends React.Component {
         <Button
           type="button"
           title="delete"
-          onClick={() => this.handleChange()}
+          onClick={this.handleRemove}
         >
           - Remove
         </Button>
@@ -45,6 +47,11 @@ export default class RenderListItem extends React.Component {
   handleChange(event) {
     const {index, onChange} = this.props
     onChange(event, index)
+  }
+
+  handleRemove() {
+    const {index, onRemove} = this.props
+    onRemove(index)
   }
 
   resolveInputComponent(field, fieldType) {

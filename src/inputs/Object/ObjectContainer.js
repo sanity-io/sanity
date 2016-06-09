@@ -4,20 +4,13 @@ import {getFieldType} from '../../utils/getFieldType'
 
 export default class ObjectContainer {
 
-  static deserialize(serialized, context) {
-    if (!serialized) {
-      return new ObjectContainer(serialized, context)
-    }
+  static deserialize(serialized = {}, context) {
     const {field, schema, resolveContainer} = context
     const type = getFieldType(schema, field)
     const deserialized = {$type: field.type}
 
-    type.fields.forEach(fieldName => {
-      if (serialized[fieldName] === void 0) {
-        return
-      }
-      const fieldDef = type.fields[fieldName]
-      deserialized[fieldName] = createFieldValue(serialized[fieldName], {field: fieldDef, schema, resolveContainer})
+    type.fields.forEach(fieldDef => {
+      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveContainer})
     })
     return new ObjectContainer(deserialized, context)
   }
@@ -28,7 +21,7 @@ export default class ObjectContainer {
   }
 
   getFieldValue(fieldName) {
-    return this.value ? this.value[fieldName] : void 0
+    return this.value[fieldName]
   }
 
   patch(patch) {
@@ -72,16 +65,15 @@ export default class ObjectContainer {
 
     type.fields.forEach(typeField => {
       const fieldValue = this.getFieldValue(typeField.name)
-      console.log('required? %s', typeField.name, typeField.required)
-      console.log(typeField.required && fieldValue === void 0)
-      if (typeField.required && fieldValue === void 0) {
-        fieldValidation[typeField.name] = {errors: [{id: 'required'}]}
-        return
-      } else if (fieldValue === void 0) {
-        return
+      const validation = fieldValue.validate()
+      if (validation) {
+        fieldValidation[typeField.name] = validation
       }
-      fieldValidation[typeField.name] = fieldValue.validate()
     })
+
+    if (Object.keys(fieldValidation).length === 0) {
+      return void 0
+    }
 
     return {
       errors: [],
@@ -90,22 +82,17 @@ export default class ObjectContainer {
   }
 
   serialize() {
-    if (!this.value) {
-      return this.value
-    }
-    const result = Object.assign(Object.create(null), {
-      $type: this.context.field.type
-    })
+    const {field, schema} = this.context
+    const type = getFieldType(schema, field)
 
-    Object.keys(this.value).forEach(fieldName => {
-      if (fieldName === '$type') {
-        return
+    const serialized = type.fields.reduce((acc, typeField) => {
+      const serializedFieldValue = this.getFieldValue(typeField.name).serialize()
+      if (serializedFieldValue !== void 0) {
+        acc[typeField.name] = serializedFieldValue
       }
-      const fieldVal = this.value[fieldName].serialize()
-      if (fieldVal !== void 0) {
-        result[fieldName] = fieldVal
-      }
-    })
-    return result
+      return acc
+    }, Object.create(null))
+
+    return Object.keys(serialized).length ? Object.assign({$type: field.type}, serialized) : void 0
   }
 }
