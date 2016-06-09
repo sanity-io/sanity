@@ -1,0 +1,31 @@
+/* remove */
+.header {
+}
+
+.nav {
+  list-style: none;
+  padding: 0;
+}
+
+.schemas {
+  composes: nav;
+}
+.types {
+  composes: nav;
+}
+
+.navItem {
+  display: inline-block;
+}
+
+.navItemSelected {
+  composes: navItem;
+  outline: 1px solid #aaa;
+  background-color: #e0e0e0;
+}
+
+.navItemLink {
+  padding: 5px;
+  display: inline-block;
+}
+
