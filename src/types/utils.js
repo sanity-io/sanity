@@ -30,7 +30,7 @@ export function createTypeBuilder(typeDescriptor) {
         console.error(validation.error)
       })
     }
-    const pickedOptions = pick(schemaType, ['name', 'primitive'].concat(Object.keys(typeDescriptor.options)))
+    const pickedOptions = pick(schemaType, ['name', 'primitive', 'required'].concat(Object.keys(typeDescriptor.options)))
 
     const options = Object.assign({}, typeDescriptor.defaultOptions, pickedOptions)
 

@@ -59,6 +59,36 @@ export default class ObjectContainer {
     return new ObjectContainer(newVal, context)
   }
 
+  validate() {
+    const {field, schema} = this.context
+
+    if (field.required && this.value === void 0) {
+      return {errors: [{id: 'required'}]}
+    }
+
+    const type = getFieldType(schema, field)
+
+    const fieldValidation = {}
+
+    type.fields.forEach(typeField => {
+      const fieldValue = this.getFieldValue(typeField.name)
+      console.log('required? %s', typeField.name, typeField.required)
+      console.log(typeField.required && fieldValue === void 0)
+      if (typeField.required && fieldValue === void 0) {
+        fieldValidation[typeField.name] = {errors: [{id: 'required'}]}
+        return
+      } else if (fieldValue === void 0) {
+        return
+      }
+      fieldValidation[typeField.name] = fieldValue.validate()
+    })
+
+    return {
+      errors: [],
+      fields: fieldValidation
+    }
+  }
+
   serialize() {
     if (!this.value) {
       return this.value

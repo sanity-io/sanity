@@ -29,7 +29,9 @@ export default class Str extends React.Component {
   }
 
   handleChange(e) {
-    this.props.onChange({patch: {$set: e.target.value}})
+    const val = e.target.value.trim() || void 0
+    console.log(val)
+    this.props.onChange({patch: {$set: val}})
   }
 
   render() {

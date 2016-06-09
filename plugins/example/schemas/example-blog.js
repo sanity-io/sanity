@@ -4,12 +4,12 @@ export default {
     {
       name: 'blogpost',
       type: 'object',
-      displayField: 'author',
       fields: [
         {
           name: 'title',
           title: 'Title',
-          type: 'string'
+          type: 'string',
+          required: true
         },
         {
           name: 'priority',
@@ -54,7 +54,8 @@ export default {
             {
               type: 'author'
             }
-          ]
+          ],
+          required: true
         }
       ]
     },
@@ -65,12 +66,14 @@ export default {
         {
           name: 'lat',
           title: 'Latitude',
-          type: 'number'
+          type: 'number',
+          required: true
         },
         {
           name: 'lon',
           title: 'Longitude',
-          type: 'number'
+          type: 'number',
+          required: true
         }
       ]
     },

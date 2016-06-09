@@ -17,6 +17,17 @@ export default class DefaultContainer {
     throw new Error(`Only $set is supported by default value container, got: ${JSON.stringify(patch)}`)
   }
 
+  validate() {
+    const {field} = this.context
+
+    if (field.required && this.value === void 0) {
+      return [{id: 'required'}]
+    }
+
+    return void 0
+
+  }
+
   serialize() {
     return this.value
   }

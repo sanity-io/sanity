@@ -70,12 +70,12 @@ export default class Demo extends React.Component {
   handleChange(event) {
     const {value} = this.state
     const nextValue = value.patch(event.patch)
-    // const validation = nextValue.validate()
+    const validation = nextValue.validate()
     this.setState({
       shouldInspect: false,
       saved: false,
       value: nextValue,
-      // validation: validation
+      validation: validation
     })
   }
 
@@ -103,7 +103,7 @@ export default class Demo extends React.Component {
   }
 
   render() {
-    const {value, saved, shouldInspect} = this.state
+    const {value, saved, validation, shouldInspect} = this.state
     const {schema, type, resolveInputComponent, resolveFieldComponent} = this.props
 
     if (shouldInspect) {
@@ -143,6 +143,9 @@ export default class Demo extends React.Component {
 
         <h2>Parsed type</h2>
         <pre>{JSON.stringify(type, null, 2)}</pre>
+
+        <h2>Validation</h2>
+        <pre>{JSON.stringify(validation, null, 2)}</pre>
       </div>
     )
   }

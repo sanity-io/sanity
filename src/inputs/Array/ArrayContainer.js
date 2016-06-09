@@ -33,11 +33,24 @@ export default class ArrayContainer {
     return this.value.map(mapFn)
   }
 
+  validate() {
+    const {field} = this.context
+
+    if (field.required && this.value === void 0 || !Array.isArray(this.value) || this.value.length === 0) {
+      return {errors: [{id: 'required'}]}
+    }
+
+    return {
+      errors: [],
+      items: this.map(item => item.validate())
+    }
+  }
+
   patch(patch) {
     const {value, context} = this
 
     if (patch.hasOwnProperty('$set')) {
-      return ArrayContainer.wrap(patch.$set, context)
+      return ArrayContainer.deserialize(patch.$set, context)
     }
 
     const nextVal = (value || []).concat()
