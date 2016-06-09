@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
+import {capitalize} from 'lodash'
 import Button from '../../buttons/Default'
 import FallbackPreviewComponent from './FallbackPreviewComponent'
 
@@ -77,6 +78,7 @@ export default class ItemPreview extends React.Component {
     return (
       <div>
         {this.renderButtons()}
+        <h3>{capitalize(field.title || fieldType.title || fieldType.name)}:</h3>
         <PreviewComponent
           value={passSerialized ? value.serialize() : value}
           field={field}
