@@ -1,0 +1,15 @@
+.root {
+  composes: root from 'style:@sanity/base/theme/button';
+}
+
+.active {
+
+}
+
+.pressed {
+
+}
+
+.danger {
+
+}

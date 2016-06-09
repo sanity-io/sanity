@@ -1,5 +1,6 @@
 @use postcss-cssnext;
 
 .root {
-  
+  max-width: 40em;
+  margin: 0 auto;
 }

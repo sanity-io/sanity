@@ -3,8 +3,15 @@ import styles from './styles/Fieldset.css'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {
+
+  let className = styles.root
+
+  if (props.level > 0) {
+    className = styles[`level_${props.level}`]
+  }
+
   return (
-    <fieldset className={styles.root} style={{outline: '1px solid #ee00ee'}}>
+    <fieldset className={className} style={{outline: '1px solid #ee00ee'}}>
       <div className={styles.inner}>
         <span style={{float: 'right'}}>[fieldset on nesting level {props.level}]</span>
         <legend className={styles.legend}>{props.legend}</legend>

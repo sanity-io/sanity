@@ -5,6 +5,7 @@ import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/Array.css'
+import Button from '../../buttons/Default'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -82,13 +83,13 @@ export default class Arr extends React.Component {
     const {type} = this.props
     return type.of.map(field => {
       return (
-        <button
+        <Button
           key={field.type}
           onClick={() => this.handleAddItem(field)}
           type="button"
         >
           {field.title || field.type}
-        </button>
+        </Button>
       )
     })
   }
@@ -107,7 +108,7 @@ export default class Arr extends React.Component {
       <div className={styles.addItemForm}>
         <b>Add {addItemField.title}</b>
         <RenderListItem index={-1} field={addItemField} value={this.state.addItem} onChange={this.handleAddItemChange} />
-        <button type="button" onClick={this.handleOK}>OK</button>
+        <Button type="button" onClick={this.handleOK}>OK</Button>
       </div>
     )
   }
@@ -117,7 +118,7 @@ export default class Arr extends React.Component {
     const {selectType, addItemField} = this.state
     return (
       <div className={styles.array}>
-        <button type="button" onClick={this.handleAddBtnClick}>+ add</button>
+        <Button type="button" onClick={this.handleAddBtnClick}>+ add</Button>
         {selectType && this.renderSelectType()}
         {addItemField && this.renderAddItemForm(addItemField)}
         {value && value.map((item, i) => {

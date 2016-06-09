@@ -5,7 +5,6 @@
   margin-bottom: 1em;
   box-sizing: border-box;
   font-size: 1em;
-  overflow: hidden;
   max-width: 100%;
   background-color: #fafafa;
   padding: 1em;
@@ -15,6 +14,22 @@
     border: 1px dotted #333;
   }
 }
+
+.level_1 {
+  composes: root;
+  border-left: 1em solid #660;
+}
+
+.level_2 {
+  composes: root;
+  border-left: 1em solid #330;
+}
+
+.level_3 {
+  composes: root;
+  border-left: 1em solid #000;
+}
+
 
 .label {
   font-weight: bold;

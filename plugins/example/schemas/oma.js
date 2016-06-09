@@ -29,6 +29,16 @@ export default {
     {
       "name": "project",
       "type": "object",
+      "fieldsets": [
+        {
+          name: "hero",
+          title: "Hero"
+        },
+        {
+          name: "description",
+          title: "Description"
+        }
+      ],
       "fields": [
         {
           "name": "title",
@@ -44,6 +54,7 @@ export default {
         },
         {
           "name": "mainImage",
+          "fieldset": "hero",
           "type": "reference",
           "title": "Hero Image",
           "required": false,
@@ -56,12 +67,14 @@ export default {
         },
         {
           "name": "mainMediaURL",
+          "fieldset": "hero",
           "type": "string",
           "title": "Hero Video",
           "required": false
         },
         {
           "name": "mainImageVertical",
+          "fieldset": "hero",
           "type": "reference",
           "title": "Hero Image Vertical",
           "required": false,
@@ -74,12 +87,14 @@ export default {
         },
         {
           "name": "description",
+          "fieldset": "description",
           "type": "string",
           "title": "Description",
           "required": false
         },
         {
           "name": "extendedDescription",
+          "fieldset": "description",
           "type": "string",
           "title": "Extended description",
           "required": false

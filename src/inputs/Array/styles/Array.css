@@ -9,3 +9,10 @@
 .item {
   border: 3px solid blue;
 }
+
+.addItemForm {
+  border: 10px solid red;
+  margin-left: -2em;
+  margin-right: -2em;
+  box-shadow: 0 0 50px #000;
+}

@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
+import Button from '../../buttons/Default'
 
 export default class RenderListItem extends React.Component {
   constructor(props, context) {
@@ -29,13 +30,13 @@ export default class RenderListItem extends React.Component {
     const {index} = this.props
     return (
       <div key={index}>
-        <button
+        <Button
           type="button"
           title="delete"
           onClick={() => this.handleChange()}
         >
           - Remove
-        </button>
+        </Button>
         {el}
       </div>
     )
