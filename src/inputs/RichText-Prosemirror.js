@@ -80,9 +80,11 @@ export default class RichTextProsemirror extends React.Component {
     this._prosemirror.on('transform', this.handleProseMirrorTransform)
   }
 
-  componentDidUpdate({options: previous}) {
+  componentDidUpdate(prevProps) {
+    if (this.props.value.doc !== this._prosemirror.doc) {
+      this._prosemirror.setDoc(this.props.value.doc)
+    }
   }
-
   componentWillUnmount() {
     this._prosemirror.off('change', this.handleProseMirrorTransform)
   }
