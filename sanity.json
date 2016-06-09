@@ -25,6 +25,10 @@
       "description": "Base theme typography for Sanity"
     },
     {
+      "name": "style:@sanity/base/theme/button",
+      "description": "Base theme button for Sanity"
+    },
+    {
       "name": "locale:@sanity/base/locale-messages",
       "description": "Messages across all known locales"
     },
@@ -60,6 +64,11 @@
       "implements": "style:@sanity/base/theme/typography",
       "srcPath": "./src/styles/typography.css",
       "path": "./lib/styles/typography.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/button",
+      "srcPath": "./src/styles/button.css",
+      "path": "./lib/styles/button.css"
     },
     {
       "name": "datastore:@sanity/base/location",

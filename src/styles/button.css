@@ -1,0 +1,20 @@
+.root {
+  display: block;
+  text-transform: uppercase;
+  background-color: #222;
+  color: #fff;
+  border: 0;
+  padding: .8em 1em;
+}
+
+.button {
+
+}
+
+.button-success {
+
+}
+
+.button-negative {
+
+}
