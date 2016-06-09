@@ -1,4 +1,4 @@
-@import "./variables.css";
+@import "style:@sanity/base/theme/variables";
 
 .base {
   font-size: 100%;
