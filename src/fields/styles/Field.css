@@ -7,7 +7,12 @@
   max-width: 100%;
   padding: 1em;
   border: 1px solid transparent;
-  /*background-color: var(--gray-lighter);*/
+  background-color: var(--gray-lighter);
+}
+
+.inner {
+  display: flex;
+  flex-direction: row;
 }
 
 .level_1 {
@@ -23,12 +28,17 @@
 }
 
 .label {
-  font-weight: bold;
+  width: 8em;
+  text-align: left;
+  padding: .25em 0;
+}
+
+.content {
+  flex-grow: 1;
 }
 
 .title {
-  font-size: 2em;
-  font-weight: bold;
+  border: 10px solid red;
 }
 
 .nestingLevel {

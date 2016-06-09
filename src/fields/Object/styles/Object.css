@@ -1,3 +1,3 @@
 .root {
-  /* This is the object wrapper */
+  /*composes: root from '../../../styles/Fieldset.css';*/
 }

@@ -11,12 +11,17 @@ export default function Field(props) {
 
   return (
     <div className={className}>
+      <div className={styles.nestingLevel}>Field, nesting level {props.level}</div>
       <div className={styles.inner}>
-        <div className={styles.nestingLevel}>Field, nesting level {props.level}</div>
+
         <label className={styles.label}>
           {props.field.title}
         </label>
-        {props.children}
+
+        <div className={styles.content}>
+          {props.children}
+        </div>
+
       </div>
     </div>
   )

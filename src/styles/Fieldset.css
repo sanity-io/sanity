@@ -6,11 +6,11 @@
   margin: 0;
   padding: 0;
   border: 0;
-  border-left: 2px solid #666;
   margin-bottom: 1rem;
   & .root {
+    text-transform: none;
     & .legend {
-      border: 5px solid red;
+      font-size: 2em;
     }
   }
 }
@@ -53,9 +53,8 @@
   font-size: 2em;
   display: block;
   width: 100%;
-  margin-left: 1rem;
-  /*border-bottom: 2px solid black;*/
   font-weight: bold;
+  text-transform: uppercase;
 }
 
 .nestingLevel {
