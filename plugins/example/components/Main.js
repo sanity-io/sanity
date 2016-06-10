@@ -67,6 +67,9 @@ function renderDemo(compiledSchema) {
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
     }
+    if (field.type === 'text' && field.format === 'html') {
+      return schemaFieldComponents.richtext
+    }
     return schemaFieldComponents[field.type]
   }
   function resolveFieldComponent(field, type) {

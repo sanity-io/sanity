@@ -8,6 +8,7 @@ import Url from './inputs/Url'
 import Text from './inputs/Text'
 import Reference from './inputs/Reference'
 import Str from './inputs/String'
+import RichText from './inputs/RichText'
 
 import BooleanField from './fields/Boolean'
 import ObjectField from './fields/Object'
@@ -22,7 +23,8 @@ export const inputComponents = {
   reference: Reference,
   url: Url,
   string: Str,
-  blocks: Blocks
+  blocks: Blocks,
+  richtext: RichText
 }
 
 export const fieldComponents = {

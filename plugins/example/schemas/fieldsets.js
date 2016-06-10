@@ -46,7 +46,8 @@ export default {
         {
           name: 'lead',
           title: 'Lead',
-          type: 'text'
+          type: 'text',
+          format: 'html'
         },
         {
           name: 'check-one',

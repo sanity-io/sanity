@@ -25,6 +25,7 @@ export default {
           name: 'lead',
           title: 'Lead',
           type: 'text',
+          format: 'html',
           required: true
         },
         {

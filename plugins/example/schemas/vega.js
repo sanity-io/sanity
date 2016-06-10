@@ -270,6 +270,7 @@ export default {
         {
           name: 'ingress',
           type: 'text',
+          format: 'html',
           title: 'Ingress',
           validates: {
             maxLength: 10
