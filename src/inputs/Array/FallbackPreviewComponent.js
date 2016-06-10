@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {resolveJSType} from "../../types/utils";
+import {resolveJSType} from '../../types/utils'
 
 function renderPrimitive(value) {
   return value
@@ -18,6 +18,7 @@ function renderObject(value) {
     .map(key => {
       return `${key}: ${render(value[key])}`
     })
+    .join('\n')
 }
 
 function renderArray(array) {

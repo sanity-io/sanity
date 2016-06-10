@@ -28,6 +28,10 @@ export default class DefaultContainer {
     return this.value
   }
 
+  isEmpty() {
+    return this.value === undefined
+  }
+
   toJSON() {
     return this.serialize()
   }

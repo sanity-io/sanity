@@ -6,7 +6,7 @@ import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
 import styles from './styles/Array.css'
 import Button from '../../buttons/Default'
-import AddItem from './AddItem'
+import EditItem from './AddItem'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -82,6 +82,11 @@ export default class Arr extends React.Component {
   }
 
   handleClose() {
+    const {editIndex} = this.state
+    const itemValue = this.props.value.at(editIndex)
+    if (itemValue.isEmpty()) {
+      this.handleRemoveItem(editIndex)
+    }
     this.setState({editIndex: -1})
   }
 
@@ -113,7 +118,7 @@ export default class Arr extends React.Component {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
     return (
-      <AddItem title={itemField.title}>
+      <EditItem title={itemField.title}>
         <ItemForm
           index={index}
           field={itemField}
@@ -122,7 +127,7 @@ export default class Arr extends React.Component {
           onRemove={this.handleRemoveItem}
         />
         <Button type="button" onClick={this.handleClose}>Close</Button>
-      </AddItem>
+      </EditItem>
     )
   }
 

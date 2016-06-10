@@ -33,6 +33,9 @@ export default class ArrayContainer {
     return this.value[index]
   }
 
+  indexOf(value) {
+    return this.value.indexOf(value)
+  }
 
   map(mapFn) {
     return this.value && this.value.map(mapFn)
@@ -98,6 +101,10 @@ export default class ArrayContainer {
       return void 0
     }
     return this.map(val => val.serialize())
+  }
+
+  isEmpty() {
+    return this.value.every(value => value.isEmpty())
   }
 
   toJSON() {

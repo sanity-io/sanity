@@ -25,10 +25,14 @@ class ProseMirrorValueContainer {
 
   validate() {
     const {field} = this.context
-    // todo: figure out a more robust way of checking if document is empty
-    if (field.required && this.doc === EMPTY_VALUE) {
+    if (field.required && this.isEmpty()) {
       return [{id: 'required'}]
     }
+  }
+
+  isEmpty() {
+    // this is not very nice. figure out a more robust way of checking if document is empty
+    return this.doc === EMPTY_VALUE || serializeTo(this.doc, 'text') === ''
   }
 
   patch(patch) {
@@ -42,7 +46,7 @@ class ProseMirrorValueContainer {
   }
 
   serialize() {
-    return serializeTo(this.doc, 'html')
+    return this.isEmpty() ? undefined : serializeTo(this.doc, 'html')
   }
 }
 

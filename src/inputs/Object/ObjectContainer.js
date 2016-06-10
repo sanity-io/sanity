@@ -96,6 +96,13 @@ export default class ObjectContainer {
     return Object.keys(serialized).length ? Object.assign({$type: field.type}, serialized) : void 0
   }
 
+  isEmpty() {
+    const {field, schema} = this.context
+    const type = getFieldType(schema, field)
+
+    return type.fields.every(typeField => this.getFieldValue(typeField.name).isEmpty())
+  }
+
   toJSON() {
     return this.serialize()
   }
