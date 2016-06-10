@@ -18,10 +18,13 @@ export default class DefaultContainer {
   }
 
   validate() {
-    const {field} = this.context
-    if (field.required && this.value === undefined) {
-      return [{id: 'required'}]
-    }
+    const messages = this.context.field.required && this.value === undefined && [{
+      id: 'required',
+      type: 'error',
+      message: 'Field is required'
+    }]
+
+    return {messages: messages || []}
   }
 
   serialize() {

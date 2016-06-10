@@ -97,6 +97,25 @@ export default {
               type: 'string'
             }
           ]
+        },
+        {
+          name: 'homestead',
+          title: 'Homestead',
+          type: 'object',
+          fields: [
+            {
+              name: 'lat',
+              title: 'Latitude',
+              type: 'number',
+              required: true
+            },
+            {
+              name: 'lon',
+              title: 'Longitude',
+              type: 'number',
+              required: true
+            }
+          ]
         }
       ]
     }

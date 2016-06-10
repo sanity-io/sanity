@@ -6,6 +6,7 @@ export class FormBuilder extends React.Component {
   static propTypes = {
     type: PropTypes.object.isRequired,
     value: PropTypes.any,
+    validation: PropTypes.object.isRequired,
     onChange: PropTypes.func
   };
 
@@ -15,7 +16,8 @@ export class FormBuilder extends React.Component {
   };
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    validation: {messages: [], fields: {}}
   }
 
   resolveInputComponent(field, type) {
@@ -23,7 +25,7 @@ export class FormBuilder extends React.Component {
   }
 
   render() {
-    const {type, onChange, value} = this.props
+    const {type, onChange, value, validation} = this.props
 
     // Create a proforma field from type
     const field = {type: type.name}
@@ -42,6 +44,7 @@ export class FormBuilder extends React.Component {
             field={field}
             type={type}
             onChange={onChange}
+            validation={validation}
             value={passSerialized ? value.serialize() : value}
           />
         </div>

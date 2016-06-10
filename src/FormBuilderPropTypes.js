@@ -21,10 +21,20 @@ const type = PropTypes.shape({
   isPrimitive: PropTypes.bool
 })
 
+const validation = {
+  fields: PropTypes.objectOf(lazy(() => validation)),
+  messages: PropTypes.arrayOf(PropTypes.shape({
+    type: PropTypes.oneOf(['error', 'warning']),
+    id: PropTypes.string,
+    message: PropTypes.string
+  }))
+}
+
 const schema = PropTypes.objectOf(type)
 
 export default {
   type,
   schema,
-  field
+  field,
+  validation
 }

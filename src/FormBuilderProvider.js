@@ -5,6 +5,7 @@ export default class FormBuilderProvider extends React.Component {
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
     resolvePreviewComponent: PropTypes.func.isRequired,
+    resolveValidationComponent: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
     schema: PropTypes.object.isRequired
   };
@@ -17,6 +18,7 @@ export default class FormBuilderProvider extends React.Component {
     resolveFieldComponent: PropTypes.func.isRequired,
     resolveInputComponent: PropTypes.func.isRequired,
     resolvePreviewComponent: PropTypes.func.isRequired,
+    resolveValidationComponent: PropTypes.func.isRequired,
     schema: PropTypes.object
   };
 
@@ -25,7 +27,8 @@ export default class FormBuilderProvider extends React.Component {
       schema: this.props.schema,
       resolveInputComponent: this.props.resolveInputComponent,
       resolvePreviewComponent: this.props.resolvePreviewComponent,
-      resolveFieldComponent: this.props.resolveFieldComponent
+      resolveFieldComponent: this.props.resolveFieldComponent,
+      resolveValidationComponent: this.props.resolveValidationComponent
     }
   }
 

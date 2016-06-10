@@ -44,6 +44,7 @@ export default class Demo extends React.Component {
     schema: PropTypes.object.isRequired,
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
+    resolveValidationComponent: PropTypes.func.isRequired,
     type: PropTypes.object.isRequired
   };
 
@@ -107,7 +108,7 @@ export default class Demo extends React.Component {
 
   render() {
     const {value, saved, validation, shouldInspect} = this.state
-    const {schema, type, resolveInputComponent, resolveFieldComponent} = this.props
+    const {schema, type, resolveInputComponent, resolveFieldComponent, resolveValidationComponent} = this.props
 
     if (shouldInspect) {
       console.log('CURRENT VALUE', value) // eslint-disable-line no-console
@@ -134,11 +135,13 @@ export default class Demo extends React.Component {
             resolveInputComponent={resolveInputComponent}
             resolveFieldComponent={resolveFieldComponent}
             resolvePreviewComponent={() => {}}
+            resolveValidationComponent={resolveValidationComponent}
             schema={schema}
           >
             <FormBuilder
               type={type}
               value={value}
+              validation={validation}
               onChange={this.handleChange}
             />
 

@@ -10,9 +10,14 @@ export default class RenderField extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     fieldName: PropTypes.string.isRequired,
+    validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
     level: PropTypes.number
+  };
+
+  static defaultProps = {
+    validation: {messages: [], fields: {}}
   };
 
   static contextTypes = {
@@ -48,7 +53,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, fieldName, level} = this.props
+    const {value, field, fieldName, level, validation} = this.props
 
     const fieldType = this.getFieldType(field)
 
@@ -65,17 +70,26 @@ export default class RenderField extends React.Component {
     const FieldComponent = this.resolveFieldComponent(field, fieldType)
 
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
-
     const input = (
       <FieldInput
         level={level + 1}
         value={passValue}
         field={field}
         type={fieldType}
+        validation={validation}
         onChange={this.handleChange}
       />
     )
 
-    return <FieldComponent level={level} input={input} field={field} fieldName={fieldName} type={fieldType} />
+    return (
+      <FieldComponent
+        level={level}
+        input={input}
+        field={field}
+        fieldName={fieldName}
+        validation={validation}
+        type={fieldType}
+      />
+    )
   }
 }

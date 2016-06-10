@@ -44,18 +44,21 @@ export default class ArrayContainer {
   validate() {
     const {field} = this.context
 
-    if (field.required && this.value.length === 0) {
-      return {errors: [{id: 'required'}]}
+    const result = {
+      messages: [],
+      items: []
     }
 
-    const itemValidations = this.map(item => item.validate())
-    if (itemValidations.length === 0) {
-      return void 0
+    if (field.required && this.value.length === 0) {
+      result.messages.push({
+        id: 'required',
+        type: 'error',
+        message: 'Field needs at least one entry'
+      })
     }
-    return {
-      errors: [],
-      items: itemValidations
-    }
+
+    result.items = this.map(item => item.validate())
+    return result
   }
 
   patch(patch) {

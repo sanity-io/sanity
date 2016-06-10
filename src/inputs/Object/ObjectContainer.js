@@ -55,12 +55,11 @@ export default class ObjectContainer {
   validate() {
     const {field, schema} = this.context
 
-    if (field.required && this.value === void 0) {
-      return {errors: [{id: 'required'}]}
+    if (field.required && this.value === undefined) {
+      return {messages: [{id: 'required', message: 'Field is required'}]}
     }
 
     const type = getFieldType(schema, field)
-
     const fieldValidation = {}
 
     type.fields.forEach(typeField => {
@@ -71,12 +70,8 @@ export default class ObjectContainer {
       }
     })
 
-    if (Object.keys(fieldValidation).length === 0) {
-      return void 0
-    }
-
     return {
-      errors: [],
+      messages: [],
       fields: fieldValidation
     }
   }
@@ -87,13 +82,15 @@ export default class ObjectContainer {
 
     const serialized = type.fields.reduce((acc, typeField) => {
       const serializedFieldValue = this.getFieldValue(typeField.name).serialize()
-      if (serializedFieldValue !== void 0) {
+      if (serializedFieldValue !== undefined) {
         acc[typeField.name] = serializedFieldValue
       }
       return acc
-    }, Object.create(null))
+    }, {})
 
-    return Object.keys(serialized).length ? Object.assign({$type: field.type}, serialized) : void 0
+    return Object.keys(serialized).length
+      ? Object.assign({$type: field.type}, serialized)
+      : undefined
   }
 
   isEmpty() {

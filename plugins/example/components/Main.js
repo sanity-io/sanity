@@ -3,6 +3,7 @@ import Demo from '../components/Demo'
 import styles from './styles/Main.css'
 import Debug from 'debug'
 import MyCustomLatLonInput from './MyCustomLatLonInput'
+import ValidationList from './ValidationList'
 
 // Todo: figure out why it complains so much
 // import {whyDidYouUpdate} from 'why-did-you-update'
@@ -78,12 +79,18 @@ function renderDemo(compiledSchema) {
     }
     return fieldComponents[field.type] || DefaultField
   }
+
+  function resolveValidationComponent() {
+    return ValidationList
+  }
+
   return (
     <Demo
       schema={compiledSchema}
       type={compiledSchema.types[typeName]}
       resolveInputComponent={resolveInputComponent}
       resolveFieldComponent={resolveFieldComponent}
+      resolveValidationComponent={resolveValidationComponent}
     />
   )
 }
