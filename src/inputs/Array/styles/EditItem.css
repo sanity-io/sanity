@@ -1,0 +1,71 @@
+@import 'style:@sanity/base/theme/variables';
+
+@use postcss-cssnext;
+
+:root {
+  --form-builder--array--add-item-color: var(--brand-primary);
+  --form-builder--array--add-item-triangle-color: color(var(--form-builder--array--add-item-color) lightness(-20%));
+}
+
+.root {
+  border: 1px solid var(--form-builder--array--add-item-color);
+  margin-left: -3rem;
+  margin-right: -3rem;
+  box-shadow: 0 0 50px #000;
+  background-color: #fff;
+  padding: 0;
+  z-index: 10;
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: -2rem;
+    left: -1px;
+    height: 0;
+    width: 0;
+    z-index: 100;
+    display: block;
+    border: 1rem solid transparent;
+    border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
+    border-right: 1rem solid var(--form-builder--array--add-item-triangle-color);
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: -2rem;
+    right: -1px;
+    height: 0;
+    width: 0;
+    z-index: 100;
+    display: block;
+    border: 1rem solid transparent;
+    border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
+    border-left: 1rem solid var(--form-builder--array--add-item-triangle-color);
+  }
+}
+
+
+
+.close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.5rem;
+  border: 0;
+  background: none;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.content {
+  padding: 1rem;
+}
+
+.title {
+  background-color: var(--form-builder--array--add-item-color);
+  color: #fff;
+  font-size: 1em;
+  padding: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}

@@ -5,13 +5,18 @@
   margin-bottom: 2rem;
   box-sizing: border-box;
   max-width: 100%;
-  border: 1px solid transparent;
-  /*background-color: var(--gray-lighter);*/
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  & {
+    border: none;
+  }
 }
 
-.inner {
+.content {
   /*display: flex;
   flex-direction: row;*/
+  padding: 1rem;
+
 }
 
 .level_1 {

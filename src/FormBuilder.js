@@ -37,12 +37,14 @@ export class FormBuilder extends React.Component {
 
     return (
       <div className={styles.root}>
-        <FieldInput
-          field={field}
-          type={type}
-          onChange={onChange}
-          value={passSerialized ? value.serialize() : value}
-        />
+        <div className={styles.inner}>
+          <FieldInput
+            field={field}
+            type={type}
+            onChange={onChange}
+            value={passSerialized ? value.serialize() : value}
+          />
+        </div>
       </div>
     )
   }

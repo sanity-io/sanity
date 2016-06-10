@@ -32,14 +32,16 @@ export default class ItemForm extends React.Component {
     const {index} = this.props
     return (
       <div key={index}>
+        {el}
         <Button
           type="button"
           title="delete"
           onClick={this.handleRemove}
+          kind="danger"
         >
           - Remove
         </Button>
-        {el}
+
       </div>
     )
   }

@@ -5,6 +5,7 @@ import {getFieldType} from '../../utils/getFieldType'
 import {capitalize} from 'lodash'
 import Button from '../../buttons/Default'
 import FallbackPreviewComponent from './FallbackPreviewComponent'
+import styles from './styles/ItemPreview.css'
 
 export default class ItemPreview extends React.Component {
   constructor(props, context) {
@@ -45,26 +46,6 @@ export default class ItemPreview extends React.Component {
     return getFieldType(this.context.schema, field)
   }
 
-  renderButtons() {
-    return (
-      <div>
-        <Button
-          type="button"
-          title="Edit"
-          onClick={this.handleEdit}
-        >
-          Edit
-        </Button>
-        <Button
-          type="button"
-          title="Delete"
-          onClick={this.handleRemove}
-        >
-          Remove
-        </Button>
-      </div>
-    )
-  }
 
   render() {
     const {value, field} = this.props
@@ -76,9 +57,11 @@ export default class ItemPreview extends React.Component {
     const passSerialized = value.constructor.passSerialized
 
     return (
-      <div>
-        {this.renderButtons()}
-        <h3>{capitalize(field.title || fieldType.title || fieldType.name)}:</h3>
+      <div className={styles.root}>
+        <div className={styles.buttons}>
+          <button type="button" title="Edit" onClick={this.handleEdit}>Edit</button>
+          <button type="button" title="Delete" onClick={this.handleRemove}>Remove</button>
+        </div>
         <PreviewComponent
           value={passSerialized ? value.serialize() : value}
           field={field}

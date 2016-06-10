@@ -6,7 +6,7 @@ import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
 import styles from './styles/Array.css'
 import Button from '../../buttons/Default'
-import EditItem from './AddItem'
+import EditItem from './EditItem'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -118,7 +118,7 @@ export default class Arr extends React.Component {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
     return (
-      <EditItem title={itemField.title}>
+      <EditItem title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           index={index}
           field={itemField}
@@ -126,7 +126,6 @@ export default class Arr extends React.Component {
           onChange={this.handleItemChange}
           onRemove={this.handleRemoveItem}
         />
-        <Button type="button" onClick={this.handleClose}>Close</Button>
       </EditItem>
     )
   }
@@ -141,7 +140,7 @@ export default class Arr extends React.Component {
     const {selectType, editIndex} = this.state
     return (
       <div className={styles.array}>
-        <Button type="button" onClick={this.handleAddBtnClick}>+ add</Button>
+        <Button type="button" onClick={this.handleAddBtnClick}>+ add #TYPE</Button>
         {selectType && this.renderSelectType()}
         {value && value.map((item, i) => {
           if (editIndex === i) {

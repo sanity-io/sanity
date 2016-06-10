@@ -2,6 +2,10 @@
   composes: root from 'style:@sanity/base/theme/button';
 }
 
+.danger {
+  composes: danger from 'style:@sanity/base/theme/button';
+}
+
 .active {
 
 }

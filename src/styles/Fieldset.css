@@ -1,5 +1,4 @@
 @import 'style:@sanity/base/theme/variables';
-
 @use postcss-cssnext;
 
 .root {
@@ -7,14 +6,14 @@
   padding: 0;
   border: 0;
   margin-bottom: 2em;
-  & .root {
-    text-transform: none;
-    & .legend {
-      font-size: 2em;
-    }
-  }
 }
 
+.content {
+  background-color: #fff;
+
+}
+
+/*
 .level_1 {
   composes: root;
 
@@ -39,7 +38,7 @@
     font-size: 1em;
     border: 0;
   }
-}
+}*/
 
 .inner {
   display: block;
@@ -55,6 +54,12 @@
   width: 100%;
   font-weight: bold;
   text-transform: uppercase;
+  & .root {
+    & .legend {
+      border: 1px solid red;
+    }
+
+  }
 }
 
 .nestingLevel {
