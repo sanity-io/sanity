@@ -28,7 +28,7 @@
     "tap": "^5.7.2"
   },
   "devDependencies": {
-    "@sanity/base": "^2.1.21",
+    "@sanity/base": "^2.1.23",
     "@sanity/cli": "^1.0.24",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
