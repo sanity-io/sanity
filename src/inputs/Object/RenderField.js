@@ -13,11 +13,13 @@ export default class RenderField extends React.Component {
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
+    onEnter: PropTypes.func,
     level: PropTypes.number
   };
 
   static defaultProps = {
-    validation: {messages: [], fields: {}}
+    validation: {messages: [], fields: {}},
+    onEnter() {}
   };
 
   static contextTypes = {
@@ -29,6 +31,7 @@ export default class RenderField extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
+    this.handleEnter = this.handleEnter.bind(this)
   }
 
   shouldComponentUpdate(nextProps) {
@@ -38,6 +41,11 @@ export default class RenderField extends React.Component {
   handleChange(event) {
     const {fieldName, onChange} = this.props
     onChange(event, fieldName)
+  }
+
+  handleEnter(event) {
+    const {fieldName, onEnter} = this.props
+    onEnter(event, fieldName)
   }
 
   resolveInputComponent(field, fieldType) {
@@ -78,6 +86,7 @@ export default class RenderField extends React.Component {
         type={fieldType}
         validation={validation}
         onChange={this.handleChange}
+        onEnter={this.handleEnter}
       />
     )
 

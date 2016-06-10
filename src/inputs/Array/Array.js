@@ -35,6 +35,7 @@ export default class Arr extends React.Component {
     this.handleItemChange = this.handleItemChange.bind(this)
     this.handleItemEdit = this.handleItemEdit.bind(this)
     this.handleRemoveItem = this.handleRemoveItem.bind(this)
+    this.handleItemEnter = this.handleItemEnter.bind(this)
     this.handleClose = this.handleClose.bind(this)
 
     this.state = {
@@ -114,6 +115,10 @@ export default class Arr extends React.Component {
     this.setState({editIndex: index})
   }
 
+  handleItemEnter() {
+    this.setState({editIndex: -1})
+  }
+
   renderEditItemForm(index) {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
@@ -124,6 +129,7 @@ export default class Arr extends React.Component {
           field={itemField}
           value={itemValue}
           onChange={this.handleItemChange}
+          onEnter={this.handleItemEnter}
           onRemove={this.handleRemoveItem}
         />
       </EditItem>

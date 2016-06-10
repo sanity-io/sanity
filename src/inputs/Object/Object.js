@@ -16,11 +16,13 @@ export default class Obj extends React.Component {
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
     onChange: PropTypes.func,
+    onEnter: PropTypes.func,
     level: PropTypes.number
   };
 
   static defaultProps = {
     onChange() {},
+    onEnter() {},
     level: 0
   };
 
@@ -32,12 +34,17 @@ export default class Obj extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleFieldChange = this.handleFieldChange.bind(this)
+    this.handleFieldEnter = this.handleFieldEnter.bind(this)
   }
 
   handleFieldChange(event, fieldName) {
     const {onChange} = this.props
     const patch = {[fieldName]: event.patch}
     onChange({patch})
+  }
+
+  handleFieldEnter(event, fieldName) {
+    this.props.onEnter(fieldName)
   }
 
   shouldComponentUpdate(nextProps) {
@@ -55,6 +62,7 @@ export default class Obj extends React.Component {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
+        onEnter={this.handleFieldEnter}
         validation={validation}
         level={level}
       />

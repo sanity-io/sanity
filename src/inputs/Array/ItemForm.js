@@ -3,12 +3,14 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import Button from '../../buttons/Default'
+import ReactDOM from 'react-dom'
 
 export default class ItemForm extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.handleRemove = this.handleRemove.bind(this)
+    this.handleEnter = this.handleEnter.bind(this)
   }
 
   static propTypes = {
@@ -16,7 +18,8 @@ export default class ItemForm extends React.Component {
     index: PropTypes.number.isRequired,
     value: PropTypes.any,
     onChange: PropTypes.func,
-    onRemove: PropTypes.func
+    onRemove: PropTypes.func,
+    onEnter: PropTypes.func
   };
 
   static contextTypes = {
@@ -56,6 +59,11 @@ export default class ItemForm extends React.Component {
     onRemove(index)
   }
 
+  handleEnter() {
+    const {index, onEnter} = this.props
+    onEnter(index)
+  }
+
   resolveInputComponent(field, fieldType) {
     return this.context.resolveInputComponent(field, fieldType)
   }
@@ -85,6 +93,7 @@ export default class ItemForm extends React.Component {
         value={passSerialized ? value.serialize() : value}
         field={field}
         type={fieldType}
+        onEnter={this.handleEnter}
         onChange={this.handleChange}
       />
     )

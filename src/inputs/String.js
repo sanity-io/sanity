@@ -11,17 +11,20 @@ export default class Str extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onEnter: PropTypes.func,
   };
 
   static defaultProps = {
     value: '',
-    onChange() {}
+    onChange() {},
+    onEnter() {}
   };
 
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
   }
 
   shouldComponentUpdate(nextProps) {
@@ -31,6 +34,12 @@ export default class Str extends React.Component {
   handleChange(e) {
     const val = e.target.value || undefined
     this.props.onChange({patch: {$set: val}})
+  }
+
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.props.onEnter()
+    }
   }
 
   render() {
@@ -44,6 +53,7 @@ export default class Str extends React.Component {
             type="text"
             placeholder={field.placeholder}
             onChange={this.handleChange}
+            onKeyPress={this.handleKeyPress}
             value={value}
           />
         </div>

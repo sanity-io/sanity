@@ -273,9 +273,9 @@ export default {
         },
         {
           "name": "references",
-          "type": "array",
           "title": "Exceptional Content",
           "required": false,
+          "type": "array",
           "of": [
             {
               "type": "reference",
