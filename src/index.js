@@ -5,7 +5,7 @@ import Num from './inputs/Number'
 import Blocks from './inputs/Blocks'
 import Email from './inputs/Email'
 import Url from './inputs/Url'
-import RichText from './inputs/RichText'
+import Text from './inputs/Text'
 import Reference from './inputs/Reference'
 import Str from './inputs/String'
 
@@ -17,7 +17,7 @@ export const inputComponents = {
   array: Arr,
   boolean: Bool,
   number: Num,
-  text: RichText,
+  text: Text,
   email: Email,
   reference: Reference,
   url: Url,

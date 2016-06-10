@@ -1,5 +1,5 @@
 :root {
-  --form-builder--array--add-item-color: green;
+  --form-builder--array--add-item-color: var(--brand-primary);
 }
 
 .root {
@@ -22,4 +22,6 @@
   color: #fff;
   font-size: 1em;
   padding: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }

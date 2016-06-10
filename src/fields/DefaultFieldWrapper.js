@@ -32,5 +32,6 @@ Field.propTypes = {
   role: PropTypes.string,
   level: PropTypes.number,
   label: PropTypes.string,
-  title: PropTypes.string
+  title: PropTypes.string,
+  field: PropTypes.object
 }

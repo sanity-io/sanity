@@ -5,14 +5,13 @@
   margin-bottom: 2rem;
   box-sizing: border-box;
   max-width: 100%;
-  padding: 1em;
   border: 1px solid transparent;
-  background-color: var(--gray-lighter);
+  /*background-color: var(--gray-lighter);*/
 }
 
 .inner {
-  display: flex;
-  flex-direction: row;
+  /*display: flex;
+  flex-direction: row;*/
 }
 
 .level_1 {
@@ -28,13 +27,15 @@
 }
 
 .label {
+  font-size: .9rem;
   width: 8em;
   text-align: left;
   padding: .25em 0;
+  padding-right: 2em;
 }
 
 .content {
-  flex-grow: 1;
+  /*flex-grow: 2;*/
 }
 
 .title {
@@ -42,6 +43,7 @@
 }
 
 .nestingLevel {
+  display: none;
   float: right;
   font-size: 0.5rem;
   font-family: var(--font-family-monospace);

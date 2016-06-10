@@ -89,14 +89,14 @@ export default {
         {
           "name": "description",
           "fieldset": "description",
-          "type": "string",
+          "type": "text",
           "title": "Description",
           "required": false
         },
         {
           "name": "extendedDescription",
           "fieldset": "description",
-          "type": "string",
+          "type": "text",
           "title": "Extended description",
           "required": false
         },
