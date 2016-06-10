@@ -29,17 +29,6 @@ export default {
     {
       "name": "project",
       "type": "object",
-      "fieldsets": [
-        {
-          name: "hero",
-          title: "Hero",
-          description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        },
-        {
-          name: "description",
-          title: "Description"
-        }
-      ],
       "fields": [
         {
           "name": "title",
@@ -55,7 +44,6 @@ export default {
         },
         {
           "name": "mainImage",
-          "fieldset": "hero",
           "type": "reference",
           "title": "Hero Image",
           "required": false,
@@ -68,14 +56,12 @@ export default {
         },
         {
           "name": "mainMediaURL",
-          "fieldset": "hero",
           "type": "string",
           "title": "Hero Video",
           "required": false
         },
         {
           "name": "mainImageVertical",
-          "fieldset": "hero",
           "type": "reference",
           "title": "Hero Image Vertical",
           "required": false,
@@ -88,15 +74,13 @@ export default {
         },
         {
           "name": "description",
-          "fieldset": "description",
-          "type": "text",
+          "type": "string",
           "title": "Description",
           "required": false
         },
         {
           "name": "extendedDescription",
-          "fieldset": "description",
-          "type": "text",
+          "type": "string",
           "title": "Extended description",
           "required": false
         },
@@ -258,7 +242,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "image",
@@ -279,7 +262,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "preoccupation",
@@ -297,48 +279,23 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "publication",
                   "title": "Publication"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publicationPDFExcerpt",
                   "title": "PDF Excerpt"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "pressCoverageItem",
                   "title": "Coverage"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "lecture",
                   "title": "Lecture"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "project",
                   "title": "Project"
@@ -403,28 +360,15 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
                   "title": "Project"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "lecture",
                   "title": "Lecture"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publication",
                   "title": "Publication"
@@ -601,7 +545,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "publicationPDFExcerpt",
@@ -618,7 +561,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "preoccupation",
@@ -636,38 +578,19 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
                   "title": "Project"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "lecture",
                   "title": "Lecture"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "pressCoverageItem",
                   "title": "Coverage"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publication",
                   "title": "Publication"
@@ -1049,7 +972,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "image",
@@ -1066,7 +988,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "preoccupation",
@@ -1084,28 +1005,15 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
                   "title": "Project"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "lecture",
                   "title": "Lecture"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publication",
                   "title": "Publication"
@@ -1271,7 +1179,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "image",
@@ -1289,28 +1196,15 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
                   "title": "Project"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "lecture",
                   "title": "Lecture"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publication",
                   "title": "Publication"
@@ -1800,18 +1694,11 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "image",
                   "title": "Image"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "required": false,
-              "to": [
+                },
                 {
                   "type": "publicationPDFExcerpt",
                   "title": "PDF Excerpt"
@@ -1874,7 +1761,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
@@ -1892,7 +1778,6 @@ export default {
           "of": [
             {
               "type": "reference",
-              "required": false,
               "to": [
                 {
                   "type": "project",
