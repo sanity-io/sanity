@@ -4,13 +4,13 @@ import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import styles from './styles/String.css'
 
-
 export default class Str extends React.Component {
   static displayName = 'String';
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
+    focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
   };
@@ -25,10 +25,30 @@ export default class Str extends React.Component {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
+    this.setInputElement = this.setInputElement.bind(this)
   }
 
+  setInputElement(element) {
+    this.inputElement = element
+  }
+
+  componentDidMount() {
+    if (this.props.focus) {
+      this.focus()
+    }
+  }
   shouldComponentUpdate(nextProps) {
     return !equals(this.props, nextProps)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.focus && this.props.focus) {
+      this.focus()
+    }
+  }
+
+  focus() {
+    this.inputElement.focus()
   }
 
   handleChange(e) {
@@ -55,6 +75,7 @@ export default class Str extends React.Component {
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             value={value}
+            ref={this.setInputElement}
           />
         </div>
       </div>

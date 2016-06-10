@@ -15,6 +15,7 @@ export default class Obj extends React.Component {
     field: FormBuilderPropTypes.field,
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
+    focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
     level: PropTypes.number
@@ -51,13 +52,14 @@ export default class Obj extends React.Component {
     return !equals(this.props, nextProps)
   }
 
-  renderField(field, validation, level) {
-    const {value} = this.props
+  renderField(field, validation, level, index) {
+    const {value, focus} = this.props
     const fieldValue = value.getFieldValue(field.name)
 
     return (
       <RenderField
         key={field.name}
+        focus={focus && index === 0}
         fieldName={field.name}
         field={field}
         value={fieldValue}
@@ -69,11 +71,11 @@ export default class Obj extends React.Component {
     )
   }
 
-  renderFieldset(fieldset, validation) {
+  renderFieldset(fieldset, validation, index) {
     const {level} = this.props
     return (
       <Fieldset key={fieldset.name} legend={fieldset.title} level={level}>
-        {fieldset.fields.map(field => this.renderField(field, validation, level + 1))}
+        {fieldset.fields.map((field, fieldIndex) => this.renderField(field, validation, level + 1, index + fieldIndex))}
       </Fieldset>
     )
   }
@@ -82,11 +84,11 @@ export default class Obj extends React.Component {
     const {type, validation} = this.props
     return (
       <div>
-        {type.fieldsets.map(fieldset => {
+        {type.fieldsets.map((fieldset, i) => {
           const fieldValidation = validation && validation.fields[fieldset.field.name]
           return fieldset.lonely
-            ? this.renderField(fieldset.field, fieldValidation, this.props.level)
-            : this.renderFieldset(fieldset, fieldValidation)
+            ? this.renderField(fieldset.field, fieldValidation, this.props.level, i)
+            : this.renderFieldset(fieldset, fieldValidation, i)
         })}
       </div>
     )

@@ -46,6 +46,7 @@ export class FormBuilder extends React.Component {
             onChange={onChange}
             validation={validation}
             value={passSerialized ? value.serialize() : value}
+            focus
           />
         </div>
       </div>

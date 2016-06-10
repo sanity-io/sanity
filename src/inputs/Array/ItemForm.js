@@ -17,6 +17,7 @@ export default class ItemForm extends React.Component {
     field: FormBuilderPropTypes.field.isRequired,
     index: PropTypes.number.isRequired,
     value: PropTypes.any,
+    focus: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
     onEnter: PropTypes.func
@@ -73,7 +74,7 @@ export default class ItemForm extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, field, focus} = this.props
 
     const fieldType = this.getFieldType(field)
 
@@ -93,6 +94,7 @@ export default class ItemForm extends React.Component {
         value={passSerialized ? value.serialize() : value}
         field={field}
         type={fieldType}
+        focus={focus}
         onEnter={this.handleEnter}
         onChange={this.handleChange}
       />

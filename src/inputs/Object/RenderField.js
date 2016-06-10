@@ -14,7 +14,8 @@ export default class RenderField extends React.Component {
     value: PropTypes.any,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
-    level: PropTypes.number
+    level: PropTypes.number,
+    focus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -61,7 +62,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, fieldName, level, validation} = this.props
+    const {value, field, fieldName, level, validation ,focus} = this.props
 
     const fieldType = this.getFieldType(field)
 
@@ -87,6 +88,7 @@ export default class RenderField extends React.Component {
         validation={validation}
         onChange={this.handleChange}
         onEnter={this.handleEnter}
+        focus={focus}
       />
     )
 
