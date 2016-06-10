@@ -143,10 +143,9 @@ export default class Arr extends React.Component {
       <div className={styles.array}>
         <Button type="button" onClick={this.handleAddBtnClick}>+ add</Button>
         {selectType && this.renderSelectType()}
-        {editIndex > -1 && this.renderEditItemForm(editIndex)}
         {value && value.map((item, i) => {
           if (editIndex === i) {
-            return null
+            return this.renderEditItemForm(editIndex)
           }
           const itemField = this.getItemField(item)
 
