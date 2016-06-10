@@ -44,8 +44,8 @@ export default class Str extends React.Component {
             placeholder={field.placeholder}
             onChange={this.handleChange}
             rows={field.rows || 10}
+            value={value}
           >
-            {value}
           </textarea>
         </div>
       </div>
