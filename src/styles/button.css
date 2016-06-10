@@ -5,16 +5,22 @@
   color: #fff;
   border: 0;
   padding: .8em 1em;
+  outline: none;
+}
+
+.danger {
+  composes: root;
+  background-color: var(--brand-danger);
 }
 
 .button {
 
 }
 
-.button-success {
+.buttonSuccess {
 
 }
 
-.button-negative {
+.buttonNegative {
 
 }

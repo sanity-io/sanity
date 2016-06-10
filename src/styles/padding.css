@@ -1,4 +1,15 @@
-.extra-large {}
-.large {}
-.medium {}
-.small {}
+.extraLarge {
+  padding: 3rem;
+}
+
+.large {
+  padding: 2rem;
+}
+
+.medium {
+  padding: 1rem;
+}
+
+.small {
+  padding: 0.5rem;
+}
