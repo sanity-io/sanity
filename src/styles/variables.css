@@ -26,7 +26,6 @@
   --selected-item-color:            var(--brand-primary);
   --selected-item-color-hover:      color(var(--brand-primary) lightness(+10%));
 
-
   /* State colors */
   --state-success-text:             #3c763d;
   --state-success-bg:               #dff0d8;
@@ -103,16 +102,17 @@
   /* Forms */
   --input-bg:                       #fff;
   --input-bg-disabled:              var(--gray-lighter);
-  --input-color:                    var(--gray);
-  --input-border:                   #ccc;
+  --input-color:                    var(--gray-light);
+  --input-border-color:             var(--gray-light);
   --input-border-radius:            var(--border-radius-base);
   --input-border-radius-large:      var(--border-radius-large);
   --input-border-radius-small:      var(--border-radius-small);
-  --input-border-focus:             #66afe9;
-  --input-border-active:            #66afe9;
-  --input-border-focus-color:       #66afe9;
-  --input-border-active-color:      #66afe9;
-  --input-color-placeholder:        #999;
+
+  --input-border-color-hover:       var(--gray-darker);
+  --input-border-color-focus:       var(--brand-primary);
+  --input-border-color-active:      var(--brand-primary);
+
+  --input-color-placeholder:        var(--gray-lighter);
   --form-group-margin-bottom:       1em;
   --legend-color:                   var(--gray-dark);
   --legend-border-color:            #e5e5e5;
