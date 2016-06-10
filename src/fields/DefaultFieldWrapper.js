@@ -42,5 +42,5 @@ DefaultFieldWrapper.propTypes = {
   label: PropTypes.string,
   title: PropTypes.string,
   field: PropTypes.object,
-  validation: FormBuilderPropTypes.validation
+  validation: PropTypes.shape(FormBuilderPropTypes.validation)
 }
