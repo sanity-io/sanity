@@ -51,7 +51,7 @@ export default class ArrayContainer {
 
     if (field.required && this.value.length === 0) {
       result.messages.push({
-        id: 'required',
+        id: 'errors.fieldIsRequired',
         type: 'error',
         message: 'Field needs at least one entry'
       })

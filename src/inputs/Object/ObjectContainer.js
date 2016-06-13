@@ -56,7 +56,11 @@ export default class ObjectContainer {
     const {field, schema} = this.context
 
     if (field.required && this.value === undefined) {
-      return {messages: [{id: 'required', type: 'error', message: 'Field is required'}]}
+      return {messages: [{
+        id: 'errors.fieldIsRequired',
+        type: 'error',
+        message: 'Field is required'
+      }]}
     }
 
     const type = getFieldType(schema, field)

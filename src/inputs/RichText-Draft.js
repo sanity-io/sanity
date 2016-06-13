@@ -33,7 +33,7 @@ class DraftJSValueContainer {
     const {field} = this.context
 
     const messages = field.required && this.isEmpty()
-      ? [{id: 'required', type: 'error', message: 'Field is required'}]
+      ? [{id: 'errors.fieldIsRequired', type: 'error', message: 'Field is required'}]
       : []
 
     return {messages}

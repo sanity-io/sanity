@@ -19,7 +19,7 @@ export default class DefaultContainer {
 
   validate() {
     const messages = this.context.field.required && this.value === undefined && [{
-      id: 'required',
+      id: 'errors.fieldIsRequired',
       type: 'error',
       message: 'Field is required'
     }]
