@@ -6,19 +6,31 @@
     },
 
     {
+      "name": "style:desk-tool/styles",
+      "description": "Styling for the desk tool"
+    },
+
+    {
+      "name": "component:desk-tool/validation-list",
+      "description": "Component that renders a list of validation feedback items"
+    },
+
+    {
       "implements": "config:desk-tool/pane-resolver",
       "srcPath": "./src/schemaPaneResolver.js",
       "path": "./lib/schemaPaneResolver.js"
     },
 
     {
-      "name": "style:desk-tool/styles",
-      "description": "Styling for the desk tool"
-    },
-    {
-      "name": "style:desk-tool/default",
       "implements": "style:desk-tool/styles",
+      "name": "style:desk-tool/default",
       "path": "./styles/DeskTool.css"
+    },
+
+    {
+      "implements": "component:desk-tool/validation-list",
+      "srcPath": "./src/validation/ValidationList.js",
+      "path": "./lib/validation/ValidationList.js"
     },
 
     {

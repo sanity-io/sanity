@@ -2,10 +2,21 @@ import React, {PropTypes} from 'react'
 import equals from 'shallow-equals'
 import client from 'client:@sanity/base/client'
 import EditorBuilder from './EditorBuilder'
+import ValidationList from 'component:desk-tool/validation-list'
 import {
   compileSchema,
-  fieldInputs as defaultFieldInputs
+  fieldComponents,
+  inputComponents,
+  DefaultField
 } from '@sanity/form-builder'
+
+function resolveFieldComponent(field, type) {
+  if (type.type === 'object') {
+    return fieldComponents.object
+  }
+
+  return fieldComponents[field.type] || DefaultField
+}
 
 class EditorContainer extends React.Component {
   constructor() {
@@ -48,7 +59,8 @@ class EditorContainer extends React.Component {
     const compiledSchema = compileSchema(this.props.schema)
     const type = compiledSchema.types[this.props.typeName]
 
-    const fieldInputs = Object.assign({}, defaultFieldInputs)
+    const fieldInputs = Object.assign({}, inputComponents)
+
     Object.keys(compiledSchema.types).forEach(typeName => {
       const typeDef = compiledSchema.types[typeName]
       if (!fieldInputs[typeName] && fieldInputs[typeDef.type]) {
@@ -56,13 +68,15 @@ class EditorContainer extends React.Component {
       }
     })
 
-    const resolveFieldInput = field => fieldInputs[field.type]
+    const resolveInputComponent = field => fieldInputs[field.type]
 
     return (
       <EditorBuilder
         schema={compiledSchema}
         type={type}
-        resolveFieldInput={resolveFieldInput}
+        resolveInputComponent={resolveInputComponent}
+        resolveFieldComponent={resolveFieldComponent}
+        resolveValidationComponent={() => ValidationList}
         initialValue={this.state.document}
       />
     )

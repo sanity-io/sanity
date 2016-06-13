@@ -7,9 +7,9 @@ import EditorContainer from 'component:desk-tool/editor-container'
 import styles from '../styles/DeskTool.css'
 
 function getTypeItems() {
-  return Object.keys(schema.types || {}).map(type => ({
-    pathSegment: type,
-    title: type.substr(0, 1).toUpperCase() + type.substr(1)
+  return (schema.types || []).map(type => ({
+    pathSegment: type.name,
+    title: type.name.substr(0, 1).toUpperCase() + type.name.substr(1)
   }))
 }
 
@@ -18,10 +18,16 @@ class SchemaPaneResolver extends React.Component {
     return this.props.location !== nextProps.location
   }
 
-  getPaneQuery(type) {
-    const displayField = schema.types[type].displayField || 'title'
-    const selection = `{"pathSegment": .$id, "title": .${displayField}}`
-    return `${schema.name}.${type} ${selection}`
+  getPaneQuery(typeName) {
+    const type = schema.types.find(currType => currType.name === typeName)
+    const displayField = (
+      type.fields.find(field => field.isDisplayField)
+      || type.fields.find(field => ['name', 'title'].indexOf(field.name) !== -1)
+    )
+
+    const fieldName = displayField && displayField.name || 'title'
+    const selection = `{"pathSegment": .$id, "title": .${fieldName}}`
+    return `${schema.name}.${typeName} ${selection}`
   }
 
   render() {

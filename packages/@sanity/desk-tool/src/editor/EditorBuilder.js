@@ -32,7 +32,7 @@ class EditorBuilder extends React.Component {
 
   getStateForProps(props) {
     const resolveContainer = (field, fieldType) =>
-      props.resolveFieldInput(field, fieldType).valueContainer
+      props.resolveInputComponent(field, fieldType).valueContainer
 
     return {
       value: createFormBuilderState(props.initialValue, {
@@ -71,9 +71,7 @@ class EditorBuilder extends React.Component {
 
     this.setState({saving: true})
     client.update(this.props.initialValue.$id, patch)
-      .then(() => {
-        this.setState({saving: false, changed: false})
-      })
+      .then(() => this.setState({saving: false, changed: false}))
       .catch(err => {
         console.error(err)
         this.setState({saving: false})
@@ -82,13 +80,22 @@ class EditorBuilder extends React.Component {
 
   render() {
     const {value, saving} = this.state
-    const {schema, type, resolveFieldInput} = this.props
+    const {
+      type,
+      schema,
+      resolveInputComponent,
+      resolveFieldComponent,
+      resolveValidationComponent
+    } = this.props
 
     return (
       <div className="content">
         <form className="form-container" onSubmit={preventDefault}>
           <FormBuilderProvider
-            resolveFieldInput={resolveFieldInput}
+            resolveInputComponent={resolveInputComponent}
+            resolveFieldComponent={resolveFieldComponent}
+            resolveValidationComponent={resolveValidationComponent}
+            resolvePreviewComponent={() => {}}
             schema={schema}
           >
             <FormBuilder
@@ -112,7 +119,9 @@ class EditorBuilder extends React.Component {
 EditorBuilder.propTypes = {
   initialValue: PropTypes.object,
   schema: PropTypes.object.isRequired,
-  resolveFieldInput: PropTypes.func.isRequired,
+  resolveInputComponent: PropTypes.func.isRequired,
+  resolveFieldComponent: PropTypes.func.isRequired,
+  resolveValidationComponent: PropTypes.func.isRequired,
   type: PropTypes.object.isRequired
 }
 
