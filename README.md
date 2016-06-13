@@ -40,16 +40,18 @@ If you define an object type, you must also define its fields. E.g. if you are d
 {
   "name": "person",
   "type": "object",
-  "fields": {
-    "firstName": {
+  "fields": [
+    {
+      "name": "firstName",
       "title": "First name",
       "type": "string"
     },
-    "lastName": {
+    {
+      "name": "lastName",
       "title": "Last name",
       "type": "string"
     }
-  }
+  ]
 }
 ```
 
@@ -67,38 +69,61 @@ When writing a schema, `type` is implicitly `object`, unless otherwise specified
 Only built-in types can take options. Below, `email.placeholder` is an option to `string` and `versions.of` is an option to `list`.
 
 ```
-{
-  name: 'user',
-  fields: {
-    email: {
-      type: 'string',
-      title: 'E-mail address',
-      placeholder: 'murgh@example.com'
+const schema = {
+  name: 'someSchema',
+  types: [
+    {
+      name: 'user',
+      fields: [
+        {
+          name: 'email',
+          type: 'string',
+          title: 'E-mail address',
+          placeholder: 'murgh@example.com'
+        },
+        {,
+          name: 'profilePicture',
+          type: 'image'
+        }
+      ]
     },
-    profilePicture: {
-      type: 'image'
+    {
+      name: 'image',
+      fields: [
+        {
+          name: 'fullSizeUrl',
+          type: 'string'
+        },
+        {
+          name: 'aspectRatio',
+          type: 'number'
+        },
+        {
+          name: 'versions',
+          type: 'list',
+          of: [{type: 'imageVersion'}]
+        }
+      ]
     },
-  }
-},
-{
-  name: 'image',
-  fields: {
-    fullSizeUrl: {type: 'string'},
-    aspectRatio: {type: 'number'},
-    versions: {
-      type: 'list',
-      of: [{type: 'imageVersion'}]
+    {
+      name: 'imageVersion',
+      fields: [
+        {
+          name: 'width',
+          type: 'number'
+        },
+        {
+          name: 'square',
+          type: 'boolean'
+        },
+        {
+          name: 'url',
+          type: 'string'
+        }
+      ]
     }
-  }
-},
-{
-  name: 'imageVersion',
-  fields: {
-    width: {type: 'number'},
-    square: {type: 'boolean'},
-    url: {type: 'string'}
-  }
-},
+  ]
+}
 ```
 
 
