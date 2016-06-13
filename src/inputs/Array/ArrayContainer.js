@@ -8,15 +8,15 @@ export default class ArrayContainer {
     if (!serializedArray) {
       return new ArrayContainer([], context)
     }
+
     const {field, schema, resolveContainer} = context
 
     const type = getFieldType(schema, field)
 
     const deserialized = serializedArray.map(item => {
-
       const itemType = (item && item.$type) || resolveJSType(item)
-      // find type in of
 
+      // find type in of
       const fieldDef = type.of.find(ofType => ofType.type === itemType)
 
       return createFieldValue(item, {field: fieldDef, schema, resolveContainer})
@@ -71,16 +71,12 @@ export default class ArrayContainer {
     const nextVal = (value || []).concat()
 
     if (patch.hasOwnProperty('$unshift')) {
-      patch.$unshift.forEach(item => {
-        nextVal.unshift(item)
-      })
+      patch.$unshift.forEach(item => nextVal.unshift(item))
       return new ArrayContainer(nextVal, context)
     }
 
     if (patch.hasOwnProperty('$splice')) {
-      patch.$splice.forEach(args => {
-        nextVal.splice(...args)
-      })
+      patch.$splice.forEach(args => nextVal.splice(...args))
       return new ArrayContainer(nextVal, context)
     }
 
@@ -89,21 +85,24 @@ export default class ArrayContainer {
         if (String(index).startsWith('$')) {
           throw new Error(`Method "${index}" not (yet) supported for arrays`)
         }
+
         throw new Error(`When patching array elements, the indices must be numbers, got ${index}`)
       }
+
       if (!nextVal.hasOwnProperty(index)) {
         throw new Error(`No such index ${index} on array`)
       }
+
       nextVal[index] = nextVal[index].patch(patch[index])
     })
+
     return new ArrayContainer(nextVal, context)
   }
 
   serialize() {
-    if (this.value.length === 0) {
-      return void 0
-    }
-    return this.map(val => val.serialize())
+    return this.value.length === 0
+      ? undefined
+      : this.map(val => val.serialize())
   }
 
   isEmpty() {

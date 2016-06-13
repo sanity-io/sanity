@@ -31,9 +31,16 @@ class DraftJSValueContainer {
 
   validate() {
     const {field} = this.context
-    if (field.required && !this.editorState.getCurrentContent().hasText()) {
-      return [{id: 'required'}]
-    }
+
+    const messages = field.required && this.isEmpty()
+      ? [{id: 'required', type: 'error', message: 'Field is required'}]
+      : []
+
+    return {messages}
+  }
+
+  isEmpty() {
+    return !this.editorState.getCurrentContent().hasText()
   }
 
   serialize() {
