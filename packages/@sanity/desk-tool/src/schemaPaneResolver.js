@@ -13,6 +13,8 @@ function getTypeItems() {
   }))
 }
 
+const looksLikeDisplayField = field => ['name', 'title'].indexOf(field.name) !== -1
+
 class SchemaPaneResolver extends React.Component {
   shouldComponentUpdate(nextProps) {
     return this.props.location !== nextProps.location
@@ -20,10 +22,7 @@ class SchemaPaneResolver extends React.Component {
 
   getPaneQuery(typeName) {
     const type = schema.types.find(currType => currType.name === typeName)
-    const displayField = (
-      type.fields.find(field => field.isDisplayField)
-      || type.fields.find(field => ['name', 'title'].indexOf(field.name) !== -1)
-    )
+    const displayField = type.displayField || type.fields.find(looksLikeDisplayField)
 
     const fieldName = displayField && displayField.name || 'title'
     const selection = `{"pathSegment": .$id, "title": .${fieldName}}`
