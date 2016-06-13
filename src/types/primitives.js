@@ -9,7 +9,8 @@ export default {
     options: {
       title: PropTypes.string,
       fields: PropTypes.array.isRequired,
-      fieldsets: PropTypes.array
+      fieldsets: PropTypes.array,
+      displayField: PropTypes.string
     },
     defaultOptions: {
       fieldsets: []

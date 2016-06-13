@@ -1,4 +1,4 @@
-import {difference, pick, uniqWith} from 'lodash'
+import {difference, uniqWith} from 'lodash'
 import PropTypes from 'proptypes'
 
 export function ifNotUniqueProp(array, property, notUniqueFn) {
@@ -30,7 +30,7 @@ export function checkSchemaType(schemaType, typeOptions) {
     errors = undeclared.map(optionName => {
       return {
         schemaType,
-        error: `The type option ${optionName} is not defined for type "${schemaType.type}". Please check the type definition for "${schemaType.name}"`
+        error: `Unknown property "${optionName}" on type "${schemaType.type}". Please check the type definition for "${schemaType.name}"`
       }
     })
   }
