@@ -22,7 +22,9 @@ class SchemaPaneResolver extends React.Component {
 
   getPaneQuery(typeName) {
     const type = schema.types.find(currType => currType.name === typeName)
-    const displayField = type.displayField || type.fields.find(looksLikeDisplayField)
+    const displayField = type.displayField
+      ? type.fields.find(field => field.name === type.displayField)
+      : type.fields.find(looksLikeDisplayField)
 
     const fieldName = displayField && displayField.name || 'title'
     const selection = `{"pathSegment": .$id, "title": .${fieldName}}`
