@@ -68,7 +68,7 @@ When writing a schema, `type` is implicitly `object`, unless otherwise specified
 
 Only built-in types can take options. Below, `email.placeholder` is an option to `string` and `versions.of` is an option to `list`.
 
-```
+```js
 const schema = {
   name: 'someSchema',
   types: [
