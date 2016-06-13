@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "in-publish && babel src --out-dir dist || not-in-publish",
+    "compile": "babel src --copy-files --out-dir dist",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf dist",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
     "start": "sanity start"
