@@ -12,7 +12,13 @@ export function createFieldValue(value, context) {
 
   const fieldType = getFieldType(schema, field)
 
-  const ResolvedContainer = resolveContainer(field, fieldType) || DefaultContainer
+  let ResolvedContainer
+  try {
+    ResolvedContainer = resolveContainer(field, fieldType) || DefaultContainer
+  } catch (error) {
+    error.message = `Got error while resolving value container for field "${field.name}" of type ${fieldType.name}: ${error.message}.`
+    throw error
+  }
 
   return ResolvedContainer.deserialize(value, context)
 }
