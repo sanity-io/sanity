@@ -27,11 +27,11 @@ function renderArray(array) {
 }
 
 function render(value) {
-  if (resolveJSType(value.serialize) === 'function') {
-    return render(value.serialize())
-  }
   const type = resolveJSType(value)
   if (type === 'object') {
+    if (resolveJSType(value.serialize) === 'function') {
+      return render(value.serialize())
+    }
     return renderObject(value)
   }
   if (type === 'array') {
@@ -43,8 +43,8 @@ function render(value) {
 export default function FallbackPreviewComponent(props) {
   return (
     <div className={styles.root}>
-      Fallback Preview Component
-      {render(props.value)}
+      <pre style={{fontSize: 'x-small'}}>[Fallback Preview Component. Trying to render value of type {props.field.type}]</pre>
+      <p>{render(props.value)}</p>
     </div>
   )
 }
