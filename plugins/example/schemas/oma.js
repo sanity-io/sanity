@@ -1255,6 +1255,7 @@ export default {
           "name": "latlon",
           "type": "object",
           "title": "Map Marker",
+          "description": "This is the map marker where you can define latitude and longitude. Thats kinda cool.",
           "required": false,
           "fields": [
             {

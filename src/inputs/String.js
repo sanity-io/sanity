@@ -65,8 +65,8 @@ export default class Str extends React.Component {
   render() {
     const {value, field, validation} = this.props
 
-    const rootClass = validation.messages.length > 0 ? styles.error : styles.root
-    const inputClass = validation.messages.length > 0 ? styles.inputError : styles.input
+    const rootClass = validation && validation.messages && validation.messages.length > 0 ? styles.error : styles.root
+    const inputClass = validation && validation.messages && validation.messages.length > 0 ? styles.inputError : styles.input
 
     return (
       <div className={rootClass}>

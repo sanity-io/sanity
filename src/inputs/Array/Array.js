@@ -147,7 +147,7 @@ export default class Arr extends React.Component {
     const {selectType, editIndex} = this.state
     return (
       <div className={styles.array}>
-        <Button type="button" onClick={this.handleAddBtnClick}>+ add {field.title}</Button>
+
         {selectType && this.renderSelectType()}
         {value && value.map((item, i) => {
           if (editIndex === i) {
@@ -176,6 +176,7 @@ export default class Arr extends React.Component {
             </div>
           )
         })}
+        <Button type="button" onClick={this.handleAddBtnClick}>add {field.title}</Button>
       </div>
     )
   }

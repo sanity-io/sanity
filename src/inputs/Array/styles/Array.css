@@ -1,7 +1,11 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
 .root {
   border: 1px solid red;
 }
 
 .item {
-  border: 3px solid blue;
+  border-bottom: var(--list-border);
+  padding: .5rem;
 }

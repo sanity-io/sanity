@@ -9,7 +9,7 @@ export default function Fieldset(props) {
         <div className={styles.debugNestingLevel}>Fieldset, nesting level {props.level}</div>
         <legend className={styles.legend}>{fieldset.legend}</legend>
         <p className={styles.description}>
-          {fieldset.description}
+          {fieldset.description || "There is no description!"}
         </p>
         <div className={styles.content}>
           {props.children}

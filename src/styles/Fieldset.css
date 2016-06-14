@@ -44,6 +44,12 @@
   }
 }
 
+.description {
+  padding-bottom: 1rem;
+  composes: small from 'style:@sanity/base/theme/typography';
+  color: var(--text-muted);
+}
+
 .debugNestingLevel {
   float: right;
   font-size: 0.7rem;

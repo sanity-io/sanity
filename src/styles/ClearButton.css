@@ -16,7 +16,9 @@
   transition: all 0.1s linear;
   color: var(--clear-cross-color);
   outline: none;
-  &:hover {
+
+  &:hover,
+  &:focus {
     color: var(--clear-cross-color-hover);
     transform: scale(1.5);
   }

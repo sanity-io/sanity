@@ -1,9 +1,18 @@
+@use postcss-cssnext;
+
+
 .root {
-  composes: root from 'style:@sanity/base/theme/button';
+  composes: default from 'style:@sanity/base/theme/button';
 }
 
 .danger {
   composes: danger from 'style:@sanity/base/theme/button';
+
+}
+
+.delete,
+.remove {
+  composes: delete from 'style:@sanity/base/theme/button';
 }
 
 .active {

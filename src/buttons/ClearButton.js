@@ -18,12 +18,14 @@ export default class ClearButton extends React.Component {
 
   render() {
     const {onClick, className} = this.props
+    const tabIndex = -1
     return (
       <button
         className={className}
         type="button"
         title="Clear value"
         onClick={onClick}
+        tabIndex={tabIndex}
       >
         ×
       </button>

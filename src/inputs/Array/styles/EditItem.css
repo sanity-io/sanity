@@ -8,10 +8,8 @@
 }
 
 .root {
-  border: 1px solid var(--form-builder--array--add-item-color);
-  margin: 1rem;
-  margin-right: -3rem;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  /*border: 1px solid var(--form-builder--array--add-item-color);*/
+  /*box-shadow: 0 0 20px rgba(0,0,0,0.1);*/
   background-color: #fff;
   padding: 0;
   z-index: 10;

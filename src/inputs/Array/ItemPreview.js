@@ -59,8 +59,8 @@ export default class ItemPreview extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.buttons}>
-          <button type="button" title="Edit" onClick={this.handleEdit}>Edit</button>
-          <button type="button" title="Delete" onClick={this.handleRemove}>Remove</button>
+          <button className={styles.editButton} type="button" title="Edit" onClick={this.handleEdit}>Edit</button>
+          <button className={styles.deleteButton} type="button" title="Delete" onClick={this.handleRemove}>Remove</button>
         </div>
         <PreviewComponent
           value={passSerialized ? value.serialize() : value}

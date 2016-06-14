@@ -1,5 +1,8 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
 .root {
-  border: 1px solid red;
+  overflow: hidden;
 }
 
 .heading {
@@ -8,4 +11,24 @@
 
 .buttons {
   float: right;
+}
+
+.button {
+  composes: small from 'style:@sanity/base/theme/button';
+  composes: noBorder from 'style:@sanity/base/theme/button';
+  opacity: .4;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.editButton {
+  composes: button;
+  composes: editIcon from 'style:@sanity/base/theme/button';
+}
+
+.deleteButton {
+  composes: button;
+  color: var(--brand-danger);
+  composes: deleteIcon from 'style:@sanity/base/theme/button';
 }

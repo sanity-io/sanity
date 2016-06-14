@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import {resolveJSType} from '../../types/utils'
+import styles from './styles/FallbackPreviewComponent.css'
 
 function renderPrimitive(value) {
   return value
@@ -41,7 +42,8 @@ function render(value) {
 
 export default function FallbackPreviewComponent(props) {
   return (
-    <div>
+    <div className={styles.root}>
+      Fallback Preview Component
       {render(props.value)}
     </div>
   )

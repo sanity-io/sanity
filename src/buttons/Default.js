@@ -13,8 +13,8 @@ export default class DefaultButton extends React.Component {
 
     let rootStyle = styles.root
 
-    if (kind == 'danger') {
-      rootStyle = styles.danger
+    if (kind == 'delete') {
+      rootStyle = styles.delete
     }
 
     return (
