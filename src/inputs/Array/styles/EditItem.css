@@ -1,4 +1,5 @@
 @import 'style:@sanity/base/theme/variables';
+@use postcss-font-awesome;
 
 @use postcss-cssnext;
 
@@ -40,31 +41,72 @@
     border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
     border-left: 1rem solid var(--form-builder--array--add-item-triangle-color);
   }*/
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    box-sizing: border-box;
+    z-index: 500;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+  }
 }
-
-
 
 .close {
   position: absolute;
-  top: 0.25rem;
-  right: 0.5rem;
+  top: 0.5rem;
+  left: 0.5rem;
   border: 0;
   background: none;
   font-size: 2rem;
   color: var(--form-builder--array--add-item-color);
   cursor: pointer;
+  color: transparent;
+
+  &::before {
+    font-awesome: chevron-left;
+    color: #fff;
+    float: left;
+  }
+
+  @media (--screen-medium) {
+    font-awesome: close;
+  }
+
 }
 
 .content {
   padding: 1rem;
+  padding-top: 5rem;
+
+  @media (--screen-medium) {
+    padding: 0;
+  }
+}
+
+.head {
+  background-color: var(--form-builder--array--add-item-color);
+  color: #fff;
+  font-size: 1em;
+  padding: 1rem;
+
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+
+  @media (--screen-medium) {
+    display: none;
+  }
 }
 
 .title {
-  /*background-color: var(--form-builder--array--add-item-color);*/
-  /*color: #fff;*/
-  color: var(--form-builder--array--add-item-color);
-  font-size: 1em;
-  padding: 1rem;
   font-weight: bold;
   text-transform: uppercase;
+  padding-left: 3rem;
+
 }

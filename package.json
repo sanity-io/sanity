@@ -20,6 +20,7 @@
     "loose-envify": "^1.2.0",
     "object-inspect": "^1.2.1",
     "postcss-cssnext": "^2.6.0",
+    "postcss-font-awesome": "^0.3.3",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.7.0",
     "react": "^15.1.0",

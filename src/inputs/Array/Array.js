@@ -150,9 +150,7 @@ export default class Arr extends React.Component {
 
         {selectType && this.renderSelectType()}
         {value && value.map((item, i) => {
-          if (editIndex === i) {
-            return this.renderEditItemForm(editIndex)
-          }
+
           const itemField = this.getItemField(item)
 
           if (!itemField) {
@@ -173,6 +171,7 @@ export default class Arr extends React.Component {
                 onEdit={this.handleItemEdit}
                 onRemove={this.handleRemoveItem}
               />
+            {editIndex === i && this.renderEditItemForm(editIndex)}
             </div>
           )
         })}
