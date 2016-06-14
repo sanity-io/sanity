@@ -52,8 +52,10 @@ export default class Obj extends React.Component {
     return !equals(this.props, nextProps)
   }
 
-  renderField(field, validation, level, index) {
-    const {value, focus} = this.props
+  renderField(field, level, index) {
+    const {value, focus, validation} = this.props
+    const fieldValidation = validation && validation.fields[field.name]
+
     const fieldValue = value.getFieldValue(field.name)
 
     return (
@@ -65,30 +67,29 @@ export default class Obj extends React.Component {
         value={fieldValue}
         onChange={this.handleFieldChange}
         onEnter={this.handleFieldEnter}
-        validation={validation}
+        validation={fieldValidation}
         level={level}
       />
     )
   }
 
-  renderFieldset(fieldset, validation, index) {
+  renderFieldset(fieldset, index) {
     const {level} = this.props
     return (
       <Fieldset key={fieldset.name} legend={fieldset.title} level={level}>
-        {fieldset.fields.map((field, fieldIndex) => this.renderField(field, validation, level + 1, index + fieldIndex))}
+        {fieldset.fields.map((field, fieldIndex) => this.renderField(field, level + 1, index + fieldIndex))}
       </Fieldset>
     )
   }
 
   render() {
-    const {type, validation} = this.props
+    const {type} = this.props
     return (
       <div>
         {type.fieldsets.map((fieldset, i) => {
-          const fieldValidation = validation && validation.fields[fieldset.field.name]
           return fieldset.lonely
-            ? this.renderField(fieldset.field, fieldValidation, this.props.level, i)
-            : this.renderFieldset(fieldset, fieldValidation, i)
+            ? this.renderField(fieldset.field, this.props.level, i)
+            : this.renderFieldset(fieldset, i)
         })}
       </div>
     )
