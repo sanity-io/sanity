@@ -12,6 +12,14 @@
   composes: textInput from '../../styles/TextInput.css';
 }
 
+.inputError {
+  composes: error from '../../styles/TextInput.css';
+}
+
 .clearButton {
   composes: textInput from '../../styles/ClearButton.css';
+}
+
+.error {
+  composes: root;
 }

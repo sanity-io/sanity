@@ -63,13 +63,17 @@ export default class Str extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, field, validation} = this.props
+
+    const rootClass = validation.messages.length > 0 ? styles.error : styles.root
+    const inputClass = validation.messages.length > 0 ? styles.inputError : styles.input
+
     return (
-      <div className={styles.root}>
+      <div className={rootClass}>
         <div className={styles.inner}>
           <ClearButton className={styles.clearButton} />
           <input
-            className={styles.input}
+            className={inputClass}
             type="text"
             placeholder={field.placeholder}
             onChange={this.handleChange}

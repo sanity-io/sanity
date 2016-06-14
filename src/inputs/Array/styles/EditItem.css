@@ -9,14 +9,14 @@
 
 .root {
   border: 1px solid var(--form-builder--array--add-item-color);
-  margin-left: -3rem;
+  margin: 1rem;
   margin-right: -3rem;
-  box-shadow: 0 0 50px #000;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
   background-color: #fff;
   padding: 0;
   z-index: 10;
   position: relative;
-  &::before {
+  /*&::before {
     content: "";
     position: absolute;
     top: -2rem;
@@ -41,7 +41,7 @@
     border: 1rem solid transparent;
     border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
     border-left: 1rem solid var(--form-builder--array--add-item-triangle-color);
-  }
+  }*/
 }
 
 
@@ -53,7 +53,7 @@
   border: 0;
   background: none;
   font-size: 2rem;
-  color: #fff;
+  color: var(--form-builder--array--add-item-color);
   cursor: pointer;
 }
 
@@ -62,8 +62,9 @@
 }
 
 .title {
-  background-color: var(--form-builder--array--add-item-color);
-  color: #fff;
+  /*background-color: var(--form-builder--array--add-item-color);*/
+  /*color: #fff;*/
+  color: var(--form-builder--array--add-item-color);
   font-size: 1em;
   padding: 1rem;
   font-weight: bold;

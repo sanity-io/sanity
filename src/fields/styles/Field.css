@@ -21,6 +21,14 @@
   }
 }
 
+.error {
+  border-left: 3px solid var(--brand-danger);
+}
+
+.valid {
+  /*border-left: 3px solid var(--brand-success);*/
+}
+
 .content {
   /* empty */
 }
@@ -56,10 +64,6 @@
 .description {
   composes: small from 'style:@sanity/base/theme/typography';
   color: var(--text-muted);
-}
-
-.title {
-  border: 10px solid red;
 }
 
 .nestingLevel {

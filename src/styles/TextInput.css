@@ -29,3 +29,20 @@
     border-color: var(--input-border-color-active);
   }
 }
+
+.error {
+  composes: textInput;
+  border-color: var(--brand-danger);
+
+  &:hover {
+    border-color: var(--brand-danger);
+  }
+
+  &:focus {
+    border-color: var(--brand-danger);
+  }
+
+  &:active {
+    border-color: var(--brand-danger);
+  }
+}

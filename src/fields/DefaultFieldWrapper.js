@@ -5,10 +5,10 @@ import React, {PropTypes} from 'react'
 
 export default function DefaultFieldWrapper(props, context) {
 
-
-  const className = styles[`level_${props.level}`]
-
   const ValidationList = context.resolveValidationComponent()
+
+  const validationClass = props.validation.messages.length > 0 ? styles.error : styles.valid
+  const className = `${styles[`level_${props.level}`]} ${validationClass}`
 
   return (
     <div className={className}>
