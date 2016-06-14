@@ -8,6 +8,9 @@
     "bengler/react",
     "bengler/import"
   ],
+  "settings": {
+    "import/ignore": ["\\.css$", "node_modules"]
+  },
   "rules": {
     "sort-imports": [1, {
       "ignoreCase": true,
