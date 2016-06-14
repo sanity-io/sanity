@@ -6,3 +6,7 @@
   line-height: var(--line-height-base);
   color: var(--text-color);
 }
+
+.small {
+  font-size: 0.8rem;
+}

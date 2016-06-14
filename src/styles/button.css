@@ -1,11 +1,60 @@
+@import "style:@sanity/base/theme/variables";
+@use postcss-cssnext;
+@use postcss-font-awesome;
+
+/* Hack to make font awsome work before we have asset management */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?v=4.6.3');
+  src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'),
+  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'),
+  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'),
+  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'),
+  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
+}
+
 .root {
   display: block;
   text-transform: uppercase;
-  background-color: #222;
-  color: #fff;
-  border: 0;
-  padding: .8em 1em;
+  padding: 0.8em 1em;
   outline: none;
+  cursor: pointer;
+}
+
+.small {
+  font-size: 0.8em;
+  padding: 0.2em 1em;
+}
+
+.filled {
+  background-color: var(--brand-primary);
+  color: #fff;
+}
+
+.hollow {
+  composes: root;
+  border: 1px solid var(--brand-primary);
+  background-color: transparent;
+  color: var(--brand-primary);
+
+  &:hover {
+    background-color: var(--brand-primary);
+    color: #fff;
+  }
+
+  &:focus {
+    background-color: color(var(--brand-primary) tint(50%));
+  }
+}
+
+.dangerHollow {
+  composes: hollow;
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+}
+
+.default {
+  composes: hollow;
 }
 
 .danger {
@@ -13,14 +62,30 @@
   background-color: var(--brand-danger);
 }
 
-.button {
-
+.delete {
+  composes: danger;
+  &::before {
+    font-awesome: trash;
+  }
 }
 
-.buttonSuccess {
-
+.noBorder {
+  background-color: transparent;
+  text-align: left;
+  border: 0;
 }
 
-.buttonNegative {
+.editIcon {
 
+  &::before {
+    margin-right: .5em;
+    font-awesome: pencil;
+  }
+}
+
+.deleteIcon {
+  &::before {
+    margin-right: .5em;
+    font-awesome: trash;
+  }
 }

@@ -10,11 +10,12 @@
   --body-bg:        #fff;
   --gray-base:      #000;
 
-  --gray-darker:    color(var(--gray-base) lightness(+12.5%) saturation(-12%));
-  --gray-dark:      color(var(--gray-base) lightness(+20%) saturation(-20%));
-  --gray:           color(var(--gray-base) lightness(+30%) saturation(-20%));;
-  --gray-light:     color(var(--gray-base) lightness(+46.7%) saturation(-46%));
-  --gray-lighter:   color(var(--gray-base) lightness(+93.7.5%) saturation(-97%));
+  --gray-darker:    color(var(--gray-base) lightness(+12.5%));
+  --gray-dark:      color(var(--gray-base) lightness(+30%));
+  --gray:           color(var(--gray-base) lightness(+40%));;
+  --gray-light:     color(var(--gray-base) lightness(+66.7%));
+  --gray-lighter:   color(var(--gray-base) lightness(+85%));
+  --gray-lightest:  color(var(--gray-base) lightness(+93.5%));
 
   --text-color:               var(--gray-darker);
   --link-color:               var(--brand-primary);
@@ -140,6 +141,10 @@
   --progress-bar-warning-bg:     var(--brand-warning);
   --progress-bar-danger-bg:      var(--brand-danger);
   --progress-bar-info-bg:        var(--brand-info);
+
+  /* List */
+  --list-border-color:            var(--gray-light);
+  --list-border:                  1px solid var(--list-border-color);
 
   /* List group */
   --list-group-bg:                 #fff;
