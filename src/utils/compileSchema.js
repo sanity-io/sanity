@@ -1,26 +1,22 @@
-import {pick, omit} from 'lodash'
-import basicTypeBuilders from '../types/builders'
+import types from '../types'
+
 import debug from './debug'
 import {ifNotUniqueProp} from '../types/utils'
 
-function createSchemaTypeBuilder(schemaTypeDef) {
+function defineSchemaType(schemaTypeDef) {
   // maybe warn if toplevel type definition is different from the passed in typeDef
-  debug('registered custom schema type "%s" of "%s"', schemaTypeDef.name, schemaTypeDef.type)
+  debug('registering custom schema type "%s" of "%s"', schemaTypeDef.name, schemaTypeDef.type)
 
-  // const builder = basicTypeBuilders[toplevelTypeDef.type]
+  const basicType = types[schemaTypeDef.type]
 
-  // if (!builder) {
-  //   throw new Error(`Invalid type: ${toplevelTypeDef.type}`)
-  // }
-  //
-  // builder(toplevelTypeDef)
-  return (typeDef, typeBuilders, schema) => {
-    return Object.assign(
-      pick(typeDef, ['name', 'title', 'type']),
-      {
-        options: omit(typeDef, ['type', 'title'])
-      }
-    )
+  if (!basicType) {
+    throw new Error(`Invalid type: ${schemaTypeDef.type}`)
+  }
+
+  return {
+    parse(fieldDef) {
+      return fieldDef
+    }
   }
 }
 
@@ -37,29 +33,23 @@ export function compile(schema) {
     throw new Error(`Duplicate schema type: ${dupe.name}. Check schema definition file for "${schema.name}"'`)
   })
 
-  const schemaTypeBuilders = {}
+  const schemaTypes = {}
   // Create type builders for all schema types
 
   schema.types.forEach(typeDef => {
-    const builder = basicTypeBuilders[typeDef.type]
-    if (!builder) {
+    const type = types[typeDef.type]
+    if (!type) {
       throw new Error(`Invalid type for specified for schema type "${typeDef.name}": "${typeDef.type}" `)
     }
-    schemaTypeBuilders[typeDef.name] = createSchemaTypeBuilder(typeDef)
+    schemaTypes[typeDef.name] = defineSchemaType(typeDef)
   })
 
-  // todo: check for conflicts
+  const typeParsers = Object.assign({}, types, schemaTypes)
 
-  const typeBuilders = Object.assign({}, basicTypeBuilders, schemaTypeBuilders)
-
-  const compiled = {
-    types: {}
-  }
-
+  const compiledTypes = {}
   schema.types.forEach(typeDef => {
-    const typeBuilder = typeBuilders[typeDef.type]
-    compiled.types[typeDef.name] = typeBuilder(typeDef, typeBuilders, schema)
+    compiledTypes[typeDef.name] = typeParsers[typeDef.type].parse(typeDef, typeParsers)
   })
 
-  return compiled
+  return {types: compiledTypes}
 }

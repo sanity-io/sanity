@@ -5,15 +5,15 @@ export default {
     options: {
       of: PropTypes.array.isRequired
     },
-    parse(options, typeBuilders, schema) {
-      const containsTypes = options.of.map(typeDef => {
-        const typeBuilder = typeBuilders[typeDef.type]
-        if (!typeBuilder) {
-          throw new Error(`Invalid type: ${typeDef.type}.`)
+    parse(typeDef, types) {
+      const containsTypes = typeDef.of.map(fieldDef => {
+        const type = types[fieldDef.type]
+        if (!type) {
+          throw new Error(`Invalid type: ${fieldDef.type}.`)
         }
-        return typeBuilder(typeDef, typeBuilders, schema)
+        return type.parse(fieldDef, types)
       })
-      return {of: containsTypes}
+      return Object.assign({}, typeDef, {of: containsTypes})
     }
   },
   reference: {
@@ -25,19 +25,19 @@ export default {
         PropTypes.array
       ]).isRequired
     },
-    parse(options, typeBuilders, schema) {
-      const toTypeDefs = Array.isArray(options.to) ? options.to : [options.to]
-      const toTypes = toTypeDefs.map(typeDef => {
-        if (!typeDef.type) {
-          throw new Error(`Missing type declaration on schema type "${typeDef.name}"`)
+    parse(typeDef, types) {
+      const toFields = Array.isArray(typeDef.to) ? typeDef.to : [typeDef.to]
+      const toTypes = toFields.map(toField => {
+        if (!toField.type) {
+          throw new Error(`Missing type declaration on schema type "${toField.name}"`)
         }
-        const typeBuilder = typeBuilders[typeDef.type]
-        if (!typeBuilder) {
+        const type = types[toField.type]
+        if (!type) {
           throw new Error(
-            `Missing type builder for ${typeDef.type}. Did you forget to declare the type "${typeDef.type}" in the schema?`
+            `Missing type builder for ${toField.type}. Did you forget to declare the type "${toField.type}" in the schema?`
           )
         }
-        return typeBuilder(typeDef, typeBuilders, schema)
+        return type.parse(type, types)
       })
       return {to: toTypes}
     }

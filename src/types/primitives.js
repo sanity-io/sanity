@@ -15,46 +15,48 @@ export default {
     defaultOptions: {
       fieldsets: []
     },
-    parse(options, typeBuilders, schema) {
-      if (!options.fields) {
+    parse(typeDef, types) {
+      if (!typeDef.fields) {
         throw new Error('Object types must have fields')
       }
 
-      const preparedFields = prepareFields(options.fields)
-
-      const fieldsets = options.fieldsets.map(fieldset => {
+      const fieldsets = (typeDef.fieldsets || []).map(fieldset => {
         return Object.assign({}, fieldset, {
           fieldset: true,
           fields: []
         })
       })
+
       ifNotUniqueProp(fieldsets, 'name', dupe => {
-        throw new Error(`Duplicate fieldset found: ${dupe.name}. The field ${options.name} has two fieldsets with the same name.`)
+        throw new Error(`Duplicate fieldset found: ${dupe.name}. The field ${typeDef.name} has two fieldsets with the same name.`)
       })
+
       const fieldsetsByName = keyBy(fieldsets, 'name')
 
-      const preparedFieldsets = preparedFields.map(field => {
+      const validatedFields = validateFields(typeDef.fields)
+
+      const validatedFieldsets = validatedFields.map(field => {
         if (field.fieldset) {
           const fieldset = fieldsetsByName[field.fieldset]
           if (!fieldset) {
-            throw new Error(`Group '${field.fieldset}' is not defined in schema for type '${options.name}'`)
+            throw new Error(`Group '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`)
           }
           fieldset.fields.push(field)
           // Return the fieldset if its the first time we encounter a field in this fieldset
           return fieldset.fields.length === 1 ? fieldset : null
         }
-        return {lonely: true, field: field}
+        return {lonely: true, field}
       }).filter(Boolean)
 
       return {
-        fields: preparedFields,
-        fieldsets: preparedFieldsets
+        fields: validatedFields,
+        fieldsets: validatedFieldsets
       }
 
-      function prepareFields(fields) {
+      function validateFields(fields) {
         // Check for duplicates
         ifNotUniqueProp(fields, 'name', dupe => {
-          throw new Error(`Duplicate field name: ${dupe.name} Please check the 'fields' property of schema type '${options.name}'`)
+          throw new Error(`Duplicate field name: ${dupe.name} Please check the 'fields' property of schema type '${typeDef.name}'`)
         })
         return fields.map(field => {
           if (field.name === '$type') {
@@ -68,15 +70,14 @@ export default {
             throw new Error(`Missing .type property for field "${field.name}".`)
           }
 
-          const typeBuilder = typeBuilders[field.type]
-          if (!typeBuilder) {
+          const fieldType = types[field.type]
+          if (!fieldType) {
             throw new Error(
               `Invalid type "${field.type}" for field "${field.name}". Did you forget to declare the type ${field.type} in the schema?`
             )
           }
-          return typeBuilder(field, typeBuilders, schema)
+          return fieldType.parse(field, types)
         })
-
       }
     }
   },
@@ -90,13 +91,13 @@ export default {
       title: PropTypes.string,
       of: PropTypes.array.isRequired
     },
-    parse(options, typeBuilders, schema) {
-      const containsTypes = options.of.map(typeDef => {
-        const typeBuilder = typeBuilders[typeDef.type]
-        if (!typeBuilder) {
-          throw new Error(`Invalid type: ${typeDef.type}.`)
+    parse(typeDef, types) {
+      const containsTypes = typeDef.of.map(fieldDef => {
+        const fieldType = types[fieldDef.type]
+        if (!fieldType) {
+          throw new Error(`Invalid type: ${fieldDef.type}.`)
         }
-        return typeBuilder(typeDef, typeBuilders, schema)
+        return fieldType.parse(fieldDef, types)
       })
       return {of: containsTypes}
     }
@@ -118,6 +119,7 @@ export default {
   string: {
     options: {
       title: PropTypes.string,
+      placeholder: PropTypes.string,
       format: PropTypes.oneOf(['markdown', 'html', 'plain']),
       maxLength: PropTypes.number
     },

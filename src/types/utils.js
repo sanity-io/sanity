@@ -9,61 +9,6 @@ export function ifNotUniqueProp(array, property, notUniqueFn) {
   })
 }
 
-const IMPLICIT_OPTIONS = {
-  type: PropTypes.string.isRequired,
-  name: PropTypes.string,
-  primitive: PropTypes.string,
-  required: PropTypes.bool
-}
-
-export function checkSchemaType(schemaType, typeOptions) {
-
-  const definedOptions = Object.assign({}, IMPLICIT_OPTIONS, typeOptions)
-  const allowedOptionNames = Object.keys(definedOptions)
-  const givenOptionNames = Object.keys(schemaType)
-
-  const undeclared = difference(givenOptionNames, allowedOptionNames)
-
-  let errors = []
-
-  if (undeclared.length) {
-    errors = undeclared.map(optionName => {
-      return {
-        schemaType,
-        error: `Unknown property "${optionName}" on type "${schemaType.type}". Please check the type definition for "${schemaType.name}"`
-      }
-    })
-  }
-
-  return errors.concat(Object.keys(definedOptions).map(optionName => {
-    const err = definedOptions[optionName](schemaType, optionName, schemaType.name, 'prop')
-    if (err) {
-      return {
-        schemaType,
-        error: err
-      }
-    }
-    return null
-  }).filter(Boolean))
-}
-
-export function createTypeBuilder(typeDescriptor) {
-  return (schemaType, typeBuilders, schema) => {
-    const result = checkSchemaType(schemaType, typeDescriptor.options)
-
-    if (result.length) {
-      result.forEach(validation => {
-        console.error(validation.error)
-      })
-    }
-
-    const options = Object.assign({}, typeDescriptor.defaultOptions, schemaType)
-
-    const extra = typeDescriptor.parse ? typeDescriptor.parse(options, typeBuilders, schema) : {}
-    return Object.assign({name: schemaType.name, type: schemaType.type}, options, extra)
-  }
-}
-
 const toString = Object.prototype.toString
 // Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 

@@ -9,7 +9,7 @@ export default {
         {
           name: 'headings',
           title: 'Headings',
-          description: 'Test description'
+          description: 'FIELDSET HEADINGS DESCRIPTION'
         },
         {
           name: 'author',
