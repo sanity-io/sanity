@@ -6,7 +6,7 @@ export default function ObjectField(props) {
   const {input, field, level} = props
   return (
     <div className={styles.root}>
-      <Fieldset level={level} legend={field.title || 'No legend is set'}>
+      <Fieldset level={level} legend={field.title || 'No legend is set'} description={field.description}>
         <div className={styles.inner}>
           {input}
         </div>

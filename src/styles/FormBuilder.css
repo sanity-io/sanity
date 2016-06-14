@@ -1,10 +1,11 @@
 @use postcss-cssnext;
 
 .root {
-  background-color: #efefef;
+  background-color: #fafafa;
 }
 
 .inner {
   max-width: 40em;
   margin: 0 auto;
+  padding: 1rem;
 }

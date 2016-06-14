@@ -6,41 +6,56 @@
   box-sizing: border-box;
   max-width: 100%;
   background-color: #fff;
-  border-bottom: 1px solid #ccc;
-  & {
-    border: none;
-  }
-}
+  border: 1px solid var(--gray-lighter);
 
-.content {
-  /*display: flex;
-  flex-direction: row;*/
   padding: 1rem;
 
 }
 
-.level_1 {
+.subRoot {
   composes: root;
-}
-
-.level_2 {
-  composes: root;
-}
-
-.level_3 {
-  composes: root;
-}
-
-.label {
-  font-size: .9rem;
-  width: 8em;
-  text-align: left;
-  padding: .25em 0;
-  padding-right: 2em;
+  border: 0;
+  padding: 0;
+  & .label {
+    font-size: 1rem;
+  }
 }
 
 .content {
-  /*flex-grow: 2;*/
+  /* empty */
+}
+
+.level_0 {
+  composes: root;
+}
+
+.level_1 {
+  composes: subRoot;
+}
+
+.level_2 {
+  composes: subRoot;
+}
+
+.level_3 {
+  composes: subRoot;
+}
+
+.level_4 {
+  composes: subRoot;
+}
+
+.label {
+  font-size: 1.5rem;
+  width: 8em;
+  text-align: left;
+  padding: 0.25em 0;
+  padding-right: 2em;
+}
+
+.description {
+  composes: small from 'style:@sanity/base/theme/typography';
+  color: var(--text-muted);
 }
 
 .title {

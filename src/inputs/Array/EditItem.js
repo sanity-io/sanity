@@ -13,7 +13,7 @@ export default class EditItem extends React.Component {
   render() {
     return (
       <div className={styles.root}>
-        <h1 className={styles.title}>{this.props.title}</h1>
+        <h1 className={styles.title}>{this.props.title || 'No title is set'}</h1>
         <button className={styles.close} type="button" onClick={this.handleClose}>×</button>
         <div className={styles.content}>
           {this.props.children}

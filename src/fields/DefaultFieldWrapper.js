@@ -4,11 +4,9 @@ import styles from './styles/Field.css'
 import React, {PropTypes} from 'react'
 
 export default function DefaultFieldWrapper(props, context) {
-  let className = styles.root
 
-  if (props.level > 0) {
-    className = styles[`level_${props.level}`]
-  }
+
+  const className = styles[`level_${props.level}`]
 
   const ValidationList = context.resolveValidationComponent()
 
@@ -20,6 +18,10 @@ export default function DefaultFieldWrapper(props, context) {
         <label className={styles.label}>
           {props.field.title}
         </label>
+
+        <div className={styles.description}>
+          {props.field.description}
+        </div>
 
         <div className={styles.content}>
           {props.children}
