@@ -8,7 +8,8 @@ export default {
       fieldsets: [
         {
           name: 'headings',
-          title: 'Headings'
+          title: 'Headings',
+          description: 'Test description'
         },
         {
           name: 'author',
@@ -24,13 +25,13 @@ export default {
           name: 'foo',
           title: 'Foo',
           type: 'string',
-          //fieldset: 'headings'
+          fieldset: 'headings'
         },
         {
           name: 'title',
           title: 'Title',
           type: 'string',
-          //fieldset: 'headings'
+          fieldset: 'headings'
         },
         {
           name: 'author',
