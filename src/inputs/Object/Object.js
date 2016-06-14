@@ -76,7 +76,7 @@ export default class Obj extends React.Component {
   renderFieldset(fieldset, index) {
     const {level} = this.props
     return (
-      <Fieldset key={fieldset.name} legend={fieldset.title} level={level}>
+      <Fieldset key={fieldset.name} fieldset={fieldset} level={level}>
         {fieldset.fields.map((field, fieldIndex) => this.renderField(field, level + 1, index + fieldIndex))}
       </Fieldset>
     )

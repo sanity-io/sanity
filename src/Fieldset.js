@@ -2,14 +2,14 @@ import styles from './styles/Fieldset.css'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {
-  console.log("Fieldset props", props)
+  const {fieldset} = props
   return (
     <fieldset className={styles.root}>
       <div className={styles.inner}>
         <div className={styles.debugNestingLevel}>Fieldset, nesting level {props.level}</div>
-        <legend className={styles.legend}>{props.legend}</legend>
+        <legend className={styles.legend}>{fieldset.legend}</legend>
         <p className={styles.description}>
-          {props.description}
+          {fieldset.description}
         </p>
         <div className={styles.content}>
           {props.children}
@@ -19,10 +19,16 @@ export default function Fieldset(props) {
   )
 }
 
+Fieldset.defaultProps = {
+  fieldset: {}
+}
+
 Fieldset.propTypes = {
-  title: PropTypes.string,
-  description: PropTypes.string,
-  legend: PropTypes.string,
+  fieldset: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    legend: PropTypes.string
+  }),
   children: PropTypes.node,
   level: PropTypes.number
 }
