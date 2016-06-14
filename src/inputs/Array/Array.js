@@ -58,7 +58,7 @@ export default class Arr extends React.Component {
       field: field,
       schema: this.context.schema,
       // not too elegant atm.
-      resolveContainer: (_field, type) => this.context.resolveInputComponent(_field, type).valueContainer
+      resolveInputComponent: this.context.resolveInputComponent
     })
 
     this.props.onChange({

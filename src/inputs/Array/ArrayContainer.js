@@ -9,7 +9,7 @@ export default class ArrayContainer {
       return new ArrayContainer([], context)
     }
 
-    const {field, schema, resolveContainer} = context
+    const {field, schema, resolveInputComponent} = context
 
     const type = getFieldType(schema, field)
 
@@ -19,7 +19,7 @@ export default class ArrayContainer {
       // find type in of
       const fieldDef = type.of.find(ofType => ofType.type === itemType)
 
-      return createFieldValue(item, {field: fieldDef, schema, resolveContainer})
+      return createFieldValue(item, {field: fieldDef, schema, resolveInputComponent})
     })
     return new ArrayContainer(deserialized, context)
   }

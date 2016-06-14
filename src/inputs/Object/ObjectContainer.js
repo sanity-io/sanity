@@ -5,12 +5,12 @@ import {getFieldType} from '../../utils/getFieldType'
 export default class ObjectContainer {
 
   static deserialize(serialized = {}, context) {
-    const {field, schema, resolveContainer} = context
+    const {field, schema, resolveInputComponent} = context
     const type = getFieldType(schema, field)
     const deserialized = {$type: field.type}
 
     type.fields.forEach(fieldDef => {
-      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveContainer})
+      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveInputComponent})
     })
     return new ObjectContainer(deserialized, context)
   }
@@ -26,7 +26,7 @@ export default class ObjectContainer {
 
   patch(patch) {
     const {value, context} = this
-    const {field, schema, resolveContainer} = context
+    const {field, schema, resolveInputComponent} = context
 
     const type = getFieldType(schema, field)
     const newVal = value ? clone(value) : {$type: type.name}
@@ -45,7 +45,7 @@ export default class ObjectContainer {
       const fieldDef = keyedFields[keyName]
 
       if (!newVal.hasOwnProperty(keyName)) {
-        newVal[keyName] = createFieldValue(void 0, {field: fieldDef, schema: context.schema, resolveContainer})
+        newVal[keyName] = createFieldValue(void 0, {field: fieldDef, schema: context.schema, resolveInputComponent})
       }
       newVal[keyName] = newVal[keyName].patch(patch[keyName])
     })

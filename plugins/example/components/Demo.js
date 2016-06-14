@@ -77,15 +77,10 @@ export default class Demo extends React.Component {
   createFormBuilderStateFrom(serialized) {
     const {schema, type, resolveInputComponent} = this.props
 
-    const resolveContainer = (field, fieldType) => {
-      const input = resolveInputComponent(field, fieldType)
-      return input.valueContainer
-    }
-
     return createFormBuilderState(serialized, {
       type: type,
       schema: schema,
-      resolveContainer
+      resolveInputComponent
     })
   }
 
