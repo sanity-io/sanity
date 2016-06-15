@@ -14,8 +14,8 @@ test('can do simple requests', t => {
     })
 
   return client.fetch('query').then(res => {
-    t.is(res[0].foo, 'bar')
-    t.is(res[1].bar, 'foo')
+    t.is(res.result[0].foo, 'bar')
+    t.is(res.result[1].bar, 'foo')
   })
 })
 
@@ -34,8 +34,7 @@ test('can create something', t => {
 
   nock(baseUrl)
     .post('/m/foo?returnIds=true', {'foo:': {$$create: doc}})
-    .reply(201, {ms: 123, result: {transactionId: 'bar', docIds: ['foo:99']}
-  })
+    .reply(201, {ms: 123, transactionId: 'bar', docIds: ['foo:99']})
 
   return client.create(doc).then(res => {
     t.is(res.transactionId, 'bar')
@@ -46,8 +45,7 @@ test('can create something', t => {
 test('can delete', t => {
   nock(baseUrl)
     .post('/m/foo?returnIds=true', {foo: {$$delete: null}})
-    .reply(200, {ms: 123, result: {transactionId: 'bar'}
-  })
+    .reply(200, {ms: 123, transactionId: 'bar'})
 
   return client.delete('foo').then(res => {
     t.is(res.transactionId, 'bar')

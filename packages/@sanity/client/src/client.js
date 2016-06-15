@@ -14,7 +14,7 @@ class SanityClient {
   }
 
   fetch(query, params) {
-    return this.gradient.fetch(query, params).then(res => res.result)
+    return this.gradient.fetch(query, params)
   }
 
   update(documentId, patch, opts) {
@@ -22,11 +22,11 @@ class SanityClient {
   }
 
   create(doc, opts) {
-    return this.gradient.create(doc, opts).then(res => res.result)
+    return this.gradient.create(doc, opts)
   }
 
   delete(documentId, opts) {
-    return this.gradient.delete(documentId, opts).then(res => res.result)
+    return this.gradient.delete(documentId, opts)
   }
 
   observe(query, opts) {
