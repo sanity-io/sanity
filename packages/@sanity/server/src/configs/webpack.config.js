@@ -60,6 +60,10 @@ export default (config = {}) => {
             require.resolve('babel-preset-react'),
             require.resolve('babel-preset-es2015')
           ],
+          plugins: [
+            require.resolve('babel-plugin-syntax-class-properties'),
+            require.resolve('babel-plugin-transform-class-properties')
+          ],
           cacheDirectory: true
         }
       }, {

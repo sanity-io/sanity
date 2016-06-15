@@ -33,10 +33,12 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
-    "@sanity/webpack-loader": "^1.2.13",
     "@sanity/resolver": "^2.0.2",
+    "@sanity/webpack-loader": "^1.2.13",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
+    "babel-plugin-syntax-class-properties": "^6.8.0",
+    "babel-plugin-transform-class-properties": "^6.9.1",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-react-hmre": "^1.1.0",
