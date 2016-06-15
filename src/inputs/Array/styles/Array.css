@@ -6,10 +6,6 @@
 }
 
 .item {
-
-  min-height: 3rem;
-  transition: all 0.5s linear;
-
   &:first-child {
     & .inner {
       border-top: var(--list-border);
@@ -17,10 +13,20 @@
   }
 }
 
+.active {
+  composes: item;
+  border: 5px solid red;
+}
+
 .inner {
   border-bottom: var(--list-border);
   padding: 0.5rem;
+  &:hover {
+    background-color: var(--gray-lightest);
+  }
 }
+
+
 
 .primaryFunctions {
   margin-top: 1rem;
