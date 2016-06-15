@@ -3,5 +3,5 @@
     "node": true
   },
   "parser": "babel-eslint",
-  "extends": "sanity/react"
+  "extends": "sanity"
 }
