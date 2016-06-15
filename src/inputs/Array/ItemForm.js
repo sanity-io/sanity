@@ -17,6 +17,7 @@ export default class ItemForm extends React.Component {
     field: FormBuilderPropTypes.field.isRequired,
     index: PropTypes.number.isRequired,
     value: PropTypes.any,
+    level: PropTypes.number,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
@@ -30,26 +31,6 @@ export default class ItemForm extends React.Component {
 
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps, this.props)
-  }
-
-  renderField(el) {
-    const {index} = this.props
-    return (
-      <div key={index}>
-        {el}
-        {
-          // <Button
-          //   type="button"
-          //   title="delete"
-          //   onClick={this.handleRemove}
-          //   kind="delete"
-          // >
-          //   Remove
-          // </Button>
-        }
-
-      </div>
-    )
   }
 
   handleChange(event) {
@@ -76,14 +57,14 @@ export default class ItemForm extends React.Component {
   }
 
   render() {
-    const {value, field, focus} = this.props
+    const {value, field, focus, level} = this.props
 
     const fieldType = this.getFieldType(field)
 
-    const FieldInput = this.context.resolveInputComponent(field, fieldType)
-    if (!FieldInput) {
+    const InputComponent = this.context.resolveInputComponent(field, fieldType)
+    if (!InputComponent) {
       return (
-        <div>Field input not found for field of type "{field.type}"
+        <div>No input component found for field of type "{field.type}"
           <pre>{JSON.stringify(field, null, 2)}</pre>
         </div>
       )
@@ -91,11 +72,12 @@ export default class ItemForm extends React.Component {
 
     const passSerialized = value.constructor.passSerialized
 
-    return this.renderField(
-      <FieldInput
+    return (
+      <InputComponent
         value={passSerialized ? value.serialize() : value}
         field={field}
         type={fieldType}
+        level={level}
         focus={focus}
         onEnter={this.handleEnter}
         onChange={this.handleChange}

@@ -135,6 +135,7 @@ export default class Arr extends React.Component {
           index={index}
           focus={index === 0}
           field={itemField}
+          level={this.props.level + 1}
           value={itemValue}
           onChange={this.handleItemChange}
           onEnter={this.handleItemEnter}
