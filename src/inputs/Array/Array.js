@@ -154,7 +154,7 @@ export default class Arr extends React.Component {
     const {type, field, value} = this.props
     const {selectType, editIndex} = this.state
     return (
-      <div className={styles.array}>
+      <div className={styles.root}>
 
         {value && value.map((item, i) => {
 
@@ -171,19 +171,25 @@ export default class Arr extends React.Component {
 
           return (
             <div key={i} className={styles.item}>
-              <ItemPreview
-                index={i}
-                field={itemField}
-                value={item}
-                onEdit={this.handleItemEdit}
-                onRemove={this.handleRemoveItem}
-              />
-            {editIndex === i && this.renderEditItemForm(editIndex)}
+              <div className={styles.inner}>
+                <ItemPreview
+                  index={i}
+                  field={itemField}
+                  value={item}
+                  onEdit={this.handleItemEdit}
+                  onRemove={this.handleRemoveItem}
+                />
+              </div>
+              {editIndex === i && this.renderEditItemForm(editIndex)}
             </div>
           )
         })}
-        <Button type="button" onClick={this.handleAddBtnClick}>add {field.title}</Button>
-        {selectType && this.renderSelectType()}
+        <div className={styles.primaryFunctions}>
+          <Button type="button" onClick={this.handleAddBtnClick} kind="add">add {field.title}</Button>
+          <div className={styles.selectType}>
+            {selectType && this.renderSelectType()}
+          </div>
+        </div>
       </div>
     )
   }

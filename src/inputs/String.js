@@ -71,7 +71,11 @@ export default class Str extends React.Component {
     return (
       <div className={rootClass}>
         <div className={styles.inner}>
-          <ClearButton className={styles.clearButton} />
+
+          {
+            value && <ClearButton className={styles.clearButton} />
+          }
+
           <input
             className={inputClass}
             type="text"

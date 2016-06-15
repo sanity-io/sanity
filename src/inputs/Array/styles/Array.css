@@ -2,10 +2,26 @@
 @use postcss-cssnext;
 
 .root {
-  border: 1px solid red;
+
 }
 
 .item {
+
+  min-height: 3rem;
+  transition: all 0.5s linear;
+
+  &:first-child {
+    & .inner {
+      border-top: var(--list-border);
+    }
+  }
+}
+
+.inner {
   border-bottom: var(--list-border);
-  padding: .5rem;
+  padding: 0.5rem;
+}
+
+.primaryFunctions {
+  margin-top: 1rem;
 }

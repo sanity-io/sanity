@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/EditItem.css'
+import Button from '../../buttons/Default'
 
 export default class EditItem extends React.Component {
   constructor() {
@@ -23,7 +24,10 @@ export default class EditItem extends React.Component {
           {this.props.children}
         </div>
 
-        <button className={styles.bottomClose} type="button" onClick={this.handleClose}>Ok</button>
+        <div className={styles.primaryFunctions}>
+          <Button type="button" onClick={this.handleClose}>Close</Button>
+        </div>
+
       </div>
     )
   }

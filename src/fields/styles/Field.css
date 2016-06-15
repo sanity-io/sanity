@@ -64,6 +64,7 @@
 .description {
   composes: small from 'style:@sanity/base/theme/typography';
   color: var(--text-muted);
+  padding-bottom: 1rem;
 }
 
 .nestingLevel {

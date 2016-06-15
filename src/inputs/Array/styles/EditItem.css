@@ -1,7 +1,24 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-font-awesome;
-
 @use postcss-cssnext;
+
+
+@keyframes appear {
+  0% {
+    max-height: 0;
+    margin-right: 0;
+    overflow: hidden;
+  }
+  50% {
+    margin-right: 0;
+    max-height: 500px;
+  }
+  100% {
+    max-height: 500px;
+    margin-right: -3rem;
+
+  }
+}
 
 :root {
   --form-builder--array--add-item-color: var(--brand-primary);
@@ -9,38 +26,19 @@
 }
 
 .root {
-  /*border: 1px solid var(--form-builder--array--add-item-color);*/
+  border: 1px solid var(--form-builder--array--add-item-color);
   /*box-shadow: 0 0 20px rgba(0,0,0,0.1);*/
   background-color: #fff;
   padding: 0;
   z-index: 10;
   position: relative;
-  /*&::before {
-    content: "";
-    position: absolute;
-    top: -2rem;
-    left: -1px;
-    height: 0;
-    width: 0;
-    z-index: 100;
-    display: block;
-    border: 1rem solid transparent;
-    border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
-    border-right: 1rem solid var(--form-builder--array--add-item-triangle-color);
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    top: -2rem;
-    right: -1px;
-    height: 0;
-    width: 0;
-    z-index: 100;
-    display: block;
-    border: 1rem solid transparent;
-    border-bottom: 1rem solid var(--form-builder--array--add-item-triangle-color);
-    border-left: 1rem solid var(--form-builder--array--add-item-triangle-color);
-  }*/
+  margin-right: -3rem;
+
+  animation-name: appear;
+  animation-duration: .5s;
+  animation-iteration-count: 1;
+
+  padding: 1rem;
 
   @media (--max-screen-medium) {
     position: fixed;
@@ -108,5 +106,8 @@
   font-weight: bold;
   text-transform: uppercase;
   padding-left: 3rem;
+}
 
+.primaryFunctions {
+  margin-top: 1rem;
 }

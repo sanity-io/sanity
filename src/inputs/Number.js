@@ -33,6 +33,7 @@ export default class Num extends React.Component {
           type="number"
           className={styles.input}
           onChange={this.handleChange}
+          placeholder="Must be a number ex. 123"
           value={value || ''}
         />
       </div>

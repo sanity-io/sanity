@@ -37,6 +37,10 @@ export default class ItemPreview extends React.Component {
     onEdit(index)
   }
 
+  toggleEdit() {
+    // Handle toggle insted of edit
+  }
+
   handleRemove() {
     const {index, onRemove} = this.props
     onRemove(index)
@@ -57,11 +61,7 @@ export default class ItemPreview extends React.Component {
     const passSerialized = value.constructor.passSerialized
 
     return (
-      <div className={styles.root}>
-        <div className={styles.buttons}>
-          <button className={styles.editButton} type="button" title="Edit" onClick={this.handleEdit}>Edit</button>
-          <button className={styles.deleteButton} type="button" title="Delete" onClick={this.handleRemove}>Remove</button>
-        </div>
+      <div className={styles.root} onClick={this.handleEdit}>
         <PreviewComponent
           value={passSerialized ? value.serialize() : value}
           field={field}
