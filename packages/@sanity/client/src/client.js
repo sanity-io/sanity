@@ -7,7 +7,9 @@ class SanityClient {
 
     this.gradient = pify({
       fetch: client.fetch.bind(client),
-      update: client.update.bind(client)
+      update: client.update.bind(client),
+      create: client.create.bind(client),
+      delete: client.delete.bind(client)
     })
   }
 
@@ -17,6 +19,14 @@ class SanityClient {
 
   update(documentId, patch, opts) {
     return this.gradient.update(documentId, patch, opts)
+  }
+
+  create(doc, opts) {
+    return this.gradient.create(doc, opts).then(res => res.result)
+  }
+
+  delete(documentId, opts) {
+    return this.gradient.delete(documentId, opts).then(res => res.result)
   }
 
   observe(query, opts) {
