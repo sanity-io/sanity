@@ -20,7 +20,10 @@ const client = sanityClient({
 ```js
 const query = 'foo.comment[] {.body, .createdAt}'
 client.fetch('query').then(res => {
-  // [{comment1}, {comment2}]
+  // {
+  //   transactionId: 'bar',
+  //   result: [{comment1}, {comment2}]
+  // }
 })
 ```
 Check out https://github.com/sanity-io/gradientql to see how queries are composed.
@@ -31,7 +34,7 @@ Check out https://github.com/sanity-io/gradientql to see how queries are compose
 const doc = {title: 'Baloney'}
 client.create(doc).then(res => {
   // {
-  //   transactionId: 'bar'
+  //   transactionId: 'bar',
   //   docIds: ['foo:99']
   // }
 })
@@ -41,7 +44,7 @@ client.create(doc).then(res => {
 ```js
 const patch = {description: 'new desc'}
 return client.update('foo:99', patch).then(res => {
-  // TBA
+  //
 })
 ```
 
