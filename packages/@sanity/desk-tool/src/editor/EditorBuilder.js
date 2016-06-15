@@ -31,14 +31,11 @@ class EditorBuilder extends React.Component {
   }
 
   getStateForProps(props) {
-    const resolveContainer = (field, fieldType) =>
-      props.resolveInputComponent(field, fieldType).valueContainer
-
     return {
       value: createFormBuilderState(props.initialValue, {
         type: props.type,
         schema: props.schema,
-        resolveContainer: resolveContainer
+        resolveInputComponent: props.resolveInputComponent
       }),
       changed: false,
       saving: false
