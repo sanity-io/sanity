@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@sanity/form-builder": "^1.0.3",
+    "@sanity/form-builder-plugin": "^1.0.0",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.5.2",
     "postcss-media-variables": "^2.0.0",

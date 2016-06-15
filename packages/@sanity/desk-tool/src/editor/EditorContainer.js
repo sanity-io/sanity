@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import equals from 'shallow-equals'
 import client from 'client:@sanity/base/client'
 import EditorBuilder from './EditorBuilder'
-import ValidationList from 'component:desk-tool/validation-list'
+import ValidationList from 'component:@sanity/form-builder/validation-list'
 import {
   compileSchema,
   fieldComponents,

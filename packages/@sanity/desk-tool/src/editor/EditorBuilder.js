@@ -43,9 +43,10 @@ class EditorBuilder extends React.Component {
   }
 
   handleChange(event) {
+    const nextValue = this.state.value.patch(event.patch)
     this.setState({
-      changed: true,
-      value: this.state.value.patch(event.patch)
+      value: nextValue,
+      validation: nextValue.validate()
     })
   }
 
@@ -76,7 +77,7 @@ class EditorBuilder extends React.Component {
   }
 
   render() {
-    const {value, saving} = this.state
+    const {value, saving, validation} = this.state
     const {
       type,
       schema,
@@ -98,6 +99,7 @@ class EditorBuilder extends React.Component {
             <FormBuilder
               type={type}
               value={value}
+              validation={validation}
               onChange={this.handleChange}
             />
           </FormBuilderProvider>
