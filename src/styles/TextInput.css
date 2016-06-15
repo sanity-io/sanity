@@ -5,24 +5,21 @@
 
 .textInput {
   border: 0;
-  border-bottom: 1px solid var(--input-border-color);
+  border: 1px solid var(--input-border-color);
   display: block;
   width: 100%;
   outline: none;
   line-height: 2em;
   font-size: inherit;
-  padding: 0;
   box-sizing: border-box;
-  padding-bottom: 2px;
+  padding: .2em .5em;
 
   &:hover {
     border-color: var(--input-border-color-hover);
   }
 
   &:focus {
-    border-width: 3px;
     border-color: var(--input-border-color-focus);
-    padding-bottom: 0;
   }
 
   &:active {

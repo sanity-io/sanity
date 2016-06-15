@@ -169,9 +169,11 @@ export default class Arr extends React.Component {
             )
           }
 
+          const itemClass = editIndex == i ? styles.itemActive : styles.item
+
           return (
-            <div key={i} className={styles.item}>
-              <div className={styles.inner}>
+            <div key={i} className={itemClass}>
+              <div className={styles.itemInner}>
                 <ItemPreview
                   index={i}
                   field={itemField}

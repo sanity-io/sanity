@@ -1,6 +1,8 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
+
+
 .root {
 
 }
@@ -11,18 +13,31 @@
       border-top: var(--list-border);
     }
   }
+  transition: margin 0.2s linear;
 }
 
-.active {
+.itemActive {
   composes: item;
-  border: 5px solid red;
+  margin-right: -3rem;
+  transition: margin 0.2s linear;
 }
 
-.inner {
+.itemInner {
   border-bottom: var(--list-border);
   padding: 0.5rem;
+  transition: background-color 0.2s linear;
+  cursor: pointer;
   &:hover {
-    background-color: var(--gray-lightest);
+    background-color: var(--gray-lighter);
+  }
+
+  @nest .itemActive & {
+    transition: background-color 0.2s linear;
+    background-color: var(--brand-primary);
+    color: #fff;
+    animation-name: appear;
+    animation-duration: .5s;
+    animation-iteration-count: 1;
   }
 }
 

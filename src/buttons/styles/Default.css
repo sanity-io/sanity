@@ -1,13 +1,11 @@
 @use postcss-cssnext;
 
-
 .root {
   composes: default from 'style:@sanity/base/theme/button';
 }
 
 .danger {
   composes: danger from 'style:@sanity/base/theme/button';
-
 }
 
 .delete,
@@ -15,14 +13,6 @@
   composes: delete from 'style:@sanity/base/theme/button';
 }
 
-.active {
-
-}
-
-.pressed {
-
-}
-
-.danger {
-
+.add {
+  composes: add from 'style:@sanity/base/theme/button';
 }

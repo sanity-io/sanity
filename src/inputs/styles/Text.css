@@ -24,7 +24,6 @@
   }
 
   &:focus {
-    border-width: 3px;
     border-color: var(--input-border-color-focus);
   }
 

@@ -17,6 +17,10 @@ export default class DefaultButton extends React.Component {
       rootStyle = styles.delete
     }
 
+    if (kind == 'add') {
+      rootStyle = styles.add
+    }
+
     return (
       <button
         className={rootStyle}
