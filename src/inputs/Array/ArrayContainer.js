@@ -24,6 +24,10 @@ export default class ArrayContainer {
     return new ArrayContainer(deserialized, context)
   }
 
+  get length() {
+    return this.value.length
+  }
+
   constructor(value, context) {
     this.context = context
     this.value = value

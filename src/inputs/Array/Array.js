@@ -50,24 +50,31 @@ export default class Arr extends React.Component {
       this.setState({selectType: true})
       return
     }
-    this.handleAddItem(this.props.type.of[0])
+    this.addItemAtEnd(this.props.type.of[0])
   }
 
-  handleAddItem(field) {
-    const addItemValue = createFieldValue(void 0, {
+  addItemAtStart(field) {
+    this.addItemAt(field, 0)
+  }
+
+  addItemAtEnd(field) {
+    this.addItemAt(field, this.props.value.length)
+  }
+
+  addItemAt(field, index) {
+    const addItemValue = createFieldValue(undefined, {
       field: field,
       schema: this.context.schema,
-      // not too elegant atm.
       resolveInputComponent: this.context.resolveInputComponent
     })
 
     this.props.onChange({
-      patch: {$unshift: [addItemValue]}
+      patch: {$splice: [[index, 0, addItemValue]]}
     })
 
     this.setState({
       selectType: false,
-      editIndex: 0
+      editIndex: index
     })
   }
 
@@ -97,7 +104,7 @@ export default class Arr extends React.Component {
       return (
         <Button
           key={field.type}
-          onClick={() => this.handleAddItem(field)}
+          onClick={() => this.addItemAtEnd(field)}
           type="button"
         >
           {field.title || field.type}
@@ -148,7 +155,6 @@ export default class Arr extends React.Component {
     return (
       <div className={styles.array}>
 
-        {selectType && this.renderSelectType()}
         {value && value.map((item, i) => {
 
           const itemField = this.getItemField(item)
@@ -176,6 +182,7 @@ export default class Arr extends React.Component {
           )
         })}
         <Button type="button" onClick={this.handleAddBtnClick}>add {field.title}</Button>
+        {selectType && this.renderSelectType()}
       </div>
     )
   }
