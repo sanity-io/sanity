@@ -132,8 +132,8 @@ export default class Arr extends React.Component {
     return (
       <EditItem title={itemField.title} onClose={this.handleClose}>
         <ItemForm
+          focus
           index={index}
-          focus={index === 0}
           field={itemField}
           level={this.props.level + 1}
           value={itemValue}
