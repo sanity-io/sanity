@@ -6,11 +6,12 @@
 @font-face {
   font-family: 'FontAwesome';
   src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?v=4.6.3');
-  src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'),
-  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'),
-  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'),
-  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'),
-  url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
+  src:
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
 }
 
 .root {
@@ -69,6 +70,14 @@
   }
 }
 
+.add {
+  composes: default;
+  &::before {
+    margin-right: 0.5em;
+    font-awesome: plus;
+  }
+}
+
 .noBorder {
   background-color: transparent;
   text-align: left;
@@ -76,16 +85,15 @@
 }
 
 .editIcon {
-
   &::before {
-    margin-right: .5em;
+    margin-right: 0.5em;
     font-awesome: pencil;
   }
 }
 
 .deleteIcon {
   &::before {
-    margin-right: .5em;
+    margin-right: 0.5em;
     font-awesome: trash;
   }
 }
