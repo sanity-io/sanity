@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "1.2.20",
+  "version": "1.2.21",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
