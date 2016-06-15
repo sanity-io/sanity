@@ -17,16 +17,10 @@ test('can do simple requests', t => {
 })
 
 test('can do update mutations', t => {
-  const patch = {
-    merge: {
-      attributes: {
-        description: 'Blah'
-      }
-    }
-  }
+  const patch = {description: 'foo'}
 
   nock(baseUrl)
-    .post('/m/foo?returnIds=true', [{update: {id: 'foo:raptor', patch}}])
+    .post('/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
     .reply(200, {})
 
   return client.update('foo:raptor', patch)
