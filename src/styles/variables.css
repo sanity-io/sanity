@@ -8,7 +8,7 @@
   --brand-warning:  #FF9B00;
   --brand-danger:   #FF4433;
   --body-bg:        #fff;
-  --gray-base:      #264045;
+  --gray-base:      #383838;
 
   --gray-darker:    color(var(--gray-base) lightness(+12.5%));
   --gray-dark:      color(var(--gray-base) lightness(+30%));

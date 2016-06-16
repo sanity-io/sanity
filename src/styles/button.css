@@ -20,6 +20,7 @@
   padding: 0.8em 1em;
   outline: none;
   cursor: pointer;
+  border: 0;
 }
 
 .small {
@@ -27,7 +28,8 @@
   padding: 0.2em 1em;
 }
 
-.filled {
+.inverted {
+  composes: root;
   background-color: var(--brand-primary);
   color: #fff;
 }
