@@ -7,10 +7,12 @@
 
 .heading2 {
   font-size: var(--font-size-h3);
+  padding-bottom: 0.5em;
 }
 
 .heading3 {
   font-size: var(--font-size-h4);
+  padding-bottom: 0.25em;
 }
 
 .heading4 {

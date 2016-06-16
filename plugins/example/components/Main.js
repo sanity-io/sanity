@@ -99,7 +99,7 @@ class Main extends React.Component {
   render() {
     return (
       <div>
-        <header>
+        <header className={styles.header}>
           Schemas: {renderSchemas()}
           {compiledSchema && (
             <span>

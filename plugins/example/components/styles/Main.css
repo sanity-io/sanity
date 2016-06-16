@@ -1,11 +1,25 @@
+@use postcss-cssnext;
+
 /* remove */
 .header {
+  background-color: #666;
+  max-height: 1rem;
+  overflow: hidden;
+
+  transition: max-height 0.5s linear;
+
+  &:hover {
+    max-height: 100vh;
+    transition: max-height 0.5s linear;
+  }
 }
+
 
 .nav {
   list-style: none;
   padding: 0;
 }
+
 
 .schemas {
   composes: nav;
@@ -28,4 +42,3 @@
   padding: 5px;
   display: inline-block;
 }
-
