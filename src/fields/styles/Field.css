@@ -48,6 +48,14 @@
   composes: subRoot;
 }
 
+.level_5 {
+  composes: subRoot;
+}
+
+.level_6 {
+  composes: subRoot;
+}
+
 .label {
   composes: heading3 from '../../styles/Typography.css';
   text-align: left;

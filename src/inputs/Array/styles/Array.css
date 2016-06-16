@@ -7,6 +7,10 @@
 
 .item {
   transition: margin 0.1s linear;
+
+  &:first-child > .itemInner {
+    border-top: var(--list-border);
+  }
 }
 
 .itemActive {
@@ -17,27 +21,25 @@
 
 .itemInner {
   border-bottom: var(--list-border);
-
-  @nest .item:first-child & {
-    border-top: var(--list-border);
-  }
-
   padding: 0.5rem 1rem;
   transition: background-color 0.1s linear;
   cursor: pointer;
+
   &:hover {
     background-color: var(--gray-lighter);
   }
+}
 
-  @nest .itemActive & {
-    margin-top: -1px;
-    background-color: #fff;
-    color: var(--brand-primary);
-    border-top: var(--list-border);
-    border-bottom: 1px solid var(--gray-lighter);
-    border-left: 2px solid var(--brand-primary);
-    font-weight: bold;
-  }
+.itemActive > .itemInner {
+  margin-top: -1px;
+  background-color: #fff;
+  /* color: var(--brand-primary); */
+  border-top: var(--list-border);
+  border-bottom: 0;
+  /* border-bottom: 1px solid var(--gray-lighter); */
+  border-left: 2px solid var(--brand-primary);
+  font-weight: bold;
+  border-right: var(--list-border);
 }
 
 

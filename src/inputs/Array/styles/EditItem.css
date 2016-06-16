@@ -26,8 +26,9 @@
   padding: 0;
   position: relative;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   border-left: 2px solid var(--brand-primary);
+  border-right: var(--list-border);
 
   transform-origin: top;
 
