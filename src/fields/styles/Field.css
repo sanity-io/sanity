@@ -2,24 +2,18 @@
 @use postcss-cssnext;
 
 .root {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   box-sizing: border-box;
   max-width: 100%;
   background-color: #fff;
   border: 1px solid var(--gray-lighter);
-
   padding: 1rem;
-
 }
 
 .subRoot {
   composes: root;
   border: 0;
   padding: 0;
-  & .label {
-    font-size: 1rem;
-    font-weight: bold;
-  }
 }
 
 .error {
@@ -27,7 +21,7 @@
 }
 
 .valid {
-  /*border-left: 3px solid var(--brand-success);*/
+  /* border-left: 3px solid var(--brand-success); */
 }
 
 .content {
@@ -55,28 +49,19 @@
 }
 
 .label {
-  font-size: 1.5rem;
-  width: 8em;
+  composes: heading3 from '../../styles/Typography.css';
   text-align: left;
-  padding: 0.25em 0;
-  padding-right: 2em;
+  display: block;
+
+  @nest .subRoot & {
+    font-size: var(--font-size-h4);
+  }
 }
 
 .description {
-  composes: small from 'style:@sanity/base/theme/typography';
-  color: var(--text-muted);
-  padding-bottom: 1rem;
+  composes: description from '../../styles/Typography.css';
 }
 
 .nestingLevel {
   display: none;
-  float: right;
-  font-size: 0.5rem;
-  font-family: var(--font-family-monospace);
-  opacity: 0.3;
-
-  @nest .root:hover & {
-    color: red;
-    opacity: 0.8;
-  }
 }

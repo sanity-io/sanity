@@ -19,9 +19,12 @@ export default function DefaultFieldWrapper(props, context) {
           {props.field.title}
         </label>
 
-        <div className={styles.description}>
-          {props.field.description}
-        </div>
+        {
+          props.field.description
+          && <div className={styles.description}>
+            {props.field.description}
+          </div>
+        }
 
         <div className={styles.content}>
           {props.children}

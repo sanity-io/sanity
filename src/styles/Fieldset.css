@@ -6,6 +6,7 @@
   padding: 0;
   margin-bottom: 2em;
 
+  /* nested inside itself */
   & & {
     margin: 0;
   }
@@ -33,26 +34,20 @@
 }
 
 .legend {
-  font-size: 2em;
   display: block;
   width: 100%;
-  font-weight: bold;
-  text-transform: uppercase;
+
+  composes: heading1 from './Typography.css';
 
   @nest .root .root & {
-    font-size: 1em;
+    font-size: var(--font-size-h3);
   }
 }
 
 .description {
-  padding-bottom: 1rem;
-  composes: small from 'style:@sanity/base/theme/typography';
-  color: var(--text-muted);
+  composes: description from './Typography.css';
 }
 
 .debugNestingLevel {
-  float: right;
-  font-size: 0.7rem;
-  font-family: var(--font-family-monospace);
-  font-weight: bold;
+  display: none;
 }

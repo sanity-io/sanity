@@ -16,3 +16,7 @@
 .add {
   composes: add from 'style:@sanity/base/theme/button';
 }
+
+.inverted {
+  composes: inverted from 'style:@sanity/base/theme/button';
+}

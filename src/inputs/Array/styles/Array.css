@@ -1,19 +1,12 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
-
-
 .root {
-
+  /* array container */
 }
 
 .item {
-  &:first-child {
-    & .inner {
-      border-top: var(--list-border);
-    }
-  }
-  transition: margin 0.2s linear;
+  transition: margin 0.1s linear;
 }
 
 .itemActive {
@@ -24,20 +17,26 @@
 
 .itemInner {
   border-bottom: var(--list-border);
-  padding: 0.5rem;
-  transition: background-color 0.2s linear;
+
+  @nest .item:first-child & {
+    border-top: var(--list-border);
+  }
+
+  padding: 0.5rem 1rem;
+  transition: background-color 0.1s linear;
   cursor: pointer;
   &:hover {
     background-color: var(--gray-lighter);
   }
 
   @nest .itemActive & {
-    transition: background-color 0.2s linear;
-    background-color: var(--brand-primary);
-    color: #fff;
-    animation-name: appear;
-    animation-duration: .5s;
-    animation-iteration-count: 1;
+    margin-top: -1px;
+    background-color: #fff;
+    color: var(--brand-primary);
+    border-top: var(--list-border);
+    border-bottom: 1px solid var(--gray-lighter);
+    border-left: 2px solid var(--brand-primary);
+    font-weight: bold;
   }
 }
 

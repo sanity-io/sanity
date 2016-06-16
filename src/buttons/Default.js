@@ -21,6 +21,10 @@ export default class DefaultButton extends React.Component {
       rootStyle = styles.add
     }
 
+    if (kind == 'inverted') {
+      rootStyle = styles.inverted
+    }
+
     return (
       <button
         className={rootStyle}

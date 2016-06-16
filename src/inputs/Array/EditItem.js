@@ -25,7 +25,7 @@ export default class EditItem extends React.Component {
         </div>
 
         <div className={styles.primaryFunctions}>
-          <Button type="button" onClick={this.handleClose}>Close</Button>
+          <Button type="button" onClick={this.handleClose} kind="inverted">Close</Button>
         </div>
 
       </div>
