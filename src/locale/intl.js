@@ -1,3 +1,1 @@
-import ReactIntl from 'react-intl'
-
-module.exports = ReactIntl
+module.exports = require('react-intl')

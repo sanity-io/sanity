@@ -8,12 +8,19 @@ class SanityIntlProvider extends React.Component {
 
   constructor(props) {
     super(props)
+
+    this.catchError = this.catchError.bind(this)
     this.state = {
       messages: null,
-      language: null
+      language: null,
+      error: null
     }
   }
 
+  catchError(err) {
+    console.error(err) // eslint-disable-line no-console
+    this.setState({error: err})
+  }
 
   componentDidMount() {
     const {supportedLanguages} = this.props
@@ -27,13 +34,21 @@ class SanityIntlProvider extends React.Component {
           messages: localizedMessages,
           language: language
         })
-      })
-    })
+      }).catch(this.catchError)
+    }).catch(this.catchError)
   }
 
-
   render() {
-    const {messages, language} = this.state
+    const {messages, language, error} = this.state
+    if (error) {
+      return (
+        <div>
+          <h2>Error fetching locale data</h2>
+          <code><pre>{error.stack}</pre></code>
+        </div>
+      )
+    }
+
     if (!messages) {
       return <div>Loading locale messages...</div>
     }
