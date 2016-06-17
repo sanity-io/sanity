@@ -4,6 +4,7 @@ import JSONView from './JSONView'
 import {createFormBuilderState} from '../../../src/state/FormBuilderState'
 
 import styles from './styles/Demo.css'
+import FormBuilderPropTypes from '../../../src/FormBuilderPropTypes'
 
 import {
   FormBuilder,
@@ -28,10 +29,12 @@ function preventDefault(e) {
 
 function restore(schema, type) {
   try {
-    return JSON.parse(localStorage.getItem(`form-builder-demo-${schema.name}-${type.name}`))
+    const val = localStorage.getItem(`form-builder-demo-${schema.name}-${type.name}`)
+    return val ? JSON.parse(val) : undefined
   } catch (error) {
     console.log('Error reading from local storage: ', error)
   }
+  return undefined
 }
 
 function save(schema, type, editorValue) {
@@ -41,7 +44,7 @@ function save(schema, type, editorValue) {
 export default class Demo extends React.Component {
 
   static propTypes = {
-    schema: PropTypes.object.isRequired,
+    schema: FormBuilderPropTypes.schema,
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
     resolveValidationComponent: PropTypes.func.isRequired,
@@ -63,12 +66,9 @@ export default class Demo extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
-    const {schema, type} = props
-
-    const serialized = restore(schema, type) || void 0
 
     this.state = {
-      value: this.createFormBuilderStateFrom(serialized),
+      value: this.reload(),
       saved: false,
       shouldInspect: false
     }
@@ -76,7 +76,6 @@ export default class Demo extends React.Component {
 
   createFormBuilderStateFrom(serialized) {
     const {schema, type, resolveInputComponent} = this.props
-
     return createFormBuilderState(serialized, {
       type: type,
       schema: schema,
@@ -84,8 +83,17 @@ export default class Demo extends React.Component {
     })
   }
 
+  reload() {
+    const {schema, type} = this.props
+    return this.createFormBuilderStateFrom(restore(schema, type))
+  }
+
   clear() {
     this.setState({value: this.createFormBuilderStateFrom(undefined)})
+  }
+
+  revert() {
+    this.setState({value: this.reload()})
   }
 
   save() {
@@ -113,6 +121,7 @@ export default class Demo extends React.Component {
       <div className={styles.root}>
         <button onClick={() => this.save()}>{saved ? 'Saved' : 'Save'} to local storage</button>
         <button onClick={() => this.clear()}>Clear value</button>
+        <button onClick={() => this.revert()}>Revert local changes</button>
         {!shouldInspect && <button onClick={() => this.setState({shouldInspect: true})}>Inspect</button>}
         {shouldInspect && (
           <div style={DEBUG_JSON_STYLE}>

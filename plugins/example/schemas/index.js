@@ -1,6 +1,6 @@
 
 import messyDevSchema from './messy-dev'
-import daniel from './daniel'
+import blocks from './blocks'
 import vega from './vega'
 import fieldsets from './fieldsets'
 import oma from './oma'
@@ -10,7 +10,7 @@ export default {
   exampleBlog,
   fieldsets,
   vega,
-  daniel,
+  blocks,
   oma,
   messyDevSchema: messyDevSchema
 }

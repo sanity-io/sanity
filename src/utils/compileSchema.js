@@ -51,5 +51,5 @@ export function compile(schema) {
     compiledTypes[typeDef.name] = typeParsers[typeDef.type].parse(typeDef, typeParsers)
   })
 
-  return {types: compiledTypes}
+  return {name: schema.name, types: compiledTypes}
 }

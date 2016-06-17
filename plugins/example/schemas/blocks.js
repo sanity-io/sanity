@@ -4,7 +4,7 @@
 //
 
 export default {
-  name: 'daniel',
+  name: 'blocks',
   types: [
     {
       name: 'document',
@@ -12,20 +12,19 @@ export default {
       fields: [
         {
           name: 'content',
-          type: 'blocks',
-          title: 'Content'
-        }
-      ]
-    },
-    {
-      name: 'blocks',
-      type: 'array',
-      of: [
-        {
-          type: 'paragraph'
-        },
-        {
-          type: 'latlon'
+          title: 'Content / blocks',
+          type: 'array',
+          editor: 'prosemirror',
+          of: [
+            {
+              type: 'paragraph',
+              title: 'Paragraph'
+            },
+            {
+              type: 'latlon',
+              title: 'Lat lon'
+            }
+          ]
         }
       ]
     },

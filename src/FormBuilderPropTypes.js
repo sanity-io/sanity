@@ -30,7 +30,10 @@ const validation = {
   }))
 }
 
-const schema = PropTypes.objectOf(type)
+const schema = PropTypes.shape({
+  name: PropTypes.string,
+  fields: PropTypes.arrayOf(field)
+})
 
 export default {
   type,
