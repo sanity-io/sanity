@@ -53,7 +53,9 @@ function renderTypes(compiledSchema) {
   )
 }
 
-const compiledSchema = schemaName && compileSchema(schemas[schemaName])
+const compiledSchema = schemaName
+  && VALID_SCHEMA_NAMES.includes(schemaName)
+  && compileSchema(schemas[schemaName])
 
 function renderDemo(compiledSchema) {
   const schemaFieldComponents = Object.assign({}, inputComponents)
@@ -109,6 +111,9 @@ class Main extends React.Component {
           )}
         </header>
         {typeName && compiledSchema && renderDemo(compiledSchema)}
+        {schemaName && !compiledSchema && (
+          <p>No such schema {schemaName}. Please select another one from the menu above</p>
+        )}
       </div>
     )
   }
