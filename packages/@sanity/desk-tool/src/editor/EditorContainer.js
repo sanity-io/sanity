@@ -3,6 +3,7 @@ import equals from 'shallow-equals'
 import client from 'client:@sanity/base/client'
 import EditorBuilder from './EditorBuilder'
 import ValidationList from 'component:@sanity/form-builder/validation-list'
+import inputResolver from 'function:@sanity/form-builder/input-resolver'
 import {
   compileSchema,
   fieldComponents,
@@ -10,13 +11,13 @@ import {
   DefaultField
 } from '@sanity/form-builder'
 
-function resolveFieldComponent(field, type) {
-  if (type.type === 'object') {
-    return fieldComponents.object
-  }
-
-  return fieldComponents[field.type] || DefaultField
+const resolveFieldComponent = (field, type) => {
+  return type.type === 'object'
+    ? fieldComponents.object
+    : fieldComponents[field.type] || DefaultField
 }
+
+const resolveValidationComponent = () => ValidationList
 
 class EditorContainer extends React.Component {
   constructor() {
@@ -68,7 +69,8 @@ class EditorContainer extends React.Component {
       }
     })
 
-    const resolveInputComponent = field => fieldInputs[field.type]
+    const resolveInputComponent = (field, fieldType) =>
+      inputResolver(field, fieldType) || fieldInputs[field.type]
 
     return (
       <EditorBuilder
@@ -76,7 +78,7 @@ class EditorContainer extends React.Component {
         type={type}
         resolveInputComponent={resolveInputComponent}
         resolveFieldComponent={resolveFieldComponent}
-        resolveValidationComponent={() => ValidationList}
+        resolveValidationComponent={resolveValidationComponent}
         initialValue={this.state.document}
       />
     )
