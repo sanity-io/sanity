@@ -86,6 +86,10 @@ function renderDemo(compiledSchema) {
     return ValidationList
   }
 
+  if (!(typeName in compiledSchema.types)) {
+    return <p>Invalid type "{typeName}". Please select another one from the menu above</p>
+  }
+
   return (
     <Demo
       schema={compiledSchema}
