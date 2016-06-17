@@ -30,10 +30,14 @@ class SanityIntlProvider extends React.Component {
         const localeData = require(`react-intl/locale-data/${languagePrefix}`)
         addLocaleData(localeData)
 
-        this.setState({
-          messages: localizedMessages,
-          language: language
-        })
+        // In order to get a proper stacktrace on rendering errors,
+        // we need to move this out of the current call stack
+        setTimeout(() => {
+          this.setState({
+            messages: localizedMessages,
+            language: language
+          })
+        }, 0)
       }).catch(this.catchError)
     }).catch(this.catchError)
   }
