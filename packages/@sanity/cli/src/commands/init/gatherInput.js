@@ -3,10 +3,11 @@ import getSlug from 'speakingurl'
 import isGitUrl from 'is-git-url'
 
 export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
+  const thing = isPlugin ? 'Plugin' : 'Project'
   const questions = [{
     type: 'input',
     name: 'name',
-    message: 'Project name:',
+    message: `${thing} name:`,
     default: defaults.projectName || '',
     validate: name => {
       const {validForNewPackages, errors} = validateNpmPackageName(name)
@@ -15,7 +16,7 @@ export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
   }, {
     type: 'input',
     name: 'description',
-    message: 'Project description:',
+    message: `${thing} description:`,
     default: defaults.description,
     validate: description => (
       (description || '').length < 1000
