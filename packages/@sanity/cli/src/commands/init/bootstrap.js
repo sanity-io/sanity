@@ -39,26 +39,62 @@ export function bootstrapSanity(targetPath, data) {
   ]))
 }
 
-export function bootstrapPlugin(targetPath, data) {
-  return promiseProps({
+export function bootstrapPlugin(targetPath, data, opts = {}) {
+  const collect = {
     pluginConfig: readTemplate('plugin-config'),
     gitIgnore: readTemplate('gitignore'),
-    manifest: createPluginManifest(data),
+    manifest: createPluginManifest(data, opts),
     sanity: createSanityManifest(data, {isPlugin: true}),
     readme: `# ${data.name}\n\n${data.description}\n`
-  }).then(templates => {
+  }
+
+  const styleMetaFiles = ['babelrc', 'editorconfig', 'eslintignore', 'eslintrc', 'npmignore']
+  if (opts.sanityStyle) {
+    styleMetaFiles.forEach(file => {
+      collect[file] = readTemplate(path.join('sanity-style', file))
+    })
+  }
+
+  return promiseProps(collect).then(templates => {
     if (!data.createConfig) {
       return templates
     }
 
     const confPath = path.join(targetPath, 'config.dist.json')
     return writeIfNotExists(confPath, templates.pluginConfig).then(() => templates)
-  }).then(templates => Promise.all([
-    writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
-    writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
-    writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
-    writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
-  ]))
+  }).then(templates => {
+    const writeOps = [
+      writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
+      writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
+      writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
+      writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
+    ]
+
+    if (opts.sanityStyle) {
+      styleMetaFiles.forEach(file =>
+        writeOps.push(writeIfNotExists(
+          path.join(targetPath, `.${file}`),
+          templates[file]
+        ))
+      )
+    }
+
+    return Promise.all(writeOps)
+  }).then(() => {
+    if (!opts.sanityStyle) {
+      return
+    }
+
+    mkdirIfNotExists(path.join(targetPath, 'src')).then(() =>
+      writeIfNotExists(
+        path.join(targetPath, 'src', 'myComponent.js'),
+        "import React from 'react'\n\n"
+        + 'export default function myComponent() {\n'
+        + '  return <div />\n'
+        + '}\n'
+      )
+    )
+  })
 }
 
 function readTemplate(file) {

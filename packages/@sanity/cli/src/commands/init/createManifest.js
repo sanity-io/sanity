@@ -51,7 +51,7 @@ export function createPackageManifest(data) {
     dependencies: sortObject(
       Object.assign(
         {[cliPackage.name]: `^${cliPackage.version}`},
-        versionRanges
+        versionRanges.core
       )
     )
   })
@@ -59,25 +59,54 @@ export function createPackageManifest(data) {
   return serializeManifest(pkg)
 }
 
-export function createPluginManifest(data) {
+function getSanityStyleManifestProps() {
+  return {
+    main: 'lib/index.js',
+    dependencies: versionRanges.plugin,
+    scripts: {
+      compile: 'babel src --copy-files --out-dir lib',
+      prepublish: 'in-publish && npm run compile || not-in-publish',
+      postpublish: 'rimraf lib',
+      test: 'eslint .'
+    }
+  }
+}
+
+export function createPluginManifest(data, opts = {}) {
+  const sanityStyleProps = opts.sanityStyle
+    ? getSanityStyleManifestProps()
+    : {}
+
   const pkg = Object.assign(getCommonManifest(data), {
     main: 'src/plugin.js',
     scripts: {test: 'echo "Error: no test specified" && exit 1'},
     keywords: ['sanity', 'sanity-plugin'],
     dependencies: {}
-  })
+  }, sanityStyleProps)
 
   return serializeManifest(pkg)
 }
 
+function getSanityPluginManifest(data) {
+  const prefix = data.name.replace(/^sanity-plugin-/, '')
+  return {
+    roles: [{
+      name: `component:${prefix}/my-component`,
+      srcPath: 'src/myComponent.js',
+      path: 'lib/myComponent.js'
+    }]
+  }
+}
+
 export function createSanityManifest(data, {isPlugin}) {
-  const manifest = isPlugin ? {} : {
+  const manifest = isPlugin ? getSanityPluginManifest(data) : {
     api: {
       dataset: data.dataset,
     },
 
     plugins: [
       '@sanity/base',
+      '@sanity/theme',
       '@sanity/default-layout',
       '@sanity/desk-tool'
     ],

@@ -17,6 +17,11 @@ export default {
       return initPlugin(args)
     }
 
+    // Do not use this, unless you're really sure you know what you're doing
+    if (type === 'blåbær') {
+      return initPlugin(args, {sanityStyle: true})
+    }
+
     const error = new Error(`Unknown init type "${type}"`)
     args.error(error)
     return Promise.reject(error)
@@ -43,7 +48,11 @@ function initSanity({print, prompt, spinner, error, options}) {
     })
 }
 
-function initPlugin({print, prompt, error, options}) {
+function initPlugin({print, prompt, error, options}, initOpts = {}) {
+  if (initOpts.sanityStyle) {
+    print('[WARNING]: Bootstrapping with Sanity.io style guide')
+  }
+
   print('This utility will walk you through creating a new Sanity plugin.')
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
@@ -51,7 +60,7 @@ function initPlugin({print, prompt, error, options}) {
   return getProjectDefaults(options.cwd)
     .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
     .then(answers => warnOnNonStandardPluginName(answers, print))
-    .then(answers => bootstrapPlugin(options.cwd, answers))
+    .then(answers => bootstrapPlugin(options.cwd, answers, initOpts))
     .then(() => print('Success!'))
     .catch(error)
 }
