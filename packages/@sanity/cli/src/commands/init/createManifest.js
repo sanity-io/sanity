@@ -62,7 +62,8 @@ export function createPackageManifest(data) {
 function getSanityStyleManifestProps() {
   return {
     main: 'lib/index.js',
-    dependencies: versionRanges.plugin,
+    dependencies: versionRanges.plugin.prod,
+    devDependencies: versionRanges.plugin.dev,
     scripts: {
       compile: 'babel src --copy-files --out-dir lib',
       prepublish: 'in-publish && npm run compile || not-in-publish',

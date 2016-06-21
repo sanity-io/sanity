@@ -44,8 +44,11 @@ export function bootstrapPlugin(targetPath, data, opts = {}) {
     pluginConfig: readTemplate('plugin-config'),
     gitIgnore: readTemplate('gitignore'),
     manifest: createPluginManifest(data, opts),
-    sanity: createSanityManifest(data, {isPlugin: true}),
-    readme: `# ${data.name}\n\n${data.description}\n`
+    readme: `# ${data.name}\n\n${data.description}\n`,
+    sanity: createSanityManifest(data, {
+      isPlugin: true,
+      isSanityStyle: opts.sanityStyle
+    })
   }
 
   const styleMetaFiles = ['babelrc', 'editorconfig', 'eslintignore', 'eslintrc', 'npmignore']
