@@ -1,0 +1,20 @@
+@import "style:@sanity/base/theme/variables/brand-colors";
+@use postcss-cssnext;
+
+:root {
+  --state-success-text: var(--state-success-color);
+  --state-success-bg: #dff0d8;
+  --state-success-border: var(--state-success-bg);
+
+  --state-info-text: var(--state-info-color);
+  --state-info-bg: #d9edf7;
+  --state-info-border: var(--state-info-bg);
+
+  --state-warning-text: var(--state-warning-color);
+  --state-warning-bg: #fcf8e3;
+  --state-warning-border: var(--state-warning-bg);
+
+  --state-danger-text: var(--state-danger-color);
+  --state-danger-bg: #f2dede;
+  --state-danger-border: var(--state-danger-bg);
+}

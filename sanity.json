@@ -16,17 +16,71 @@
       "name": "tool:@sanity/base/tool",
       "description": "Tools available for use within a Sanity configuration"
     },
+
     {
       "name": "style:@sanity/base/theme/variables",
-      "description": "Base theme variables for Sanity"
+      "description": "Base theme variables for Sanity. Dont override this unless you provide all the new variables"
     },
     {
-      "name": "style:@sanity/base/theme/typography",
-      "description": "Base theme typography for Sanity"
+      "name": "style:@sanity/base/theme/variables/globals",
+      "description": "Global generic variables"
     },
     {
       "name": "style:@sanity/base/theme/button",
       "description": "Base theme button for Sanity"
+    },
+    {
+      "name": "style:@sanity/base/theme/responsive",
+      "description": "Responsive breakpoints"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/brand-colors",
+      "description": "Brand colors. Other colors are based on this"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/code",
+      "description": "Syntax highlighting variables for color and styling"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/forms",
+      "description": "Form variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/gray-colors",
+      "description": "Shades of var(--gray-base)"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/layers",
+      "description": "Z-Index variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/list-group",
+      "description": "List group variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/list",
+      "description": "List variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/progress",
+      "description": "Progress bar variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/selectable-item",
+      "description": "Selectable item variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/variables/state-colors",
+      "description": "State color variables. Shades of warning, info and danger"
+    },
+
+    {
+      "name": "style:@sanity/base/theme/variables/typography",
+      "description": "Typography variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/typography",
+      "description": "Base theme typography for Sanity"
     },
     {
       "name": "locale:@sanity/base/locale-messages",
@@ -48,27 +102,95 @@
       "name": "component:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
-
-
     {
       "implements": "component:@sanity/base/root",
       "srcPath": "./src/components/DefaultRootComponent.js",
       "path": "./lib/components/DefaultRootComponent.js"
     },
+
     {
       "implements": "style:@sanity/base/theme/variables",
       "srcPath": "./src/styles/variables.css",
       "path": "./lib/styles/variables.css"
     },
     {
-      "implements": "style:@sanity/base/theme/typography",
-      "srcPath": "./src/styles/typography.css",
+      "implements": "style:@sanity/base/theme/variables/globals",
+      "srcPath": "./src/styles/variables/globals.css",
+      "path": "./lib/styles/variables.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/variables/brand-colors",
+      "srcPath": "./src/styles/variables/brand-colors.css",
+      "path": "./lib/styles/base-colors.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/responsive",
+      "srcPath": "./src/styles/responsive.css",
+      "path": "./lib/styles/responsive.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/variables/code",
+      "srcPath": "./src/styles/variables/code.css",
+      "path": "./lib/styles/code.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/forms",
+      "srcPath": "./src/styles/variables/forms.css",
+      "path": "./lib/styles/forms.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/gray-colors",
+      "srcPath": "./src/styles/variables/gray-colors.css",
+      "path": "./lib/styles/gray-colors.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/layers",
+      "srcPath": "./src/styles/variables/layers.css",
+      "path": "./lib/styles/layers.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/list-group",
+      "srcPath": "./src/styles/variables/list-group.css",
+      "path": "./lib/styles/list-group.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/list",
+      "srcPath": "./src/styles/variables/list.css",
+      "path": "./lib/styles/list.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/progress",
+      "srcPath": "./src/styles/variables/progress.css",
+      "path": "./lib/styles/progress.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/selectable-item",
+      "srcPath": "./src/styles/variables/selectable-item.css",
+      "path": "./lib/styles/selectable-item.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/state-colors",
+      "srcPath": "./src/styles/variables/state-colors.css",
+      "path": "./lib/styles/state-colors.css"
+    },
+
+    {
+      "implements": "style:@sanity/base/theme/variables/typography",
+      "srcPath": "./src/styles/variables/typography.css",
       "path": "./lib/styles/typography.css"
     },
     {
-      "implements": "style:@sanity/base/theme/button",
-      "srcPath": "./src/styles/button.css",
-      "path": "./lib/styles/button.css"
+      "implements": "style:@sanity/base/theme/typography",
+      "srcPath": "./src/styles/typography.css",
+      "path": "./lib/styles/typography.css"
     },
     {
       "name": "datastore:@sanity/base/location",
@@ -111,6 +233,11 @@
       "implements": "component:@sanity/base/sanity-intl-provider",
       "srcPath": "./src/components/SanityIntlProvider",
       "path": "./lib/components/SanityIntlProvider"
+    },
+    {
+      "implements": "style:@sanity/base/theme/button",
+      "srcPath": "./src/styles/button.css",
+      "path": "./lib/styles/button.css"
     }
   ]
 }

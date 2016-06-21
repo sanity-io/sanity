@@ -1,0 +1,12 @@
+@import 'style:@sanity/base/theme/variables/brand-colors';
+@use postcss-cssnext;
+
+:root {
+  --gray-darkest: color(var(--gray-base) lightness(+5%));
+  --gray-darker: color(var(--gray-base) lightness(+12%));
+  --gray-dark: color(var(--gray-base) lightness(+30%));
+  --gray: color(var(--gray-base) lightness(+40%));
+  --gray-light: color(var(--gray-base) lightness(+50%));
+  --gray-lighter: color(var(--gray-base) lightness(+75%));
+  --gray-lightest: color(var(--gray-base) lightness(+93%));
+}

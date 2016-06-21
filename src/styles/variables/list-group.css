@@ -1,0 +1,20 @@
+@use postcss-cssnext;
+
+/*
+:root {
+  --list-group-bg: #fff;
+  --list-group-border: #ddd;
+  --list-group-border-radius: var(--border-radius-base);
+  --list-group-hover-bg: #f5f5f5;
+  --list-group-active-color: var(--component-active-color);
+  --list-group-active-bg: var(--component-active-bg);
+  --list-group-active-border: var(--list-group-active-bg);
+  --list-group-active-text-color: color(var(--list-group-active-bg) lighten(40%));
+  --list-group-disabled-color: var(--gray-light);
+  --list-group-disabled-bg: var(--gray-lighter);
+  --list-group-disabled-text-color: var(--list-group-disabled-color);
+  --list-group-link-color: #555;
+  --list-group-link-hover-color: var(--list-group-link-color);
+  --list-group-link-heading-color: #333;
+}
+*/

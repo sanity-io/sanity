@@ -1,0 +1,7 @@
+@import "style:@sanity/base/theme/variables/gray-colors";
+@use postcss-cssnext;
+
+:root {
+  --list-border-color: var(--gray-light);
+  --list-border: 1px solid var(--list-border-color);
+}

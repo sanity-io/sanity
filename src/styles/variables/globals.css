@@ -1,0 +1,19 @@
+@import 'style:@sanity/base/theme/variables/brand-colors';
+@use postcss-cssnext;
+
+:root {
+  --header-height: 3rem;
+
+  --border-radius-base: 0.5rem;
+  --border-radius-large: 0.25rem;
+  --border-radius-small: 0.15rem;
+
+  --small-padding: 0.5rem;
+  --medium-padding: 1rem;
+  --large-padding: 1.5rem;
+
+  --component-active-color: #fff;
+  --component-active-bg: var(--brand-primary);
+  --caret-width-base: 4px;
+  --caret-width-large: 5px;
+}

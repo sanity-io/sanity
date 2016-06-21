@@ -1,0 +1,30 @@
+@import 'style:@sanity/base/theme/variables/gray-colors';
+@use postcss-cssnext;
+
+:root {
+  --input-bg: #fff;
+  --input-bg-disabled: var(--gray-lighter);
+  --input-color: var(--gray-light);
+  --input-border-color: var(--gray-light);
+
+  --input-border-radius: var(--border-radius-base);
+  --input-border-radius-large: var(--border-radius-large);
+  --input-border-radius-small: var(--border-radius-small);
+
+  --input-border-color-hover: var(--gray-darker);
+  --input-border-color-focus: var(--brand-primary);
+  --input-border-color-active: var(--brand-primary);
+
+  --input-color-placeholder: var(--gray-lighter);
+  --form-group-margin-bottom: 1em;
+  --legend-color: var(--gray-dark);
+  --legend-border-color: #e5e5e5;
+
+  --input-group-addon-bg: var(--gray-lighter);
+  --input-group-addon-border-color: var(--input-border);
+
+  --cursor-disabled: not-allowed;
+
+  --clear-cross-color: var(--gray-lighter);
+  --clear-cross-color-hover: var(--brand-danger);
+}
