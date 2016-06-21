@@ -18,7 +18,7 @@ class QueryPane extends React.Component {
 
   componentDidMount() {
     client.fetch(this.props.query)
-      .then(items => this.setState({loading: false, items}))
+      .then(res => this.setState({loading: false, items: res.result}))
   }
 
   render() {

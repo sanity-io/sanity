@@ -46,9 +46,9 @@ class EditorContainer extends React.Component {
 
   fetchDocument(documentId) {
     client.fetch('*[.$id == %id]', {id: documentId})
-      .then(items => this.setState({
+      .then(res => this.setState({
         loading: false,
-        document: items && items[0]
+        document: res && res.result && res.result[0]
       }))
   }
 
