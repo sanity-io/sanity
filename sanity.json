@@ -79,10 +79,6 @@
       "description": "Typography variables"
     },
     {
-      "name": "style:@sanity/base/theme/typography",
-      "description": "Base theme typography for Sanity"
-    },
-    {
       "name": "locale:@sanity/base/locale-messages",
       "description": "Messages across all known locales"
     },
@@ -185,11 +181,6 @@
     {
       "implements": "style:@sanity/base/theme/variables/typography",
       "srcPath": "./src/styles/variables/typography.css",
-      "path": "./lib/styles/typography.css"
-    },
-    {
-      "implements": "style:@sanity/base/theme/typography",
-      "srcPath": "./src/styles/typography.css",
       "path": "./lib/styles/typography.css"
     },
     {
