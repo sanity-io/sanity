@@ -43,8 +43,7 @@ function render(value) {
 export default function FallbackPreviewComponent(props) {
   return (
     <div className={styles.root}>
-      <pre className={styles.debug}>[Fallback Preview Component. Trying to render value of type {props.field.type}]</pre>
-      <p>{render(props.value) || 'Untitled'}</p>
+      {render(props.value) || 'Untitled'}
     </div>
   )
 }

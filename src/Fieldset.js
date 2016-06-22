@@ -4,12 +4,11 @@ import React, {PropTypes} from 'react'
 export default function Fieldset(props) {
   const {fieldset} = props
   return (
-    <fieldset className={styles.root}>
+    <fieldset className={styles.root} data-nesting-level={props.level}>
+      <legend className={styles.legend}>{fieldset.legend}</legend>
       <div className={styles.inner}>
-        <div className={styles.debugNestingLevel}>Fieldset, nesting level {props.level}</div>
-        <legend className={styles.legend}>{fieldset.legend}</legend>
         <p className={styles.description}>
-          {fieldset.description || "There is no description!"}
+          {fieldset.description || 'There is no description!'}
         </p>
         <div className={styles.content}>
           {props.children}

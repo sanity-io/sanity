@@ -12,6 +12,7 @@ import RichText from './inputs/RichText'
 
 import BooleanField from './fields/Boolean'
 import ObjectField from './fields/Object'
+import ArrayField from './fields/Array'
 
 export const inputComponents = {
   object: Obj,
@@ -29,7 +30,8 @@ export const inputComponents = {
 
 export const fieldComponents = {
   boolean: BooleanField,
-  object: ObjectField
+  object: ObjectField,
+  array: ArrayField
 }
 
 export {default as DefaultField} from './fields/Default'

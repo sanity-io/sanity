@@ -155,37 +155,38 @@ export default class Arr extends React.Component {
     const {selectType, editIndex} = this.state
     return (
       <div className={styles.root}>
+        <ul className={styles.itemList}>
+          {value && value.map((item, i) => {
 
-        {value && value.map((item, i) => {
+            const itemField = this.getItemField(item)
 
-          const itemField = this.getItemField(item)
+            if (!itemField) {
+              return (
+                <div>
+                  <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
+                  <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
+                </div>
+              )
+            }
 
-          if (!itemField) {
+            const itemClass = editIndex == i ? styles.itemActive : styles.item
+
             return (
-              <div>
-                <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
-                <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
-              </div>
+              <li key={i} className={itemClass}>
+                <div className={styles.itemInner}>
+                  <ItemPreview
+                    index={i}
+                    field={itemField}
+                    value={item}
+                    onEdit={this.handleItemEdit}
+                    onRemove={this.handleRemoveItem}
+                  />
+                </div>
+                {editIndex === i && this.renderEditItemForm(editIndex)}
+              </li>
             )
-          }
-
-          const itemClass = editIndex == i ? styles.itemActive : styles.item
-
-          return (
-            <div key={i} className={itemClass}>
-              <div className={styles.itemInner}>
-                <ItemPreview
-                  index={i}
-                  field={itemField}
-                  value={item}
-                  onEdit={this.handleItemEdit}
-                  onRemove={this.handleRemoveItem}
-                />
-              </div>
-              {editIndex === i && this.renderEditItemForm(editIndex)}
-            </div>
-          )
-        })}
+          })}
+        </ul>
         <div className={styles.primaryFunctions}>
           <Button type="button" onClick={this.handleAddBtnClick} kind="add">add {field.title}</Button>
           <div className={styles.selectType}>

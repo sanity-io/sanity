@@ -11,8 +11,7 @@ export default function DefaultFieldWrapper(props, context) {
   const className = `${styles[`level_${props.level}`]} ${validationClass}`
 
   return (
-    <div className={className}>
-      <div className={styles.nestingLevel}>Field, nesting level {props.level}</div>
+    <div className={className} data-nesting-level={props.level}>
       <div className={styles.inner}>
 
         <label className={styles.label}>

@@ -16,7 +16,7 @@ export default class EditItem extends React.Component {
       <div className={styles.root}>
 
         <div className={styles.head}>
-          <h1 className={styles.title}>New {this.props.title || 'No title is set'}</h1>
+          <h3 className={styles.title}>New {this.props.title || 'No title is set'}</h3>
           <button className={styles.close} type="button" onClick={this.handleClose}>Close</button>
         </div>
 
@@ -31,4 +31,10 @@ export default class EditItem extends React.Component {
       </div>
     )
   }
+}
+
+EditItem.propTypes = {
+  title: PropTypes.string,
+  children: PropTypes.node,
+  onClose: PropTypes.func
 }
