@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-
 import jsonMarkup from 'json-markup'
 
 import styles from './styles/JSONView.css'

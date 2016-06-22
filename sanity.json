@@ -1,6 +1,7 @@
 {
   "plugins": [
     "@sanity/base",
+    "@sanity/theme",
     "example"
   ]
 }

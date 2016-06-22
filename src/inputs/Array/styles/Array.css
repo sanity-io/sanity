@@ -13,6 +13,10 @@
   }
 }
 
+.list {
+  /* This is the list that contains the items */
+}
+
 .itemActive {
   composes: item;
   margin-right: -3rem;

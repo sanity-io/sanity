@@ -91,7 +91,7 @@
   font-size: 1em;
   padding: 1rem;
 
-  composes: heading1 from '../../../styles/Typography.css';
+  composes: heading1 from 'style:@sanity/base/theme/typography/headings';
 
   position: fixed;
   top: 0;

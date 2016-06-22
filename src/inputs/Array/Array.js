@@ -155,7 +155,7 @@ export default class Arr extends React.Component {
     const {selectType, editIndex} = this.state
     return (
       <div className={styles.root}>
-        <ul className={styles.itemList}>
+        <ul className={styles.list}>
           {value && value.map((item, i) => {
 
             const itemField = this.getItemField(item)

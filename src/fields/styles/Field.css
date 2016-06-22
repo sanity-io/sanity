@@ -57,7 +57,7 @@
 }
 
 .label {
-  composes: heading3 from '../../styles/Typography.css';
+  composes: heading3 from 'style:@sanity/base/theme/typography/headings';
   text-align: left;
   display: block;
 
@@ -67,7 +67,7 @@
 }
 
 .description {
-  composes: description from '../../styles/Typography.css';
+  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
 }
 
 .nestingLevel {
