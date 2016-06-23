@@ -10,3 +10,7 @@ coverage
 
 # Dependency directories
 node_modules
+
+# Compiled code
+lib
+
