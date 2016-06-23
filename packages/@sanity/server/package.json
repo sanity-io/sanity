@@ -52,7 +52,7 @@
     "json-loader": "^0.5.4",
     "lodash": "^4.5.0",
     "postcss-import": "^8.1.0",
-    "postcss-use": "^2.1.0",
+    "postcss-use": "^2.2.0",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
     "require-uncached": "^1.0.2",
