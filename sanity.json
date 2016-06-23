@@ -1,7 +1,32 @@
 {
-  "plugins": [
-    "@sanity/base",
-    "@sanity/theme",
-    "example"
+  "roles": [
+    {
+      "name": "function:@sanity/form-builder/input-resolver",
+      "description": "Function that resolves the input component to use for a given field"
+    },
+
+    {
+      "name": "component:@sanity/form-builder/validation-list",
+      "description": "Component that renders a list of validation feedback items"
+    },
+
+
+    {
+      "implements": "function:@sanity/form-builder/input-resolver",
+      "srcPath": "./src/sanity/inputResolver/inputResolver.js",
+      "path": "./lib/sanity/inputResolver/inputResolver.js"
+    },
+
+    {
+      "implements": "component:@sanity/form-builder/validation-list",
+      "srcPath": "./src/sanity/validation/ValidationList.js",
+      "path": "./lib/sanity/validation/ValidationList.js"
+    },
+
+    {
+      "implements": "locale:@sanity/base/locale-messages",
+      "srcPath": "./src/sanity/locale/strings.json",
+      "path": "./lib/sanity/locale/strings.json"
+    }
   ]
 }
