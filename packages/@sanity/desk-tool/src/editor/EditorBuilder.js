@@ -6,7 +6,7 @@ import {
   FormBuilder,
   FormBuilderProvider,
   createFormBuilderState
-} from '@sanity/form-builder'
+} from 'role:@sanity/form-builder'
 
 function preventDefault(ev) {
   ev.preventDefault()

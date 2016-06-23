@@ -9,7 +9,7 @@ import {
   fieldComponents,
   inputComponents,
   DefaultField
-} from '@sanity/form-builder'
+} from 'role:@sanity/form-builder'
 
 const resolveFieldComponent = (field, type) => {
   return type.type === 'object'
