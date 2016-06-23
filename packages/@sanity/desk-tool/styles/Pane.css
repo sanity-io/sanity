@@ -1,7 +1,5 @@
 @import 'style:@sanity/base/theme/variables';
-
 @use postcss-cssnext;
-@use postcss-nested;
 
 .panes {
   @media (--screen-medium) {
@@ -18,13 +16,14 @@
 
 .pane {
   max-width: 100%;
+  align-self: stretch;
+
   @media (--screen-medium) {
     flex-grow: 1;
     position: relative;
     overflow-y: auto;
     max-height: 100%;
   }
-  align-self: stretch;
 }
 
 .paneItems {
@@ -53,11 +52,11 @@
   text-overflow: ellipsis;
   overflow: hidden;
 
-  &:after {
+  &::after {
     position: absolute;
     right: 0;
     content: "\232A";
-    opacity: .2;
+    opacity: 0.2;
     color: var(--selectable-item-color);
   }
 
@@ -71,23 +70,24 @@
   }
 }
 
-
 .activePaneItemLink {
   composes: paneItemLink;
   font-weight: 700;
   color: var(--selected-item-color);
+
   @media (--screen-medium) {
-    &:after {
+    &::after {
       opacity: 1;
       color: var(--selected-item-color);
       font-weight: 700;
       font-size: 2em;
-      margin-right: -.35em;
+      margin-right: -0.35em;
     }
   }
+
   &:hover {
     color: var(--selected-item-color-hover);
-    &:after {
+    &::after {
       color: var(--selected-item-color-hover);
     }
   }
@@ -95,5 +95,5 @@
 }
 
 .panes {
-
+  /* No styling for this yet */
 }

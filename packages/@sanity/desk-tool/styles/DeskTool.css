@@ -1,5 +1,4 @@
 @import 'style:@sanity/base/theme/variables';
-
 @use postcss-cssnext;
 
 .deskTool {
@@ -39,14 +38,7 @@
 }
 
 .nothingSelected {
-  position: absolute;
-  box-sizing: border-box;
-  height: 50%;
-  width: 100%;
-  top: 50%;
-  text-align: center;
-  vertical-align: middle;
+  composes: center-both from 'style:@sanity/base/theme/layout/positioning';
+  composes: heading2 from 'style:@sanity/base/theme/typography/headings';
   color: var(--text-muted);
-  transform: translateY(-50%);
-  font-size: 2em;
 }
