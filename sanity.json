@@ -95,6 +95,10 @@
       "description": "Exposes the current ReactIntl module instance"
     },
     {
+      "name": "role:@sanity/base/locale/formatters",
+      "description": "Functions to format based on resolved locale"
+    },
+    {
       "name": "component:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
@@ -224,6 +228,11 @@
       "implements": "component:@sanity/base/sanity-intl-provider",
       "srcPath": "./src/components/SanityIntlProvider",
       "path": "./lib/components/SanityIntlProvider"
+    },
+    {
+      "implements": "role:@sanity/base/locale/formatters",
+      "srcPath": "./src/components/IntlWrapper.js",
+      "path": "./lib/components/IntlWrapper.js"
     },
     {
       "implements": "component:@sanity/base/buttons/default",
