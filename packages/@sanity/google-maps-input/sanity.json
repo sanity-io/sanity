@@ -1,0 +1,13 @@
+{
+  "roles": [
+    {
+      "name": "component:@sanity/form-builder/inputs/geopoint",
+      "srcPath": "src/GeopointInput.js",
+      "path": "lib/GeopointInput.js"
+    },
+    {
+      "implements": "locale:@sanity/base/locale-messages",
+      "path": "./locale/strings.json"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "en-US": {
+    "google-maps.placeOnMap": "Place on map",
+    "google-maps.mapHelpText": "Select location by dragging the marker or search for a place",
+    "google-maps.searchInputPlaceholder": "Search for place or address",
+    "google-maps.button.done": "Done",
+    "google-maps.button.edit": "Edit",
+    "google-maps.button.remove": "Remove",
+    "google-maps.button.setLocation": "Set location"
+  }
+}
