@@ -13,9 +13,9 @@
   --font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
   --font-family-base: var(--font-family-sans-serif);
 
-  --font-size-base: 16px; /* 100% */
-  --font-size-large: 1.2rem; /* 19.2px */
-  --font-size-small: 0.85rem; /* 13.6px */
+  --font-size-base: 16px;
+  --font-size-large: 1.2rem;
+  --font-size-small: 0.85rem;
 
   --font-size-h1: 2.6rem;
   --font-size-h2: 2.15rem;

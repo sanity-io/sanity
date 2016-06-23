@@ -13,6 +13,10 @@
       "description": "Statically positioned elements that should live on the page regardless of routing."
     },
     {
+      "name": "component:@sanity/base/buttons/default",
+      "description": "Default button"
+    },
+    {
       "name": "tool:@sanity/base/tool",
       "description": "Tools available for use within a Sanity configuration"
     },
@@ -24,10 +28,6 @@
     {
       "name": "style:@sanity/base/theme/variables/globals",
       "description": "Global generic variables"
-    },
-    {
-      "name": "style:@sanity/base/theme/button",
-      "description": "Base theme button for Sanity"
     },
     {
       "name": "style:@sanity/base/theme/responsive",
@@ -226,9 +226,9 @@
       "path": "./lib/components/SanityIntlProvider"
     },
     {
-      "implements": "style:@sanity/base/theme/button",
-      "srcPath": "./src/styles/button.css",
-      "path": "./lib/styles/button.css"
+      "implements": "component:@sanity/base/buttons/default",
+      "srcPath": "./src/components/buttons/DefaultButton.js",
+      "path": "./lib/components/buttons/DefaultButton.js"
     }
   ]
 }
