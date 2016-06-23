@@ -15,6 +15,11 @@
 
 .list {
   /* This is the list that contains the items */
+  padding-bottom: var(--medium-padding);
+
+  &:empty {
+    display: none;
+  }
 }
 
 .itemActive {
@@ -37,17 +42,13 @@
 .itemActive > .itemInner {
   margin-top: -1px;
   background-color: #fff;
-  /* color: var(--brand-primary); */
   border-top: var(--list-border);
   border-bottom: 0;
-  /* border-bottom: 1px solid var(--gray-lighter); */
   border-left: 2px solid var(--brand-primary);
   font-weight: bold;
   border-right: var(--list-border);
 }
 
-
-
 .primaryFunctions {
-  margin-top: 1rem;
+
 }

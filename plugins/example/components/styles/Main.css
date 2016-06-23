@@ -1,6 +1,10 @@
+@import './reset.css';
 @use postcss-cssnext;
 
-/* remove */
+body {
+  background-color: #fafafa;
+}
+
 .header {
   background-color: #666;
   max-height: 1rem;

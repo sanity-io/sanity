@@ -18,5 +18,5 @@
 }
 
 .description {
-  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
+  composes: description from 'style:@sanity/base/theme/typography/text-blocks';  
 }

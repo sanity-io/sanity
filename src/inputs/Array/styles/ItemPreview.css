@@ -16,7 +16,7 @@
 .button {
   composes: small from 'style:@sanity/base/theme/button';
   composes: noBorder from 'style:@sanity/base/theme/button';
-  opacity: .4;
+  opacity: 0.4;
   &:hover {
     opacity: 1;
   }

@@ -2,5 +2,4 @@
 
 .root {
   composes: root from 'style:@sanity/base/theme/typography/base';
-  background-color: #fafafa;
 }
