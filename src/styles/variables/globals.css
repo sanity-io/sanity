@@ -8,9 +8,11 @@
   --border-radius-large: 0.25rem;
   --border-radius-small: 0.15rem;
 
+  --extra-small-padding: 0.25rem;
   --small-padding: 0.5rem;
   --medium-padding: 1rem;
   --large-padding: 1.5rem;
+  --extra-large-padding: 3rem;
 
   --component-active-color: #fff;
   --component-active-bg: var(--brand-primary);
