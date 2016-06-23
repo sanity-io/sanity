@@ -10,6 +10,11 @@
       "description": "Component that renders a list of validation feedback items"
     },
 
+    {
+      "name": "role:@sanity/form-builder",
+      "description": "Sanity form builder module"
+    },
+
 
     {
       "implements": "function:@sanity/form-builder/input-resolver",
@@ -27,6 +32,12 @@
       "implements": "locale:@sanity/base/locale-messages",
       "srcPath": "./src/sanity/locale/strings.json",
       "path": "./lib/sanity/locale/strings.json"
+    },
+
+    {
+      "implements": "role:@sanity/form-builder",
+      "srcPath": "./src/index.js",
+      "path": "./lib/index.js"
     }
   ]
 }
