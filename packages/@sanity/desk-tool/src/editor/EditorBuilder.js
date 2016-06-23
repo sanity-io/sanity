@@ -51,8 +51,8 @@ class EditorBuilder extends React.Component {
   }
 
   handleSave() {
-    const data = this.state.value.unwrap()
-    const newDocument = Object.keys(data).reduce((doc, key) => {
+    const data = this.state.value.serialize()
+    const patch = Object.keys(data).reduce((doc, key) => {
       if (key[0] === '$') {
         return doc
       }
@@ -60,12 +60,6 @@ class EditorBuilder extends React.Component {
       doc[key] = data[key]
       return doc
     }, {})
-
-    const patch = {
-      set: {
-        attributes: newDocument
-      }
-    }
 
     this.setState({saving: true})
     client.update(this.props.initialValue.$id, patch)
