@@ -2,12 +2,7 @@
 @use postcss-cssnext;
 
 .root {
-  margin-bottom: 1rem;
-  box-sizing: border-box;
-  max-width: 100%;
-  background-color: #fff;
-  border: 1px solid var(--gray-lighter);
-  padding: 1rem;
+  composes: root from 'style:@sanity/base/theme/layout/box';
 }
 
 .subRoot {
@@ -58,8 +53,6 @@
 
 .label {
   composes: heading3 from 'style:@sanity/base/theme/typography/headings';
-  text-align: left;
-  display: block;
 
   @nest .subRoot & {
     font-size: var(--font-size-h4);

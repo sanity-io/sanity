@@ -2,54 +2,21 @@
 @use postcss-cssnext;
 
 .root {
-  margin: 0;
-  padding: 0;
-  margin-bottom: 2em;
-  border: 0;
-
-  /* nested inside itself */
-  & & {
-    margin: 0;
-  }
-
+  composes: root from 'style:@sanity/base/theme/forms/fieldset';
 }
 
 .content {
-  background-color: #fff;
-  border: 1px solid var(--gray-lighter);
-  padding: 1rem;
-
-  /* nested inside itself */
-  & & {
-    border: none;
-    padding: 0;
-  }
+  composes: content from 'style:@sanity/base/theme/forms/fieldset';
 }
 
 .inner {
-  display: block;
-}
-
-.content {
-  display: block;
+  composes: inner from 'style:@sanity/base/theme/forms/fieldset';
 }
 
 .legend {
-  display: block;
-  width: 100%;
-
-  composes: heading1 from 'style:@sanity/base/theme/typography/headings';
-
-  /* Should compose heading3, but it is not allowed */
-  @nest .root .root & {
-    font-size: var(--font-size-h3);
-  }
+  composes: legend from 'style:@sanity/base/theme/forms/fieldset';
 }
 
 .description {
   composes: description from 'style:@sanity/base/theme/typography/text-blocks';
-}
-
-.debugNestingLevel {
-  display: none;
 }

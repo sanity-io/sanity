@@ -1,38 +1,18 @@
 @import 'style:@sanity/base/theme/variables';
-
 @use postcss-cssnext;
 
 .root {
-  position: relative;
+  composes: root from 'style:@sanity/base/theme/forms/control';
 }
 
 .inner {
-
+  composes: inner from 'style:@sanity/base/theme/forms/control';
 }
 
 .textarea {
-  width: 100%;
-  max-width: 100%;
-  outline: 0;
-  box-sizing: border-box;
-  resize: vertical;
-  padding: 0.5em;
-  font-size: 1em;
-
-  &:hover {
-    border-color: var(--input-border-color-hover);
-  }
-
-  &:focus {
-    border-color: var(--input-border-color-focus);
-  }
-
-  &:active {
-    border-color: var(--input-border-color-active);
-  }
-
+  composes: root from 'style:@sanity/base/theme/forms/textarea';
 }
 
 .clearButton {
-  composes: TopRight from '../../styles/ClearButton.css';
+  composes: textarea from 'style:@sanity/base/theme/forms/clear-button';
 }

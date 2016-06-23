@@ -17,7 +17,7 @@
 }
 
 .clearButton {
-  composes: textInput from '../../styles/ClearButton.css';
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
 }
 
 .error {
