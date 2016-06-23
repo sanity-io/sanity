@@ -1,6 +1,6 @@
 {
   "plugins": [
-    "@sanity/form-builder-plugin"
+    "@sanity/form-builder"
   ],
 
   "roles": [
