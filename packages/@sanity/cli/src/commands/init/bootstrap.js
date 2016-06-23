@@ -51,7 +51,7 @@ export function bootstrapPlugin(targetPath, data, opts = {}) {
     })
   }
 
-  const styleMetaFiles = ['babelrc', 'editorconfig', 'eslintignore', 'eslintrc', 'npmignore']
+  const styleMetaFiles = ['babelrc', 'editorconfig', 'eslintignore', 'eslintrc', 'npmignore', 'gitignore']
   if (opts.sanityStyle) {
     styleMetaFiles.forEach(file => {
       collect[file] = readTemplate(path.join('sanity-style', file))
