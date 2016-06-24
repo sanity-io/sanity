@@ -15,6 +15,11 @@
       "description": "Sanity form builder module"
     },
 
+    {
+      "name": "role:@sanity/form-builder/container",
+      "description": "Container component that abstracts loading of documents, schemas etc"
+    },
+
 
     {
       "implements": "function:@sanity/form-builder/input-resolver",
@@ -32,6 +37,12 @@
       "implements": "locale:@sanity/base/locale-messages",
       "srcPath": "./src/sanity/locale/strings.json",
       "path": "./lib/sanity/locale/strings.json"
+    },
+
+    {
+      "implements": "role:@sanity/form-builder/container",
+      "srcPath": "./src/sanity/FormBuilderContainer.js",
+      "path": "./lib/sanity/FormBuilderContainer.js"
     },
 
     {
