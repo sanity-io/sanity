@@ -20,6 +20,10 @@
       "name": "tool:@sanity/base/tool",
       "description": "Tools available for use within a Sanity configuration"
     },
+    {
+      "name": "role:@sanity/base/schema-creator",
+      "description": "Function that creates a schema, merging the default Sanity types with user-specific types"
+    },
 
     {
       "name": "style:@sanity/base/theme/variables",
@@ -106,6 +110,11 @@
       "implements": "component:@sanity/base/root",
       "srcPath": "./src/components/DefaultRootComponent.js",
       "path": "./lib/components/DefaultRootComponent.js"
+    },
+    {
+      "implements": "role:@sanity/base/schema-creator",
+      "srcPath": "./src/schema/createSchema.js",
+      "path": "./lib/schema/createSchema.js"
     },
 
     {
