@@ -1,67 +1,88 @@
-export default {
-  types: {
-    blogpost: {
+import createSchema from 'role:@sanity/base/schema-creator'
+
+export default createSchema({
+  name: 'example-blog',
+  types: [
+    {
+      name: 'blogpost',
       type: 'object',
-      fields: {
-        title: {
+      fields: [
+        {
+          name: 'title',
           title: 'Title',
-          type: 'string'
+          type: 'string',
+          required: true
         },
-        lead: {
+        {
+          name: 'priority',
+          title: 'Priority',
+          type: 'number'
+        },
+        {
+          name: 'checked',
+          title: 'Checked',
+          type: 'boolean'
+        },
+        {
+          name: 'lead',
           title: 'Lead',
-          type: 'string'
+          type: 'text',
+          format: 'html',
+          required: true
         },
-        content: {
+        {
+          name: 'email',
+          title: 'Email',
+          type: 'email'
+        },
+        {
+          name: 'location',
+          title: 'Location',
+          type: 'geopoint'
+        },
+        {
+          name: 'content',
           type: 'array',
           of: [
             {
-              title: 'Image',
-              type: 'reference',
-              to: [{type: 'image'}],
-              meta: {type: 'imageMetadata'}
-            },
-            {
-              title: 'Text',
-              type: 'text'
+              title: 'String',
+              type: 'string'
             }
           ]
         },
-        authors: {
+        {
+          name: 'authors',
           title: 'Authors',
           type: 'array',
           of: [
-            {type: 'author'}
+            {
+              type: 'author'
+            }
+          ],
+          required: true
+        }
+      ]
+    },
+    {
+      name: 'author',
+      type: 'object',
+      fields: [
+        {
+          name: 'name',
+          title: 'Title',
+          type: 'string'
+        },
+        {
+          name: 'awards',
+          title: 'Awards',
+          type: 'array',
+          of: [
+            {
+              type: 'string'
+            }
           ]
         }
-      }
-    },
-    author: {
-      type: 'object',
-      fields: {
-        name: {
-          title: 'Name',
-          type: 'string'
-        }
-      }
-    },
-    image: {
-      type: 'object',
-      fields: {
-        fullsize: {type: 'string'},
-        aspectRatio: {type: 'number'},
-        versions: {
-          type: 'array',
-          of: [{type: 'imageVersion'}]
-        }
-      }
-    },
-    imageVersion: {
-      type: 'object',
-      fields: {
-        width: {type: 'number'},
-        square: {type: 'boolean'},
-        url: {type: 'string'}
-      }
+      ]
     }
-  }
-}
+  ]
+})
