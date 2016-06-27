@@ -28,6 +28,8 @@
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-eslint": "^5.0.0",
+    "babel-plugin-syntax-class-properties": "^6.8.0",
+    "babel-plugin-transform-class-properties": "^6.9.1",
     "babel-register": "^6.5.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
