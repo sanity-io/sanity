@@ -68,7 +68,8 @@ function registerLoader(options) {
 
     // Should we load all the fulfillers or just a single one
     const loadAll = request.indexOf('all:') === 0
-    const roleName = request.replace(/^all:/, '')
+    const roleName = request.replace(/^all:/, '').replace(/\?$/, '')
+    const allowUnfulfilled = request.match(/\?$/)
 
     // If we're loading all the fulfillers of a role, we can't point to
     // one single file - instead we need to manually "construct" a module
@@ -89,19 +90,25 @@ function registerLoader(options) {
 
     // If we have no fulfillers of the role, fall back to the default resolver
     // Note that `all:`-requests should return an empty array, not throw
-    if (!roles.fulfilled[request]) {
+    if (!roles.fulfilled[roleName]) {
+      // If using the "allow unfulfilled" (?)-postfix, we want to return undefined
+      if (allowUnfulfilled) {
+        require.cache[request] = getModule(request, undefined)
+        return request
+      }
+
       return realResolve(request, parent)
     }
 
     // "Most significant"-imports can be directly resolved to their fulfiller,
     // HOWEVER; overwritten implementations needs to be put into cache
-    const override = overrides && overrides[request]
+    const override = overrides && overrides[roleName]
     if (override) {
       require.cache[request] = getModule(request, override[0])
       return request
     }
 
-    return roles.fulfilled[request][0]
+    return roles.fulfilled[roleName][0]
   }
 
   // Register CSS hook

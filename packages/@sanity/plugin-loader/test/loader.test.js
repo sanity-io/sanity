@@ -87,3 +87,26 @@ test('should be able to load CSS files through PostCSS', t => {
   t.is(styles.something, 'datepicker__something___2XYYD base__base___2r-NO')
   t.is(styles.zebra, 'datepicker__zebra___3-rtJ')
 })
+
+test('should resolve correctly when using optional role requires (?-postfix)', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const getBar = require('function:base/bar?')
+  t.is(require.resolve('function:base/bar?'), path.join(__dirname, 'fixture', 'getBar.js'))
+  t.is(getBar(), 'bar')
+})
+
+test('should resolve correctly when overriding and using optional role requires', t => {
+  const overrides = {'function:base/bar': ['moo']}
+  pluginLoader({basePath: path.join(__dirname, 'fixture'), overrides})
+
+  const bar = require('function:base/bar?')
+  t.is(bar, 'moo')
+})
+
+test('should return undefined when using optional role requires on an unfulfilled role', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const result = require('function:not/existant?')
+  t.is(result, undefined)
+})
