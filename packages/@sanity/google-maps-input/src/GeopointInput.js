@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import config from 'config:google-maps'
+import config from 'config:@sanity/google-maps-input'
 import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
 import GeopointSelect from './GeopointSelect'
 import {intlShape} from 'component:@sanity/base/locale/intl'

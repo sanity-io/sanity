@@ -1,7 +1,13 @@
 {
   "roles": [
     {
-      "name": "component:@sanity/form-builder/inputs/geopoint",
+      "name": "role:@sanity/google-maps-input/input/geopoint",
+      "srcPath": "src/GeopointInput.js",
+      "path": "lib/GeopointInput.js"
+    },
+
+    {
+      "implements": "role:@sanity/form-builder/input/geopoint",
       "srcPath": "src/GeopointInput.js",
       "path": "lib/GeopointInput.js"
     },
