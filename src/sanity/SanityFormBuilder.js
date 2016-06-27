@@ -1,6 +1,7 @@
+import React, {PropTypes} from 'react'
 import client from 'client:@sanity/base/client'
 import equals from 'shallow-equals'
-import React, {PropTypes} from 'react'
+import locationStore from 'datastore:@sanity/base/location'
 
 import {
   FormBuilder,
@@ -49,6 +50,7 @@ class SanityFormBuilder extends React.Component {
   }
 
   handleSave() {
+    const {initialValue} = this.props
     const data = this.state.value.serialize()
     const patch = Object.keys(data).reduce((doc, key) => {
       if (key[0] === '$') {
@@ -60,8 +62,21 @@ class SanityFormBuilder extends React.Component {
     }, {})
 
     this.setState({saving: true})
-    client.update(this.props.initialValue.$id, patch)
-      .then(() => this.setState({saving: false, changed: false}))
+
+    const mutation = initialValue.$id
+      ? client.update(initialValue.$id, patch)
+      : client.create(Object.assign({$type: initialValue.$type}, patch))
+
+    mutation
+      .then(res => {
+        this.setState({saving: false, changed: false})
+
+        const newId = res.docIds[0]
+        if (newId !== initialValue.$id) {
+          // @todo figure out how to navigate to the correct URL
+          locationStore.actions.navigate('/')
+        }
+      })
       .catch(err => {
         console.error(err)
         this.setState({saving: false})
@@ -113,6 +128,10 @@ SanityFormBuilder.propTypes = {
   resolveInputComponent: PropTypes.func.isRequired,
   resolveFieldComponent: PropTypes.func.isRequired,
   resolveValidationComponent: PropTypes.func.isRequired
+}
+
+SanityFormBuilder.defaultProps = {
+  initialValue: {}
 }
 
 export default SanityFormBuilder

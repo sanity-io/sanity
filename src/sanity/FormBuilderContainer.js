@@ -46,11 +46,14 @@ class FormBuilderContainer extends React.Component {
   }
 
   fetchDocument(documentId) {
-    client.fetch('*[.$id == %id]', {id: documentId})
-      .then(res => this.setState({
+    client.fetch('*[.$id == %id]', {id: documentId}).then(res =>
+      this.setState({
         loading: false,
-        document: res && res.result && res.result[0]
-      }))
+        document: (res && res.result && res.result[0]) || {
+          $type: `${schema.name}.${this.props.typeName}`
+        }
+      })
+    )
   }
 
   render() {
