@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from '../styles/LoginStatus.css'
+import styles from '../../styles/LoginStatus.css'
 
 class LoginStatus extends React.Component {
   render() {

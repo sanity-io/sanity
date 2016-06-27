@@ -1,8 +1,35 @@
 {
-  "roles": [{
-    "implements": "component:@sanity/base/root",
-    "name": "component:@sanity/default-layout/root",
-    "srcPath": "./src/components/DefaultLayoutRouter",
-    "path": "./lib/components/DefaultLayoutRouter"
-  }]
+  "roles": [
+    {
+      "name": "style:@sanity/default-layout/action-button",
+      "description": "Styles for the default layout action button"
+    },
+    {
+      "name": "style:@sanity/default-layout/action-modal",
+      "description": "Styles for the action picker modal"
+    },
+
+    {
+      "implements": "component:@sanity/base/root",
+      "name": "component:@sanity/default-layout/root",
+      "srcPath": "./src/components/DefaultLayoutRouter",
+      "path": "./lib/components/DefaultLayoutRouter"
+    },
+    {
+      "implements": "component:@sanity/base/action-button",
+      "name": "component:@sanity/default-layout/action-button",
+      "srcPath": "./src/components/ActionButton",
+      "path": "./lib/components/ActionButton"
+    },
+    {
+      "implements": "style:@sanity/default-layout/action-button",
+      "name": "style:@sanity/default-layout/action-button/default",
+      "path": "./styles/ActionButton.css"
+    },
+    {
+      "implements": "style:@sanity/default-layout/action-modal",
+      "name": "style:@sanity/default-layout/action-modal/default",
+      "path": "./styles/ActionModal.css"
+    }
+  ]
 }

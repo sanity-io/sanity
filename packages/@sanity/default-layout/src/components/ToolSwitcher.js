@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from 'router:@sanity/base/router'
 
-import styles from '../styles/ToolSwitcher.css'
+import styles from '../../styles/ToolSwitcher.css'
 
 const ToolSwitcher = ({tools, activeToolName}) =>
   <div className={styles.toolSwitcher}>
