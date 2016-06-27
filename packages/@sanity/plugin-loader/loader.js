@@ -1,5 +1,4 @@
 const path = require('path')
-const util = require('util')
 const Module = require('module')
 const interopRequire = require('interop-require')
 const resolver = require('@sanity/resolver')
@@ -51,7 +50,7 @@ function registerLoader(options) {
     )
   }
 
-  const realResolve = Module._resolveFilename;
+  const realResolve = Module._resolveFilename
   Module._resolveFilename = (request, parent) => {
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {

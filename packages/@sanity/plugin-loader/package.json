@@ -5,6 +5,7 @@
   "main": "loader.js",
   "scripts": {
     "test": "ava",
+    "posttest": "eslint .",
     "coverage": "nyc --reporter=html ava"
   },
   "repository": {
@@ -30,6 +31,9 @@
   },
   "devDependencies": {
     "ava": "^0.15.1",
+    "babel-eslint": "^6.1.0",
+    "eslint": "^2.13.1",
+    "eslint-config-sanity": "^1.1.1",
     "nyc": "^6.4.4"
   },
   "ava": {

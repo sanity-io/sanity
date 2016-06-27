@@ -26,11 +26,11 @@ test('should be able to override a role with multiple fulfillers', t => {
   const overrides = {[role]: [func1, func2]}
   pluginLoader({overrides})
   t.is(require(role), func1)
-  t.is(require('all:' + role), overrides[role])
+  t.is(require(`all:${role}`), overrides[role])
 })
 
 test('should pass unmocked requests onto the default resolver', t => {
-  const overrides = {'foo': [{}]}
+  const overrides = {foo: [{}]}
   pluginLoader({overrides})
   t.is(require('interop-require'), interopRequire)
 })
@@ -50,7 +50,7 @@ test('should be able to require all fulfillers of a role', t => {
   const timestampers = require('all:function:date/timestamp')
   t.is(timestampers.length, 2)
 
-  const results = timestampers.forEach(fn => {
+  timestampers.forEach(fn => {
     const stamp = fn()
     t.true(stamp > start && stamp <= Date.now())
   })
