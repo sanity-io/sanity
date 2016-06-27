@@ -24,6 +24,10 @@
       "name": "role:@sanity/base/schema-creator",
       "description": "Function that creates a schema, merging the default Sanity types with user-specific types"
     },
+    {
+      "name": "component:@sanity/base/action-button",
+      "description": "Reusable action button"
+    },
 
     {
       "name": "style:@sanity/base/theme/variables",
