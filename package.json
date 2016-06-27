@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "draft-js": "^0.7.0",
-    "eslint": "^2.10.2",
+    "eslint": "^2.12.2",
     "lodash": "^4.13.1",
     "loose-envify": "^1.2.0",
     "object-inspect": "^1.2.1",

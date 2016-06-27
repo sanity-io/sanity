@@ -19,7 +19,46 @@
       "name": "role:@sanity/form-builder/container",
       "description": "Container component that abstracts loading of documents, schemas etc"
     },
-
+    {
+      "name": "role:@sanity/form-builder/input/array",
+      "description": "Input component for the core array type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/boolean",
+      "description": "Input component for the core boolean type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/email",
+      "description": "Input component for the core email type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/geopoint",
+      "description": "Input component for the core geopoint type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/number",
+      "description": "Input component for the core number type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/object",
+      "description": "Input component for the core object type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/reference",
+      "description": "Input component for the core reference type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/string",
+      "description": "Input component for the core string type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/text",
+      "description": "Input component for the core text type"
+    },
+    {
+      "name": "role:@sanity/form-builder/input/url",
+      "description": "Input component for the core url type"
+    },
 
     {
       "implements": "function:@sanity/form-builder/input-resolver",
