@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
