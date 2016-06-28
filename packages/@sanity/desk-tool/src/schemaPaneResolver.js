@@ -4,6 +4,7 @@ import QueryPane from 'component:desk-tool/query-pane'
 import schema from 'schema:@sanity/base/schema'
 import PaneContainer from 'component:desk-tool/pane-container'
 import FormBuilderContainer from 'role:@sanity/form-builder/container'
+import locationStore from 'datastore:@sanity/base/location'
 import styles from '../styles/DeskTool.css'
 
 function getTypeItems() {
@@ -22,6 +23,11 @@ class SchemaPaneResolver extends React.Component {
 
   getPaneQuery(typeName) {
     const type = schema.types.find(currType => currType.name === typeName)
+    if (!type) {
+      console.error(`Type "${typeName}" not defined in schema`)
+      return locationStore.actions.navigate('/')
+    }
+
     const displayField = type.displayField
       ? type.fields.find(field => field.name === type.displayField)
       : type.fields.find(looksLikeDisplayField)
