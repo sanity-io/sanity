@@ -1,0 +1,168 @@
+@import "style:@sanity/base/theme/variables";
+@use postcss-cssnext;
+
+:root {
+  --switch-color: var(--brand-primary);
+
+  /* Label */
+  --switch-label-height: 1.25rem;
+
+  /* Thumb */
+  --switch-thumb-size: 1.25rem;
+  --switch-thumb-color: var(--switch-color);
+  --switch-off-thumb-color: #fff;
+  --switch-on-thumb-color: var(--switch-color);
+
+  /* Track */
+  --switch-track-top: 0.35rem;
+  --switch-track-height: 0.6rem;
+  --switch-track-length: 2rem;
+  --switch-disabled-track-color: red;
+  --switch-track-color: #ccc;
+  --switch-off-track-color: #ccc;
+  --switch-on-track-color: color(var(--brand-primary) alpha(40%));
+  --switch-faded-color: rgba(0, 0, 0, 0.1);
+
+  /* Helper */
+  --switch-helper-size: 4rem;
+}
+
+.root {
+  position: relative;
+}
+
+.switch {
+  background: var(--switch-off-track-color);
+  position: absolute;
+  left: 0;
+  top: var(--switch-track-top);
+  height: var(--switch-track-height);
+  width: var(--switch-track-length);
+  border-radius: var(--switch-track-height);
+
+  cursor: pointer;
+
+  @nest .checked & {
+    background: $switch-track-color;
+  }
+
+  @nest .disabled & {
+    background: var(--switch-disabled-track-color);
+    cursor: auto;
+  }
+}
+
+.enabled {
+  composes: root;
+}
+
+.disabled {
+  composes: root;
+  opacity: 0.5;
+}
+
+.thumb {
+  background: var(--switch-off-thumb-color);
+  position: absolute;
+  left: 0;
+  top: var(--switch-thumb-top);
+  height: var(--switch-thumb-size);
+  width: var(--switch-thumb-size);
+  border-radius: 50%;
+  cursor: pointer;
+
+  /* @include shadow-2dp(); */
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+
+  /* @include material-animation-default(0.28s); */
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.28s;
+  transition-property: left;
+  @nest .checked & {
+    background: var(--switch-thumb-color);
+    left: calc(var(--switch-track-length) - var(--switch-thumb-size));
+
+    /* @include shadow-3dp(); */
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  @nest .disabled & {
+    background: var(--switch-disabled-thumb-color);
+    cursor: auto;
+  }
+}
+
+.focusHelper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+  display: inline-block;
+
+  box-sizing: border-box;
+  width: var(--switch-helper-size);
+  height: var(--switch-helper-size);
+  border-radius: 50%;
+
+  background-color: transparent;
+
+  @nest .focused & {
+    /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) rgba(0, 0, 0, 0.1); */
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  @nest .checked & {
+    /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) $switch-faded-color; */
+    /*background-color: var(--switch-faded-color);*/
+  }
+}
+
+.input {
+  line-height: $switch-label-height;
+
+  /* Hide input element, while still making it respond to focus. */
+  position: absolute;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  appearance: none;
+  border: none;
+}
+
+.label {
+  position: relative;
+  cursor: pointer;
+  font-size: var(--switch-label-font-size);
+  line-height: var(--switch-label-height);
+  margin: 0;
+  left: calc(var(--switch-track-length) + 0.5rem);
+
+  .disabled & {
+    color: var(--switch-disabled-thumb-color);
+    cursor: auto;
+  }
+}
+
+.track {
+  background: var(--switch-off-track-color);
+  position: absolute;
+  left: 0;
+  top: var(--switch-track-top);
+  height: var(--switch-track-height);
+  width: var(--switch-track-length);
+  border-radius: var(--switch-track-height);
+
+  cursor: pointer;
+
+  @nest .checked & {
+    background: var(--switch-on-track-color);
+  }
+
+  @nest .disabled & {
+    background: var(--switch-disabled-track-color);
+    cursor: auto;
+  }
+}
