@@ -32,5 +32,13 @@
     "eslint-config-sanity": "^1.1.1",
     "eslint-plugin-react": "^5.1.1",
     "rimraf": "^2.5.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/components/issues"
+  },
+  "homepage": "https://github.com/sanity-io/components#readme"
 }
