@@ -129,7 +129,7 @@
     {
       "implements": "style:@sanity/base/theme/variables/globals",
       "srcPath": "./src/styles/variables/globals.css",
-      "path": "./lib/styles/variables/variables.css"
+      "path": "./lib/styles/variables/globals.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/brand-colors",
