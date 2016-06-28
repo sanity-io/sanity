@@ -25,7 +25,7 @@ export default class EditItem extends React.Component {
         </div>
 
         <div className={styles.primaryFunctions}>
-          <Button type="button" onClick={this.handleClose} ripple>Close</Button>
+          <Button type="button" onClick={this.handleClose} ripple colored>Close</Button>
         </div>
 
       </div>

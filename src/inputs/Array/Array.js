@@ -188,8 +188,8 @@ export default class Arr extends React.Component {
           })}
         </ul>
         <div className={styles.primaryFunctions}>
-          <Button onClick={this.handleAddBtnClick} ripple>
-            {field.title}
+          <Button onClick={this.handleAddBtnClick} ripple inverted kind="add">
+            Add {field.title}
           </Button>
           <div className={styles.selectType}>
             {selectType && this.renderSelectType()}

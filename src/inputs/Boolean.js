@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
+import Switch from 'component:@sanity/components/toggles/switch'
 
 export default class Bool extends React.Component {
   static displayName = 'Boolean';
@@ -26,11 +27,7 @@ export default class Bool extends React.Component {
   render() {
     const {value} = this.props
     return (
-      <input
-        type="checkbox"
-        onChange={this.handleChange}
-        checked={!!value}
-      />
+      <Switch onChange={this.handleChange} checked={!!value} label="A switch should always have a label"/>
     )
   }
 }
