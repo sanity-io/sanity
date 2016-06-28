@@ -123,68 +123,82 @@
 
     {
       "implements": "style:@sanity/base/theme/variables",
-      "path": "./src/styles/variables.css"
+      "srcPath": "./src/styles/variables.css",
+      "path": "./lib/styles/variables.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/globals",
-      "path": "./src/styles/variables/globals.css"
+      "srcPath": "./src/styles/variables/globals.css",
+      "path": "./lib/styles/variables/variables.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/brand-colors",
-      "path": "./src/styles/variables/brand-colors.css"
+      "srcPath": "./src/styles/variables/brand-colors.css",
+      "path": "./lib/styles/variables/base-colors.css"
     },
     {
       "implements": "style:@sanity/base/theme/responsive",
-      "path": "./src/styles/responsive.css"
+      "srcPath": "./src/styles/responsive.css",
+      "path": "./lib/styles/responsive.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/code",
-      "path": "./src/styles/variables/code.css"
+      "srcPath": "./src/styles/variables/code.css",
+      "path": "./lib/styles/variables/code.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/forms",
-      "path": "./src/styles/variables/forms.css"
+      "srcPath": "./src/styles/variables/forms.css",
+      "path": "./lib/styles/variables/forms.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/gray-colors",
-      "path": "./src/styles/variables/gray-colors.css"
+      "srcPath": "./src/styles/variables/gray-colors.css",
+      "path": "./lib/styles/variables/gray-colors.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/layers",
-      "path": "./src/styles/variables/layers.css"
+      "srcPath": "./src/styles/variables/layers.css",
+      "path": "./lib/styles/variables/layers.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/list-group",
-      "path": "./src/styles/variables/list-group.css"
+      "srcPath": "./src/styles/variables/list-group.css",
+      "path": "./lib/styles/variables/list-group.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/list",
-      "path": "./src/styles/variables/list.css"
+      "srcPath": "./src/styles/variables/list.css",
+      "path": "./lib/styles/variables/list.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/progress",
-      "path": "./src/styles/variables/progress.css"
+      "srcPath": "./src/styles/variables/progress.css",
+      "path": "./lib/styles/variables/progress.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/selectable-item",
-      "path": "./src/styles/variables/selectable-item.css"
+      "srcPath": "./src/styles/variables/selectable-item.css",
+      "path": "./lib/styles/variables/selectable-item.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/state-colors",
-      "path": "./src/styles/variables/state-colors.css"
+      "srcPath": "./src/styles/variables/state-colors.css",
+      "path": "./lib/styles/variables/state-colors.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/typography",
-      "path": "./src/styles/variables/typography.css"
+      "srcPath": "./src/styles/variables/typography.css",
+      "path": "./lib/styles/variables/typography.css"
     },
     {
       "name": "datastore:@sanity/base/location",
