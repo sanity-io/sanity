@@ -30,7 +30,7 @@
     color: var(--selectable-item-color-hover);
 
     @media (--screen-medium) {
-      /*border-bottom: 1px solid var(--selectable-item-color-hover);*/
+      /* border-bottom: 1px solid var(--selectable-item-color-hover); */
     }
 
   }
