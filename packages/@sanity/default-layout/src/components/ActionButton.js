@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/default-layout/action-button'
 import ActionModal from './ActionModal'
+import Fab from 'component:@sanity/components/buttons/fab'
 
 class ActionButton extends React.Component {
   static propTypes = {
@@ -32,7 +32,7 @@ class ActionButton extends React.Component {
     }
 
     return (
-      <button className={styles.button} onClick={this.handleToggleModal}>➕</button>
+      <Fab onClick={this.handleToggleModal} ripple colored />
     )
   }
 }
