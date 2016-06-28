@@ -32,7 +32,7 @@ export default class DefaultButton extends React.Component {
       <button
         className={style}
         type="button"
-        onClick={this.handleOnClick}
+        onClick={this.props.onClick}
       >
         {
           loading && <Spinner />

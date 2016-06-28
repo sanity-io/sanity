@@ -14,15 +14,6 @@
     url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .root {
   display: block;
   position: relative;
@@ -30,8 +21,7 @@
   padding: 0.8em 1em;
   outline: none;
   cursor: pointer;
-  border: 0.2em solid var(--gray-base);
-  background-color: transparent;
+  background-color: var(--default-button-color);
 }
 
 .icon {
@@ -44,16 +34,6 @@
 
 .loading {
   composes: root;
-  &::before {
-    display: inline-block;
-    font-awesome: spinner;
-    margin-right: 0.5em;
-    transform-origin: center center;
-    animation-name: spin;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
 }
 
 .small {
