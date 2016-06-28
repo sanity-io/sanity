@@ -22,24 +22,12 @@
   outline: none;
   cursor: pointer;
   background-color: var(--default-button-color);
-  border: none;
+  border: 1px solid transparent;
 }
 
 .colored {
-  composes: root;
   background-color: var(--brand-primary);
-}
-
-.icon {
-  &::before {
-    display: inline-block;
-    margin-right: 0.5em;
-    font-size: 1.25em;
-  }
-}
-
-.loading {
-  composes: root;
+  color: #fff;
 }
 
 .small {
@@ -47,33 +35,31 @@
   padding: 0.2em 1em;
 }
 
-.inverted {
-  background-color: var(--brand-primary);
-  color: #fff;
-
-  &.danger {
-    background-color: var(--brand-primary);
-    color: #fff;
-  }
+.border {
+  composes: root;
+  background-color: transparent;
+  border-color: var(--gray-base);
 }
 
+.inverted {
+  composes: border;
+}
+
+/* Kinds */
 .danger {
   composes: root;
   border-color: var(--brand-danger);
   color: var(--brand-danger);
-  &.inverted {
-    background-color: var(--brand-danger);
-    color: #fff;
-  }
 }
 
 .success {
   composes: root;
-  border-color: var(--brand-success);
-  color: var(--brand-success);
+  background-color: var(--brand-success);
+  color: #fff;
   &.inverted {
-    background-color: var(--brand-success);
-    color: #fff;
+    border-color: var(--brand-success);
+    background-color: transparent;
+    color: var(--brand-success);
   }
 }
 
@@ -81,36 +67,18 @@
   composes: root;
   border-color: var(--brand-warning);
   color: var(--brand-warning);
-  &.inverted {
-    background-color: var(--brand-warning);
-    color: #fff;
-  }
 }
 
 .delete {
   composes: danger;
-  composes: icon;
-  &::before {
-    font-awesome: trash;
-  }
 }
 
 .add {
-  composes: root;
-  composes: icon;
-  &::before {
-    font-awesome: plus;
-  }
+  composes: success;
 }
-
-
 
 .save {
   composes: root;
-  composes: icon;
-  &::before {
-    font-awesome: save;
-  }
 }
 
 .noBorder {
@@ -119,19 +87,6 @@
   border: 0;
 }
 
-.editIcon {
-  composes: icon;
-  &::before {
-    font-awesome: pencil;
-  }
-}
-
-.deleteIcon {
-  composes: icon;
-  &::before {
-    font-awesome: trash;
-  }
-}
 
 /*
 
