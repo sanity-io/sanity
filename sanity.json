@@ -6,7 +6,7 @@
     },
     {
       "name": "style:@sanity/components/buttons/default",
-      "description": "Default button"
+      "description": "Default button styling"
     },
     {
       "name": "component:@sanity/components/buttons/fab",
@@ -14,7 +14,7 @@
     },
     {
       "name": "style:@sanity/components/buttons/fab",
-      "description": "Floating Action Button"
+      "description": "Floating Action Button styling"
     },
     {
       "name": "component:@sanity/components/loading/spinner",
@@ -22,37 +22,43 @@
     },
     {
       "name": "style:@sanity/components/loading/spinner",
-      "description": "Spinner to show activity"
+      "description": "Spinner style"
     },
 
 
 
 
     {
-      "implements":  "component:@sanity/components/buttons/default",
-      "path": "src/buttons/DefaultButton.js"
+      "implements": "component:@sanity/components/buttons/default",
+      "srcPath": "./src/buttons/DefaultButton.js",
+      "path": "./src/buttons/DefaultButton.js"
     },
     {
       "implements":  "component:@sanity/components/loading/spinner",
-      "path": "src/loading/Spinner.js"
+      "srcPath": "./src/loading/Spinner.js",
+      "path": "./lib/loading/Spinner.js"
     },
     {
       "implements":  "component:@sanity/components/buttons/fab",
-      "path": "src/buttons/Fab.js"
+      "srcPath": "./src/buttons/Fab.js",
+      "path": "./lib/buttons/Fab.js"
     },
 
 
     {
       "implements": "style:@sanity/components/buttons/default",
-      "path": "src/buttons/styles/DefaultButton.css"
+      "srcPath": "./src/buttons/styles/DefaultButton.css",
+      "path": "./lib/buttons/styles/DefaultButton.css"
     },
     {
       "implements": "style:@sanity/components/buttons/fab",
-      "path": "src/buttons/styles/Fab.css"
+      "srcPath": "./src/buttons/styles/Fab.css",
+      "path": "./lib/buttons/styles/Fab.css"
     },
     {
       "implements": "style:@sanity/components/loading/spinner",
-      "path": "src/loading/styles/Spinner.css"
+      "srcPath": "./src/loading/styles/Spinner.css",
+      "path": "./lib/loading/styles/Spinner.css"
     }
 
   ]
