@@ -5,7 +5,7 @@ import ItemPreview from './ItemPreview'
 import ArrayContainer from './ArrayContainer'
 import {createFieldValue} from '../../state/FormBuilderState'
 import styles from './styles/Array.css'
-import Button from '../../buttons/Default'
+import Button from 'component:@sanity/components/buttons/default'
 import EditItem from './EditItem'
 
 export default class Arr extends React.Component {
@@ -188,7 +188,9 @@ export default class Arr extends React.Component {
           })}
         </ul>
         <div className={styles.primaryFunctions}>
-          <Button type="button" onClick={this.handleAddBtnClick} kind="add">add {field.title}</Button>
+          <Button onClick={this.handleAddBtnClick} ripple>
+            {field.title}
+          </Button>
           <div className={styles.selectType}>
             {selectType && this.renderSelectType()}
           </div>

@@ -3,7 +3,6 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import {capitalize} from 'lodash'
-import Button from '../../buttons/Default'
 import FallbackPreviewComponent from './FallbackPreviewComponent'
 import styles from './styles/ItemPreview.css'
 

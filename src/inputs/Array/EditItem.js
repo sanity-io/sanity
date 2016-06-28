@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/EditItem.css'
-import Button from '../../buttons/Default'
+import Button from 'component:@sanity/components/buttons/default'
 
 export default class EditItem extends React.Component {
   constructor() {
@@ -25,7 +25,7 @@ export default class EditItem extends React.Component {
         </div>
 
         <div className={styles.primaryFunctions}>
-          <Button type="button" onClick={this.handleClose} kind="inverted">Close</Button>
+          <Button type="button" onClick={this.handleClose} ripple>Close</Button>
         </div>
 
       </div>
