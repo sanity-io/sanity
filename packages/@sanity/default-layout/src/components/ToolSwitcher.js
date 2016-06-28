@@ -29,4 +29,9 @@ const ToolSwitcher = ({tools, activeToolName}) =>
     </ul>
   </div>
 
+ToolSwitcher.propTypes = {
+  tools: React.PropTypes.obj,
+  activeToolName: React.PropTypes.string
+}
+
 export default ToolSwitcher

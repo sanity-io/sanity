@@ -1,9 +1,11 @@
 @import 'style:@sanity/base/theme/variables';
 @import './reset.css';
+@import './body.css';
 @use postcss-cssnext;
 
 .defaultLayout {
-  padding: .5rem;
+  padding: var(--small-padding);
+
   @media (--screen-medium) {
     display: flex;
     flex-direction: column;
@@ -22,7 +24,6 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    /*justify-content: space-between;*/
     flex-basis: var(--header-height);
     min-height: var(--header-height);
     border-bottom: 1px solid #ccc;
@@ -46,22 +47,8 @@
 .logoContainer {
   & svg {
     height: calc(var(--header-height) - 1.5rem);
-    padding-top: .75rem;
-    padding-left: .5rem;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
     width: auto;
-  }
-}
-
-body {
-
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-
-  font-family: var(--font-family-sans-serif);
-
-  @media (--screen-medium) {
-    max-height: 100%;
-    overflow: hidden;
   }
 }
