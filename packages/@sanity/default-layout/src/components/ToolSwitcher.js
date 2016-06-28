@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import {Link} from 'router:@sanity/base/router'
 
 import styles from '../../styles/ToolSwitcher.css'
@@ -30,8 +30,11 @@ const ToolSwitcher = ({tools, activeToolName}) =>
   </div>
 
 ToolSwitcher.propTypes = {
-  tools: React.PropTypes.obj,
-  activeToolName: React.PropTypes.string
+  activeToolName: PropTypes.string,
+  tools: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    icon: PropTypes.func.isRequired
+  }))
 }
 
 export default ToolSwitcher
