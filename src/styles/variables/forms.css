@@ -2,6 +2,9 @@
 @use postcss-cssnext;
 
 :root {
+
+  --default-button-color: var(--gray);
+
   --input-bg: #fff;
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--gray-light);
