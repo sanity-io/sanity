@@ -1,0 +1,165 @@
+@import "style:@sanity/base/theme/variables";
+@use postcss-cssnext;
+@use postcss-font-awesome;
+
+/* Hack to make font awsome work before we have asset management */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?v=4.6.3');
+  src:
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'),
+    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.root {
+  display: block;
+  position: relative;
+  text-transform: uppercase;
+  padding: 0.8em 1em;
+  outline: none;
+  cursor: pointer;
+  border: 0.2em solid var(--gray-base);
+  background-color: transparent;
+}
+
+.icon {
+  &::before {
+    display: inline-block;
+    margin-right: 0.5em;
+    font-size: 1.25em;
+  }
+}
+
+.loading {
+  composes: root;
+  &::before {
+    display: inline-block;
+    font-awesome: spinner;
+    margin-right: 0.5em;
+    transform-origin: center center;
+    animation-name: spin;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+.small {
+  font-size: 0.8em;
+  padding: 0.2em 1em;
+}
+
+.inverted {
+  background-color: var(--brand-primary);
+  color: #fff;
+
+  &.danger {
+    background-color: var(--brand-primary);
+    color: #fff;
+  }
+}
+
+.danger {
+  composes: root;
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+  &.inverted {
+    background-color: var(--brand-danger);
+    color: #fff;
+  }
+}
+
+.success {
+  composes: root;
+  border-color: var(--brand-success);
+  color: var(--brand-success);
+  &.inverted {
+    background-color: var(--brand-success);
+    color: #fff;
+  }
+}
+
+.warning {
+  composes: root;
+  border-color: var(--brand-warning);
+  color: var(--brand-warning);
+  &.inverted {
+    background-color: var(--brand-warning);
+    color: #fff;
+  }
+}
+
+.delete {
+  composes: danger;
+  composes: icon;
+  &::before {
+    font-awesome: trash;
+  }
+}
+
+.add {
+  composes: root;
+  composes: icon;
+  &::before {
+    font-awesome: plus;
+  }
+}
+
+
+
+.save {
+  composes: root;
+  composes: icon;
+  &::before {
+    font-awesome: save;
+  }
+}
+
+.noBorder {
+  background-color: transparent;
+  text-align: left;
+  border: 0;
+}
+
+.editIcon {
+  composes: icon;
+  &::before {
+    font-awesome: pencil;
+  }
+}
+
+.deleteIcon {
+  composes: icon;
+  &::before {
+    font-awesome: trash;
+  }
+}
+
+/*
+
+@styleguide
+
+@title Button
+
+Compose .root to get the default button
+<button class="root">root</button>
+
+Compose .danger to get a button that indicates delete/remove etc.
+<button class="danger">Danger!</button>
+
+Compose .inverted to get a button that is inverted
+<button class="inverted">Danger!</button>
+
+*/

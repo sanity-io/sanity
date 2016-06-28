@@ -1,0 +1,24 @@
+{
+  "roles": [
+    {
+      "name": "component:@sanity/components/button",
+      "description": "Default button",
+      "path": "src/buttons/DefaultButton.js"
+    },
+    {
+      "name": "style:@sanity/components/button",
+      "description": "Default button",
+      "path": "src/buttons/style/DefaultButton.css"
+    },
+    {
+      "name": "component:@sanity/components/loading/spinner",
+      "description": "Spinner to show activity",
+      "path": "src/buttons/loading/Spinner.js"
+    },
+    {
+      "name": "style:@sanity/components/loading/spinner",
+      "description": "Spinner to show activity",
+      "path": "src/buttons/loading/style/Spinner.css"
+    }
+  ]
+}
