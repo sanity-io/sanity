@@ -1,6 +1,5 @@
 {
   "name": "@sanity/components",
-  "private": true,
   "version": "1.0.2",
   "description": "Basic UX components",
   "main": "lib/index.js",
