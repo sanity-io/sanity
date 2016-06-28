@@ -5,7 +5,7 @@ import Spinner from 'component:@sanity/components/loading/spinner'
 
 export default class DefaultButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.string,
+    kind: PropTypes.oneOf(['add', 'delete', 'warning', 'success', 'danger']),
     onClick: PropTypes.func,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
@@ -27,13 +27,11 @@ export default class DefaultButton extends React.Component {
       console.error(`There is no ${kind} button`) // eslint-disable-line no-console
     }
 
-    const style = `${styles[kind] || styles.root} ${inverted && styles.inverted} ${color}`
-
-    const coloredStyle = colored && styles.colored
+    const style = `${styles[kind] || styles.root} ${colored && styles.colored} ${inverted && styles.inverted} ${color}`
 
     return (
       <button
-        className={`${style} ${coloredStyle}`}
+        className={style}
         type="button"
         onClick={this.props.onClick}
       >
