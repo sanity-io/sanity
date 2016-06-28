@@ -22,6 +22,12 @@
   outline: none;
   cursor: pointer;
   background-color: var(--default-button-color);
+  border: none;
+}
+
+.colored {
+  composes: root;
+  background-color: var(--brand-primary);
 }
 
 .icon {

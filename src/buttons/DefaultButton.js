@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import Ink from 'react-ink'
-import styles from 'style:@sanity/base/theme/buttons/default'
+import styles from 'style:@sanity/components/buttons/default'
 import Spinner from 'component:@sanity/components/loading/spinner'
 
 export default class DefaultButton extends React.Component {
