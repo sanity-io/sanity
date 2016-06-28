@@ -1,0 +1,29 @@
+@import "style:@sanity/base/theme/variables";
+
+.root {
+  display: block;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  border-radius: 50%;
+  background-color: var(--default-button-color);
+  height: 4rem;
+  width: 4rem;
+  border: none;
+  color: #fff;
+  outline: none;
+}
+
+.colored {
+  composes: root;
+  background-color: var(--brand-primary);
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 3rem;
+  text-align: center;
+  width: 100%;
+}

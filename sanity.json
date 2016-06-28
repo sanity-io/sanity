@@ -1,24 +1,59 @@
 {
   "roles": [
     {
-      "name": "component:@sanity/components/button",
-      "description": "Default button",
-      "path": "src/buttons/DefaultButton.js"
+      "name": "component:@sanity/components/buttons/default",
+      "description": "Default button"
     },
     {
-      "name": "style:@sanity/components/button",
-      "description": "Default button",
-      "path": "src/buttons/style/DefaultButton.css"
+      "name": "style:@sanity/components/buttons/default",
+      "description": "Default button"
+    },
+    {
+      "name": "component:@sanity/components/buttons/fab",
+      "description": "Floating Action Button"
+    },
+    {
+      "name": "style:@sanity/components/buttons/fab",
+      "description": "Floating Action Button"
     },
     {
       "name": "component:@sanity/components/loading/spinner",
-      "description": "Spinner to show activity",
-      "path": "src/buttons/loading/Spinner.js"
+      "description": "Spinner to show activity"
     },
     {
       "name": "style:@sanity/components/loading/spinner",
-      "description": "Spinner to show activity",
-      "path": "src/buttons/loading/style/Spinner.css"
+      "description": "Spinner to show activity"
+    },
+
+
+
+
+    {
+      "implements":  "component:@sanity/components/buttons/default",
+      "path": "src/buttons/DefaultButton.js"
+    },
+    {
+      "implements":  "component:@sanity/components/loading/spinner",
+      "path": "src/loading/Spinner.js"
+    },
+    {
+      "implements":  "component:@sanity/components/buttons/fab",
+      "path": "src/buttons/Fab.js"
+    },
+
+
+    {
+      "implements": "style:@sanity/components/buttons/default",
+      "path": "src/buttons/styles/DefaultButton.css"
+    },
+    {
+      "implements": "style:@sanity/components/buttons/fab",
+      "path": "src/buttons/styles/Fab.css"
+    },
+    {
+      "implements": "style:@sanity/components/loading/spinner",
+      "path": "src/loading/styles/Spinner.css"
     }
+
   ]
 }

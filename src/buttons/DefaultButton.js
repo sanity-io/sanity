@@ -7,7 +7,7 @@ export default class DefaultButton extends React.Component {
   static propTypes = {
     kind: PropTypes.string,
     onClick: PropTypes.func,
-    children: PropTypes.node.isRequired(),
+    children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
     icon: PropTypes.node,
     loading: PropTypes.bool,
