@@ -9,7 +9,7 @@
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
-    "start": "cd example-app && npm start"
+    "start": "cd example-app && sanity start"
   },
   "keywords": [],
   "author": "",
