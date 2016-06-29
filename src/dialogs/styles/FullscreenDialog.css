@@ -1,0 +1,50 @@
+@import 'style:@sanity/base/theme/variables/typography';
+
+.root {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.heading {
+  font-size: var(--font-size-h1);
+  font-weight: 100;
+  margin-bottom: 0.5em;
+}
+
+.inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  max-width: 40em;
+  font-size: 1em;
+  margin: 0 auto;
+  line-height: 1.5em;
+}
+
+.opened {
+  display: block;
+}
+
+.closed {
+  display: none;
+}
+
+.closeButton {
+  display: block;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 3em;
+  height: 1em;
+  width: 1em;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  composes: close from 'style:@sanity/base/theme/icons';
+}
