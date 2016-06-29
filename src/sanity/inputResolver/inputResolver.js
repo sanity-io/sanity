@@ -1,5 +1,6 @@
 import array from 'role:@sanity/form-builder/input/array?'
 import boolean from 'role:@sanity/form-builder/input/boolean?'
+import date from 'role:@sanity/form-builder/input/date?'
 import email from 'role:@sanity/form-builder/input/email?'
 import geopoint from 'role:@sanity/form-builder/input/geopoint?'
 import number from 'role:@sanity/form-builder/input/number?'
@@ -12,6 +13,7 @@ import url from 'role:@sanity/form-builder/input/url?'
 const coreTypes = {
   array,
   boolean,
+  date,
   email,
   geopoint,
   number,
