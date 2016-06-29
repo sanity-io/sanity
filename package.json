@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "compile": "babel src --copy-files --out-dir dist",
+    "compile": "babel src --copy-files --out-dir lib",
     "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf dist",
     "lint": "eslint . --quiet",
