@@ -7,6 +7,7 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import styles from './styles/Array.css'
 import Button from 'component:@sanity/components/buttons/default'
 import EditItem from './EditItem'
+import DropDownButton from 'component:@sanity/components/buttons/dropdown'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -100,17 +101,31 @@ export default class Arr extends React.Component {
 
   renderSelectType() {
     const {type} = this.props
-    return type.of.map(field => {
-      return (
-        <Button
-          key={field.type}
-          onClick={() => this.addItemAtEnd(field)}
-          type="button"
-        >
-          {field.title || field.type}
-        </Button>
-      )
+
+    const items = type.of.map(field => {
+      return {
+        title: field.title || field.type,
+        onClick: () => this.addItemAtEnd(field),
+      }
     })
+
+    return (
+      <DropDownButton items={items} ripple inverted kind="add">
+        New {this.props.field.title}
+      </DropDownButton>
+    )
+
+    // return type.of.map(field => {
+    //   return (
+    //     <Button
+    //       key={field.type}
+    //       onClick={() => this.addItemAtEnd(field)}
+    //       type="button"
+    //     >
+    //       Select type {field.title || field.type}
+    //     </Button>
+    //   )
+    // })
   }
 
   handleItemChange(event, index) {
@@ -188,12 +203,16 @@ export default class Arr extends React.Component {
           })}
         </ul>
         <div className={styles.primaryFunctions}>
-          <Button onClick={this.handleAddBtnClick} ripple inverted kind="add">
-            Add {field.title}
-          </Button>
-          <div className={styles.selectType}>
-            {selectType && this.renderSelectType()}
-          </div>
+          {
+            this.props.type.of.length == 1
+            && <Button onClick={this.handleAddBtnClick} ripple inverted kind="add">
+              Add {field.title}
+            </Button>
+          }
+          {
+            this.props.type.of.length > 1 && this.renderSelectType()
+          }
+
         </div>
       </div>
     )
