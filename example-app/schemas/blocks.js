@@ -18,14 +18,8 @@ export default {
         },
         {
           name: 'checked',
-          title: 'Checked',
+          title: 'Published',
           type: 'boolean'
-        },
-        {
-          name: 'lead',
-          title: 'Lead',
-          type: 'text',
-          required: true
         },
         {
           name: 'content',

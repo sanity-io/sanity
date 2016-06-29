@@ -1,4 +1,4 @@
-import {Schema, Block, Inline, Text, Attribute, MarkType, Fragment} from 'prosemirror/dist/model'
+import {Schema, Text} from 'prosemirror/dist/model'
 import createFormBuilderBlockTypeForField from './createFormBuilderBlockTypeForField'
 
 import {

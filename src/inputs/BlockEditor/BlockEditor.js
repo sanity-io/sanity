@@ -4,6 +4,7 @@ import {ProseMirror} from 'prosemirror'
 import EditBlock from './EditBlock'
 import {createFieldValue} from '../../state/FormBuilderState'
 import createProseMirrorSchema from './createProseMirrorSchema'
+import styles from './styles/BlockEditor.css'
 
 export default class BlockEditor extends React.Component {
   static valueContainer = ProseMirrorValueContainer
@@ -12,6 +13,9 @@ export default class BlockEditor extends React.Component {
     type: PropTypes.any,
     field: PropTypes.any,
     value: PropTypes.instanceOf(ProseMirrorValueContainer),
+    validation: PropTypes.shape({
+      errors: PropTypes.array
+    }),
     onChange: PropTypes.func
   }
 
@@ -31,6 +35,7 @@ export default class BlockEditor extends React.Component {
       editEntity: null
     }
     this.handleInsertBlock = this.handleInsertBlock.bind(this)
+    this.handleEditDone = this.handleEditDone.bind(this)
     this.handleEditorClick = this.handleEditorClick.bind(this)
     this.handleBlockChange = this.handleBlockChange.bind(this)
     this.setEditorRef = this.setEditorRef.bind(this)
@@ -72,7 +77,8 @@ export default class BlockEditor extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.value.doc !== this.pm.doc) {
       // oops, docs are out of sync
-      console.log('Editor document are out of sync with value.doc')
+      // todo: revisit
+      console.log('Editor document are out of sync with value.doc') // eslint-disable-line no-console
     }
   }
 
@@ -90,6 +96,10 @@ export default class BlockEditor extends React.Component {
     this.pmContainer = element
   }
 
+  handleEditDone(event) {
+    this.setState({edit: null})
+  }
+
   handleInsertBlock(event) {
     const schema = this.pmSchema
     const nodeTypeName = event.target.getAttribute('data-type')
@@ -105,7 +115,6 @@ export default class BlockEditor extends React.Component {
           return (
             <button
               key={ofField.type}
-              type="button"
               data-type={ofField.type}
               onClick={this.handleInsertBlock}
             >
@@ -143,14 +152,27 @@ export default class BlockEditor extends React.Component {
     }
 
     return (
-      <EditBlock value={edit.value} field={edit.value.context.field} onChange={this.handleBlockChange} />
+      <EditBlock
+        value={edit.value}
+        field={edit.value.context.field}
+        onChange={this.handleBlockChange}
+        onClose={this.handleEditDone}
+        onEnter={this.handleEditDone}
+      />
     )
   }
   render() {
+    const {validation} = this.props
+    const hasError = validation && validation.messages && validation.messages.length > 0
     return (
-      <div style={{position: 'relative'}}>
+      <div className={hasError ? styles.error : styles.root}>
         {this.renderInsertMenu()}
-        <div ref={this.setEditorRef} />
+        <div className={styles.inner}>
+          <div
+            className={hasError ? styles.inputError : styles.input}
+            ref={this.setEditorRef}
+          />
+        </div>
         {this.renderBlockForm()}
       </div>
     )

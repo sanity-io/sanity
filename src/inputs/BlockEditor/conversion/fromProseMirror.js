@@ -1,5 +1,6 @@
-
-const typeTransforms = {
+// Todo: support more prosemirror types
+const TRANSFORMS = {
+  /* eslint-disable camelcase */
   paragraph(node) {
     return {
       $type: 'paragraph',
@@ -34,6 +35,7 @@ const typeTransforms = {
   doc(node) {
     return node.content.map(fromProseMirror).filter(Boolean)
   }
+  /* eslint-enable camelcase */
 }
 
 function convertMark(mark) {
@@ -42,7 +44,7 @@ function convertMark(mark) {
 }
 
 export default function fromProseMirror(node) {
-  const pmTransform = typeTransforms[node.type]
+  const pmTransform = TRANSFORMS[node.type]
 
   if (pmTransform) {
     return pmTransform(node)
@@ -52,5 +54,5 @@ export default function fromProseMirror(node) {
     return node.attrs.value.serialize()
   }
 
-  console.warn("Don't know how to transform node of type: ", node.type)
+  throw new Error(`Don't know how to transform node of type: ${node.type}`)
 }

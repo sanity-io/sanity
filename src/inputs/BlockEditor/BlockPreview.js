@@ -3,7 +3,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import FallbackPreviewComponent from '../Array/FallbackPreviewComponent'
-import styles from '../Array/styles/ItemPreview.css'
+import styles from './styles/BlockPreview.css'
 
 export default class PreviewWrapper extends React.Component {
   static propTypes = {
@@ -42,6 +42,7 @@ export default class PreviewWrapper extends React.Component {
           field={field}
           type={fieldType}
         />
+        (click to edit)
       </div>
     )
   }

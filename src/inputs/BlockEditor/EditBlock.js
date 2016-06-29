@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
+import styles from './styles/EditBlock.css'
+import Button from 'component:@sanity/components/buttons/default'
 
 export default class EntityForm extends React.Component {
   constructor(props, context) {
@@ -17,7 +19,8 @@ export default class EntityForm extends React.Component {
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
-    onEnter: PropTypes.func
+    onEnter: PropTypes.func,
+    onClose: PropTypes.func
   };
 
   static contextTypes = {
@@ -48,7 +51,7 @@ export default class EntityForm extends React.Component {
   }
 
   render() {
-    const {value, field, focus, level} = this.props
+    const {value, field, focus, level, onClose} = this.props
 
     const fieldType = this.getFieldType(field)
 
@@ -64,15 +67,18 @@ export default class EntityForm extends React.Component {
     const passSerialized = value.constructor.passSerialized
 
     return (
-      <InputComponent
-        value={passSerialized ? value.serialize() : value}
-        field={field}
-        type={fieldType}
-        level={level}
-        focus={focus}
-        onEnter={this.handleEnter}
-        onChange={this.handleChange}
-      />
+      <div className={styles.root}>
+        <InputComponent
+          value={passSerialized ? value.serialize() : value}
+          field={field}
+          type={fieldType}
+          level={level}
+          focus={focus}
+          onEnter={this.handleEnter}
+          onChange={this.handleChange}
+        />
+        <Button onClick={onClose}>OK</Button>
+      </div>
     )
   }
 }

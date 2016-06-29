@@ -1,7 +1,7 @@
 import {createFieldValue} from '../../../state/FormBuilderState'
 // Converts a persisted array to a prosemirror compatible json document
 
-const converters = {
+const TRANSFORMS = {
   paragraph(item) {
     return {
       type: 'paragraph',
@@ -40,7 +40,7 @@ function convertMark(mark) {
 }
 
 function convertPMType(item) {
-  const pmConverter = converters[item.$type]
+  const pmConverter = TRANSFORMS[item.$type]
   if (pmConverter) {
     return pmConverter(item)
   }
@@ -51,7 +51,7 @@ export default function toProseMirror(array, context) {
   return {
     type: 'doc',
     content: array.map(item => {
-      const isPMType = converters[item.$type]
+      const isPMType = TRANSFORMS[item.$type]
       if (isPMType) {
         return convertPMType(item)
       }

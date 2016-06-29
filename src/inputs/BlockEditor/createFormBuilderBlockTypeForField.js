@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PreviewWrapper from './PreviewWrapper'
+import BlockPreview from './BlockPreview'
 import {Block, Attribute} from 'prosemirror/dist/model'
 
 export default function createFormBuilderBlockTypeForField({createBlockValue, field, parentComponent}) {
@@ -46,7 +46,7 @@ export default function createFormBuilderBlockTypeForField({createBlockValue, fi
       }
       domNode.setAttribute('data-entity', 'true')
 
-      const el = (<PreviewWrapper field={field} value={value} />)
+      const el = (<BlockPreview field={field} value={value} />)
       ReactDOM.unstable_renderSubtreeIntoContainer(parentComponent, el, domNode)
 
       return domNode
