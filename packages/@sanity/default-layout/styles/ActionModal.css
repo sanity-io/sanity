@@ -1,21 +1,13 @@
 .modal {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #ff5c59;
-  color: #fff;
+
 }
 
-.closeButton {
-  composes: button from 'style:@sanity/default-layout/action-button';
+.content {
+  columns: 4;
 }
 
 .actionLink {
-  display: inline-block;
-  width: 50%;
-  color: #fff;
   text-decoration: none;
-  font-size: 2em;
+  color: #fff;
+  display: block;
 }
