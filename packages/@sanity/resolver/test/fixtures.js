@@ -471,3 +471,21 @@ export function getRootLevelRolesTree() {
     )
   })
 }
+
+export function getNodeResolutionTree() {
+  return Object.assign({}, getBasicTree(), {
+    '/sanity/app/sanity.json': sanityManifest(
+      ['@sanity/core', '@sanity/strawberry', 'rebeltastic']
+    ),
+    '/node_modules': {
+      '@sanity': {
+        strawberry: {
+          'sanity.json': sanityManifest()
+        }
+      },
+      'sanity-plugin-rebeltastic': {
+        'sanity.json': sanityManifest()
+      }
+    }
+  })
+}

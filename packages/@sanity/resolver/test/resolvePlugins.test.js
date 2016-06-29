@@ -17,7 +17,8 @@ import {
   getInvalidRoleDeclaration,
   getStyleOverriderTree,
   getNonAbstractRoleTree,
-  getRootLevelRolesTree
+  getRootLevelRolesTree,
+  getNodeResolutionTree
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -204,6 +205,18 @@ describe('plugin resolver', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
       return resolvePlugins(opts).then(plugins => {
         plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
+      })
+    })
+
+    it('follows the node resolution algorithm (trickles down directory tree)', () => {
+      mockFs(getNodeResolutionTree())
+      const resolveOpts = Object.assign(opts, {basePath: '/sanity/app'})
+      return resolvePlugins(resolveOpts).then(plugins => {
+        plugins[0].path.should.equal('/sanity/node_modules/@sanity/default-layout')
+        plugins[1].path.should.equal('/sanity/node_modules/@sanity/core')
+        plugins[2].path.should.equal('/node_modules/@sanity/strawberry')
+        plugins[3].path.should.equal('/node_modules/sanity-plugin-rebeltastic')
+        plugins[4].path.should.equal('/sanity/app')
       })
     })
   })

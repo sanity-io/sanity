@@ -64,6 +64,12 @@ function resolvePluginPath(plugin, sync) {
     locations.splice(2, 0, path.join(plugin.parentPluginPath, 'node_modules', pluginDir))
   }
 
+  let currentDir = plugin.basePath
+  while (path.dirname(currentDir) !== currentDir) {
+    currentDir = path.dirname(currentDir)
+    locations.push(path.join(currentDir, 'node_modules', pluginDir))
+  }
+
   locations = uniq(locations)
 
   if (sync) {
