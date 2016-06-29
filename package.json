@@ -2,7 +2,7 @@
   "name": "@sanity/form-builder",
   "version": "1.0.24",
   "description": "",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
     "prepublish": "in-publish && npm run compile || not-in-publish",
