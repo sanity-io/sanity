@@ -9,3 +9,12 @@
     font-awesome: caret-down;
   }
 }
+
+.close {
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  &::before {
+    font-awesome: close;
+  }
+}
