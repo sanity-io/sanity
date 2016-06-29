@@ -50,6 +50,10 @@
       "description": "Provides a bunch of shadows to pick from. Based on Material Design Lite"
     },
     {
+      "name": "style:@sanity/base/theme/icons",
+      "description": "Provides icons"
+    },
+    {
       "name": "style:@sanity/base/theme/variables/brand-colors",
       "description": "Brand colors. Other colors are based on this"
     },
@@ -159,6 +163,12 @@
       "srcPath": "./src/styles/shadows.css",
       "path": "./lib/styles/shadows.css"
     },
+    {
+      "implements": "style:@sanity/base/theme/icons",
+      "srcPath": "./src/styles/icons.css",
+      "path": "./lib/styles/icons.css"
+    },
+
     {
       "implements": "style:@sanity/base/theme/variables/code",
       "srcPath": "./src/styles/variables/code.css",

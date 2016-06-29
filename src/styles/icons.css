@@ -1,0 +1,11 @@
+@use postcss-cssnext;
+@use postcss-font-awesome;
+
+.chevron-down {
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  &::before {
+    font-awesome: caret-down;
+  }
+}
