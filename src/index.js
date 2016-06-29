@@ -1,11 +1,9 @@
 import Arr from './inputs/Array'
-import Blocks from './inputs/Blocks'
 import Bool from './inputs/Boolean'
 import Email from './inputs/Email'
 import Num from './inputs/Number'
 import Obj from './inputs/Object'
 import Reference from './inputs/Reference'
-import RichText from './inputs/RichText'
 import Str from './inputs/String'
 import Text from './inputs/Text'
 import Url from './inputs/Url'
@@ -23,9 +21,7 @@ export const inputComponents = {
   email: Email,
   reference: Reference,
   url: Url,
-  string: Str,
-  blocks: Blocks,
-  richtext: RichText
+  string: Str
 }
 
 export const fieldComponents = {
