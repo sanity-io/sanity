@@ -13,8 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",    "draft-js": "^0.7.0",
-
+  "license": "ISC",
   "dependencies": {
     "eslint": "^2.12.2",
     "lodash": "^4.13.1",
