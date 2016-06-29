@@ -12,6 +12,8 @@ import ArrayField from './fields/Array'
 import BooleanField from './fields/Boolean'
 import ObjectField from './fields/Object'
 
+export {default as BlockEditor} from './inputs/BlockEditor'
+
 export const inputComponents = {
   object: Obj,
   array: Arr,

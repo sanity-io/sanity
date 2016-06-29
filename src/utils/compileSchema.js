@@ -22,6 +22,10 @@ function defineSchemaType(schemaTypeDef) {
 
 export function compile(schema) {
 
+  if (!schema.name) {
+    throw new Error('Missing schema name.')
+  }
+
   // sanity checks
   schema.types.forEach(typeDef => {
     if (!typeDef.type) {

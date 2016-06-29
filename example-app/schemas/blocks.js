@@ -23,8 +23,28 @@ export default {
             {
               type: 'latlon',
               title: 'Lat lon'
+            },
+            {
+              type: 'homeAddress',
+              title: 'Address'
             }
           ]
+        }
+      ]
+    },
+    {
+      name: 'homeAddress',
+      type: 'object',
+      fields: [
+        {
+          type: 'string',
+          name: 'zip',
+          title: 'Zip code'
+        },
+        {
+          type: 'string',
+          name: 'address',
+          title: 'Street'
         }
       ]
     },

@@ -22,6 +22,7 @@
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "proptypes": "^0.14.3",
+    "prosemirror": "^0.8.3",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {

@@ -13,6 +13,7 @@ import {
   compileSchema,
   inputComponents,
   fieldComponents,
+  BlockEditor,
   DefaultField
 } from '../../src'
 
@@ -66,12 +67,15 @@ function renderDemo(compiledSchema) {
     }
   })
 
-  function resolveInputComponent(field) {
+  function resolveInputComponent(field, type) {
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
     }
     if (field.type === 'text' && field.format === 'html') {
       return schemaFieldComponents.richtext
+    }
+    if (field.type === 'array' && field.editor === 'prosemirror') {
+      return BlockEditor
     }
     return schemaFieldComponents[field.type]
   }

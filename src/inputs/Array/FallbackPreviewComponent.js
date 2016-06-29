@@ -39,11 +39,10 @@ function render(value) {
   }
   return renderPrimitive(value)
 }
-
 export default function FallbackPreviewComponent(props) {
   return (
     <div className={styles.root}>
-      {render(props.value) || 'Untitled'}
+      {render(props.value) || <pre>[{props.field.type}: {JSON.stringify(props.value)}]</pre>}
     </div>
   )
 }

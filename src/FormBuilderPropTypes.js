@@ -17,7 +17,6 @@ const field = PropTypes.shape({
 
 const type = PropTypes.shape({
   fields: PropTypes.arrayOf(field),
-  alias: PropTypes.string,
   isPrimitive: PropTypes.bool
 })
 

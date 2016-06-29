@@ -1,12 +1,13 @@
 import DefaultContainer from './DefaultContainer'
 import {getFieldType} from '../utils/getFieldType'
+import inspect from 'object-inspect'
 
 export function createFieldValue(value, context) {
 
   const {schema, field, resolveInputComponent} = context
 
   if (!field) {
-    throw new Error(`Missing field for value ${value}`)
+    throw new Error(`Missing field for value ${inspect(value)}`)
   }
 
   const fieldType = getFieldType(schema, field)
