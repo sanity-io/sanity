@@ -1,64 +1,126 @@
-//import {atLeast, atMost, required} from './sanity/validates'
-//import {image, imageVersion, richText} from './sanity/types/bundled'
-
-//
-
 export default {
   name: 'blocks',
   types: [
     {
-      name: 'document',
+      name: 'blogpost',
       type: 'object',
       fields: [
         {
+          name: 'title',
+          title: 'Title',
+          type: 'string',
+          required: true
+        },
+        {
+          name: 'priority',
+          title: 'Priority',
+          type: 'number'
+        },
+        {
+          name: 'checked',
+          title: 'Checked',
+          type: 'boolean'
+        },
+        {
+          name: 'lead',
+          title: 'Lead',
+          type: 'text',
+          required: true
+        },
+        {
           name: 'content',
-          title: 'Content / blocks',
           type: 'array',
           editor: 'prosemirror',
           of: [
             {
-              type: 'paragraph',
-              title: 'Paragraph'
+              title: 'Paragraph',
+              type: 'paragraph'
             },
             {
-              type: 'latlon',
-              title: 'Lat lon'
+              title: 'Image',
+              type: 'simpleImage'
             },
             {
-              type: 'homeAddress',
-              title: 'Address'
+              title: 'Author',
+              type: 'author'
+            },
+            {
+              title: 'Location',
+              type: 'geopoint'
             }
           ]
         }
       ]
     },
     {
-      name: 'homeAddress',
+      name: 'simpleImage',
       type: 'object',
       fields: [
         {
-          type: 'string',
-          name: 'zip',
-          title: 'Zip code'
+          name: 'url',
+          type: 'url'
         },
         {
-          type: 'string',
-          name: 'address',
-          title: 'Street'
+          name: 'caption',
+          type: 'string'
         }
       ]
     },
     {
-      name: 'latlon',
+      name: 'geopoint',
       type: 'object',
       fields: [
         {
           name: 'lat',
-          type: 'number'
+          title: 'Latitude',
+          type: 'number',
+          required: true
         },
         {
           name: 'lon',
-          type: 'number'
+          title: 'Longitude',
+          type: 'number',
+          required: true
+        }
+      ]
+    },
+    {
+      name: 'author',
+      type: 'object',
+      fields: [
+        {
+          name: 'name',
+          title: 'Title',
+          type: 'string'
+        },
+        {
+          name: 'awards',
+          title: 'Awards',
+          type: 'array',
+          of: [
+            {
+              type: 'string'
+            }
+          ]
+        },
+        {
+          name: 'homestead',
+          title: 'Homestead',
+          type: 'object',
+          fields: [
+            {
+              name: 'lat',
+              title: 'Latitude',
+              type: 'number',
+              required: true
+            },
+            {
+              name: 'lon',
+              title: 'Longitude',
+              type: 'number',
+              required: true
+            }
+          ]
         }
       ]
     },
