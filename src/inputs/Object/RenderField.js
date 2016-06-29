@@ -62,7 +62,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, fieldName, level, validation ,focus} = this.props
+    const {value, field, fieldName, level, validation, focus} = this.props
 
     const fieldType = this.getFieldType(field)
 

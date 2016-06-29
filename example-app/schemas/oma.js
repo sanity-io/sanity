@@ -1,4 +1,4 @@
-/*eslint-disable quotes,quote-props*/
+/*eslint-disable quotes,quote-props,max-len*/
 export default {
   "name": "oma",
   "types": [

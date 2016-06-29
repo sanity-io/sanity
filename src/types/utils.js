@@ -1,5 +1,4 @@
-import {difference, uniqWith} from 'lodash'
-import PropTypes from 'proptypes'
+import {uniqWith} from 'lodash'
 
 export function ifNotUniqueProp(array, property, notUniqueFn) {
   uniqWith(array, (item, otherItem) => {
@@ -25,9 +24,11 @@ export function resolveJSType(val) {
 
   if (typeof val == 'object' && val && typeof val.length == 'number') {
     try {
-      if (typeof val.callee == 'function') return 'arguments'
+      if (typeof val.callee == 'function') { // eslint-disable-line max-depth
+        return 'arguments'
+      }
     } catch (ex) {
-      if (ex instanceof TypeError) {
+      if (ex instanceof TypeError) { // eslint-disable-line max-depth
         return 'arguments'
       }
     }
@@ -37,7 +38,7 @@ export function resolveJSType(val) {
     return 'null'
   }
 
-  if (val === void 0) {
+  if (val === undefined) {
     return 'undefined'
   }
 

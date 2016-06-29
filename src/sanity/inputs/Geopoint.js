@@ -33,7 +33,7 @@ export default class GeopointInput extends React.Component {
   handleFieldChange(fieldName, fieldValue) {
     const {value, onChange} = this.props
     const nextValue = Object.assign({}, value, {
-      [fieldName]: fieldValue.trim() ? Number(fieldValue) : void 0
+      [fieldName]: fieldValue.trim() ? Number(fieldValue) : undefined
     })
     onChange({patch: {$set: nextValue}})
   }

@@ -18,6 +18,7 @@ export default class Arr extends React.Component {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
+    level: PropTypes.num,
     onChange: PropTypes.func
   };
 
@@ -40,7 +41,6 @@ export default class Arr extends React.Component {
     this.handleClose = this.handleClose.bind(this)
 
     this.state = {
-      selectType: false,
       addItemField: null,
       editIndex: -1
     }
@@ -167,7 +167,7 @@ export default class Arr extends React.Component {
 
   render() {
     const {type, field, value} = this.props
-    const {selectType, editIndex} = this.state
+    const {editIndex} = this.state
     return (
       <div className={styles.root}>
         <ul className={styles.list}>

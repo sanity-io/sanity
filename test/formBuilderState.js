@@ -33,13 +33,16 @@ function defaultResolveContainer(field, type) {
       return ObjectContainer
     case 'array':
       return ArrayContainer
+    default:
   }
   switch (type.type) {
     case 'object':
       return ObjectContainer
     case 'array':
       return ArrayContainer
+    default:
   }
+  return undefined
 }
 
 const defaultContext = {
@@ -55,13 +58,13 @@ test('create from raw value', t => {
 })
 
 test('create from empty', t => {
-  const state = createFormBuilderState(void 0, defaultContext)
-  t.same(state.unwrap(), void 0)
+  const state = createFormBuilderState(undefined, defaultContext)
+  t.same(state.unwrap(), undefined)
   t.end()
 })
 
 test('create empty, and patch with simple value', t => {
-  const state = createFormBuilderState(void 0, defaultContext)
+  const state = createFormBuilderState(undefined, defaultContext)
   const newState = state.patch({
     someString: {$set: 'foobar'}
   })
@@ -150,7 +153,7 @@ test('custom container', t => {
     }
 
     unwrap() {
-      return this.value.trim() ? Number(this.value) : void 0
+      return this.value.trim() ? Number(this.value) : undefined
     }
   }
 

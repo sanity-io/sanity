@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import Str from './String'
 
 export default class Telephone extends React.Component {
   constructor(props, context) {

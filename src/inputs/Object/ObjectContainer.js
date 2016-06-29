@@ -45,7 +45,7 @@ export default class ObjectContainer {
       const fieldDef = keyedFields[keyName]
 
       if (!newVal.hasOwnProperty(keyName)) {
-        newVal[keyName] = createFieldValue(void 0, {field: fieldDef, schema: context.schema, resolveInputComponent})
+        newVal[keyName] = createFieldValue(undefined, {field: fieldDef, schema: context.schema, resolveInputComponent})
       }
       newVal[keyName] = newVal[keyName].patch(patch[keyName])
     })

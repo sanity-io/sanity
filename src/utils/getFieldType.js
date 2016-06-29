@@ -9,6 +9,7 @@ export function getFieldType(schema, field) {
   }
   if (!BASIC_TYPE_NAMES.includes(field.type)) {
     // todo: this will normally fail during schema compilation, but keep it here for now and consider remove later
+    // eslint-disable-next-line no-console
     console.warn('Invalid field type "%s" of field "%s". Must be one of %s', field.type, field.name, BASIC_TYPE_NAMES.join(', '))
   }
   // Treat as "anonymous"/inline type where type parameters are defined in field

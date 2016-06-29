@@ -2,8 +2,6 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
-import Button from '../../buttons/Default'
-import ReactDOM from 'react-dom'
 
 export default class ItemForm extends React.Component {
   constructor(props, context) {

@@ -1,4 +1,3 @@
-import styles from './styles/Boolean.css'
 import React, {PropTypes} from 'react'
 import DefaultFieldWrapper from './DefaultFieldWrapper'
 

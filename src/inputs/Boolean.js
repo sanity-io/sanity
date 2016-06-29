@@ -27,7 +27,7 @@ export default class Bool extends React.Component {
   render() {
     const {value} = this.props
     return (
-      <Switch onChange={this.handleChange} checked={!!value} label="A switch should always have a label"/>
+      <Switch onChange={this.handleChange} checked={!!value} label="A switch should always have a label" />
     )
   }
 }

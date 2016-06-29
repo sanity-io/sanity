@@ -19,15 +19,12 @@ export function createFieldValue(value, context) {
     throw error
   }
 
-  const ResolvedContainer = ResolvedInput && ResolvedInput.valueContainer || DefaultContainer
+  const ResolvedContainer = (ResolvedInput && ResolvedInput.valueContainer) || DefaultContainer
 
   return ResolvedContainer.deserialize(value, context)
 }
 
 export function createFormBuilderState(value, {type, schema, resolveInputComponent}) {
-  if (!resolveInputComponent) {
-    debugger
-  }
   const context = {
     schema: schema,
     field: {type: type.name},

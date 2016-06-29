@@ -10,6 +10,9 @@ export default class Str extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
+    validation: PropTypes.shape({
+      messages: PropTypes.array
+    }),
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,

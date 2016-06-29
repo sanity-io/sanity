@@ -1,7 +1,7 @@
 import primitives from './primitives'
 import bundled from './bundled'
 import PropTypes from 'proptypes'
-import {difference, pick} from 'lodash'
+import {difference} from 'lodash'
 
 const all = Object.assign({}, primitives, bundled)
 
