@@ -42,6 +42,14 @@
       "description": "Responsive breakpoints"
     },
     {
+      "name": "style:@sanity/base/theme/animation",
+      "description": "Provides basic animation"
+    },
+    {
+      "name": "style:@sanity/base/theme/shadows",
+      "description": "Provides a bunch of shadows to pick from. Based on Material Design Lite"
+    },
+    {
       "name": "style:@sanity/base/theme/variables/brand-colors",
       "description": "Brand colors. Other colors are based on this"
     },
@@ -137,9 +145,19 @@
       "path": "./lib/styles/variables/base-colors.css"
     },
     {
+      "implements": "style:@sanity/base/theme/animation",
+      "srcPath": "./src/styles/animation.css",
+      "path": "./lib/styles/animation.css"
+    },
+    {
       "implements": "style:@sanity/base/theme/responsive",
       "srcPath": "./src/styles/responsive.css",
       "path": "./lib/styles/responsive.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/shadows",
+      "srcPath": "./src/styles/shadows.css",
+      "path": "./lib/styles/shadows.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/code",
