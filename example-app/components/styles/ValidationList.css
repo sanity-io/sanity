@@ -1,0 +1,15 @@
+/*@import 'style:@sanity/base/theme/variables';*/
+@use postcss-cssnext;
+
+
+.validationList {
+
+}
+
+.error {
+  /*color: var(--brand-danger);*/
+}
+
+.warning {
+  /*color: var(--brand-warning);*/
+}

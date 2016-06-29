@@ -1,0 +1,20 @@
+{
+  "name": "example-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "sanity start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sanity/base": "^2.1.38",
+    "@sanity/cli": "^1.0.30",
+    "@sanity/components": "^1.0.8",
+    "@sanity/theme": "^1.0.4",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0"
+  }
+}

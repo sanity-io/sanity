@@ -9,7 +9,7 @@
     "postpublish": "rimraf dist",
     "lint": "eslint . --quiet",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
-    "start": "sanity start"
+    "start": "cd example-app && npm start"
   },
   "keywords": [],
   "author": "",
@@ -18,23 +18,14 @@
     "draft-js": "^0.7.0",
     "eslint": "^2.12.2",
     "lodash": "^4.13.1",
-    "loose-envify": "^1.2.0",
     "object-inspect": "^1.2.1",
-    "postcss-autoreset": "^1.1.5",
-    "postcss-cssnext": "^2.6.0",
+    "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
-    "postcss-normalize": "^0.3.0",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.7.0",
-    "react": "^15.1.0",
-    "react-addons-update": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "shallow-equals": "0.0.0",
-    "tap": "^5.7.2"
+    "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^2.1.28",
-    "@sanity/cli": "^1.0.24",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-css-modules-transform": "^0.1.1",
@@ -57,6 +48,11 @@
     "rimraf": "^2.5.2",
     "tap": "^5.7.2",
     "why-did-you-update": "0.0.8"
+  },
+  "peerDependencies": {
+    "react": "^15.x",
+    "react-addons-update": "^15.x",
+    "react-dom": "^15.x"
   },
   "directories": {
     "example": "example",

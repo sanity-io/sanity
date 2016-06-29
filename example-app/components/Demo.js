@@ -1,15 +1,13 @@
 import React, {PropTypes} from 'react'
 import JSONView from './JSONView'
 
-import {createFormBuilderState} from '../../../src/state/FormBuilderState'
-
-import styles from './styles/Demo.css'
-import FormBuilderPropTypes from '../../../src/FormBuilderPropTypes'
-
 import {
   FormBuilder,
-  FormBuilderProvider
-} from '../../../src'
+  FormBuilderProvider,
+  createFormBuilderState
+} from '../../src'
+
+import styles from './styles/Demo.css'
 
 const DEBUG_JSON_STYLE = {
   zIndex: 10000,
@@ -44,7 +42,10 @@ function save(schema, type, editorValue) {
 export default class Demo extends React.Component {
 
   static propTypes = {
-    schema: FormBuilderPropTypes.schema,
+    schema: PropTypes.shape({
+      name: PropTypes.string,
+      types: PropTypes.array
+    }),
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
     resolveValidationComponent: PropTypes.func.isRequired,

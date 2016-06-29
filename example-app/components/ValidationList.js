@@ -1,9 +1,10 @@
-import FormBuilderPropTypes from '../../../src/FormBuilderPropTypes'
-import React from 'react'
+import React, {PropTypes} from 'react'
 import styles from './styles/ValidationList.css'
 
 class ValidationList extends React.Component {
-  static propTypes = FormBuilderPropTypes.validation
+  static propTypes = {
+    messages: PropTypes.array
+  }
 
   render() {
     const {messages} = this.props

@@ -1,4 +1,9 @@
 {
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/theme"
+  ],
   "roles": [
     {
       "implements": "component:@sanity/base/root",

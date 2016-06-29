@@ -1,5 +1,0 @@
-@use postcss-cssnext;
-
-.root {
-  composes: root from 'style:@sanity/base/theme/typography/base';
-}

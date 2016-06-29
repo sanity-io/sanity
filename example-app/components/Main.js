@@ -1,5 +1,5 @@
 import React from 'react'
-import Demo from '../components/Demo'
+import Demo from './Demo'
 import styles from './styles/Main.css'
 import Debug from 'debug'
 import MyCustomLatLonInput from './MyCustomLatLonInput'
@@ -13,7 +13,7 @@ import {
   inputComponents,
   fieldComponents,
   DefaultField
-} from '../../../src'
+} from '../../src'
 
 Debug.disable('*')
 
