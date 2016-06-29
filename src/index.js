@@ -1,18 +1,18 @@
-import Obj from './inputs/Object'
 import Arr from './inputs/Array'
-import Bool from './inputs/Boolean'
-import Num from './inputs/Number'
 import Blocks from './inputs/Blocks'
+import Bool from './inputs/Boolean'
 import Email from './inputs/Email'
-import Url from './inputs/Url'
-import Text from './inputs/Text'
+import Num from './inputs/Number'
+import Obj from './inputs/Object'
 import Reference from './inputs/Reference'
-import Str from './inputs/String'
 import RichText from './inputs/RichText'
+import Str from './inputs/String'
+import Text from './inputs/Text'
+import Url from './inputs/Url'
 
+import ArrayField from './fields/Array'
 import BooleanField from './fields/Boolean'
 import ObjectField from './fields/Object'
-import ArrayField from './fields/Array'
 
 export const inputComponents = {
   object: Obj,
