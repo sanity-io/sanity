@@ -28,6 +28,10 @@
       "description": "Input component for the core boolean type"
     },
     {
+      "name": "role:@sanity/form-builder/input/date",
+      "description": "Input component for the core date type"
+    },
+    {
       "name": "role:@sanity/form-builder/input/email",
       "description": "Input component for the core email type"
     },
