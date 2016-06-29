@@ -13,6 +13,7 @@ export default class DefaultButton extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
+    className: PropTypes.string,
     color: PropTypes.string // success, warning, danger, info
   }
 
@@ -21,13 +22,14 @@ export default class DefaultButton extends React.Component {
   }
 
   render() {
-    const {kind, inverted, color, colored, ripple, icon, loading} = this.props
+    console.log("DefaultButton props:", this.props)
+    const {kind, inverted, color, colored, ripple, icon, loading, className} = this.props
 
     if (!styles[kind] && kind) {
       console.error(`There is no ${kind} button`) // eslint-disable-line no-console
     }
 
-    const style = `${styles[kind] || styles.root} ${colored && styles.colored} ${inverted && styles.inverted} ${color}`
+    const style = `${styles[kind] || styles.root} ${colored && styles.colored} ${inverted && styles.inverted} ${color} ${className}`
 
     return (
       <button

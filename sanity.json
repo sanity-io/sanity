@@ -17,6 +17,14 @@
       "description": "Floating Action Button styling"
     },
     {
+      "name": "component:@sanity/components/buttons/dropdown",
+      "description": "Drop down button with menu"
+    },
+    {
+      "name": "style:@sanity/components/buttons/dropwdown",
+      "description": "Drop down button styling"
+    },
+    {
       "name": "component:@sanity/components/loading/spinner",
       "description": "Spinner to show activity"
     },
@@ -52,6 +60,11 @@
       "path": "./lib/buttons/Fab.js"
     },
     {
+      "implements":  "component:@sanity/components/buttons/dropdown",
+      "srcPath": "./src/buttons/DropDownButton.js",
+      "path": "./lib/buttons/DropDownButton.js"
+    },
+    {
       "implements":  "component:@sanity/components/toggles/switch",
       "srcPath": "./src/toggles/Switch.js",
       "path": "./lib/toggles/Switch.js"
@@ -67,6 +80,11 @@
       "implements": "style:@sanity/components/buttons/fab",
       "srcPath": "./src/buttons/styles/Fab.css",
       "path": "./lib/buttons/styles/Fab.css"
+    },
+    {
+      "implements": "style:@sanity/components/buttons/dropwdown",
+      "srcPath": "./src/buttons/styles/DropDownButton.css",
+      "path": "./lib/buttons/styles/DropDownButton.css"
     },
     {
       "implements": "style:@sanity/components/loading/spinner",

@@ -19,6 +19,7 @@
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
+    "react-click-outside": "^2.1.0",
     "react-ink": "^5.1.1"
   },
   "devDependencies": {

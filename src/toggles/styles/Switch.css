@@ -1,17 +1,24 @@
 @import "style:@sanity/base/theme/variables";
+@import "style:@sanity/base/theme/animation";
 @use postcss-cssnext;
 
 :root {
   --switch-color: var(--brand-primary);
+  --shadow-ambient-shadow-opacity: 0.5;
+  --shadow-key-penumbra-opacity: 0.5;
+  --shadow-key-umbra-opacity: 0.5;
 
   /* Label */
   --switch-label-height: 1.25rem;
+  --switch-label-font-size: 1rem;
 
   /* Thumb */
+  --switch-thumb-top: 0;
   --switch-thumb-size: 1.25rem;
   --switch-thumb-color: var(--switch-color);
   --switch-off-thumb-color: #fff;
   --switch-on-thumb-color: var(--switch-color);
+  --switch-disabled-thumb-color: #fff;
 
   /* Track */
   --switch-track-top: 0.35rem;
@@ -70,26 +77,21 @@
   width: var(--switch-thumb-size);
   border-radius: 50%;
   cursor: pointer;
-
-  /* @include shadow-2dp(); */
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-
-  /* @include material-animation-default(0.28s); */
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 0.28s;
+  composes: shadow-2dp from "style:@sanity/base/theme/shadows";
+  composes: animation-default from "style:@sanity/base/theme/animation";
   transition-property: left;
-  @nest .checked & {
-    background: var(--switch-thumb-color);
-    left: calc(var(--switch-track-length) - var(--switch-thumb-size));
-
-    /* @include shadow-3dp(); */
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-  }
 
   @nest .disabled & {
     background: var(--switch-disabled-thumb-color);
     cursor: auto;
   }
+}
+
+.thumbChecked {
+  composes: thumb;
+  background: var(--switch-thumb-color);
+  left: calc(var(--switch-track-length) - var(--switch-thumb-size));
+  composes: shadow-3dp from "style:@sanity/base/theme/shadows";
 }
 
 .focusHelper {

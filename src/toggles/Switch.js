@@ -16,7 +16,7 @@ export default class Switch extends React.Component {
     return (
       <label className={`${rootStyle} ${checkedStyle}`}>
         <div className={styles.track} />
-        <div className={styles.thumb} />
+        <div className={`${checked ? styles.thumbChecked : styles.thumb}`} />
         <input
           className={styles.input}
           type="checkbox"
