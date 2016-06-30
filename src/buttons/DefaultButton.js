@@ -22,7 +22,7 @@ export default class DefaultButton extends React.Component {
   }
 
   render() {
-    console.log("DefaultButton props:", this.props)
+
     const {kind, inverted, color, colored, ripple, icon, loading, className} = this.props
 
     if (!styles[kind] && kind) {
