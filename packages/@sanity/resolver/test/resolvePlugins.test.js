@@ -1,7 +1,7 @@
 import path from 'path'
 import assert from 'assert'
 import mockFs from 'mock-fs'
-import resolvePlugins, {resolveRoles} from '../src/resolver'
+import resolvePlugins, {resolveRoles, resolveProjectRoot} from '../src/resolver'
 import {afterEach, describe, it} from 'mocha'
 import {
   getBasicTree,
@@ -401,6 +401,17 @@ describe('plugin resolver', () => {
       res.fulfilled.should.have.property('component:@sanity/core/root')
       res.fulfilled['component:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
     })
+  })
+
+  it('should be able to find project root synchronously by looking for `root` prop', () => {
+    mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
+
+    const rootPath = resolveProjectRoot({
+      basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
+      sync: true
+    })
+
+    rootPath.should.eql('/sanity')
   })
 })
 

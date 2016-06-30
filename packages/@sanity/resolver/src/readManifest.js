@@ -4,7 +4,7 @@ import fsp from 'fs-promise'
 import path from 'path'
 import validateManifest from './validateManifest'
 
-function readManifestSync(basePath, manifestPath, options) {
+function readManifestSync(manifestPath, options) {
   try {
     const manifest = fs.readFileSync(manifestPath)
     const parsedManifest = JSON.parse(manifest)
@@ -31,7 +31,7 @@ function readManifest(options = {}) {
   const manifestPath = path.join(options.manifestDir || basePath, 'sanity.json')
 
   if (options.sync) {
-    return readManifestSync(basePath, manifestPath, options)
+    return readManifestSync(manifestPath, options)
   }
 
   return fsp.readJson(manifestPath)

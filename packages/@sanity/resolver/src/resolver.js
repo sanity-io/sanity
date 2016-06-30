@@ -21,6 +21,16 @@ export default function resolveTree(opts = {}) {
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
 }
 
+export function resolveRoles(options = {}) {
+  if (options.sync) {
+    return mergeResult(resolveTree(options), options)
+  }
+
+  return resolveTree(options).then(plugins => mergeResult(plugins, options))
+}
+
+export {default as resolveProjectRoot} from './resolveProjectRoot'
+
 function resolveTreeSync(options) {
   const basePath = options.basePath || process.cwd()
   const manifest = readManifest(options)
@@ -33,18 +43,11 @@ function resolveTreeSync(options) {
 function getProjectRootPlugin(basePath, manifest) {
   return {
     name: '(project root)',
+    isRoot: true,
     path: basePath,
     manifest: manifest,
     plugins: []
   }
-}
-
-export function resolveRoles(options = {}) {
-  if (options.sync) {
-    return mergeResult(resolveTree(options), options)
-  }
-
-  return resolveTree(options).then(plugins => mergeResult(plugins, options))
 }
 
 function mergeResult(plugins, options = {}) {

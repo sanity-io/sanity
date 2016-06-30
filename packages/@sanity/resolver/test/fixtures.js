@@ -1,7 +1,8 @@
 import merge from 'lodash/merge'
 
-function sanityManifest(plugins, roles) {
+function sanityManifest(plugins, roles, opts = {}) {
   return JSON.stringify({
+    root: opts.root,
     server: {
       port: 7777
     },
@@ -88,7 +89,7 @@ export function getResolutionOrderFixture({chosenMethod}) {
   }
 
   const base = {
-    '/sanity/sanity.json': sanityManifest(['foo']),
+    '/sanity/sanity.json': sanityManifest(['foo'], [], {root: true}),
     '/sanity/node_modules/sanity-plugin-foo/sanity.json': pluginManifest({plugins: ['bar']})
   }
 
