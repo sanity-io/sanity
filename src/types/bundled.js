@@ -37,7 +37,7 @@ export default {
             `Missing type builder for ${toField.type}. Did you forget to declare the type "${toField.type}" in the schema?`
           )
         }
-        return type.parse(type, types)
+        return type.parse(toField, types)
       })
       return {to: toTypes}
     }
