@@ -41,6 +41,14 @@
       "description": "Switch toggle style"
     },
     {
+      "name": "component:@sanity/components/textfields/default",
+      "description": "Standard text field"
+    },
+    {
+      "name": "style:@sanity/components/textfields/default",
+      "description": "Text field styling"
+    },
+    {
       "name": "component:@sanity/components/dialogs/fullscreen",
       "description": "Fullscreen dialog"
     },
@@ -78,6 +86,11 @@
       "path": "./lib/toggles/Switch.js"
     },
     {
+      "implements":  "component:@sanity/components/textfields/default",
+      "srcPath": "./src/textfields/DefaultTextField.js",
+      "path": "./lib/textfields/DefaultTextField.js"
+    },
+    {
       "implements":  "component:@sanity/components/dialogs/fullscreen",
       "srcPath": "./src/dialogs/FullscreenDialog.js",
       "path": "./lib/dialogs/FullscreenDialog.js"
@@ -109,6 +122,11 @@
       "implements": "style:@sanity/components/toggles/switch",
       "srcPath": "./src/toggles/styles/Switch.css",
       "path": "./lib/toggles/styles/Switch.css"
+    },
+    {
+      "implements": "style:@sanity/components/textfields/default",
+      "srcPath": "./src/textfields/styles/DefaultTextField.css",
+      "path": "./lib/textfields/styles/DefaultTextField.css"
     },
     {
       "implements":  "style:@sanity/components/dialogs/fullscreen",

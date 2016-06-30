@@ -48,7 +48,7 @@ class DropDownButton extends React.Component {
         {...this.props}
       >
         <span className={styles.title}>
-          Dropdown {this.props.children}
+          {this.props.children}
         </span>
 
         <span className={styles.arrow}></span>
