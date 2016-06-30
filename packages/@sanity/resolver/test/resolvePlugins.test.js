@@ -413,6 +413,17 @@ describe('plugin resolver', () => {
 
     rootPath.should.eql('/sanity')
   })
+
+  it('should resolve project root if option is passed', () => {
+    mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
+
+    return resolveRoles({
+      basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
+      resolveProjectRoot: true
+    }).then(roles => {
+      roles.plugins[roles.plugins.length - 1].path.should.eql('/sanity')
+    })
+  })
 })
 
 function shouldHaveThrown() {

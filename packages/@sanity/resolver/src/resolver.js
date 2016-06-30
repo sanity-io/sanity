@@ -3,9 +3,17 @@ import readManifest from './readManifest'
 import resolvePlugins from './resolvePlugins'
 import assignFulfillers from './assignFulfillers'
 import assignDefinitions from './assignDefinitions'
+import resolveProjectRoot from './resolveProjectRoot'
 
 export default function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
+
+  if (options.resolveProjectRoot) {
+    // @todo Sync vs async
+    const resolveOpts = Object.assign({}, options, {sync: true})
+    options.basePath = resolveProjectRoot(resolveOpts)
+  }
+
   let projectManifest = null
 
   if (options.sync) {
@@ -43,7 +51,6 @@ function resolveTreeSync(options) {
 function getProjectRootPlugin(basePath, manifest) {
   return {
     name: '(project root)',
-    isRoot: true,
     path: basePath,
     manifest: manifest,
     plugins: []
