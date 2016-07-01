@@ -67,4 +67,5 @@ client.config({dataset: 'newDataset'})
 ```
 
 Yes, these examples use ES6-flavored JS.
+
 ![Deal with it](http://i.imgur.com/ZGxjoYC.gif)
