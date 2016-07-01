@@ -1,0 +1,9 @@
+{
+  "roles": [
+    {
+      "implements": "role:@sanity/form-builder/input/date",
+      "srcPath": "./src/inputs/Date",
+      "path": "./lib/inputs/Date"
+    }
+  ]
+}
