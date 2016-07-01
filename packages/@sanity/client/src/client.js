@@ -3,7 +3,7 @@ import gradient from '@sanity/gradient-client'
 
 class SanityClient {
   constructor(config = {}) {
-    const client = gradient(config)
+    const client = this.client = gradient(config)
 
     this.gradient = pify({
       fetch: client.fetch.bind(client),
@@ -11,6 +11,12 @@ class SanityClient {
       create: client.create.bind(client),
       delete: client.delete.bind(client)
     })
+  }
+
+  config(newConfig) {
+    return typeof newConfig === 'undefined'
+      ? this.client.getConfig()
+      : this.client.setConfig(newConfig) && this
   }
 
   fetch(query, params) {
@@ -27,10 +33,6 @@ class SanityClient {
 
   delete(documentId, opts) {
     return this.gradient.delete(documentId, opts)
-  }
-
-  observe(query, opts) {
-
   }
 }
 

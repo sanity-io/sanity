@@ -5,6 +5,19 @@ import sanityClient from '../src/client'
 const baseUrl = 'https://gradient.url'
 const client = sanityClient({url: baseUrl, dataset: 'foo'})
 
+test('can get and set config', t => {
+  nock(baseUrl).post('/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
+  nock(baseUrl).post('/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
+
+  return client.fetch('query')
+    .then(res => t.is(res.ms, 123))
+    .then(() =>
+      client
+        .config({dataset: 'bar'})
+        .fetch('query')
+        .then(res => t.is(res.ms, 456)))
+})
+
 test('can do simple requests', t => {
   nock(baseUrl)
     .post('/q/foo', {query: 'query'})
