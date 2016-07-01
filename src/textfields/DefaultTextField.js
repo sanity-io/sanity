@@ -39,9 +39,11 @@ export default class DefaultTextField extends React.Component {
 
     return (
       <div className={styles.root}>
-        <label htmlFor={id} className={styles.label}>
-          {label}
-        </label>
+        {
+          label && <label htmlFor={id} className={styles.label}>
+            {label}
+          </label>
+        }
         <input
           className={styles.input}
           id={id}
@@ -50,7 +52,7 @@ export default class DefaultTextField extends React.Component {
           value={!!value}
           placeholder={placeholder}
           onKeyPress={this.handleKeyPress}
-          focus={this.handleFocus}
+          onFocus={this.handleFocus}
         />
       </div>
     )

@@ -49,6 +49,22 @@
       "description": "Text field styling"
     },
     {
+      "name": "component:@sanity/components/fieldsets/default",
+      "description": "Default <fieldset> with label as prop"
+    },
+    {
+      "name": "style:@sanity/components/fieldsets/default",
+      "description": "Fieldset styling"
+    },
+    {
+      "name": "component:@sanity/components/cards/default",
+      "description": "Card"
+    },
+    {
+      "name": "style:@sanity/components/cards/default",
+      "description": "Card styling"
+    },
+    {
       "name": "component:@sanity/components/dialogs/fullscreen",
       "description": "Fullscreen dialog"
     },
@@ -95,7 +111,16 @@
       "srcPath": "./src/dialogs/FullscreenDialog.js",
       "path": "./lib/dialogs/FullscreenDialog.js"
     },
-
+    {
+      "implements": "component:@sanity/components/fieldsets/default",
+      "srcPath": "./src/fieldsets/DefaultFieldSet.js",
+      "path": "./lib/fieldsets/DefaultFieldSet.js"
+    },
+    {
+      "implements": "component:@sanity/components/cards/default",
+      "srcPath": "./src/cards/DefaultCard.js",
+      "path": "./lib/cards/DefaultCard.js"
+    },
 
 
     {
@@ -132,7 +157,18 @@
       "implements":  "style:@sanity/components/dialogs/fullscreen",
       "srcPath": "./src/dialogs/styles/FullscreenDialog.css",
       "path": "./lib/dialogs/styles/FullscreenDialog.css"
+    },
+    {
+      "implements": "style:@sanity/components/fieldsets/default",
+      "srcPath": "./src/fieldsets/styles/DefaultFieldSet.css",
+      "path": "./lib/fieldsets/styles/DefaultFieldSet.css"
+    },
+    {
+      "implements": "style:@sanity/components/cards/default",
+      "srcPath": "./src/cards/styles/DefaultCard.css",
+      "path": "./lib/cards/styles/DefaultCard.css"
     }
+
 
   ]
 }

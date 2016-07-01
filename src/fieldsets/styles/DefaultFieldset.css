@@ -1,0 +1,52 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.root {
+  margin: 0;
+  padding: 0;
+  margin-bottom: var(--large-padding);
+  border: 0;
+
+  /* nested inside itself */
+  & & {
+    margin: 0;
+  }
+
+}
+
+.content {
+  display: block;
+  background-color: #fff;
+  border: 1px solid var(--gray-lighter);
+  padding: var(--medium-padding);
+
+  /* nested inside itself */
+  & & {
+    border: none;
+    padding: 0;
+  }
+}
+
+.inner {
+  display: block;
+}
+
+.legend {
+  composes: heading1 from 'style:@sanity/base/theme/typography/headings';
+  display: block;
+  width: 100%;
+
+  /* Should compose heading3, but it is not allowed */
+  @nest .root .root & {
+    font-size: var(--font-size-h3);
+    padding-top: var(--medium-padding);
+  }
+}
+
+.description {
+  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
+}
+
+.debugNestingLevel {
+  display: none;
+}
