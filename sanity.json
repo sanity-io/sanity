@@ -1,4 +1,9 @@
 {
+  "plugins": [
+    "@sanity/date-input",
+    "@sanity/google-maps-input"
+  ],
+
   "roles": [
     {
       "name": "function:@sanity/form-builder/input-resolver",

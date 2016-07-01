@@ -15,9 +15,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sanity/date-input": "^1.0.0",
+    "@sanity/google-maps-input": "^1.0.1",
+    "debug": "^2.2.0",
     "eslint": "^2.12.2",
     "lodash": "^4.13.1",
-    "debug": "^2.2.0",
     "object-inspect": "^1.2.1",
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
