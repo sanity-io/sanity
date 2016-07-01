@@ -1,7 +1,9 @@
 @import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
 
-body {
+:global(body) {
   font-family: var(--font-family-sans-serif);
+  background-color: var(--body-bg);
 
   @media (--screen-medium) {
     max-height: 100%;

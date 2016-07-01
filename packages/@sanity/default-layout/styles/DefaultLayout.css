@@ -5,7 +5,6 @@
 
 .defaultLayout {
   padding: var(--small-padding);
-
   @media (--screen-medium) {
     display: flex;
     flex-direction: column;
