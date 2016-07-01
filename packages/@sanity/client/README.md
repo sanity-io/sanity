@@ -55,5 +55,16 @@ return client.delete('foo').then(res => {
 })
 ```
 
+### Get client configuration
+```js
+const config = client.config()
+console.log(config.dataset)
+```
+
+### Set client configuration
+```js
+client.config({dataset: 'newDataset'})
+```
+
 Yes, these examples use ES6-flavored JS.
 ![Deal with it](http://i.imgur.com/ZGxjoYC.gif)
