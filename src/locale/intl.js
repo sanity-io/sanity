@@ -1,1 +1,1 @@
-module.exports = require('react-intl')
+export * from 'react-intl'
