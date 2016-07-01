@@ -33,7 +33,6 @@ export const fieldComponents = {
 }
 
 export {default as DefaultField} from './fields/Default'
-export {default as Fieldset} from './Fieldset'
 
 export {createFormBuilderState} from './state/FormBuilderState'
 export {compile as compileSchema} from './utils/compileSchema'

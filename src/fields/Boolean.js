@@ -6,9 +6,7 @@ export default function BooleanField(props) {
   const {input, field} = props
   return (
     <DefaultFieldWrapper {...props}>
-      <label>
-        {input} {field.title}
-      </label>
+      {input}
     </DefaultFieldWrapper>
   )
 }

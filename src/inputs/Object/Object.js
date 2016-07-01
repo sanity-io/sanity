@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
-import Fieldset from '../../Fieldset'
+import Fieldset from 'component:@sanity/components/fieldsets/default'
 import equals from 'shallow-equals'
 
 export default class Obj extends React.Component {

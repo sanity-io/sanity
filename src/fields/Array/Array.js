@@ -1,6 +1,6 @@
 import styles from './styles/Array.css'
 import React, {PropTypes} from 'react'
-import Fieldset from '../../Fieldset'
+import Fieldset from 'component:@sanity/components/fieldsets/default'
 
 export default function ArrayField(props) {
   const {input, field, level} = props
