@@ -1,0 +1,45 @@
+.root {
+  composes: root from 'style:@sanity/base/theme/forms/control';
+}
+
+.inner {
+  composes: inner from 'style:@sanity/base/theme/forms/control';
+}
+
+.searchInput {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  border: 0;
+  padding: 0;
+}
+.input {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  position: relative;
+  color: #555;
+}
+
+.inputError {
+  composes: error from 'style:@sanity/base/theme/forms/text-input';
+}
+
+.clearButton {
+  composes: textInput from 'style:@sanity/base/theme/forms/clear-button';
+  color: #444;
+}
+
+.hitBase {
+
+}
+.hit {
+  padding: 2px 10px;
+  border: 0 solid #eee;
+  border-top-width: 1px;
+  box-shadow: 1px 1px 1px 0px rgba(217,217,217,1);
+}
+.hit:hover {
+  background-color: #0b97c4;
+  color: #fff;
+}
+
+.error {
+  composes: root;
+}
