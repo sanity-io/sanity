@@ -188,15 +188,17 @@ export default class Arr extends React.Component {
 
             return (
               <li key={i} className={itemClass}>
-                <div className={styles.itemInner}>
-                  <ItemPreview
-                    index={i}
-                    field={itemField}
-                    value={item}
-                    onEdit={this.handleItemEdit}
-                    onRemove={this.handleRemoveItem}
-                  />
-                </div>
+                {editIndex !== i && (
+                  <div className={styles.itemInner}>
+                    <ItemPreview
+                      index={i}
+                      field={itemField}
+                      value={item}
+                      onEdit={this.handleItemEdit}
+                      onRemove={this.handleRemoveItem}
+                    />
+                  </div>
+                )}
                 {editIndex === i && this.renderEditItemForm(editIndex)}
               </li>
             )
