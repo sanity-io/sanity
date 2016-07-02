@@ -2,6 +2,11 @@ import {clone, keyBy} from 'lodash'
 import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../utils/getFieldType'
 
+const hasOwn = (() => {
+  const hO = {}.hasOwnProperty
+  return (obj, ...args) => hO.call(obj, ...args)
+})()
+
 export default class ObjectContainer {
 
   static deserialize(serialized = {}, context) {
@@ -9,6 +14,9 @@ export default class ObjectContainer {
     const type = getFieldType(schema, field)
     const deserialized = {$type: field.type}
 
+    if (serialized && hasOwn(serialized, '$id')) {
+      deserialized.$id = serialized.$id
+    }
     type.fields.forEach(fieldDef => {
       deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveInputComponent})
     })
