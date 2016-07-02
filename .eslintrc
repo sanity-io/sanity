@@ -9,9 +9,12 @@
     "bengler/import"
   ],
   "settings": {
-    "import/ignore": ["\\.css$", "node_modules"]
+    "import/ignore": ["\\.css$", "node_modules", ".*:.*"],
   },
   "rules": {
+    "import/no-unresolved": ["error", {
+      "ignore": [".*:.*"]
+    }],
     "sort-imports": [1, {
       "ignoreCase": true,
       "ignoreMemberSort": true,
