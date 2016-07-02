@@ -45,7 +45,7 @@ export default class Demo extends React.Component {
   static propTypes = {
     schema: PropTypes.shape({
       name: PropTypes.string,
-      types: PropTypes.array
+      types: PropTypes.object
     }),
     resolveInputComponent: PropTypes.func.isRequired,
     resolveFieldComponent: PropTypes.func.isRequired,
