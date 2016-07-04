@@ -16,6 +16,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "dialog-polyfill": "^0.4.3",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",

@@ -1,23 +1,65 @@
+@use postcss-cssnext;
+
+:root {
+  --dialog-padding: 1rem;
+}
 .root {
+  composes: shadow-10dp from "style:@sanity/base/theme/shadows";
   z-index: 5000;
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   width: 80%;
   height: 80%;
-  composes: shadow-10dp from "style:@sanity/base/theme/shadows";
   border: 0;
+  transition: transform 200ms;
+  padding: 0;
+}
+
+.isClosed {
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-50%) scale(0.1);
+}
+
+.isOpen {
+  composes: root;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-50%) scale(1);
+}
+
+.inner {
+  padding: var(--dialog-padding);
+}
+
+.header {
+  background-color: red;
+  height: 2rem;
+  line-height: 2rem;
+  padding: 0 var(--dialog-padding);
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 2rem;
+  composes: close from 'style:@sanity/base/theme/icons';
 }
 
 ::backdrop {
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .functions {
+  text-align: right;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   border-top: 1px solid red;
+  padding: var(--dialog-padding);
 }
