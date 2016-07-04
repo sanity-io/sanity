@@ -139,7 +139,7 @@ export default class Reference extends React.Component {
   }
 
   search(query) {
-    const {searchFn} = this.props
+    const {searchFn, field} = this.props
     if (this._currentQuery === query) {
       return
     }
@@ -152,7 +152,7 @@ export default class Reference extends React.Component {
 
     this.setState({searching: true})
 
-    searchFn(query)
+    searchFn(query, field)
       .then(hits => {
         if (this._currentQuery !== query) {
           return // ignore

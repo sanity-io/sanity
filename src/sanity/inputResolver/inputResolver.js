@@ -10,6 +10,8 @@ import string from 'role:@sanity/form-builder/input/string?'
 import text from 'role:@sanity/form-builder/input/text?'
 import url from 'role:@sanity/form-builder/input/url?'
 
+import DefaultReference from '../inputs/Reference'
+
 const coreTypes = {
   array,
   boolean,
@@ -18,7 +20,7 @@ const coreTypes = {
   geopoint,
   number,
   object,
-  reference,
+  reference: reference || DefaultReference,
   string,
   text,
   url

@@ -7,6 +7,7 @@ import schema from 'schema:@sanity/base/schema'
 import locationStore from 'datastore:@sanity/base/location'
 import inputResolver from 'function:@sanity/form-builder/input-resolver'
 import ValidationList from 'component:@sanity/form-builder/validation-list'
+import {unprefixType} from './utils/unprefixType'
 
 import {
   createFormBuilder,
@@ -23,10 +24,6 @@ const FormBuilder = createFormBuilder({
 
 const preventDefault = ev => ev.preventDefault()
 
-
-const unprefixType = doc => doc && Object.assign({}, doc, {
-  $type: doc.$type.split('.').slice().pop()
-})
 class SanityFormBuilder extends React.Component {
   constructor(props) {
     super(props)
