@@ -50,10 +50,7 @@ export default (config = {}) => {
     module: {
       loaders: [{
         test: /\.jsx?/,
-        exclude: modulePath => (
-          modulePath.indexOf('/node_modules/') >= 0
-          && modulePath.indexOf('?sanityRole=all%3A') === -1
-        ),
+        exclude: modPath => modPath.indexOf('/node_modules/') >= 0,
         loader: 'babel',
         query: babelConfig || {
           presets: [
