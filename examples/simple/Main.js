@@ -3,7 +3,6 @@ import Undoable from './lib/Undoable'
 
 import {
   createFormBuilder,
-  defaultConfig,
   Schema
 } from '../../src'
 
@@ -34,7 +33,7 @@ const schema = Schema.compile({
   ]
 })
 
-const FormBuilder = createFormBuilder({schema, config: defaultConfig})
+const FormBuilder = createFormBuilder({schema})
 
 export default class SimpleExample extends React.Component {
   constructor(...args) {
