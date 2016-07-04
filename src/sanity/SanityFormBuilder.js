@@ -1,16 +1,32 @@
+// Connects the FormBuilder with various sanity roles
+
 import React, {PropTypes} from 'react'
 import client from 'client:@sanity/base/client'
 import equals from 'shallow-equals'
+import schema from 'schema:@sanity/base/schema'
 import locationStore from 'datastore:@sanity/base/location'
+import inputResolver from 'function:@sanity/form-builder/input-resolver'
+import ValidationList from 'component:@sanity/form-builder/validation-list'
 
 import {
-  FormBuilder,
-  FormBuilderProvider,
-  createFormBuilderState
+  createFormBuilder,
+  Schema
 } from 'role:@sanity/form-builder'
+
+const compiledSchema = Schema.compile(schema)
+
+const FormBuilder = createFormBuilder({
+  schema: compiledSchema,
+  resolveInputComponent: inputResolver,
+  resolveValidationComponent: () => ValidationList
+})
 
 const preventDefault = ev => ev.preventDefault()
 
+
+const unprefixType = doc => doc && Object.assign({}, doc, {
+  $type: doc.$type.split('.').slice().pop()
+})
 class SanityFormBuilder extends React.Component {
   constructor(props) {
     super(props)
@@ -31,11 +47,7 @@ class SanityFormBuilder extends React.Component {
 
   getStateForProps(props) {
     return {
-      value: createFormBuilderState(props.initialValue, {
-        type: props.type,
-        schema: props.schema,
-        resolveInputComponent: props.resolveInputComponent
-      }),
+      value: FormBuilder.deserialize(unprefixType(props.initialValue)),
       changed: false,
       saving: false
     }
@@ -50,7 +62,6 @@ class SanityFormBuilder extends React.Component {
   }
 
   handleSave() {
-    const {initialValue} = this.props
     const data = this.state.value.serialize()
     const patch = Object.keys(data).reduce((doc, key) => {
       if (key[0] === '$') {
@@ -63,16 +74,18 @@ class SanityFormBuilder extends React.Component {
 
     this.setState({saving: true})
 
-    const mutation = initialValue.$id
-      ? client.update(initialValue.$id, patch)
-      : client.create(Object.assign({$type: initialValue.$type}, patch))
+    const prefixedType = `${schema.name}.${data.$type}`
+    const mutation = data.$id
+      ? client.update(data.$id, patch)
+      : client.create(Object.assign({$type: prefixedType}, patch))
 
     mutation
       .then(res => {
         this.setState({saving: false, changed: false})
 
         const newId = res.docIds[0]
-        if (newId !== initialValue.$id) {
+        if (newId !== data.$id) {
+          debugger
           // @todo figure out how to navigate to the correct URL
           locationStore.actions.navigate('/')
         }
@@ -85,30 +98,15 @@ class SanityFormBuilder extends React.Component {
 
   render() {
     const {value, saving, validation} = this.state
-    const {
-      type,
-      resolveInputComponent,
-      resolveFieldComponent,
-      resolveValidationComponent
-    } = this.props
 
     return (
       <div className="content">
         <form className="form-container" onSubmit={preventDefault}>
-          <FormBuilderProvider
-            resolveInputComponent={resolveInputComponent}
-            resolveFieldComponent={resolveFieldComponent}
-            resolveValidationComponent={resolveValidationComponent}
-            resolvePreviewComponent={() => {}}
-            schema={this.props.schema}
-          >
-            <FormBuilder
-              type={type}
-              value={value}
-              validation={validation}
-              onChange={this.handleChange}
-            />
-          </FormBuilderProvider>
+          <FormBuilder
+            value={value}
+            validation={validation}
+            onChange={this.handleChange}
+          />
         </form>
 
         <p>
@@ -122,16 +120,7 @@ class SanityFormBuilder extends React.Component {
 }
 
 SanityFormBuilder.propTypes = {
-  initialValue: PropTypes.object,
-  schema: PropTypes.object,
-  type: PropTypes.object.isRequired,
-  resolveInputComponent: PropTypes.func.isRequired,
-  resolveFieldComponent: PropTypes.func.isRequired,
-  resolveValidationComponent: PropTypes.func.isRequired
-}
-
-SanityFormBuilder.defaultProps = {
-  initialValue: {}
+  initialValue: PropTypes.object
 }
 
 export default SanityFormBuilder

@@ -1,0 +1,20 @@
+@import './shared.css';
+@use postcss-cssnext;
+
+.root {
+  background-color: #fafafa;
+  padding: 20px;
+}
+
+ul.schema {
+
+}
+li.schema {
+  list-style-type: none;
+}
+
+li.type {
+  list-style-type: none;
+  display: inline-block;
+  padding: 5px;
+}

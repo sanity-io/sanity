@@ -24,8 +24,7 @@ export default class EntityForm extends React.Component {
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema
+    formBuilder: PropTypes.object
   };
 
   shouldComponentUpdate(nextProps) {
@@ -43,11 +42,11 @@ export default class EntityForm extends React.Component {
   }
 
   resolveInputComponent(field, fieldType) {
-    return this.context.resolveInputComponent(field, fieldType)
+    return this.context.formBuilder.resolveInputComponent(field, fieldType)
   }
 
   getFieldType(field) {
-    return getFieldType(this.context.schema, field)
+    return getFieldType(this.context.formBuilder.schema, field)
   }
 
   render() {

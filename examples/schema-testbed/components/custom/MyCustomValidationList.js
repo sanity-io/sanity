@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/ValidationList.css'
+import styles from '../styles/ValidationList.css'
 
 class ValidationList extends React.Component {
   static propTypes = {

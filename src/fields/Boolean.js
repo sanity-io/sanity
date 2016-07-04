@@ -3,7 +3,7 @@ import DefaultFieldWrapper from './DefaultFieldWrapper'
 
 // Field component for boolean fields
 export default function BooleanField(props) {
-  const {input, field} = props
+  const {input} = props
   return (
     <DefaultFieldWrapper {...props}>
       {input}

@@ -1,0 +1,59 @@
+@import './shared.css';
+
+@use postcss-cssnext;
+
+.root {
+}
+.inner {
+  margin-bottom: 270px;
+  padding: 10px;
+}
+
+.inspectPaneInner {
+  max-height: 250px;
+}
+.toolbarButton {
+  border: 0;
+  min-width: 85px;
+  margin: 2px;
+  border-radius: 2px;
+  color: #c47054;
+  background-color: #f0f0f0;
+}
+.inspectPaneInnerFullscreen {
+  max-height: 100%;
+}
+
+.inspectPane {
+  z-index: 10000;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  background-color: white;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+}
+
+.inspectPaneFullScreen {
+  composes: inspectPane;
+  top: 0;
+}
+
+.inspectPaneButton {
+  position: absolute;
+  top: 1vh;
+}
+.closeInspectPaneButton {
+  right: 5px;
+  composes: inspectPaneButton;
+}
+.fullscreenInspectPaneButton {
+  right: 35px;
+  composes: inspectPaneButton;
+}
+.dockedInspectPaneButton {
+  right: 35px;
+  composes: inspectPaneButton;
+}

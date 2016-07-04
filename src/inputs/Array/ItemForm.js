@@ -23,8 +23,7 @@ export default class ItemForm extends React.Component {
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema
+    formBuilder: PropTypes.object
   };
 
   shouldComponentUpdate(nextProps) {
@@ -47,11 +46,11 @@ export default class ItemForm extends React.Component {
   }
 
   resolveInputComponent(field, fieldType) {
-    return this.context.resolveInputComponent(field, fieldType)
+    return this.context.formBuilder.resolveInputComponent(field, fieldType)
   }
 
   getFieldType(field) {
-    return getFieldType(this.context.schema, field)
+    return getFieldType(this.context.formBuilder.schema, field)
   }
 
   render() {
@@ -59,7 +58,7 @@ export default class ItemForm extends React.Component {
 
     const fieldType = this.getFieldType(field)
 
-    const InputComponent = this.context.resolveInputComponent(field, fieldType)
+    const InputComponent = this.context.formBuilder.resolveInputComponent(field, fieldType)
     if (!InputComponent) {
       return (
         <div>No input component found for field of type "{field.type}"

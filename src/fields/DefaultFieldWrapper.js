@@ -5,7 +5,7 @@ import React, {PropTypes} from 'react'
 
 export default function DefaultFieldWrapper(props, context) {
 
-  const ValidationList = context.resolveValidationComponent()
+  const ValidationList = context.formBuilder.resolveValidationComponent()
 
   const validationClass = props.validation.messages.length > 0 ? styles.error : styles.valid
   const className = `${styles[`level_${props.level}`]} ${validationClass}`
@@ -36,7 +36,7 @@ export default function DefaultFieldWrapper(props, context) {
 }
 
 DefaultFieldWrapper.contextTypes = {
-  resolveValidationComponent: PropTypes.func
+  formBuilder: PropTypes.object
 }
 
 DefaultFieldWrapper.propTypes = {

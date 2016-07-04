@@ -29,7 +29,13 @@
 .hitBase {
 
 }
+.hits {
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto
+}
 .hit {
+  list-style-type: none;
   padding: 2px 10px;
   border: 0 solid #eee;
   border-top-width: 1px;

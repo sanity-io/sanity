@@ -1,0 +1,19 @@
+@import './reset.css';
+body :global {
+  font-family: 'Helvetica', sans-serif;
+}
+
+:global h1 {
+  display: block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  font-weight: bold;  font-weight: bold;
+  font-size: 1.5em;
+}
+h2 :global {
+  margin-top: 0.27em;
+  margin-bottom: 0.27em;
+  font-weight: bold;
+  font-size: 1.2em;
+}

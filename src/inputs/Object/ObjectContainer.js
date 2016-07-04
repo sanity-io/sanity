@@ -100,6 +100,10 @@ export default class ObjectContainer {
       return acc
     }, {})
 
+    if (hasOwn(this.value, '$id')) {
+      serialized.$id = this.value.$id
+    }
+
     return Object.keys(serialized).length
       ? Object.assign({$type: field.type}, serialized)
       : undefined

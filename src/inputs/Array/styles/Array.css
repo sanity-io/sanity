@@ -8,6 +8,7 @@
 .item {
   transition: margin 0.1s linear;
 
+  list-style-type: none;
   &:first-child > .itemInner {
     border-top: var(--list-border);
   }

@@ -3,7 +3,6 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import ItemForm from './ItemForm'
 import ItemPreview from './ItemPreview'
 import ArrayContainer from './ArrayContainer'
-import {createFieldValue} from '../../state/FormBuilderState'
 import styles from './styles/Array.css'
 import Button from 'component:@sanity/components/buttons/default'
 import EditItem from './EditItem'
@@ -18,7 +17,7 @@ export default class Arr extends React.Component {
     type: FormBuilderPropTypes.type,
     field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
-    level: PropTypes.num,
+    level: PropTypes.number,
     onChange: PropTypes.func
   };
 
@@ -27,8 +26,7 @@ export default class Arr extends React.Component {
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: PropTypes.object
+    formBuilder: PropTypes.object
   };
 
   constructor(props, context) {
@@ -63,11 +61,7 @@ export default class Arr extends React.Component {
   }
 
   addItemAt(field, index) {
-    const addItemValue = createFieldValue(undefined, {
-      field: field,
-      schema: this.context.schema,
-      resolveInputComponent: this.context.resolveInputComponent
-    })
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, field)
 
     this.props.onChange({
       patch: {$splice: [[index, 0, addItemValue]]}

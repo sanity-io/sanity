@@ -2,11 +2,11 @@ import {test} from 'tap'
 import {createFormBuilderState} from '../src/state/FormBuilderState'
 import ObjectContainer from '../src/inputs/Object/ObjectContainer'
 import ArrayContainer from '../src/inputs/Array/ArrayContainer'
-import {compileSchema} from '../src'
+import {Schema} from '../src'
 
-import schema from './fixtures/schema'
+import schemaDef from './fixtures/schema'
 
-const compiledSchema = compileSchema(schema)
+const compiledSchema = Schema.compile(schemaDef)
 
 const rawValue = {
   $type: 'simple',
@@ -47,7 +47,7 @@ function defaultResolveContainer(field, type) {
 
 const defaultContext = {
   type: compiledSchema.types.simple,
-  schema: schema,
+  schema: compiledSchema,
   resolveContainer: defaultResolveContainer
 }
 
@@ -170,7 +170,7 @@ test('custom container', t => {
 
   const state = createFormBuilderState(rawValue, {
     type: compiledSchema.types.simple,
-    schema,
+    schema: compiledSchema,
     resolveContainer
   })
 

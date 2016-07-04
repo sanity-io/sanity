@@ -1,4 +1,4 @@
-import createReferenceInput from './createReferenceInput'
+import {createReferenceInput} from '../../../../src'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
