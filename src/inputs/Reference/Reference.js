@@ -199,6 +199,7 @@ export default class Reference extends React.Component {
 
   renderInput() {
     const {searching, query, searchInputValue, hits} = this.state
+    const {field} = this.props
 
     function renderStatus() {
       if (!searchInputValue) {
@@ -210,12 +211,13 @@ export default class Reference extends React.Component {
       return `${hits.length || 'No'} hit${hits.length === 1 ? '' : 's'} for ${JSON.stringify(query)}:`
     }
 
+    const toTypes = field.to.map(toField => toField.type)
     return (
       <div className={styles.input}>
         <input
           type="search"
           value={searchInputValue}
-          placeholder="Type to find"
+          placeholder={`Type to find ${toTypes.join(', ')}` }
           onChange={this.handleSearchFieldChange}
           className={styles.searchInput}
 
