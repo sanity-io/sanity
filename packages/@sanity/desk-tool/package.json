@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
