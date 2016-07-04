@@ -3,7 +3,7 @@
 
 :root {
 
-  --default-button-color: var(--gray);
+  --default-button-color: var(--gray-lighter);
 
   --input-bg: #fff;
   --input-bg-disabled: var(--gray-lighter);
