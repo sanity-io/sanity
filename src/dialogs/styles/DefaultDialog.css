@@ -1,0 +1,23 @@
+.root {
+  z-index: 5000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 80%;
+  height: 80%;
+  composes: shadow-10dp from "style:@sanity/base/theme/shadows";
+  border: 0;
+}
+
+::backdrop {
+  background-color: rgba(0,0,0,0.3);
+}
+
+.functions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid red;
+}

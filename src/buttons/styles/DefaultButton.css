@@ -15,7 +15,7 @@
 }
 
 .root {
-  display: block;
+  display: inline-block;
   position: relative;
   text-transform: uppercase;
   padding: 0.8em 1em;
@@ -23,6 +23,8 @@
   cursor: pointer;
   background-color: var(--default-button-color);
   border: 1px solid transparent;
+  margin-right: var(--extra-small-padding);
+  composes: shadow-1dp from "style:@sanity/base/theme/shadows";
 }
 
 .colored {

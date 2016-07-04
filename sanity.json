@@ -72,6 +72,14 @@
       "name": "style:@sanity/components/dialogs/fullscreen",
       "description": "Fullscreen dialog styling"
     },
+    {
+      "name": "component:@sanity/components/dialogs/default",
+      "description": "Default dialog"
+    },
+    {
+      "name": "style:@sanity/components/dialogs/default",
+      "description": "Default dialog styling"
+    },
 
 
 
@@ -105,6 +113,11 @@
       "implements":  "component:@sanity/components/textfields/default",
       "srcPath": "./src/textfields/DefaultTextField.js",
       "path": "./lib/textfields/DefaultTextField.js"
+    },
+    {
+      "implements":  "component:@sanity/components/dialogs/default",
+      "srcPath": "./src/dialogs/DefaultDialog.js",
+      "path": "./lib/dialogs/DefaultDialog.js"
     },
     {
       "implements":  "component:@sanity/components/dialogs/fullscreen",
@@ -157,6 +170,11 @@
       "implements":  "style:@sanity/components/dialogs/fullscreen",
       "srcPath": "./src/dialogs/styles/FullscreenDialog.css",
       "path": "./lib/dialogs/styles/FullscreenDialog.css"
+    },
+    {
+      "implements":  "style:@sanity/components/dialogs/default",
+      "srcPath": "./src/dialogs/styles/DefaultDialog.css",
+      "path": "./lib/dialogs/styles/DefaultDialog.css"
     },
     {
       "implements": "style:@sanity/components/fieldsets/default",

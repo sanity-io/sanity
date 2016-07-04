@@ -4,43 +4,23 @@ import styles from 'style:@sanity/components/dialogs/fullscreen'
 
 export default class FullScreenDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['add', 'delete', 'warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['warning', 'success', 'danger']),
     className: PropTypes.string,
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
     children: PropTypes.node,
-    onClose: PropTypes.func
-  }
-
-  constructor(props, context) {
-    super(props, context)
-    this.state = {
-      opened: true
-    }
-    this.handleClose = this.handleClose.bind(this)
-  }
-
-  handleClose() {
-    this.setState({
-      opened: false
-    })
-    if (this.props.onClose) {
-      this.props.onClose()
-    }
+    onClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired
   }
 
   render() {
 
-    const {kind, title, className} = this.props
+    const {kind, title, className, onClose} = this.props
 
-    if (!styles[kind] && kind) {
-      console.error(`There is no ${kind} fullscreen dialog`) // eslint-disable-line no-console
-    }
-
-    const style = `${styles[kind] || styles.root} ${className} ${this.state.opened ? styles.opened : styles.closed}`
+    const style = `${styles[kind] || styles.root} ${className} ${this.props.isOpen ? styles.isOpen : styles.isClosed}`
 
     return (
       <div className={style}>
-        <button className={styles.closeButton} onClick={this.handleClose} />
+        <button className={styles.closeButton} onClick={onClose} />
         <div className={styles.inner}>
           <h1 className={styles.heading}>{title}</h1>
           <div className={styles.content}>

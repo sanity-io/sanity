@@ -5,7 +5,6 @@ export default function Fieldset(props) {
   const {fieldset} = props
   return (
     <fieldset className={styles.root} data-nesting-level={props.level}>
-
       <legend className={styles.legend}>{fieldset.legend}</legend>
       <div className={styles.inner}>
         <p className={styles.description}>

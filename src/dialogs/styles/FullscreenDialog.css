@@ -1,4 +1,5 @@
 @import 'style:@sanity/base/theme/variables/typography';
+@import 'style:@sanity/base/theme/variables/layers';
 
 .root {
   position: fixed;
@@ -8,6 +9,7 @@
   right: 0;
   background: var(--brand-primary);
   color: #fff;
+  z-index: var(--zindex-modal-background);
 }
 
 .heading {
@@ -27,11 +29,11 @@
   line-height: 1.5em;
 }
 
-.opened {
+.isOpened {
   display: block;
 }
 
-.closed {
+.isClosed {
   display: none;
 }
 

@@ -36,6 +36,7 @@ export default class DefaultButton extends React.Component {
         className={style}
         type="button"
         onClick={this.props.onClick}
+        {...this.props}
       >
         {
           loading && <Spinner />
