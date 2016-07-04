@@ -18,7 +18,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^1.1.2",
+    "@sanity/form-builder": "^1.1.3",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
     "postcss-media-variables": "^2.0.0",
