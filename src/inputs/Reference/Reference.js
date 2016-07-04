@@ -217,7 +217,7 @@ export default class Reference extends React.Component {
         <input
           type="search"
           value={searchInputValue}
-          placeholder={`Type to find ${toTypes.join(', ')}` }
+          placeholder={`Type to find ${toTypes.join(', ')}`}
           onChange={this.handleSearchFieldChange}
           className={styles.searchInput}
 
