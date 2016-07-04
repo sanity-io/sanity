@@ -46,8 +46,12 @@ class SanityFormBuilder extends React.Component {
   }
 
   getStateForProps(props) {
+    const value = props.initialValue
+      ? FormBuilder.deserialize(unprefixType(props.initialValue))
+      : FormBuilder.createEmpty(this.props.typeName)
+
     return {
-      value: FormBuilder.deserialize(unprefixType(props.initialValue)),
+      value: value,
       changed: false,
       saving: false
     }
@@ -85,7 +89,6 @@ class SanityFormBuilder extends React.Component {
 
         const newId = res.docIds[0]
         if (newId !== data.$id) {
-          debugger
           // @todo figure out how to navigate to the correct URL
           locationStore.actions.navigate('/')
         }
@@ -110,7 +113,7 @@ class SanityFormBuilder extends React.Component {
         </form>
 
         <p>
-          <button disabled={saving} onClick={() => this.handleSave()}>
+          <button disabled={saving} onClick={this.handleSave}>
             {saving ? 'Saving...' : 'Save'}
           </button>
         </p>
@@ -120,7 +123,8 @@ class SanityFormBuilder extends React.Component {
 }
 
 SanityFormBuilder.propTypes = {
-  initialValue: PropTypes.object
+  initialValue: PropTypes.object,
+  typeName: PropTypes.string
 }
 
 export default SanityFormBuilder

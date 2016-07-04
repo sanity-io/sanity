@@ -42,13 +42,14 @@ class FormBuilderContainer extends React.Component {
       return <div>Loading document...</div>
     }
     return (
-      <SanityFormBuilder initialValue={this.state.document} />
+      <SanityFormBuilder initialValue={this.state.document} typeName={this.props.typeName} />
     )
   }
 }
 
 FormBuilderContainer.propTypes = {
-  documentId: PropTypes.string
+  documentId: PropTypes.string,
+  typeName: PropTypes.string
 }
 
 export default FormBuilderContainer
