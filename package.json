@@ -9,7 +9,8 @@
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
-    "start": "cd example-app && sanity start"
+    "start": "cd examples/schema-testbed && sanity start",
+    "start-simple": "cd examples/simple && sanity start"
   },
   "keywords": [],
   "author": "",
@@ -51,8 +52,10 @@
     "eslint-plugin-react": "^5.2.2",
     "in-publish": "^2.0.0",
     "json-markup": "^0.1.7",
+    "path-to-regexp": "^1.5.3",
     "react": "^15.2.0",
     "react-dom": "^15.2.0",
+    "react-enroute": "0.0.1",
     "rimraf": "^2.5.2",
     "tap": "^6.1.1",
     "why-did-you-update": "0.0.8"

@@ -3,7 +3,7 @@ import basicTypes from '../types'
 const BASIC_TYPE_NAMES = Object.keys(basicTypes)
 
 export function getFieldType(schema, field) {
-  const schemaType = schema.types[field.type]
+  const schemaType = schema.getType(field.type)
   if (schemaType) {
     return schemaType
   }

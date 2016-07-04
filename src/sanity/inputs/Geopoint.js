@@ -11,11 +11,6 @@ export default class GeopointInput extends React.Component {
     value: {}
   };
 
-  static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: PropTypes.object
-  };
-
   constructor(props, context) {
     super(props, context)
     this.handleLatChange = this.handleLatChange.bind(this)

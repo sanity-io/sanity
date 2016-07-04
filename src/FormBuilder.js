@@ -1,18 +1,16 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from './FormBuilderPropTypes'
 import styles from './styles/FormBuilder.css'
+import {getFieldType} from './utils/getFieldType'
 
 export class FormBuilder extends React.Component {
   static propTypes = {
-    type: PropTypes.object.isRequired,
     value: PropTypes.any,
-    validation: PropTypes.object.isRequired,
+    validation: PropTypes.object,
     onChange: PropTypes.func
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema,
+    formBuilder: PropTypes.object
   };
 
   static defaultProps = {
@@ -21,16 +19,16 @@ export class FormBuilder extends React.Component {
   }
 
   resolveInputComponent(field, type) {
-    return this.context.resolveInputComponent(field, type)
+    return this.context.formBuilder.resolveInputComponent(field, type)
   }
 
   render() {
-    const {type, onChange, value, validation} = this.props
+    const {onChange, value, validation} = this.props
 
-    // Create a proforma field from type
-    const field = {type: type.name}
+    const field = value.context.field
+    const schemaType = getFieldType(this.context.formBuilder.schema, field)
 
-    const FieldInput = this.resolveInputComponent(field, type)
+    const FieldInput = this.resolveInputComponent(field, schemaType)
     if (!FieldInput) {
       return <div>No field input resolved for field {JSON.stringify(field)}</div>
     }
@@ -42,7 +40,7 @@ export class FormBuilder extends React.Component {
         <div className={styles.inner}>
           <FieldInput
             field={field}
-            type={type}
+            type={schemaType}
             onChange={onChange}
             validation={validation}
             value={passSerialized ? value.serialize() : value}

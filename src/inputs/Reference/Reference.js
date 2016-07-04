@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import ItemPreview from './ItemPreview'
-import {createFieldValue} from '../../state/FormBuilderState'
 import Button from 'component:@sanity/components/buttons/default'
 import styles from './styles/Reference.css'
 
@@ -21,8 +20,7 @@ export default class Reference extends React.Component {
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: PropTypes.object
+    formBuilder: PropTypes.object
   };
 
   constructor(props, ...rest) {
@@ -40,7 +38,7 @@ export default class Reference extends React.Component {
       query: null,
       hits: [],
       refCache: {},
-      showInput: props.value.isEmpty(),
+      showInput: false,
       materializedValue: null,
       searching: false
     }
@@ -100,7 +98,7 @@ export default class Reference extends React.Component {
       return
     }
 
-    const materialize = materializeReferences([value.refId])
+    materializeReferences([value.refId])
       .then(materializedRefs => {
         return this.createValueFromDoc(materializedRefs[0])
       })
@@ -134,11 +132,7 @@ export default class Reference extends React.Component {
   }
 
   createValueFromDoc(doc) {
-    return createFieldValue(doc, {
-      field: this.getItemFieldForType(doc.$type),
-      schema: this.context.schema,
-      resolveInputComponent: this.context.resolveInputComponent
-    })
+    return this.context.formBuilder.createFieldValue(doc, this.getItemFieldForType(doc.$type))
   }
   createValueFromHit(hit) {
     return this.createValueFromDoc(hit.document)
@@ -197,7 +191,7 @@ export default class Reference extends React.Component {
 
   renderHits(hits) {
     return (
-      <ul style={{maxHeight: 400, overflowY: 'auto'}}>
+      <ul className={styles.hits}>
         {hits.map((hit, i) => <li className={styles.hit} key={hit.key || i}>{this.renderHit(hit, i)}</li>)}
       </ul>
     )

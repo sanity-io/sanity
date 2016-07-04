@@ -3,7 +3,6 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import FallbackPreviewComponent from '../Array/FallbackPreviewComponent'
-import styles from './styles/ItemPreview.css'
 
 export default class ItemPreview extends React.Component {
   static propTypes = {
@@ -13,9 +12,7 @@ export default class ItemPreview extends React.Component {
   };
 
   static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    resolvePreviewComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema
+    formBuilder: PropTypes.object
   };
 
   shouldComponentUpdate(nextProps) {
@@ -23,7 +20,7 @@ export default class ItemPreview extends React.Component {
   }
 
   getFieldType(field) {
-    return getFieldType(this.context.schema, field)
+    return getFieldType(this.context.formBuilder.schema, field)
   }
 
   render() {
@@ -31,7 +28,7 @@ export default class ItemPreview extends React.Component {
 
     const fieldType = this.getFieldType(field)
 
-    const PreviewComponent = this.context.resolvePreviewComponent(field, fieldType) || FallbackPreviewComponent
+    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType) || FallbackPreviewComponent
 
     const passSerialized = value.constructor.passSerialized
 

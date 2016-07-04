@@ -1,0 +1,17 @@
+{
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/theme"
+  ],
+  "roles": [
+    {
+      "implements": "component:@sanity/base/root",
+      "srcPath": "./Main",
+      "path": "./Main"
+    }
+  ]
+}

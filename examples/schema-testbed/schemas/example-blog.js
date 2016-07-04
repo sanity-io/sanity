@@ -1,5 +1,5 @@
 export default {
-  name: 'example-blog',
+  name: 'exampleBlog',
   types: [
     {
       name: 'blogpost',

@@ -24,9 +24,7 @@ export default class RenderField extends React.Component {
   };
 
   static contextTypes = {
-    resolveFieldComponent: PropTypes.func,
-    resolveInputComponent: PropTypes.func,
-    schema: FormBuilderPropTypes.schema
+    formBuilder: PropTypes.object
   };
 
   constructor(props, context) {
@@ -50,15 +48,15 @@ export default class RenderField extends React.Component {
   }
 
   resolveInputComponent(field, fieldType) {
-    return this.context.resolveInputComponent(field, fieldType)
+    return this.context.formBuilder.resolveInputComponent(field, fieldType)
   }
 
   resolveFieldComponent(field, fieldType) {
-    return this.context.resolveFieldComponent(field, fieldType)
+    return this.context.formBuilder.resolveFieldComponent(field, fieldType)
   }
 
   getFieldType(field) {
-    return getFieldType(this.context.schema, field)
+    return getFieldType(this.context.formBuilder.schema, field)
   }
 
   render() {
@@ -66,7 +64,7 @@ export default class RenderField extends React.Component {
 
     const fieldType = this.getFieldType(field)
 
-    const FieldInput = this.context.resolveInputComponent(field, fieldType)
+    const FieldInput = this.context.formBuilder.resolveInputComponent(field, fieldType)
 
     if (!FieldInput) {
       return (
