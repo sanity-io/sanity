@@ -4,10 +4,15 @@ import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
 import GeopointSelect from './GeopointSelect'
 import {intlShape} from 'component:@sanity/base/locale/intl'
 import {formatMessage} from 'role:@sanity/base/locale/formatters'
+//import Fieldset from 'component:@sanity/components/fieldsets/default'
+import Button from 'component:@sanity/components/buttons/default'
+import Dialog from 'component:@sanity/components/dialogs/default'
 
 class GeopointInput extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
     value: PropTypes.shape({
       lat: PropTypes.number,
       lng: PropTypes.number
@@ -22,6 +27,7 @@ class GeopointInput extends React.Component {
     super()
 
     this.handleToggleModal = this.handleToggleModal.bind(this)
+    this.handleDialogAction = this.handleDialogAction.bind(this)
 
     this.state = {
       dragMarkerInitialPosition: null,
@@ -50,8 +56,20 @@ class GeopointInput extends React.Component {
     return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
   }
 
+  handleDialogAction(action) {
+    console.log('we have action', action)
+  }
+
+
   render() {
     const {value} = this.props
+
+    const actions = [
+      {
+        title: 'Bjørge',
+        id: 'b'
+      }
+    ]
 
     if (!config || !config.apiKey) {
       return (
@@ -71,57 +89,42 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <div className="form-builder__field form-builder__latlng">
+      <div>
+        {value && <div><img src={this.getStaticImageUrl(value)} /></div>}
 
-        <label className="form-builder__label">
-          {this.props.title}
-        </label>
-
-        {this.props.description
-          && <div className="form-builder__help-text">{this.props.description}</div>
-        }
-
-        <div className="form-builder__item">
-
-          {value && <div><img src={this.getStaticImageUrl(value)} /></div>}
-
-          <button type="button" onClick={this.handleToggleModal}>
-            {formatMessage(value
-              ? 'google-maps.button.edit'
-              : 'google-maps.button.setLocation'
-            )}
-          </button>
-
-          {value && (
-            <button type="button">
-              {formatMessage('google-maps.button.remove')}
-            </button>
+        <Button onClick={this.handleToggleModal}>
+          {formatMessage(value
+            ? 'google-maps.button.edit'
+            : 'google-maps.button.setLocation'
           )}
+        </Button>
 
-          {this.state.modalOpen && (
-            <div className="modal modal--map">
-              <h1>{formatMessage('google-maps.placeOnMap')}</h1>
-              <p>{formatMessage('google-maps.mapHelpText')}</p>
+        {value && (
+          <Button type="button">
+            {formatMessage('google-maps.button.remove')}
+          </Button>
+        )}
 
-              <GoogleMapsLoadProxy
-                value={value}
-                apiKey={config.apiKey}
-                onChange={this.props.onChange}
-                defaultLocation={config.defaultLocation}
-                defaultZoom={config.defaultZoom}
-                locale={this.context.intl.locale}
-                component={GeopointSelect}
-              />
+        <div
+          title={formatMessage('google-maps.placeOnMap')}
+          onClose={this.handleToggleModal}
+          message={formatMessage('google-maps.mapHelpText')}
+          isOpen={this.state.modalOpen}
+          actions={actions}
+          onAction={this.handleDialogAction}
+        >
+          <GoogleMapsLoadProxy
+            value={value}
+            apiKey={config.apiKey}
+            onChange={this.props.onChange}
+            defaultLocation={config.defaultLocation}
+            defaultZoom={config.defaultZoom}
+            locale={this.context.intl.locale}
+            component={GeopointSelect}
+          />
 
-              <div className="modal-buttons">
-                <button className="primary" onClick={this.handleToggleModal}>
-                  {formatMessage('google-maps.button.done')}
-                </button>
-              </div>
-            </div>
-          )}
+      </div>
 
-        </div>
       </div>
     )
   }

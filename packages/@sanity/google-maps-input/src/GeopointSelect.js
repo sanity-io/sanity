@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import {intlShape} from 'component:@sanity/base/locale/intl'
 import {formatMessage} from 'role:@sanity/base/locale/formatters'
+import SearchField from 'component:@sanity/components/textfields/default'
 
 class GeopointSelect extends React.Component {
   static propTypes = {
@@ -138,13 +139,13 @@ class GeopointSelect extends React.Component {
         />
 
         <div className="geo-position-select__search-field">
-          <input
-            ref={this.assignReference('searchInput')}
-            type="search"
+
+          <SearchField
             name="place"
-            className="form-control geo-position-select__input"
+            ref={this.assignReference('searchInput')}
             placeholder={formatMessage('google-maps.searchInputPlaceholder')}
           />
+
         </div>
       </div>
     )
