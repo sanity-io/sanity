@@ -75,11 +75,9 @@ export default class Reference extends React.Component {
     const {onChange} = this.props
 
     const refId = event.currentTarget.getAttribute('data-id')
-    const refType = event.currentTarget.getAttribute('data-type')
     const patch = {
       $set: {
         $type: 'reference',
-        $refType: refType,
         $ref: refId
       }
     }
@@ -183,7 +181,7 @@ export default class Reference extends React.Component {
 
     // todo: make rendering strategy for hits injectable as prop
     return (
-      <div onMouseDown={this.handleSelectItem} data-id={hit.document.$id} data-type={hit.document.$type}>
+      <div onMouseDown={this.handleSelectItem} data-id={hit.document.$id}>
         <ItemPreview highlight={hit.match} value={hit.value} field={itemField} />
       </div>
     )
