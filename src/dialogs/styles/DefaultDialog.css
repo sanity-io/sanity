@@ -34,6 +34,7 @@
   animation-timing-function: linear;
   animation-iteration-count: once;
   transform: translateX(-50%) translateY(-50%) scale(1);
+  overflow: hidden;
 }
 
 .isClosed {
@@ -46,11 +47,17 @@
 
 .inner {
   padding: var(--dialog-padding);
-  z-index: 1001;
+  position: relative;
+  height: calc(100% - var(--dialog-padding) * 2);
+}
+
+.content {
+  position: relative;
+  height: calc(100% - var(--dialog-padding) * 2 - 4rem);
 }
 
 .header {
-  background-color: red;
+  background-color: var(--brand-primary);
   height: 2rem;
   line-height: 2rem;
   padding: 0 var(--dialog-padding);
@@ -84,6 +91,7 @@
 
 .bigHeading {
   font-size: var(--font-size-h2);
+  margin-bottom: var(--dialog-padding);
 }
 
 .bigCloseButton {
