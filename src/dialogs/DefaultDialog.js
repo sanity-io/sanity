@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import ReactDOM from 'react-dom'
 
 import styles from 'style:@sanity/components/dialogs/default'
 import Button from 'component:@sanity/components/buttons/default'
@@ -12,17 +13,14 @@ export default class DefaultDialog extends React.Component {
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
-    onCloseClick: PropTypes.func,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.shape(
-      {
+    actions: PropTypes.arrayOf(PropTypes.shape({
         title: PropTypes.string.isRequired,
         id: PropTypes.string.isRequired,
         tooltip: PropTypes.string,
         kind: PropTypes.string
-      }
-    ))
+      }))
   }
 
   static defaultProps = {
@@ -37,30 +35,22 @@ export default class DefaultDialog extends React.Component {
     this.handleCloseClick = this.handleCloseClick.bind(this)
   }
 
-  componentWillReceiveProps(props) {
-    if (props.isOpen) {
-      this.handleOpen()
+  componentDidUpdate() {
+    const {isOpen} = this.props
+    if (isOpen) {
+      this.dialogElement.showModal()
     } else {
-      this.handleClose()
+      this.dialogElement.close()
     }
   }
 
   componentDidMount() {
-    this.dialog = dialogPolyfill.registerDialog(this.dialogElement) || this.dialogElement
-    // Now dialog acts like a native <dialog>.
-  }
-
-  handleOpen() {
-    this.dialog.showModal()
+    const dialogElement = ReactDOM.findDOMNode(this)
+    this.dialogElement = dialogElement.showModal ? dialogElement : dialogPolyfill.registerDialog(dialogElement)
   }
 
   handleCloseClick() {
-    this.handleClose()
-    this.props.onCloseClick()
-  }
-
-  handleClose() {
-    this.dialog.close()
+    this.props.onClose()
   }
 
   handleActionClick(event) {
@@ -75,7 +65,7 @@ export default class DefaultDialog extends React.Component {
     const style = isOpen ? styles.isOpen : styles.root
 
     return (
-      <dialog className={style} ref={(ref) => this.dialogElement = ref}>
+      <dialog className={style}>
 
         {
           showHeader && <div className={styles.header}>
