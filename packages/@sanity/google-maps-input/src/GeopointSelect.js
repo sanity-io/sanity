@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import {intlShape} from 'component:@sanity/base/locale/intl'
 import {formatMessage} from 'role:@sanity/base/locale/formatters'
 import SearchField from 'component:@sanity/components/textfields/default'
+import Styles from '../styles/GeopointSelect.css'
 
 class GeopointSelect extends React.Component {
   static propTypes = {
@@ -135,7 +136,6 @@ class GeopointSelect extends React.Component {
         <div
           ref={this.assignReference('map')}
           className="geo-position-select__map"
-          style={{width: '100%', height: '100%'}}
         />
 
         <div className="geo-position-select__search-field" style={{display: 'none'}}>
