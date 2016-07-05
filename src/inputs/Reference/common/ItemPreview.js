@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from '../../utils/getFieldType'
-import FallbackPreviewComponent from '../Array/FallbackPreviewComponent'
+import {getFieldType} from '../../../utils/getFieldType'
+import FallbackPreviewComponent from '../../Array/FallbackPreviewComponent'
 
 export default class ItemPreview extends React.Component {
   static propTypes = {

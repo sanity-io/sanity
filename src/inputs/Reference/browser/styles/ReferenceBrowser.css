@@ -1,0 +1,59 @@
+.root {
+  composes: root from 'style:@sanity/base/theme/forms/control';
+}
+
+.inner {
+  composes: inner from 'style:@sanity/base/theme/forms/control';
+}
+
+.searchInput {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  border: 0;
+  padding: 0;
+}
+.input {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  position: relative;
+  color: #555;
+}
+
+.inputError {
+  composes: error from 'style:@sanity/base/theme/forms/text-input';
+}
+
+.clearButton {
+  composes: textInput from 'style:@sanity/base/theme/forms/clear-button';
+  color: #444;
+}
+
+.itemBase {
+
+}
+.items {
+  padding: 0;
+  overflow-y: auto
+}
+.item {
+  display: inline-block;
+  list-style-type: none;
+  padding: 2px 10px;
+  margin: 8px;
+  border: 1px solid #eee;
+  box-shadow: 1px 1px 1px 0px rgba(217,217,217,1);
+}
+.itemSelected {
+  composes: item;
+  background-color: #0b97c4;
+}
+.itemCurrent {
+  composes: item;
+  background-color: #b0b1ac;
+}
+.item:hover {
+  background-color: #ace1ea;
+  color: #fff;
+}
+
+.error {
+  composes: root;
+}

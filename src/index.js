@@ -1,5 +1,6 @@
 import * as defaultInputs from './defaultInputComponents'
 import * as defaultFields from './defaultFieldComponents'
+import * as ReferenceInput from './inputs/Reference'
 
 export {defaultInputs}
 export {defaultFields}
@@ -9,4 +10,12 @@ export {default as defaultConfig} from './defaultConfig'
 export {default as createFormBuilder} from './createFormBuilder'
 
 // Input component factories
-export {default as createReferenceInput} from './inputs/Reference/createReferenceInput'
+export {ReferenceInput}
+
+export const createReferenceInput = function deprecated(...args) {
+  console.warn(
+      '[deprecated] FormBuilder.createReferenceInput is deprecated, use either '
+    + 'FormBuilder.ReferenceInput.createAutoComplete or FormBuilder.ReferenceInput.createBrowser(...)'
+  )
+  return ReferenceInput.createAutoComplete(...args)
+}

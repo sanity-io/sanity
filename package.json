@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@sanity/date-input": "^1.0.0",
-    "@sanity/google-maps-input": "^1.0.1",
+    "@sanity/google-maps-input": "^1.0.4",
     "debounce-promise": "^1.1.0",
     "debug": "^2.2.0",
     "eslint": "^2.12.2",
@@ -30,9 +30,9 @@
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^2.1.42",
-    "@sanity/cli": "^1.0.31",
-    "@sanity/components": "^1.0.13",
+    "@sanity/base": "^2.1.43",
+    "@sanity/cli": "^1.0.32",
+    "@sanity/components": "^1.0.20",
     "@sanity/theme": "^1.0.4",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.1.0",

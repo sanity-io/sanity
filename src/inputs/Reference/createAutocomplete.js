@@ -1,17 +1,17 @@
 import React from 'react'
-import Reference from './Reference'
-import ValueContainer from './ValueContainer'
+import ReferenceAutocomplete from './autocomplete/ReferenceAutocomplete'
+import ValueContainer from './common/ValueContainer'
 
 export default function createReferenceInput({search, materializeReferences}) {
 
-  ReferenceInput.propTypes = Reference.propTypes
+  ReferenceInput.propTypes = ReferenceAutocomplete.propTypes
   ReferenceInput.valueContainer = ValueContainer
 
   return ReferenceInput
 
   function ReferenceInput(props) {
     return (
-      <Reference
+      <ReferenceAutocomplete
         searchFn={search}
         materializeReferences={materializeReferences}
         {...props}

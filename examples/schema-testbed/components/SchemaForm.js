@@ -11,7 +11,7 @@ import {parseParams, preventDefault} from '../lib/utils'
 
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
-import MyCustomReferenceInput from './custom/MyCustomReferenceInput'
+import MyCustomReferenceBrowser from './custom/MyCustomReferenceBrowser'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -27,7 +27,7 @@ const FormBuilder = schema && createFormBuilder({
       return MyCustomLatLonInput
     }
     if (field.type === 'reference') {
-      return MyCustomReferenceInput
+      return MyCustomReferenceBrowser
     }
     return undefined // signal to use default
   },
