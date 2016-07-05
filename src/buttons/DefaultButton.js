@@ -3,12 +3,22 @@ import Ink from 'react-ink'
 import styles from 'style:@sanity/components/buttons/default'
 import Spinner from 'component:@sanity/components/loading/spinner'
 
+/**
+ * General
+ */
+
 export default class DefaultButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['add', 'delete', 'warning', 'success', 'danger']),
+    /**
+     * Kind of button. Supports add, warning, success, danger
+     */
+    kind: PropTypes.oneOf(['add', 'warning', 'success', 'danger']),
     onClick: PropTypes.func,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
+    /**
+     * Icon
+     */
     icon: PropTypes.node,
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
