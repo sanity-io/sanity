@@ -35,18 +35,30 @@ export default class DefaultDialog extends React.Component {
     this.handleCloseClick = this.handleCloseClick.bind(this)
   }
 
-  componentDidUpdate() {
-    const {isOpen} = this.props
-    if (isOpen) {
-      this.dialogElement.showModal()
-    } else {
-      this.dialogElement.close()
+  componentDidUpdate(prevProps) {
+    const isOpen = this.props.isOpen
+    const wasOpen = prevProps.isOpen
+    if (!wasOpen && isOpen) {
+      this.openDialogElement()
+    } else if (wasOpen && !isOpen) {
+      this.closeDialogElement()
     }
   }
 
   componentDidMount() {
     const dialogElement = ReactDOM.findDOMNode(this)
     this.dialogElement = dialogElement.showModal ? dialogElement : dialogPolyfill.registerDialog(dialogElement)
+    if (this.props.isOpen) {
+      this.openDialogElement()
+    }
+  }
+
+  openDialogElement() {
+    this.dialogElement.showModal()
+  }
+
+  closeDialogElement() {
+    this.dialogElement.close()
   }
 
   handleCloseClick() {
