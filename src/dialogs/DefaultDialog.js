@@ -14,6 +14,7 @@ export default class DefaultDialog extends React.Component {
     isOpen: PropTypes.bool.isRequired,
     onCloseClick: PropTypes.func,
     onAction: PropTypes.func,
+    showHeader: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape(
       {
         title: PropTypes.string.isRequired,
@@ -25,6 +26,7 @@ export default class DefaultDialog extends React.Component {
   }
 
   static defaultProps = {
+    showHeader: false,
     onAction() {}
   }
 
@@ -52,8 +54,8 @@ export default class DefaultDialog extends React.Component {
   }
 
   handleCloseClick() {
-    this.props.onCloseClick()
     this.handleClose()
+    this.props.onCloseClick()
   }
 
   handleClose() {
@@ -68,37 +70,49 @@ export default class DefaultDialog extends React.Component {
   }
 
   render() {
-    const {title, actions, isOpen} = this.props
+    const {title, actions, isOpen, showHeader} = this.props
     const style = isOpen ? styles.isOpen : styles.root
 
     return (
       <dialog className={style} ref={(ref) => this.dialogElement = ref}>
-        <div className={styles.header}>
-          <h1 className={styles.heading}>{title}</h1>
-          <button className={styles.closeButton} onClick={this.handleCloseClick} />
-        </div>
+
+        {
+          showHeader && <div className={styles.header}>
+            <h1 className={styles.heading}>{title}</h1>
+            <button className={styles.closeButton} onClick={this.handleCloseClick} />
+          </div>
+        }
+
         <div className={styles.inner}>
 
+          {
+            !showHeader && <div>
+              <h1 className={styles.bigHeading}>{title}</h1>
+              <button className={styles.bigCloseButton} onClick={this.handleCloseClick} />
+            </div>
+          }
 
           <div className={styles.content}>
             {this.props.children}
           </div>
 
-          <div className={styles.functions}>
-            {
-              actions.map(action => {
-                return (
-                  <Button
-                    key={action.id}
-                    onClick={this.handleActionClick}
-                    data-action-id={action.id}
-                  >
-                    {action.title}
-                  </Button>
-                )
-              })
-            }
-          </div>
+          {
+            actions.length > 0 && <div className={styles.functions}>
+              {
+                actions.map(action => {
+                  return (
+                    <Button
+                      key={action.id}
+                      onClick={this.handleActionClick}
+                      data-action-id={action.id}
+                    >
+                      {action.title}
+                    </Button>
+                  )
+                })
+              }
+            </div>
+          }
         </div>
       </dialog>
     )

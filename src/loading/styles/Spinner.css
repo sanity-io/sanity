@@ -1,3 +1,4 @@
+@use postcss-cssnext;
 @use postcss-font-awesome;
 
 /* Hack to make font awsome work before we have asset management */

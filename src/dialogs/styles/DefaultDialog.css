@@ -1,34 +1,52 @@
+@import "style:@sanity/base/theme/variables";
 @use postcss-cssnext;
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%) scale(0.1);
+  }
+  5% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+}
 
 :root {
   --dialog-padding: 1rem;
 }
+
 .root {
   composes: shadow-10dp from "style:@sanity/base/theme/shadows";
-  z-index: 5000;
+  z-index: 1000;
   position: fixed;
   top: 50%;
   left: 50%;
   width: 80%;
   height: 80%;
   border: 0;
-  transition: transform 200ms;
   padding: 0;
+  animation-name: reveal;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
+  transform: translateX(-50%) translateY(-50%) scale(1);
 }
 
 .isClosed {
-  visibility: hidden;
-  transform: translateX(-50%) translateY(-50%) scale(0.1);
+  composes: root;
 }
 
 .isOpen {
   composes: root;
-  visibility: visible;
-  transform: translateX(-50%) translateY(-50%) scale(1);
 }
 
 .inner {
   padding: var(--dialog-padding);
+  z-index: 1001;
 }
 
 .header {
@@ -41,16 +59,17 @@
 .closeButton {
   position: absolute;
   top: 0;
-  right: 1rem;
+  right: var(--dialog-padding);
   background-color: transparent;
   border: none;
   color: #fff;
   font-size: 1rem;
   line-height: 2rem;
+  outline: none;
   composes: close from 'style:@sanity/base/theme/icons';
 }
 
-::backdrop {
+:global(::backdrop) {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -60,6 +79,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  border-top: 1px solid red;
   padding: var(--dialog-padding);
+}
+
+.bigHeading {
+  font-size: var(--font-size-h2);
+}
+
+.bigCloseButton {
+  composes: closeButton;
+  top: var(--dialog-padding);
+  font-size: 2rem;
+  color: var(--gray-base);
 }
