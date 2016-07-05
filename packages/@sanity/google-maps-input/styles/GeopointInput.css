@@ -1,0 +1,5 @@
+:global(.pac-container) {
+  border: 10px solid red;
+  z-index: 500000;
+  position: fixed;
+}

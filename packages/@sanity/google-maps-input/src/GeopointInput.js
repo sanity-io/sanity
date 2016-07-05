@@ -7,6 +7,7 @@ import {formatMessage} from 'role:@sanity/base/locale/formatters'
 //import Fieldset from 'component:@sanity/components/fieldsets/default'
 import Button from 'component:@sanity/components/buttons/default'
 import Dialog from 'component:@sanity/components/dialogs/default'
+import Styles from '../styles/GeopointInput.css'
 
 class GeopointInput extends React.Component {
   static propTypes = {
@@ -27,6 +28,7 @@ class GeopointInput extends React.Component {
     super()
 
     this.handleToggleModal = this.handleToggleModal.bind(this)
+    this.handleCloseModal = this.handleCloseModal.bind(this)
     this.handleDialogAction = this.handleDialogAction.bind(this)
 
     this.state = {
@@ -37,6 +39,10 @@ class GeopointInput extends React.Component {
 
   handleToggleModal() {
     this.setState({modalOpen: !this.state.modalOpen})
+  }
+
+  handleCloseModal() {
+    this.setState({modalOpen: false})
   }
 
   getStaticImageUrl(value) {
@@ -57,17 +63,18 @@ class GeopointInput extends React.Component {
   }
 
   handleDialogAction(action) {
-    console.log('we have action', action)
+    if (action.id === 'close') {
+      this.handleCloseModal()
+    }
   }
-
 
   render() {
     const {value} = this.props
 
     const actions = [
       {
-        title: 'Bjørge',
-        id: 'b'
+        title: 'Close',
+        id: 'close'
       }
     ]
 
@@ -105,9 +112,11 @@ class GeopointInput extends React.Component {
           </Button>
         )}
 
-        <div
+        <Dialog
           title={formatMessage('google-maps.placeOnMap')}
-          onClose={this.handleToggleModal}
+          onClose={this.handleCloseModal}
+          onCloseClick={this.handleCloseModal}
+          onOpen={this.handleOpenModal}
           message={formatMessage('google-maps.mapHelpText')}
           isOpen={this.state.modalOpen}
           actions={actions}
@@ -123,7 +132,7 @@ class GeopointInput extends React.Component {
             component={GeopointSelect}
           />
 
-      </div>
+        </Dialog>
 
       </div>
     )

@@ -135,17 +135,15 @@ class GeopointSelect extends React.Component {
         <div
           ref={this.assignReference('map')}
           className="geo-position-select__map"
-          style={{width: '100%', height: 500}}
+          style={{width: '100%', height: '100%'}}
         />
 
-        <div className="geo-position-select__search-field">
-
-          <SearchField
+        <div className="geo-position-select__search-field" style={{display: 'none'}}>
+          <input
             name="place"
             ref={this.assignReference('searchInput')}
             placeholder={formatMessage('google-maps.searchInputPlaceholder')}
           />
-
         </div>
       </div>
     )
