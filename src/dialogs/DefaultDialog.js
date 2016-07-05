@@ -27,7 +27,8 @@ export default class DefaultDialog extends React.Component {
 
   static defaultProps = {
     showHeader: false,
-    onAction() {}
+    onAction() {},
+    actions: []
   }
 
   constructor(...args) {
