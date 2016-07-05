@@ -55,7 +55,7 @@
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "react-intl": "^2.1.2",
-    "zen-observable": "^0.2.1"
+    "zen-observable": "^0.3.0"
   },
   "peerDependencies": {
     "react": ">=15.0"
