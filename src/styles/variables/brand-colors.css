@@ -1,13 +1,13 @@
 @use postcss-cssnext;
 
 :root {
-  --brand-primary: #00f;
-  --brand-success: #0f0;
-  --brand-info: #ccf;
-  --brand-warning: #ffc;
-  --brand-danger: #f00;
-  --body-bg: #eee;
-  --gray-base: #000;
+  --brand-primary: #2097ac;
+  --brand-success: #5cb85c;
+  --brand-info: #5bc0de;
+  --brand-warning: #ff9b00;
+  --brand-danger: #f43;
+  --body-bg: #fafafa;
+  --gray-base: #383838;
 
   --state-success-color: var(--brand-success);
   --state-info-color: var(--brand-info);

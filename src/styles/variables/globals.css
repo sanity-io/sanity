@@ -14,6 +14,7 @@
   --large-padding: 1.5rem;
   --extra-large-padding: 3rem;
 
+  --component-background-color: #fff;
   --component-active-color: #fff;
   --component-active-bg: var(--brand-primary);
 
