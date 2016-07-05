@@ -1,0 +1,10 @@
+@import 'style:@sanity/base/theme/variables';
+
+.root {
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  background-color: #fff;
+  border: 1px solid var(--gray-lighter);
+  padding: 1rem;
+}

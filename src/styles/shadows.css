@@ -1,3 +1,5 @@
+@use postcss-cssnext;
+
 :root {
   --shadow-key-umbra-opacity: 0.2;
   --shadow-key-penumbra-opacity: 0.14;

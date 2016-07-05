@@ -1,0 +1,38 @@
+@import 'style:@sanity/base/theme/variables/typography';
+@use postcss-cssnext;
+
+.root {
+  text-align: left;
+  display: block;
+  font-family: var(--headings-font-family);
+  font-weight: var(--headings-font-weight);
+  line-height: var(--headings-line-height);
+  color: var(--headings-color);
+}
+
+.heading1 {
+  composes: root;
+  font-size: var(--font-size-h2);
+}
+
+.heading2 {
+  composes: root;
+  font-size: var(--font-size-h3);
+  padding-bottom: 0.5em;
+}
+
+.heading3 {
+  composes: root;
+  font-size: var(--font-size-h4);
+  padding-bottom: 0.25em;
+}
+
+.heading4 {
+  composes: root;
+  font-size: var(--font-size-h5);
+}
+
+.heading5 {
+  composes: root;
+  font-size: var(--font-size-h6);
+}
