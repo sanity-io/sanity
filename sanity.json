@@ -93,12 +93,10 @@
       "name": "style:@sanity/base/theme/variables/state-colors",
       "description": "State color variables. Shades of warning, info and danger"
     },
-
     {
       "name": "style:@sanity/base/theme/variables/typography",
       "description": "Typography variables"
     },
-
     {
       "name": "style:@sanity/base/theme/typography/headings",
       "description": "Basic headings"
@@ -332,55 +330,60 @@
       "srcPath": "./src/components/buttons/DefaultButton.js",
       "path": "./lib/components/buttons/DefaultButton.js"
     },
-
-
-    {
-      "implements": "style:@sanity/base/theme/layout/resets",
-      "path": "./src/styles/layout/resets.css"
-    },
     {
       "implements": "style:@sanity/base/theme/layout/box",
-      "path": "./src/styles/layout/box.css"
+      "srcPath": "./src/styles/layout/box.css",
+      "path": "./lib/styles/layout/box.css"
     },
     {
       "implements": "style:@sanity/base/theme/layout/positioning",
-      "path": "./src/styles/layout/positioning.css"
+      "srcPath": "./src/styles/layout/positioning.css",
+      "path": "./lib/styles/layout/positioning.css"
     },
     {
       "implements": "style:@sanity/base/theme/buttons/default",
-      "path": "./src/styles/buttons/default.css"
+      "srcPath": "./src/styles/buttons/default.css",
+      "path": "./lib/styles/buttons/default.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/text-input",
-      "path": "./src/styles/forms/text-input.css"
+      "srcPath": "./src/styles/forms/text-input.css",
+      "path": "./lib/styles/forms/text-input.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/control",
-      "path": "./src/styles/forms/control.css"
+      "srcPath": "./src/styles/forms/control.css",
+      "path": "./lib/styles/forms/control.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/textarea",
-      "path": "./src/styles/forms/textarea.css"
+      "srcPath": "./src/styles/forms/textarea.css",
+      "path": "./lib/styles/forms/textarea.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/clear-button",
-      "path": "./src/styles/forms/clear-button.css"
+      "srcPath": "./src/styles/forms/clear-button.css",
+      "path": "./lib/styles/forms/clear-button.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/base",
-      "path": "./src/styles/typography/base.css"
+      "srcPath": "./src/styles/typography/base.css",
+      "path": "./lib/styles/typography/base.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/headings",
-      "path": "./src/styles/typography/headings.css"
+      "srcPath": "./src/styles/typography/headings.css",
+      "path": "./lib/styles/typography/headings.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/text-blocks",
-      "path": "./src/styles/typography/text-blocks.css"
+      "srcPath": "./src/styles/typography/text-blocks.css",
+      "path": "./lib/styles/typography/text-blocks.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/code",
-      "path": "./src/styles/typography/code.css"
+      "srcPath": "./src/styles/typography/code.css",
+      "path": "./lib/styles/typography/code.css"
     }
   ]
 }
