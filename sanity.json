@@ -196,7 +196,7 @@
     {
       "implements": "style:@sanity/base/theme/variables/brand-colors",
       "srcPath": "./src/styles/variables/brand-colors.css",
-      "path": "./lib/styles/variables/base-colors.css"
+      "path": "./lib/styles/variables/brand-colors.css"
     },
     {
       "implements": "style:@sanity/base/theme/animation",
