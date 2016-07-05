@@ -106,5 +106,10 @@ function readManifestIfExists(manifestPath, opts) {
 
 // @todo Figure out a better way to detect if we're running in "development mode"
 function isDevMode() {
-  return Boolean(pkg._id) === false
+  try {
+    fs.statSync(path.join(__dirname, '..', 'src'))
+    return true
+  } catch (err) {
+    return false
+  }
 }
