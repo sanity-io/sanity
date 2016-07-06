@@ -3,13 +3,15 @@ import {getProdServer, getDevServer} from '@sanity/server'
 import isProduction from '../../util/isProduction'
 import getConfig from '../../util/getConfig'
 import thenify from 'thenify'
+import storyBook from '@sanity/storybook/server'
 
 export default {
   name: 'start',
   signature: 'start',
   description: 'Starts a webserver that serves Sanity',
   action: ({print, options}) => {
-    const config = getConfig(options.cwd).get('server')
+    const sanityConfig = getConfig(options.cwd)
+    const config = sanityConfig.get('server')
     const getServer = isProduction ? getProdServer : getDevServer
     const server = getServer({
       staticPath: resolveStaticPath(options.cwd, config),
@@ -18,8 +20,20 @@ export default {
 
     const {port, hostname} = config
     const httpPort = options.port || port
-    return thenify(server.listen.bind(server))(httpPort, hostname)
-      .then(() => print(`Server listening on ${hostname}:${httpPort}`))
+    const listeners = [thenify(server.listen.bind(server))(httpPort, hostname)]
+
+    const storyConfig = sanityConfig.get('storybook')
+    if (storyConfig) {
+      listeners.push(storyBook(storyConfig))
+    }
+
+    return Promise.all(listeners)
+      .then(res => {
+        print(`Server listening on http://${hostname}:${httpPort}`)
+        if (res.length > 1) {
+          print(`Storybook listening on ${res[1]}`)
+        }
+      })
       .catch(getGracefulDeathHandler(config))
   }
 }

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "compile": "babel --copy-files -d lib/ src/",
+    "compile:watch": "babel --watch --copy-files -d lib/ src/",
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
@@ -32,6 +33,7 @@
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
     "@sanity/server": "^1.2.24",
+    "@sanity/storybook": "^1.0.0",
     "child-process-promise": "^1.1.0",
     "colors": "^1.1.2",
     "configstore": "^1.4.0",
@@ -59,6 +61,7 @@
     "yargs": "^3.32.0"
   },
   "devDependencies": {
+    "@kadira/storybook": "^1.36.0",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.0.4",
     "babel-preset-es2015": "^6.9.0",
