@@ -5,6 +5,8 @@ import {IntlWrapper} from 'role:@sanity/base/locale/formatters'
 import {resolveLanguage} from 'machine:@sanity/base/language-resolver'
 import messageFetcher from 'machine:@sanity/base/locale-message-fetcher'
 
+let isMounted = false
+
 class SanityIntlProvider extends React.Component {
 
   constructor(props) {
@@ -24,6 +26,7 @@ class SanityIntlProvider extends React.Component {
   }
 
   componentDidMount() {
+    isMounted = true
     const {supportedLanguages} = this.props
     resolveLanguage(supportedLanguages).then(language => {
       messageFetcher.fetchLocalizedMessages(language).then(localizedMessages => {
@@ -34,13 +37,19 @@ class SanityIntlProvider extends React.Component {
         // In order to get a proper stacktrace on rendering errors,
         // we need to move this out of the current call stack
         setTimeout(() => {
-          this.setState({
-            messages: localizedMessages,
-            language: language
-          })
+          if (isMounted) {
+            this.setState({
+              messages: localizedMessages,
+              language: language
+            })
+          }
         }, 0)
       }).catch(this.catchError)
     }).catch(this.catchError)
+  }
+
+  componentWillUnmount() {
+    isMounted = false
   }
 
   render() {
