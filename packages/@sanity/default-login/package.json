@@ -1,0 +1,38 @@
+{
+  "name": "@sanity/default-login",
+  "version": "1.0.0",
+  "description": "Lets the user log in to Sanity.",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "compile": "babel src --copy-files --out-dir lib",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "postpublish": "rimraf lib",
+    "test": "eslint ."
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "@sanity/request": "^1.0.1",
+    "in-publish": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-eslint": "^6.0.4",
+    "babel-plugin-syntax-class-properties": "^6.8.0",
+    "babel-plugin-transform-class-properties": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "eslint": "^2.12.0",
+    "eslint-config-sanity": "^1.1.1",
+    "eslint-plugin-react": "^5.1.1",
+    "rimraf": "^2.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/default-login.git"
+  }
+}
