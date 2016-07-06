@@ -4,6 +4,7 @@ import getDevServer from './devServer'
 import getProdServer from './prodServer'
 import getWebpackProdConfig from './configs/webpack.config.prod'
 import getWebpackDevConfig from './configs/webpack.config.dev'
+import getWebpackBaseConfig from './configs/webpack.config'
 import {getDocumentElement} from './baseServer'
 
 const getWebpackCompiler = baseConfig => {
@@ -18,6 +19,9 @@ export {
   getDevServer,
   getProdServer,
   getWebpackCompiler,
+  getWebpackDevConfig,
+  getWebpackBaseConfig,
+  getWebpackProdConfig,
   getDocumentElement,
   ReactDOM // exported to allow reuse of same React version from CLI
 }
