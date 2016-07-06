@@ -1,0 +1,7 @@
+@use postcss-cssnext;
+
+.states {
+  &:hover {
+    border: 1px solid red;
+  }
+}

@@ -1,0 +1,11 @@
+@use postcss-cssnext;
+
+.center-both {
+  position: absolute;
+  box-sizing: border-box;
+  height: 50%;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+}

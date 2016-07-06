@@ -1,0 +1,11 @@
+@import 'style:@sanity/base/theme/variables/globals';
+@use postcss-cssnext;
+
+.root {
+  padding-top: var(--medium-padding);
+  box-sizing: border-box;
+}
+
+.inner {
+  position: relative;
+}

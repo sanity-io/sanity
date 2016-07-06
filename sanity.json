@@ -28,6 +28,10 @@
       "name": "component:@sanity/base/action-button",
       "description": "Reusable action button"
     },
+    {
+      "name": "story:@sanity/base/component",
+      "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
+    },
 
     {
       "name": "style:@sanity/base/theme/variables",
@@ -93,10 +97,17 @@
       "name": "style:@sanity/base/theme/variables/state-colors",
       "description": "State color variables. Shades of warning, info and danger"
     },
-
     {
       "name": "style:@sanity/base/theme/variables/typography",
       "description": "Typography variables"
+    },
+    {
+      "name": "style:@sanity/base/theme/typography/headings",
+      "description": "Basic headings"
+    },
+    {
+      "name": "style:@sanity/base/theme/layout/positioning",
+      "description": "Basic positioning helpers"
     },
     {
       "name": "locale:@sanity/base/locale-messages",
@@ -139,6 +150,49 @@
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
     {
+      "name": "style:@sanity/base/theme/layout/resets",
+      "description": "Provides resets for resetting browser styling"
+    },
+    {
+      "name": "style:@sanity/base/theme/layout/box",
+      "description": "Provides boxes"
+    },
+    {
+      "name": "style:@sanity/base/theme/forms/text-input",
+      "description": "Styling for <input>"
+    },
+    {
+      "name": "style:@sanity/base/theme/forms/control",
+      "description": "Wrapper for control elements like <input>"
+    },
+    {
+      "name": "style:@sanity/base/theme/forms/textarea",
+      "description": "Styling for <textarea>"
+    },
+    {
+      "name": "style:@sanity/base/theme/buttons/default",
+      "description": "Styling for default button"
+    },
+    {
+      "name": "style:@sanity/base/theme/forms/clear-button",
+      "description": "Styling for for clear button connected to a form control"
+    },
+
+    {
+      "name": "style:@sanity/base/theme/typography/base",
+      "description": "Base typography to but on the root for setting font-sizes etc."
+    },
+    {
+      "name": "style:@sanity/base/theme/typography/text-blocks",
+      "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
+    },
+    {
+      "name": "style:@sanity/base/theme/typography/code",
+      "description": "Styling for code"
+    },
+
+
+    {
       "implements": "component:@sanity/base/root",
       "srcPath": "./src/components/DefaultRootComponent.js",
       "path": "./lib/components/DefaultRootComponent.js"
@@ -162,7 +216,7 @@
     {
       "implements": "style:@sanity/base/theme/variables/brand-colors",
       "srcPath": "./src/styles/variables/brand-colors.css",
-      "path": "./lib/styles/variables/base-colors.css"
+      "path": "./lib/styles/variables/brand-colors.css"
     },
     {
       "implements": "style:@sanity/base/theme/animation",
@@ -310,6 +364,61 @@
       "implements": "component:@sanity/base/login-wrapper",
       "srcPath": "./src/components/login/LoginWrapper.js",
       "path": "./lib/components/login/LoginWrapper.js"
+    },
+    {
+      "implements": "style:@sanity/base/theme/layout/box",
+      "srcPath": "./src/styles/layout/box.css",
+      "path": "./lib/styles/layout/box.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/layout/positioning",
+      "srcPath": "./src/styles/layout/positioning.css",
+      "path": "./lib/styles/layout/positioning.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/buttons/default",
+      "srcPath": "./src/styles/buttons/default.css",
+      "path": "./lib/styles/buttons/default.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/forms/text-input",
+      "srcPath": "./src/styles/forms/text-input.css",
+      "path": "./lib/styles/forms/text-input.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/forms/control",
+      "srcPath": "./src/styles/forms/control.css",
+      "path": "./lib/styles/forms/control.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/forms/textarea",
+      "srcPath": "./src/styles/forms/textarea.css",
+      "path": "./lib/styles/forms/textarea.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/forms/clear-button",
+      "srcPath": "./src/styles/forms/clear-button.css",
+      "path": "./lib/styles/forms/clear-button.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/typography/base",
+      "srcPath": "./src/styles/typography/base.css",
+      "path": "./lib/styles/typography/base.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/typography/headings",
+      "srcPath": "./src/styles/typography/headings.css",
+      "path": "./lib/styles/typography/headings.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/typography/text-blocks",
+      "srcPath": "./src/styles/typography/text-blocks.css",
+      "path": "./lib/styles/typography/text-blocks.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/typography/code",
+      "srcPath": "./src/styles/typography/code.css",
+      "path": "./lib/styles/typography/code.css"
     }
   ]
 }

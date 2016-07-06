@@ -1,0 +1,33 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.default {
+  display: block;
+}
+
+.base {
+  font-size: 100%;
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-base);
+  color: var(--text-color);
+}
+
+.lead {
+  composes: base;
+  font-size: var(--font-size-large);
+}
+
+.small {
+  composes: base;
+  font-size: var(--font-size-small);
+}
+
+.description {
+  composes: small;
+  color: var(--text-muted);
+  padding-bottom: var(--small-padding);
+}
+
+.blockquote {
+  border-left: 2rem solid red;
+}

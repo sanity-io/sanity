@@ -1,0 +1,22 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.extra-large {
+  padding: var(--extra-large-padding);
+}
+
+.large {
+  padding: var(--large-padding);
+}
+
+.medium {
+  padding: var(--medium-padding);
+}
+
+.small {
+  padding: var(--small-padding);
+}
+
+.extra-small {
+  padding: var(--extra-small-padding);
+}
