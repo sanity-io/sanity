@@ -2,13 +2,16 @@ import nock from 'nock'
 import test from 'ava'
 import sanityClient from '../src/client'
 
+const noop = () => {} // eslint-disable-line no-empty-function
 const baseUrl = 'https://gradient.url'
-const client = sanityClient({url: baseUrl, dataset: 'foo'})
+const clientConfig = {url: baseUrl, dataset: 'foo'}
+const getClient = () => sanityClient(clientConfig)
 
 test('can get and set config', t => {
   nock(baseUrl).post('/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
   nock(baseUrl).post('/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
 
+  const client = getClient()
   return client.fetch('query')
     .then(res => t.is(res.ms, 123))
     .then(() =>
@@ -26,7 +29,7 @@ test('can do simple requests', t => {
       result: [{foo: 'bar'}, {bar: 'foo'}]
     })
 
-  return client.fetch('query').then(res => {
+  return getClient().fetch('query').then(res => {
     t.is(res.result[0].foo, 'bar')
     t.is(res.result[1].bar, 'foo')
   })
@@ -39,7 +42,7 @@ test('can do update mutations', t => {
     .post('/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
     .reply(200, {})
 
-  return client.update('foo:raptor', patch)
+  return getClient().update('foo:raptor', patch)
 })
 
 test('can create something', t => {
@@ -49,7 +52,7 @@ test('can create something', t => {
     .post('/m/foo?returnIds=true', {'foo:': {$$create: doc}})
     .reply(201, {ms: 123, transactionId: 'bar', docIds: ['foo:99']})
 
-  return client.create(doc).then(res => {
+  return getClient().create(doc).then(res => {
     t.is(res.transactionId, 'bar')
     t.is(res.docIds[0], 'foo:99')
   })
@@ -60,7 +63,7 @@ test('can delete', t => {
     .post('/m/foo?returnIds=true', {foo: {$$delete: null}})
     .reply(200, {ms: 123, transactionId: 'bar'})
 
-  return client.delete('foo').then(res => {
+  return getClient().delete('foo').then(res => {
     t.is(res.transactionId, 'bar')
   })
 })
@@ -71,7 +74,115 @@ test('request errors are captured as errors', t => {
     .reply(400, {errors: [{message: 'Some error', line: 1, column: 13}]})
 
   return t.throws(
-    client.fetch('some invalid query'),
+    getClient().fetch('some invalid query'),
     /Some error/
   )
+})
+
+test('throws if adding unknown event handlers', t =>
+  t.throws(() => getClient().on('foo', noop), /unknown event type "foo"/i)
+)
+
+test('throws if adding event handler without a function', t =>
+  t.throws(() => getClient().on('request', 'bar'), /must be a function/)
+)
+
+test.cb('event handlers can be added and triggered', t => {
+  getClient().on('request', (method, params) => {
+    t.is(method, 'create')
+    t.deepEqual(params, {opts: true})
+    t.end()
+  }).emit('request', 'create', {opts: true})
+})
+
+test.cb('request event handlers are run pre-request', t => {
+  nock(baseUrl)
+    .post('/q/foo', {query: '*'})
+    .reply(200, {ms: 123, result: []})
+
+  let requestHookHasBeenResolved = false
+  let requestHookHasBeenRun = false
+
+  const reqHandler = () => {
+    requestHookHasBeenRun = true
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        requestHookHasBeenResolved = true
+        resolve()
+      }, 150)
+    })
+  }
+
+  t.is(requestHookHasBeenRun, false)
+  t.is(requestHookHasBeenResolved, false)
+  getClient()
+    .on('request', reqHandler)
+    .fetch('*')
+    .then(() => {
+      t.is(requestHookHasBeenRun, true)
+      t.is(requestHookHasBeenResolved, true)
+      t.end()
+    })
+    .catch(err => {
+      throw err
+    })
+
+  t.is(requestHookHasBeenRun, true)
+  t.is(requestHookHasBeenResolved, false)
+})
+
+test('can add and remove event handlers', t => {
+  nock(baseUrl).post('/q/foo', {query: 'foo'}).reply(200, {ms: 1, result: []})
+  nock(baseUrl).post('/q/foo', {query: 'bar'}).reply(200, {ms: 1, result: []})
+
+  let callCount = 0
+  const client = getClient()
+  const incCallCount = () => callCount++
+
+  return client
+    .on('request', incCallCount)
+    .fetch('foo')
+    .then(() => t.is(callCount, 1))
+    .then(() => client.removeListener('request', incCallCount))
+    .then(() => client.fetch('bar'))
+    .then(() => {
+      t.is(callCount, 1)
+    })
+})
+
+test('does not blow up when emitting events without handlers', t => {
+  t.notThrows(() => {
+    getClient().emit('foo', 'bar')
+  })
+})
+
+test('throws if trying to remove handler that is not registered', t => {
+  t.throws(() => {
+    getClient()
+      .on('request', noop)
+      .removeListener('request', () => { /* empty */ })
+  }, /not registered for this event/)
+})
+
+test('can set and get new configuration', t => {
+  nock(baseUrl)
+    .post('/m/bar?returnIds=true', {doc: {$$delete: null}})
+    .reply(200, {ms: 123, transactionId: 'bar'})
+
+  const client = getClient()
+  t.deepEqual(client.config(), clientConfig)
+  client.config({dataset: 'bar'})
+  t.deepEqual(client.config(), Object.assign({}, clientConfig, {dataset: 'bar'}))
+
+  return client.delete('doc').then(res => t.is(res.transactionId, 'bar'))
+})
+
+test('can change client configuration in pre-request hook', t => {
+  nock(baseUrl).post('/q/bar', {query: '*'}).reply(200, {ms: 1337, result: []})
+
+  const client = getClient()
+  return client
+    .on('request', () => client.config({dataset: 'bar'}))
+    .fetch('*')
+    .then(res => t.is(res.ms, 1337))
 })
