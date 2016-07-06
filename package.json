@@ -6,7 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "prepublish": "npm run test",
     "test": "eslint ."
   },
   "keywords": [
