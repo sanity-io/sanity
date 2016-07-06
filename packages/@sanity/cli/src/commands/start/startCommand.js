@@ -24,6 +24,15 @@ export default {
 
     const storyConfig = sanityConfig.get('storybook')
     if (storyConfig) {
+      const plugins = sanityConfig.get('plugins') || []
+      if (plugins.indexOf('@sanity/storybook') === -1) {
+        throw new Error(
+          '`@sanity/storybook` is missing from `plugins` array. '
+          + 'Either add it as a dependency and plugin, or remove the '
+          + '`storybook` section of your projects `sanity.json`.'
+        )
+      }
+
       listeners.push(storyBook(storyConfig))
     }
 
