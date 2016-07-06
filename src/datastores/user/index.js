@@ -1,3 +1,3 @@
-import createUserStore from './createUSerStore'
+import createUserStore from './createUserStore'
 
 export default createUserStore()

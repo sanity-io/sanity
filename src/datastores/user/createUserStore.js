@@ -4,11 +4,17 @@ import pubsubber from '../utils/pubsubber'
 import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
 
 const userChannel = pubsubber()
+const tokenChannel = pubsubber()
 
 let _currentUser = null
+let _currentToken = null
 
 userChannel.subscribe(val => {
   _currentUser = val
+})
+
+tokenChannel.subscribe(val => {
+  _currentToken = val
 })
 
 function getCurrentUser() {
@@ -26,17 +32,7 @@ function logout() {
       type: 'logout',
       user: _currentUser
     })
-
-    xr(
-      {
-        withCredentials: true,
-        method: xr.Methods.GET,
-        headers: {
-          Accept: '*/*'
-        },
-        url: '/api/sanction/v1/users/logout',
-      }
-    )
+    authenticationFetcher.logout()
     .then(() => {
       userChannel.publish(null)
       observer.complete()
@@ -46,38 +42,25 @@ function logout() {
   return {progress}
 }
 
-function unsetUser() {
-  const progress = new Observable(observer => {
-    observer.next({
-      type: 'unset',
-      user: _currentUser
-    })
-    userChannel.publish(null)
-    observer.complete()
+
+const currentToken = new Observable(observer => {
+
+  nextToken('snapshot', _currentToken)
+
+  return tokenChannel.subscribe(nextToken => {
+    nextToken('change', nextToken)
   })
-  return {progress}
-}
 
-function login(username, password) {
-  const progress = new Observable(observer => {
-    observer.next({
-      type: 'begin'
+  function nextToken(type, token) {
+    authenticationFetcher.getToken()
+    .then(token => {
+      observer.next({
+        type: type,
+        token: token
+      })
     })
-
-    const authenticatedUser = {username}
-    const ev = {
-      type: username ? 'success' : 'failure',
-      user: authenticatedUser
-    }
-
-    setTimeout(() => {
-      observer.next(ev)
-      observer.complete()
-      userChannel.publish(authenticatedUser)
-    }, 400)
-  })
-  return {progress}
-}
+  }
+})
 
 const currentUser = new Observable(observer => {
 
@@ -98,10 +81,9 @@ const currentUser = new Observable(observer => {
 export default function createUserStore(options = {}) {
   return {
     actions: createActions({
-      login: login,
       logout: logout,
-      unsetUser: unsetUser
     }),
-    currentUser
+    currentUser,
+    currentToken
   }
 }
