@@ -28,6 +28,10 @@
       "name": "component:@sanity/base/action-button",
       "description": "Reusable action button"
     },
+    {
+      "name": "story:@sanity/base/component",
+      "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
+    },
 
     {
       "name": "style:@sanity/base/theme/variables",
