@@ -131,6 +131,10 @@
       "description": "Fetches the logged in user and JSON web token."
     },
     {
+      "name": "machine:@sanity/base/installation-fetcher",
+      "description": "Fetches data about an installation."
+    },
+    {
       "name": "component:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
@@ -249,6 +253,11 @@
       "name": "datastore:@sanity/base/user",
       "srcPath": "./src/datastores/user",
       "path": "./lib/datastores/user"
+    },
+    {
+      "name": "datastore:@sanity/base/installation",
+      "srcPath": "./src/datastores/installation",
+      "path": "./lib/datastores/installation"
     },
     {
       "name": "router:@sanity/base/router",
