@@ -116,7 +116,8 @@
 
   @nest .checked & {
     /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) $switch-faded-color; */
-    /*background-color: var(--switch-faded-color);*/
+
+    /* background-color: var(--switch-faded-color); */
   }
 }
 

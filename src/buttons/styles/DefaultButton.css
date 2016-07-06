@@ -88,21 +88,3 @@
   text-align: left;
   border: 0;
 }
-
-
-/*
-
-@styleguide
-
-@title Button
-
-Compose .root to get the default button
-<button class="root">root</button>
-
-Compose .danger to get a button that indicates delete/remove etc.
-<button class="danger">Danger!</button>
-
-Compose .inverted to get a button that is inverted
-<button class="inverted">Danger!</button>
-
-*/

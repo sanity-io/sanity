@@ -7,7 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "stylelint": "stylelint \"src/**/*.css\"",
+    "prepublish": "npm run stylelint && in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
     "test": "eslint ."
   },
@@ -22,7 +23,8 @@
     "postcss-font-awesome": "^0.3.3",
     "react-click-outside": "^2.1.0",
     "react-ink": "^5.1.1",
-    "react-styleguide-generator": "^1.3.0"
+    "stylelint": "^6.8.0",
+    "stylelint-config-standard": "^10.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
