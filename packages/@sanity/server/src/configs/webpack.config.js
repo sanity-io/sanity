@@ -30,6 +30,11 @@ export default (config = {}) => {
     ? `${baseCssLoader}&minimize`
     : `${baseCssLoader}&sourceMap`
 
+  const commonChunkPlugin = (
+    typeof config.commonChunkPlugin === 'undefined'
+    || config.commonChunkPlugin
+  ) && new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
+
   return {
     entry: {
       app: path.join(__dirname, '..', 'browser', 'entry'),
@@ -79,7 +84,7 @@ export default (config = {}) => {
       cssExtractor,
       new OccurrenceOrderPlugin(),
       new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
-      new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
+      commonChunkPlugin
     ].filter(Boolean),
     postcss: wp => [
       postcssImport({
