@@ -11,21 +11,23 @@ export default class DefaultDialog extends React.Component {
     className: PropTypes.string,
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
+    onOpen: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        id: PropTypes.string.isRequired,
-        tooltip: PropTypes.string,
-        kind: PropTypes.string
-      }))
+      title: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      tooltip: PropTypes.string,
+      kind: PropTypes.string
+    }))
   }
 
   static defaultProps = {
     showHeader: false,
     onAction() {},
+    onOpen() {},
     actions: []
   }
 
@@ -46,15 +48,22 @@ export default class DefaultDialog extends React.Component {
   }
 
   componentDidMount() {
-    const dialogElement = ReactDOM.findDOMNode(this)
-    this.dialogElement = dialogElement.showModal ? dialogElement : dialogPolyfill.registerDialog(dialogElement)
+    this.dialogElement = ReactDOM.findDOMNode(this)
+
+    if (!this.dialogElement.showModal) {
+      dialogPolyfill.registerDialog(this.dialogElement)
+    }
+
     if (this.props.isOpen) {
       this.openDialogElement()
+    } else {
+      this.closeDialogElement()
     }
   }
 
   openDialogElement() {
     this.dialogElement.showModal()
+    this.props.onOpen()
   }
 
   closeDialogElement() {
