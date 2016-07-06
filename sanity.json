@@ -185,6 +185,11 @@
       "implements": "style:@sanity/components/cards/default",
       "srcPath": "./src/cards/styles/DefaultCard.css",
       "path": "./lib/cards/styles/DefaultCard.css"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/buttons/story.js",
+      "path": "./lib/buttons/story.js"
     }
   ]
 }
