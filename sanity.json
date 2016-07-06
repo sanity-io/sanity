@@ -1,0 +1,7 @@
+{
+  "roles": [{
+    "name": "component:@sanity/storybook",
+    "description": "Sanity wrapped version of Kadira's React Storybook",
+    "path": "./index.js"
+  }]
+}
