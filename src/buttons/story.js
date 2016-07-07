@@ -2,10 +2,10 @@ import React from 'react'
 import Button from 'component:@sanity/components/buttons/default'
 import Fab from 'component:@sanity/components/buttons/fab'
 import DropDownButton from 'component:@sanity/components/buttons/dropdown'
-import {storiesOf, action} from '@kadira/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 
 storiesOf('Buttons').addWithInfo(
-  '<Defaultbutton>',
+  'Defaultbutton',
   `
     Standard button
     Role: component:@sanity/components/buttons/default
@@ -19,21 +19,20 @@ storiesOf('Buttons').addWithInfo(
 )
 
 storiesOf('Buttons').addWithInfo(
-  '<Fab> (Floating Action Button)',
+  'Fab (Floating Action Button)',
   `
     Borrowed from Googles material design. Used to create new stuff. Is by default fixed to bottom right.
   `,
   () => (
     <div>
-      <Fab onClick={action('onClick')} />
-      <br />
+      <Fab onClick={action('onClick')} fixed={false} colored />
     </div>
   ),
   {inline: true, propTables: [Fab]}
 )
 
 storiesOf('Buttons').addWithInfo(
-  '<DropDownButton>',
+  'DropDownButton',
   `
     Buttons that opens a menu.
   `,

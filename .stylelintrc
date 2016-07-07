@@ -8,6 +8,10 @@
     "selector-pseudo-class-no-unknown": [true,{
       ignorePseudoClasses: ["global"]
       }
-    ]
+    ],
+    "unit-no-unknown": [true, {
+      ignoreUnits: ["composes"]
+    }]
+
   }
 }

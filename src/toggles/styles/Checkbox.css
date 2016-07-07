@@ -1,3 +1,15 @@
+@use postcss-cssnext;
+
 .root {
-  /* Empty */
+  border: 1px solid red;
+  user-select: none;
+}
+
+.label {
+  display: inline-block;
+  user-select: none;
+}
+
+.input {
+  border: 2px solid blue;
 }

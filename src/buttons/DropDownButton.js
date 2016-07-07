@@ -1,23 +1,20 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/buttons/dropwdown'
+import styles from 'style:@sanity/components/buttons/dropdown'
 import Button from 'component:@sanity/components/buttons/default'
 import enhanceWithClickOutside from 'react-click-outside'
+import Menu from 'component:@sanity/components/menus/default'
 
 class DropDownButton extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['add', 'delete', 'warning', 'success', 'danger']),
-    items: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      onClick: PropTypes.func,
-      icon: PropTypes.string
-    })),
+    items: Menu.propTypes.items,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
     icon: PropTypes.node,
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
-    color: PropTypes.string // success, warning, danger, info
+    color: PropTypes.string
   }
 
   constructor(props, context) {
@@ -45,7 +42,6 @@ class DropDownButton extends React.Component {
       <Button
         className={styles.root}
         onClick={this.handleOnClick}
-        {...this.props}
       >
         <span className={styles.title}>
           {this.props.children}
@@ -53,23 +49,11 @@ class DropDownButton extends React.Component {
 
         <span className={styles.arrow}></span>
 
-        <ul className={this.state.menuOpened ? styles.menuOpened : styles.menuClosed}>
-          {
-            items.map((item, i) => {
-              return (
-                <li key={i} className={styles.menuItem}>
-                  <a onClick={item.onClick} className={styles.menuItemLink}>
-                    {item.title}
-                  </a>
-                </li>
-              )
-            })
-          }
+        <Menu items={items} opened={this.state.menuOpened} />
 
-        </ul>
       </Button>
     )
   }
 }
 
-export default enhanceWithClickOutside(DropDownButton)
+export default DropDownButton

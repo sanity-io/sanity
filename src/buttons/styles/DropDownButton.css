@@ -5,27 +5,6 @@
   padding-right: 3em;
 }
 
-.menu {
-  position: absolute;
-  top: 2.5em;
-  left: 0;
-  width: 100%;
-  background-color: #fff;
-  composes: shadow-2dp from 'style:@sanity/base/theme/shadows';
-}
-
-.menuItem {
-  display: block;
-}
-
-.menuItemLink {
-  display: block;
-  line-height: 3em;
-  &:hover {
-    background-color: #eee;
-  }
-}
-
 .arrow {
   position: absolute;
   right: 1em;
@@ -35,14 +14,4 @@
   &::before {
     font-size: 1.5em;
   }
-}
-
-.menuOpened {
-  composes: menu;
-  display: block;
-}
-
-.menuClosed {
-  composes: menu;
-  display: none;
 }

@@ -21,7 +21,7 @@
       "description": "Drop down button with menu"
     },
     {
-      "name": "style:@sanity/components/buttons/dropwdown",
+      "name": "style:@sanity/components/buttons/dropdown",
       "description": "Drop down button styling"
     },
     {
@@ -39,6 +39,14 @@
     {
       "name": "style:@sanity/components/toggles/switch",
       "description": "Switch toggle style"
+    },
+    {
+      "name": "component:@sanity/components/toggles/checkbox",
+      "description": "Checkbox toggle"
+    },
+    {
+      "name": "style:@sanity/components/toggles/checkbox",
+      "description": "Checkbox toggle style"
     },
     {
       "name": "component:@sanity/components/textfields/default",
@@ -80,10 +88,38 @@
       "name": "style:@sanity/components/dialogs/default",
       "description": "Default dialog styling"
     },
-
-
-
-
+    {
+      "name": "component:@sanity/components/snackbar/default",
+      "description": "Shows messages with an action and a timeout."
+    },
+    {
+      "name": "style:@sanity/components/snackbar/default",
+      "description": "Styling for snackbar"
+    },
+    {
+      "name": "component:@sanity/components/menus/default",
+      "description": "Standard context menu"
+    },
+    {
+      "name": "style:@sanity/components/menus/default",
+      "description": "Styling for standard context menu"
+    },
+    {
+      "name": "component:@sanity/components/lists/default",
+      "description": "Default list"
+    },
+    {
+      "name": "style:@sanity/components/lists/default",
+      "description": "Styling for edfault list"
+    },
+    {
+      "name": "component:@sanity/components/lists/items/default",
+      "description": "Default list item"
+    },
+    {
+      "name": "style:@sanity/components/lists/items/default",
+      "description": "Default list item styling"
+    },
     {
       "implements": "component:@sanity/components/buttons/default",
       "srcPath": "./src/buttons/DefaultButton.js",
@@ -110,6 +146,11 @@
       "path": "./lib/toggles/Switch.js"
     },
     {
+      "implements":  "component:@sanity/components/toggles/checkbox",
+      "srcPath": "./src/toggles/Checkbox.js",
+      "path": "./lib/toggles/Checkbox.js"
+    },
+    {
       "implements":  "component:@sanity/components/textfields/default",
       "srcPath": "./src/textfields/DefaultTextField.js",
       "path": "./lib/textfields/DefaultTextField.js"
@@ -134,6 +175,11 @@
       "srcPath": "./src/cards/DefaultCard.js",
       "path": "./lib/cards/DefaultCard.js"
     },
+    {
+      "implements": "component:@sanity/components/snackbar/default",
+      "srcPath": "./src/snackbar/DefaultSnackbar.js",
+      "path": "./lib/snackbar/DefaultSnackbar.js"
+    },
 
 
     {
@@ -147,7 +193,7 @@
       "path": "./lib/buttons/styles/Fab.css"
     },
     {
-      "implements": "style:@sanity/components/buttons/dropwdown",
+      "implements": "style:@sanity/components/buttons/dropdown",
       "srcPath": "./src/buttons/styles/DropDownButton.css",
       "path": "./lib/buttons/styles/DropDownButton.css"
     },
@@ -160,6 +206,11 @@
       "implements": "style:@sanity/components/toggles/switch",
       "srcPath": "./src/toggles/styles/Switch.css",
       "path": "./lib/toggles/styles/Switch.css"
+    },
+    {
+      "implements": "style:@sanity/components/toggles/checkbox",
+      "srcPath": "./src/toggles/styles/Checkbox.css",
+      "path": "./lib/toggles/styles/Checkbox.css"
     },
     {
       "implements": "style:@sanity/components/textfields/default",
@@ -187,9 +238,64 @@
       "path": "./lib/cards/styles/DefaultCard.css"
     },
     {
+      "implements": "style:@sanity/components/snackbar/default",
+      "srcPath": "./src/snackbar/styles/DefaultSnackbar.css",
+      "path": "./lib/snackbar/styles/DefaultSnackbar.css"
+    },
+    {
+      "implements": "component:@sanity/components/menus/default",
+      "srcPath": "./src/menus/DefaultMenu.js",
+      "path": "./lib/menus/DefaultMenu.js"
+    },
+    {
+      "implements": "style:@sanity/components/menus/default",
+      "srcPath": "./src/menus/styles/DefaultMenu.css",
+      "path": "./lib/menus/styles/DefaultMenu.css"
+    },
+    {
+      "implements": "component:@sanity/components/lists/default",
+      "srcPath": "./src/lists/DefaultList.js",
+      "path": "./lib/lists/DefaultList.js"
+    },
+    {
+      "implements": "style:@sanity/components/lists/default",
+      "srcPath": "./src/lists/styles/DefaultList.css",
+      "path": "./lib/lists/styles/DefaultList.css"
+    },
+    {
+      "implements": "component:@sanity/components/lists/items/default",
+      "srcPath": "./src/lists/items/DefaultItem.js",
+      "path": "./lib/lists/items/DefaultItem.js"
+    },
+    {
+      "implements": "style:@sanity/components/lists/items/default",
+      "srcPath": "./src/lists/items/styles/DefaultItem.css",
+      "path": "./lib/lists/items/styles/DefaultItem.css"
+    },
+    {
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/buttons/story.js",
       "path": "./lib/buttons/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/dialogs/story.js",
+      "path": "./lib/dialogs/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/toggles/story.js",
+      "path": "./lib/toggles/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/fieldsets/story.js",
+      "path": "./lib/fieldsets/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/lists/story.js",
+      "path": "./lib/lists/story.js"
     }
   ]
 }

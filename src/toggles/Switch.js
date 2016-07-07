@@ -3,10 +3,10 @@ import styles from 'style:@sanity/components/toggles/switch'
 
 export default class Switch extends React.Component {
   static propTypes = {
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     checked: PropTypes.bool,
-    disabled: PropTypes.bool,
-    label: PropTypes.string
+    disabled: PropTypes.bool
   }
   render() {
     const {disabled, checked} = this.props

@@ -19,6 +19,7 @@
   "dependencies": {
     "dialog-polyfill": "^0.4.3",
     "in-publish": "^2.0.0",
+    "lodash": "^4.13.1",
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "react-click-outside": "^2.1.0",

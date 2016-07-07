@@ -25,6 +25,7 @@ export default class DefaultDialog extends React.Component {
   }
 
   static defaultProps = {
+    isOpen: false,
     showHeader: false,
     onAction() {},
     onOpen() {},
@@ -67,7 +68,9 @@ export default class DefaultDialog extends React.Component {
   }
 
   closeDialogElement() {
-    this.dialogElement.close()
+    if (this.dialogElement.open) {
+      this.dialogElement.close()
+    }
   }
 
   handleCloseClick() {

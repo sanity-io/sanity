@@ -1,0 +1,38 @@
+@use postcss-cssnext;
+
+.root {
+  position: absolute;
+  top: 2.5em;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  composes: shadow-2dp from 'style:@sanity/base/theme/shadows';
+}
+
+.list {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: block;
+}
+
+.link {
+  display: block;
+  line-height: 3em;
+  &:hover {
+    background-color: #eee;
+  }
+}
+
+.opened {
+  composes: root;
+  display: block;
+}
+
+.closed {
+  composes: root;
+  display: none;
+}

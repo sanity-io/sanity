@@ -9,17 +9,23 @@ export default class Fab extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
+    fixed: PropTypes.bool,
     color: PropTypes.string // success, warning, danger, info
   }
 
-  render() {
-    const {ripple, onClick, colored} = this.props
+  static defaultProps = {
+    fixed: true,
+    ripple: true
+  }
 
-    const rootStyle = colored ? styles.colored : styles.root
+  render() {
+    const {ripple, onClick, colored, fixed} = this.props
+
+    const style = `${colored ? styles.colored : styles.root} ${fixed ? styles.fixed : ''}`
 
     return (
       <button
-        className={rootStyle}
+        className={style}
         type="button"
         onClick={onClick}
       >

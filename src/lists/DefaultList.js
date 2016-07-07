@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/default'
-import ListItem from 'component:@sanity/components/list-items/default'
+import ListItem from 'component:@sanity/components/lists/items/default'
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -13,7 +13,6 @@ export default class DefaultList extends React.Component {
         icon: PropTypes.node
       })
     ),
-    children: PropTypes.node,
     selectable: PropTypes.bool,
     loading: PropTypes.bool,
     className: PropTypes.string,
@@ -37,7 +36,6 @@ export default class DefaultList extends React.Component {
                 )
               })
             }
-            {children}
           </ul>
         </div>
       </div>

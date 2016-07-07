@@ -1,0 +1,39 @@
+@use postcss-cssnext;
+
+.root {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.inner {
+  width: 80%;
+  height: 2rem;
+  display: block;
+}
+
+.warning {
+  composes: root;
+  .inner {
+    background-color: yellow;
+    color: black;
+  }
+}
+
+.success {
+  composes: root;
+  .inner {
+    background-color: green;
+    color: white;
+  }
+}
+
+.danger {
+  composes: root;
+  .inner {
+    background-color: green;
+    color: white;
+  }
+  background-color: red;
+  color: white;
+}
