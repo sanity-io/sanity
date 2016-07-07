@@ -6,7 +6,7 @@ const MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN = 60*2*1000 // How many ms left of tok
 let currentTokenPayload = null
 
 function base64urlDecode(str) {
-  return new Buffer(base64urlUnescape(str), 'base64').toString()
+  return window.atob(base64urlUnescape(str))
 }
 
 function base64urlUnescape(str) {
