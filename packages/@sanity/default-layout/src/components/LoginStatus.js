@@ -1,7 +1,6 @@
 import React from 'react'
 import styles from '../../styles/LoginStatus.css'
 import userStore from 'datastore:@sanity/base/user'
-import SanityIntlProvider from 'component:@sanity/base/sanity-intl-provider'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
 import config from 'config:sanity'
 
@@ -32,9 +31,7 @@ export default class LoginStatus extends React.Component {
 
   handleLogoutButtonClicked(evnt) {
     evnt.preventDefault()
-    userStore.actions.logout().progress.subscribe(ev => {
-      // Nothing to do here...
-    })
+    userStore.actions.logout()
   }
 
   render() {
@@ -47,14 +44,12 @@ export default class LoginStatus extends React.Component {
         <img onClick={this.toggleLoginStatusMenu} src={user.profileImage} className={styles.userImage} />
         {this.state.menuVisible && (
           <div style={{float: 'left'}}>
-            <SanityIntlProvider supportedLanguages={config.locale.supportedLanguages}>
-              <p>{user.name}</p>
-              <p>
-                <button onClick={this.handleLogoutButtonClicked}>
-                  <FormattedMessage id="logoutButtonText" />
-                </button>
-              </p>   
-            </SanityIntlProvider>
+            <p>{user.name}</p>
+            <p>
+              <button onClick={this.handleLogoutButtonClicked}>
+                <FormattedMessage id="logoutButtonText" />
+              </button>
+            </p>
           </div>
         )}
       </div>
