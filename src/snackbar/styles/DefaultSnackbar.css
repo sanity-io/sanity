@@ -1,39 +1,92 @@
+@import "style:@sanity/base/theme/variables/state-colors";
 @use postcss-cssnext;
+
+@keyframes reveal {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 
 .root {
   position: fixed;
   bottom: 0;
   width: 100%;
+  transition: transform 0.2s linear;
+  animation-name: reveal;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
 }
 
 .inner {
   width: 80%;
-  height: 2rem;
+  height: 2em;
+  line-height: 2em;
+  margin: 0 auto;
   display: block;
+  border: 1px solid #000;
+  border-bottom: 0;
+  position: relative;
+
+  @nest .info & {
+    border-color: var(--state-info-border);
+    background-color: var(--state-info-bg);
+    color: var(--state-info-text);
+  }
+
+  @nest .warning & {
+    background-color: var(--state-warning-bg);
+    color: var(--state-warning-text);
+    border-color: var(--state-warning-border);
+  }
+
+  @nest .success & {
+    background-color: var(--state-success-bg);
+    color: var(--state-success-text);
+    border-color: var(--state-success-border);
+  }
+
+  @nest .error & {
+    background-color: var(--state-danger-bg);
+    color: var(--state-danger-text);
+    border-color: var(--state-danger-border);
+  }
+}
+
+.content {
+  padding: 0 1em;
+}
+
+.action {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.info {
+  composes: root;
 }
 
 .warning {
   composes: root;
-  .inner {
-    background-color: yellow;
-    color: black;
-  }
 }
 
 .success {
   composes: root;
-  .inner {
-    background-color: green;
-    color: white;
-  }
 }
 
-.danger {
+.danger,
+.error {
   composes: root;
-  .inner {
-    background-color: green;
-    color: white;
-  }
-  background-color: red;
-  color: white;
+}
+
+.visible {
+  transform: translateY(0);
+}
+
+.hidden {
+  transform: translateY(100%);
 }

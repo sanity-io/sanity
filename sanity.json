@@ -296,6 +296,11 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/lists/story.js",
       "path": "./lib/lists/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/snackbar/story.js",
+      "path": "./lib/snackbar/story.js"
     }
   ]
 }

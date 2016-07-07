@@ -15,7 +15,7 @@ storiesOf('Lists').addWithInfo(
   () => {
     const items = range(10).map((item, i) => {
       return {
-        id: i,
+        id: `${i}`,
         title: Faker.Name.findName()
       }
     })
