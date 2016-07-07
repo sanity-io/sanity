@@ -1,3 +1,31 @@
+@use postcss-cssnext;
+
+.zebra-stripes {
+  &:nth-child(even) {
+    background-color: #fff;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+  &:nth-child(odd) {
+    background-color: #fafafa;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
+.default {
+  composes: zebra-stripes;
+}
+
 .root {
-  border: 2px solid blue;
+  composes: zebra-stripes;
+  height: 3rem;
+  line-height: 3rem;
+  border-bottom: 1px solid #ccc;
+  padding: 0 1rem;
+  &:first-child {
+    border-top: 1px solid #ccc;
+  }
 }

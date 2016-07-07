@@ -10,10 +10,7 @@ storiesOf('Toggles').addWithInfo(
   `,
   () => {
     return (
-      <Switch onChange={function () {
-        action('change')
-        linkTo('Toggles', 'Switch (on)')
-      }} label="Switch is off" />
+      <Switch onChange={action('change')} label="Switch is off" />
     )
   },
   {inline: true, propTables: [Switch]}
@@ -26,7 +23,7 @@ storiesOf('Toggles').addWithInfo(
   () => {
     return (
       <div>
-      <Switch checked label="Switch is on"/>
+      <Switch checked label="Switch is on" />
       </div>
     )
   },
@@ -39,7 +36,7 @@ storiesOf('Toggles').addWithInfo(
   `,
   () => {
     return (
-      <Switch disabled/>
+      <Switch label="This checkbox is disabled" disabled />
     )
   },
   {inline: true, propTables: [Switch]}
@@ -55,5 +52,5 @@ storiesOf('Toggles').addWithInfo(
       <Checkbox label="This is a checkbox" />
     )
   },
-  {inline: true, propTables: [Switch]}
+  {inline: true, propTables: [Checkbox]}
 )

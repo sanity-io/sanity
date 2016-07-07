@@ -1,3 +1,15 @@
 .root {
-  border: 10px solid red;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.list {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: block;
 }
