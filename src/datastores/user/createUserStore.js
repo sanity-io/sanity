@@ -27,19 +27,13 @@ getCurrentUser().then(user => {
 
 
 function logout() {
-  const progress = new Observable(observer => {
-    observer.next({
-      type: 'logout',
-      user: _currentUser
-    })
+  return new Promise((resolve,reject) => {
     authenticationFetcher.logout()
     .then(() => {
       userChannel.publish(null)
-      observer.complete()
+      resolve()
     })
   })
-
-  return {progress}
 }
 
 
