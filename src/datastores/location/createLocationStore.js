@@ -1,7 +1,7 @@
-import Observable from './utils/SanityStoreObservable'
-import Location from './utils/Location'
+import Observable from '../utils/SanityStoreObservable'
+import Location from '../utils/Location'
 import {createHistory} from 'history'
-import createActions from './utils/createActions'
+import createActions from '../utils/createActions'
 
 const noop = () => {} // eslint-disable-line no-empty-function
 const history = createHistory()

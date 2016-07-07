@@ -33,7 +33,7 @@ class SanityIntlProvider extends React.Component {
 
         // In order to get a proper stacktrace on rendering errors,
         // we need to move this out of the current call stack
-        setTimeout(() => {
+        this.mountTimer = setTimeout(() => {
           this.setState({
             messages: localizedMessages,
             language: language
@@ -41,6 +41,10 @@ class SanityIntlProvider extends React.Component {
         }, 0)
       }).catch(this.catchError)
     }).catch(this.catchError)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.mountTimer)
   }
 
   render() {

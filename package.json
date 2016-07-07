@@ -46,7 +46,7 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "@sanity/client-next": "^1.0.0",
+    "@sanity/client-next": "^1.0.6",
     "@sanity/router": "^1.0.10",
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
@@ -55,7 +55,7 @@
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "react-intl": "^2.1.2",
-    "zen-observable": "^0.2.1"
+    "zen-observable": "^0.3.0"
   },
   "peerDependencies": {
     "react": ">=15.0"

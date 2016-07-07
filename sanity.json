@@ -130,6 +130,22 @@
       "description": "Functions to format based on resolved locale"
     },
     {
+      "name": "component:@sanity/base/login-wrapper",
+      "description": "Checks if user is logged in or not, and displays login screen or content for logged in users."
+    },
+    {
+      "name": "component:@sanity/base/login-dialog",
+      "description": "Lets the user log in to Sanity."
+    },
+    {
+      "name": "machine:@sanity/base/authentication-fetcher",
+      "description": "Fetches the logged in user and JSON web token."
+    },
+    {
+      "name": "machine:@sanity/base/installation-fetcher",
+      "description": "Fetches data about an installation."
+    },
+    {
       "name": "component:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
@@ -288,6 +304,16 @@
       "path": "./lib/datastores/location"
     },
     {
+      "name": "datastore:@sanity/base/user",
+      "srcPath": "./src/datastores/user",
+      "path": "./lib/datastores/user"
+    },
+    {
+      "name": "datastore:@sanity/base/installation",
+      "srcPath": "./src/datastores/installation",
+      "path": "./lib/datastores/installation"
+    },
+    {
       "name": "router:@sanity/base/router",
       "srcPath": "./src/router",
       "path": "./lib/router"
@@ -333,6 +359,11 @@
       "implements": "component:@sanity/base/buttons/default",
       "srcPath": "./src/components/buttons/DefaultButton.js",
       "path": "./lib/components/buttons/DefaultButton.js"
+    },
+    {
+      "implements": "component:@sanity/base/login-wrapper",
+      "srcPath": "./src/components/login/LoginWrapper.js",
+      "path": "./lib/components/login/LoginWrapper.js"
     },
     {
       "implements": "style:@sanity/base/theme/layout/box",
