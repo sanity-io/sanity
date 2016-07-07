@@ -25,7 +25,7 @@ function tokenIsExpired(tokenPayload) {
     return true
   }
   const tokenTime  = currentTokenPayload.x * 1000
-  const now = new Date().getTime()
+  const now = Date.now()
   if ((tokenTime - now) > MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN) {
     return false
   }
