@@ -1,8 +1,7 @@
 const storyBook = require('../..')
 const infoAddon = require('@kadira/react-storybook-addon-info')
 
-require('./reset.css')
-require('./base.css')
+require('style:@sanity/base/theme/body')
 
 storyBook.setAddon(infoAddon.default)
 
