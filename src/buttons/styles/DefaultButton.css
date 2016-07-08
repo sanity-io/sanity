@@ -80,22 +80,25 @@
 }
 
 .hasIcon {
-
+  /* empty */
 }
 
 .iconContainer {
-
+  /* empty */
 }
 
 .icon {
   margin-right: 0.5em;
   transform: scale(1.2);
+
   @nest .colored & {
     fill: #fff;
   }
+
   @nest .danger & {
     fill: #fff;
   }
+
   @nest .danger.inverted & {
     fill: var(--brand-danger);
   }
