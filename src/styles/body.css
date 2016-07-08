@@ -1,0 +1,10 @@
+@import "style:@sanity/base/theme/variables";
+@import "./reset.css";
+@use postcss-cssnext;
+
+body {
+  font-size: 100%;
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-base);
+  color: var(--text-color);
+}

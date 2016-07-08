@@ -1,19 +1,21 @@
 @use postcss-cssnext;
 @use postcss-font-awesome;
 
-.chevron-down {
+.icon {
   display: inline-block;
   height: 1em;
   width: 1em;
+}
+
+.chevron-down {
+  composes: icon;
   &::before {
     font-awesome: caret-down;
   }
 }
 
 .close {
-  display: inline-block;
-  height: 1em;
-  width: 1em;
+  composes: icon;
   &::before {
     font-awesome: close;
   }

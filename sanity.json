@@ -110,6 +110,10 @@
       "description": "Basic positioning helpers"
     },
     {
+      "name": "style:@sanity/base/theme/body",
+      "description": "Resets, fontsize, font-family etc"
+    },
+    {
       "name": "locale:@sanity/base/locale-messages",
       "description": "Messages across all known locales"
     },
@@ -419,6 +423,11 @@
       "implements": "style:@sanity/base/theme/typography/code",
       "srcPath": "./src/styles/typography/code.css",
       "path": "./lib/styles/typography/code.css"
+    },
+    {
+      "implements": "style:@sanity/base/theme/body",
+      "srcPath": "./src/styles/body.css",
+      "path": "./lib/styles/body.css"
     }
   ]
 }
