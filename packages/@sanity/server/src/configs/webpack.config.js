@@ -23,7 +23,7 @@ export default (config = {}) => {
   ]
 
   const cssExtractor = isProd
-    && new ExtractTextPlugin('../css/main.css', {allChunks: true})
+    && new ExtractTextPlugin('css/main.css', {allChunks: true})
 
   const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
   const cssLoader = isProd
@@ -33,7 +33,7 @@ export default (config = {}) => {
   const commonChunkPlugin = (
     typeof config.commonChunkPlugin === 'undefined'
     || config.commonChunkPlugin
-  ) && new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
+  ) && new webpack.optimize.CommonsChunkPlugin('vendor', 'js/vendor.bundle.js')
 
   return {
     entry: {
@@ -42,8 +42,8 @@ export default (config = {}) => {
     },
     output: {
       path: config.outputPath || path.join(__dirname, '..', '..', 'dist'),
-      filename: '[name].bundle.js',
-      publicPath: '/static/js'
+      filename: 'js/[name].bundle.js',
+      publicPath: '/static/'
     },
     resolve: {
       modules: resolvePaths, // Webpack 2
@@ -75,6 +75,12 @@ export default (config = {}) => {
         test: /\.css(\?|$)/,
         loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
         loaders: !isProd && ['style-loader', cssLoader, 'postcss-loader']
+      }, {
+        test: /\.(jpe?g|png|gif|svg|webp)$/,
+        loader: require.resolve('file-loader'),
+        query: {
+          name: 'assets/[name]-[hash].[ext]'
+        }
       }, {
         test: /[?&]sanityRole=/,
         loader: roleLoaderPath
