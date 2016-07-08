@@ -24,6 +24,7 @@
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "react-click-outside": "^2.1.0",
+    "react-icons": "^2.2.0",
     "react-ink": "^5.1.1",
     "stylelint": "^6.8.0",
     "stylelint-config-standard": "^10.0.0"

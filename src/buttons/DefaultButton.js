@@ -5,7 +5,7 @@ import Spinner from 'component:@sanity/components/loading/spinner'
 
 export default class DefaultButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['add', 'warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['add', 'danger', 'colored']),
     onClick: PropTypes.func,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
@@ -13,12 +13,12 @@ export default class DefaultButton extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
-    className: PropTypes.string,
-    color: PropTypes.string // success, warning, danger, info
+    className: PropTypes.string
   }
 
   static defaultProps = {
-    ripple: true
+    ripple: true,
+    icon: false
   }
 
   handleOnClick() {
@@ -29,6 +29,8 @@ export default class DefaultButton extends React.Component {
 
     const {kind, inverted, color, colored, ripple, icon, loading, className} = this.props
 
+    const Icon = icon
+
     if (!styles[kind] && kind) {
       console.error(`There is no ${kind} button`) // eslint-disable-line no-console
     }
@@ -37,7 +39,9 @@ export default class DefaultButton extends React.Component {
       ${className}
       ${styles[kind] || styles.root}
       ${colored && styles.colored}
-      ${inverted && styles.inverted} ${color}
+      ${inverted && styles.inverted}
+      ${Icon && styles.hasIcon}
+      ${color}
     `
 
     return (
@@ -51,7 +55,7 @@ export default class DefaultButton extends React.Component {
           loading && <Spinner />
         }
         {
-          icon && <span className={styles.icon}>{icon}</span>
+          Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
         }
         <span className={styles.content}>
           {this.props.children}

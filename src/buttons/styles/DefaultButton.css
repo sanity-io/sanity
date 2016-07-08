@@ -37,38 +37,28 @@
   padding: 0.2em 1em;
 }
 
-.border {
-  composes: root;
+.inverted {
+  border: 1px solid var(--gray-base);
   background-color: transparent;
   border-color: var(--gray-base);
-}
-
-.inverted {
-  composes: border;
-}
-
-/* Kinds */
-.danger {
-  composes: root;
-  border-color: var(--brand-danger);
-  color: var(--brand-danger);
-}
-
-.success {
-  composes: root;
-  background-color: var(--brand-success);
-  color: #fff;
-  &.inverted {
-    border-color: var(--brand-success);
-    background-color: transparent;
-    color: var(--brand-success);
+  box-shadow: none;
+  &.danger {
+    background-color: inherit;
+    border-color: var(--brand-danger);
+    color: var(--brand-danger);
+  }
+  &.colored {
+    background-color: inherit;
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
   }
 }
 
-.warning {
+.danger {
   composes: root;
-  border-color: var(--brand-warning);
-  color: var(--brand-warning);
+  border-color: var(--brand-danger);
+  color: #fff;
+  background-color: var(--brand-danger);
 }
 
 .delete {
@@ -76,7 +66,7 @@
 }
 
 .add {
-  composes: success;
+  composes: colored;
 }
 
 .save {
@@ -87,4 +77,26 @@
   background-color: transparent;
   text-align: left;
   border: 0;
+}
+
+.hasIcon {
+
+}
+
+.iconContainer {
+
+}
+
+.icon {
+  margin-right: 0.5em;
+  transform: scale(1.2);
+  @nest .colored & {
+    fill: #fff;
+  }
+  @nest .danger & {
+    fill: #fff;
+  }
+  @nest .danger.inverted & {
+    fill: var(--brand-danger);
+  }
 }

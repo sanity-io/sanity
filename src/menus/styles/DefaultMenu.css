@@ -1,12 +1,18 @@
+@import "style:@sanity/base/theme/variables/typography";
 @use postcss-cssnext;
 
 .root {
   position: absolute;
-  top: 2.5em;
-  left: 0;
-  width: 100%;
+  width: auto;
   background-color: #fff;
   composes: shadow-2dp from 'style:@sanity/base/theme/shadows';
+  font-size: var(--font-size-small);
+  user-select: none;
+  text-align: left;
+}
+
+.fullWidth {
+  width: 100%;
 }
 
 .list {
@@ -19,12 +25,23 @@
   display: block;
 }
 
+.iconContainer {
+  margin-right: .5em;
+}
+
 .link {
   display: block;
+  position: relative;
   line-height: 3em;
+  padding: 0 1em;
+  cursor: pointer;
   &:hover {
     background-color: #eee;
   }
+}
+
+.divider {
+  border-top: 1px solid #ccc;
 }
 
 .opened {
@@ -35,4 +52,24 @@
 .closed {
   composes: root;
   display: none;
+}
+
+.origin__top-left {
+  top: 0;
+  left: 0;
+}
+
+.origin__top-right {
+  top: 0;
+  right: 0;
+}
+
+.origin__bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+.origin__bottom-left {
+  bottom: 0;
+  left: 0;
 }

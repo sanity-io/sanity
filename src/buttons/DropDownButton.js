@@ -49,7 +49,7 @@ class DropDownButton extends React.Component {
 
         <span className={styles.arrow}></span>
 
-        <Menu items={items} opened={this.state.menuOpened} />
+        <Menu items={items} opened={this.state.menuOpened} fullWidth className={styles.menu} />
 
       </Button>
     )
