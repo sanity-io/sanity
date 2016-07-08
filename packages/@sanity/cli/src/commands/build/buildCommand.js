@@ -21,7 +21,7 @@ export default {
       env: 'production',
       staticPath: resolveStaticPath(options.cwd, config),
       basePath: options.cwd,
-      outputPath: path.join(outputDir, 'static', 'js')
+      outputPath: path.join(outputDir, 'static')
     }
 
     const compiler = getWebpackCompiler(compilationConfig)
