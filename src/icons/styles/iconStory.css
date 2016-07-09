@@ -1,0 +1,23 @@
+@use postcss-cssnext;
+
+.list {
+  margin: 4rem;
+  overflow: hidden;
+}
+
+.item {
+  float: left;
+  width: 4rem;
+  margin: 1rem;
+}
+
+.iconName {
+  text-align: center;
+  font-size: .5rem;
+}
+
+.icon svg {
+  height: 3rem;
+  width: 3rem;
+  margin: 0 auto;
+}

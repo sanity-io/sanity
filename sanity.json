@@ -306,6 +306,11 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/menus/story.js",
       "path": "./lib/menus/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/icons/story.js",
+      "path": "./lib/icons/story.js"
     }
   ]
 }
