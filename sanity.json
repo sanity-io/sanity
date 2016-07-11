@@ -49,12 +49,28 @@
       "description": "Checkbox toggle style"
     },
     {
+      "name": "component:@sanity/components/toggles/buttons",
+      "description": "Toggle buttons"
+    },
+    {
+      "name": "style:@sanity/components/toggles/buttons",
+      "description": "Toggle buttons style"
+    },
+    {
       "name": "component:@sanity/components/textfields/default",
       "description": "Standard text field"
     },
     {
       "name": "style:@sanity/components/textfields/default",
       "description": "Text field styling"
+    },
+    {
+      "name": "component:@sanity/components/textfields/search",
+      "description": "Search text field"
+    },
+    {
+      "name": "style:@sanity/components/textfields/search",
+      "description": "Search field styling"
     },
     {
       "name": "component:@sanity/components/fieldsets/default",
@@ -151,9 +167,19 @@
       "path": "./lib/toggles/Checkbox.js"
     },
     {
+      "implements":  "component:@sanity/components/toggles/buttons",
+      "srcPath": "./src/toggles/Buttons.js",
+      "path": "./lib/toggles/Buttons.js"
+    },
+    {
       "implements":  "component:@sanity/components/textfields/default",
       "srcPath": "./src/textfields/DefaultTextField.js",
       "path": "./lib/textfields/DefaultTextField.js"
+    },
+    {
+      "implements":  "component:@sanity/components/textfields/search",
+      "srcPath": "./src/textfields/SearchField.js",
+      "path": "./lib/textfields/SearchField.js"
     },
     {
       "implements":  "component:@sanity/components/dialogs/default",
@@ -213,9 +239,19 @@
       "path": "./lib/toggles/styles/Checkbox.css"
     },
     {
+      "implements": "style:@sanity/components/toggles/buttons",
+      "srcPath": "./src/toggles/styles/Buttons.css",
+      "path": "./lib/toggles/styles/Buttons.css"
+    },
+    {
       "implements": "style:@sanity/components/textfields/default",
       "srcPath": "./src/textfields/styles/DefaultTextField.css",
       "path": "./lib/textfields/styles/DefaultTextField.css"
+    },
+    {
+      "implements": "style:@sanity/components/textfields/search",
+      "srcPath": "./src/textfields/styles/SearchField.css",
+      "path": "./lib/textfields/styles/SearchField.css"
     },
     {
       "implements":  "style:@sanity/components/dialogs/fullscreen",
@@ -311,6 +347,16 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/icons/story.js",
       "path": "./lib/icons/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/datepickers/story.js",
+      "path": "./lib/datepickers/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/textfields/story.js",
+      "path": "./lib/textfields/story.js"
     }
   ]
 }

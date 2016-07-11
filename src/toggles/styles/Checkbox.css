@@ -1,15 +1,151 @@
+@import "style:@sanity/base/theme/variables";
 @use postcss-cssnext;
 
-.root {
-  border: 1px solid red;
-  user-select: none;
+:root {
+  --checkbox-label-height: 1rem;
+  --checkbox-off-color: var(--brand-primary);
+  --checkbox-color: var(--brand-primary);
+  --checkbox-button-size: 1rem;
+  --checkbox-top-offset: 0;
+  --checkbox-focus-color: magenta;
+  --checkbox-label-font-size: 1em;
+  --checkbox-padding: 0.25em;
 }
 
-.label {
-  display: inline-block;
+.root {
   user-select: none;
+  position: relative;
+
+  z-index: 1;
+
+  vertical-align: middle;
+
+  display: inline-block;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--checkbox-label-height);
+  margin: 0;
+  padding: 0;
+  padding-left: calc(var(--checkbox-button-size) + var(--checkbox-padding));
+}
+
+.isChecked {
+  composes: root;
+}
+
+.unChecked {
+  composes: root;
+}
+
+.isDisabled {
+  opacity: 0.2;
 }
 
 .input {
-  border: 2px solid blue;
+  line-height: var(--checkbox-label-height);
+
+  /* Hide input element, while still making it respond to focus. */
+  position: absolute;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  appearance: none;
+  border: none;
+}
+
+.boxOutline {
+  position: absolute;
+  top: var(--checkbox-top-offset);
+  left: 0;
+
+  display: inline-block;
+
+  box-sizing: border-box;
+  width: var(--checkbox-button-size);
+  height: var(--checkbox-button-size);
+  margin: 0;
+
+  cursor: pointer;
+  overflow: hidden;
+
+  border: 2px solid var(--checkbox-off-color);
+  border-radius: 2px;
+
+  z-index: 2;
+
+  @nest .isChecked & {
+    border: 2px solid var(--checkbox-color);
+  }
+
+  /*
+  fieldset[disabled] .mdl-checkbox &,
+  .mdl-checkbox.is-disabled & {
+    border: 2px solid $checkbox-disabled-color;
+    cursor: auto;
+  }
+  */
+}
+
+.focusHelper {
+  position: absolute;
+  top: var(--checkbox-top-offset);
+  left: 0;
+
+  display: inline-block;
+
+  box-sizing: border-box;
+  width: var(--checkbox-button-size);
+  height: var(--checkbox-button-size);
+  border-radius: 50%;
+
+  background-color: transparent;
+
+  @nest .focused & {
+    box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  @nest .focused.checked & {
+    box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) var(--checkbox-focus-color);
+    background-color: var(--checkbox-focus-color);
+  }
+}
+
+.tickOutline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  /* mask: url("#{$checkbox-image-path}/tick-mask.svg?embed"); */
+  background: transparent;
+
+  /* @include material-animation-default(0.28s); */
+  transition-property: background;
+
+  @nest .isChecked & {
+    /* background: $checkbox-color url("#{$checkbox-image-path}/tick.svg?embed"); */
+    background-color: var(--checkbox-color);
+  }
+
+}
+
+.label {
+  position: relative;
+  cursor: pointer;
+  font-size: var(--checkbox-label-font-size);
+  line-height: var(--checkbox-label-height);
+  margin: 0;
+
+  /*
+  fieldset[disabled] .mdl-checkbox &,
+  .mdl-checkbox.is-disabled & {
+    color: $checkbox-disabled-color;
+    cursor: auto;
+  }
+  */
 }

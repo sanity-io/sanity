@@ -8,14 +8,18 @@ export default class Checkbox extends React.Component {
     checked: PropTypes.bool,
     disabled: PropTypes.bool
   }
+
+  componentDidMount() {
+
+  }
+
   render() {
     const {disabled, checked} = this.props
-    const rootStyle = disabled ? styles.disabled : styles.enabled
-    const checkedStyle = checked ? styles.checked : styles.unchecked
+    const disabledStyle = disabled ? styles.isDisabled : styles.isEnabled
+    const checkedStyle = checked ? styles.isChecked : styles.unChecked
 
     return (
-      <label className={`${rootStyle} ${checkedStyle}`}>
-        <div className={`${checked ? styles.thumbChecked : styles.thumb}`} />
+      <label className={`${styles.root} ${disabledStyle} ${checkedStyle}`}>
         <input
           className={styles.input}
           type="checkbox"
@@ -23,7 +27,15 @@ export default class Checkbox extends React.Component {
           checked={this.props.checked}
         />
         <div className={styles.label}>{this.props.label}</div>
+
         <div className={styles.focusHelper} />
+        <div className={styles.boxOutline}>
+          <div className={styles.tickOutline} />
+        </div>
+
+        <div className={styles.tickHelper} />
+        <div className={styles.rippleContainer} />
+
       </label>
     )
   }

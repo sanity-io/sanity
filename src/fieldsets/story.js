@@ -32,9 +32,9 @@ storiesOf('Fieldsets').addWithInfo(
   `,
   () => {
     return (
-      <form>
+      <form style={{'max-width': '50rem', 'margin': '1rem auto'}}>
         <Fieldset legend="This is the legend" description="This is the description">
-          <Fieldset legend="This is the legend" description="This is the description">
+          <Fieldset legend="This is the legend in a nested fieldset" description="This is the description">
             A nested fieldset
           </Fieldset>
         </Fieldset>

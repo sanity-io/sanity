@@ -1,0 +1,21 @@
+@import "style:@sanity/base/theme/variables";
+
+.root {
+  margin: 1rem;
+}
+
+.label {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.button {
+  margin: 0;
+}
+
+.selectedButton {
+  composes: button;
+  background-color: var(--brand-primary);
+  box-shadow: 0.1em 0.25em 0.25em #000 inset;
+  color: #fff;
+}

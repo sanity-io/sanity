@@ -1,23 +1,10 @@
-@import 'style:@sanity/base/theme/variables';
-@use postcss-cssnext;
-
 .root {
   display: block;
   position: relative;
 }
 
-.error {
-  composes: root;
-}
-
 .label {
   display: block;
-}
-
-.errorLabel {
-  composes: label;
-  color: var(--brand-danger);
-  font-weight: bold;
 }
 
 .input {
@@ -34,4 +21,12 @@
 
 .isFocused {
   border: 2px solid green;
+}
+
+.isDirty {
+  border: 2px solid red;
+}
+
+.is-invalid {
+  composes: isDirty;
 }
