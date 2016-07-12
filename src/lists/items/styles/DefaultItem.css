@@ -21,6 +21,7 @@
 
 .root {
   composes: zebra-stripes;
+  display: block;
   height: 3rem;
   line-height: 3rem;
   border-bottom: 1px solid #ccc;

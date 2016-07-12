@@ -29,10 +29,15 @@ export default class DefaultAutocomplete extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleSelect = this.handleSelect.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
     this.state = {
       value: this.props.value,
       isOpen: this.props.isOpen
     }
+  }
+
+  handleKeyPress(event) {
+    console.log('press', event)
   }
 
   handleSelect(id) {
@@ -47,7 +52,7 @@ export default class DefaultAutocomplete extends React.Component {
 
     return (
       <div className={`${this.state.isOpen ? styles.opened : styles.closed}`}>
-        <DefaultTextField {...this.props} value={this.state.value} />
+        <DefaultTextField {...this.props} value={this.state.value} onKeyPress={this.handleKeyPress} />
 
         <div className={styles.suggestionsContainer}>
           <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />

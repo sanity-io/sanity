@@ -14,18 +14,21 @@ export default class DefaultTextField extends React.Component {
   }
 
   static defaultProps = {
-    value: ''
+    value: '',
+    onKeyPress() {}
   }
 
   constructor(props, context) {
     super(props, context)
+    // this.handleKeyPress = this.handleKeyPress.bind(this)
+    // this.handleChange = this.handleChange.bind(this)
     this.state = {
       value: this.props.value
     }
   }
 
   handleChange() {
-    this.props.onChange()
+    // this.props.onChange()
   }
 
   handleKeyPress() {

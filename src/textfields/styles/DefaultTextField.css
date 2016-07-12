@@ -4,6 +4,8 @@
 .root {
   display: block;
   position: relative;
+  width: 100%;
+  min-width: 20em;
 }
 
 .error {

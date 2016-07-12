@@ -3,14 +3,19 @@ import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import Faker from 'Faker'
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
 
 const formStyle = {'width': '30em', 'margin': '0 auto', 'padding-bottom': '20em'}
 
-storiesOf('Autocomplete').addWithInfo(
+storiesOf('Autocomplete')
+  .addDecorator(centered)
+  .addWithRole(
   'Default',
   `
     Default textfield
   `,
+  'component:@sanity/components/autocomplete/default',
   () => {
     return (
       <form style={formStyle}>
@@ -18,13 +23,14 @@ storiesOf('Autocomplete').addWithInfo(
       </form>
     )
   },
-  {inline: true, propTables: [Autocomplete]}
+  {propTables: [Autocomplete]}
 )
-.addWithInfo(
+.addWithRole(
   'Default with suggestions',
   `
     Default textfield
   `,
+  'component:@sanity/components/autocomplete/default',
   () => {
 
     const suggestions = range(10).map((item, i) => {
@@ -39,5 +45,5 @@ storiesOf('Autocomplete').addWithInfo(
       </form>
     )
   },
-  {inline: true, propTables: [Autocomplete]}
+  {propTables: [Autocomplete]}
 )

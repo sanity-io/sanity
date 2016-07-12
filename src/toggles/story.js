@@ -4,50 +4,49 @@ import ToggleButtons from 'component:@sanity/components/toggles/buttons'
 import Switch from 'component:@sanity/components/toggles/switch'
 import Checkbox from 'component:@sanity/components/toggles/checkbox'
 
-storiesOf('Toggles').addWithInfo(
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
+
+storiesOf('Toggles')
+.addDecorator(centered)
+.addWithRole(
   'Switch (off)',
-  `
-    Role: component:@sanity/components/toggles/switch
-  `,
+  '',
+  'component:@sanity/components/toggles/switch',
   () => {
     return (
       <Switch onChange={action('change')} label="Switch is off" />
     )
   },
-  {inline: true, propTables: [Switch]}
+  {propTables: [Switch]}
 )
-.addWithInfo(
+.addWithRole(
   'Switch (on)',
-  `
-    Role: component:@sanity/components/toggles/switch
-  `,
+  '',
+  'component:@sanity/components/toggles/switch',
   () => {
     return (
-      <div>
-      <Switch checked label="Switch is on" />
-      </div>
+      <Switch checked label="Switch is on" onClick={linkTo('Switch (off)')} />
     )
   },
-  {inline: true, propTables: [Switch]}
+  {propTables: [Switch]}
 )
-.addWithInfo(
+.addWithRole(
   'Switch (disabled)',
-  `
-    Role: component:@sanity/components/toggles/switch
-  `,
+  '',
+  'component:@sanity/components/toggles/switch',
   () => {
     return (
       <Switch label="This checkbox is disabled" disabled />
     )
   },
-  {inline: true, propTables: [Switch]}
+  {propTables: [Switch]}
 )
 
-.addWithInfo(
+.addWithRole(
   'Checkbox',
-  `
-    Role: component:@sanity/components/toggles/checkbox
-  `,
+  '',
+  'component:@sanity/components/toggles/checkbox',
   () => {
     return (
       <div>
@@ -55,18 +54,16 @@ storiesOf('Toggles').addWithInfo(
         <Checkbox label="This is a disabled checkbox" disabled />
         <Checkbox label="This is a checked checkbox" checked />
         <Checkbox label="This is a disabled checked checkbox" checked disabled />
-
       </div>
     )
   },
-  {inline: true, propTables: [Checkbox]}
+  {propTables: [Checkbox]}
 )
 
-.addWithInfo(
+.addWithRole(
   'Buttons',
-  `
-    Role: component:@sanity/components/toggles/buttons
-  `,
+  '',
+  'component:@sanity/components/toggles/buttons',
   () => {
     const items = [
       {
@@ -81,7 +78,6 @@ storiesOf('Toggles').addWithInfo(
         title: 'The Bad',
         default: true,
         action() {
-          console.log('clicked the bad')
           action('Clicked')
         },
         icon: false
@@ -96,10 +92,8 @@ storiesOf('Toggles').addWithInfo(
       }
     ]
     return (
-      <div>
-        <ToggleButtons items={items} label="Select something" />
-      </div>
+      <ToggleButtons items={items} label="Select something" />
     )
   },
-  {inline: true, propTables: [ToggleButtons]}
+  {propTables: [ToggleButtons]}
 )

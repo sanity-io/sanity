@@ -60,5 +60,5 @@ storiesOf('Typography').addWithInfo(
       </article>
     )
   },
-  {inline: true}
+  {inline: false}
 )

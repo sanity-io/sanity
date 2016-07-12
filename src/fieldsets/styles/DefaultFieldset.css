@@ -7,6 +7,7 @@
   padding: 0;
   margin-bottom: var(--large-padding);
   border: 0;
+  max-width: 38em;
 
   /* nested inside itself */
   & & {
@@ -36,6 +37,8 @@
   composes: heading1 from 'style:@sanity/base/theme/typography/headings';
   display: block;
   width: 100%;
+  margin: 0;
+  padding: 0;
 
   /* Should compose heading3, but it is not allowed */
   @nest .root .root & {

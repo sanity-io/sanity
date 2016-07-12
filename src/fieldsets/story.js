@@ -3,43 +3,40 @@ import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
 import Faker from 'Faker'
 
-storiesOf('Fieldsets').addWithInfo(
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
+
+storiesOf('Fieldsets')
+  .addDecorator(centered)
+  .addWithRole(
   'Default',
   `
     The default fieldset is used to gather a collection of fields.
-
-    Role
-    component:@sanity/components/fieldsets/default
   `,
+  'component:@sanity/components/fieldsets/default',
   () => {
     return (
-      <form>
-        <Fieldset legend="This is the legend" description="This is the description">
-          Put content here
-        </Fieldset>
-      </form>
+      <Fieldset legend="This is the legend" description={Faker.Lorem.paragraphs(1)}>
+        Put content here
+      </Fieldset>
     )
   },
-  {inline: true, propTables: [Fieldset]}
+  {inline: false, propTables: [Fieldset]}
 )
-.addWithInfo(
+.addWithRole(
   'Nested',
   `
     Fieldsets supports beeing inside itselfs, and get new styling!
-
-    Role
-    component:@sanity/components/fieldsets/default
   `,
+  'component:@sanity/components/fieldsets/default',
   () => {
     return (
-      <form style={{'max-width': '50rem', 'margin': '1rem auto'}}>
-        <Fieldset legend="This is the legend" description="This is the description">
-          <Fieldset legend="This is the legend in a nested fieldset" description="This is the description">
-            A nested fieldset
-          </Fieldset>
+      <Fieldset legend="This is the legend" description={Faker.Lorem.paragraphs(1)}>
+        <Fieldset legend="This is the legend in a nested fieldset" description={Faker.Lorem.paragraphs(1)}>
+          A nested fieldset
         </Fieldset>
-      </form>
+      </Fieldset>
     )
   },
-  {inline: true, propTables: [Fieldset]}
+  {inline: false, propTables: [Fieldset]}
 )

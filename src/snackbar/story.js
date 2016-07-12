@@ -2,60 +2,59 @@ import React from 'react'
 import Snackbar from 'component:@sanity/components/snackbar/default'
 import {storiesOf, action} from 'component:@sanity/storybook'
 
-storiesOf('Snackbar').addWithInfo(
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
+
+storiesOf('Snackbar')
+.addWithRole(
   'Snackbar (info)',
   `
     Default snackbar.
-    ### Role
-    "component:@sanity/components/buttons/default"
   `,
+  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar>This is the message</Snackbar>
   ),
-  {inline: true, propTables: [Snackbar]}
-).addWithInfo(
+  {propTables: [Snackbar]}
+).addWithRole(
   'Snackbar (warning)',
   `
-    Default snackbar.
-    ### Role
-    "component:@sanity/components/buttons/default"
+    Used to give a warning
   `,
+  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="warning">This is the message</Snackbar>
   ),
-  {inline: true, propTables: [Snackbar]}
+  {propTables: [Snackbar]}
 )
-.addWithInfo(
+.addWithRole(
   'Snackbar (success)',
   `
     Default snackbar.
-    ### Role
-    "component:@sanity/components/buttons/default"
   `,
+  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="success">This is the success message</Snackbar>
   ),
-  {inline: true, propTables: [Snackbar]}
+  {propTables: [Snackbar]}
 )
-.addWithInfo(
+.addWithRole(
   'Snackbar (error)',
   `
     Default snackbar.
-    ### Role
-    "component:@sanity/components/buttons/default"
   `,
+  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="error">This is the error message</Snackbar>
   ),
   {inline: true, propTables: [Snackbar]}
 )
-.addWithInfo(
+.addWithRole(
   'Snackbar (with action)',
   `
     Default snackbar.
-    ### Role
-    "component:@sanity/components/buttons/default"
   `,
+  'component:@sanity/components/snackbar/default',
   () => {
     const myAction = {
       title: 'Undo',
@@ -67,5 +66,5 @@ storiesOf('Snackbar').addWithInfo(
       </Snackbar>
     )
   },
-  {inline: true, propTables: [Snackbar]}
+  {propTables: [Snackbar]}
 )

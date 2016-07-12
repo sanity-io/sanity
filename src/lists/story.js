@@ -4,14 +4,18 @@ import DefaultList from 'component:@sanity/components/lists/default'
 import {range} from 'lodash'
 import Faker from 'Faker'
 
-storiesOf('Lists').addWithInfo(
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
+
+
+storiesOf('Lists')
+.addDecorator(centered)
+.addWithRole(
   'Default',
   `
     The default fieldset is used to gather a collection of fields.
-
-    Role
-    component:@sanity/components/fieldsets/default
   `,
+  'component:@sanity/components/fieldsets/default',
   () => {
     const items = range(10).map((item, i) => {
       return {
@@ -23,5 +27,5 @@ storiesOf('Lists').addWithInfo(
       <DefaultList items={items} />
     )
   },
-  {inline: true, propTables: [DefaultList]}
+  {propTables: [DefaultList]}
 )

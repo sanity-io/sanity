@@ -3,14 +3,17 @@ import Menu from 'component:@sanity/components/menus/default'
 import {storiesOf, action} from 'component:@sanity/storybook'
 import FaBeer from 'react-icons/lib/fa/beer'
 
-storiesOf('Menus').addWithInfo(
+import centered from '../storybook-addons/centered.js'
+import role from '../storybook-addons/role.js'
+
+storiesOf('Menus')
+.addDecorator(centered)
+.addWithRole(
   'Menu',
   `
-    ### Role
-    component:@sanity/components/menus/default
-
-
+    Default menu
   `,
+  'component:@sanity/components/menus/default',
   () => {
     const items = [
       {
@@ -34,21 +37,21 @@ storiesOf('Menus').addWithInfo(
       }
     ]
     return (
-      <div style={{width: '300px', position: 'relative', 'margin-bottom': '12em', clear: 'both', border: '1px solid black', height: '2rem'}}>
+      <div style={{
+        width: '300px',
+        position: 'relative'}}>
         <Menu items={items} opened />
       </div>
     )
   },
-  {inline: true, propTables: [Menu]}
+  {propTables: [Menu]}
 )
-.addWithInfo(
+.addWithRole(
   'Menu (with icons)',
   `
-    ### Role
-    component:@sanity/components/menus/default
-
-
+    ## Using icons
   `,
+  'component:@sanity/components/menus/default',
   () => {
     const items = [
       {
@@ -76,7 +79,9 @@ storiesOf('Menus').addWithInfo(
       }
     ]
     return (
-      <div style={{width: '300px', position: 'relative', 'margin-bottom': '12em', clear: 'both', border: '1px solid black', height: '2rem'}}>
+      <div style={{
+        width: '300px',
+        position: 'relative'}}>
         <Menu items={items} opened />
       </div>
     )
