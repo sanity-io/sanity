@@ -23,7 +23,7 @@ storiesOf('Buttons').addWithInfo(
         With icon
       </Button>
       <Button onClick={action('clicked')} colored icon={FaBeer}>
-        With icon
+        Colored with icon
       </Button>
       <Button onClick={action('clicked')} kind="danger" icon={FaBeer} inverted>
         Danger, inverted & icon

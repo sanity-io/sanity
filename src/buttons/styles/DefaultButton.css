@@ -19,6 +19,7 @@
   position: relative;
   text-transform: uppercase;
   padding: 0.8em 1em;
+  font-size: var(--font-size-xsmall);
   outline: none;
   cursor: pointer;
   background-color: var(--default-button-color);
@@ -28,6 +29,7 @@
 }
 
 .colored {
+  composes: root;
   background-color: var(--brand-primary);
   color: #fff;
 }
@@ -38,6 +40,7 @@
 }
 
 .inverted {
+  composes: root;
   border: 1px solid var(--gray-base);
   background-color: transparent;
   border-color: var(--gray-base);

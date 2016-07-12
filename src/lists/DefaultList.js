@@ -8,29 +8,35 @@ export default class DefaultList extends React.Component {
       PropTypes.shape({
         title: PropTypes.string,
         content: PropTypes.node,
-        id: PropTypes.string,
+        key: PropTypes.string,
         extraContent: PropTypes.node,
         icon: PropTypes.node
       })
     ),
+    onSelect: PropTypes.func,
     selectable: PropTypes.bool,
     loading: PropTypes.bool,
+    children: PropTypes.node,
     className: PropTypes.string,
     layout: PropTypes.oneOf(['media', 'block', 'string'])
   }
 
+  constructor(context, props) {
+    super(context, props)
+  }
+
   render() {
 
-    const {items, children, layout} = this.props
+    const {items, children, layout, className} = this.props
 
     return (
-      <div className={styles.root}>
+      <div className={`${className} ${styles.root}`}>
         <div className={styles.inner}>
           <ul className={styles.list}>
             {
-              !children && items && items.map(item => {
+              !children && items && items.map((item, i) => {
                 return (
-                  <ListItem layout={layout} key={item.id} title={item.title} icon={item.icon}>
+                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.props.onSelect}>
                     {item.content}
                   </ListItem>
                 )

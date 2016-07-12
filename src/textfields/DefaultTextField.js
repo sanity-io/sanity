@@ -33,7 +33,8 @@ export default class DefaultTextField extends React.Component {
   }
 
   handleFocus() {
-    this.props.onFocus()
+    console.log('Focus')
+    // this.props.onFocus()
   }
 
   render() {

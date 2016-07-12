@@ -1,6 +1,14 @@
 {
   "roles": [
     {
+      "name": "component:@sanity/components/autocomplete/default",
+      "description": "Default autocomplete"
+    },
+    {
+      "name": "style:@sanity/components/autocomplete/default",
+      "description": "Default autocomplete styling"
+    },
+    {
       "name": "component:@sanity/components/buttons/default",
       "description": "Default button"
     },
@@ -137,6 +145,11 @@
       "description": "Default list item styling"
     },
     {
+      "implements": "component:@sanity/components/autocomplete/default",
+      "srcPath": "./src/autocomplete/DefaultAutocomplete.js",
+      "path": "./lib/autocomplete/DefaultAutocomplete.js"
+    },
+    {
       "implements": "component:@sanity/components/buttons/default",
       "srcPath": "./src/buttons/DefaultButton.js",
       "path": "./lib/buttons/DefaultButton.js"
@@ -207,7 +220,11 @@
       "path": "./lib/snackbar/DefaultSnackbar.js"
     },
 
-
+    {
+      "implements": "style:@sanity/components/autocomplete/default",
+      "srcPath": "./src/autocomplete/styles/DefaultAutocomplete.css",
+      "path": "./lib/autocomplete/styles/DefaultAutocomplete.css"
+    },
     {
       "implements": "style:@sanity/components/buttons/default",
       "srcPath": "./src/buttons/styles/DefaultButton.css",
@@ -357,6 +374,16 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/textfields/story.js",
       "path": "./lib/textfields/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/typography/story.js",
+      "path": "./lib/typography/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/autocomplete/story.js",
+      "path": "./lib/autocomplete/story.js"
     }
   ]
 }

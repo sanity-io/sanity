@@ -7,10 +7,13 @@
   background-color: var(--default-button-color);
   height: 4rem;
   width: 4rem;
+  line-height: 4rem;
   border: none;
   color: #000;
   outline: none;
   overflow: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 .colored {
@@ -21,11 +24,12 @@
 
 .content {
   position: absolute;
+  display: inline-block;
   top: 0;
   left: 0;
-  font-size: 3rem;
   text-align: center;
   width: 100%;
+  font-size: 2rem;
 }
 
 .fixed {
