@@ -1,3 +1,0 @@
-:global(body) {
-  composes: base from 'style:@sanity/base/theme/typography/text-blocks';
-}
