@@ -25,6 +25,34 @@ storiesOf('Autocomplete')
   },
   {propTables: [Autocomplete]}
 )
+
+storiesOf('Autocomplete')
+  .addDecorator(centered)
+  .addWithRole(
+  'Local search',
+  `
+    Default textfield
+  `,
+  'component:@sanity/components/autocomplete/default',
+  () => {
+    const items = range(100).map((item, i) => {
+      const width = Math.round(Math.random() * 100)
+      const height = Math.round(Math.random() * 100)
+      return {
+        id: `${i}`,
+        title: Faker.Name.findName(),
+        image: `${Faker.Image.imageUrl(width, height)}?${i}`,
+      }
+    })
+    return (
+      <form style={formStyle}>
+        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" items={items}/>
+      </form>
+    )
+  },
+  {propTables: [Autocomplete]}
+)
+
 .addWithRole(
   'Default with suggestions',
   `

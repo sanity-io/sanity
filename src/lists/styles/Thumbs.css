@@ -1,0 +1,34 @@
+@use postcss-cssnext;
+
+.root {
+  display: block;
+}
+
+.inner {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  @nest .isScrollable & {
+    overflow: scroll;
+    overflow-x: hidden;
+    max-height: 70vh;
+  }
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  align-content: flex-start;
+  justify-content: flex-start;
+}
+
+.item {
+  display: block;
+  list-style: none;
+  flex-grow: 1;
+  flex-basis: 7em;
+  padding: 0.25em;
+}

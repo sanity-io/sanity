@@ -24,7 +24,6 @@ export default class DefaultListItem extends React.Component {
   }
 
   handleClick(id) {
-    console.log('id', this.props.id)
     this.props.onClick(this.props.id)
     this.props.action()
   }

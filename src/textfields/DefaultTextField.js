@@ -20,7 +20,7 @@ export default class DefaultTextField extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    // this.handleKeyPress = this.handleKeyPress.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
     // this.handleChange = this.handleChange.bind(this)
     this.state = {
       value: this.props.value
@@ -31,8 +31,9 @@ export default class DefaultTextField extends React.Component {
     // this.props.onChange()
   }
 
-  handleKeyPress() {
-    this.props.onKeyPress()
+  handleKeyPress(event) {
+    // console.log('defaultTextFieldPress', event)
+    // this.props.onKeyPress(event)
   }
 
   handleFocus() {

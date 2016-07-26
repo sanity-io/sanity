@@ -145,6 +145,22 @@
       "description": "Default list item styling"
     },
     {
+      "name": "component:@sanity/components/lists/thumbs",
+      "description": "Thumbs list"
+    },
+    {
+      "name": "style:@sanity/components/lists/thumbs",
+      "description": "Styling for thumbs list"
+    },
+    {
+      "name": "component:@sanity/components/lists/items/thumb",
+      "description": "Thumb item"
+    },
+    {
+      "name": "style:@sanity/components/lists/items/thumb",
+      "description": "Thumb item styling"
+    },
+    {
       "implements": "component:@sanity/components/autocomplete/default",
       "srcPath": "./src/autocomplete/DefaultAutocomplete.js",
       "path": "./lib/autocomplete/DefaultAutocomplete.js"
@@ -324,6 +340,26 @@
       "implements": "style:@sanity/components/lists/items/default",
       "srcPath": "./src/lists/items/styles/DefaultItem.css",
       "path": "./lib/lists/items/styles/DefaultItem.css"
+    },
+    {
+      "implements": "component:@sanity/components/lists/thumbs",
+      "srcPath": "./src/lists/Thumbs.js",
+      "path": "./lib/lists/Thumbs.js"
+    },
+    {
+      "implements": "style:@sanity/components/lists/thumbs",
+      "srcPath": "./src/lists/styles/Thumbs.css",
+      "path": "./lib/lists/styles/Thumbs.css"
+    },
+    {
+      "implements": "component:@sanity/components/lists/items/thumb",
+      "srcPath": "./src/lists/items/Thumb.js",
+      "path": "./lib/lists/items/Thumb.js"
+    },
+    {
+      "implements": "style:@sanity/components/lists/items/thumb",
+      "srcPath": "./src/lists/items/styles/Thumb.css",
+      "path": "./lib/lists/items/styles/Thumb.css"
     },
     {
       "implements": "story:@sanity/base/component",

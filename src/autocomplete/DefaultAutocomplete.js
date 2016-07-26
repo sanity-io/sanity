@@ -14,6 +14,11 @@ export default class DefaultAutocomplete extends React.Component {
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
     isOpen: PropTypes.bool,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string
+      })
+    ),
     suggestions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string
@@ -36,8 +41,8 @@ export default class DefaultAutocomplete extends React.Component {
     }
   }
 
-  handleKeyPress(event) {
-    console.log('press', event)
+  handleKeyPress() {
+    console.log('press')
   }
 
   handleSelect(id) {
@@ -48,7 +53,7 @@ export default class DefaultAutocomplete extends React.Component {
   }
 
   render() {
-    const {suggestions} = this.props
+    const {suggestions} = this.state.suggestions || this.props
 
     return (
       <div className={`${this.state.isOpen ? styles.opened : styles.closed}`}>

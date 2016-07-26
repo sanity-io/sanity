@@ -1,0 +1,23 @@
+@import "style:@sanity/base/theme/variables";
+
+.root {
+  display: block;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.info {
+  position: absolute;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  bottom: 0;
+  font-size: var(--font-size-tiny);
+  color: #fff;
+  padding: 0.25em;
+}
