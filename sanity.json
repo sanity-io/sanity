@@ -420,6 +420,11 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/autocomplete/story.js",
       "path": "./lib/autocomplete/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/loading/story.js",
+      "path": "./lib/loading/story.js"
     }
   ]
 }

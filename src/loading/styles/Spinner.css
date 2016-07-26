@@ -1,17 +1,4 @@
 @use postcss-cssnext;
-@use postcss-font-awesome;
-
-/* Hack to make font awsome work before we have asset management */
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?v=4.6.3');
-  src:
-    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'),
-    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'),
-    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'),
-    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'),
-    url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
-}
 
 @keyframes spin {
   0% {
@@ -25,14 +12,15 @@
 .root {
   height: 1rem;
   width: 1rem;
-  display: inline-block;
-  border: 1px solid red;
-  background-color: yellow;
-  font-awesome: spinner;
-  margin-right: 0.5em;
+  display: block;
+}
+
+.root svg {
   transform-origin: center center;
   animation-name: spin;
   animation-duration: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  height: 1em;
+  width: 1em;
 }
