@@ -1,0 +1,20 @@
+@use postcss-cssnext;
+
+.root {
+  width: 100%;
+}
+
+.list {
+  clear: both;
+  max-height: 15em;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.toggle {
+  float: right;
+}
+
+.search {
+  float: left;
+}

@@ -1,8 +1,11 @@
 @import "style:@sanity/base/theme/variables";
 
 .root {
-  display: block;
+  display: flex;
   position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .image {
@@ -20,4 +23,8 @@
   font-size: var(--font-size-tiny);
   color: #fff;
   padding: 0.25em;
+}
+
+.spinner {
+  display: block;
 }

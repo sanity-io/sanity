@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/items/thumb'
 
+import Spinner from 'component:@sanity/components/loading/spinner'
+
 export default class Thumb extends React.Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
@@ -20,12 +22,27 @@ export default class Thumb extends React.Component {
 
   static defaultProps = {
     onClick() {},
-    action() {}
+    action() {},
+    height: 100,
+    width: 133
   }
 
   constructor(context, props) {
     super(context, props)
     this.handleClick = this.handleClick.bind(this)
+    this.state = {
+      loading: true
+    }
+  }
+
+  componentDidMount() {
+    const image = new Image()
+    image.src = this.props.image
+    image.onload = () => {
+      this.setState({
+        loading: false
+      })
+    }
   }
 
   handleClick(id) {
@@ -43,6 +60,14 @@ export default class Thumb extends React.Component {
     return (
       <div className={rootStyles} onClick={this.handleClick}>
         <div className={styles.inner}>
+
+          {
+            this.state.loading
+            && <div className={styles.spinner}>
+              <Spinner />
+            </div>
+          }
+
           <img className={styles.image} src={image} />
           {
             showInfo && <div className={styles.info}>

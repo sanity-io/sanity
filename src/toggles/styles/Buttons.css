@@ -1,7 +1,7 @@
 @import "style:@sanity/base/theme/variables";
 
 .root {
-  margin: 1rem;
+  display: block;
 }
 
 .label {

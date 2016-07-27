@@ -161,6 +161,14 @@
       "description": "Thumb item styling"
     },
     {
+      "name": "component:@sanity/components/referencepickers/default",
+      "description": "Reference picker"
+    },
+    {
+      "name": "style:@sanity/components/referencepickers/default",
+      "description": "Reference picker styling"
+    },
+    {
       "implements": "component:@sanity/components/autocomplete/default",
       "srcPath": "./src/autocomplete/DefaultAutocomplete.js",
       "path": "./lib/autocomplete/DefaultAutocomplete.js"
@@ -359,7 +367,17 @@
     {
       "implements": "style:@sanity/components/lists/items/thumb",
       "srcPath": "./src/lists/items/styles/Thumb.css",
-      "path": "./lib/lists/items/styles/Thumb.css"
+      "path":    "./lib/lists/items/styles/Thumb.css"
+    },
+    {
+      "implements": "component:@sanity/components/referencepickers/default",
+      "srcPath": "./src/referencepickers/ReferencePickerDefault.js",
+      "path":    "./lib/referencepickers/ReferencePickerDefault.js"
+    },
+    {
+      "implements": "style:@sanity/components/referencepickers/default",
+      "srcPath": "./src/referencepickers/styles/ReferencePickerDefault.css",
+      "path":    "./lib/referencepickers/styles/ReferencePickerDefault.css"
     },
     {
       "implements": "story:@sanity/base/component",
@@ -425,6 +443,11 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/loading/story.js",
       "path": "./lib/loading/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/referencepickers/story.js",
+      "path": "./lib/referencepickers/story.js"
     }
   ]
 }
