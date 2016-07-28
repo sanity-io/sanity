@@ -16,7 +16,8 @@
 }
 
 :root {
-  --dialog-padding: 1rem;
+  --dialog-padding: var(--small-padding);
+  --dialog-header-height: 2.5em;
 }
 
 .root {
@@ -46,10 +47,23 @@
   composes: root;
 }
 
+.header {
+  background-color: var(--brand-primary);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--dialog-header-height);
+}
+
 .inner {
   padding: var(--dialog-padding);
   position: relative;
-  height: calc(100% - var(--dialog-padding) * 2);
+  height: 100%;
+  @nest .hasHeader & {
+    height: calc(100% - var(--dialog-header-height) - var(--dialog-padding) * 2);
+    margin-top: var(--dialog-header-height);
+  }
 }
 
 .content {
@@ -57,11 +71,13 @@
   height: calc(100% - var(--dialog-padding) * 2 - 4rem);
 }
 
-.header {
-  background-color: var(--brand-primary);
+.title {
   height: 2rem;
-  line-height: 2rem;
+  line-height: var(--dialog-header-height);
   padding: 0 var(--dialog-padding);
+  font-size: var(--font-size-h5);
+  color: #fff;
+  margin: 0;
 }
 
 .closeButton {
@@ -72,7 +88,7 @@
   border: none;
   color: #fff;
   font-size: 1rem;
-  line-height: 2rem;
+  line-height: 1.5rem;
   outline: none;
   composes: close from 'style:@sanity/base/theme/icons';
 }
@@ -88,16 +104,4 @@
   left: 0;
   right: 0;
   padding: var(--dialog-padding);
-}
-
-.bigHeading {
-  font-size: var(--font-size-h2);
-  margin-bottom: var(--dialog-padding);
-}
-
-.bigCloseButton {
-  composes: closeButton;
-  top: var(--dialog-padding);
-  font-size: 2rem;
-  color: var(--gray-base);
 }

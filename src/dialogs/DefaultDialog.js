@@ -86,14 +86,17 @@ export default class DefaultDialog extends React.Component {
 
   render() {
     const {title, actions, isOpen, showHeader} = this.props
-    const style = isOpen ? styles.isOpen : styles.root
+    const style = `
+      ${isOpen ? styles.isOpen : styles.root}
+      ${showHeader ? styles.hasHeader : ''}
+    `
 
     return (
       <dialog className={style}>
 
         {
           showHeader && <div className={styles.header}>
-            <h1 className={styles.heading}>{title}</h1>
+            <h1 className={styles.title}>{title}</h1>
             <button className={styles.closeButton} onClick={this.handleCloseClick} />
           </div>
         }
@@ -101,10 +104,10 @@ export default class DefaultDialog extends React.Component {
         <div className={styles.inner}>
 
           {
-            !showHeader && <div>
-              <h1 className={styles.bigHeading}>{title}</h1>
-              <button className={styles.bigCloseButton} onClick={this.handleCloseClick} />
-            </div>
+            // showHeader && <div>
+            //   <h1 className={styles.title}>{title}</h1>
+            //   <button className={styles.bigCloseButton} onClick={this.handleCloseClick} />
+            // </div>
           }
 
           <div className={styles.content}>

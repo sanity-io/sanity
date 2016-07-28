@@ -70,25 +70,28 @@ export default class DefaultList extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
-          <div className={styles.search}>
-            <SearchField placeholder="Search…" />
+          <div className={styles.functions}>
+            <div className={styles.search}>
+              <SearchField placeholder="Search…" />
+            </div>
+            <div className={styles.toggle}>
+              <ToggleButtons items={toggleItems} label="View" />
+            </div>
           </div>
-          <div className={styles.toggle}>
-            <ToggleButtons items={toggleItems} label="View" />
+          <div className={styles.listContainer}>
+            {
+              this.state.view == 'list'
+              && <List items={items} scrollable className={styles.list} />
+            }
+            {
+              this.state.view == 'thumbs'
+              && <ThumbList items={items} scrollable className={styles.list} />
+            }
+            {
+              this.state.view == 'details'
+              && <div>Details view do not exist yet</div>
+            }
           </div>
-          {
-            this.state.view == 'list'
-            && <List items={items} scrollable className={styles.list} />
-          }
-          {
-            this.state.view == 'thumbs'
-            && <ThumbList items={items} scrollable className={styles.list} />
-          }
-          {
-            this.state.view == 'details'
-            && <div>Details view do not exist yet</div>
-          }
-
         </div>
       </div>
     )

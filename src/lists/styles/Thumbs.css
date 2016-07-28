@@ -10,12 +10,6 @@
   height: 100%;
 }
 
-.isScrollable {
-  overflow: scroll;
-  overflow-x: hidden;
-  max-height: 70vh;
-}
-
 .list {
   display: flex;
   flex-wrap: wrap;

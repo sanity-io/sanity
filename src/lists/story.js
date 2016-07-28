@@ -30,7 +30,9 @@ storiesOf('Lists')
       }
     })
     return (
-      <DefaultList items={items} />
+      <div style={{'max-height': '30em'}}>
+        <DefaultList items={items} />
+      </div>
     )
   },
   {propTables: [DefaultList]}
@@ -51,7 +53,9 @@ storiesOf('Lists')
       }
     })
     return (
-      <ThumbsList items={items} scrollable />
+      <div style={{'max-height': '30em'}}>
+        <ThumbsList items={items} scrollable />
+      </div>
     )
   },
   {propTables: [ThumbsList]}
@@ -95,7 +99,9 @@ storiesOf('Lists')
       }
     })
     return (
-      <ThumbsList items={items} scrollable />
+      <div style={{'max-height': '30em'}}>
+        <ThumbsList items={items} scrollable />
+      </div>
     )
   },
   {propTables: [ThumbsList]}
@@ -116,7 +122,9 @@ storiesOf('Lists')
       }
     })
     return (
-      <ThumbsList items={items} scrollable showInfo />
+      <div style={{'max-height': '30em'}}>
+        <ThumbsList items={items} scrollable showInfo />
+      </div>
     )
   },
   {propTables: [ThumbsList]}

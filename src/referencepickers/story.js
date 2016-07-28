@@ -20,7 +20,7 @@ storiesOf('Reference picker')
   `,
   'component:@sanity/components/referencepickers/default',
   () => {
-    const items = range(500).map((item, i) => {
+    const items = range(50).map((item, i) => {
       return {
         id: `${i}`,
         title: Faker.Name.findName(),
@@ -28,7 +28,9 @@ storiesOf('Reference picker')
       }
     })
     return (
-      <ReferencePickerDefault items={items} onSearch={action('Search')} />
+      <div style={{'height': '30em'}}>
+        <ReferencePickerDefault items={items} onSearch={action('Search')} />
+      </div>
     )
   },
   {propTables: [ReferencePickerDefault]}
@@ -40,9 +42,25 @@ storiesOf('Reference picker')
   `,
   'component:@sanity/components/referencepickers/default',
   () => {
+    const items = range(100).map((item, i) => {
+      return {
+        id: `${i}`,
+        title: Faker.Name.findName(),
+        image: `${Faker.Image.imageUrl()}?${i}`
+      }
+    })
+    const actions = [
+      {
+        title: 'Finished',
+        id: '1',
+        action: () => {
+          action('Ok, Close')
+        }
+      }
+    ]
     return (
-      <DefaultDialog title="Reference picker" onClose={action('Close')} isOpen>
-        <ReferencePickerDefault />
+      <DefaultDialog title="Reference picker" onClose={action('Close')} isOpen showHeader actions={actions}>
+        <ReferencePickerDefault items={items} />
       </DefaultDialog>
     )
   },

@@ -45,6 +45,24 @@ storiesOf('Dialogs')
   {propTables: [DefaultDialog]}
 )
 .addWithRole(
+  'Default (with header)',
+  '',
+  'component:@sanity/components/dialogs/default',
+  () => {
+    return (
+      <div>
+        <Button>Open default dialog</Button>
+        <DefaultDialog title={Faker.Lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
+          This is the content
+          {Faker.Lorem.paragraphs(2)}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {propTables: [DefaultDialog]}
+)
+
+.addWithRole(
   'Fullscreen',
   '',
   'component:@sanity/components/dialogs/fullscreen',
