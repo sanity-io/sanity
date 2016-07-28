@@ -13,16 +13,18 @@
   --font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
   --font-family-base: var(--font-family-sans-serif);
 
-  --font-size-base: 16px;
-  --font-size-large: 1.2rem;
-  --font-size-small: 0.85rem;
+  --font-size-base: 1rem;
+  --font-size-large: 1.25rem;
+  --font-size-small: 0.875rem;
+  --font-size-xsmall: 0.75rem;
+  --font-size-tiny: 0.625rem;
 
-  --font-size-h1: 2.6rem;
-  --font-size-h2: 2.15rem;
-  --font-size-h3: 1.8rem;
+  --font-size-h1: 2.625rem;
+  --font-size-h2: 2rem;
+  --font-size-h3: 1.75rem;
   --font-size-h4: 1.25rem;
   --font-size-h5: var(--font-size-base);
-  --font-size-h6: 0.85rem;
+  --font-size-h6: 0.875rem;
 
   --line-height-base: 1.428571429; /* 20/14 */
   --line-height-computed: calc(var(--font-size-base) * var(--line-height-base)));

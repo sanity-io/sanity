@@ -8,31 +8,43 @@
   font-weight: var(--headings-font-weight);
   line-height: var(--headings-line-height);
   color: var(--headings-color);
+  margin: 0;
+  padding: 0;
 }
 
 .heading1 {
   composes: root;
-  font-size: var(--font-size-h2);
+  font-size: var(--font-size-h1);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .heading2 {
   composes: root;
-  font-size: var(--font-size-h3);
-  padding-bottom: 0.5em;
+  font-size: var(--font-size-h2);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .heading3 {
   composes: root;
-  font-size: var(--font-size-h4);
-  padding-bottom: 0.25em;
+  font-size: var(--font-size-h3);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .heading4 {
   composes: root;
-  font-size: var(--font-size-h5);
+  text-transform: uppercase;
+  font-size: var(--font-size-h4);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .heading5 {
   composes: root;
-  font-size: var(--font-size-h6);
+  text-transform: uppercase;
+  font-size: var(--font-size-h5);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }

@@ -5,16 +5,23 @@
   display: block;
 }
 
-.base {
+.root {
   font-size: 100%;
   font-family: var(--font-family-base);
   line-height: var(--line-height-base);
   color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+.base {
+  composes: root;
 }
 
 .lead {
   composes: base;
   font-size: var(--font-size-large);
+  padding-bottom: 1rem;
 }
 
 .small {
@@ -26,6 +33,11 @@
   composes: small;
   color: var(--text-muted);
   padding-bottom: var(--small-padding);
+}
+
+.paragraph {
+  composes: base;
+  padding-bottom: 1rem;
 }
 
 .blockquote {

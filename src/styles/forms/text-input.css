@@ -4,6 +4,7 @@
 .textInput {
   border: 0;
   border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg);
   display: block;
   width: 100%;
   outline: none;
