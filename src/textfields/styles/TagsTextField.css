@@ -1,0 +1,85 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.root {
+  display: block;
+
+}
+
+.tags {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  display: inline-block;
+  background-color: var(--gray-lighter);
+  color: var(--gray-dark);
+  border: 1px solid color(var(--gray-lighter) lightness(-15%));
+  box-sizing: border-box;
+  margin-right: 0.25em;
+  padding: 0.4em 0.5em;
+  font-size: 0.7em;
+  line-height: 1em;
+  user-select: none;
+  cursor: default;
+  position: relative;
+  padding-right: 2em;
+}
+
+.clearTag {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  height: 100%;
+  font-size: 1em;
+  line-height: 1.6em;
+  width: 1.5em;
+  text-align: center;
+  &:hover {
+    color: #000;
+  }
+}
+
+.inner {
+  line-height: 1em;
+}
+
+.content {
+  composes: input from 'style:@sanity/components/textfields/default';
+  min-height: 2em;
+  overflow: hidden;
+  height: auto;
+  padding: 0.2em;
+  line-height: 1.5em;
+  padding-top: 0.093em;
+
+  @nest .isFocused & {
+    border-color: var(--input-border-color-focus);
+  }
+}
+
+.input {
+  display: inline-block;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1em;
+  width: 2em;
+  margin-top: 0.2em;
+  transform: translateY(0.15em);
+  padding-left: 0.1em;
+  &:focus {
+    outline: none;
+  }
+}
+
+.label {
+  composes: label from 'style:@sanity/components/textfields/default';
+  display: block;
+  clear: both;
+}

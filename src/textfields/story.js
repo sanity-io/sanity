@@ -3,6 +3,7 @@ import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
 import DefaultTextField from 'component:@sanity/components/textfields/default'
 import SearchTextField from 'component:@sanity/components/textfields/search'
+import TagsTextField from 'component:@sanity/components/textfields/tags'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
@@ -75,4 +76,47 @@ storiesOf('Textfields')
     )
   },
   {propTables: [SearchTextField]}
+)
+.addWithRole(
+  'Tags',
+  `
+    Default tags
+  `,
+  'component:@sanity/components/textfields/tags',
+  () => {
+    const tags = ['Test', 'Sanity']
+
+    return (
+      <TagsTextField
+        label="Tags"
+        placeholder="This is the placeholder"
+        tags={tags}
+        addTag={action('Add tag')}
+        removeTag={action('Remove tag')}
+      />
+    )
+  },
+  {propTables: [TagsTextField]}
+)
+
+.addWithRole(
+  'Tags (a lot of)',
+  `
+    Default tags
+  `,
+  'component:@sanity/components/textfields/tags',
+  () => {
+    const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
+
+    return (
+      <TagsTextField
+        label="Tags"
+        placeholder="This is the placeholder"
+        tags={tags}
+        addTag={action('Add tag')}
+        removeTag={action('Remove tag')}
+      />
+    )
+  },
+  {propTables: [TagsTextField]}
 )
