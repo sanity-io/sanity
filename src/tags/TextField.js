@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 
-import DefaultTextField from 'component:@sanity/components/textfields/default'
-import styles from 'style:@sanity/components/textfields/tags'
+import styles from 'style:@sanity/components/tags/textfield'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {
@@ -41,10 +40,12 @@ export default class TagsTextField extends React.Component {
   }
 
   addTag(title) {
-    console.log('new tag')
+    console.log('New tag', title)
+    this.props.addTag(title)
   }
 
   removeTag(i) {
+    console.log('Remove tag', i)
     this.props.removeTag(i)
   }
 
@@ -62,20 +63,16 @@ export default class TagsTextField extends React.Component {
     const value = this._input.value
 
     if (event.key == 'Enter') {
-      console.log('Create tag')
-      this.props.addTag(value)
+      this.addTag(value)
       this._input.value = ''
     }
   }
 
   handleSetFocus() {
-    console.log('setting focus')
-    console.log('_input', this._input)
     this._input.focus()
   }
 
   handleFocus() {
-    console.log('handleFocus')
     this.setState({
       isFocused: true
     })
@@ -96,7 +93,7 @@ export default class TagsTextField extends React.Component {
           <div className={styles.content} onClick={this.handleSetFocus}>
             <ul className={styles.tags}>
               {
-                tags.map((tag, i) => {
+                tags && tags.map((tag, i) => {
                   return (
                     <li key={i} className={styles.tag}>
                       {tag}

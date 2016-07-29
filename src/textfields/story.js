@@ -3,10 +3,53 @@ import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
 import DefaultTextField from 'component:@sanity/components/textfields/default'
 import SearchTextField from 'component:@sanity/components/textfields/search'
-import TagsTextField from 'component:@sanity/components/textfields/tags'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
+
+class DefaultTextFieldImplementation extends React.Component {
+
+  constructor(...args) {
+    super(...args)
+
+    this.addTag = this.addTag.bind(this)
+    this.removeTag = this.removeTag.bind(this)
+
+    this.state = {
+      tags: this.props.tags
+    }
+  }
+
+  addTag(tag) {
+    action('Add tag')
+    this.setState({
+      tags: this.state.tags.push(tag)
+    })
+    console.log('adding tag', tag, this.state.tags)
+  }
+
+  removeTag(i) {
+    action('Remove tag')
+    console.log('Removing tag', this.state.tags[i], i, this.state.tags)
+    this.setState({
+      tags: this.state.tags[i].splice(i, 1)
+    })
+  }
+
+  render() {
+    return (
+      <TagsTextField
+        label="Tags"
+        placeholder="This is the placeholder"
+        tags={this.state.tags}
+        addTag={this.addTag}
+        removeTag={this.removeTag}
+      />
+    )
+  }
+}
+
+
 
 storiesOf('Textfields')
   .addDecorator(centered)
@@ -76,47 +119,4 @@ storiesOf('Textfields')
     )
   },
   {propTables: [SearchTextField]}
-)
-.addWithRole(
-  'Tags',
-  `
-    Default tags
-  `,
-  'component:@sanity/components/textfields/tags',
-  () => {
-    const tags = ['Test', 'Sanity']
-
-    return (
-      <TagsTextField
-        label="Tags"
-        placeholder="This is the placeholder"
-        tags={tags}
-        addTag={action('Add tag')}
-        removeTag={action('Remove tag')}
-      />
-    )
-  },
-  {propTables: [TagsTextField]}
-)
-
-.addWithRole(
-  'Tags (a lot of)',
-  `
-    Default tags
-  `,
-  'component:@sanity/components/textfields/tags',
-  () => {
-    const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
-
-    return (
-      <TagsTextField
-        label="Tags"
-        placeholder="This is the placeholder"
-        tags={tags}
-        addTag={action('Add tag')}
-        removeTag={action('Remove tag')}
-      />
-    )
-  },
-  {propTables: [TagsTextField]}
 )

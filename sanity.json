@@ -81,11 +81,11 @@
       "description": "Search field styling"
     },
     {
-      "name": "component:@sanity/components/textfields/tags",
+      "name": "component:@sanity/components/tags/textfield",
       "description": "Text field to input tags"
     },
     {
-      "name": "style:@sanity/components/textfields/tags",
+      "name": "style:@sanity/components/tags/textfield",
       "description": "Styling for text field to input tags"
     },
     {
@@ -227,9 +227,9 @@
       "path": "./lib/textfields/SearchField.js"
     },
     {
-      "implements":  "component:@sanity/components/textfields/tags",
-      "srcPath": "./src/textfields/TagsTextField.js",
-      "path": "./lib/textfields/TagsTextField.js"
+      "implements":  "component:@sanity/components/tags/textfield",
+      "srcPath": "./src/tags/TextField.js",
+      "path": "./lib/tags/TextField.js"
     },
     {
       "implements":  "component:@sanity/components/dialogs/default",
@@ -308,9 +308,9 @@
       "path": "./lib/textfields/styles/SearchField.css"
     },
     {
-      "implements": "style:@sanity/components/textfields/tags",
-      "srcPath": "./src/textfields/styles/TagsTextField.css",
-      "path": "./lib/textfields/styles/TagsTextField.css"
+      "implements": "style:@sanity/components/tags/textfield",
+      "srcPath": "./src/tags/styles/TextField.css",
+      "path": "./lib/tags/styles/TextField.css"
     },
     {
       "implements":  "style:@sanity/components/dialogs/fullscreen",
@@ -466,6 +466,11 @@
       "implements": "story:@sanity/base/component",
       "srcPath": "./src/referencepickers/story.js",
       "path": "./lib/referencepickers/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "srcPath": "./src/tags/story.js",
+      "path": "./lib/tags/story.js"
     }
   ]
 }
