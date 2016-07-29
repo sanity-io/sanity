@@ -86,6 +86,7 @@ export default class TagsTextField extends React.Component {
 
   render() {
     const {tags, label} = this.props
+    console.log('render', tags)
     return (
       <div className={`${styles.root} ${this.state.isFocused ? styles.isFocused : 'noFocus'}`}>
         <label className={styles.label}>{label}</label>

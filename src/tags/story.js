@@ -20,17 +20,23 @@ class DefaultTextFieldImplementation extends React.Component {
 
   addTag(tag) {
     action('Add tag')
+    const tags = this.state.tags
+    tags.push(tag)
+    console.log('about to set new state', tags)
     this.setState({
-      tags: this.state.tags.push(tag)
+      tags: tags
     })
-    console.log('adding tag', tag, this.state.tags)
   }
 
   removeTag(i) {
     action('Remove tag')
     console.log('Removing tag', this.state.tags[i], i, this.state.tags)
+
+    this.state.tags.splice(i, 1)
+    const tags = this.state.tags
+
     this.setState({
-      tags: this.state.tags[i].splice(i, 1)
+      tags: tags
     })
   }
 
