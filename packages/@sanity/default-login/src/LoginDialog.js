@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import installationStore from 'datastore:@sanity/base/installation'
-import SanityIntlProvider from 'component:@sanity/base/sanity-intl-provider'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
 import config from 'config:sanity'
 import pluginConfig from 'config:@sanity/default-login'
@@ -61,7 +60,7 @@ export default class LoginDialog extends React.Component {
 
   render() {
     return (
-      <SanityIntlProvider supportedLanguages={config.locale.supportedLanguages}>
+      <div>
         {
           this.state.error && (
             <div className="error">
@@ -73,7 +72,7 @@ export default class LoginDialog extends React.Component {
           )
         }
         {this.state.installation && this.renderLoginScreen()}
-      </SanityIntlProvider>
+      </div>
     )
   }
 
