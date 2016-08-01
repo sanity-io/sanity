@@ -31,6 +31,9 @@ storiesOf('Buttons')
     <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>
     <Button onClick={action('clicked')} kind="danger" inverted>Kind=danger inverted</Button>
     <Button onClick={action('clicked')} colored inverted>colored inverted</Button>
+    <Button onClick={action('clicked')} kind="secondary" icon={FaBeer} inverted>
+      Secondary
+    </Button>
     <Button onClick={action('clicked')} icon={FaBeer}>
       With icon
     </Button>
@@ -65,13 +68,15 @@ storiesOf('Buttons')
   'component:@sanity/components/buttons/dropdown',
   () => {
     const items = [
-      {title: 'Test'},
-      {title: 'Test 2'},
-      {title: 'Test 3'}
+      {id: 1, title: 'Test'},
+      {id: 2, title: 'Test 2'},
+      {id: 3, title: 'Test 3'}
     ]
     return (
       <div>
-        <DropDownButton items={items}>This is a dropdown</DropDownButton>
+        <DropDownButton items={items} onAction={action('Clicked item')}>
+          This is a dropdown
+        </DropDownButton>
       </div>
     )
   },

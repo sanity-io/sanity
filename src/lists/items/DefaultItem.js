@@ -8,7 +8,6 @@ export default class DefaultListItem extends React.Component {
     key: PropTypes.string.isRequired,
     extraContent: PropTypes.node,
     icon: PropTypes.node,
-    action: PropTypes.func,
     onClick: PropTypes.func,
     layout: PropTypes.string
   }
@@ -24,8 +23,8 @@ export default class DefaultListItem extends React.Component {
   }
 
   handleClick(id) {
-    this.props.onClick(this.props.id)
-    this.props.action()
+    console.log('click from item')
+    this.props.onClick(this.props.key)
   }
 
   render() {

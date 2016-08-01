@@ -13,6 +13,15 @@ import faker from 'faker'
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
 
+const containerStyle = {
+  'max-width': '40em',
+  'max-height': '20em',
+  'overflow-x': 'hidden',
+  'overflow-y': 'auto',
+  'box-shadow': '0 0 10px #ccc',
+  'position': 'relative'
+}
+
 
 storiesOf('Lists')
 .addDecorator(centered)
@@ -23,15 +32,15 @@ storiesOf('Lists')
   `,
   'component:@sanity/components/lists/default',
   () => {
-    const items = range(500).map((item, i) => {
+    const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
         title: faker.name.findName()
       }
     })
     return (
-      <div style={{'max-height': '30em'}}>
-        <DefaultList items={items} />
+      <div style={containerStyle}>
+        <DefaultList items={items} onSelect={action('onSelect')} />
       </div>
     )
   },
@@ -53,7 +62,7 @@ storiesOf('Lists')
       }
     })
     return (
-      <div style={{'max-height': '30em'}}>
+      <div style={containerStyle}>
         <ThumbsList items={items} scrollable />
       </div>
     )
@@ -76,7 +85,9 @@ storiesOf('Lists')
       }
     })
     return (
-      <ThumbsList items={items} scrollable />
+      <div style={containerStyle}>
+        <ThumbsList items={items} scrollable />
+      </div>
     )
   },
   {propTables: [ThumbsList]}
@@ -99,7 +110,7 @@ storiesOf('Lists')
       }
     })
     return (
-      <div style={{'max-height': '30em'}}>
+      <div style={containerStyle}>
         <ThumbsList items={items} scrollable />
       </div>
     )
@@ -122,7 +133,7 @@ storiesOf('Lists')
       }
     })
     return (
-      <div style={{'max-height': '30em'}}>
+      <div style={containerStyle}>
         <ThumbsList items={items} scrollable showInfo />
       </div>
     )

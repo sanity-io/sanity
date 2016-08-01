@@ -5,13 +5,16 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  width: 100%;
 }
 
 .image {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.inner {
+  position: relative;
 }
 
 .info {

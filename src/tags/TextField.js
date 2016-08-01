@@ -5,10 +5,9 @@ import styles from 'style:@sanity/components/tags/textfield'
 export default class TagsTextField extends React.Component {
   static propTypes = {
     label: PropTypes.func.isRequired,
-    onChange: PropTypes.func,
+    addTag: PropTypes.func.isRequired,
+    removeTag: PropTypes.func.isRequired,
     error: PropTypes.bool,
-    onKeyPress: PropTypes.func,
-    placeholder: PropTypes.string,
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
     tags: PropTypes.arr
@@ -17,7 +16,6 @@ export default class TagsTextField extends React.Component {
   static defaultProps = {
     value: '',
     tags: [],
-    onKeyPress() {}
   }
 
   constructor(props, context) {
@@ -28,24 +26,17 @@ export default class TagsTextField extends React.Component {
     this.handleFocus = this.handleFocus.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
 
-    // this.handleChange = this.handleChange.bind(this)
     this.state = {
       length: 4,
       isFocused: false
     }
   }
 
-  handleChange() {
-    // this.props.onChange()
-  }
-
   addTag(title) {
-    console.log('New tag', title)
     this.props.addTag(title)
   }
 
   removeTag(i) {
-    console.log('Remove tag', i)
     this.props.removeTag(i)
   }
 
@@ -86,7 +77,6 @@ export default class TagsTextField extends React.Component {
 
   render() {
     const {tags, label} = this.props
-    console.log('render', tags)
     return (
       <div className={`${styles.root} ${this.state.isFocused ? styles.isFocused : 'noFocus'}`}>
         <label className={styles.label}>{label}</label>

@@ -40,3 +40,26 @@ storiesOf('Fieldsets')
   },
   {inline: false, propTables: [Fieldset]}
 )
+
+.addWithRole(
+  'Crazy nested',
+  `
+    Fieldsets supports beeing inside itselfs, and get new styling!
+  `,
+  'component:@sanity/components/fieldsets/default',
+  () => {
+    return (
+      <Fieldset legend="Dude, I heard you like fieldsets…" description={Faker.Lorem.paragraphs(1)}>
+        <Fieldset legend="So I put a fieldset in a fieldset…" description={Faker.Lorem.paragraphs(1)}>
+          <Fieldset legend="In a fieldset…" description={Faker.Lorem.paragraphs(1)}>
+
+            <Fieldset legend="In a fieldset!" description={Faker.Lorem.paragraphs(1)}>
+
+            </Fieldset>
+          </Fieldset>
+        </Fieldset>
+      </Fieldset>
+    )
+  },
+  {inline: false, propTables: [Fieldset]}
+)

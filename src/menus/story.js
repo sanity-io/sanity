@@ -15,32 +15,35 @@ storiesOf('Menus')
   `,
   'component:@sanity/components/menus/default',
   () => {
-    const items = [
-      {
-        title: 'First item',
-        action: () => action('Clicked first item')
-      },
-      {
-        title: 'Second item',
-        action: () => action('Clicked second item')
-      },
-      {
-        title: 'Third item',
-        action: () => action('Clicked third item')
-      },
-      {
-        kind: 'divider'
-      },
-      {
-        title: 'Extra item',
-        action: () => action('Clicked third item')
-      }
-    ]
     return (
       <div style={{
         width: '300px',
         position: 'relative'}}>
-        <Menu items={items} opened />
+        <Menu
+          onAction={action('Clicked item')}
+          items={[
+            {
+              title: 'First item',
+              id: '1'
+            },
+            {
+              title: 'Second item',
+              id: '1'
+            },
+            {
+              title: 'Third item',
+              id: '3'
+            },
+            {
+              kind: 'divider'
+            },
+            {
+              title: 'Extra item',
+              id: '4'
+            }
+          ]}
+          opened
+        />
       </div>
     )
   },
@@ -56,33 +59,29 @@ storiesOf('Menus')
     const items = [
       {
         title: 'First item',
-        icon: FaBeer,
-        action: () => action('Clicked first item')
+        icon: FaBeer
       },
       {
         title: 'Second item',
-        icon: FaBeer,
-        action: () => action('Clicked second item')
+        icon: FaBeer
       },
       {
         title: 'Third item',
-        icon: FaBeer,
-        action: () => action('Clicked third item')
+        icon: FaBeer
       },
       {
         kind: 'divider'
       },
       {
         title: 'Extra item',
-        icon: FaBeer,
-        action: () => action('Clicked third item')
+        icon: FaBeer
       }
     ]
     return (
       <div style={{
         width: '300px',
         position: 'relative'}}>
-        <Menu items={items} opened />
+        <Menu onAction={action('Clicked item')} items={items} opened />
       </div>
     )
   },

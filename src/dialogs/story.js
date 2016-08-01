@@ -93,3 +93,39 @@ storiesOf('Dialogs')
   },
   {propTables: [DefaultDialog]}
 )
+
+.addWithRole(
+  'Default (with actions)',
+  '',
+  'component:@sanity/components/dialogs/fullscreen',
+  () => {
+    const actions = [
+      {
+        id: 1,
+        title: 'Finish'
+      },
+      {
+        id: 2,
+        title: 'Cancel',
+      },
+      {
+        id: 3,
+        title: 'Secondary',
+        kind: 'secondary'
+      }
+    ]
+    return (
+      <div>
+        <DefaultDialog
+          title="This is the title"
+          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
+          actions={actions}
+          onAction={action('onAction', 'button')}
+        >
+          This is the content
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {propTables: [DefaultDialog]}
+)

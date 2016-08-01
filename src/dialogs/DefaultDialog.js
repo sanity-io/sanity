@@ -103,13 +103,6 @@ export default class DefaultDialog extends React.Component {
 
         <div className={styles.inner}>
 
-          {
-            // showHeader && <div>
-            //   <h1 className={styles.title}>{title}</h1>
-            //   <button className={styles.bigCloseButton} onClick={this.handleCloseClick} />
-            // </div>
-          }
-
           <div className={styles.content}>
             {this.props.children}
           </div>
@@ -123,6 +116,8 @@ export default class DefaultDialog extends React.Component {
                       key={action.id}
                       onClick={this.handleActionClick}
                       data-action-id={action.id}
+                      kind={action.kind}
+                      className={styles[`button_${action.kind}`] || styles.button}
                     >
                       {action.title}
                     </Button>

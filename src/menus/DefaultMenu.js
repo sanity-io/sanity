@@ -5,6 +5,7 @@ import enhanceWithClickOutside from 'react-click-outside'
 
 class DefaultMenu extends React.Component {
   static propTypes = {
+    onAction: PropTypes.func.isRequired,
     opened: PropTypes.bool,
     origin: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
     ripple: PropTypes.bool,
@@ -13,7 +14,7 @@ class DefaultMenu extends React.Component {
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
-        onClick: PropTypes.func,
+        id: PropTypes.string.isRequired,
         icon: PropTypes.node
       })
     )
@@ -26,13 +27,21 @@ class DefaultMenu extends React.Component {
     ripple: true
   }
 
-  // constructor(props, context) {
-  //   super(props, context)
-  //   // this.handleOnClick = this.handleOnClick.bind(this)
-  // }
+  constructor(props, context) {
+    super(props, context)
+    this.handleItemClick = this.handleItemClick.bind(this)
+  }
 
   handleClickOutside() {
     this.setState({menuOpened: false})
+  }
+
+  handleItemClick(event) {
+    // const actionId = event.currentTarget.getAttribute('data-action-id')
+    this.props.onAction(
+      // this.props.items.find(item => item.id === actionId)
+      console.log('click')
+    )
   }
 
   render() {
@@ -52,7 +61,7 @@ class DefaultMenu extends React.Component {
               const Icon = item.icon
               return (
                 <li key={i} className={styles.item}>
-                  <a onClick={item.onClick} className={styles.link}>
+                  <a onClick={this.handleItemClick} className={styles.link}>
                     {
                       Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
                     }

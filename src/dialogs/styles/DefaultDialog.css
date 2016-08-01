@@ -18,6 +18,7 @@
 :root {
   --dialog-padding: var(--small-padding);
   --dialog-header-height: 2.5em;
+  --dialog-functions-height: 3em;
 }
 
 .root {
@@ -93,6 +94,7 @@
   composes: close from 'style:@sanity/base/theme/icons';
 }
 
+/* Native dialog backdrop */
 :global(::backdrop) {
   background-color: rgba(0, 0, 0, 0.3);
 }
@@ -104,4 +106,15 @@
   left: 0;
   right: 0;
   padding: var(--dialog-padding);
+  background-color: var(--gray-lightest);
+  border-top: 1px solid var(--gray-lighter);
+  height: var(--dialog-functions-height);
+}
+
+.button {
+  float: right;
+}
+
+.button_secondary {
+  float: left;
 }

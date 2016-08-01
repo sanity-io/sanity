@@ -26,6 +26,7 @@
   border: none;
   margin-right: var(--extra-small-padding);
   composes: shadow-1dp from "style:@sanity/base/theme/shadows";
+  line-height: 1em;
 }
 
 .colored {
@@ -37,6 +38,14 @@
 .small {
   font-size: 0.8em;
   padding: 0.2em 1em;
+}
+
+.secondary {
+  composes: root;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  color: var(--gray);
 }
 
 .inverted {

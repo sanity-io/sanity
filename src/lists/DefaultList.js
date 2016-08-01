@@ -23,6 +23,13 @@ export default class DefaultList extends React.Component {
 
   constructor(context, props) {
     super(context, props)
+
+    this.onSelect = this.onSelect.bind(this)
+  }
+
+  onSelect(id) {
+    console.log('click from list', id)
+    this.props.onSelect(id)
   }
 
   render() {
@@ -36,7 +43,7 @@ export default class DefaultList extends React.Component {
             {
               !children && items && items.map((item, i) => {
                 return (
-                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.props.onSelect}>
+                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.onSelect}>
                     {item.content}
                   </ListItem>
                 )
