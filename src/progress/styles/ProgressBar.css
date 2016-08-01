@@ -1,0 +1,49 @@
+@import "style:@sanity/base/theme/variables";
+@use postcss-cssnext;
+
+:root {
+  --progress-bar-height: 1em;
+}
+
+.root {
+  border: 1px solid #000;
+  height: var(--progress-bar-height);
+}
+
+.inner {
+  width: 100%;
+  position: relative;
+}
+
+.completed {
+  composes: root;
+}
+
+.uncompleted {
+  composes: root;
+}
+
+.barContainer {
+  position: relative;
+  width: 100%;
+  height: var(--progress-bar-height);
+  padding: 0.1em;
+  box-sizing: border-box;
+}
+
+.bar {
+  background-color: black;
+  height: calc(var(--progress-bar-height) - 0.2em);
+  transition-property: width;
+  transition-duration: 0.1s;
+  transition-timing-function: linear;
+}
+
+.percent {
+  float: right;
+}
+
+.text,
+.percent {
+  font-size: var(--font-size-xsmall);
+}
