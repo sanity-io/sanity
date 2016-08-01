@@ -8,10 +8,13 @@
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
     "stylelint": "stylelint \"src/**/*.css\"",
-    "prepublish": "npm run stylelint && in-publish && npm run compile || not-in-publish",
+    "eslint": "eslint . --quiet",
+    "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
-    "test": "eslint ."
+    "test": "npm run lint",
+    "lint": "npm run eslint && npm run stylelint"
   },
+  "pre-commit": ["lint"],
   "keywords": [
     "sanity",
     "sanity-plugin"
@@ -24,6 +27,7 @@
     "postcss-cssnext": "^2.7.0",
     "postcss-font-awesome": "^0.3.3",
     "postcss-nested": "^1.0.0",
+    "pre-commit": "^1.1.3",
     "react-addons-css-transition-group": "^15.3.0",
     "react-addons-shallow-compare": "^15.3.0",
     "react-click-outside": "^2.1.0",
