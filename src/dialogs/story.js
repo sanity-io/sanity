@@ -37,7 +37,7 @@ storiesOf('Dialogs')
         <Button>Open default dialog</Button>
         <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
           This is the content
-          {faker.Lorem.paragraphs(2)}
+          {faker.lorem.paragraphs(2)}
         </DefaultDialog>
       </div>
     )
@@ -54,7 +54,7 @@ storiesOf('Dialogs')
         <Button>Open default dialog</Button>
         <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
           This is the content
-          {faker.Lorem.paragraphs(2)}
+          {faker.lorem.paragraphs(2)}
         </DefaultDialog>
       </div>
     )
