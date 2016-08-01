@@ -1,4 +1,4 @@
-const storyBook = require('../..')
+const storyBook = require('component:@sanity/storybook')
 const infoAddon = require('@kadira/react-storybook-addon-info')
 
 require('style:@sanity/base/theme/body')
