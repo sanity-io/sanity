@@ -16,7 +16,7 @@ class ProgressBarImplementation extends React.Component {
   }
 
   componentDidMount() {
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.setState({
         completion: this.state.completion + 0.8
       })
@@ -26,6 +26,11 @@ class ProgressBarImplementation extends React.Component {
         })
       }
     }, 100)
+  }
+
+  componentWillUnmount() {
+    console.log('Did unmount')
+    clearInterval(this.interval)
   }
 
   render() {
