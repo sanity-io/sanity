@@ -112,28 +112,29 @@ class GeopointInput extends React.Component {
           </Button>
         )}
 
-        <Dialog
-          title={formatMessage('google-maps.placeOnMap')}
-          onClose={this.handleCloseModal}
-          onCloseClick={this.handleCloseModal}
-          onOpen={this.handleOpenModal}
-          message={formatMessage('google-maps.mapHelpText')}
-          isOpen={this.state.modalOpen}
-          actions={actions}
-          onAction={this.handleDialogAction}
-        >
-          <GoogleMapsLoadProxy
-            value={value}
-            apiKey={config.apiKey}
-            onChange={this.props.onChange}
-            defaultLocation={config.defaultLocation}
-            defaultZoom={config.defaultZoom}
-            locale={this.context.intl.locale}
-            component={GeopointSelect}
-          />
+        {this.state.modalOpen && (
+          <Dialog
+            title={formatMessage('google-maps.placeOnMap')}
+            onClose={this.handleCloseModal}
+            onCloseClick={this.handleCloseModal}
+            onOpen={this.handleOpenModal}
+            message={formatMessage('google-maps.mapHelpText')}
+            isOpen={this.state.modalOpen}
+            actions={actions}
+            onAction={this.handleDialogAction}
+          >
+            <GoogleMapsLoadProxy
+              value={value}
+              apiKey={config.apiKey}
+              onChange={this.props.onChange}
+              defaultLocation={config.defaultLocation}
+              defaultZoom={config.defaultZoom}
+              locale={this.context.intl.locale}
+              component={GeopointSelect}
+            />
 
-        </Dialog>
-
+          </Dialog>
+        )}
       </div>
     )
   }
