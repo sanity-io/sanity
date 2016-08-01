@@ -5,6 +5,7 @@ import getProdServer from './prodServer'
 import getWebpackProdConfig from './configs/webpack.config.prod'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 import getWebpackBaseConfig from './configs/webpack.config'
+import applyStaticLoaderFix from './util/applyStaticLoaderFix'
 import {getDocumentElement} from './baseServer'
 
 const getWebpackCompiler = baseConfig => {
@@ -23,5 +24,6 @@ export {
   getWebpackBaseConfig,
   getWebpackProdConfig,
   getDocumentElement,
+  applyStaticLoaderFix,
   ReactDOM // exported to allow reuse of same React version from CLI
 }

@@ -5,7 +5,7 @@ import RoleResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import postcssUse from 'postcss-use'
 import postcssImport from 'postcss-import'
-import resolveStyleImport from '../resolveStyleImport'
+import resolveStyleImport from '../util/resolveStyleImport'
 
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
