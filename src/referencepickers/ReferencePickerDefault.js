@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/referencepickers/default'
 
 import {range} from 'lodash'
-import Faker from 'Faker'
 
 import SearchField from 'component:@sanity/components/textfields/search'
 import List from 'component:@sanity/components/lists/default'

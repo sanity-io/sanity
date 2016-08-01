@@ -5,7 +5,7 @@ import ReferencePickerDefault from 'component:@sanity/components/referencepicker
 import DefaultDialog from 'component:@sanity/components/dialogs/default'
 
 import {range} from 'lodash'
-import Faker from 'Faker'
+import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
@@ -23,8 +23,8 @@ storiesOf('Reference picker')
     const items = range(50).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl()}?${i}`
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl()}?${i}`
       }
     })
     return (
@@ -45,8 +45,8 @@ storiesOf('Reference picker')
     const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl()}?${i}`
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl()}?${i}`
       }
     })
     const actions = [

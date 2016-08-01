@@ -17,8 +17,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "Faker": "^0.7.2",
     "dialog-polyfill": "^0.4.3",
+    "faker": "^3.1.0",
     "in-publish": "^2.0.0",
     "lodash": "^4.13.1",
     "postcss-cssnext": "^2.7.0",

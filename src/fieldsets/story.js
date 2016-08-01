@@ -1,7 +1,7 @@
 import React from 'react'
 import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
-import Faker from 'Faker'
+import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
@@ -16,7 +16,7 @@ storiesOf('Fieldsets')
   'component:@sanity/components/fieldsets/default',
   () => {
     return (
-      <Fieldset legend="This is the legend" description={Faker.Lorem.paragraphs(1)}>
+      <Fieldset legend="This is the legend" description={faker.lorem.paragraphs(1)}>
         Put content here
       </Fieldset>
     )
@@ -31,8 +31,8 @@ storiesOf('Fieldsets')
   'component:@sanity/components/fieldsets/default',
   () => {
     return (
-      <Fieldset legend="This is the legend" description={Faker.Lorem.paragraphs(1)}>
-        <Fieldset legend="This is the legend in a nested fieldset" description={Faker.Lorem.paragraphs(1)}>
+      <Fieldset legend="This is the legend" description={faker.lorem.paragraphs(1)}>
+        <Fieldset legend="This is the legend in a nested fieldset" description={faker.lorem.paragraphs(1)}>
           A nested fieldset
         </Fieldset>
       </Fieldset>

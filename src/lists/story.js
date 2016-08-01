@@ -8,7 +8,7 @@ import ThumbsList from 'component:@sanity/components/lists/thumbs'
 import Thumb from 'component:@sanity/components/lists/items/thumb'
 
 import {range} from 'lodash'
-import Faker from 'Faker'
+import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
@@ -26,7 +26,7 @@ storiesOf('Lists')
     const items = range(500).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName()
+        title: faker.name.findName()
       }
     })
     return (
@@ -48,8 +48,8 @@ storiesOf('Lists')
     const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl()}?${i}`
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl()}?${i}`
       }
     })
     return (
@@ -71,8 +71,8 @@ storiesOf('Lists')
     const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl(300, 500)}?${i}`
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl(300, 500)}?${i}`
       }
     })
     return (
@@ -94,8 +94,8 @@ storiesOf('Lists')
       const height = Math.round(Math.random() * 100)
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl(width, height)}?${i}`,
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl(width, height)}?${i}`,
       }
     })
     return (
@@ -117,8 +117,8 @@ storiesOf('Lists')
     const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl()}?${i}`
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl()}?${i}`
       }
     })
     return (
@@ -142,7 +142,7 @@ storiesOf('Lists items')
   () => {
     const item = {
       id: '2',
-      title: Faker.Name.findName()
+      title: faker.name.findName()
     }
     return (
       <DefaultListItem title={item.title} id={item.id} />
@@ -159,8 +159,8 @@ storiesOf('Lists items')
   () => {
     const item = {
       id: '1',
-      title: Faker.Name.findName(),
-      image: `${Faker.Image.avatar()}?1`,
+      title: faker.name.findName(),
+      image: `${faker.image.avatar()}?1`,
       action() {
         action('Clicked the single thumb')
       }
@@ -180,8 +180,8 @@ storiesOf('Lists items')
   () => {
     const item = {
       id: '1',
-      title: Faker.Name.findName(),
-      image: `${Faker.Image.avatar()}?1`,
+      title: faker.name.findName(),
+      image: `${faker.image.avatar()}?1`,
       action() {
         action('Clicked the single thumb')
       }

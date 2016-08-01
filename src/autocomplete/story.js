@@ -2,7 +2,7 @@ import React from 'react'
 import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
-import Faker from 'Faker'
+import faker from 'faker'
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
 
@@ -40,8 +40,8 @@ storiesOf('Autocomplete')
       const height = Math.round(Math.random() * 100)
       return {
         id: `${i}`,
-        title: Faker.Name.findName(),
-        image: `${Faker.Image.imageUrl(width, height)}?${i}`,
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl(width, height)}?${i}`,
       }
     })
     return (
@@ -64,7 +64,7 @@ storiesOf('Autocomplete')
     const suggestions = range(10).map((item, i) => {
       return {
         id: `${i}`,
-        title: Faker.Name.findName()
+        title: faker.name.findName()
       }
     })
     return (

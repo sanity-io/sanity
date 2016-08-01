@@ -3,7 +3,7 @@ import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
 import Button from 'component:@sanity/components/buttons/default'
 import DefaultDialog from 'component:@sanity/components/dialogs/default'
 import FullscreenDialog from 'component:@sanity/components/dialogs/fullscreen'
-import Faker from 'Faker'
+import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
 import role from '../storybook-addons/role.js'
@@ -35,9 +35,9 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button>Open default dialog</Button>
-        <DefaultDialog title={Faker.Lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
+        <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
           This is the content
-          {Faker.Lorem.paragraphs(2)}
+          {faker.Lorem.paragraphs(2)}
         </DefaultDialog>
       </div>
     )
@@ -52,9 +52,9 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button>Open default dialog</Button>
-        <DefaultDialog title={Faker.Lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
+        <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
           This is the content
-          {Faker.Lorem.paragraphs(2)}
+          {faker.Lorem.paragraphs(2)}
         </DefaultDialog>
       </div>
     )
