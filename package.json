@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Kristoffer Sivertsen <kristofferjoachim@gmail.com>",
@@ -14,7 +14,9 @@
     "test": "npm run lint",
     "lint": "npm run eslint && npm run stylelint"
   },
-  "pre-commit": ["lint"],
+  "pre-commit": [
+    "lint"
+  ],
   "keywords": [
     "sanity",
     "sanity-plugin"
