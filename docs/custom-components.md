@@ -35,7 +35,7 @@ You could then create a tiny wrapper component that receives a value property, a
 // MyColorPicker.js
 // ...
 import React, {PropTypes} from 'react'
-import InputColor from 'input-color'
+import InputColor from 'react-input-color'
 
 export default class MyColorPicker extends React.Component {
   static propTypes = {

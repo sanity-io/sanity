@@ -4,7 +4,7 @@
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import FormBuilder, {Schema} from '@sanity/form-builder'
+import {createFormBuilder, Schema} from '@sanity/form-builder'
 
 const schema = Schema.compile({
   name: 'simple',
@@ -33,6 +33,8 @@ const schema = Schema.compile({
   ]
 })
 
+const FormBuilder = createFormBuilder({schema: schema})
+
 let currentValue = FormBuilder.createEmpty('book')
 
 function handleChange(event) {
@@ -54,16 +56,11 @@ function render() {
 
 // Initial render
 document.addEventListener('DOMContentLoaded', render)
-
 ```
 
-## Use in another component
+## Use as component
 
 ```js
-import React from 'react'
-import ReactDOM from 'react-dom'
-import FormBuilder from '@sanity/form-builder'
-
 class MyComponent extends React.Component {
   constructor(...args) {
     super(...args)

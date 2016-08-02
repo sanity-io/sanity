@@ -1,8 +1,9 @@
 # The FormBuilder Component
 
+The `FormBuilder` component returned by `createFormBuilder(...)` is responsible for rendering the generated form and takes the following props:
+
+
 ## Props
 - **`value`** - required. The current form builder value. It should always be an instance of FormBuilderValue
-- **`onChange`** - required. This is the function that will be called whenever the value changes. 
-- **`schema`** - required, instance of `Schema`. The schema to use when building the form. This can be provided either as a prop, or specified as an option to `createFormBuilder(...)`
-
-Handling changes
+- **`onChange`** - required. This is the function that will be called whenever a change happens. The change must be applied for it to update the form field. If the change is not applied the form will effectively be read-only. 
+- **`validation`** - optional. An instance of `ValidationResult`
