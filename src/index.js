@@ -13,6 +13,7 @@ export {default as createFormBuilder} from './createFormBuilder'
 export {ReferenceInput}
 
 export const createReferenceInput = function deprecated(...args) {
+  // eslint-disable-next-line no-console
   console.warn(
       '[deprecated] FormBuilder.createReferenceInput is deprecated, use either '
     + 'FormBuilder.ReferenceInput.createAutoComplete or FormBuilder.ReferenceInput.createBrowser(...)'

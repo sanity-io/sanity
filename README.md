@@ -54,6 +54,7 @@ If you define an object type, you must also define its fields. E.g. if you are d
   ]
 }
 ```
+You cannot create an object type that has no fields. We haven't yet had the need for a `hash` type that can have arbitrary key => value pairs (where keys are strings and value can be anything), but will consider supporting it in the future.
 
 ## Input widgets
 

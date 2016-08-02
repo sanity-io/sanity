@@ -9,8 +9,11 @@
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
-    "start": "cd examples/schema-testbed && sanity start",
-    "start-simple": "cd examples/simple && sanity start"
+    "start": "npm run example-testbed",
+    "example-testbed": "cd examples/schema-testbed && sanity start",
+    "example-undo": "cd examples/undo && sanity start",
+    "example-quickstart": "cd examples/quickstart && sanity start",
+    "postinstall": "echo 'POSTINSTALL'"
   },
   "keywords": [],
   "author": "",

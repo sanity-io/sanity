@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {FormBuilder} from './FormBuilder'
+import {FormBuilderInner} from './FormBuilderInner'
 import {createFormBuilderState, createFieldValue} from './state/FormBuilderState'
 import defaultConfig from './defaultConfig'
 import Schema from './Schema'
@@ -22,7 +22,7 @@ export default function createFormBuilder(config = {}) {
   const resolvePreviewComponent = withDefaultFallback(config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
 
   if (!schema) {
-    throw new TypeError('You must provide a schema')
+    throw new TypeError('You must provide a schema to createFormBuilder(...)')
   }
 
   function _createFieldValue(value, field) {
@@ -52,7 +52,7 @@ export default function createFormBuilder(config = {}) {
     return createValue(undefined, typeName)
   }
 
-  return class FormBuilderContextProvider extends React.Component {
+  return class FormBuilder extends React.Component {
     static createEmpty = createEmpty;
     static deserialize = deserialize;
     static propTypes = {
@@ -86,7 +86,7 @@ export default function createFormBuilder(config = {}) {
     render() {
       const {value, onChange} = this.props
       return (
-        <FormBuilder value={value} onChange={onChange} />
+        <FormBuilderInner value={value} onChange={onChange} />
       )
     }
   }

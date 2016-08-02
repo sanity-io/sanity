@@ -1,10 +1,7 @@
 import React from 'react'
 import Undoable from './lib/Undoable'
 
-import {
-  createFormBuilder,
-  Schema
-} from '../../src'
+import {createFormBuilder, Schema} from '../../src'
 
 const schema = Schema.compile({
   name: 'simple',

@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from './styles/FormBuilder.css'
 import {getFieldType} from './utils/getFieldType'
 
-export class FormBuilder extends React.Component {
+export class FormBuilderInner extends React.Component {
   static propTypes = {
     value: PropTypes.any,
     validation: PropTypes.object,
