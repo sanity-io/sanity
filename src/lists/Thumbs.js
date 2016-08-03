@@ -9,7 +9,7 @@ export default class Thumbs extends React.Component {
         title: PropTypes.string,
         description: PropTypes.string,
         content: PropTypes.node,
-        key: PropTypes.string,
+        index: PropTypes.string,
         image: PropTypes.string
       })
     ),
@@ -22,6 +22,10 @@ export default class Thumbs extends React.Component {
     layout: PropTypes.oneOf(['media', 'block', 'string']),
     scrollable: PropTypes.bool,
     showInfo: PropTypes.bool
+  }
+
+  handleSelect(index) {
+    this.props.onSelect(index)
   }
 
 
@@ -46,12 +50,13 @@ export default class Thumbs extends React.Component {
                   <li className={styles.item} key={i}>
                     <Thumb
                       layout={layout}
-                      id={item.id}
+                      key={i}
+                      index={item.index}
                       title={item.title}
                       description={item.description}
                       image={item.image}
                       square={item.square}
-                      onClick={this.props.onSelect}
+                      onClick={this.handleSelect}
                       showInfo={showInfo}
                     >
                       {item.extraContent}

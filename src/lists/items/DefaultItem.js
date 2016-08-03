@@ -3,9 +3,9 @@ import styles from 'style:@sanity/components/lists/items/default'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
+    index: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     content: PropTypes.node,
-    key: PropTypes.string.isRequired,
     extraContent: PropTypes.node,
     icon: PropTypes.node,
     onClick: PropTypes.func,
@@ -22,9 +22,8 @@ export default class DefaultListItem extends React.Component {
     this.handleClick = this.handleClick.bind(this)
   }
 
-  handleClick(id) {
-    // console.log('click from item')
-    this.props.onClick(this.props.key)
+  handleClick(index) {
+    this.props.onClick(this.props.index)
   }
 
   render() {

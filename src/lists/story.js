@@ -12,12 +12,12 @@ import centered from '../storybook-addons/centered.js'
 require('../storybook-addons/role.js')
 
 const containerStyle = {
-  'max-width': '40em',
-  'max-height': '20em',
-  'overflow-x': 'hidden',
-  'overflow-y': 'auto',
-  'box-shadow': '0 0 10px #ccc',
-  'position': 'relative'
+  maxWidth: '40em',
+  maxHeight: '20em',
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  boxShadow: '0 0 10px #ccc',
+  position: 'relative'
 }
 
 
@@ -32,13 +32,13 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        id: `${i}`,
+        index: `${i}`,
         title: faker.name.findName()
       }
     })
     return (
       <div style={containerStyle}>
-        <DefaultList items={items} onSelect={action('onSelect')} />
+        <DefaultList items={items} onSelect={action('Select')} />
       </div>
     )
   },
@@ -54,14 +54,14 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        id: `${i}`,
+        index: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl()}?${i}`
       }
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable />
+        <ThumbsList items={items} scrollable onSelect={action('Select')} />
       </div>
     )
   },
@@ -77,14 +77,14 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        id: `${i}`,
+        index: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl(300, 500)}?${i}`
       }
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable />
+        <ThumbsList items={items} scrollable onSelect={action('Select')} />
       </div>
     )
   },
@@ -102,7 +102,7 @@ storiesOf('Lists')
       const width = Math.round(Math.random() * 100)
       const height = Math.round(Math.random() * 100)
       return {
-        id: `${i}`,
+        index: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl(width, height)}?${i}`,
       }
@@ -125,14 +125,14 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        id: `${i}`,
+        index: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl()}?${i}`
       }
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable showInfo />
+        <ThumbsList items={items} scrollable showInfo onSelect={action('Select')} />
       </div>
     )
   },
@@ -149,12 +149,8 @@ storiesOf('Lists items')
   `,
   'component:@sanity/components/lists/items/default',
   () => {
-    const item = {
-      id: '2',
-      title: faker.name.findName()
-    }
     return (
-      <DefaultListItem title={item.title} id={item.id} />
+      <DefaultListItem title={faker.name.findName()} index={2} onClick={action('Click')} />
     )
   },
   {propTables: [DefaultListItem]}
@@ -166,16 +162,8 @@ storiesOf('Lists items')
   `,
   'component:@sanity/components/lists/items/thumb',
   () => {
-    const item = {
-      id: '1',
-      title: faker.name.findName(),
-      image: `${faker.image.avatar()}?1`,
-      action() {
-        action('Clicked the single thumb')
-      }
-    }
     return (
-      <Thumb title={item.title} id={item.id} image={item.image} action={item.action} />
+      <Thumb title={faker.name.findName()} index="1" image={`${faker.image.avatar()}?1`} onClick={action('Click')} />
     )
   },
   {propTables: [Thumb]}
@@ -187,17 +175,15 @@ storiesOf('Lists items')
   `,
   'component:@sanity/components/lists/items/thumb',
   () => {
-    const item = {
-      id: '1',
-      title: faker.name.findName(),
-      image: `${faker.image.avatar()}?1`,
-      action() {
-        action('Clicked the single thumb')
-      }
-    }
     return (
       <div style={{width: '300px'}}>
-        <Thumb showInfo title={item.title} id={item.id} image={item.image} action={item.action} />
+        <Thumb
+          showInfo
+          title={faker.name.findName()}
+          index="1"
+          image={`${faker.image.avatar()}?1`}
+          onClick={action('Click')}
+        />
       </div>
     )
   },

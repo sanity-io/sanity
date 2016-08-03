@@ -7,8 +7,8 @@ export default class DefaultList extends React.Component {
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
+        index: PropTypes.string,
         content: PropTypes.node,
-        key: PropTypes.string,
         extraContent: PropTypes.node,
         icon: PropTypes.node
       })
@@ -24,7 +24,7 @@ export default class DefaultList extends React.Component {
   constructor(context, props) {
     super(context, props)
 
-    this.onSelect = this.onSelect.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
   }
 
   handleSelect(id) {
@@ -43,7 +43,14 @@ export default class DefaultList extends React.Component {
             {
               !children && items && items.map((item, i) => {
                 return (
-                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.handleSelect}>
+                  <ListItem
+                    layout={layout}
+                    key={i}
+                    title={item.title}
+                    icon={item.icon}
+                    onClick={this.handleSelect}
+                    index={item.index}
+                  >
                     {item.content}
                   </ListItem>
                 )

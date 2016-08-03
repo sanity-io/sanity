@@ -7,11 +7,9 @@ export default class Thumb extends React.Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.node,
-    key: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    index: PropTypes.string.isRequired,
     extraContent: PropTypes.node,
     icon: PropTypes.node,
-    action: PropTypes.func,
     onClick: PropTypes.func,
     layout: PropTypes.string,
     description: PropTypes.string,
@@ -45,9 +43,8 @@ export default class Thumb extends React.Component {
     }
   }
 
-  handleClick(id) {
-    this.props.onClick(this.props.id)
-    this.props.action('Clicked')
+  handleClick(index) {
+    this.props.onClick(this.props.index)
   }
 
   render() {
