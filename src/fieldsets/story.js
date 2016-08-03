@@ -1,10 +1,10 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
 import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 storiesOf('Fieldsets')
   .addDecorator(centered)
@@ -49,13 +49,10 @@ storiesOf('Fieldsets')
   'component:@sanity/components/fieldsets/default',
   () => {
     return (
-      <Fieldset legend="Dude, I heard you like fieldsets…" description={Faker.Lorem.paragraphs(1)}>
-        <Fieldset legend="So I put a fieldset in a fieldset…" description={Faker.Lorem.paragraphs(1)}>
-          <Fieldset legend="In a fieldset…" description={Faker.Lorem.paragraphs(1)}>
-
-            <Fieldset legend="In a fieldset!" description={Faker.Lorem.paragraphs(1)}>
-
-            </Fieldset>
+      <Fieldset legend="Dude, I heard you like fieldsets…" description={faker.lorem.paragraphs(1)}>
+        <Fieldset legend="So I put a fieldset in a fieldset…" description={faker.lorem.paragraphs(1)}>
+          <Fieldset legend="In a fieldset…" description={faker.lorem.paragraphs(1)}>
+            <Fieldset legend="In a fieldset!" description={faker.lorem.paragraphs(1)} />
           </Fieldset>
         </Fieldset>
       </Fieldset>

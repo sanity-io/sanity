@@ -34,6 +34,10 @@ export default class DefaultSnackbar extends React.Component {
     }, this.props.time * 1000)
   }
 
+  handleAction() {
+    this.props.action.action()
+  }
+
   render() {
 
     const {kind, action, children} = this.props
@@ -48,7 +52,7 @@ export default class DefaultSnackbar extends React.Component {
           </div>
           <div className={styles.action}>
             {
-              action && <Button onClick={action.action}>{action.title}</Button>
+              action && <Button onClick={this.handleAction}>{action.title}</Button>
             }
           </div>
         </div>

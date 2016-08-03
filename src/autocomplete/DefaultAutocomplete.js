@@ -42,7 +42,7 @@ export default class DefaultAutocomplete extends React.Component {
   }
 
   handleKeyPress() {
-    console.log('press')
+    // console.log('press')
   }
 
   handleSelect(id) {

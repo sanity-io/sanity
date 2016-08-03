@@ -4,7 +4,7 @@ import {storiesOf, action} from 'component:@sanity/storybook'
 import FaBeer from 'react-icons/lib/fa/beer'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 storiesOf('Menus')
 .addDecorator(centered)

@@ -1,17 +1,15 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 
 import DefaultList from 'component:@sanity/components/lists/default'
 import DefaultListItem from 'component:@sanity/components/lists/items/default'
-
 import ThumbsList from 'component:@sanity/components/lists/thumbs'
 import Thumb from 'component:@sanity/components/lists/items/thumb'
 
 import {range} from 'lodash'
 import faker from 'faker'
-
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 const containerStyle = {
   'max-width': '40em',

@@ -41,7 +41,6 @@ export default class ToggleButtons extends React.Component {
 
   render() {
     const {items, label} = this.props
-    const {selected} = this.state
 
     return (
       <div className={styles.root}>

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/buttons/dropdown'
 import Button from 'component:@sanity/components/buttons/default'
-import enhanceWithClickOutside from 'react-click-outside'
+// import enhanceWithClickOutside from 'react-click-outside'
 import Menu from 'component:@sanity/components/menus/default'
 
 class DropDownButton extends React.Component {

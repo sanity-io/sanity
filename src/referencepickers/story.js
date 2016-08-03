@@ -1,5 +1,5 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 
 import ReferencePickerDefault from 'component:@sanity/components/referencepickers/default'
 import DefaultDialog from 'component:@sanity/components/dialogs/default'
@@ -8,7 +8,7 @@ import {range} from 'lodash'
 import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 
 storiesOf('Reference picker')
@@ -28,7 +28,7 @@ storiesOf('Reference picker')
       }
     })
     return (
-      <div style={{'height': '30em'}}>
+      <div style={{height: '30em'}}>
         <ReferencePickerDefault items={items} onSearch={action('Search')} />
       </div>
     )

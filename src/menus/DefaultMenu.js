@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/menus/default'
 import Ink from 'react-ink'
-import enhanceWithClickOutside from 'react-click-outside'
+// import enhanceWithClickOutside from 'react-click-outside'
 
 class DefaultMenu extends React.Component {
   static propTypes = {
@@ -40,7 +40,7 @@ class DefaultMenu extends React.Component {
     // const actionId = event.currentTarget.getAttribute('data-action-id')
     this.props.onAction(
       // this.props.items.find(item => item.id === actionId)
-      console.log('click')
+      // console.log('click')
     )
   }
 

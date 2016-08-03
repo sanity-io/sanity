@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 import DatePicker from 'role:@sanity/form-builder/input/date'
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 import InfiniteCalendar from 'react-infinite-calendar'
 import styles from './styles.css'

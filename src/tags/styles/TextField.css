@@ -3,12 +3,10 @@
 
 .root {
   display: block;
-
 }
 
 .tags {
   display: inline;
-  margin: 0;
   padding: 0;
 }
 

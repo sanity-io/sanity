@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/referencepickers/default'
 
-import {range} from 'lodash'
-
 import SearchField from 'component:@sanity/components/textfields/search'
 import List from 'component:@sanity/components/lists/default'
 import ThumbList from 'component:@sanity/components/lists/thumbs'
@@ -35,7 +33,7 @@ export default class DefaultList extends React.Component {
   }
 
   changeView(viewName) {
-    console.log('change view', viewName)
+    // console.log('change view', viewName)
     this.setState({
       view: viewName
     })
@@ -43,7 +41,7 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, children, layout, className} = this.props
+    const {items, className} = this.props
 
     const toggleItems = [
       {
@@ -67,7 +65,7 @@ export default class DefaultList extends React.Component {
     ]
 
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} ${className}`}>
         <div className={styles.inner}>
           <div className={styles.functions}>
             <div className={styles.search}>

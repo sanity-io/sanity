@@ -1,10 +1,10 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import faker from 'faker'
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 const formStyle = {'width': '30em', 'margin': '0 auto', 'padding-bottom': '20em'}
 
@@ -19,7 +19,7 @@ storiesOf('Autocomplete')
   () => {
     return (
       <form style={formStyle}>
-        <Autocomplete suggestions={false} placeholder="Type to autocomplete…"/>
+        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" />
       </form>
     )
   },
@@ -46,7 +46,7 @@ storiesOf('Autocomplete')
     })
     return (
       <form style={formStyle}>
-        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" items={items}/>
+        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" items={items} />
       </form>
     )
   },

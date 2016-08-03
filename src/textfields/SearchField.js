@@ -32,7 +32,7 @@ export default class SearchFieldField extends React.Component {
   }
 
   render() {
-    const {label, value, placeholder, error, focus} = this.props
+    const {label, value, placeholder} = this.props
 
     // TODO generate an ID here
     const id = label

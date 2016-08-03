@@ -1,5 +1,5 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 import faker from 'faker'
 
 import styles from './styles/story.css'

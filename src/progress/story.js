@@ -1,9 +1,9 @@
 import React from 'react'
 import ProgressBar from 'component:@sanity/components/progress/bar'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 class ProgressBarImplementation extends React.Component {
 
@@ -29,7 +29,6 @@ class ProgressBarImplementation extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('Did unmount')
     clearInterval(this.interval)
   }
 

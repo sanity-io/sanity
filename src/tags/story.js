@@ -1,12 +1,14 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 import TagsTextField from 'component:@sanity/components/tags/textfield'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 class DefaultTextFieldImplementation extends React.Component {
-
+  static propTypes = {
+    tags: React.PropTypes.arr
+  }
   constructor(...args) {
     super(...args)
 
@@ -22,7 +24,7 @@ class DefaultTextFieldImplementation extends React.Component {
     action('Add tag')
     const tags = this.state.tags
     tags.push(tag)
-    console.log('about to set new state', tags)
+    // console.log('about to set new state', tags)
     this.setState({
       tags: tags
     })
@@ -30,7 +32,7 @@ class DefaultTextFieldImplementation extends React.Component {
 
   removeTag(i) {
     action('Remove tag')
-    console.log('Removing tag', this.state.tags[i], i, this.state.tags)
+    // console.log('Removing tag', this.state.tags[i], i, this.state.tags)
 
     this.state.tags.splice(i, 1)
     const tags = this.state.tags

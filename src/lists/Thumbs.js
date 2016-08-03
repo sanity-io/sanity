@@ -24,9 +24,6 @@ export default class Thumbs extends React.Component {
     showInfo: PropTypes.bool
   }
 
-  constructor(context, props) {
-    super(context, props)
-  }
 
   render() {
 

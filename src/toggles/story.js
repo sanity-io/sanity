@@ -5,7 +5,7 @@ import Switch from 'component:@sanity/components/toggles/switch'
 import Checkbox from 'component:@sanity/components/toggles/checkbox'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
+require('../storybook-addons/role.js')
 
 storiesOf('Toggles')
 .addDecorator(centered)

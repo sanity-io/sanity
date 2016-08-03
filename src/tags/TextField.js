@@ -77,6 +77,9 @@ export default class TagsTextField extends React.Component {
 
   render() {
     const {tags, label} = this.props
+    const setInput = component => {
+      this._input = component
+    }
     return (
       <div className={`${styles.root} ${this.state.isFocused ? styles.isFocused : 'noFocus'}`}>
         <label className={styles.label}>{label}</label>
@@ -106,7 +109,7 @@ export default class TagsTextField extends React.Component {
               style={{width: `${this.state.length * 0.8}em`}}
               onBlur={this.handleBlur}
               onFocus={this.handleFocus}
-              ref={(c) => this._input = c}
+              ref={setInput}
             />
           </div>
         </div>

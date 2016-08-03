@@ -27,8 +27,8 @@ export default class DefaultList extends React.Component {
     this.onSelect = this.onSelect.bind(this)
   }
 
-  onSelect(id) {
-    console.log('click from list', id)
+  handleSelect(id) {
+    // console.log('click from list', id)
     this.props.onSelect(id)
   }
 
@@ -43,7 +43,7 @@ export default class DefaultList extends React.Component {
             {
               !children && items && items.map((item, i) => {
                 return (
-                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.onSelect}>
+                  <ListItem layout={layout} key={i} id={item.id} title={item.title} icon={item.icon} onClick={this.handleSelect}>
                     {item.content}
                   </ListItem>
                 )

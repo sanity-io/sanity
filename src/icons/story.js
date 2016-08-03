@@ -1,5 +1,5 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf} from 'component:@sanity/storybook'
 
 import * as FontAwesome from 'react-icons/lib/fa'
 import * as MaterialDesignIcons from 'react-icons/lib/md'

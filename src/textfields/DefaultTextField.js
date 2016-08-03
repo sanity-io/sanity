@@ -37,12 +37,12 @@ export default class DefaultTextField extends React.Component {
   }
 
   handleFocus() {
-    console.log('Focus')
+    // console.log('Focus')
     // this.props.onFocus()
   }
 
   render() {
-    const {label, value, placeholder, error, focus, showClearButton} = this.props
+    const {label, value, placeholder, error, showClearButton} = this.props
 
     // TODO generate an ID here
     const id = label

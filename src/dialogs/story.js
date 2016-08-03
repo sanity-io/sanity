@@ -6,8 +6,7 @@ import FullscreenDialog from 'component:@sanity/components/dialogs/fullscreen'
 import faker from 'faker'
 
 import centered from '../storybook-addons/centered.js'
-import role from '../storybook-addons/role.js'
-
+require('../storybook-addons/role.js')
 
 storiesOf('Dialogs')
 .addDecorator(centered)

@@ -61,6 +61,7 @@
   padding: var(--dialog-padding);
   position: relative;
   height: 100%;
+
   @nest .hasHeader & {
     height: calc(100% - var(--dialog-header-height) - var(--dialog-padding) * 2);
     margin-top: var(--dialog-header-height);

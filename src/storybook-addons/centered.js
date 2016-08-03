@@ -11,10 +11,9 @@ const style = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  'background-color': '#fafafa'
+  backgroundColor: '#fafafa'
 }
 
-export default function (storyFn, story) {
-  console.log('storyfn', storyFn, story)
+export default function (storyFn, story) { //eslint-disable-line react/display-name
   return <div style={style}>{storyFn()}</div>
 }
