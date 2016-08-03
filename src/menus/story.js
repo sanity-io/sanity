@@ -24,22 +24,20 @@ storiesOf('Menus')
           items={[
             {
               title: 'First item',
-              id: '1'
+              index: '1'
             },
             {
               title: 'Second item',
-              id: '1'
+              index: '1'
             },
             {
               title: 'Third item',
-              id: '3'
-            },
-            {
-              kind: 'divider'
+              index: '3'
             },
             {
               title: 'Extra item',
-              id: '4'
+              index: '4',
+              divider: true
             }
           ]}
           opened
@@ -59,21 +57,25 @@ storiesOf('Menus')
     const items = [
       {
         title: 'First item',
-        icon: FaBeer
+        icon: FaBeer,
+        index: '1'
       },
       {
         title: 'Second item',
-        icon: FaBeer
+        icon: FaBeer,
+        index: '2'
       },
       {
         title: 'Third item',
-        icon: FaBeer
+        icon: FaBeer,
+        index: '3'
       },
       {
         kind: 'divider'
       },
       {
         title: 'Extra item',
+        index: '4',
         icon: FaBeer
       }
     ]

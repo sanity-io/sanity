@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/textfields/search'
+import lodash from 'lodash'
 
 export default class SearchFieldField extends React.Component {
   static propTypes = {
-    label: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
@@ -31,22 +32,23 @@ export default class SearchFieldField extends React.Component {
     this.props.onKeyPress()
   }
 
+  componentWillMount() {
+    this._inputId = lodash.uniqueId('searchfield')
+  }
+
   render() {
     const {label, value, placeholder} = this.props
-
-    // TODO generate an ID here
-    const id = label
 
     return (
       <div className={styles.root}>
         {
-          label && <label htmlFor={id} className={styles.label}>
+          label && <label htmlFor={this._inputId} className={styles.label}>
             {label}
           </label>
         }
         <input
           className={styles.input}
-          id={id}
+          id={this._inputId}
           type="search"
           onChange={this.handleChange}
           value={value}

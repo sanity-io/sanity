@@ -100,15 +100,15 @@ storiesOf('Dialogs')
   () => {
     const actions = [
       {
-        id: 1,
+        index: '1',
         title: 'Finish'
       },
       {
-        id: 2,
+        index: '2',
         title: 'Cancel',
       },
       {
-        id: 3,
+        index: '3',
         title: 'Secondary',
         kind: 'secondary'
       }
@@ -119,7 +119,7 @@ storiesOf('Dialogs')
           title="This is the title"
           isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
           actions={actions}
-          onAction={action('onAction', 'button')}
+          onAction={action('onAction')}
         >
           This is the content
         </DefaultDialog>

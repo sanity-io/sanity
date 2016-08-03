@@ -8,6 +8,7 @@ class DropDownButton extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['add', 'delete', 'warning', 'success', 'danger']),
     items: Menu.propTypes.items,
+    onAction: Menu.propTypes.onAction,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
     icon: PropTypes.node,
@@ -23,6 +24,7 @@ class DropDownButton extends React.Component {
       menuOpened: false
     }
     this.handleOnClick = this.handleOnClick.bind(this)
+    this.handleAction = this.handleAction.bind(this)
   }
 
   handleClickOutside() {
@@ -33,6 +35,9 @@ class DropDownButton extends React.Component {
     this.setState({
       menuOpened: !this.state.menuOpened
     })
+  }
+  handleAction(item) {
+    this.props.onAction(item)
   }
 
   render() {
@@ -49,7 +54,13 @@ class DropDownButton extends React.Component {
 
         <span className={styles.arrow}></span>
 
-        <Menu items={items} opened={this.state.menuOpened} fullWidth className={styles.menu} />
+        <Menu
+          items={items}
+          opened={this.state.menuOpened}
+          fullWidth
+          className={styles.menu}
+          onAction={this.handleAction}
+        />
 
       </Button>
     )

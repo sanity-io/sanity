@@ -80,7 +80,7 @@ export default class DefaultDialog extends React.Component {
   handleActionClick(event) {
     const actionId = event.currentTarget.getAttribute('data-action-id')
     this.props.onAction(
-      this.props.actions.find(action => action.id === actionId)
+      this.props.actions.find(action => action.index === actionId)
     )
   }
 
@@ -113,9 +113,9 @@ export default class DefaultDialog extends React.Component {
                 actions.map(action => {
                   return (
                     <Button
-                      key={action.id}
+                      key={action.index}
                       onClick={this.handleActionClick}
-                      data-action-id={action.id}
+                      data-action-id={action.index}
                       kind={action.kind}
                       className={styles[`button_${action.kind}`] || styles.button}
                     >

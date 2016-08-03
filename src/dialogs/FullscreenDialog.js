@@ -9,7 +9,7 @@ export default class FullScreenDialog extends React.Component {
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool.isRequired
+    isOpen: PropTypes.bool
   }
 
   render() {

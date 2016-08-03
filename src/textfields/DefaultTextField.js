@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/textfields/default'
+import lodash from 'lodash'
 
 export default class DefaultTextField extends React.Component {
   static propTypes = {
-    label: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
@@ -41,11 +42,12 @@ export default class DefaultTextField extends React.Component {
     // this.props.onFocus()
   }
 
+  componentWillMount() {
+    this._inputId = lodash.uniqueId('DefaultTextField')
+  }
+
   render() {
     const {label, value, placeholder, error, showClearButton} = this.props
-
-    // TODO generate an ID here
-    const id = label
 
     const rootClass = error ? styles.error : styles.root
 
@@ -54,7 +56,7 @@ export default class DefaultTextField extends React.Component {
         {
           label
           && <label
-            htmlFor={id}
+            htmlFor={this._inputId}
             className={`${error ? styles.errorLabel : styles.label}`}
              >
               {label}
@@ -62,7 +64,7 @@ export default class DefaultTextField extends React.Component {
         }
         <input
           className={`${error ? styles.inputError : styles.input}`}
-          id={id}
+          id={this._inputId}
           type="text"
           onChange={this.handleChange}
           value={value}

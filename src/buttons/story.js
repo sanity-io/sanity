@@ -68,9 +68,9 @@ storiesOf('Buttons')
   'component:@sanity/components/buttons/dropdown',
   () => {
     const items = [
-      {id: 1, title: 'Test'},
-      {id: 2, title: 'Test 2'},
-      {id: 3, title: 'Test 3'}
+      {index: '1', title: 'Test'},
+      {index: '2', title: 'Test 2'},
+      {index: '3', title: 'Test 3'}
     ]
     return (
       <div>
