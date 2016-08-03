@@ -2,7 +2,7 @@
   "name": "@sanity/data-aspects",
   "version": "1.0.0",
   "description": "Sanity plugin which controls how your data is presented",
-  "main": "lib/index.js",
+  "main": "lib/DataAspectsResolver.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
