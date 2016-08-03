@@ -31,7 +31,9 @@ function handleApiError(errObj, observer) {
     return observer.error(new AccessDeniedError('You are not allowed to perform this action.'))
   }
   if (errObj.code === 'NOT_FOUND_ERROR') {
-    return observer.error(new NotFoundError(`An installation with label '${config.api.dataset}' not found. Check your installation's sanity.json file.`))
+    return observer.error(
+      new NotFoundError(`An installation with label '${config.api.dataset}' not found. Check your installation's sanity.json file.`)
+    )
   }
   return observer.error(new UnknownApiError(errObj))
 }
@@ -67,7 +69,7 @@ function currentInstallation() {
 }
 
 export default function createInstallationsStore(options = {}) {
-  const store = {
+  return {
     actions: createActions({}),
     currentInstallation: currentInstallation(),
     errors: {
@@ -76,5 +78,4 @@ export default function createInstallationsStore(options = {}) {
       UnknownApiError: UnknownApiError
     }
   }
-  return store
 }
