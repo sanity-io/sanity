@@ -63,7 +63,7 @@ class GeopointInput extends React.Component {
   }
 
   handleDialogAction(action) {
-    if (action.id === 'close') {
+    if (action.key === 'close') {
       this.handleCloseModal()
     }
   }
@@ -74,7 +74,7 @@ class GeopointInput extends React.Component {
     const actions = [
       {
         title: 'Close',
-        id: 'close'
+        key: 'close'
       }
     ]
 
