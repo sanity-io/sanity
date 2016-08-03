@@ -2,6 +2,8 @@ const path = require('path')
 const sanityServer = require('@sanity/server')
 
 module.exports = (storyWpConfig, configType) => {
+  'use strict' // eslint-disable-line strict
+
   const sanityWpConfig = sanityServer.getWebpackBaseConfig({
     basePath: process.cwd(),
     commonChunkPlugin: false
