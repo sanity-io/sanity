@@ -1,0 +1,11 @@
+{
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "extends": [
+    "sanity",
+    "sanity/react"
+  ]
+}
