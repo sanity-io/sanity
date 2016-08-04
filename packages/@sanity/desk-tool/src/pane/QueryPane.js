@@ -1,34 +1,27 @@
 import React, {PropTypes} from 'react'
 import Pane from 'component:desk-tool/pane'
-import client from 'client:@sanity/base/client'
 import equals from 'shallow-equals'
+import QueryContainer from 'component:@sanity/base/query-container'
+
+function mapProps(props) {
+  const {result, ...rest} = props
+  return {
+    items: result ? result.documents : [],
+    ...rest
+  }
+}
 
 class QueryPane extends React.Component {
-  constructor() {
-    super()
-
-    this.state = {
-      loading: true
-    }
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     return !equals(this.props, nextProps) || !equals(this.state, nextState)
   }
 
-  componentDidMount() {
-    client.fetch(this.props.query)
-      .then(res => this.setState({loading: false, items: res.result}))
-  }
-
   render() {
+    const {query, ...rest} = this.props
     return (
-      <Pane
-        items={this.state.items}
-        loading={this.state.loading}
-        basePath={this.props.basePath}
-        activeItem={this.props.activeItem}
-      />
+      <QueryContainer query={query} mapFn={mapProps}>
+        <Pane {...rest} />
+      </QueryContainer>
     )
   }
 }
