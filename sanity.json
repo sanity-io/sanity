@@ -154,6 +154,10 @@
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
     {
+      "name": "component:@sanity/base/query-container",
+      "description": "Wraps a query and passes down results as props to its child component"
+    },
+    {
       "name": "style:@sanity/base/theme/layout/resets",
       "description": "Provides resets for resetting browser styling"
     },
@@ -308,6 +312,11 @@
       "path": "./lib/datastores/location"
     },
     {
+      "name": "datastore:@sanity/base/document",
+      "srcPath": "./src/datastores/document",
+      "path": "./lib/datastores/document"
+    },
+    {
       "name": "datastore:@sanity/base/user",
       "srcPath": "./src/datastores/user",
       "path": "./lib/datastores/user"
@@ -353,6 +362,11 @@
       "implements": "component:@sanity/base/sanity-intl-provider",
       "srcPath": "./src/components/SanityIntlProvider",
       "path": "./lib/components/SanityIntlProvider"
+    },
+    {
+      "implements": "component:@sanity/base/query-container",
+      "srcPath": "./src/components/QueryContainer",
+      "path": "./lib/components/QueryContainer"
     },
     {
       "implements": "role:@sanity/base/locale/formatters",
