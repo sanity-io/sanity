@@ -56,7 +56,8 @@ export default class Str extends React.Component {
 
   handleChange(e) {
     const val = e.target.value || undefined
-    this.props.onChange({patch: {$set: val}})
+    const op = val ? '$set' : '$delete'
+    this.props.onChange({patch: {[op]: val}})
   }
 
   handleKeyPress(e) {

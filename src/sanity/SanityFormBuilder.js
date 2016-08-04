@@ -1,7 +1,7 @@
 // Connects the FormBuilder with various sanity roles
 
 import React, {PropTypes} from 'react'
-import client from 'client:@sanity/base/client'
+import documentStore from 'datastore:@sanity/base/document'
 import equals from 'shallow-equals'
 import schema from 'schema:@sanity/base/schema'
 import locationStore from 'datastore:@sanity/base/location'
@@ -31,9 +31,17 @@ class SanityFormBuilder extends React.Component {
     this.state = this.getStateForProps(props)
 
     this.handleChange = this.handleChange.bind(this)
-    this.handleSave = this.handleSave.bind(this)
+    this.handleDocPatch = this.handleDocPatch.bind(this)
   }
 
+  componentWillMount() {
+    documentStore.actions.update.calls.subscribe(call => {
+      const [id, patch] = call.args
+      if (id === this.props.documentId) {
+        this.handleDocPatch(patch)
+      }
+    })
+  }
   shouldComponentUpdate(nextProps, nextState) {
     return !equals(this.props, nextProps) || !equals(this.state, nextState)
   }
@@ -55,45 +63,20 @@ class SanityFormBuilder extends React.Component {
   }
 
   handleChange(event) {
-    const nextValue = this.state.value.patch(event.patch)
-    this.setState({
-      value: nextValue,
-      validation: nextValue.validate()
-    })
+    const {typeName} = this.props
+    const id = this.state.value.getFieldValue('$id')
+    const prefixedType = `${schema.name}.${typeName}`
+    const mutation = id
+      ? documentStore.actions.update(id, event.patch)
+      : documentStore.actions.create(Object.assign({$type: prefixedType}, event.patch))
+
+    mutation.progress.subscribe(() => {})
   }
 
-  handleSave() {
-    const data = this.state.value.serialize()
-    const patch = Object.keys(data).reduce((doc, key) => {
-      if (key[0] === '$') {
-        return doc
-      }
+  handleDocPatch(patch) {
+    const nextValue = this.state.value.patch(patch)
 
-      doc[key] = data[key]
-      return doc
-    }, {})
-
-    this.setState({saving: true})
-
-    const prefixedType = `${schema.name}.${data.$type}`
-    const mutation = data.$id
-      ? client.update(data.$id, patch)
-      : client.create(Object.assign({$type: prefixedType}, patch))
-
-    mutation
-      .then(res => {
-        this.setState({saving: false, changed: false})
-
-        const newId = res.docIds[0]
-        if (newId !== data.$id) {
-          // @todo figure out how to navigate to the correct URL
-          locationStore.actions.navigate('/')
-        }
-      })
-      .catch(err => {
-        console.error(err) // eslint-disable-line no-console
-        this.setState({saving: false})
-      })
+    this.setState({value: nextValue})
   }
 
   render() {
