@@ -36,7 +36,8 @@
     "rimraf": "^2.5.3"
   },
   "peerDependencies": {
-    "react": "^15.0.0"
+    "react": "^15.0.0",
+    "@sanity/data-aspects": "^1.0.1"
   },
   "repository": {
     "type": "git",
