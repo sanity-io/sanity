@@ -17,41 +17,30 @@ tokenChannel.subscribe(val => {
   _currentToken = val
 })
 
-function getCurrentUser() {
-  return authenticationFetcher.getCurrentUser()
-}
-
-getCurrentUser().then(user => {
+authenticationFetcher.getCurrentUser().then(user => {
+  // Set initial value
   userChannel.publish(user)
 })
 
 
 function logout() {
-  return new Promise((resolve,reject) => {
-    authenticationFetcher.logout()
-    .then(() => {
-      userChannel.publish(null)
-      resolve()
-    })
+  return authenticationFetcher.logout().then(() => {
+    userChannel.publish(null)
   })
 }
 
-
 const currentToken = new Observable(observer => {
 
-  nextToken('snapshot', _currentToken)
+  pushToken('snapshot', _currentToken)
 
-  return tokenChannel.subscribe(nextToken => {
-    nextToken('change', nextToken)
+  return tokenChannel.subscribe(_nextToken => {
+    pushToken('change', _nextToken)
   })
 
-  function nextToken(type, token) {
-    authenticationFetcher.getToken()
-    .then(token => {
-      observer.next({
-        type: type,
-        token: token
-      })
+  function pushToken(type, token) {
+    observer.next({
+      type: type,
+      token: token
     })
   }
 })
