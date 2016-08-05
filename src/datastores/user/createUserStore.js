@@ -17,11 +17,24 @@ tokenChannel.subscribe(val => {
   _currentToken = val
 })
 
-authenticationFetcher.getCurrentUser().then(user => {
-  // Set initial value
-  userChannel.publish(user)
-})
+function refreshUser() {
+  return authenticationFetcher.getCurrentUser().then(user => {
+    userChannel.publish(user)
+    return user
+  })
+}
 
+function refreshToken() {
+  return authenticationFetcher.getToken().then(token => {
+    tokenChannel.publish(token)
+    return token
+  })
+}
+
+// Set initial value for user
+refreshUser()
+// Set initial value for user
+refreshToken()
 
 function logout() {
   return authenticationFetcher.logout().then(() => {
@@ -30,7 +43,6 @@ function logout() {
 }
 
 const currentToken = new Observable(observer => {
-
   pushToken('snapshot', _currentToken)
 
   return tokenChannel.subscribe(_nextToken => {
@@ -61,10 +73,22 @@ const currentUser = new Observable(observer => {
   }
 })
 
+function refreshTokenAction() {
+  const progress = new Observable(observer => {
+    refreshToken().then(
+      token => observer.next(token),
+      error => observer.error(error)
+    )
+      .then(() => observer.complete())
+  })
+  return {progress}
+}
+
 export default function createUserStore(options = {}) {
   return {
     actions: createActions({
-      logout: logout,
+      logout,
+      refreshToken: refreshTokenAction
     }),
     currentUser,
     currentToken

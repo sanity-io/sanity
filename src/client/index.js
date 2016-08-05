@@ -24,7 +24,7 @@ function tokenIsExpired(tokenPayload) {
   if (!tokenPayload) {
     return true
   }
-  const tokenTime  = currentTokenPayload.x * 1000
+  const tokenTime = currentTokenPayload.x * 1000
   const now = Date.now()
   if ((tokenTime - now) > MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN) {
     return false
@@ -32,22 +32,26 @@ function tokenIsExpired(tokenPayload) {
   return true
 }
 
+const client = sanityClient(config.api)
+client.on('request', updateClientTokenPromise)
+
 function updateClientTokenPromise() {
+  if (!tokenIsExpired(currentTokenPayload)) {
+    return Promise.resolve()
+  }
+
   return new Promise((resolve, reject) => {
-    if (!tokenIsExpired(currentTokenPayload)) {
-      return resolve()
-    }
-    userStore.currentToken
-      .map(ev => ev.token)
-      .subscribe(token => {
-        currentTokenPayload = extractTokenPayload(token)
-        client.config({token})
-        resolve()
+    userStore.actions.refreshToken()
+      .progress
+      .subscribe({
+        next: token => {
+          currentTokenPayload = extractTokenPayload(token)
+          client.config({token})
+          resolve()
+        },
+        error: reject
       })
   })
 }
-
-const client = sanityClient(config.api)
-client.on('request', updateClientTokenPromise)
 
 export default client
