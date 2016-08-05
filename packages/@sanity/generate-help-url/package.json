@@ -1,0 +1,28 @@
+{
+  "name": "@sanity/generate-help-url",
+  "version": "1.0.0",
+  "description": "Generates URLs to specific sections of the Sanity documentation",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/**/*.test.js",
+    "posttest": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/generate-help-url.git"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/generate-help-url/issues"
+  },
+  "homepage": "https://github.com/sanity-io/generate-help-url#readme",
+  "devDependencies": {
+    "eslint": "^3.2.2",
+    "eslint-config-sanity": "^1.1.2",
+    "tape": "^4.6.0"
+  }
+}
