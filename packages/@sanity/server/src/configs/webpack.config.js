@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
+import parents from 'parents'
 import RoleResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import postcssUse from 'postcss-use'
@@ -17,10 +18,7 @@ export default (config = {}) => {
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
   const isProd = env === 'production'
-  const resolvePaths = [
-    path.resolve(basePath),
-    path.resolve(path.join(basePath, 'node_modules'))
-  ]
+  const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
 
   const cssExtractor = isProd
     && new ExtractTextPlugin('css/main.css', {allChunks: true})
@@ -46,10 +44,9 @@ export default (config = {}) => {
       publicPath: '/static/'
     },
     resolve: {
-      modules: resolvePaths, // Webpack 2
-      root: resolvePaths // Webpack 1
+      fallback: resolvePaths
     },
-    resolveLoader: { // Webpack 1
+    resolveLoader: {
       root: resolvePaths
     },
     module: {
