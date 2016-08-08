@@ -1,19 +1,21 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
   "roles": [
     {
       "implements": "component:@sanity/base/login-dialog",
-      "srcPath": "src/LoginDialog.js",
-      "path": "lib/LoginDialog.js"
+      "path": "LoginDialog.js"
     },
     {
       "implements": "machine:@sanity/base/authentication-fetcher",
-      "srcPath": "src/authenticationFetcher.js",
-      "path": "lib/authenticationFetcher.js"
+      "path": "authenticationFetcher.js"
     },
     {
       "implements": "machine:@sanity/base/installation-fetcher",
-      "srcPath": "src/installationFetcher.js",
-      "path": "lib/installationFetcher.js"
+      "path": "installationFetcher.js"
     },
     {
       "implements": "locale:@sanity/base/locale-messages",
