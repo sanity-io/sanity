@@ -2,58 +2,63 @@ import React from 'react'
 import Snackbar from 'component:@sanity/components/snackbar/default'
 import {storiesOf, action} from 'component:@sanity/storybook'
 
-require('../storybook-addons/role.js')
-
 storiesOf('Snackbar')
-.addWithRole(
+.addWithInfo(
   'Snackbar (info)',
   `
     Default snackbar.
   `,
-  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar>This is the message</Snackbar>
   ),
-  {propTables: [Snackbar]}
-).addWithRole(
+  {
+    propTables: [Snackbar],
+    role: 'component:@sanity/components/snackbar/default'
+  }
+).addWithInfo(
   'Snackbar (warning)',
   `
     Used to give a warning
   `,
-  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="warning">This is the message</Snackbar>
   ),
-  {propTables: [Snackbar]}
+  {
+    propTables: [Snackbar],
+    role: 'component:@sanity/components/snackbar/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Snackbar (success)',
   `
     Default snackbar.
   `,
-  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="success">This is the success message</Snackbar>
   ),
-  {propTables: [Snackbar]}
+  {
+    propTables: [Snackbar],
+    role: 'component:@sanity/components/snackbar/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Snackbar (error)',
   `
     Default snackbar.
   `,
-  'component:@sanity/components/snackbar/default',
   () => (
     <Snackbar kind="error">This is the error message</Snackbar>
   ),
-  {inline: true, propTables: [Snackbar]}
+  {
+    propTables: [Snackbar],
+    role: 'component:@sanity/components/snackbar/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Snackbar (with action)',
   `
     Default snackbar.
   `,
-  'component:@sanity/components/snackbar/default',
   () => {
     const myAction = {
       title: 'Undo',
@@ -65,5 +70,8 @@ storiesOf('Snackbar')
       </Snackbar>
     )
   },
-  {propTables: [Snackbar]}
+  {
+    propTables: [Snackbar],
+    role: 'component:@sanity/components/snackbar/default'
+  }
 )

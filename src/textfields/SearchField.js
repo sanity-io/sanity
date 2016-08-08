@@ -14,22 +14,30 @@ export default class SearchFieldField extends React.Component {
   }
 
   static defaultProps = {
-    value: ''
+    value: '',
+    onKeyPress() {},
+    onChange() {}
   }
 
   constructor(props, context) {
     super(props, context)
+    this.handleChange = this.handleChange.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
     this.state = {
       value: this.props.value
     }
   }
 
-  handleChange() {
-    this.props.onChange()
+  handleChange(event) {
+    const value = event.target.value
+    this.setState({
+      value: value
+    })
+    this.props.onChange(value)
   }
 
-  handleKeyPress() {
-    this.props.onKeyPress()
+  handleKeyPress(event) {
+    this.props.onKeyPress(event)
   }
 
   componentWillMount() {
@@ -37,7 +45,8 @@ export default class SearchFieldField extends React.Component {
   }
 
   render() {
-    const {label, value, placeholder} = this.props
+    const {label, placeholder} = this.props
+    const {value} = this.state
 
     return (
       <div className={styles.root}>

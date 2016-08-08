@@ -7,18 +7,36 @@ import DefaultDialog from 'component:@sanity/components/dialogs/default'
 import {range} from 'lodash'
 import faker from 'faker'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
-
 storiesOf('Reference picker')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Default',
   `
     The default reference picker
   `,
-  'component:@sanity/components/referencepickers/default',
+  () => {
+    const items = range(50).map((item, i) => {
+      return {
+        id: `${i}`,
+        title: faker.name.findName(),
+        image: `${faker.image.imageUrl()}?${i}`
+      }
+    })
+    return (
+      <div style={{height: '30em'}}>
+        <ReferencePickerDefault items={items} />
+      </div>
+    )
+  },
+  {
+    propTables: [ReferencePickerDefault],
+    role: 'component:@sanity/components/referencepickers/default'
+  }
+)
+.addWithInfo(
+  'With search',
+  `
+    The default reference picker
+  `,
   () => {
     const items = range(50).map((item, i) => {
       return {
@@ -33,14 +51,17 @@ storiesOf('Reference picker')
       </div>
     )
   },
-  {propTables: [ReferencePickerDefault]}
+  {
+    propTables: [ReferencePickerDefault],
+    role: 'component:@sanity/components/referencepickers/default'
+  }
 )
-.addWithRole(
+
+.addWithInfo(
   'In dialog',
   `
     The default reference picker
   `,
-  'component:@sanity/components/referencepickers/default',
   () => {
     const items = range(100).map((item, i) => {
       return {
@@ -64,5 +85,8 @@ storiesOf('Reference picker')
       </DefaultDialog>
     )
   },
-  {propTables: [ReferencePickerDefault]}
+  {
+    propTables: [ReferencePickerDefault],
+    role: 'component:@sanity/components/referencepickers/default'
+  }
 )

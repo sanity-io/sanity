@@ -2,9 +2,6 @@ import React from 'react'
 import ProgressBar from 'component:@sanity/components/progress/bar'
 import {storiesOf} from 'component:@sanity/storybook'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 class ProgressBarImplementation extends React.Component {
 
   constructor(...args) {
@@ -40,71 +37,82 @@ class ProgressBarImplementation extends React.Component {
 }
 
 storiesOf('Progress')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Progress bar',
   `
     Default progress bar.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBar style={{width: '20em'}} />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Progress bar (20%)',
   `
     Default progress bar.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBar style={{width: '20em'}} completion={20} />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Progress bar (100%)',
   `
     Default progress bar.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBar style={{width: '20em'}} completion={100} />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Progress bar (showPercent)',
   `
     Default progress bar showing percent.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBar style={{width: '20em'}} completion={22} showPercent />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Progress bar (with text)',
   `
     Default progress bar showing percent.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBar style={{width: '20em'}} completion={22} showPercent text="Downloaded 5.1 of 8.2Mb" />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Progress bar example',
   `
     Default progress bar showing percent.
   `,
-  'component:@sanity/components/progress/bar',
   () => (
     <ProgressBarImplementation />
   ),
-  {propTables: [ProgressBar]}
+  {
+    propTables: [ProgressBar],
+    role: 'component:@sanity/components/progress/bar'
+  }
 )

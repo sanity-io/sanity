@@ -1,13 +1,12 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import {storiesOf, action} from 'component:@sanity/storybook'
 import TagsTextField from 'component:@sanity/components/tags/textfield'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 class DefaultTextFieldImplementation extends React.Component {
   static propTypes = {
-    tags: React.PropTypes.arr
+    tags: PropTypes.arrayOf(PropTypes.shape(
+      PropTypes.string
+    ))
   }
   constructor(...args) {
     super(...args)
@@ -16,24 +15,19 @@ class DefaultTextFieldImplementation extends React.Component {
     this.removeTag = this.removeTag.bind(this)
 
     this.state = {
-      tags: this.props.tags
+      tags: this.props.tags || []
     }
   }
 
   addTag(tag) {
-    action('Add tag')
     const tags = this.state.tags
     tags.push(tag)
-    // console.log('about to set new state', tags)
     this.setState({
       tags: tags
     })
   }
 
   removeTag(i) {
-    action('Remove tag')
-    // console.log('Removing tag', this.state.tags[i], i, this.state.tags)
-
     this.state.tags.splice(i, 1)
     const tags = this.state.tags
 
@@ -56,13 +50,11 @@ class DefaultTextFieldImplementation extends React.Component {
 }
 
 storiesOf('Tags')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Tags',
   `
     Default tags
   `,
-  'component:@sanity/components/textfields/tags',
   () => {
     const tags = ['Test', 'Sanity']
 
@@ -76,15 +68,17 @@ storiesOf('Tags')
       />
     )
   },
-  {propTables: [TagsTextField]}
+  {
+    propTables: [TagsTextField],
+    role: 'component:@sanity/components/textfields/tags'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Tags (test)',
   `
     Default tags
   `,
-  'component:@sanity/components/textfields/tags',
   () => {
     let tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
 
@@ -92,5 +86,8 @@ storiesOf('Tags')
       <DefaultTextFieldImplementation tags={tags} />
     )
   },
-  {propTables: [TagsTextField]}
+  {
+    propTables: [TagsTextField],
+    role: 'component:@sanity/components/textfields/tags'
+  }
 )

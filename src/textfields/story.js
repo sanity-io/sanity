@@ -1,35 +1,53 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 import DefaultTextField from 'component:@sanity/components/textfields/default'
 import SearchTextField from 'component:@sanity/components/textfields/search'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 storiesOf('Textfields')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Default',
   `
     Default textfield
   `,
-  'component:@sanity/components/textfields/default',
   () => {
     return (
       <DefaultTextField
         label="This is the label"
         placeholder="This is the placeholder"
+        onChange={action('Changed')}
       />
     )
   },
-  {propTables: [DefaultTextField]}
+  {
+    propTables: [DefaultTextField],
+    role: 'component:@sanity/components/textfields/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
+  'With value',
+  `
+    Default textfield
+  `,
+  () => {
+    return (
+      <DefaultTextField
+        label="This is the label"
+        placeholder="This is the placeholder"
+        onChange={action('Changed')}
+        value="Donald Duck"
+      />
+    )
+  },
+  {
+    propTables: [DefaultTextField],
+    role: 'component:@sanity/components/textfields/default'
+  }
+)
+.addWithInfo(
   'Default (with clear)',
   `
     Default textfield
   `,
-  'component:@sanity/components/textfields/default',
   () => {
     return (
       <DefaultTextField
@@ -39,14 +57,16 @@ storiesOf('Textfields')
       />
     )
   },
-  {propTables: [DefaultTextField]}
+  {
+    propTables: [DefaultTextField],
+    role: 'component:@sanity/components/textfields/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Default (error)',
   `
     Default textfield
   `,
-  'component:@sanity/components/textfields/default',
   () => {
     return (
       <DefaultTextField
@@ -57,21 +77,27 @@ storiesOf('Textfields')
       />
     )
   },
-  {propTables: [DefaultTextField]}
+  {
+    propTables: [DefaultTextField],
+    role: 'component:@sanity/components/textfields/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Search',
   `
     Default searchfield
   `,
-  'component:@sanity/components/textfields/search',
   () => {
     return (
       <SearchTextField
         label="This is the label"
         placeholder="This is the placeholder"
+        onChange={action('onChange', 'more')}
       />
     )
   },
-  {propTables: [SearchTextField]}
+  {
+    propTables: [SearchTextField],
+    role: 'component:@sanity/components/textfields/search'
+  }
 )

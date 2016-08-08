@@ -29,6 +29,7 @@ setAddon({
             <code style={codeStyle}>{role}</code>
           </div>
           <div>
+            addedWithRole
             {storyFn(context)}
           </div>
         </div>

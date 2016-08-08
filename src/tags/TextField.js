@@ -4,13 +4,15 @@ import styles from 'style:@sanity/components/tags/textfield'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {
-    label: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
     addTag: PropTypes.func.isRequired,
     removeTag: PropTypes.func.isRequired,
     error: PropTypes.bool,
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
-    tags: PropTypes.arr
+    tags: PropTypes.arrayOf(PropTypes.shape(
+      PropTypes.string
+    ))
   }
 
   static defaultProps = {

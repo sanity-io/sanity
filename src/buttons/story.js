@@ -5,24 +5,19 @@ import DropDownButton from 'component:@sanity/components/buttons/dropdown'
 import {storiesOf, action} from 'component:@sanity/storybook'
 import FaBeer from 'react-icons/lib/fa/beer'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
 
 storiesOf('Buttons')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
     'Default Button',
     'Standard button Role: component:@sanity/components/buttons/default',
-    'component:@sanity/components/buttons/default',
     () => (
       <Button onClick={action('clicked')}>Touch me!</Button>
     ),
-    {propTables: [Button], role: 'rolename'}
+    {propTables: [Button], role: 'component:@sanity/components/buttons/default'}
   )
-.addWithRole(
+.addWithInfo(
 'Variations',
 '',
-'component:@sanity/components/buttons/default',
 () => (
   <div>
     <Button onClick={action('clicked')}>Default</Button>
@@ -45,13 +40,12 @@ storiesOf('Buttons')
     </Button>
   </div>
 ),
-{propTables: [Button], role: 'rolename'}
+{propTables: [Button], role: 'component:@sanity/components/buttons/default'}
 )
 
-.addWithRole(
+.addWithInfo(
   'Fab (Floating Action Button)',
   'Borrowed from Googles material design. Used to create new stuff. Is by default fixed to bottom right.',
-  'component:@sanity/components/buttons/fab',
   () => {
     return (
       <div>
@@ -59,13 +53,12 @@ storiesOf('Buttons')
       </div>
     )
   },
-  {propTables: [Fab]}
+  {propTables: [Fab], role: 'component:@sanity/components/buttons/fab'}
 )
 
-.addWithRole(
+.addWithInfo(
   'DropDownButton',
   'Buttons that opens a menu.',
-  'component:@sanity/components/buttons/dropdown',
   () => {
     const items = [
       {index: '1', title: 'Test'},
@@ -80,5 +73,5 @@ storiesOf('Buttons')
       </div>
     )
   },
-  {propTables: [DropDownButton]}
+  {propTables: [DropDownButton], role: 'component:@sanity/components/buttons/dropdown'}
 )

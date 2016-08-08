@@ -1,16 +1,37 @@
+@import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
+
+:root {
+  --default-item-selected-color: var(--brand-primary);
+  --default-item-background-color: #fff;
+  --default-item-background-color-hover: #f0f0f0;
+  --default-item-odd-background-color: #fafafa;
+  --default-item-odd-background-color-hover: #f0f0f0;
+}
 
 .zebra-stripes {
   &:nth-child(even) {
-    background-color: #fff;
+    background-color: var(--default-item-background-color);
+    &.selected {
+      background-color: color(var(--default-item-background-color) blend(var(--default-item-selected-color) 40%));
+    }
     &:hover {
-      background-color: #f0f0f0;
+      background-color: var(--default-item-background-color-hover);
+      &.selected {
+        background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
+      }
     }
   }
   &:nth-child(odd) {
-    background-color: #fafafa;
+    background-color: var(--default-item-odd-background-color);
+    &.selected {
+      background-color: color(var(--default-item-odd-background-color) blend(var(--default-item-selected-color) 40%));
+    }
     &:hover {
-      background-color: #f0f0f0;
+      background-color: var(--default-item-odd-background-color-hover);
+      &.selected {
+        background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
+      }
     }
   }
 }

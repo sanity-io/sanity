@@ -15,10 +15,15 @@ export default class DefaultList extends React.Component {
     ),
     onSelect: PropTypes.func,
     selectable: PropTypes.bool,
+    selectedItemIndex: PropTypes.string,
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
     layout: PropTypes.oneOf(['media', 'block', 'string'])
+  }
+
+  static defaultProps = {
+    selectedItemIndex: false
   }
 
   constructor(context, props) {
@@ -27,14 +32,13 @@ export default class DefaultList extends React.Component {
     this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSelect(id) {
-    // console.log('click from list', id)
-    this.props.onSelect(id)
+  handleSelect(index) {
+    this.props.onSelect(this.props.items.find(item => item.index === index))
   }
 
   render() {
 
-    const {items, children, layout, className} = this.props
+    const {items, children, layout, className, selectedItemIndex} = this.props
 
     return (
       <div className={`${className} ${styles.root}`}>
@@ -50,6 +54,7 @@ export default class DefaultList extends React.Component {
                     icon={item.icon}
                     onClick={this.handleSelect}
                     index={item.index}
+                    selected={selectedItemIndex == item.index}
                   >
                     {item.content}
                   </ListItem>

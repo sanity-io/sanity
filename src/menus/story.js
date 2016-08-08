@@ -3,17 +3,12 @@ import Menu from 'component:@sanity/components/menus/default'
 import {storiesOf, action} from 'component:@sanity/storybook'
 import FaBeer from 'react-icons/lib/fa/beer'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 storiesOf('Menus')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Menu',
   `
     Default menu
   `,
-  'component:@sanity/components/menus/default',
   () => {
     return (
       <div style={{
@@ -45,14 +40,16 @@ storiesOf('Menus')
       </div>
     )
   },
-  {propTables: [Menu]}
+  {
+    propTables: [Menu],
+    role: 'component:@sanity/components/menus/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Menu (with icons)',
   `
     ## Using icons
   `,
-  'component:@sanity/components/menus/default',
   () => {
     const items = [
       {
@@ -87,5 +84,8 @@ storiesOf('Menus')
       </div>
     )
   },
-  {inline: true, propTables: [Menu]}
+  {
+    propTables: [Menu],
+    role: 'component:@sanity/components/menus/default'
+  }
 )

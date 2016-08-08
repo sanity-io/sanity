@@ -3,21 +3,19 @@ import {storiesOf} from 'component:@sanity/storybook'
 
 import Spinner from 'component:@sanity/components/loading/spinner'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 storiesOf('Loading')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Spinner',
   `
     Spinner
   `,
-  'component:@sanity/components/loading/spinner',
   () => {
     return (
       <Spinner />
     )
   },
-  {propTables: [Spinner]}
+  {
+    propTables: [Spinner],
+    role: 'component:@sanity/components/loading/spinner'
+  }
 )

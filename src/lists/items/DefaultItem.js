@@ -9,7 +9,8 @@ export default class DefaultListItem extends React.Component {
     extraContent: PropTypes.node,
     icon: PropTypes.node,
     onClick: PropTypes.func,
-    layout: PropTypes.string
+    layout: PropTypes.string,
+    selected: PropTypes.bool
   }
 
   static defaultProps = {
@@ -27,9 +28,13 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {layout, title, icon} = this.props
+    const {layout, title, icon, selected} = this.props
+    const rootClasses = `
+      ${styles[layout] || styles.root}
+      ${selected ? styles.selected : styles.unSelected}
+    `
     return (
-      <li className={`${styles[layout] || styles.root}`} onClick={this.handleClick}>
+      <li className={rootClasses} onClick={this.handleClick}>
         <div className={styles.icon}>{icon}</div>
         <div className={styles.title}>{title}</div>
       </li>

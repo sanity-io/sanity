@@ -4,49 +4,43 @@ import ToggleButtons from 'component:@sanity/components/toggles/buttons'
 import Switch from 'component:@sanity/components/toggles/switch'
 import Checkbox from 'component:@sanity/components/toggles/checkbox'
 
-import centered from '../storybook-addons/centered.js'
 require('../storybook-addons/role.js')
 
 storiesOf('Toggles')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Switch (off)',
   '',
-  'component:@sanity/components/toggles/switch',
   () => {
     return (
       <Switch onChange={action('change')} label="Switch is off" />
     )
   },
-  {propTables: [Switch]}
+  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
 )
-.addWithRole(
+.addWithInfo(
   'Switch (on)',
   '',
-  'component:@sanity/components/toggles/switch',
   () => {
     return (
       <Switch checked label="Switch is on" onClick={linkTo('Switch (off)')} />
     )
   },
-  {propTables: [Switch]}
+  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
 )
-.addWithRole(
+.addWithInfo(
   'Switch (disabled)',
   '',
-  'component:@sanity/components/toggles/switch',
   () => {
     return (
       <Switch label="This checkbox is disabled" disabled />
     )
   },
-  {propTables: [Switch]}
+  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
 )
 
-.addWithRole(
+.addWithInfo(
   'Checkbox',
   '',
-  'component:@sanity/components/toggles/checkbox',
   () => {
     return (
       <div>
@@ -57,13 +51,12 @@ storiesOf('Toggles')
       </div>
     )
   },
-  {propTables: [Checkbox]}
+  {propTables: [Checkbox], role: 'component:@sanity/components/toggles/checkbox'}
 )
 
-.addWithRole(
+.addWithInfo(
   'Buttons',
   '',
-  'component:@sanity/components/toggles/buttons',
   () => {
     const items = [
       {
@@ -95,5 +88,5 @@ storiesOf('Toggles')
       <ToggleButtons items={items} label="Select something" />
     )
   },
-  {propTables: [ToggleButtons]}
+  {propTables: [ToggleButtons], role: 'component:@sanity/components/toggles/buttons'}
 )

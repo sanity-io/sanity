@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/referencepickers/default'
 
 import SearchField from 'component:@sanity/components/textfields/search'
+import TextField from 'component:@sanity/components/textfields/default'
 import List from 'component:@sanity/components/lists/default'
 import ThumbList from 'component:@sanity/components/lists/thumbs'
 import ToggleButtons from 'component:@sanity/components/toggles/buttons'
@@ -22,13 +23,17 @@ export default class DefaultList extends React.Component {
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
+    onSearch: PropTypes.func,
+    filter: PropTypes.bool,
+    view: PropTypes.oneOf(['list', 'thumbs', 'detail', 'custom']),
     layout: PropTypes.oneOf(['media', 'block', 'string'])
   }
 
   constructor(context, props) {
     super(context, props)
+    this.handleSearch = this.handleSearch.bind(this)
     this.state = {
-      view: 'thumbs'
+      view: this.props.view || 'list'
     }
   }
 
@@ -39,9 +44,13 @@ export default class DefaultList extends React.Component {
     })
   }
 
+  handleSearch(value) {
+    // Handle search
+  }
+
   render() {
 
-    const {items, className} = this.props
+    const {items, className, onSearch, filter} = this.props
 
     const toggleItems = [
       {
@@ -68,9 +77,16 @@ export default class DefaultList extends React.Component {
       <div className={`${styles.root} ${className}`}>
         <div className={styles.inner}>
           <div className={styles.functions}>
-            <div className={styles.search}>
-              <SearchField placeholder="Search…" />
-            </div>
+            {
+              onSearch && <div className={styles.search}>
+                <SearchField placeholder="Search…" onKeyPress={this.handleSearch} />
+              </div>
+            }
+            {
+              filter && <div className={styles.search}>
+                <TextField placeholder="Search…" />
+              </div>
+            }
             <div className={styles.toggle}>
               <ToggleButtons items={toggleItems} label="View" />
             </div>

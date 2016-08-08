@@ -1,6 +1,7 @@
 import React from 'react'
 import {storiesOf, action} from 'component:@sanity/storybook'
 
+import DefaultTextField from 'component:@sanity/components/textfields/default'
 import DefaultList from 'component:@sanity/components/lists/default'
 import DefaultListItem from 'component:@sanity/components/lists/items/default'
 import ThumbsList from 'component:@sanity/components/lists/thumbs'
@@ -8,8 +9,6 @@ import Thumb from 'component:@sanity/components/lists/items/thumb'
 
 import {range} from 'lodash'
 import faker from 'faker'
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
 
 const containerStyle = {
   maxWidth: '40em',
@@ -22,13 +21,11 @@ const containerStyle = {
 
 
 storiesOf('Lists')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Default',
   `
     The default fieldset is used to gather a collection of fields.
   `,
-  'component:@sanity/components/lists/default',
   () => {
     const items = range(100).map((item, i) => {
       return {
@@ -42,15 +39,71 @@ storiesOf('Lists')
       </div>
     )
   },
-  {propTables: [DefaultList]}
+  {
+    propTables: [DefaultList],
+    role: 'component:@sanity/components/lists/default'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
+  'Default witih selected item',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    const items = range(5).map((item, i) => {
+      return {
+        index: `${i}`,
+        title: faker.name.findName()
+      }
+    })
+    return (
+      <div style={containerStyle}>
+        <DefaultList items={items} selectedItemIndex={'1'} onSelect={action('Select')} />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'component:@sanity/components/lists/default'
+  }
+)
+
+.addWithInfo(
+  'With filter',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    const items = range(5).map((item, i) => {
+      return {
+        index: `${i}`,
+        title: faker.name.findName()
+      }
+    })
+    let filterValue = ''
+    const setFilterValue = function (value) {
+      filterValue = value
+    }
+    return (
+      <div style={containerStyle}>
+        <DefaultTextField onChange={setFilterValue} />
+        <DefaultList items={items} selectedItemIndex={'1'} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'component:@sanity/components/lists/default'
+  }
+)
+
+
+.addWithInfo(
   'Thumbs',
   `
     Showing landscape thumbs in a grid
   `,
-  'component:@sanity/components/lists/thumbs',
   () => {
     const items = range(100).map((item, i) => {
       return {
@@ -65,15 +118,17 @@ storiesOf('Lists')
       </div>
     )
   },
-  {propTables: [ThumbsList]}
+  {
+    propTables: [ThumbsList],
+    role: 'component:@sanity/components/lists/thumbs'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Thumbs (portrait)',
   `
     Showing portrait thumbs in a grid
   `,
-  'component:@sanity/components/lists/thumbs',
   () => {
     const items = range(100).map((item, i) => {
       return {
@@ -88,15 +143,17 @@ storiesOf('Lists')
       </div>
     )
   },
-  {propTables: [ThumbsList]}
+  {
+    propTables: [ThumbsList],
+    role: 'component:@sanity/components/lists/thumbs'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Thumbs (mixed)',
   `
     Showing portrait thumbs in a grid
   `,
-  'component:@sanity/components/lists/thumbs',
   () => {
     const items = range(100).map((item, i) => {
       const width = Math.round(Math.random() * 100)
@@ -113,15 +170,17 @@ storiesOf('Lists')
       </div>
     )
   },
-  {propTables: [ThumbsList]}
+  {
+    propTables: [ThumbsList],
+    role: 'component:@sanity/components/lists/thumbs'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Thumbs (with info)',
   `
     Showing portrait thumbs in a grid
   `,
-  'component:@sanity/components/lists/thumbs',
   () => {
     const items = range(100).map((item, i) => {
       return {
@@ -136,44 +195,49 @@ storiesOf('Lists')
       </div>
     )
   },
-  {propTables: [ThumbsList]}
+  {
+    propTables: [ThumbsList],
+    role: 'component:@sanity/components/lists/thumbs'
+  }
 )
 
 
 storiesOf('Lists items')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Default',
   `
     The default fieldset is used to gather a collection of fields.
   `,
-  'component:@sanity/components/lists/items/default',
   () => {
     return (
       <DefaultListItem title={faker.name.findName()} index={2} onClick={action('Click')} />
     )
   },
-  {propTables: [DefaultListItem]}
+  {
+    propTables: [DefaultListItem],
+    role: 'component:@sanity/components/lists/items/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Thumb',
   `
     The default fieldset is used to gather a collection of fields.
   `,
-  'component:@sanity/components/lists/items/thumb',
   () => {
     return (
       <Thumb title={faker.name.findName()} index="1" image={`${faker.image.avatar()}?1`} onClick={action('Click')} />
     )
   },
-  {propTables: [Thumb]}
+  {
+    propTables: [Thumb],
+    role: 'component:@sanity/components/lists/items/thumb'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Thumb with info',
   `
     The default fieldset is used to gather a collection of fields.
   `,
-  'component:@sanity/components/lists/items/thumb',
   () => {
     return (
       <div style={{width: '300px'}}>
@@ -187,5 +251,8 @@ storiesOf('Lists items')
       </div>
     )
   },
-  {propTables: [Thumb]}
+  {
+    propTables: [Thumb],
+    role: 'component:@sanity/components/lists/items/thumb'
+  }
 )

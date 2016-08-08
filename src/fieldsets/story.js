@@ -3,17 +3,12 @@ import {storiesOf} from 'component:@sanity/storybook'
 import Fieldset from 'component:@sanity/components/fieldsets/default'
 import faker from 'faker'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 storiesOf('Fieldsets')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Default',
   `
     The default fieldset is used to gather a collection of fields.
   `,
-  'component:@sanity/components/fieldsets/default',
   () => {
     return (
       <Fieldset legend="This is the legend" description={faker.lorem.paragraphs(1)}>
@@ -21,14 +16,16 @@ storiesOf('Fieldsets')
       </Fieldset>
     )
   },
-  {inline: false, propTables: [Fieldset]}
+  {
+    propTables: [Fieldset],
+    role: 'component:@sanity/components/fieldsets/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Nested',
   `
     Fieldsets supports beeing inside itselfs, and get new styling!
   `,
-  'component:@sanity/components/fieldsets/default',
   () => {
     return (
       <Fieldset legend="This is the legend" description={faker.lorem.paragraphs(1)}>
@@ -38,15 +35,17 @@ storiesOf('Fieldsets')
       </Fieldset>
     )
   },
-  {inline: false, propTables: [Fieldset]}
+  {
+    propTables: [Fieldset],
+    role: 'component:@sanity/components/fieldsets/default'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Crazy nested',
   `
     Fieldsets supports beeing inside itselfs, and get new styling!
   `,
-  'component:@sanity/components/fieldsets/default',
   () => {
     return (
       <Fieldset legend="Dude, I heard you like fieldsets…" description={faker.lorem.paragraphs(1)}>
@@ -58,5 +57,8 @@ storiesOf('Fieldsets')
       </Fieldset>
     )
   },
-  {inline: false, propTables: [Fieldset]}
+  {
+    propTables: [Fieldset],
+    role: 'component:@sanity/components/fieldsets/default'
+  }
 )

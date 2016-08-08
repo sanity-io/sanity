@@ -408,7 +408,8 @@
     },
     {
       "implements": "story:@sanity/base/component",
-      "path": "datepickers/story.js"
+      "srcPath": "./src/datepickers/story.js",
+      "path": "./lib/datepickers/story.js"
     },
     {
       "implements": "story:@sanity/base/component",

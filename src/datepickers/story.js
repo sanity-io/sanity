@@ -1,35 +1,29 @@
 import React from 'react'
 import {storiesOf} from 'component:@sanity/storybook'
 import DatePicker from 'role:@sanity/form-builder/input/date'
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 import InfiniteCalendar from 'react-infinite-calendar'
 import styles from './styles.css'
 import 'react-infinite-calendar/styles.css'
 
 storiesOf('Date pickers')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Form-builder',
   `
     react-datepicker with customized styling
   `,
-  'role:@sanity/form-builder/input/date',
   () => {
 
     return (
       <DatePicker />
     )
   },
-  {PropTables: [DatePicker]}
+  {PropTables: [DatePicker], role: 'role:@sanity/form-builder/input/date'}
 )
-.addWithRole(
+.addWithInfo(
 'Form-builder (range)',
 `
   react-datepicker with customized styling
 `,
-'role:@sanity/form-builder/input/date',
 () => {
 
   return (
@@ -39,7 +33,7 @@ storiesOf('Date pickers')
     </div>
   )
 },
-{PropTables: [DatePicker]}
+{PropTables: [DatePicker], role: 'role:@sanity/form-builder/input/date'}
 )
 .addWithInfo(
 'react-infinite-calendar',

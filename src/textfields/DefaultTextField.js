@@ -10,31 +10,35 @@ export default class DefaultTextField extends React.Component {
     error: PropTypes.bool,
     onKeyPress: PropTypes.func,
     placeholder: PropTypes.string,
-    focus: PropTypes.func,
+    onFocus: PropTypes.func,
     showClearButton: PropTypes.bool
   }
 
   static defaultProps = {
     value: '',
-    onKeyPress() {}
+    onKeyPress() {},
+    onChange() {}
   }
 
   constructor(props, context) {
     super(props, context)
     this.handleKeyPress = this.handleKeyPress.bind(this)
-    // this.handleChange = this.handleChange.bind(this)
+    this.handleChange = this.handleChange.bind(this)
     this.state = {
       value: this.props.value
     }
   }
 
-  handleChange() {
-    // this.props.onChange()
+  handleChange(event) {
+    const value = event.target.value
+    this.setState({
+      value: value
+    })
+    this.props.onChange(value)
   }
 
   handleKeyPress(event) {
-    // console.log('defaultTextFieldPress', event)
-    // this.props.onKeyPress(event)
+    this.props.onKeyPress(event)
   }
 
   handleFocus() {
@@ -47,7 +51,7 @@ export default class DefaultTextField extends React.Component {
   }
 
   render() {
-    const {label, value, placeholder, error, showClearButton} = this.props
+    const {label, placeholder, error, showClearButton} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
@@ -67,7 +71,7 @@ export default class DefaultTextField extends React.Component {
           id={this._inputId}
           type="text"
           onChange={this.handleChange}
-          value={value}
+          value={this.state.value}
           placeholder={placeholder}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}

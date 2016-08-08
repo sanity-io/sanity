@@ -3,19 +3,15 @@ import {storiesOf} from 'component:@sanity/storybook'
 import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import faker from 'faker'
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
 
 const formStyle = {'width': '30em', 'margin': '0 auto', 'padding-bottom': '20em'}
 
 storiesOf('Autocomplete')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Default',
   `
     Default textfield
   `,
-  'component:@sanity/components/autocomplete/default',
   () => {
     return (
       <form style={formStyle}>
@@ -23,17 +19,15 @@ storiesOf('Autocomplete')
       </form>
     )
   },
-  {propTables: [Autocomplete]}
+  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
 )
 
 storiesOf('Autocomplete')
-  .addDecorator(centered)
-  .addWithRole(
+  .addWithInfo(
   'Local search',
   `
     Default textfield
   `,
-  'component:@sanity/components/autocomplete/default',
   () => {
     const items = range(100).map((item, i) => {
       const width = Math.round(Math.random() * 100)
@@ -50,15 +44,14 @@ storiesOf('Autocomplete')
       </form>
     )
   },
-  {propTables: [Autocomplete]}
+  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
 )
 
-.addWithRole(
+.addWithInfo(
   'Default with suggestions',
   `
     Default textfield
   `,
-  'component:@sanity/components/autocomplete/default',
   () => {
 
     const suggestions = range(10).map((item, i) => {
@@ -73,5 +66,5 @@ storiesOf('Autocomplete')
       </form>
     )
   },
-  {propTables: [Autocomplete]}
+  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
 )

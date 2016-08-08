@@ -71,6 +71,8 @@
 .content {
   position: relative;
   height: calc(100% - var(--dialog-padding) * 2 - 4rem);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .title {

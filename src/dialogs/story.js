@@ -5,15 +5,10 @@ import DefaultDialog from 'component:@sanity/components/dialogs/default'
 import FullscreenDialog from 'component:@sanity/components/dialogs/fullscreen'
 import faker from 'faker'
 
-import centered from '../storybook-addons/centered.js'
-require('../storybook-addons/role.js')
-
 storiesOf('Dialogs')
-.addDecorator(centered)
-.addWithRole(
+.addWithInfo(
   'Default',
   '',
-  'component:@sanity/components/dialogs/default',
   () => {
     return (
       <div>
@@ -24,12 +19,14 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog, DefaultDialog.propTypes.actions]}
+  {
+    propTables: [DefaultDialog, DefaultDialog.propTypes.actions],
+    role: 'component:@sanity/components/dialogs/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Default (open)',
   '',
-  'component:@sanity/components/dialogs/default',
   () => {
     return (
       <div>
@@ -41,12 +38,14 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog]}
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/default'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Default (with header)',
   '',
-  'component:@sanity/components/dialogs/default',
   () => {
     return (
       <div>
@@ -58,13 +57,15 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog]}
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/default'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Fullscreen',
   '',
-  'component:@sanity/components/dialogs/fullscreen',
   () => {
     return (
       <div>
@@ -75,12 +76,14 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog]}
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/fullscreen'
+  }
 )
-.addWithRole(
+.addWithInfo(
   'Fullscreen (open)',
   '',
-  'component:@sanity/components/dialogs/fullscreen',
   () => {
     return (
       <div>
@@ -90,13 +93,15 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog]}
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/fullscreen'
+  }
 )
 
-.addWithRole(
+.addWithInfo(
   'Default (with actions)',
   '',
-  'component:@sanity/components/dialogs/fullscreen',
   () => {
     const actions = [
       {
@@ -126,5 +131,8 @@ storiesOf('Dialogs')
       </div>
     )
   },
-  {propTables: [DefaultDialog]}
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/fullscreen'
+  }
 )

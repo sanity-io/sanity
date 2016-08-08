@@ -7,7 +7,7 @@ export default class ProgressBar extends React.Component {
     completion: PropTypes.number,
     animation: PropTypes.bool,
     text: PropTypes.string,
-    style: PropTypes.obj,
+    style: PropTypes.object,
     showPercent: PropTypes.bool
   }
 
