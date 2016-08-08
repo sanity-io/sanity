@@ -61,7 +61,7 @@ test('should be able to include the sanity debug role', t => {
   const debug = require('sanity:debug')
   t.is(debug.plugins[0].name, 'date')
   t.is(
-    debug.fulfilled['function:base/bar'][0],
+    debug.implementations['function:base/bar'][0],
     path.join(__dirname, 'fixture', 'getBar.js')
   )
 })

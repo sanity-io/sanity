@@ -8,7 +8,7 @@ const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$
 const resolveRoles = resolver.resolveRoles
 const defaultResult = {
   definitions: {},
-  fulfilled: {},
+  implementations: {},
   plugins: []
 }
 
@@ -30,9 +30,9 @@ function registerLoader(options) {
   )
 
   // Turn {"roleName": [{path: "/foo/bar.js"}]} into {"roleName": ["/foo/bar.js"]}
-  roles.fulfilled = Object.keys(roles.fulfilled).reduce((fulfillers, role) => {
-    fulfillers[role] = roles.fulfilled[role].map(impl => impl.path)
-    return fulfillers
+  roles.implementations = Object.keys(roles.implementations).reduce((implementations, role) => {
+    implementations[role] = roles.implementations[role].map(impl => impl.path)
+    return implementations
   }, {})
 
   // Allow passing specific overrides for roles
@@ -44,8 +44,8 @@ function registerLoader(options) {
       }
     })
 
-    roles.fulfilled = Object.assign(
-      roles.fulfilled,
+    roles.implementations = Object.assign(
+      roles.implementations,
       overrides
     )
   }
@@ -66,33 +66,33 @@ function registerLoader(options) {
         : path.join(configPath, `${configFor}.json`)
     }
 
-    // Should we load all the fulfillers or just a single one
+    // Should we load all the implementations or just a single one
     const loadAll = request.indexOf('all:') === 0
     const roleName = request.replace(/^all:/, '').replace(/\?$/, '')
-    const allowUnfulfilled = request.match(/\?$/)
+    const allowUnimplemented = request.match(/\?$/)
 
-    // If we're loading all the fulfillers of a role, we can't point to
+    // If we're loading all the implementations of a role, we can't point to
     // one single file - instead we need to manually "construct" a module
-    // consisting of an array which holds all the fulfillers, then add it
+    // consisting of an array which holds all the implementations, then add it
     // to the require cache
     if (loadAll) {
-      const implementers = roles.fulfilled[roleName]
+      const implementers = roles.implementations[roleName]
 
       // Overrides should be plain objects, not paths to modules
-      // Actual resolved roles are paths to fulfillers
-      const fulfillers = overrides && overrides[roleName]
+      // Actual resolved roles are paths to implementations
+      const implementations = overrides && overrides[roleName]
         ? implementers
         : implementers.map(interopRequire)
 
-      require.cache[request] = getModule(request, fulfillers)
+      require.cache[request] = getModule(request, implementations)
       return request
     }
 
-    // If we have no fulfillers of the role, fall back to the default resolver
+    // If we have no implementations of the role, fall back to the default resolver
     // Note that `all:`-requests should return an empty array, not throw
-    if (!roles.fulfilled[roleName]) {
-      // If using the "allow unfulfilled" (?)-postfix, we want to return undefined
-      if (allowUnfulfilled) {
+    if (!roles.implementations[roleName]) {
+      // If using the "allow unimplemented" (?)-postfix, we want to return undefined
+      if (allowUnimplemented) {
         require.cache[request] = getModule(request, undefined)
         return request
       }
@@ -100,7 +100,7 @@ function registerLoader(options) {
       return realResolve(request, parent)
     }
 
-    // "Most significant"-imports can be directly resolved to their fulfiller,
+    // "Most significant"-imports can be directly resolved to their implementation,
     // HOWEVER; overwritten implementations needs to be put into cache
     const override = overrides && overrides[roleName]
     if (override) {
@@ -108,7 +108,7 @@ function registerLoader(options) {
       return request
     }
 
-    return roles.fulfilled[roleName][0]
+    return roles.implementations[roleName][0]
   }
 
   // Register CSS hook
