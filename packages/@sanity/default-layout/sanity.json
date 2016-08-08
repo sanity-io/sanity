@@ -1,4 +1,9 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
   "roles": [
     {
       "name": "style:@sanity/default-layout/action-modal",
@@ -8,14 +13,12 @@
     {
       "implements": "component:@sanity/base/root",
       "name": "component:@sanity/default-layout/root",
-      "srcPath": "./src/components/DefaultLayoutRouter",
-      "path": "./lib/components/DefaultLayoutRouter"
+      "path": "components/DefaultLayoutRouter"
     },
     {
       "implements": "component:@sanity/base/action-button",
       "name": "component:@sanity/default-layout/action-button",
-      "srcPath": "./src/components/ActionButton",
-      "path": "./lib/components/ActionButton"
+      "path": "components/ActionButton"
     },
     {
       "implements": "style:@sanity/default-layout/action-modal",
