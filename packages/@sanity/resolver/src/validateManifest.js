@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import generateHelpUrl from '@sanity/generate-help-url'
 
 const matchers = {
   rolePrefix: /^[a-z]+:/,
@@ -22,27 +23,20 @@ export default function validateManifest(manifest, plugin) {
     const baseError = `Role defined at index ${i} of plugin "${plugin}" is invalid`
     const isImplementation = isDefined(role.path)
 
-    if (!isImplementation && isDefined(role.srcPath)) {
-      throw new Error([
-        baseError,
-        'A role that has a defined `srcPath` also needs to define a `path` (compiled version).',
-        'If the file does not need to be compiled, use `path` instead of `srcPath`'
-      ].join('\n'))
-    }
-
-    if (!isImplementation && (!isDefined(role.name) || !isDefined(role.description))) {
-      throw new Error([
-        baseError,
-        'A role definition needs to define `name` and `description`,',
-        'an implementation needs to define `path` and either `implements` or `name`'
-      ].join('\n'))
-    }
-
     const hasRole = isDefined(role.name) || isDefined(role.implements)
     if (isImplementation && !hasRole) {
       throw new Error([
         baseError,
         'A role that has a defined `path` needs to also define either `name` or `implements`',
+        `See ${generateHelpUrl('plugin-roles-syntax')}`
+      ].join('\n'))
+    }
+
+    if (!isDefined(role.path) && !isDefined(role.description)) {
+      throw new Error([
+        baseError,
+        'A role that has not defined a `path` needs to include a `description`',
+        `See ${generateHelpUrl('plugin-roles-syntax')}`
       ].join('\n'))
     }
 
@@ -72,7 +66,8 @@ function validateRoleName(name, baseError) {
   const examples = [
     'Examples:',
     '- component:package-name/role-name',
-    '- style:package-name/role-name'
+    '- style:package-name/role-name', '',
+    `See ${generateHelpUrl('role-name-format')}`
   ].join('\n')
 
   if (name.indexOf('all:') !== -1) {

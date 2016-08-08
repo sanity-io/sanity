@@ -6,6 +6,7 @@
   "extends": "sanity",
   "rules": {
     "newline-per-chained-call": 0,
-    "sort-imports": 0
+    "sort-imports": 0,
+    "prefer-template": 0
   }
 }

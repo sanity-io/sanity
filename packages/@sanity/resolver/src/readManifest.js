@@ -3,6 +3,7 @@ import fs from 'fs'
 import fsp from 'fs-promise'
 import path from 'path'
 import validateManifest from './validateManifest'
+import generateHelpUrl from '@sanity/generate-help-url'
 
 function readManifestSync(manifestPath, options) {
   try {
@@ -16,7 +17,9 @@ function readManifestSync(manifestPath, options) {
 
 function handleManifestReadError(err, options) {
   if (err.code === 'ENOENT' && options.plugin) {
-    throw new Error(`No "sanity.json" file found in plugin "${options.plugin}"`)
+    const base = `No "sanity.json" file found in plugin "${options.plugin}"`
+    const help = `See ${generateHelpUrl('missing-plugin-sanity-json')}`
+    throw new Error(`${base}\n${help}`)
   } else if (err.name === 'ValidationError' && options.plugin) {
     err.message = `Error while reading "${options.plugin}" manifest:\n${err.message}`
   } else if (err.name === 'ValidationError') {

@@ -125,15 +125,6 @@ describe('plugin resolver', () => {
         err.message.should.contain('index 8')
       })
     })
-
-    it('roles with `srcPath` should also contain `path`', () => {
-      mockFs(getInvalidRoleDeclaration({missingLibPath: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 9')
-        err.message.should.contain('`srcPath`')
-        err.message.should.contain('compiled')
-      })
-    })
   })
 
   it('rejects on missing plugin', () => {
@@ -148,7 +139,7 @@ describe('plugin resolver', () => {
 
   it('rejects if two plugins define the same role', () => {
     mockFs(getDuplicateRoleTree())
-    return resolveRoles(opts).should.be.rejectedWith(Error, 'both provide "component:snarkel/foo"')
+    return resolveRoles(opts).should.be.rejectedWith(Error, 'both define role "component:snarkel/foo"')
   })
 
   it('resolves plugins in the right order', () => {
@@ -227,21 +218,21 @@ describe('plugin resolver', () => {
       const settings = res.definitions['component:@sanity/default-layout/settingsPane']
       settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
 
-      const tool = res.fulfilled['component:@sanity/default-layout/tool']
+      const tool = res.implementations['component:@sanity/default-layout/tool']
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
 
-      const main = res.fulfilled['component:@sanity/core/root']
+      const main = res.implementations['component:@sanity/core/root']
       main.should.have.length(1)
       main[0].should.eql({
         plugin: '@sanity/default-layout',
-        path: '/sanity/node_modules/@sanity/default-layout/src/components/Root'
+        path: '/sanity/node_modules/@sanity/default-layout/lib/components/Root'
       })
 
-      const comments = res.fulfilled['component:instagram/commentsList']
+      const comments = res.implementations['component:instagram/commentsList']
       comments[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
@@ -284,34 +275,15 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('resolves path to lib for node_modules, src for plugins', () => {
+  it('resolves path to "compiled" path for node_modules, "source" for plugins', () => {
     mockFs(getMixedPluginTree())
     return resolveRoles(opts).then(res => {
-      res.fulfilled['component:@sanity/default-layout/tool'][0].should.eql({
+      res.implementations['component:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/File'
       })
 
-      res.fulfilled['component:@sanity/default-layout/tool'][1].should.eql({
-        plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
-      })
-    })
-  })
-
-  it('can be told to ignore srcPath (always using path)', () => {
-    mockFs(getMixedPluginTree())
-    const overrideOpts = Object.assign({}, opts, {
-      ignoreSrcPath: true
-    })
-
-    return resolveRoles(overrideOpts).then(res => {
-      res.fulfilled['component:@sanity/default-layout/tool'][0].should.eql({
-        plugin: 'foo',
-        path: '/sanity/plugins/foo/lib/File'
-      })
-
-      res.fulfilled['component:@sanity/default-layout/tool'][1].should.eql({
+      res.implementations['component:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
@@ -321,7 +293,7 @@ describe('plugin resolver', () => {
   it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
     return resolveRoles(opts).then(res => {
-      const fulfillers = res.fulfilled['component:instagram/commentsList']
+      const fulfillers = res.implementations['component:instagram/commentsList']
       fulfillers.should.have.length(2)
       fulfillers[0].should.eql({
         plugin: 'foo',
@@ -334,15 +306,15 @@ describe('plugin resolver', () => {
     mockFs(getMultiTree())
     return resolveRoles(opts).then(res => {
       res.definitions.should.have.property('component:@sanity/base/absolute')
-      res.fulfilled.should.have.property('component:@sanity/base/absolute')
-      res.fulfilled['component:@sanity/base/absolute'].should.have.length(2)
+      res.implementations.should.have.property('component:@sanity/base/absolute')
+      res.implementations['component:@sanity/base/absolute'].should.have.length(2)
     })
   })
 
   it('handles style roles as regular roles', () => {
     mockFs(getStyleTree())
     return resolveRoles(opts).then(res => {
-      res.fulfilled['style:@sanity/default-layout/header'].should.eql([
+      res.implementations['style:@sanity/default-layout/header'].should.eql([
         {
           path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
           plugin: 'screaming-dev-badge'
@@ -365,14 +337,14 @@ describe('plugin resolver', () => {
       res.definitions.should.have.property('style:foo/button')
       res.definitions.should.have.property('style:foo/button-default')
 
-      res.fulfilled.should.have.property('style:foo/button')
-      res.fulfilled.should.have.property('style:foo/button-default')
+      res.implementations.should.have.property('style:foo/button')
+      res.implementations.should.have.property('style:foo/button-default')
     })
   })
 
   it('does not allow a non-abstract role to be implemented by others', () => {
     mockFs(getNonAbstractRoleTree())
-    return resolveRoles(opts).should.be.rejectedWith(Error, 'not an abstract role')
+    return resolveRoles(opts).should.be.rejectedWith(Error, 'both define role')
   })
 
   it('should include roles defined in base manifest', () => {
@@ -381,8 +353,8 @@ describe('plugin resolver', () => {
       res.definitions.should.have.property('config:@sanity/config/schema')
       res.definitions['config:@sanity/config/schema'].path.should.eql('/sanity')
 
-      res.fulfilled.should.have.property('config:@sanity/config/schema')
-      res.fulfilled['config:@sanity/config/schema'][0].path.should.eql(
+      res.implementations.should.have.property('config:@sanity/config/schema')
+      res.implementations['config:@sanity/config/schema'][0].path.should.eql(
         path.join('/sanity', 'schema', 'schema.js')
       )
 
@@ -398,8 +370,8 @@ describe('plugin resolver', () => {
       res.definitions.should.have.property('component:@sanity/core/root')
       res.definitions['component:@sanity/core/root'].plugin.should.eql('@sanity/core')
 
-      res.fulfilled.should.have.property('component:@sanity/core/root')
-      res.fulfilled['component:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
+      res.implementations.should.have.property('component:@sanity/core/root')
+      res.implementations['component:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
     })
   })
 

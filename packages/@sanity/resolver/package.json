@@ -37,11 +37,12 @@
     "eslint-config-sanity": "^1.0.6",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
-    "mock-fs": "^3.7.0",
+    "mock-fs": "^3.11.0",
     "proxyquire": "^1.7.4",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
+    "@sanity/generate-help-url": "^1.0.0",
     "debug": "^2.2.0",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",

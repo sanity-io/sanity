@@ -5,8 +5,14 @@ import readManifest from './readManifest'
 export default function resolveProjectRoot(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
 
-  // @todo implement async version
-  return resolveProjectRootSync(options)
+  return options.sync
+    ? resolveProjectRootSync(options)
+    : resolveProjectRootAsync(options)
+}
+
+function resolveProjectRootAsync(options) {
+  // @todo implement actual async version
+  return Promise.resolve(resolveProjectRootSync(options))
 }
 
 function resolveProjectRootSync(options) {
