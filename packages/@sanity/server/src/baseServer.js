@@ -13,9 +13,9 @@ const getDefaultModule = mod => {
 
 const getDocumentComponent = basePath =>
   resolveRoles({basePath}).then(res => {
-    const role = res.fulfilled[docRole]
+    const role = res.implementations[docRole]
     if (!role) {
-      throw new Error(`Role '${docRole}' is not fulfilled by any plugins, are you missing @sanity/base?`)
+      throw new Error(`Role '${docRole}' is not implemented by any plugins, are you missing @sanity/base?`)
     }
 
     return getDefaultModule(

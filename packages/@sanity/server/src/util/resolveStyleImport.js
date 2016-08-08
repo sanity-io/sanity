@@ -13,12 +13,12 @@ function resolveStyleImports(id, basedir, opts) {
       const loadAll = id.indexOf('all:') === 0
       const roleName = loadAll ? id.substr(4) : id
 
-      const role = roles.fulfilled[roleName]
+      const role = roles.implementations[roleName]
       if (!role) {
-        throw new Error(`No fulfillers of role '${roleName}'`)
+        throw new Error(`No implementers of role '${roleName}'`)
       }
 
-      const paths = role.map(fulfiller => fulfiller.path)
+      const paths = role.map(implementer => implementer.path)
       return loadAll
         ? paths.reverse()
         : paths[0]

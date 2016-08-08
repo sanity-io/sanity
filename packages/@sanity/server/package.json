@@ -33,8 +33,8 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
-    "@sanity/resolver": "^2.2.3",
-    "@sanity/webpack-loader": "^1.2.18",
+    "@sanity/resolver": "^3.0.0",
+    "@sanity/webpack-loader": "^2.0.0",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
     "babel-plugin-syntax-class-properties": "^6.8.0",
