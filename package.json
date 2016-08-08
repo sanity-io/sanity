@@ -13,8 +13,8 @@
     "sanity"
   ],
   "dependencies": {
-    "@kadira/react-storybook-addon-info": "^3.0.9",
     "@kadira/storybook": "^1.36.0",
+    "@sanity/react-storybook-addon-info": "^3.1.2",
     "express": "^4.14.0",
     "in-publish": "^2.0.0"
   },
