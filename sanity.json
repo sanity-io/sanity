@@ -1,4 +1,9 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
   "roles": [
     {
       "name": "component:@sanity/base/document",
@@ -202,114 +207,94 @@
 
     {
       "implements": "component:@sanity/base/root",
-      "srcPath": "./src/components/DefaultRootComponent.js",
-      "path": "./lib/components/DefaultRootComponent.js"
+      "path": "components/DefaultRootComponent.js"
     },
     {
       "implements": "role:@sanity/base/schema-creator",
-      "srcPath": "./src/schema/createSchema.js",
-      "path": "./lib/schema/createSchema.js"
+      "path": "schema/createSchema.js"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables",
-      "srcPath": "./src/styles/variables.css",
-      "path": "./lib/styles/variables.css"
+      "path": "styles/variables.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/globals",
-      "srcPath": "./src/styles/variables/globals.css",
-      "path": "./lib/styles/variables/globals.css"
+      "path": "styles/variables/globals.css"
     },
     {
       "implements": "style:@sanity/base/theme/variables/brand-colors",
-      "srcPath": "./src/styles/variables/brand-colors.css",
-      "path": "./lib/styles/variables/brand-colors.css"
+      "path": "styles/variables/brand-colors.css"
     },
     {
       "implements": "style:@sanity/base/theme/animation",
-      "srcPath": "./src/styles/animation.css",
-      "path": "./lib/styles/animation.css"
+      "path": "styles/animation.css"
     },
     {
       "implements": "style:@sanity/base/theme/responsive",
-      "srcPath": "./src/styles/responsive.css",
-      "path": "./lib/styles/responsive.css"
+      "path": "styles/responsive.css"
     },
     {
       "implements": "style:@sanity/base/theme/shadows",
-      "srcPath": "./src/styles/shadows.css",
-      "path": "./lib/styles/shadows.css"
+      "path": "styles/shadows.css"
     },
     {
       "implements": "style:@sanity/base/theme/icons",
-      "srcPath": "./src/styles/icons.css",
-      "path": "./lib/styles/icons.css"
+      "path": "styles/icons.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/code",
-      "srcPath": "./src/styles/variables/code.css",
-      "path": "./lib/styles/variables/code.css"
+      "path": "styles/variables/code.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/forms",
-      "srcPath": "./src/styles/variables/forms.css",
-      "path": "./lib/styles/variables/forms.css"
+      "path": "styles/variables/forms.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/gray-colors",
-      "srcPath": "./src/styles/variables/gray-colors.css",
-      "path": "./lib/styles/variables/gray-colors.css"
+      "path": "styles/variables/gray-colors.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/layers",
-      "srcPath": "./src/styles/variables/layers.css",
-      "path": "./lib/styles/variables/layers.css"
+      "path": "styles/variables/layers.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/list-group",
-      "srcPath": "./src/styles/variables/list-group.css",
-      "path": "./lib/styles/variables/list-group.css"
+      "path": "styles/variables/list-group.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/list",
-      "srcPath": "./src/styles/variables/list.css",
-      "path": "./lib/styles/variables/list.css"
+      "path": "styles/variables/list.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/progress",
-      "srcPath": "./src/styles/variables/progress.css",
-      "path": "./lib/styles/variables/progress.css"
+      "path": "styles/variables/progress.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/selectable-item",
-      "srcPath": "./src/styles/variables/selectable-item.css",
-      "path": "./lib/styles/variables/selectable-item.css"
+      "path": "styles/variables/selectable-item.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/state-colors",
-      "srcPath": "./src/styles/variables/state-colors.css",
-      "path": "./lib/styles/variables/state-colors.css"
+      "path": "styles/variables/state-colors.css"
     },
 
     {
       "implements": "style:@sanity/base/theme/variables/typography",
-      "srcPath": "./src/styles/variables/typography.css",
-      "path": "./lib/styles/variables/typography.css"
+      "path": "styles/variables/typography.css"
     },
     {
       "name": "datastore:@sanity/base/location",
-      "srcPath": "./src/datastores/location",
-      "path": "./lib/datastores/location"
+      "path": "datastores/location"
     },
     {
       "name": "datastore:@sanity/base/document",
@@ -318,50 +303,41 @@
     },
     {
       "name": "datastore:@sanity/base/user",
-      "srcPath": "./src/datastores/user",
-      "path": "./lib/datastores/user"
+      "path": "datastores/user"
     },
     {
       "name": "datastore:@sanity/base/installation",
-      "srcPath": "./src/datastores/installation",
-      "path": "./lib/datastores/installation"
+      "path": "datastores/installation"
     },
     {
       "name": "router:@sanity/base/router",
-      "srcPath": "./src/router",
-      "path": "./lib/router"
+      "path": "router"
     },
     {
       "name": "client:@sanity/base/client",
-      "srcPath": "./src/client",
-      "path": "./lib/client"
+      "path": "client"
     },
     {
       "name": "component:@sanity/base/document-default",
       "implements": "component:@sanity/base/document",
-      "srcPath": "./src/components/Document",
-      "path": "./lib/components/Document"
+      "path": "components/Document"
     },
 
     {
       "implements": "machine:@sanity/base/language-resolver",
-      "srcPath": "./src/locale/languageResolver.js",
-      "path": "./lib/locale/languageResolver.js"
+      "path": "locale/languageResolver.js"
     },
     {
       "implements": "machine:@sanity/base/locale-message-fetcher",
-      "srcPath": "./src/locale/messageFetcher.js",
-      "path": "./lib/locale/messageFetcher.js"
+      "path": "locale/messageFetcher.js"
     },
     {
       "implements": "component:@sanity/base/locale/intl",
-      "srcPath": "./src/locale/intl.js",
-      "path": "./lib/locale/intl.js"
+      "path": "locale/intl.js"
     },
     {
       "implements": "component:@sanity/base/sanity-intl-provider",
-      "srcPath": "./src/components/SanityIntlProvider",
-      "path": "./lib/components/SanityIntlProvider"
+      "path": "components/SanityIntlProvider"
     },
     {
       "implements": "component:@sanity/base/query-container",
@@ -370,78 +346,63 @@
     },
     {
       "implements": "role:@sanity/base/locale/formatters",
-      "srcPath": "./src/components/IntlWrapper.js",
-      "path": "./lib/components/IntlWrapper.js"
+      "path": "components/IntlWrapper.js"
     },
     {
       "implements": "component:@sanity/base/buttons/default",
-      "srcPath": "./src/components/buttons/DefaultButton.js",
-      "path": "./lib/components/buttons/DefaultButton.js"
+      "path": "components/buttons/DefaultButton.js"
     },
     {
       "implements": "component:@sanity/base/login-wrapper",
-      "srcPath": "./src/components/login/LoginWrapper.js",
-      "path": "./lib/components/login/LoginWrapper.js"
+      "path": "components/login/LoginWrapper.js"
     },
     {
       "implements": "style:@sanity/base/theme/layout/box",
-      "srcPath": "./src/styles/layout/box.css",
-      "path": "./lib/styles/layout/box.css"
+      "path": "styles/layout/box.css"
     },
     {
       "implements": "style:@sanity/base/theme/layout/positioning",
-      "srcPath": "./src/styles/layout/positioning.css",
-      "path": "./lib/styles/layout/positioning.css"
+      "path": "styles/layout/positioning.css"
     },
     {
       "implements": "style:@sanity/base/theme/buttons/default",
-      "srcPath": "./src/styles/buttons/default.css",
-      "path": "./lib/styles/buttons/default.css"
+      "path": "styles/buttons/default.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/text-input",
-      "srcPath": "./src/styles/forms/text-input.css",
-      "path": "./lib/styles/forms/text-input.css"
+      "path": "styles/forms/text-input.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/control",
-      "srcPath": "./src/styles/forms/control.css",
-      "path": "./lib/styles/forms/control.css"
+      "path": "styles/forms/control.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/textarea",
-      "srcPath": "./src/styles/forms/textarea.css",
-      "path": "./lib/styles/forms/textarea.css"
+      "path": "styles/forms/textarea.css"
     },
     {
       "implements": "style:@sanity/base/theme/forms/clear-button",
-      "srcPath": "./src/styles/forms/clear-button.css",
-      "path": "./lib/styles/forms/clear-button.css"
+      "path": "styles/forms/clear-button.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/base",
-      "srcPath": "./src/styles/typography/base.css",
-      "path": "./lib/styles/typography/base.css"
+      "path": "styles/typography/base.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/headings",
-      "srcPath": "./src/styles/typography/headings.css",
-      "path": "./lib/styles/typography/headings.css"
+      "path": "styles/typography/headings.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/text-blocks",
-      "srcPath": "./src/styles/typography/text-blocks.css",
-      "path": "./lib/styles/typography/text-blocks.css"
+      "path": "styles/typography/text-blocks.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/code",
-      "srcPath": "./src/styles/typography/code.css",
-      "path": "./lib/styles/typography/code.css"
+      "path": "styles/typography/code.css"
     },
     {
       "implements": "style:@sanity/base/theme/body",
-      "srcPath": "./src/styles/body.css",
-      "path": "./lib/styles/body.css"
+      "path": "styles/body.css"
     }
   ]
 }
