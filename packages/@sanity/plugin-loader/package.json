@@ -1,6 +1,6 @@
 {
   "name": "@sanity/plugin-loader",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Monkey-patches node's require algorithm to allow requiring of Sanity roles",
   "main": "loader.js",
   "scripts": {
