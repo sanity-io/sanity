@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@sanity/base": "^2.1.52",
-    "@sanity/cli": "^1.0.32",
+    "@sanity/cli": "^1.0.38",
     "@sanity/components": "^1.0.20",
     "@sanity/theme": "^1.0.5",
     "babel-cli": "^6.10.1",
