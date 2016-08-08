@@ -4,8 +4,8 @@ const banner = [
   '/**',
   ' * Sanity role: ROLE_NAME',
   ' * ',
-  ' * Sanity plugin loader multi-fulfiller wrapper',
-  ' * Imports all fulfillers, then exports them as an array',
+  ' * Sanity plugin loader multi-implementation wrapper',
+  ' * Imports all implementers, then exports them as an array',
   ' */'
 ]
 
@@ -15,14 +15,14 @@ const normalizer = [
   '}', ''
 ]
 
-module.exports = function multiFulfillerHandler(opts, callback) {
-  const fulfillers = opts.roles.fulfilled[opts.role]
+module.exports = function multiImplementationHandler(opts, callback) {
+  const implementations = opts.roles.implementations[opts.role]
 
   const result = banner
     .concat(normalizer)
     .concat(['\nmodule.exports = ['])
-    .concat(fulfillers.map(
-      (fulfiller, i) => `  require('${fulfiller.path}')`
+    .concat(implementations.map(
+      (implementer, i) => `  require('${implementer.path}')`
     ).join(',\n'))
     .concat(['].map(normalize)\n'])
     .join('\n')

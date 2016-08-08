@@ -5,7 +5,7 @@ const path = require('path')
 const roleResolver = require('@sanity/resolver')
 const emptyRole = require.resolve('./emptyRole')
 const debugRole = require.resolve('./debugRole')
-const unfulfilledRole = require.resolve('./unfulfilledRole')
+const unimplementedRole = require.resolve('./unimplementedRole')
 const roleMatcher = /^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 
@@ -59,15 +59,15 @@ const RoleResolverPlugin = function (options) {
           }
 
           const loadAll = request.request.indexOf('all:') === 0
-          const allowUnfulfilled = request.query === '?'
+          const allowUnimplemented = request.query === '?'
 
-          // Imports throw if they are not fulfilled, except if they
+          // Imports throw if they are not implemented, except if they
           // are prefixed with `all:` (returns an empty array) or they
           // are postfixed with `?` (returns undefined)
-          const role = roles.fulfilled[sanityRole]
+          const role = roles.implementations[sanityRole]
           if (!role) {
-            if (allowUnfulfilled) {
-              return this.doResolve(['file'], {request: unfulfilledRole}, callback)
+            if (allowUnimplemented) {
+              return this.doResolve(['file'], {request: unimplementedRole}, callback)
             }
 
             if (loadAll) {
@@ -75,7 +75,7 @@ const RoleResolverPlugin = function (options) {
             }
 
             return callback(new Error(
-              `Role "${sanityRole}" not fulfilled by any plugins`
+              `Role "${sanityRole}" not implemented by any plugins`
             ))
           }
 

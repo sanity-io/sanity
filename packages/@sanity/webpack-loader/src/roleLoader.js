@@ -3,7 +3,7 @@
 const path = require('path')
 const loaderUtils = require('loader-utils')
 const resolver = require('@sanity/resolver')
-const multiFulfillerHandler = require('./multiFulfillerHandler')
+const multiImplementationHandler = require('./multiImplementationHandler')
 
 function sanityRoleLoader(input) {
   const callback = this.async()
@@ -46,7 +46,7 @@ function sanityRoleLoader(input) {
       }
 
       return loadAll
-        ? setImmediate(multiFulfillerHandler, opts, callback)
+        ? setImmediate(multiImplementationHandler, opts, callback)
         : callback(null, input)
     })
     .catch(err => {
