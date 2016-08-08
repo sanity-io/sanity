@@ -18,7 +18,8 @@ import {
   getStyleOverriderTree,
   getNonAbstractRoleTree,
   getRootLevelRolesTree,
-  getNodeResolutionTree
+  getNodeResolutionTree,
+  getPathAlternatives
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -286,6 +287,26 @@ describe('plugin resolver', () => {
       res.implementations['component:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+      })
+    })
+  })
+
+  it('treats dot-paths as relative to sanity.json, absolute as absolute', () => {
+    mockFs(getPathAlternatives())
+    return resolveRoles(opts).then(res => {
+      res.implementations['component:foo/relative'][0].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/src/relative/Path.js'
+      })
+
+      res.implementations['component:foo/absolute'][0].should.eql({
+        plugin: 'foo',
+        path: '/absolute/path/to/File.js'
+      })
+
+      res.implementations['component:foo/dot-path'][0].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/locale/en-us.json'
       })
     })
   })

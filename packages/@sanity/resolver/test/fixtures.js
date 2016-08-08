@@ -175,6 +175,33 @@ export function getMixedPluginTree() {
   }
 }
 
+export function getPathAlternatives() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['foo']),
+    '/sanity/plugins': {
+      foo: {
+        'sanity.json': pluginManifest({
+          paths: {
+            compiled: './lib',
+            source: './src'
+          },
+
+          roles: [{
+            implements: 'component:foo/relative',
+            path: 'relative/Path.js'
+          }, {
+            implements: 'component:foo/absolute',
+            path: '/absolute/path/to/File.js'
+          }, {
+            implements: 'component:foo/dot-path',
+            path: './locale/en-us.json'
+          }]
+        })
+      }
+    }
+  }
+}
+
 export function getScopedPluginsTree() {
   return {
     '/sanity/sanity.json': sanityManifest(['@sanity/core', '@sanity/foo']),

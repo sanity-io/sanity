@@ -192,10 +192,18 @@ function getDefinitionDeclaration(plugin, role, options = {}) {
 function getImplementationDeclaration(plugin, role) {
   const paths = plugin.manifest.paths || {}
   const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
-  const basePath = path.join(plugin.path, (isLib ? paths.compiled : paths.source) || '')
+  const isDotPath = /^\.{1,2}[\\/]/.test(role.path)
+
+  const basePath = isDotPath
+    ? plugin.path
+    : path.join(plugin.path, (isLib ? paths.compiled : paths.source) || '')
+
+  const filePath = path.isAbsolute(role.path)
+    ? role.path
+    : path.resolve(path.join(basePath, role.path))
 
   return {
     plugin: plugin.name,
-    path: path.resolve(path.join(basePath, role.path))
+    path: filePath
   }
 }
