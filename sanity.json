@@ -1,4 +1,9 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
   "plugins": [
     "@sanity/date-input",
     "@sanity/google-maps-input"
@@ -71,32 +76,27 @@
 
     {
       "implements": "function:@sanity/form-builder/input-resolver",
-      "srcPath": "./src/sanity/inputResolver/inputResolver.js",
-      "path": "./lib/sanity/inputResolver/inputResolver.js"
+      "path": "sanity/inputResolver/inputResolver.js"
     },
 
     {
       "implements": "component:@sanity/form-builder/validation-list",
-      "srcPath": "./src/sanity/validation/ValidationList.js",
-      "path": "./lib/sanity/validation/ValidationList.js"
+      "path": "sanity/validation/ValidationList.js"
     },
 
     {
       "implements": "locale:@sanity/base/locale-messages",
-      "srcPath": "./src/sanity/locale/strings.json",
-      "path": "./lib/sanity/locale/strings.json"
+      "path": "sanity/locale/strings.json"
     },
 
     {
       "implements": "role:@sanity/form-builder/container",
-      "srcPath": "./src/sanity/FormBuilderContainer.js",
-      "path": "./lib/sanity/FormBuilderContainer.js"
+      "path": "sanity/FormBuilderContainer.js"
     },
 
     {
       "implements": "role:@sanity/form-builder",
-      "srcPath": "./src/index.js",
-      "path": "./lib/index.js"
+      "path": "index.js"
     }
   ]
 }
