@@ -101,6 +101,8 @@ function getSanityPluginManifest(data) {
 
 export function createSanityManifest(data, {isPlugin}) {
   const manifest = isPlugin ? getSanityPluginManifest(data) : {
+    root: true,
+
     api: {
       dataset: data.dataset,
     },
