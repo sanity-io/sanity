@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/sanity-io/webpack-loader#readme",
   "dependencies": {
-    "@sanity/resolver": "^2.2.3",
+    "@sanity/resolver": "^3.0.0",
     "css-loader": "^0.23.1",
     "fs-extra": "^0.26.5",
     "fs-promise": "^0.4.1",
