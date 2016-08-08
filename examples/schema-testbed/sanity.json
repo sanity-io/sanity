@@ -10,7 +10,6 @@
   "roles": [
     {
       "implements": "component:@sanity/base/root",
-      "srcPath": "./components/Main",
       "path": "./components/Main"
     }
   ]
