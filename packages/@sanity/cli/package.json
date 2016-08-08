@@ -32,9 +32,9 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/resolver": "^2.2.4",
-    "@sanity/server": "^1.2.29",
-    "@sanity/storybook": "^1.0.6",
+    "@sanity/resolver": "^3.0.1",
+    "@sanity/server": "^1.2.32",
+    "@sanity/storybook": "^1.0.11",
     "child-process-promise": "^1.1.0",
     "colors": "^1.1.2",
     "configstore": "^1.4.0",
