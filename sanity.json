@@ -1,4 +1,9 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
   "roles": [
     {
       "name": "component:@sanity/components/autocomplete/default",
@@ -186,314 +191,252 @@
     },
     {
       "implements": "component:@sanity/components/autocomplete/default",
-      "srcPath": "./src/autocomplete/DefaultAutocomplete.js",
-      "path": "./lib/autocomplete/DefaultAutocomplete.js"
+      "path": "autocomplete/DefaultAutocomplete.js"
     },
     {
       "implements": "component:@sanity/components/buttons/default",
-      "srcPath": "./src/buttons/DefaultButton.js",
-      "path": "./lib/buttons/DefaultButton.js"
+      "path": "buttons/DefaultButton.js"
     },
     {
       "implements":  "component:@sanity/components/loading/spinner",
-      "srcPath": "./src/loading/Spinner.js",
-      "path": "./lib/loading/Spinner.js"
+      "path": "loading/Spinner.js"
     },
     {
       "implements":  "component:@sanity/components/progress/bar",
-      "srcPath": "./src/progress/ProgressBar.js",
-      "path": "./lib/progress/ProgressBar.js"
+      "path": "progress/ProgressBar.js"
     },
     {
       "implements":  "component:@sanity/components/buttons/fab",
-      "srcPath": "./src/buttons/Fab.js",
-      "path": "./lib/buttons/Fab.js"
+      "path": "buttons/Fab.js"
     },
     {
       "implements":  "component:@sanity/components/buttons/dropdown",
-      "srcPath": "./src/buttons/DropDownButton.js",
-      "path": "./lib/buttons/DropDownButton.js"
+      "path": "buttons/DropDownButton.js"
     },
     {
       "implements":  "component:@sanity/components/toggles/switch",
-      "srcPath": "./src/toggles/Switch.js",
-      "path": "./lib/toggles/Switch.js"
+      "path": "toggles/Switch.js"
     },
     {
       "implements":  "component:@sanity/components/toggles/checkbox",
-      "srcPath": "./src/toggles/Checkbox.js",
-      "path": "./lib/toggles/Checkbox.js"
+      "path": "toggles/Checkbox.js"
     },
     {
       "implements":  "component:@sanity/components/toggles/buttons",
-      "srcPath": "./src/toggles/Buttons.js",
-      "path": "./lib/toggles/Buttons.js"
+      "path": "toggles/Buttons.js"
     },
     {
       "implements":  "component:@sanity/components/textfields/default",
-      "srcPath": "./src/textfields/DefaultTextField.js",
-      "path": "./lib/textfields/DefaultTextField.js"
+      "path": "textfields/DefaultTextField.js"
     },
     {
       "implements":  "component:@sanity/components/textfields/search",
-      "srcPath": "./src/textfields/SearchField.js",
-      "path": "./lib/textfields/SearchField.js"
+      "path": "textfields/SearchField.js"
     },
     {
       "implements":  "component:@sanity/components/tags/textfield",
-      "srcPath": "./src/tags/TextField.js",
-      "path": "./lib/tags/TextField.js"
+      "path": "tags/TextField.js"
     },
     {
       "implements":  "component:@sanity/components/dialogs/default",
-      "srcPath": "./src/dialogs/DefaultDialog.js",
-      "path": "./lib/dialogs/DefaultDialog.js"
+      "path": "dialogs/DefaultDialog.js"
     },
     {
       "implements":  "component:@sanity/components/dialogs/fullscreen",
-      "srcPath": "./src/dialogs/FullscreenDialog.js",
-      "path": "./lib/dialogs/FullscreenDialog.js"
+      "path": "dialogs/FullscreenDialog.js"
     },
     {
       "implements": "component:@sanity/components/fieldsets/default",
-      "srcPath": "./src/fieldsets/DefaultFieldset.js",
-      "path": "./lib/fieldsets/DefaultFieldset.js"
+      "path": "fieldsets/DefaultFieldset.js"
     },
     {
       "implements": "component:@sanity/components/cards/default",
-      "srcPath": "./src/cards/DefaultCard.js",
-      "path": "./lib/cards/DefaultCard.js"
+      "path": "cards/DefaultCard.js"
     },
     {
       "implements": "component:@sanity/components/snackbar/default",
-      "srcPath": "./src/snackbar/DefaultSnackbar.js",
-      "path": "./lib/snackbar/DefaultSnackbar.js"
+      "path": "snackbar/DefaultSnackbar.js"
     },
 
     {
       "implements": "style:@sanity/components/autocomplete/default",
-      "srcPath": "./src/autocomplete/styles/DefaultAutocomplete.css",
-      "path": "./lib/autocomplete/styles/DefaultAutocomplete.css"
+      "path": "autocomplete/styles/DefaultAutocomplete.css"
     },
     {
       "implements": "style:@sanity/components/buttons/default",
-      "srcPath": "./src/buttons/styles/DefaultButton.css",
-      "path": "./lib/buttons/styles/DefaultButton.css"
+      "path": "buttons/styles/DefaultButton.css"
     },
     {
       "implements": "style:@sanity/components/buttons/fab",
-      "srcPath": "./src/buttons/styles/Fab.css",
-      "path": "./lib/buttons/styles/Fab.css"
+      "path": "buttons/styles/Fab.css"
     },
     {
       "implements": "style:@sanity/components/buttons/dropdown",
-      "srcPath": "./src/buttons/styles/DropDownButton.css",
-      "path": "./lib/buttons/styles/DropDownButton.css"
+      "path": "buttons/styles/DropDownButton.css"
     },
     {
       "implements": "style:@sanity/components/loading/spinner",
-      "srcPath": "./src/loading/styles/Spinner.css",
-      "path": "./lib/loading/styles/Spinner.css"
+      "path": "loading/styles/Spinner.css"
     },
     {
       "implements": "style:@sanity/components/progress/bar",
-      "srcPath": "./src/progress/styles/ProgressBar.css",
-      "path": "./lib/progress/styles/ProgressBar.css"
+      "path": "progress/styles/ProgressBar.css"
     },
     {
       "implements": "style:@sanity/components/toggles/switch",
-      "srcPath": "./src/toggles/styles/Switch.css",
-      "path": "./lib/toggles/styles/Switch.css"
+      "path": "toggles/styles/Switch.css"
     },
     {
       "implements": "style:@sanity/components/toggles/checkbox",
-      "srcPath": "./src/toggles/styles/Checkbox.css",
-      "path": "./lib/toggles/styles/Checkbox.css"
+      "path": "toggles/styles/Checkbox.css"
     },
     {
       "implements": "style:@sanity/components/toggles/buttons",
-      "srcPath": "./src/toggles/styles/Buttons.css",
-      "path": "./lib/toggles/styles/Buttons.css"
+      "path": "toggles/styles/Buttons.css"
     },
     {
       "implements": "style:@sanity/components/textfields/default",
-      "srcPath": "./src/textfields/styles/DefaultTextField.css",
-      "path": "./lib/textfields/styles/DefaultTextField.css"
+      "path": "textfields/styles/DefaultTextField.css"
     },
     {
       "implements": "style:@sanity/components/textfields/search",
-      "srcPath": "./src/textfields/styles/SearchField.css",
-      "path": "./lib/textfields/styles/SearchField.css"
+      "path": "textfields/styles/SearchField.css"
     },
     {
       "implements": "style:@sanity/components/tags/textfield",
-      "srcPath": "./src/tags/styles/TextField.css",
-      "path": "./lib/tags/styles/TextField.css"
+      "path": "tags/styles/TextField.css"
     },
     {
       "implements":  "style:@sanity/components/dialogs/fullscreen",
-      "srcPath": "./src/dialogs/styles/FullscreenDialog.css",
-      "path": "./lib/dialogs/styles/FullscreenDialog.css"
+      "path": "dialogs/styles/FullscreenDialog.css"
     },
     {
       "implements":  "style:@sanity/components/dialogs/default",
-      "srcPath": "./src/dialogs/styles/DefaultDialog.css",
-      "path": "./lib/dialogs/styles/DefaultDialog.css"
+      "path": "dialogs/styles/DefaultDialog.css"
     },
     {
       "implements": "style:@sanity/components/fieldsets/default",
-      "srcPath": "./src/fieldsets/styles/DefaultFieldset.css",
-      "path": "./lib/fieldsets/styles/DefaultFieldset.css"
+      "path": "fieldsets/styles/DefaultFieldset.css"
     },
     {
       "implements": "style:@sanity/components/cards/default",
-      "srcPath": "./src/cards/styles/DefaultCard.css",
-      "path": "./lib/cards/styles/DefaultCard.css"
+      "path": "cards/styles/DefaultCard.css"
     },
     {
       "implements": "style:@sanity/components/snackbar/default",
-      "srcPath": "./src/snackbar/styles/DefaultSnackbar.css",
-      "path": "./lib/snackbar/styles/DefaultSnackbar.css"
+      "path": "snackbar/styles/DefaultSnackbar.css"
     },
     {
       "implements": "component:@sanity/components/menus/default",
-      "srcPath": "./src/menus/DefaultMenu.js",
-      "path": "./lib/menus/DefaultMenu.js"
+      "path": "menus/DefaultMenu.js"
     },
     {
       "implements": "style:@sanity/components/menus/default",
-      "srcPath": "./src/menus/styles/DefaultMenu.css",
-      "path": "./lib/menus/styles/DefaultMenu.css"
+      "path": "menus/styles/DefaultMenu.css"
     },
     {
       "implements": "component:@sanity/components/lists/default",
-      "srcPath": "./src/lists/DefaultList.js",
-      "path": "./lib/lists/DefaultList.js"
+      "path": "lists/DefaultList.js"
     },
     {
       "implements": "style:@sanity/components/lists/default",
-      "srcPath": "./src/lists/styles/DefaultList.css",
-      "path": "./lib/lists/styles/DefaultList.css"
+      "path": "lists/styles/DefaultList.css"
     },
     {
       "implements": "component:@sanity/components/lists/items/default",
-      "srcPath": "./src/lists/items/DefaultItem.js",
-      "path": "./lib/lists/items/DefaultItem.js"
+      "path": "lists/items/DefaultItem.js"
     },
     {
       "implements": "style:@sanity/components/lists/items/default",
-      "srcPath": "./src/lists/items/styles/DefaultItem.css",
-      "path": "./lib/lists/items/styles/DefaultItem.css"
+      "path": "lists/items/styles/DefaultItem.css"
     },
     {
       "implements": "component:@sanity/components/lists/thumbs",
-      "srcPath": "./src/lists/Thumbs.js",
-      "path": "./lib/lists/Thumbs.js"
+      "path": "lists/Thumbs.js"
     },
     {
       "implements": "style:@sanity/components/lists/thumbs",
-      "srcPath": "./src/lists/styles/Thumbs.css",
-      "path": "./lib/lists/styles/Thumbs.css"
+      "path": "lists/styles/Thumbs.css"
     },
     {
       "implements": "component:@sanity/components/lists/items/thumb",
-      "srcPath": "./src/lists/items/Thumb.js",
-      "path": "./lib/lists/items/Thumb.js"
+      "path": "lists/items/Thumb.js"
     },
     {
       "implements": "style:@sanity/components/lists/items/thumb",
-      "srcPath": "./src/lists/items/styles/Thumb.css",
-      "path":    "./lib/lists/items/styles/Thumb.css"
+      "path":    "lists/items/styles/Thumb.css"
     },
     {
       "implements": "component:@sanity/components/referencepickers/default",
-      "srcPath": "./src/referencepickers/ReferencePickerDefault.js",
-      "path":    "./lib/referencepickers/ReferencePickerDefault.js"
+      "path":    "referencepickers/ReferencePickerDefault.js"
     },
     {
       "implements": "style:@sanity/components/referencepickers/default",
-      "srcPath": "./src/referencepickers/styles/ReferencePickerDefault.css",
-      "path":    "./lib/referencepickers/styles/ReferencePickerDefault.css"
+      "path":    "referencepickers/styles/ReferencePickerDefault.css"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/buttons/story.js",
-      "path": "./lib/buttons/story.js"
+      "path": "buttons/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/dialogs/story.js",
-      "path": "./lib/dialogs/story.js"
+      "path": "dialogs/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/toggles/story.js",
-      "path": "./lib/toggles/story.js"
+      "path": "toggles/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/fieldsets/story.js",
-      "path": "./lib/fieldsets/story.js"
+      "path": "fieldsets/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/lists/story.js",
-      "path": "./lib/lists/story.js"
+      "path": "lists/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/snackbar/story.js",
-      "path": "./lib/snackbar/story.js"
+      "path": "snackbar/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/menus/story.js",
-      "path": "./lib/menus/story.js"
+      "path": "menus/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/icons/story.js",
-      "path": "./lib/icons/story.js"
+      "path": "icons/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/datepickers/story.js",
-      "path": "./lib/datepickers/story.js"
+      "path": "datepickers/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/textfields/story.js",
-      "path": "./lib/textfields/story.js"
+      "path": "textfields/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/typography/story.js",
-      "path": "./lib/typography/story.js"
+      "path": "typography/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/autocomplete/story.js",
-      "path": "./lib/autocomplete/story.js"
+      "path": "autocomplete/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/loading/story.js",
-      "path": "./lib/loading/story.js"
+      "path": "loading/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/referencepickers/story.js",
-      "path": "./lib/referencepickers/story.js"
+      "path": "referencepickers/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/tags/story.js",
-      "path": "./lib/tags/story.js"
+      "path": "tags/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/progress/story.js",
-      "path": "./lib/progress/story.js"
+      "path": "progress/story.js"
     }
   ]
 }
