@@ -132,7 +132,6 @@ export function createSanityManifest(data, opts) {
     roles: [
       {
         name: 'schema:@sanity/base/schema',
-        srcPath: './schemas/schema.js',
         path: './schemas/schema.js'
       }
     ]
