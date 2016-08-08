@@ -4,6 +4,7 @@ import {Router, Route, NotFound, Redirect} from 'router:@sanity/base/router'
 import locationStore from 'datastore:@sanity/base/location'
 import SanityIntlProvider from 'component:@sanity/base/sanity-intl-provider'
 import LoginWrapper from 'component:@sanity/base/login-wrapper'
+import config from 'config:sanity'
 
 class DefaultLayoutRouter extends React.Component {
   constructor() {
@@ -28,12 +29,14 @@ class DefaultLayoutRouter extends React.Component {
 
   render() {
     const {location} = this.state
+    const locale = config.locale || {}
+    const supportedLanguages = locale.supportedLanguages || ['en-US']
     if (!location) {
       return null
     }
 
     return (
-      <SanityIntlProvider>
+      <SanityIntlProvider supportedLanguages={supportedLanguages}>
         <LoginWrapper>
           <Router location={location} navigate={this.handleNavigate}>
             <Route path="/:site/*" component={DefaultLayout} />
