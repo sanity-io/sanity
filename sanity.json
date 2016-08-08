@@ -298,8 +298,7 @@
     },
     {
       "name": "datastore:@sanity/base/document",
-      "srcPath": "./src/datastores/document",
-      "path": "./lib/datastores/document"
+      "path": "datastores/document"
     },
     {
       "name": "datastore:@sanity/base/user",
@@ -341,7 +340,6 @@
     },
     {
       "implements": "component:@sanity/base/query-container",
-      "srcPath": "./src/components/QueryContainer",
       "path": "./lib/components/QueryContainer"
     },
     {
