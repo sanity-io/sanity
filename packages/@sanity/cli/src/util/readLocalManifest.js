@@ -1,8 +1,8 @@
 import fsp from 'fs-promise'
 import path from 'path'
 
-function readLocalManifest(cwd, fileName) {
-  return fsp.readJson(path.join(cwd, fileName || 'package.json')).catch(err => {
+function readLocalManifest(dirName, fileName) {
+  return fsp.readJson(path.join(dirName, fileName || 'package.json')).catch(err => {
     if (err.code === 'ENOENT') {
       return Promise.resolve({})
     }

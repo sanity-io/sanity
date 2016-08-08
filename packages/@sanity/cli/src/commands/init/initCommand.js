@@ -2,6 +2,7 @@ import gatherInput from './gatherInput'
 import {bootstrapSanity, bootstrapPlugin} from './bootstrap'
 import {install as npmInstall} from '../../npm-bridge/install'
 import getProjectDefaults from '../../util/getProjectDefaults'
+import addPluginToManifest from '../../util/addPluginToManifest'
 
 export default {
   name: 'init',
@@ -35,7 +36,7 @@ function initSanity({print, prompt, spinner, error, options}) {
 
   const spin = spinner('Installing dependencies...')
 
-  return getProjectDefaults(options.cwd)
+  return getProjectDefaults(options.cwd, {})
     .then(defaults => gatherInput(prompt, defaults))
     .then(answers => bootstrapSanity(options.cwd, answers))
     .then(() => spin.start())
@@ -57,12 +58,28 @@ function initPlugin({print, prompt, error, options}, initOpts = {}) {
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
-  return getProjectDefaults(options.cwd)
-    .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
+  let sanityDir = options.cwd
+  return getProjectDefaults(sanityDir, {isPlugin: true})
+    .then(defaults => {
+      sanityDir = defaults.sanityRoot || sanityDir
+      return gatherInput(prompt, defaults, {isPlugin: true})
+    })
     .then(answers => warnOnNonStandardPluginName(answers, print))
-    .then(answers => bootstrapPlugin(options.cwd, answers, initOpts))
-    .then(() => print('Success!'))
+    .then(answers => bootstrapPlugin(answers, initOpts))
+    .then(answers => addPluginOnUserConfirm(sanityDir, answers))
+    .then(answers => print(`Success! Plugin initialized at ${answers.outputPath}`))
     .catch(error)
+}
+
+function addPluginOnUserConfirm(sanityDir, answers) {
+  if (!answers.addPluginToManifest) {
+    return answers
+  }
+
+  return addPluginToManifest(
+    sanityDir,
+    answers.name.replace(/^sanity-plugin-/, '')
+  ).then(() => answers)
 }
 
 function warnOnNonStandardPluginName(answers, print) {

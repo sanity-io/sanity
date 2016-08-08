@@ -88,23 +88,37 @@ export function createPluginManifest(data, opts = {}) {
   return serializeManifest(pkg)
 }
 
-function getSanityPluginManifest(data) {
+function getSanityPluginManifest(data, {isSanityStyle}) {
   const prefix = data.name.replace(/^sanity-plugin-/, '')
+  if (isSanityStyle) {
+    return {
+      paths: {
+        source: './src',
+        compiled: './lib'
+      },
+
+      roles: [{
+        name: `component:${prefix}/my-component`,
+        path: 'myComponent.js'
+      }]
+    }
+  }
+
   return {
     roles: [{
-      name: `component:${prefix}/my-component`,
-      srcPath: 'src/myComponent.js',
+      implements: `component:${prefix}/my-component`,
+      description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
       path: 'lib/myComponent.js'
     }]
   }
 }
 
-export function createSanityManifest(data, {isPlugin}) {
-  const manifest = isPlugin ? getSanityPluginManifest(data) : {
+export function createSanityManifest(data, opts) {
+  const manifest = opts.isPlugin ? getSanityPluginManifest(data, opts) : {
     root: true,
 
     api: {
-      dataset: data.dataset,
+      dataset: data.dataset
     },
 
     plugins: [

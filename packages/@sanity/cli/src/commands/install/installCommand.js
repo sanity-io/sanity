@@ -1,8 +1,8 @@
 import fsp from 'fs-promise'
 import path from 'path'
 import {install as npmInstall} from '../../npm-bridge/install'
-import readLocalManifest from '../../util/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
+import addPluginToManifest from '../../util/addPluginToManifest'
 import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
 
 export default {
@@ -34,7 +34,7 @@ function installPlugin(plugin, {print, spinner, error, options}) {
   spin.start()
 
   return npmInstall(['--save', fullName])
-    .then(() => saveToSanityManifest(options.cwd, shortName))
+    .then(() => addPluginToManifest(options.cwd, shortName))
     .then(() => copyConfiguration(options.cwd, fullName, shortName, print))
     .then(() => spin.stop())
     .then(() => print(`Plugin '${fullName}' installed`))
@@ -50,18 +50,6 @@ function handleNpmError(err, printError, pluginName) {
   }
 
   printError(err)
-}
-
-function saveToSanityManifest(cwd, pluginName) {
-  return readLocalManifest(cwd, 'sanity.json')
-    .then(manifest => {
-      manifest.plugins = manifest.plugins || []
-      if (manifest.plugins.indexOf(pluginName) === -1) {
-        manifest.plugins.push(pluginName)
-      }
-      return manifest
-    })
-    .then(manifest => fsp.writeJson(path.join(cwd, 'sanity.json'), manifest, {spaces: 2}))
 }
 
 function copyConfiguration(cwd, fullName, shortName, print) {

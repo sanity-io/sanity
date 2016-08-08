@@ -39,7 +39,7 @@ export function bootstrapSanity(targetPath, data) {
   ]))
 }
 
-export function bootstrapPlugin(targetPath, data, opts = {}) {
+export function bootstrapPlugin(data, opts = {}) {
   const collect = {
     pluginConfig: readTemplate('plugin-config'),
     gitIgnore: readTemplate('gitignore'),
@@ -51,14 +51,18 @@ export function bootstrapPlugin(targetPath, data, opts = {}) {
     })
   }
 
+  const targetPath = data.outputPath
   const styleMetaFiles = ['babelrc', 'editorconfig', 'eslintignore', 'eslintrc', 'npmignore', 'gitignore']
+
   if (opts.sanityStyle) {
     styleMetaFiles.forEach(file => {
       collect[file] = readTemplate(path.join('sanity-style', file))
     })
   }
 
-  return promiseProps(collect).then(templates => {
+  return mkdirIfNotExists(targetPath).then(
+    () => promiseProps(collect)
+  ).then(templates => {
     if (!data.createConfig) {
       return templates
     }
@@ -97,7 +101,7 @@ export function bootstrapPlugin(targetPath, data, opts = {}) {
         + '}\n'
       )
     )
-  })
+  }).then(() => data)
 }
 
 function readTemplate(file) {

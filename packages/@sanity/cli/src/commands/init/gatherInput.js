@@ -1,3 +1,4 @@
+import path from 'path'
 import validateNpmPackageName from 'validate-npm-package-name'
 import getSlug from 'speakingurl'
 import isGitUrl from 'is-git-url'
@@ -46,9 +47,25 @@ export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
     questions.push({
       type: 'confirm',
       name: 'createConfig',
-      message: 'Create sample configuration file?',
-      default: true
+      message: 'Does the plugin need a configuration file?',
+      default: false
     })
+
+    questions.push({
+      type: 'input',
+      name: 'outputPath',
+      message: 'Output path:',
+      default: answers => path.join(defaults.sanityRoot || process.cwd(), 'plugins', answers.name)
+    })
+
+    if (defaults.sanityRoot) {
+      questions.push({
+        type: 'confirm',
+        name: 'addPluginToManifest',
+        message: 'Enable plugin in current Sanity installation?',
+        default: true
+      })
+    }
   } else {
     // @todo how do we explain what a dataset is?
     questions.push({
