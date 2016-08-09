@@ -75,7 +75,7 @@
     },
 
     {
-      "implements": "role:@sanity/form-builder/core-types",
+      "implements": "role:@sanity/base/core-types",
       "path": "./types"
     },
     {
