@@ -9,6 +9,7 @@ import reference from 'role:@sanity/form-builder/input/reference?'
 import string from 'role:@sanity/form-builder/input/string?'
 import text from 'role:@sanity/form-builder/input/text?'
 import url from 'role:@sanity/form-builder/input/url?'
+import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
 import DefaultReference from '../inputs/Reference'
 
@@ -34,6 +35,9 @@ const inputResolver = (field, fieldType) => {
     return field.component || fieldType.component
   }
   const inputRole = coreTypes[field.type] || coreTypes[fieldType.name]
+  if (field.input === 'slate') {
+    return SlateBlockEditor
+  }
   return field.input || inputRole
 }
 

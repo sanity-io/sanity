@@ -24,8 +24,13 @@ export default {
         {
           name: 'content',
           type: 'array',
+<<<<<<< 05843f12386c63efe27303f308298503f7a02e94
           title: 'Content array',
           editor: 'prosemirror',
+=======
+          title: 'Blocks',
+          editor: 'slate',
+>>>>>>> Attempt to get patching to work
           of: [
             {
               title: 'Paragraph',

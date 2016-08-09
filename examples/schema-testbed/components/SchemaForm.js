@@ -12,6 +12,7 @@ import {parseParams, preventDefault} from '../lib/utils'
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomReferenceBrowser from './custom/MyCustomReferenceBrowser'
+import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -28,6 +29,9 @@ const FormBuilder = schema && createFormBuilder({
     }
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
+    }
+    if (field.type === 'array' && field.editor === 'slate') {
+      return BlockEditorSlate
     }
     if (field.type === 'reference') {
       return MyCustomReferenceBrowser
