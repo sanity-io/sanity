@@ -29,7 +29,7 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName()
       }
     })
@@ -53,13 +53,13 @@ storiesOf('Lists')
   () => {
     const items = range(5).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName()
       }
     })
     return (
       <div style={containerStyle}>
-        <DefaultList items={items} selectedItemIndex={'1'} onSelect={action('Select')} />
+        <DefaultList items={items} selectedItem={items[3]} onSelect={action('Select')} />
       </div>
     )
   },
@@ -77,7 +77,7 @@ storiesOf('Lists')
   () => {
     const items = range(5).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName()
       }
     })
@@ -87,8 +87,8 @@ storiesOf('Lists')
     }
     return (
       <div style={containerStyle}>
-        <DefaultTextField onChange={setFilterValue} />
-        <DefaultList items={items} selectedItemIndex={'1'} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
+        <DefaultTextField onChange={setFilterValue} label="Type to filter…" />
+        <DefaultList items={items} selectedItem={items[2]} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
       </div>
     )
   },
@@ -107,7 +107,7 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl()}?${i}`
       }
@@ -132,7 +132,7 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl(300, 500)}?${i}`
       }
@@ -159,7 +159,7 @@ storiesOf('Lists')
       const width = Math.round(Math.random() * 100)
       const height = Math.round(Math.random() * 100)
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl(width, height)}?${i}`,
       }
@@ -184,7 +184,7 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        index: `${i}`,
+        key: `${i}`,
         title: faker.name.findName(),
         image: `${faker.image.imageUrl()}?${i}`
       }

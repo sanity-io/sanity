@@ -15,7 +15,7 @@ export default class DefaultList extends React.Component {
     ),
     onSelect: PropTypes.func,
     selectable: PropTypes.bool,
-    selectedItemIndex: PropTypes.string,
+    selectedItem: PropTypes.object,
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
@@ -23,7 +23,7 @@ export default class DefaultList extends React.Component {
   }
 
   static defaultProps = {
-    selectedItemIndex: false
+    selectedItemIndex: null
   }
 
   constructor(context, props) {
@@ -32,13 +32,14 @@ export default class DefaultList extends React.Component {
     this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSelect(index) {
-    this.props.onSelect(this.props.items.find(item => item.index === index))
+  handleSelect(event) {
+    const itemIndex = event.currentTarget.getAttribute('data-item-index')
+    this.props.onSelect(this.props.items[itemIndex])
   }
 
   render() {
 
-    const {items, children, layout, className, selectedItemIndex} = this.props
+    const {items, children, layout, className, selectedItem} = this.props
 
     return (
       <div className={`${className} ${styles.root}`}>
@@ -47,17 +48,16 @@ export default class DefaultList extends React.Component {
             {
               !children && items && items.map((item, i) => {
                 return (
-                  <ListItem
-                    layout={layout}
-                    key={i}
-                    title={item.title}
-                    icon={item.icon}
-                    onClick={this.handleSelect}
-                    index={item.index}
-                    selected={selectedItemIndex == item.index}
-                  >
-                    {item.content}
-                  </ListItem>
+                  <li key={i} onClick={this.handleSelect} data-item-index={i}>
+                    <ListItem
+                      layout={layout}
+                      title={item.title}
+                      icon={item.icon}
+                      selected={selectedItem == item}
+                    >
+                      {item.content}
+                    </ListItem>
+                  </li>
                 )
               })
             }
