@@ -10,7 +10,7 @@ storiesOf('Labels')
   `,
   () => {
     return (
-      <DefaultLabel htmlFor="thisNeedsToBeUnique" />
+      <DefaultLabel htmlFor="thisNeedsToBeUnique">This is an label</DefaultLabel>
     )
   },
   {
