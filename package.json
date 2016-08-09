@@ -33,7 +33,7 @@
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^2.1.52",
+    "@sanity/base": "^2.1.56",
     "@sanity/cli": "^1.0.38",
     "@sanity/components": "^1.0.20",
     "@sanity/theme": "^1.0.5",
