@@ -76,7 +76,7 @@
 
     {
       "implements": "role:@sanity/base/core-types",
-      "path": "types"
+      "path": "sanity/coreTypes.js"
     },
     {
       "implements": "function:@sanity/form-builder/input-resolver",
