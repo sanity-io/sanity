@@ -5,7 +5,7 @@ npm-shrinkwrap.json
 coverage
 .idea
 npm-shrinkwrap.json
-lib
+/lib
 form-builder-old
 plugins/@sanity
 examples/schema-testbed/plugins/@sanity
