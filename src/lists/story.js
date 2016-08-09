@@ -19,6 +19,13 @@ const containerStyle = {
   position: 'relative'
 }
 
+const defaultItems = range(100).map((item, i) => {
+  return {
+    key: `${i}`,
+    title: faker.name.findName()
+  }
+})
+
 
 storiesOf('Lists')
 .addWithInfo(
@@ -27,15 +34,9 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    const items = range(100).map((item, i) => {
-      return {
-        key: `${i}`,
-        title: faker.name.findName()
-      }
-    })
     return (
       <div style={containerStyle}>
-        <DefaultList items={items} onSelect={action('Select')} />
+        <DefaultList items={defaultItems} onSelect={action('Select')} />
       </div>
     )
   },
@@ -51,15 +52,9 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    const items = range(5).map((item, i) => {
-      return {
-        key: `${i}`,
-        title: faker.name.findName()
-      }
-    })
     return (
       <div style={containerStyle}>
-        <DefaultList items={items} selectedItem={items[3]} onSelect={action('Select')} />
+        <DefaultList items={defaultItems} selectedItem={items[3]} onSelect={action('Select')} />
       </div>
     )
   },
@@ -75,12 +70,6 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    const items = range(5).map((item, i) => {
-      return {
-        key: `${i}`,
-        title: faker.name.findName()
-      }
-    })
     let filterValue = ''
     const setFilterValue = function (value) {
       filterValue = value
@@ -88,7 +77,7 @@ storiesOf('Lists')
     return (
       <div style={containerStyle}>
         <DefaultTextField onChange={setFilterValue} label="Type to filter…" />
-        <DefaultList items={items} selectedItem={items[2]} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
+        <DefaultList items={defaultItems} selectedItem={defaultItems[2]} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
       </div>
     )
   },

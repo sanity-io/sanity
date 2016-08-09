@@ -1,0 +1,38 @@
+@use postcss-cssnext;
+
+.root {
+  display: block;
+  position: relative;
+}
+
+.label {
+  /* Nothing here yet */
+}
+
+.select {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  border-radius: 0;
+  appearance: none;
+  position: relative;
+  color: red;
+  overflow: hidden;
+  margin-right: 1.5em;
+}
+
+.selectContainer {
+  position: relative;
+}
+
+.icon {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  right: 0.2em;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+  pointer-events: none;
+  svg {
+    color: green;
+  }
+}

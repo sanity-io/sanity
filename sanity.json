@@ -86,6 +86,14 @@
       "description": "Text field styling"
     },
     {
+      "name": "component:@sanity/components/selects/default",
+      "description": "Standard select field"
+    },
+    {
+      "name": "style:@sanity/components/selects/default",
+      "description": "Standard select field styling"
+    },
+    {
       "name": "component:@sanity/components/textfields/search",
       "description": "Search text field"
     },
@@ -236,6 +244,14 @@
     {
       "implements":  "component:@sanity/components/tags/textfield",
       "path": "tags/TextField.js"
+    },
+    {
+      "implements": "component:@sanity/components/selects/default",
+      "path": "selects/DefaultSelect.js"
+    },
+    {
+      "implements": "style:@sanity/components/selects/default",
+      "path": "selects/styles/DefaultSelect.css"
     },
     {
       "implements":  "component:@sanity/components/dialogs/default",
@@ -408,8 +424,7 @@
     },
     {
       "implements": "story:@sanity/base/component",
-      "srcPath": "./src/datepickers/story.js",
-      "path": "./lib/datepickers/story.js"
+      "path": "datepickers/story.js"
     },
     {
       "implements": "story:@sanity/base/component",
@@ -438,6 +453,10 @@
     {
       "implements": "story:@sanity/base/component",
       "path": "progress/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "selects/story.js"
     }
   ]
 }

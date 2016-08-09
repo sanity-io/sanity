@@ -10,12 +10,8 @@ import * as Ionicons from 'react-icons/lib/io'
 import {keysIn} from 'lodash'
 import styles from './styles/iconStory.css'
 
-storiesOf('Icons').addWithInfo(
+storiesOf('Icons').add(
   'Font awesome',
-  `
-    import * as FontAwesome from 'react-icons/lib/fa'
-
-  `,
   () => {
 
 
@@ -43,12 +39,8 @@ storiesOf('Icons').addWithInfo(
   },
   {inline: false}
 )
-.addWithInfo(
+.add(
   'Material Design Icons',
-  `
-    import * as FontAwesome from 'react-icons/lib/ma'
-
-  `,
   () => {
 
 
@@ -73,16 +65,11 @@ storiesOf('Icons').addWithInfo(
         }
       </ul>
     )
-  },
-  {inline: false}
+  }
 )
 
-.addWithInfo(
+.add(
   'Typicons',
-  `
-    import * as Typicons from 'react-icons/lib/ti'
-
-  `,
   () => {
 
 
@@ -112,12 +99,8 @@ storiesOf('Icons').addWithInfo(
 )
 
 
-.addWithInfo(
+.add(
   'Github Octicons',
-  `
-    import * as FontAwesome from 'react-icons/lib/go'
-
-  `,
   () => {
 
 
@@ -142,15 +125,10 @@ storiesOf('Icons').addWithInfo(
         }
       </ul>
     )
-  },
-  {inline: false}
+  }
 )
-.addWithInfo(
+.add(
   'Ionicons',
-  `
-    import * as FontAwesome from 'react-icons/lib/io'
-
-  `,
   () => {
 
 
@@ -175,6 +153,5 @@ storiesOf('Icons').addWithInfo(
         }
       </ul>
     )
-  },
-  {inline: false}
+  }
 )

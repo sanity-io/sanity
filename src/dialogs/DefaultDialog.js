@@ -18,7 +18,7 @@ export default class DefaultDialog extends React.Component {
     showHeader: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
+      index: PropTypes.string.isRequired,
       tooltip: PropTypes.string,
       kind: PropTypes.string
     }))
@@ -78,10 +78,8 @@ export default class DefaultDialog extends React.Component {
   }
 
   handleActionClick(event) {
-    const actionId = event.currentTarget.getAttribute('data-action-id')
-    this.props.onAction(
-      this.props.actions.find(action => action.index === actionId)
-    )
+    const actionIndex = event.currentTarget.getAttribute('data-action-index')
+    this.props.onAction(this.props.actions[actionIndex])
   }
 
   render() {
@@ -106,16 +104,15 @@ export default class DefaultDialog extends React.Component {
           <div className={styles.content}>
             {this.props.children}
           </div>
-
           {
             actions.length > 0 && <div className={styles.functions}>
               {
-                actions.map(action => {
+                actions.map((action, i) => {
                   return (
                     <Button
-                      key={action.index}
+                      key={i}
                       onClick={this.handleActionClick}
-                      data-action-id={action.index}
+                      data-action-index={i}
                       kind={action.kind}
                       className={styles[`button_${action.kind}`] || styles.button}
                     >

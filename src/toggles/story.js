@@ -4,8 +4,6 @@ import ToggleButtons from 'component:@sanity/components/toggles/buttons'
 import Switch from 'component:@sanity/components/toggles/switch'
 import Checkbox from 'component:@sanity/components/toggles/checkbox'
 
-require('../storybook-addons/role.js')
-
 storiesOf('Toggles')
 .addWithInfo(
   'Switch (off)',
