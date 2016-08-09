@@ -54,7 +54,7 @@ storiesOf('Lists')
   () => {
     return (
       <div style={containerStyle}>
-        <DefaultList items={defaultItems} selectedItem={items[3]} onSelect={action('Select')} />
+        <DefaultList items={defaultItems} selectedItem={defaultItems[3]} onSelect={action('Select')} />
       </div>
     )
   },

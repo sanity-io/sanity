@@ -34,7 +34,6 @@ export default class DefaultSelect extends React.Component {
   }
 
   handleChange(event) {
-    console.log('handleChange', event)
     this.props.onChange(this.props.items[event.target.value])
   }
 
