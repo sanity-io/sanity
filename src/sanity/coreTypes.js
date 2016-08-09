@@ -1,4 +1,4 @@
-import types from './types'
+import types from '../types'
 const sanityTypes = {} // TODO: Image, ImageAsset
 const coreTypes = Object.assign({}, types, sanityTypes)
 
