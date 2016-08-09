@@ -340,7 +340,7 @@
     },
     {
       "implements": "component:@sanity/base/query-container",
-      "path": "./lib/components/QueryContainer"
+      "path": "components/QueryContainer"
     },
     {
       "implements": "role:@sanity/base/locale/formatters",
