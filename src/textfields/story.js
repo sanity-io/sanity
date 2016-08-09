@@ -14,7 +14,8 @@ storiesOf('Textfields')
       <DefaultTextField
         label="This is the label"
         placeholder="This is the placeholder"
-        onChange={action('Changed')}
+        onChange={action('onChange')}
+        onFocus={action('onFocus')}
       />
     )
   },
@@ -33,7 +34,8 @@ storiesOf('Textfields')
       <DefaultTextField
         label="This is the label"
         placeholder="This is the placeholder"
-        onChange={action('Changed')}
+        onChange={action('onChange')}
+        onFocus={action('onFocus')}
         value="Donald Duck"
       />
     )
@@ -53,6 +55,9 @@ storiesOf('Textfields')
       <DefaultTextField
         label="This is the label"
         placeholder="This is the placeholder"
+        onChange={action('onChange')}
+        onFocus={action('onFocus')}
+        onClear={action('onClear')}
         showClearButton
       />
     )
@@ -72,7 +77,6 @@ storiesOf('Textfields')
       <DefaultTextField
         label="This is the label"
         placeholder="This is the placeholder"
-        showClearButton
         error
       />
     )

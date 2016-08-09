@@ -1,3 +1,4 @@
+@import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
 .root {
@@ -11,16 +12,26 @@
 
 .select {
   composes: textInput from 'style:@sanity/base/theme/forms/text-input';
-  border-radius: 0;
   appearance: none;
   position: relative;
-  color: red;
   overflow: hidden;
   margin-right: 1.5em;
 }
 
+.focused {
+  /* focused */
+}
+
 .selectContainer {
   position: relative;
+  color: var(--input-border-color);
+  &:hover {
+    color: var(--input-border-color-focus);
+  }
+
+  @nest .focused & {
+    color: var(--input-border-color-focus);
+  }
 }
 
 .icon {
@@ -32,7 +43,8 @@
   transform: translateY(-50%);
   font-size: 1.2em;
   pointer-events: none;
+  color: inherit;
   svg {
-    color: green;
+    color: inherit;
   }
 }

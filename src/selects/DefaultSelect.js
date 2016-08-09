@@ -10,6 +10,7 @@ export default class DefaultSelect extends React.Component {
     value: PropTypes.string,
     error: PropTypes.bool,
     onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     showClearButton: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -20,17 +21,32 @@ export default class DefaultSelect extends React.Component {
 
   static defaultProps = {
     value: '',
-    onChange() {}
+    onChange() {},
+    onBlur() {}
   }
 
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
+    this.handleBlur = this.handleBlur.bind(this)
+    this.state = {
+      hasFocus: false
+    }
   }
 
   handleFocus() {
+    this.setState({
+      hasFocus: true
+    })
     this.props.onFocus()
+  }
+
+  handleBlur() {
+    this.setState({
+      hasFocus: false
+    })
+    this.props.onBlur()
   }
 
   handleChange(event) {
@@ -43,11 +59,12 @@ export default class DefaultSelect extends React.Component {
 
   render() {
     const {label, error, items} = this.props
+    const {hasFocus} = this.state
 
     const rootClass = error ? styles.error : styles.root
 
     return (
-      <div className={rootClass}>
+      <div className={`${rootClass} ${hasFocus && styles.focused}`}>
         {
           label
           && <label
@@ -59,7 +76,13 @@ export default class DefaultSelect extends React.Component {
         }
 
         <div className={styles.selectContainer}>
-          <select className={styles.select} id={this._inputId} onChange={this.handleChange} onFocus={this.handleFocus}>
+          <select
+            className={styles.select}
+            id={this._inputId}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+          >
             {
               items.map((item, i) => {
                 return (

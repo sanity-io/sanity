@@ -20,7 +20,7 @@ class DefaultTextFieldImplementation extends React.Component {
   }
 
   addTag(tag) {
-    const tags = this.state.tags
+    const tags = this.state.tags.concat()
     tags.push(tag)
     this.setState({
       tags: tags
@@ -28,9 +28,8 @@ class DefaultTextFieldImplementation extends React.Component {
   }
 
   removeTag(i) {
-    this.state.tags.splice(i, 1)
-    const tags = this.state.tags
-
+    const tags = this.state.tags.concat()
+    tags.splice(i, 1)
     this.setState({
       tags: tags
     })

@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react'
+import lodash from 'lodash'
 
 import styles from 'style:@sanity/components/tags/textfield'
+import Label from 'component:@sanity/components/labels/default'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {
@@ -27,6 +29,7 @@ export default class TagsTextField extends React.Component {
     this.handleSetFocus = this.handleSetFocus.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
+    this.handleKeyUp = this.handleKeyUp.bind(this)
 
     this.state = {
       length: 4,
@@ -44,12 +47,17 @@ export default class TagsTextField extends React.Component {
 
   handleKeyDown(event) {
     const value = this._input.value
-    if (event.key == 'Backspace' && value == '') {
-      this.removeTag(this.props.tags.length)
-    }
     this.setState({
       length: value.length > 3 ? value.length : 3
     })
+  }
+
+  handleKeyUp(event) {
+    // Can not handle Backspace on keyPress
+    const value = this._input.value
+    if (event.key == 'Backspace' && value == '') {
+      this.removeTag(this.props.tags.length - 1)
+    }
   }
 
   handleKeyPress(event) {
@@ -72,9 +80,18 @@ export default class TagsTextField extends React.Component {
   }
 
   handleBlur() {
+    const value = this._input.value
+    if (value) {
+      this.addTag(value)
+      this._input.value = ''
+    }
     this.setState({
       isFocused: false
     })
+  }
+
+  componentWillMount() {
+    this._inputId = lodash.uniqueId('DefaultTextField')
   }
 
   render() {
@@ -84,7 +101,7 @@ export default class TagsTextField extends React.Component {
     }
     return (
       <div className={`${styles.root} ${this.state.isFocused ? styles.isFocused : 'noFocus'}`}>
-        <label className={styles.label}>{label}</label>
+        <Label className={styles.label} htmlFor={this._inputId}>{label}</Label>
         <div className={`${styles.inner}`}>
           <div className={styles.content} onClick={this.handleSetFocus}>
             <ul className={styles.tags}>
@@ -111,7 +128,9 @@ export default class TagsTextField extends React.Component {
               style={{width: `${this.state.length * 0.8}em`}}
               onBlur={this.handleBlur}
               onFocus={this.handleFocus}
+              onKeyUp={this.handleKeyUp}
               ref={setInput}
+              id={this._inputId}
             />
           </div>
         </div>

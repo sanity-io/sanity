@@ -46,7 +46,7 @@
 }
 
 .content {
-  composes: input from 'style:@sanity/components/textfields/default';
+  composes: input from 'style:@sanity/components/textinputs/default';
   min-height: 2em;
   overflow: hidden;
   height: auto;
@@ -77,7 +77,7 @@
 }
 
 .label {
-  composes: label from 'style:@sanity/components/textfields/default';
+  composes: label from 'style:@sanity/components/labels/default';
   display: block;
   clear: both;
 }

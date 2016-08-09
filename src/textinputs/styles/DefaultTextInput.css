@@ -1,0 +1,33 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.root {
+  position: relative;
+}
+
+.input {
+  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+}
+
+.inputError {
+  composes: error from 'style:@sanity/base/theme/forms/text-input';
+}
+
+.hasClearButton {
+  padding-right: 2em;
+}
+
+.clearButton {
+  composes: textInput from 'style:@sanity/base/theme/forms/clear-button';
+  z-index: 1;
+  top: 0.35em;
+  right: 0.1em;
+
+  svg {
+    color: inherit;
+  }
+}
+
+.isFocused {
+  border: 2px solid green;
+}

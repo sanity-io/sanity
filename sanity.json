@@ -78,6 +78,22 @@
       "description": "Toggle buttons style"
     },
     {
+      "name": "component:@sanity/components/labels/default",
+      "description": "Default label"
+    },
+    {
+      "name": "style:@sanity/components/labels/default",
+      "description": "Default label styling"
+    },
+    {
+      "name": "component:@sanity/components/textinput/default",
+      "description": "Standard text input"
+    },
+    {
+      "name": "style:@sanity/components/textinput/default",
+      "description": "Standard text styling"
+    },
+    {
       "name": "component:@sanity/components/textfields/default",
       "description": "Standard text field"
     },
@@ -234,6 +250,14 @@
       "path": "toggles/Buttons.js"
     },
     {
+      "implements":  "component:@sanity/components/labels/default",
+      "path": "labels/DefaultLabel.js"
+    },
+    {
+      "implements":  "component:@sanity/components/textinputs/default",
+      "path": "textinputs/DefaultTextInput.js"
+    },
+    {
       "implements":  "component:@sanity/components/textfields/default",
       "path": "textfields/DefaultTextField.js"
     },
@@ -309,6 +333,14 @@
     {
       "implements": "style:@sanity/components/toggles/buttons",
       "path": "toggles/styles/Buttons.css"
+    },
+    {
+      "implements": "style:@sanity/components/labels/default",
+      "path": "labels/styles/DefaultLabel.css"
+    },
+    {
+      "implements": "style:@sanity/components/textinputs/default",
+      "path": "textinputs/styles/DefaultTextInput.css"
     },
     {
       "implements": "style:@sanity/components/textfields/default",
@@ -457,6 +489,14 @@
     {
       "implements": "story:@sanity/base/component",
       "path": "selects/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "textinputs/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "labels/story.js"
     }
   ]
 }

@@ -5,7 +5,6 @@ import DropDownButton from 'component:@sanity/components/buttons/dropdown'
 import {storiesOf, action} from 'component:@sanity/storybook'
 import FaBeer from 'react-icons/lib/fa/beer'
 
-
 storiesOf('Buttons')
   .addWithInfo(
     'Default Button',

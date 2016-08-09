@@ -1,21 +1,18 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textfields/default'
-import Label from 'component:@sanity/components/labels/default'
-import DefaultTextInput from 'component:@sanity/components/textinputs/default'
+import styles from 'style:@sanity/components/textinputs/default'
+import {IoAndroidClose} from 'react-icons/lib/io'
 
-import lodash from 'lodash'
-
-export default class DefaultTextField extends React.Component {
+export default class DefaultTextInput extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
-    onClear: PropTypes.func,
     onKeyPress: PropTypes.func,
+    onClear: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
-    showClearButton: PropTypes.bool
+    showClearButton: PropTypes.bool,
+    id: PropTypes.string.isRequired
   }
 
   static defaultProps = {
@@ -38,7 +35,11 @@ export default class DefaultTextField extends React.Component {
   }
 
   handleChange(event) {
-    this.props.onChange(event.target.value)
+    const value = event.target.value
+    this.setState({
+      value: value
+    })
+    this.props.onChange(event)
   }
 
   handleKeyPress(event) {
@@ -50,33 +51,35 @@ export default class DefaultTextField extends React.Component {
   }
 
   handleClear() {
+    this.setState({
+      value: ''
+    })
     this.props.onClear()
   }
 
-  componentWillMount() {
-    this._inputId = lodash.uniqueId('DefaultTextField')
-  }
-
   render() {
-    const {label, placeholder, error, showClearButton} = this.props
+    const {placeholder, error, showClearButton, id} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
     return (
       <div className={rootClass}>
-        <Label htmlFor={this._inputId}>{label}</Label>
-        <DefaultTextInput
-          className={`${error ? styles.inputError : styles.input}`}
-          id={this._inputId}
+        <input
+          className={`
+            ${error ? styles.inputError : styles.input}
+            ${showClearButton && styles.hasClearButton}
+          `}
+          id={id}
           type="text"
           onChange={this.handleChange}
-          value={this.props.value}
+          value={this.state.value}
           placeholder={placeholder}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
-          onClear={this.handleClear}
-          showClearButton={showClearButton}
         />
+        {
+          showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
+        }
       </div>
     )
   }
