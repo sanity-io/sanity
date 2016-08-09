@@ -14,7 +14,6 @@ class DefaultMenu extends React.Component {
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
-        index: PropTypes.string.isRequired,
         icon: PropTypes.node
       })
     )
@@ -38,9 +37,7 @@ class DefaultMenu extends React.Component {
 
   handleItemClick(event) {
     const actionId = event.currentTarget.getAttribute('data-action-id')
-    this.props.onAction(
-      this.props.items.find(item => item.index === actionId)
-    )
+    this.props.onAction(this.props.items[actionId])
   }
 
   render() {
@@ -57,7 +54,7 @@ class DefaultMenu extends React.Component {
                 <li key={i} className={`${styles.item} ${item.divider && styles.divider}`}>
                   <a
                     onClick={this.handleItemClick}
-                    data-action-id={item.index}
+                    data-action-id={i}
                     className={styles.link}
                   >
                     {
