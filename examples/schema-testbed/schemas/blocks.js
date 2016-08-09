@@ -24,6 +24,7 @@ export default {
         {
           name: 'content',
           type: 'array',
+          title: 'Content array',
           editor: 'prosemirror',
           of: [
             {
@@ -120,6 +121,7 @@ export default {
     },
     {
       name: 'paragraph',
+      title: 'Paragraph object',
       type: 'object',
       fields: [
         {

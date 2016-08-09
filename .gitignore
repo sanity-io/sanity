@@ -8,3 +8,4 @@ npm-shrinkwrap.json
 lib
 form-builder-old
 plugins/@sanity
+examples/schema-testbed/plugins/@sanity

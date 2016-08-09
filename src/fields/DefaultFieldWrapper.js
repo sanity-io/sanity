@@ -15,7 +15,7 @@ export default function DefaultFieldWrapper(props, context) {
       <div className={styles.inner}>
 
         <label className={styles.label}>
-          {props.field.title}
+          {props.field.title || 'No field title is set'}
         </label>
 
         {

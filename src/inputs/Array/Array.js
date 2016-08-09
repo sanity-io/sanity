@@ -37,6 +37,8 @@ export default class Arr extends React.Component {
     this.handleRemoveItem = this.handleRemoveItem.bind(this)
     this.handleItemEnter = this.handleItemEnter.bind(this)
     this.handleClose = this.handleClose.bind(this)
+    this.handleDropDownAction = this.handleDropDownAction.bind(this)
+    this.addItemAtEnd = this.addItemAtEnd.bind(this)
 
     this.state = {
       addItemField: null,
@@ -93,33 +95,27 @@ export default class Arr extends React.Component {
     this.setState({editIndex: -1})
   }
 
+  handleDropDownAction(menuItem) {
+    this.addItemAtEnd(menuItem.field)
+  }
+
+
   renderSelectType() {
     const {type} = this.props
 
-    const items = type.of.map(field => {
+    const items = type.of.map((field, i) => {
       return {
         title: field.title || field.type,
-        onClick: () => this.addItemAtEnd(field),
+        index: `action${i}`,
+        field: field
       }
     })
 
     return (
-      <DropDownButton items={items} ripple inverted kind="add">
+      <DropDownButton items={items} ripple inverted kind="add" onAction={this.handleDropDownAction}>
         New {this.props.field.title}
       </DropDownButton>
     )
-
-    // return type.of.map(field => {
-    //   return (
-    //     <Button
-    //       key={field.type}
-    //       onClick={() => this.addItemAtEnd(field)}
-    //       type="button"
-    //     >
-    //       Select type {field.title || field.type}
-    //     </Button>
-    //   )
-    // })
   }
 
   handleItemChange(event, index) {
@@ -202,7 +198,7 @@ export default class Arr extends React.Component {
           {
             this.props.type.of.length == 1
             && <Button onClick={this.handleAddBtnClick} ripple inverted kind="add">
-              Add {field.title}
+              Add
             </Button>
           }
           {

@@ -5,8 +5,10 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 export default ReferenceInput.createBrowser({
   materializeReferences(ids) {
-    return delay(500).then(() => (
-      ids.map(id => PETS.find(pet => pet.$id === id))
+    return delay(100).then(() => (
+      ids.map(id => {
+        return PETS.find(pet => pet.index === id)
+      })
     ))
   },
   fetch(field) {

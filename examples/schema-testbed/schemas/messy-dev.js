@@ -8,30 +8,36 @@ export default {
   types: [
     {
       name: 'simple',
+      title: 'Simple',
       type: 'object',
       fields: [
         {
           name: 'someString',
+          title: 'Some string',
           type: 'string'
         },
         {
           name: 'home',
+          title: 'Home address',
           type: 'homeAddress'
         }
       ]
     },
     {
       name: 'homeAddress',
+      title: 'Home address',
       type: 'object',
       fields: [
         {
           name: 'zip',
+          title: 'Zip code',
           type: 'string'
         }
       ]
     },
     {
       name: 'pets',
+      title: 'Array of pets (strings)',
       type: 'array',
       of: [
         {
@@ -42,6 +48,7 @@ export default {
     },
     {
       name: 'latlon',
+      title: 'Latlong',
       type: 'object',
       fields: [
         {
@@ -58,18 +65,22 @@ export default {
     },
     {
       name: 'image',
+      title: 'Image',
       type: 'object',
       fields: [
         {
           name: 'fullsize',
+          title: 'Full size',
           type: 'string'
         },
         {
           name: 'aspectRatio',
+          title: 'Aspect ratio',
           type: 'number'
         },
         {
           name: 'versions',
+          title: 'Versions',
           type: 'array',
           of: [
             {
@@ -81,14 +92,17 @@ export default {
     },
     {
       name: 'imageVersion',
+      title: 'Image version',
       type: 'object',
       fields: [
         {
           name: 'width',
+          title: 'Width',
           type: 'number'
         },
         {
           name: 'square',
+          title: 'Square',
           type: 'boolean'
         },
         {
@@ -99,6 +113,7 @@ export default {
     },
     {
       name: 'person',
+      title: 'Person',
       type: 'object',
       fields: [
         {
@@ -108,14 +123,17 @@ export default {
         },
         {
           name: 'contact',
+          title: 'Contact',
           type: 'object',
           fields: [
             {
               name: 'type',
+              title: 'Type',
               type: 'string'
             },
             {
               name: 'person',
+              title: 'Person reference',
               type: 'reference',
               to: {
                 type: 'person'
@@ -123,6 +141,7 @@ export default {
             },
             {
               name: 'relation',
+              title: 'Relation string',
               type: 'string',
               placeholder: 'Fetter, mor, etc.'
             }
@@ -132,27 +151,30 @@ export default {
     },
     {
       name: 'client',
+      title: 'Client',
       type: 'object',
       fields: [
         {
           name: 'somethingInline',
+          title: 'Something inline',
           type: 'object',
           fields: [
             {
               name: 'foo',
+              title: 'Foo string',
               type: 'string'
             }
           ]
         },
         {
           name: 'contactPerson',
-          type: 'person',
-          title: 'Kontaktperson'
+          title: 'Contact Person',
+          type: 'person'
         },
         {
           name: 'name',
           type: 'string',
-          title: 'Tittel',
+          title: 'Name',
           placeholder: 'Hva heter kunden?'
         },
         {
@@ -187,6 +209,7 @@ export default {
     },
     {
       name: 'personName',
+      title: 'Autocomplete person',
       type: 'string',
       autocompletes: {
         scope: 'person'
@@ -194,6 +217,7 @@ export default {
     },
     {
       name: 'something',
+      title: 'Something any',
       type: 'any',
       of: [
         {

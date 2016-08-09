@@ -2,9 +2,11 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import ItemPreview from '../common/ItemPreview'
-import Button from 'component:@sanity/components/buttons/default'
-import Dialog from 'component:@sanity/components/dialogs/default'
+import Button from 'component:@sanity/components/buttons/default' //eslint-disable-line
+import Dialog from 'component:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
+import DefaultList from 'component:@sanity/components/lists/default' //eslint-disable-line
+import Spinner from 'component:@sanity/components/loading/spinner' //eslint-disable-line
 
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
@@ -62,12 +64,9 @@ export default class ReferenceBrowser extends React.Component {
     })
   }
 
-  handleDialogSelectItem(event) {
-    const {refCache} = this.state
-
-    const refId = event.currentTarget.getAttribute('data-id')
+  handleDialogSelectItem(item) {
     this.setState({
-      dialogSelectedItem: refCache[refId]
+      dialogSelectedItem: item
     })
   }
 
@@ -104,7 +103,7 @@ export default class ReferenceBrowser extends React.Component {
 
   handleDialogAction(action) {
     const {onChange} = this.props
-    switch(action.id) {
+    switch (action.index) {
       case 'set':
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
@@ -122,7 +121,7 @@ export default class ReferenceBrowser extends React.Component {
         this.setState({showDialog: false})
         break
       default:
-        console.log('Unsupported action: ', action)
+        console.error('Unsupported action: ', action)
     }
   }
 
@@ -164,64 +163,39 @@ export default class ReferenceBrowser extends React.Component {
       })
   }
 
-  renderItem(item) {
-    const itemField = this.getItemFieldForType(item.value.$type)
-    return (
-      <div onMouseDown={this.handleDialogSelectItem} data-id={item.value.$id}>
-        <ItemPreview value={item} field={itemField} />
-      </div>
-    )
-  }
-
-  renderItems(items) {
-    const {value} = this.props
-    const {dialogSelectedItem} = this.state
-
-    const getItemClass = item => {
-      const isCurrent = item.value.$id === value.refId
-      const isSelected = item === dialogSelectedItem
-      if (isCurrent && isSelected) {
-        return styles.itemSelected
-      }
-      if (isCurrent) {
-        return styles.itemCurrent
-      }
-      if (isSelected) {
-        return styles.itemSelected
-      }
-      return styles.item
-    }
-
-    return (
-      <ul className={styles.items}>
-        {items.map((item, i) => {
-          return (
-            <li key={item.key || i} className={getItemClass(item)}>{this.renderItem(item, i)}</li>
-          )
-        })}
-      </ul>
-    )
-  }
-
   renderDialog() {
     const {fetching, items, dialogSelectedItem} = this.state
     const {field} = this.props
     const toTypes = field.to.map(toField => toField.type)
     const actions = [
-      dialogSelectedItem && {id: 'set', title: 'Change'},
-      {id: 'cancel', title: 'Cancel'}
+      dialogSelectedItem && {index: 'set', title: 'Change'},
+      {index: 'cancel', title: 'Cancel'}
     ].filter(Boolean)
+
+    items.map((item, i) => {
+      item.key = item.value.$id
+      item.title = item.value.name.value
+      return true
+    })
+
     return (
       <Dialog
         className={styles.dialog}
+        showHeader
         title={`Select ${toTypes.join(', ')}`}
         actions={actions}
         onClose={this.handleCloseDialog}
         onAction={this.handleDialogAction}
         isOpen
       >
-        {fetching && 'Loading items…'}
-        {this.renderItems(items)}
+        <DefaultList
+          className={styles.list}
+          loading={fetching}
+          items={items}
+          scrollable
+          onSelect={this.handleDialogSelectItem}
+          selectedItem={dialogSelectedItem}
+        />
       </Dialog>
     )
   }
@@ -237,16 +211,23 @@ export default class ReferenceBrowser extends React.Component {
 
       const materializedValue = refCache[value.refId]
       if (!materializedValue) {
-        return <div>Loading…</div>
+        return (
+          <div>
+            <Spinner />
+            Loading…
+          </div>
+        )
       }
 
       // Todo: make context.field an official / formalized thing
       const itemField = materializedValue.context.field
       return (
-        <ItemPreview
-          field={itemField}
-          value={materializedValue}
-        />
+        <div>
+          <ItemPreview
+            field={itemField}
+            value={materializedValue}
+          />
+        </div>
       )
     }
 
@@ -255,21 +236,16 @@ export default class ReferenceBrowser extends React.Component {
         return <Button className={styles.chooseButton} onClick={this.handleShowDialog}>Browse…</Button>
       }
       return (
-        <span>
-          <Button className={styles.clearButton} onClick={this.handleClearValue}>x</Button>,
-          <Button className={styles.replaceButton} onClick={this.handleShowDialog}>Replace…</Button>,
-        </span>
+        <div>
+          <Button className={styles.clearButton} onClick={this.handleClearValue}>Delete</Button>
+          <Button className={styles.replaceButton} onClick={this.handleShowDialog}>Change</Button>
+        </div>
       )
     }
     return (
-      <div className={styles.input}>
-        <div
-          tabIndex="0"
-          onClick={this.handleShowDialog}
-        >
-          {renderPreview()}
-        </div>
-        {renderButtons}
+      <div>
+        {renderPreview()}
+        {renderButtons()}
       </div>
     )
   }

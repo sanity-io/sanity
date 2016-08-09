@@ -4,6 +4,7 @@ import {bindAll} from 'lodash'
 import ItemPreview from '../common/ItemPreview'
 import Button from 'component:@sanity/components/buttons/default'
 import styles from './styles/ReferenceAutocomplete.css'
+import AutoComplete from 'component:@sanity/components/autocomplete/default'
 
 export default class Reference extends React.Component {
   static propTypes = {
@@ -212,6 +213,11 @@ export default class Reference extends React.Component {
     const toTypes = field.to.map(toField => toField.type)
     return (
       <div className={styles.input}>
+
+
+        <AutoComplete placeholder="autocomplete" />
+
+        Old goes here
         <input
           type="search"
           value={searchInputValue}
