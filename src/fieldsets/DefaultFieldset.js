@@ -7,9 +7,12 @@ export default function Fieldset(props) {
     <fieldset className={styles.root} data-nesting-level={props.level}>
       <legend className={styles.legend}>{legend || fieldset.legend}</legend>
       <div className={styles.inner}>
-        <p className={styles.description}>
-          {description || fieldset.description || 'There is no description!'}
-        </p>
+        {
+          (description || fieldset.description)
+          && <p className={styles.description}>
+              {description || fieldset.description}
+          </p>
+        }
         <div className={styles.content}>
           {props.children}
         </div>
