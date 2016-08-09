@@ -75,6 +75,10 @@
     },
 
     {
+      "implements": "role:@sanity/form-builder/core-types",
+      "path": "./types"
+    },
+    {
       "implements": "function:@sanity/form-builder/input-resolver",
       "path": "sanity/inputResolver/inputResolver.js"
     },
