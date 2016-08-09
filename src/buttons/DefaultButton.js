@@ -13,7 +13,8 @@ export default class DefaultButton extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
-    className: PropTypes.string
+    className: PropTypes.string,
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {
@@ -27,7 +28,7 @@ export default class DefaultButton extends React.Component {
 
   render() {
 
-    const {kind, inverted, colored, ripple, icon, loading, className} = this.props
+    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = this.props
 
     const Icon = icon
 
@@ -39,7 +40,7 @@ export default class DefaultButton extends React.Component {
 
     return (
       <button
-        {...this.props}
+        {...rest}
         className={style}
         type="button"
         onClick={this.props.onClick}
