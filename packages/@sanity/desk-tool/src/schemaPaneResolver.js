@@ -4,60 +4,65 @@ import QueryPane from 'component:desk-tool/query-pane'
 import schema from 'schema:@sanity/base/schema'
 import PaneContainer from 'component:desk-tool/pane-container'
 import FormBuilderContainer from 'role:@sanity/form-builder/container'
-import locationStore from 'datastore:@sanity/base/location'
 import styles from '../styles/DeskTool.css'
+import DataAspectsResolver from 'role:@sanity/data-aspects/resolver'
+const dataAspects = new DataAspectsResolver(schema)
+
 
 function getTypeItems() {
-  return (schema.types || []).map(type => ({
+  return dataAspects.getInferredTypes().map(type => ({
     pathSegment: type.name,
     title: type.name.substr(0, 1).toUpperCase() + type.name.substr(1)
   }))
 }
 
-const looksLikeDisplayField = field => ['name', 'title'].indexOf(field.name) !== -1
 
 class SchemaPaneResolver extends React.Component {
+
   shouldComponentUpdate(nextProps) {
     return this.props.location !== nextProps.location
   }
 
-  getPaneQuery(typeName) {
-    const type = schema.types.find(currType => currType.name === typeName)
-    if (!type) {
-      console.error(`Type "${typeName}" not defined in schema`)
-      return locationStore.actions.navigate('/')
+  parseLocation() {
+    const segments = this.props.location.split('/').slice(1)
+    let selectedType = segments[0]
+    let selectedItem = segments[1]
+    if (selectedType && !dataAspects.getType(selectedType)) {
+      selectedType = null
+      selectedItem = null
     }
-
-    const displayField = type.displayField
-      ? type.fields.find(field => field.name === type.displayField)
-      : type.fields.find(looksLikeDisplayField)
-
-    const fieldName = displayField && displayField.name || 'title'
-    const selection = `{"pathSegment": .$id, "title": .${fieldName}}`
-    return `${schema.name}.${typeName} ${selection}`
+    return {segments, selectedType, selectedItem}
   }
 
   render() {
-    const segments = this.props.location.split('/').slice(1)
-    const selectedType = segments[0]
-    const selectedItem = segments[1]
+    const {segments, selectedType, selectedItem} = this.parseLocation()
+    const typeItems = getTypeItems()
+
     const panes = [
       <Pane
         key="types"
-        items={getTypeItems()}
+        items={typeItems}
         activeItem={selectedType}
       />
     ]
 
     if (selectedType) {
+      const queryOpts = {
+        typeName: selectedType,
+        keyForId: 'pathSegment',
+        keyForDisplayFieldName: 'title'
+      }
+      const selectedTypeQuery = dataAspects.getListQuery(queryOpts)
+      console.log('query:', selectedTypeQuery)
+
       panes.push(
         <QueryPane
           key={selectedType}
           basePath={`/${selectedType}`}
           segments={segments}
-          query={this.getPaneQuery(selectedType)}
-          activeItem={segments[1]}
-          previousPathSegment={segments[0]}
+          query={selectedTypeQuery}
+          activeItem={selectedItem}
+          previousPathSegment={selectedType}
         />
       )
     }
