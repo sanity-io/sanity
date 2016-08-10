@@ -133,6 +133,32 @@ export function getDuplicateRoleTree() {
   }
 }
 
+export function getDuplicatePluginTree() {
+  return {
+    '/sanity/sanity.json': sanityManifest(['form-builder', 'google-maps-input']),
+    '/sanity/plugins': {
+      'form-builder': {
+        'sanity.json': pluginManifest({
+          plugins: ['google-maps-input'],
+          roles: [{
+            name: 'component:form-builder/thing',
+            description: 'Yup'
+          }]
+        })
+      },
+      'google-maps-input': {
+        'sanity.json': pluginManifest({
+          roles: [{
+            name: 'component:google-maps-input/thing',
+            description: 'Map thing',
+            path: './Thing.js'
+          }]
+        })
+      }
+    }
+  }
+}
+
 export function getBasicTree() {
   return {
     '/sanity/sanity.json': sanityManifest(['@sanity/core', 'instagram']),

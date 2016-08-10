@@ -1,9 +1,10 @@
 import path from 'path'
+import generateHelpUrl from '@sanity/generate-help-url'
 import flattenTree from './flattenTree'
 import readManifest from './readManifest'
 import resolvePlugins from './resolvePlugins'
 import resolveSanityRoot from './resolveProjectRoot'
-import generateHelpUrl from '@sanity/generate-help-url'
+import removeDuplicatePlugins from './removeDuplicatePlugins'
 
 export default function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
@@ -27,6 +28,7 @@ export default function resolveTree(opts = {}) {
     })
     .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
+    .then(removeDuplicatePlugins)
 }
 
 export function resolveRoles(options = {}) {

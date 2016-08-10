@@ -19,7 +19,8 @@ import {
   getNonAbstractRoleTree,
   getRootLevelRolesTree,
   getNodeResolutionTree,
-  getPathAlternatives
+  getPathAlternatives,
+  getDuplicatePluginTree
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -154,6 +155,13 @@ describe('plugin resolver', () => {
         'foo',
         '(project root)'
       ])
+    })
+  })
+
+  it('does not list duplicate plugins multiple times', () => {
+    mockFs(getDuplicatePluginTree())
+    return resolvePlugins(opts).then(plugins => {
+      plugins.should.have.length(3)
     })
   })
 
