@@ -53,6 +53,7 @@
     "lodash": "^4.5.0",
     "npm": "^3.7.2",
     "ora": "^0.2.0",
+    "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0",
     "semver-compare": "^1.0.0",
     "speakingurl": "^9.0.0",

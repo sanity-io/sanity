@@ -4,6 +4,7 @@ import isProduction from '../../util/isProduction'
 import getConfig from '../../util/getConfig'
 import thenify from 'thenify'
 import storyBook from '@sanity/storybook/server'
+import reinitializePluginConfigs from '../../util/reinitializePluginConfigs'
 
 export default {
   name: 'start',
@@ -37,7 +38,8 @@ export default {
       listeners.push(storyBook(storyConfig))
     }
 
-    return Promise.all(listeners)
+    return reinitializePluginConfigs({sanityDir: options.cwd, print})
+      .then(() => Promise.all(listeners))
       .then(res => {
         print(`Server listening on http://${hostname}:${httpPort}`)
         if (res.length > 1) {

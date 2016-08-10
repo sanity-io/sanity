@@ -4,12 +4,14 @@ import startCommand from './start/startCommand'
 import installCommand from './install/installCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
 import versionCommand from './version/versionCommand'
+import configCheckCommand from './configcheck/configCheckCommand'
 
 export default [
   initCommand,
   buildCommand,
   startCommand,
   installCommand,
+  configCheckCommand,
   uninstallCommand,
   versionCommand
 ]
