@@ -1,10 +1,7 @@
-import fs from 'fs'
 import path from 'path'
-import thenify from 'thenify'
+import fsp from 'fs-promise'
 import pkg from '../../package.json'
 import readLocalManifest from './readLocalManifest'
-
-const stat = thenify(fs.stat)
 
 function checkLocalCli(cwd) {
   return readLocalManifest(cwd)
@@ -22,7 +19,7 @@ function hasLocalCliInstalled(cwd, isDeclared) {
   }
 
   const fullFath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
-  return stat(fullFath).then(() => fullFath).catch(err => {
+  return fsp.stat(fullFath).then(() => fullFath).catch(err => {
     if (err.code === 'ENOENT') {
       throw new Error(
         `Local ${pkg.name} dependency declared, but not installed, run \`npm install\``

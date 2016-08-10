@@ -1,16 +1,12 @@
-import fs from 'fs'
+import path from 'path'
 import fsp from 'fs-promise'
 import partialRight from 'lodash/partialRight'
-import path from 'path'
-import thenify from 'thenify'
 import promiseProps from 'promise-props-recursive'
 import {
   createPackageManifest,
   createSanityManifest,
   createPluginManifest
 } from './createManifest'
-
-const readFile = thenify(fs.readFile)
 
 export function bootstrapSanity(targetPath, data, print) {
   const writeIfNotExists = partialRight(writeFileIfNotExists, print)
@@ -110,7 +106,7 @@ export function bootstrapPlugin(data, opts = {}) {
 }
 
 function readTemplate(file) {
-  return readFile(path.join(__dirname, 'templates', file))
+  return fsp.readFile(path.join(__dirname, 'templates', file))
 }
 
 function writeFileIfNotExists(filePath, content, print) {
