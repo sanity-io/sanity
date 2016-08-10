@@ -22,9 +22,9 @@ or
 sanity install @sanity/data-aspects
 ```
 
-Make sure data-aspects and desk-tool
+If you want the desk tool plugin too, repeat the above for the `@sanity/desk-tool` plugin as well.
 
-Add the file `config/@sanity/data-aspects.json` and put some stuff in there, e.g.:
+Add the file `config/@sanity/data-aspects.json` to you project and put some stuff in there, e.g.:
 
 ```
 {
@@ -45,7 +45,8 @@ Add the file `config/@sanity/data-aspects.json` and put some stuff in there, e.g
   }
 }
 ```
-Have a look at https://github.com/sanity-io/desk-tool/blob/master/src/schemaPaneResolver.js for an example.
+
+If you're using the desk-tool, the content of the above config file will take effect. If you're not using the desk-tool, but rather something home-grown, refer to https://github.com/sanity-io/desk-tool/blob/master/src/schemaPaneResolver.js for an example on how the DataAspectsResolver is used.
 
 ## License
 
