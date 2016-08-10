@@ -1,13 +1,13 @@
 export default {
   // Dependencies for a default Sanity installation
   core: {
-    '@sanity/base': '^2.1.49',
-    '@sanity/components': '^1.0.21',
-    '@sanity/default-layout': '^1.0.15',
-    '@sanity/default-login': '^1.0.0',
-    '@sanity/desk-tool': '^1.0.28',
-    'react': '^15.0.1',
-    'react-dom': '^15.0.1'
+    '@sanity/base': '^2.1.56',
+    '@sanity/components': '^1.0.43',
+    '@sanity/default-layout': '^1.0.28',
+    '@sanity/default-login': '^1.0.3',
+    '@sanity/desk-tool': '^1.0.32',
+    'react': '^15.3.0',
+    'react-dom': '^15.3.0'
   },
 
   // Only used for Sanity-style plugins (eg, the ones we build at Sanity.io)
