@@ -14,7 +14,10 @@ export default class DefaultContainer {
     if (patch.hasOwnProperty('$set')) {
       return new DefaultContainer(patch.$set, this.context)
     }
-    throw new Error(`Only $set is supported by default value container, got: ${JSON.stringify(patch)}`)
+    if (patch.hasOwnProperty('$delete')) {
+      return new DefaultContainer(undefined, this.context)
+    }
+    throw new Error(`Only $set and $delete is supported by default value container, got: ${JSON.stringify(patch)}`)
   }
 
   validate() {

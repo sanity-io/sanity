@@ -20,7 +20,8 @@ export default class RenderField extends React.Component {
 
   static defaultProps = {
     validation: {messages: [], fields: {}},
-    onEnter() {}
+    onEnter() {
+    }
   };
 
   static contextTypes = {
@@ -51,10 +52,6 @@ export default class RenderField extends React.Component {
     return this.context.formBuilder.resolveInputComponent(field, fieldType)
   }
 
-  resolveFieldComponent(field, fieldType) {
-    return this.context.formBuilder.resolveFieldComponent(field, fieldType)
-  }
-
   getFieldType(field) {
     return getFieldType(this.context.formBuilder.schema, field)
   }
@@ -74,11 +71,10 @@ export default class RenderField extends React.Component {
       )
     }
 
-    const FieldComponent = this.resolveFieldComponent(field, fieldType)
-
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
-    const input = (
+    return (
       <FieldInput
+        fieldName={fieldName}
         level={level + 1}
         value={passValue}
         field={field}
@@ -87,17 +83,6 @@ export default class RenderField extends React.Component {
         onChange={this.handleChange}
         onEnter={this.handleEnter}
         focus={focus}
-      />
-    )
-
-    return (
-      <FieldComponent
-        level={level}
-        input={input}
-        field={field}
-        fieldName={fieldName}
-        validation={validation}
-        type={fieldType}
       />
     )
   }

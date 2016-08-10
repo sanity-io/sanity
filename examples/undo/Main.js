@@ -90,7 +90,7 @@ export default class SimpleExample extends React.Component {
         <div>
           <label>
             <input type="checkbox" checked={shouldInspect} onChange={this.handleCommand} data-command="inspect" />
-            Inspect as you type
+            {' '} Inspect as you type
           </label>
         </div>
         {shouldInspect && (

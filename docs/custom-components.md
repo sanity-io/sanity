@@ -40,7 +40,8 @@ import InputColor from 'react-input-color'
 export default class MyColorPicker extends React.Component {
   static propTypes = {
     value: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    field: PropTypes.object
   };
 
   constructor(...args) {
@@ -52,10 +53,13 @@ export default class MyColorPicker extends React.Component {
   }    
   render() {    
     return (
-      <InputColor
-        value={this.props.value}
-        onChange={this.handleChange}
-      />
+      <div>
+        <label>{field.title}</label>
+        <InputColor
+          value={this.props.value}
+          onChange={this.handleChange}
+        />
+      </div>
     )
   }
 }

@@ -99,40 +99,28 @@ export default {
         }
       ],
       fields: [
-        {name: 'street', type: 'string', title: 'Street',
-      fieldset: 'street'
-      },
-      {name: 'zip', type: 'string', title: 'Zip',
-        fieldset: 'basics'
-      },
-      {name: 'place', type: 'string', title: 'Place',
-        fieldset: 'basics'
-      }
+        {
+          name: 'street', type: 'string', title: 'Street',
+          fieldset: 'street'
+        },
+        {
+          name: 'zip', type: 'string', title: 'Zip',
+          fieldset: 'basics'
+        },
+        {
+          name: 'place', type: 'string', title: 'Place',
+          fieldset: 'basics'
+        }
       ]
     },
     {
       name: 'person',
       type: 'object',
-      fieldsets: [
-        {
-          name: 'basics',
-          title: 'Basics',
-        },
-        {
-          name: 'address',
-          title: 'Address'
-        }
-      ],
+      title: 'Object with plain fields',
       fields: [
-        {name: 'firstname', type: 'string', title: 'First name',
-      //   fieldset: 'basics'
-       },
-        {name: 'lastname', type: 'string', title: 'Last name',
-        //fieldset: 'basics'
-      },
-       {name: 'address', type: 'address', title: 'Address',
-       //fieldset: 'basics'
-     }
+        {name: 'firstname', type: 'string', title: 'First name'},
+        {name: 'lastname', type: 'string', title: 'Last name'},
+        {name: 'address', type: 'address', title: 'Address'}
       ]
     },
   ]

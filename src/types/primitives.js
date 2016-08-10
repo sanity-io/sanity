@@ -45,7 +45,7 @@ export default {
           // Return the fieldset if its the first time we encounter a field in this fieldset
           return fieldset.fields.length === 1 ? fieldset : null
         }
-        return {lonely: true, field}
+        return {fields: [field]}
       }).filter(Boolean)
 
       return {

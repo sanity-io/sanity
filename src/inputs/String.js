@@ -74,6 +74,7 @@ export default class Str extends React.Component {
 
     return (
       <div className={rootClass}>
+        <label>{field.title}</label>
         <div className={styles.inner}>
 
           {

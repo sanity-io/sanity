@@ -4,9 +4,9 @@ import ItemForm from './ItemForm'
 import ItemPreview from './ItemPreview'
 import ArrayContainer from './ArrayContainer'
 import styles from './styles/Array.css'
-import Button from 'component:@sanity/components/buttons/default'
 import EditItem from './EditItem'
 import DropDownButton from 'component:@sanity/components/buttons/dropdown'
+import Button from 'component:@sanity/components/buttons/default'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -156,7 +156,7 @@ export default class Arr extends React.Component {
   }
 
   render() {
-    const {type, field, value} = this.props
+    const {type, value} = this.props
     const {editIndex} = this.state
     return (
       <div className={styles.root}>

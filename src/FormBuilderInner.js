@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/FormBuilder.css'
 import {getFieldType} from './utils/getFieldType'
 
 export class FormBuilderInner extends React.Component {
@@ -36,18 +35,14 @@ export class FormBuilderInner extends React.Component {
     const passSerialized = value && value.constructor.passSerialized
 
     return (
-      <div className={styles.root}>
-        <div className={styles.inner}>
-          <FieldInput
-            field={field}
-            type={schemaType}
-            onChange={onChange}
-            validation={validation}
-            value={passSerialized ? value.serialize() : value}
-            focus
-          />
-        </div>
-      </div>
+      <FieldInput
+        field={field}
+        type={schemaType}
+        onChange={onChange}
+        validation={validation}
+        value={passSerialized ? value.serialize() : value}
+        focus
+      />
     )
   }
 }

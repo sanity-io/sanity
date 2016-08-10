@@ -17,8 +17,6 @@ function withDefaultFallback(fn, defaultFn) {
 export default function createFormBuilder(config = {}) {
   const {schema} = config
   const resolveInputComponent = withDefaultFallback(config.resolveInputComponent, defaultConfig.resolveInputComponent)
-  const resolveFieldComponent = withDefaultFallback(config.resolveFieldComponent, defaultConfig.resolveFieldComponent)
-  const resolveValidationComponent = withDefaultFallback(config.resolveValidationComponent, defaultConfig.resolveValidationComponent)
   const resolvePreviewComponent = withDefaultFallback(config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
 
   if (!schema) {
@@ -64,9 +62,7 @@ export default function createFormBuilder(config = {}) {
       formBuilder: PropTypes.shape({
         schema: PropTypes.instanceOf(Schema),
         createFieldValue: PropTypes.func,
-        resolveInputComponent: PropTypes.func,
-        resolveFieldComponent: PropTypes.func,
-        resolveValidationComponent: PropTypes.func
+        resolveInputComponent: PropTypes.func
       })
     };
 
@@ -76,8 +72,6 @@ export default function createFormBuilder(config = {}) {
           schema: config.schema,
           createFieldValue: _createFieldValue,
           resolveInputComponent: resolveInputComponent,
-          resolveFieldComponent: resolveFieldComponent,
-          resolveValidationComponent: resolveValidationComponent,
           resolvePreviewComponent: resolvePreviewComponent
         }
       }

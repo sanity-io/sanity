@@ -34,9 +34,15 @@ export default class QuickstartExample extends React.Component {
   constructor(...args) {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
+    this.handleLogClick = this.handleLogClick.bind(this)
     this.state = {
       editorValue: FormBuilder.createEmpty('book')
     }
+  }
+
+  handleLogClick(event) {
+    // eslint-disable-next-line no-console
+    console.log(this.state.editorValue.toJSON())
   }
 
   handleChange(event) {
@@ -48,6 +54,7 @@ export default class QuickstartExample extends React.Component {
       <div>
         {/* ... */}
         <FormBuilder value={this.state.editorValue} onChange={this.handleChange} />
+        <button type="button" onClick={this.handleLogClick}>Output current value to console</button>
       </div>
     )
   }
