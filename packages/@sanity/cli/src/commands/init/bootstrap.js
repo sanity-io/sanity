@@ -1,4 +1,6 @@
 import fs from 'fs'
+import fsp from 'fs-promise'
+import partialRight from 'lodash/partialRight'
 import path from 'path'
 import thenify from 'thenify'
 import promiseProps from 'promise-props-recursive'
@@ -10,12 +12,14 @@ import {
 
 const readFile = thenify(fs.readFile)
 
-export function bootstrapSanity(targetPath, data) {
+export function bootstrapSanity(targetPath, data, print) {
+  const writeIfNotExists = partialRight(writeFileIfNotExists, print)
+
   return Promise.all([
-    mkdirIfNotExists(path.join(targetPath, 'config')),
-    mkdirIfNotExists(path.join(targetPath, 'plugins')),
-    mkdirIfNotExists(path.join(targetPath, 'static')),
-    mkdirIfNotExists(path.join(targetPath, 'schemas'))
+    fsp.ensureDir(path.join(targetPath, 'config')),
+    fsp.ensureDir(path.join(targetPath, 'plugins')),
+    fsp.ensureDir(path.join(targetPath, 'static')),
+    fsp.ensureDir(path.join(targetPath, 'schemas'))
   ])
   .then(() => promiseProps({
     pluginGitKeep: readTemplate('pluginGitKeep'),
@@ -40,6 +44,7 @@ export function bootstrapSanity(targetPath, data) {
 }
 
 export function bootstrapPlugin(data, opts = {}) {
+  const writeIfNotExists = partialRight(writeFileIfNotExists, opts.print)
   const collect = {
     pluginConfig: readTemplate('plugin-config'),
     gitIgnore: readTemplate('gitignore'),
@@ -60,7 +65,7 @@ export function bootstrapPlugin(data, opts = {}) {
     })
   }
 
-  return mkdirIfNotExists(targetPath).then(
+  return fsp.ensureDir(targetPath).then(
     () => promiseProps(collect)
   ).then(templates => {
     if (!data.createConfig) {
@@ -92,7 +97,7 @@ export function bootstrapPlugin(data, opts = {}) {
       return
     }
 
-    mkdirIfNotExists(path.join(targetPath, 'src')).then(() =>
+    fsp.ensureDir(path.join(targetPath, 'src')).then(() =>
       writeIfNotExists(
         path.join(targetPath, 'src', 'myComponent.js'),
         "import React from 'react'\n\n"
@@ -108,42 +113,13 @@ function readTemplate(file) {
   return readFile(path.join(__dirname, 'templates', file))
 }
 
-function writeIfNotExists(filePath, content) {
-  return new Promise((resolve, reject) => {
-    fs.stat(filePath, err => {
-      if (err && err.code !== 'ENOENT') {
-        return reject(err)
-      } else if (!err) {
-        return resolve()
+function writeFileIfNotExists(filePath, content, print) {
+  return fsp.writeFile(filePath, content, {flag: 'wx'})
+    .catch(err => {
+      if (err.code === 'EEXIST') {
+        print(`[WARN] File "${filePath}" already exists, skipping`)
+      } else {
+        throw err
       }
-
-      fs.writeFile(filePath, content, writeErr => {
-        if (writeErr) {
-          return reject(writeErr)
-        }
-
-        resolve()
-      })
     })
-  })
-}
-
-function mkdirIfNotExists(dir) {
-  return new Promise((resolve, reject) => {
-    fs.stat(dir, err => {
-      if (err && err.code !== 'ENOENT') {
-        return reject(err)
-      } else if (!err) {
-        return resolve()
-      }
-
-      fs.mkdir(dir, writeErr => {
-        if (writeErr) {
-          return reject(writeErr)
-        }
-
-        return resolve()
-      })
-    })
-  })
 }

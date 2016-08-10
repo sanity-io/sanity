@@ -38,7 +38,7 @@ function initSanity({print, prompt, spinner, error, options}) {
 
   return getProjectDefaults(options.cwd, {})
     .then(defaults => gatherInput(prompt, defaults))
-    .then(answers => bootstrapSanity(options.cwd, answers))
+    .then(answers => bootstrapSanity(options.cwd, answers, print))
     .then(() => spin.start())
     .then(() => npmInstall())
     .then(() => spin.stop())
@@ -65,7 +65,7 @@ function initPlugin({print, prompt, error, options}, initOpts = {}) {
       return gatherInput(prompt, defaults, {isPlugin: true})
     })
     .then(answers => warnOnNonStandardPluginName(answers, print))
-    .then(answers => bootstrapPlugin(answers, initOpts))
+    .then(answers => bootstrapPlugin(answers, {print, ...initOpts}))
     .then(answers => addPluginOnUserConfirm(sanityDir, answers))
     .then(answers => print(`Success! Plugin initialized at ${answers.outputPath}`))
     .catch(error)
