@@ -1,13 +1,16 @@
 {
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
   "roles": [
     {
       "name": "role:@sanity/data-aspects/resolver",
-      "description": "Figures out what the data should look like"
+      "description": "Figures out what your data should look like"
     },
     {
       "implements": "role:@sanity/data-aspects/resolver",
-      "srcPath": "src/DataAspectsResolver.js",
-      "path": "lib/DataAspectsResolver.js"
+      "path": "DataAspectsResolver.js"
     }
   ]
 }
