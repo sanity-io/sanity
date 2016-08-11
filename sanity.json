@@ -32,7 +32,7 @@
     {
       "name": "role:@sanity/base/bundled-types",
       "description": "Commonly used data types which are bundled with Sanity for the sake of convenience.",
-      "path": "schema/types/baseSchema.js"
+      "path": "schema/baseSchema.js"
     },
     {
       "name": "component:@sanity/base/action-button",
