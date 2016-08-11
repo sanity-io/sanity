@@ -5,7 +5,8 @@
   },
 
   "plugins": [
-    "@sanity/form-builder"
+    "@sanity/form-builder",
+    "@sanity/data-aspects"
   ],
 
   "roles": [
