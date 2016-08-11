@@ -1,5 +1,5 @@
 import config from 'config:@sanity/data-aspects'
-import coreTypes from 'role:@sanity/base/core-types'
+import bundledTypes from 'role:@sanity/base/bundled-types'
 
 
 class DataAspectsResolver {
@@ -13,27 +13,27 @@ class DataAspectsResolver {
     return this.config
   }
 
-  getInferredTypes() {
-    let defaultTypes = this.schema.types || []
-    defaultTypes = defaultTypes.filter(type => {
-      // Filter out schema.types which are named in coreTypes
-      return !Object.keys(coreTypes).includes(type.name)
-    })
-    if (this.config.hiddenTypes) {
-      // Filter out schema.types which are named in hiddenTypes
-      defaultTypes = defaultTypes.filter(type => {
-        return !config.hiddenTypes.includes(type.name)
-      })
-    }
-    return defaultTypes
+  getField(type, fieldName) {
+    return type.fields.filter(currField => currField.name === fieldName)
   }
 
   getType(typeName) {
     return this.schema.types.find(currType => currType.name === typeName)
   }
 
-  getField(type, fieldName) {
-    return type.fields.filter(currField => currField.name === fieldName)
+  getInferredTypes() {
+    let defaultTypes = this.schema.types || []
+    defaultTypes = defaultTypes.filter(type => {
+      // Exclude types which come bundled with Sanity
+      return !Object.keys(bundledTypes).includes(type.name)
+    })
+    if (this.config.hiddenTypes) {
+      // Exclude types which are explicitly named in hiddenTypes
+      defaultTypes = defaultTypes.filter(type => {
+        return !config.hiddenTypes.includes(type.name)
+      })
+    }
+    return defaultTypes
   }
 
   fallbackDisplayFieldName(typeName) {
@@ -62,8 +62,7 @@ class DataAspectsResolver {
     const constraints = []
     if (listOptions.order) {
       // prefix order items with . because that's what gql requires
-      //constraints.push(`order: .${listOptions.order}`)
-      constraints.push(listOptions.order)
+      //constraints.push(listOptions.order)
     }
     if (listOptions.limit || listOptions.limit == 0) {
       constraints.push(`limit: ${listOptions.limit}`)
