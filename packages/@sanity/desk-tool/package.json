@@ -18,7 +18,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "^1.0.3",
+    "@sanity/data-aspects": "^1.0.4",
     "@sanity/form-builder": "^1.1.14",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
