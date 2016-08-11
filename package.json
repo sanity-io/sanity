@@ -24,7 +24,7 @@
   "dependencies": {
     "dialog-polyfill": "^0.4.3",
     "faker": "^3.1.0",
-    "fuse": "^0.4.0",
+    "fuse.js": "^2.4.1",
     "in-publish": "^2.0.0",
     "lodash": "^4.13.1",
     "postcss-cssnext": "^2.7.0",

@@ -48,16 +48,18 @@ export default class DefaultList extends React.Component {
             {
               !children && items && items.map((item, i) => {
                 return (
-                  <li key={i} onClick={this.handleSelect} data-item-index={i}>
-                    <ListItem
-                      layout={layout}
-                      title={item.title}
-                      icon={item.icon}
-                      selected={selectedItem == item}
-                    >
-                      {item.content}
-                    </ListItem>
-                  </li>
+                  <ListItem
+                    layout={layout}
+                    title={item.title}
+                    icon={item.icon}
+                    selected={selectedItem == item}
+                    key={i}
+                    index={`${i}`}
+                    onSelect={this.handleSelect}
+                    className={styles.item}
+                  >
+                    {item.content}
+                  </ListItem>
                 )
               })
             }

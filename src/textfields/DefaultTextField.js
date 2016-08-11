@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/textfields/default'
-import Label from 'component:@sanity/components/labels/default'
 import DefaultTextInput from 'component:@sanity/components/textinputs/default'
+import FormField from 'component:@sanity/components/formfields/default'
 
 import lodash from 'lodash'
 
 export default class DefaultTextField extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onClear: PropTypes.func,
@@ -58,13 +59,12 @@ export default class DefaultTextField extends React.Component {
   }
 
   render() {
-    const {label, placeholder, error, showClearButton} = this.props
+    const {label, placeholder, error, showClearButton, id} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
     return (
-      <div className={rootClass}>
-        <Label htmlFor={this._inputId}>{label}</Label>
+      <FormField className={rootClass} id={id} label={label}>
         <DefaultTextInput
           className={`${error ? styles.inputError : styles.input}`}
           id={this._inputId}
@@ -77,7 +77,7 @@ export default class DefaultTextField extends React.Component {
           onClear={this.handleClear}
           showClearButton={showClearButton}
         />
-      </div>
+      </FormField>
     )
   }
 }

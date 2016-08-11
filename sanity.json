@@ -78,6 +78,14 @@
       "description": "Toggle buttons style"
     },
     {
+      "name": "component:@sanity/components/formfields/default",
+      "description": "Default form field"
+    },
+    {
+      "name": "style:@sanity/components/formfield/default",
+      "description": "Default form field styling"
+    },
+    {
       "name": "component:@sanity/components/labels/default",
       "description": "Default label"
     },
@@ -108,6 +116,14 @@
     {
       "name": "style:@sanity/components/selects/default",
       "description": "Standard select field styling"
+    },
+    {
+      "name": "component:@sanity/components/selects/searchable",
+      "description": "Searchable select field"
+    },
+    {
+      "name": "style:@sanity/components/selects/searchable",
+      "description": "Searchable select field styling"
     },
     {
       "name": "component:@sanity/components/textfields/search",
@@ -250,6 +266,10 @@
       "path": "toggles/Buttons.js"
     },
     {
+      "implements":  "component:@sanity/components/formfields/default",
+      "path": "formfields/DefaultFormField.js"
+    },
+    {
       "implements":  "component:@sanity/components/labels/default",
       "path": "labels/DefaultLabel.js"
     },
@@ -276,6 +296,14 @@
     {
       "implements": "style:@sanity/components/selects/default",
       "path": "selects/styles/DefaultSelect.css"
+    },
+    {
+      "implements": "component:@sanity/components/selects/searchable",
+      "path": "selects/SearchableSelect.js"
+    },
+    {
+      "implements": "style:@sanity/components/selects/searchable",
+      "path": "selects/styles/SearchableSelect.css"
     },
     {
       "implements":  "component:@sanity/components/dialogs/default",
@@ -333,6 +361,10 @@
     {
       "implements": "style:@sanity/components/toggles/buttons",
       "path": "toggles/styles/Buttons.css"
+    },
+    {
+      "implements": "style:@sanity/components/formfields/default",
+      "path": "formfields/styles/DefaultFormField.css"
     },
     {
       "implements": "style:@sanity/components/labels/default",
@@ -497,6 +529,11 @@
     {
       "implements": "story:@sanity/base/component",
       "path": "labels/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "formfields/story.js"
     }
+
   ]
 }

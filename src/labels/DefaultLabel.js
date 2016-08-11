@@ -11,7 +11,7 @@ export default class DefaultLabel extends React.Component {
   render() {
     const {htmlFor, className} = this.props
     return (
-      <div className={`${className} ${styles.root}`}>
+      <div className={`${styles.root} ${className}`}>
         <label htmlFor={htmlFor}>
           {this.props.children}
         </label>

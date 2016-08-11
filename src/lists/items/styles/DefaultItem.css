@@ -3,6 +3,7 @@
 
 :root {
   --default-item-selected-color: var(--brand-primary);
+  --default-item-active-color: var(--brand-primary);
   --default-item-background-color: #fff;
   --default-item-background-color-hover: #f0f0f0;
   --default-item-odd-background-color: #fafafa;
@@ -15,6 +16,14 @@
     &.selected {
       background-color: color(var(--default-item-background-color) blend(var(--default-item-selected-color) 40%));
     }
+    &.active {
+      background-color: var(--default-item-active-color);
+      color: #fff;
+      &:hover {
+        background-color: var(--default-item-active-color);
+        color: #fff;
+      }
+    }
     &:hover {
       background-color: var(--default-item-background-color-hover);
       &.selected {
@@ -26,6 +35,14 @@
     background-color: var(--default-item-odd-background-color);
     &.selected {
       background-color: color(var(--default-item-odd-background-color) blend(var(--default-item-selected-color) 40%));
+    }
+    &.active {
+      background-color: var(--default-item-active-color);
+      color: #fff;
+      &:hover {
+        background-color: var(--default-item-active-color);
+        color: #fff;
+      }
     }
     &:hover {
       background-color: var(--default-item-odd-background-color-hover);
@@ -49,7 +66,4 @@
   padding: 0 1rem;
   width: 100%;
   text-overflow: ellipsis;
-  &:first-child {
-    border-top: 1px solid #ccc;
-  }
 }

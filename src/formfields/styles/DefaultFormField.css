@@ -1,0 +1,65 @@
+@import 'style:@sanity/base/theme/variables';
+@import 'style:@sanity/base/theme/body';
+@use postcss-cssnext;
+
+.root {
+  display: block;
+  width: 100%;
+}
+
+.block {
+  composes: root;
+}
+
+.inline {
+  composes: root;
+}
+
+.label {
+  display: block;
+
+}
+
+.description {
+  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
+
+  @nest .inline & {
+    font-size: var(--font-size-tiny);
+  }
+}
+
+.labelAndDescriptionWrapper {
+  display: block;
+
+  @nest .inline & {
+    flex-basis: 33%;
+    flex-grow: 1;
+  }
+}
+
+.content {
+  display: block;
+
+  @nest .inline & {
+    flex-basis: 77%;
+    flex-grow: 10;
+    display: inline-block;
+  }
+}
+
+.wrapped {
+  composes: root;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+
+.inner {
+  display: block;
+
+  @nest .inline & {
+    display: flex;
+    flex-direction: row;
+  }
+}

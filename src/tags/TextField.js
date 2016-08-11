@@ -64,7 +64,9 @@ export default class TagsTextField extends React.Component {
     const value = this._input.value
 
     if (event.key == 'Enter') {
-      this.addTag(value)
+      if (value) {
+        this.addTag(value)
+      }
       this._input.value = ''
     }
   }

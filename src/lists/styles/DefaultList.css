@@ -2,10 +2,17 @@
   border: 0;
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 .list {
   border: 0;
   margin: 0;
   padding: 0;
+  width: 100%;
+}
+
+.item {
+  display: block;
+  list-style-type: none;
 }

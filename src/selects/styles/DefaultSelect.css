@@ -44,6 +44,7 @@
   font-size: 1.2em;
   pointer-events: none;
   color: inherit;
+  cursor: pointer;
   svg {
     color: inherit;
   }

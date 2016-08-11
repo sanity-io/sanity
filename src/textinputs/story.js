@@ -15,6 +15,7 @@ storiesOf('Text inputs')
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onKeyPress={action('onKeyPress')}
+        onBlur={action('onBlur')}
         id="ThisIsAnUniqueId"
       />
     )
@@ -37,6 +38,7 @@ storiesOf('Text inputs')
         onFocus={action('onFocus')}
         onKeyPress={action('onKeyPress')}
         onClear={action('onClear')}
+        onBlur={action('onBlur')}
         value="This field has a clearbutton"
         id="ThisIsAnUniqueId_ufthw"
         showClearButton

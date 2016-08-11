@@ -7,6 +7,7 @@ export default class DefaultTextInput extends React.Component {
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onKeyPress: PropTypes.func,
+    onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
@@ -20,7 +21,8 @@ export default class DefaultTextInput extends React.Component {
     onKeyPress() {},
     onChange() {},
     onFocus() {},
-    onClear() {}
+    onClear() {},
+    onBlur() {}
   }
 
   constructor(props, context) {
@@ -29,15 +31,23 @@ export default class DefaultTextInput extends React.Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.handleClear = this.handleClear.bind(this)
+    this.handleBlur = this.handleBlur.bind(this)
     this.state = {
       value: this.props.value
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value) {
+      this.setState({
+        value: nextProps.value
+      })
+    }
+  }
+
   handleChange(event) {
-    const value = event.target.value
     this.setState({
-      value: value
+      value: event.target.value
     })
     this.props.onChange(event)
   }
@@ -50,11 +60,16 @@ export default class DefaultTextInput extends React.Component {
     this.props.onFocus(event)
   }
 
-  handleClear() {
+  handleBlur(event) {
+    this.props.onBlur(event)
+  }
+
+  handleClear(event) {
     this.setState({
       value: ''
     })
-    this.props.onClear()
+    this.props.onChange(event)
+    this.props.onClear(event)
   }
 
   render() {
@@ -71,11 +86,12 @@ export default class DefaultTextInput extends React.Component {
           `}
           id={id}
           type="text"
-          onChange={this.handleChange}
           value={this.state.value}
           placeholder={placeholder}
+          onChange={this.handleChange}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
         />
         {
           showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
