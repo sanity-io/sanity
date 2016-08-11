@@ -73,11 +73,6 @@
       "name": "role:@sanity/form-builder/input/url",
       "description": "Input component for the core url type"
     },
-
-    {
-      "implements": "role:@sanity/base/core-types",
-      "path": "sanity/coreTypes.js"
-    },
     {
       "implements": "function:@sanity/form-builder/input-resolver",
       "path": "sanity/inputResolver/inputResolver.js"
