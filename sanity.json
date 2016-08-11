@@ -30,8 +30,9 @@
       "description": "Function that creates a schema, merging the default Sanity types with user-specific types"
     },
     {
-      "name": "role:@sanity/base/core-types",
-      "description": "Out-of-the-box data types. Core Types are the sum of all Primitive and Bundled types."
+      "name": "role:@sanity/base/bundled-types",
+      "description": "Commonly used data types which are bundled with Sanity for the sake of convenience.",
+      "path": "schema/types/baseSchema.js"
     },
     {
       "name": "component:@sanity/base/action-button",
