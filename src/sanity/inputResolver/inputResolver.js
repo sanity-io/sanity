@@ -12,19 +12,22 @@ import url from 'role:@sanity/form-builder/input/url?'
 
 import DefaultReference from '../inputs/Reference'
 
-const coreTypes = {
+const primitiveTypes = {
   array,
   boolean,
   date,
-  email,
-  geopoint,
   number,
   object,
   reference: reference || DefaultReference,
-  string,
+  string
+}
+const bundledTypes = {
+  email,
+  geopoint,
   text,
   url
 }
+const coreTypes = Object.assign({}, primitiveTypes, bundledTypes)
 
 const inputResolver = (field, fieldType) => {
   const inputRole = coreTypes[field.type] || coreTypes[fieldType.name]
