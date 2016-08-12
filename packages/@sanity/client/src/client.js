@@ -54,9 +54,10 @@ class SanityClient {
   }
 
   emit(event, ...args) {
-    return Promise.all(
-      (this.eventHandlers[event] || []).map(handler => handler(...args))
-    )
+    const handlers = this.eventHandlers[event] || []
+    return handlers.length
+      ? Promise.all(handlers.map(handler => handler(...args)))
+      : Promise.resolve()
   }
 
   request(method, ...args) {
