@@ -28,6 +28,6 @@
 
   --cursor-disabled: not-allowed;
 
-  --clear-cross-color: var(--gray-lighter);
+  --clear-cross-color: var(--gray-light);
   --clear-cross-color-hover: var(--brand-danger);
 }

@@ -12,6 +12,7 @@
   font-size: inherit;
   box-sizing: border-box;
   padding: 0.2em 0.5em;
+  border-radius: var(--input-border-radius);
 
   &:hover {
     border-color: var(--input-border-color-hover);

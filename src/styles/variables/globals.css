@@ -4,9 +4,9 @@
 :root {
   --header-height: 3rem;
 
-  --border-radius-base: 0.5rem;
-  --border-radius-large: 0.25rem;
-  --border-radius-small: 0.15rem;
+  --border-radius-base: 0;
+  --border-radius-large: 0;
+  --border-radius-small: 0;
 
   --extra-small-padding: 0.25rem;
   --small-padding: 0.5rem;
