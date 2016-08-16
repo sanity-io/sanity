@@ -10,6 +10,7 @@ export default {
   description: 'Initialize a new Sanity project',
   action: (args, opts) => {
     const type = args.options._[1]
+
     if (!type) {
       return initSanity(args)
     }
@@ -56,12 +57,16 @@ function initPlugin({print, prompt, error, options}, initOpts = {}) {
 
   print('This utility will walk you through creating a new Sanity plugin.')
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
-  print('Press ^C at any time to quit.')
+  print('Press ^C at any time to quit.\n')
+
+  print(
+    'If you intend to publish the plugin for reuse by others, it is '
+    + 'recommended that the plugin name is prefixed with `sanity-plugin-`'
+  )
 
   const rootDir = options.rootDir
   return getProjectDefaults(rootDir, {isPlugin: true})
     .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
-    .then(answers => warnOnNonStandardPluginName(answers, print))
     .then(answers => bootstrapPlugin(answers, {print, ...initOpts}))
     .then(answers => addPluginOnUserConfirm(rootDir, answers))
     .then(answers => print(`Success! Plugin initialized at ${answers.outputPath}`))
@@ -77,15 +82,4 @@ function addPluginOnUserConfirm(rootDir, answers) {
     rootDir,
     answers.name.replace(/^sanity-plugin-/, '')
   ).then(() => answers)
-}
-
-function warnOnNonStandardPluginName(answers, print) {
-  if (answers.name.indexOf('sanity-plugin-') !== 0) {
-    print([
-      '[Warning] If you intend to publish the plugin for reuse by others, ',
-      'it is recommended that the plugin name is prefixed with `sanity-plugin-`'
-    ].join(''))
-  }
-
-  return answers
 }
