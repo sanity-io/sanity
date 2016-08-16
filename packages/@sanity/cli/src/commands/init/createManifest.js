@@ -66,7 +66,7 @@ function getSanityStyleManifestProps() {
     devDependencies: versionRanges.plugin.dev,
     scripts: {
       compile: 'babel src --copy-files --out-dir lib',
-      prepublish: 'in-publish && npm run compile || not-in-publish',
+      prepublish: 'in-publish && npm run compile && sanity-check || not-in-publish',
       postpublish: 'rimraf lib',
       test: 'eslint .'
     }

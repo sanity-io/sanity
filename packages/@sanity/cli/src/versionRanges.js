@@ -13,6 +13,7 @@ export default {
   // Only used for Sanity-style plugins (eg, the ones we build at Sanity.io)
   plugin: {
     dev: {
+      '@sanity/check': '^1.0.0',
       'babel-cli': '^6.9.0',
       'babel-eslint': '^6.0.4',
       'babel-plugin-syntax-class-properties': '^6.8.0',
