@@ -10,7 +10,7 @@
     "compile": "babel -d lib/ src/",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
-    "prepublish": "in-publish && npm run compile || not-in-publish"
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish"
   },
   "keywords": [
     "sanity",
@@ -27,6 +27,7 @@
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
+    "@sanity/check": "^1.0.0",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.1.0",
     "babel-plugin-syntax-object-rest-spread": "^6.8.0",
