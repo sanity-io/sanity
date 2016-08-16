@@ -95,9 +95,9 @@ export function bootstrapPlugin(data, opts = {}) {
 
     fsp.ensureDir(path.join(targetPath, 'src')).then(() =>
       writeIfNotExists(
-        path.join(targetPath, 'src', 'myComponent.js'),
+        path.join(targetPath, 'src', 'MyComponent.js'),
         "import React from 'react'\n\n"
-        + 'export default function myComponent() {\n'
+        + 'export default function MyComponent() {\n'
         + '  return <div />\n'
         + '}\n'
       )

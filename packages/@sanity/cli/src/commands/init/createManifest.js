@@ -99,7 +99,7 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
 
       roles: [{
         name: `component:${prefix}/my-component`,
-        path: 'myComponent.js'
+        path: 'MyComponent.js'
       }]
     }
   }
@@ -108,7 +108,7 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
     roles: [{
       implements: `component:${prefix}/my-component`,
       description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
-      path: 'lib/myComponent.js'
+      path: 'lib/MyComponent.js'
     }]
   }
 }
