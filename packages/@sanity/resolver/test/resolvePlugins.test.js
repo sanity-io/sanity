@@ -299,6 +299,21 @@ describe('plugin resolver', () => {
     })
   })
 
+  it('resolves path to "compiled" if "useCompiledPaths"-option is set to true', () => {
+    mockFs(getMixedPluginTree())
+    return resolveRoles(Object.assign({}, opts, {useCompiledPaths: true})).then(res => {
+      res.implementations['component:@sanity/default-layout/tool'][0].should.eql({
+        plugin: 'foo',
+        path: '/sanity/plugins/foo/lib/File'
+      })
+
+      res.implementations['component:@sanity/default-layout/tool'][1].should.eql({
+        plugin: 'instagram',
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+      })
+    })
+  })
+
   it('treats dot-paths as relative to sanity.json, absolute as absolute', () => {
     mockFs(getPathAlternatives())
     return resolveRoles(opts).then(res => {

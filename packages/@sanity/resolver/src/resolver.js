@@ -6,6 +6,25 @@ import resolvePlugins from './resolvePlugins'
 import resolveSanityRoot from './resolveProjectRoot'
 import removeDuplicatePlugins from './removeDuplicatePlugins'
 
+export const resolveProjectRoot = resolveSanityRoot
+
+export function resolveRoles(options = {}) {
+  if (options.sync) {
+    return mergeResult(resolveTree(options), options)
+  }
+
+  return resolveTree(options).then(plugins => mergeResult(plugins, options))
+}
+
+function resolveTreeSync(options) {
+  const basePath = options.basePath || process.cwd()
+  const manifest = readManifest(options)
+  const plugins = resolvePlugins(manifest.plugins || [], options)
+    .concat([getProjectRootPlugin(basePath, manifest)])
+
+  return plugins.reduce(flattenTree, plugins.slice())
+}
+
 export default function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
 
@@ -29,25 +48,6 @@ export default function resolveTree(opts = {}) {
     .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
     .then(removeDuplicatePlugins)
-}
-
-export function resolveRoles(options = {}) {
-  if (options.sync) {
-    return mergeResult(resolveTree(options), options)
-  }
-
-  return resolveTree(options).then(plugins => mergeResult(plugins, options))
-}
-
-export const resolveProjectRoot = resolveSanityRoot
-
-function resolveTreeSync(options) {
-  const basePath = options.basePath || process.cwd()
-  const manifest = readManifest(options)
-  const plugins = resolvePlugins(manifest.plugins || [], options)
-    .concat([getProjectRootPlugin(basePath, manifest)])
-
-  return plugins.reduce(flattenTree, plugins.slice())
 }
 
 function getProjectRootPlugin(basePath, manifest) {
@@ -86,13 +86,13 @@ function mergeResult(plugins, options = {}) {
   rolePlugins.forEach(({roles, plugin}) => {
     roles.forEach(role => {
       if (role.name && role.path) {
-        assignNonOverridableRole(plugin, role, implementations, definitions)
+        assignNonOverridableRole(plugin, role, implementations, definitions, options)
       } else if (role.name) {
         assignDefinitionForAbstractRole(plugin, role, definitions)
       }
 
       if (role.implements) {
-        assignRoleImplementation(plugin, role, implementations, definitions)
+        assignRoleImplementation(plugin, role, implementations, definitions, options)
       }
     })
   })
@@ -100,7 +100,7 @@ function mergeResult(plugins, options = {}) {
   return result
 }
 
-function assignNonOverridableRole(plugin, role, implementations, definitions) {
+function assignNonOverridableRole(plugin, role, implementations, definitions, options) {
   // Actual, non-overridable role
   const prevDefinition = definitions[role.name]
   if (prevDefinition) {
@@ -115,7 +115,7 @@ function assignNonOverridableRole(plugin, role, implementations, definitions) {
   }
 
   definitions[role.name] = getDefinitionDeclaration(plugin, role)
-  implementations[role.name] = [getImplementationDeclaration(plugin, role)]
+  implementations[role.name] = [getImplementationDeclaration(plugin, role, options)]
 }
 
 function assignDefinitionForAbstractRole(plugin, role, definitions) {
@@ -134,7 +134,7 @@ function assignDefinitionForAbstractRole(plugin, role, definitions) {
   definitions[role.name] = getDefinitionDeclaration(plugin, role)
 }
 
-function assignRoleImplementation(plugin, role, implementations, definitions) {
+function assignRoleImplementation(plugin, role, implementations, definitions, options) {
   const roleName = role.implements
   if (!role.path) {
     const current = `"${plugin.name}" (${plugin.path})`
@@ -174,7 +174,7 @@ function assignRoleImplementation(plugin, role, implementations, definitions) {
     implementations[roleName] = []
   }
 
-  implementations[roleName].push(getImplementationDeclaration(plugin, role))
+  implementations[roleName].push(getImplementationDeclaration(plugin, role, options))
 }
 
 function getDefinitionDeclaration(plugin, role, options = {}) {
@@ -191,9 +191,9 @@ function getDefinitionDeclaration(plugin, role, options = {}) {
   }
 }
 
-function getImplementationDeclaration(plugin, role) {
+function getImplementationDeclaration(plugin, role, options) {
   const paths = plugin.manifest.paths || {}
-  const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
+  const isLib = options.useCompiledPaths || plugin.path.split(path.sep).includes('node_modules')
   const isDotPath = /^\.{1,2}[\\/]/.test(role.path)
 
   const basePath = isDotPath
