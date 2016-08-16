@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "extends": [
+    "sanity"
+  ]
+}
