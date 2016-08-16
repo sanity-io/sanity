@@ -9,7 +9,7 @@
     "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
     "test": "mocha test/**/*.test.js"
   },
   "repository": {
@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/sanity-io/base#readme",
   "devDependencies": {
+    "@sanity/check": "^1.0.0",
     "babel-cli": "^6.5.1",
     "babel-eslint": "^6.0.0",
     "babel-plugin-syntax-class-properties": "^6.8.0",
