@@ -3,13 +3,13 @@
   "version": "1.0.44",
   "description": "Basic UX components",
   "main": "lib/index.js",
-  "author": "Kristoffer Sivertsen <kristofferjoachim@gmail.com>",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "UNLICENSED",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
     "stylelint": "stylelint \"src/**/*.css\"",
     "eslint": "eslint . --quiet",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
     "postpublish": "rimraf lib",
     "test": "npm run lint",
     "lint": "npm run eslint && npm run stylelint"
@@ -41,6 +41,7 @@
     "stylelint-config-standard": "^10.0.0"
   },
   "devDependencies": {
+    "@sanity/check": "^1.0.0",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.8.0",
