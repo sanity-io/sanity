@@ -27,7 +27,7 @@ Fieldset.defaultProps = {
 
 Fieldset.propTypes = {
   description: PropTypes.string,
-  legend: PropTypes.string,
+  legend: PropTypes.string.isRequired,
   fieldset: PropTypes.shape({
     description: PropTypes.string,
     legend: PropTypes.string

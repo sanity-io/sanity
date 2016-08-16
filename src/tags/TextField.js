@@ -2,24 +2,21 @@ import React, {PropTypes} from 'react'
 import lodash from 'lodash'
 
 import styles from 'style:@sanity/components/tags/textfield'
-import Label from 'component:@sanity/components/labels/default'
+import DefaultFormField from 'component:@sanity/components/formfields/default'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
-    addTag: PropTypes.func.isRequired,
-    removeTag: PropTypes.func.isRequired,
+    onAddTag: PropTypes.func.isRequired,
+    onRemoveTag: PropTypes.func.isRequired,
     error: PropTypes.bool,
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
-    tags: PropTypes.arrayOf(PropTypes.shape(
-      PropTypes.string
-    ))
+    tags: PropTypes.arrayOf(PropTypes.string)
   }
 
   static defaultProps = {
-    value: '',
-    tags: [],
+    tags: []
   }
 
   constructor(props, context) {
@@ -38,11 +35,11 @@ export default class TagsTextField extends React.Component {
   }
 
   addTag(title) {
-    this.props.addTag(title)
+    this.props.onAddTag(title)
   }
 
   removeTag(i) {
-    this.props.removeTag(i)
+    this.props.onRemoveTag(i)
   }
 
   handleKeyDown(event) {
@@ -102,8 +99,14 @@ export default class TagsTextField extends React.Component {
       this._input = component
     }
     return (
-      <div className={`${styles.root} ${this.state.isFocused ? styles.isFocused : 'noFocus'}`}>
-        <Label className={styles.label} htmlFor={this._inputId}>{label}</Label>
+      <DefaultFormField
+        className={`
+          ${styles.root}
+          ${this.state.isFocused ? styles.isFocused : 'noFocus'}
+        `}
+        label={label}
+        labelHtmlFor={this._inputId}
+      >
         <div className={`${styles.inner}`}>
           <div className={styles.content} onClick={this.handleSetFocus}>
             <ul className={styles.tags}>
@@ -136,7 +139,7 @@ export default class TagsTextField extends React.Component {
             />
           </div>
         </div>
-      </div>
+      </DefaultFormField>
     )
   }
 }

@@ -5,6 +5,7 @@
 .root {
   display: block;
   width: 100%;
+  margin-bottom: 2rem;
 }
 
 .block {

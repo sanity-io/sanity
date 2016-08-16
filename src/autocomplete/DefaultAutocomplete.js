@@ -1,11 +1,12 @@
 import React, {PropTypes} from 'react'
-import DefaultTextField from 'component:@sanity/components/textfields/default'
+import FormField from 'component:@sanity/components/formfields/default'
+import TextInput from 'component:@sanity/components/textinputs/default'
 import styles from 'style:@sanity/components/autocomplete/default'
 import List from 'component:@sanity/components/lists/default'
 
 export default class DefaultAutocomplete extends React.Component {
   static propTypes = {
-    label: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
@@ -45,25 +46,23 @@ export default class DefaultAutocomplete extends React.Component {
     // console.log('press')
   }
 
-  handleSelect(id) {
-    this.setState({
-      value: this.props.suggestions[id].title,
-      isOpen: false
-    })
+  handleSelect(item) {
+    // this.props.onSelect(item)
   }
 
   render() {
-    const {suggestions} = this.state.suggestions || this.props
+    const {suggestions, label} = this.state.suggestions || this.props
 
     return (
-      <div className={`${this.state.isOpen ? styles.opened : styles.closed}`}>
-        <DefaultTextField {...this.props} value={this.state.value} onKeyPress={this.handleKeyPress} />
-
+      <FormField className={`${this.state.isOpen ? styles.opened : styles.closed}`} label={label}>
+        <div className={styles.input}>
+          <TextInput {...this.props} value={this.state.value} onKeyPress={this.handleKeyPress} className={styles.textField} />
+        </div>
         <div className={styles.suggestionsContainer}>
           <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />
         </div>
 
-      </div>
+      </FormField>
     )
   }
 }

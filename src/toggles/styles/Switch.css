@@ -36,6 +36,7 @@
 
 .root {
   position: relative;
+  composes: root from 'style:@sanity/components/formfields/default';
 }
 
 .switch {

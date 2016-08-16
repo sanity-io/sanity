@@ -37,7 +37,7 @@ storiesOf('Selects')
   }
 )
 .addWithInfo(
-  'Searchable local',
+  'Searchable async',
   `
     Default textfield
   `,

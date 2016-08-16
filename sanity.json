@@ -94,11 +94,19 @@
       "description": "Default label styling"
     },
     {
-      "name": "component:@sanity/components/textinput/default",
+      "name": "component:@sanity/components/textareas/default",
       "description": "Standard text input"
     },
     {
-      "name": "style:@sanity/components/textinput/default",
+      "name": "style:@sanity/components/textareas/default",
+      "description": "Standard text input"
+    },
+    {
+      "name": "component:@sanity/components/textinputs/default",
+      "description": "Standard text input"
+    },
+    {
+      "name": "style:@sanity/components/textinputs/default",
       "description": "Standard text styling"
     },
     {
@@ -274,6 +282,10 @@
       "path": "labels/DefaultLabel.js"
     },
     {
+      "implements":  "component:@sanity/components/textareas/default",
+      "path": "textareas/DefaultTextArea.js"
+    },
+    {
       "implements":  "component:@sanity/components/textinputs/default",
       "path": "textinputs/DefaultTextInput.js"
     },
@@ -369,6 +381,10 @@
     {
       "implements": "style:@sanity/components/labels/default",
       "path": "labels/styles/DefaultLabel.css"
+    },
+    {
+      "implements": "style:@sanity/components/textareas/default",
+      "path": "textareas/styles/DefaultTextArea.css"
     },
     {
       "implements": "style:@sanity/components/textinputs/default",
@@ -533,6 +549,10 @@
     {
       "implements": "story:@sanity/base/component",
       "path": "formfields/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "textareas/story.js"
     }
 
   ]

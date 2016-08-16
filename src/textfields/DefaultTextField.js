@@ -8,7 +8,8 @@ import lodash from 'lodash'
 export default class DefaultTextField extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
+    type: PropTypes.string,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onClear: PropTypes.func,
@@ -16,7 +17,8 @@ export default class DefaultTextField extends React.Component {
     value: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
-    showClearButton: PropTypes.bool
+    showClearButton: PropTypes.bool,
+    className: PropTypes.string
   }
 
   static defaultProps = {
@@ -39,7 +41,7 @@ export default class DefaultTextField extends React.Component {
   }
 
   handleChange(event) {
-    this.props.onChange(event.target.value)
+    this.props.onChange(event)
   }
 
   handleKeyPress(event) {
@@ -55,20 +57,23 @@ export default class DefaultTextField extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = lodash.uniqueId('DefaultTextField')
+    this._inputId = this.props.id || lodash.uniqueId('DefaultTextField')
   }
 
   render() {
-    const {label, placeholder, error, showClearButton, id} = this.props
+    const {label, placeholder, error, showClearButton, type, className} = this.props
 
-    const rootClass = error ? styles.error : styles.root
+    const rootClass = `
+      ${error ? styles.error : styles.root}
+      ${className}
+    `
 
     return (
-      <FormField className={rootClass} id={id} label={label}>
+      <FormField className={rootClass} labelHtmlFor={this._inputId} label={label}>
         <DefaultTextInput
           className={`${error ? styles.inputError : styles.input}`}
           id={this._inputId}
-          type="text"
+          type={type}
           onChange={this.handleChange}
           value={this.props.value}
           placeholder={placeholder}

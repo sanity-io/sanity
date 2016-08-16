@@ -1,5 +1,5 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'component:@sanity/storybook'
 import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import faker from 'faker'
@@ -10,12 +10,12 @@ storiesOf('Autocomplete')
   .addWithInfo(
   'Default',
   `
-    Default textfield
+    Autocomplete is used to help user complete a normal text input. The input can be anything.
   `,
   () => {
     return (
       <form style={formStyle}>
-        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" />
+        <Autocomplete placeholder="Type to autocomplete…" label="Autocomplete" />
       </form>
     )
   },
@@ -40,7 +40,7 @@ storiesOf('Autocomplete')
     })
     return (
       <form style={formStyle}>
-        <Autocomplete suggestions={false} placeholder="Type to autocomplete…" items={items} />
+        <Autocomplete placeholder="Type to autocomplete…" suggestions={items} label="Autocomplete" onSelect={action('onSelect')} />
       </form>
     )
   },
@@ -62,7 +62,7 @@ storiesOf('Autocomplete')
     })
     return (
       <form style={formStyle}>
-        <Autocomplete value="One" suggestions={suggestions} isOpen />
+        <Autocomplete value="One" suggestions={suggestions} isOpen label="Autocomplete component" onChange={action('onChange')} />
       </form>
     )
   },

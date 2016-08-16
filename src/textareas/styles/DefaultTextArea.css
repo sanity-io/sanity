@@ -1,0 +1,23 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-cssnext;
+
+.root {
+  width: 100%;
+  position: relative;
+}
+
+.textarea {
+  composes: root from 'style:@sanity/base/theme/forms/textarea';
+  width: 100%;
+}
+
+.clearButton {
+  composes: textarea from 'style:@sanity/base/theme/forms/clear-button';
+  z-index: 1;
+  top: 0.35em;
+  right: 0.1em;
+
+  svg {
+    color: inherit;
+  }
+}

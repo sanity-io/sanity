@@ -8,6 +8,10 @@
   position: relative;
 }
 
+.textField {
+  margin-bottom: 0;
+}
+
 .suggestions {
   position: absolute;
   top: 0;

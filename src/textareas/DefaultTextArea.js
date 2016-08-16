@@ -1,25 +1,26 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textinputs/default'
+import styles from 'style:@sanity/components/textareas/default'
 import {IoAndroidClose} from 'react-icons/lib/io'
 
-export default class DefaultTextInput extends React.Component {
+export default class DefaultTextArea extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onKeyPress: PropTypes.func,
-    type: PropTypes.string,
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
+    rows: PropTypes.number,
     id: PropTypes.string.isRequired
   }
 
   static defaultProps = {
     value: '',
     type: 'text',
+    rows: 10,
     onKeyPress() {},
     onChange() {},
     onFocus() {},
@@ -75,19 +76,20 @@ export default class DefaultTextInput extends React.Component {
   }
 
   render() {
-    const {placeholder, error, showClearButton, id, type} = this.props
+    const {placeholder, error, showClearButton, id, rows} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
     return (
       <div className={rootClass}>
-        <input
+        <textarea
           className={`
+            ${styles.textarea}
             ${error ? styles.inputError : styles.input}
             ${showClearButton && styles.hasClearButton}
           `}
+          rows={rows}
           id={id}
-          type={type}
           value={this.state.value}
           placeholder={placeholder}
           onChange={this.handleChange}

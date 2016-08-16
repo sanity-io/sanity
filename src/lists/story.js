@@ -1,7 +1,6 @@
 import React from 'react'
 import {storiesOf, action} from 'component:@sanity/storybook'
 
-import DefaultTextField from 'component:@sanity/components/textfields/default'
 import DefaultList from 'component:@sanity/components/lists/default'
 import DefaultListItem from 'component:@sanity/components/lists/items/default'
 import ThumbsList from 'component:@sanity/components/lists/thumbs'
@@ -52,32 +51,13 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    return (
-      <div style={containerStyle}>
-        <DefaultList items={defaultItems} selectedItem={defaultItems[3]} onSelect={action('Select')} />
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'component:@sanity/components/lists/default'
-  }
-)
-
-.addWithInfo(
-  'With filter',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
-  () => {
-    let filterValue = ''
-    const setFilterValue = function (value) {
-      filterValue = value
+    let selectedItem = defaultItems[3]
+    const setSelectedItem = function (item) {
+      selectedItem = item
     }
     return (
       <div style={containerStyle}>
-        <DefaultTextField onChange={setFilterValue} label="Type to filter…" />
-        <DefaultList items={defaultItems} selectedItem={defaultItems[2]} onSelect={action('Select')} filter={filterValue} filterKeys={'test'} />
+        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} />
       </div>
     )
   },
@@ -86,7 +66,6 @@ storiesOf('Lists')
     role: 'component:@sanity/components/lists/default'
   }
 )
-
 
 .addWithInfo(
   'Thumbs',

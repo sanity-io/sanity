@@ -20,7 +20,7 @@ storiesOf('Toggles')
   '',
   () => {
     return (
-      <Switch checked label="Switch is on" onClick={linkTo('Switch (off)')} />
+      <Switch checked label="Switch is on" onChange={linkTo('Switch (off)')} />
     )
   },
   {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}

@@ -15,7 +15,9 @@ export default class DefaultFormField extends React.Component {
     wrapped: PropTypes.bool
   }
 
-  static defaultProps = {}
+  static defaultProps = {
+    level: 0
+  }
 
   render() {
 
