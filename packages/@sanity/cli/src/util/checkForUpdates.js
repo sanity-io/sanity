@@ -4,7 +4,7 @@ import pkg from '../../package.json'
 import getUserConfig from './getUserConfig'
 import debug from '../debug'
 
-function checkForUpdates() {
+function checkForUpdates(options = {}) {
   const config = getUserConfig()
   const interval = config.get('cli.update.interval')
   const lastCheck = config.get('cli.update.lastcheck') || 0
@@ -16,7 +16,7 @@ function checkForUpdates() {
   }
 
   debug(`Checking for new version of ${pkg.name}`)
-  return getVersion(pkg.name).then(latest => ({
+  return getVersion(pkg.name, options).then(latest => ({
     atLatest: semverCompare(latest, pkg.version) === 0,
     current: pkg.version,
     latest

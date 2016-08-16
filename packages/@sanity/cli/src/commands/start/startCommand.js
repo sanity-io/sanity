@@ -4,19 +4,19 @@ import isProduction from '../../util/isProduction'
 import getConfig from '../../util/getConfig'
 import thenify from 'thenify'
 import storyBook from '@sanity/storybook/server'
-import reinitializePluginConfigs from '../../util/reinitializePluginConfigs'
+import reinitializePluginConfigs from '../../actions/config/reinitializePluginConfigs'
 
 export default {
   name: 'start',
   signature: 'start',
   description: 'Starts a webserver that serves Sanity',
   action: ({print, options}) => {
-    const sanityConfig = getConfig(options.cwd)
+    const sanityConfig = getConfig(options.rootDir)
     const config = sanityConfig.get('server')
     const getServer = isProduction ? getProdServer : getDevServer
     const server = getServer({
-      staticPath: resolveStaticPath(options.cwd, config),
-      basePath: options.cwd,
+      staticPath: resolveStaticPath(options.rootDir, config),
+      basePath: options.rootDir,
       listen: config
     })
 
@@ -38,7 +38,7 @@ export default {
       listeners.push(storyBook(storyConfig))
     }
 
-    return reinitializePluginConfigs({sanityDir: options.cwd, print})
+    return reinitializePluginConfigs({rootDir: options.rootDir, print})
       .then(() => Promise.all(listeners))
       .then(res => {
         print(`Server listening on http://${hostname}:${httpPort}`)
@@ -50,11 +50,11 @@ export default {
   }
 }
 
-function resolveStaticPath(cwd, config) {
+function resolveStaticPath(rootDir, config) {
   const {staticPath} = config
   return path.isAbsolute(staticPath)
     ? staticPath
-    : path.resolve(path.join(cwd, staticPath))
+    : path.resolve(path.join(rootDir, staticPath))
 }
 
 function getGracefulDeathHandler(config) {

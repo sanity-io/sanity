@@ -5,25 +5,24 @@ import gitConfigLocal from 'gitconfiglocal'
 import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
 import thenify from 'thenify'
-import {resolveProjectRoot} from '@sanity/resolver'
 
-export default (cwd, {isPlugin}) =>
-  resolveProjectRoot({basePath: cwd}).then(sanityRoot => {
-    const isSanityRoot = sanityRoot === cwd
-    return promiseProps({
-      sanityRoot,
-      author: getUserInfo(),
+export default (rootDir, {isPlugin}) => {
+  const cwd = process.cwd()
+  const isSanityRoot = rootDir === cwd
 
-      // Don't try to use git remote from main Sanity project for plugins
-      gitRemote: isPlugin && isSanityRoot ? '' : resolveGitRemote(cwd),
+  return promiseProps({
+    author: getUserInfo(),
 
-      // Don't try to guess plugin name if we're initing from Sanity root
-      projectName: isPlugin && isSanityRoot ? '' : path.basename(cwd),
+    // Don't try to use git remote from main Sanity project for plugins
+    gitRemote: isPlugin && isSanityRoot ? '' : resolveGitRemote(cwd),
 
-      // If we're initing a plugin, don't use description from Sanity readme
-      description: (isSanityRoot && !isPlugin && getProjectDescription(cwd)) || ''
-    })
+    // Don't try to guess plugin name if we're initing from Sanity root
+    projectName: isPlugin && isSanityRoot ? '' : path.basename(cwd),
+
+    // If we're initing a plugin, don't use description from Sanity readme
+    description: (isSanityRoot && !isPlugin && getProjectDescription(cwd)) || ''
   })
+}
 
 const getGitConfig = thenify(gitConfigLocal)
 function resolveGitRemote(cwd) {

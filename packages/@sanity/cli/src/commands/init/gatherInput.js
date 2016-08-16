@@ -55,10 +55,10 @@ export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
       type: 'input',
       name: 'outputPath',
       message: 'Output path:',
-      default: answers => path.join(defaults.sanityRoot || process.cwd(), 'plugins', answers.name)
+      default: answers => path.join(defaults.rootDir || process.cwd(), 'plugins', answers.name)
     })
 
-    if (defaults.sanityRoot) {
+    if (defaults.rootDir) {
       questions.push({
         type: 'confirm',
         name: 'addPluginToManifest',

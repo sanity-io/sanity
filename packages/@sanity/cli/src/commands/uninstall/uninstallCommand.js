@@ -25,27 +25,27 @@ function uninstallPlugin(plugin, {print, error, prompt, options}) {
   const shortName = isFullName ? plugin.substr(14) : plugin
   const fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
 
-  return removeConfiguration(options.cwd, fullName, shortName, prompt)
-    .then(() => removeFromSanityManifest(options.cwd, shortName))
-    .then(() => npmUninstall(['--save', fullName]))
+  return removeConfiguration(options.rootDir, fullName, shortName, prompt)
+    .then(() => removeFromSanityManifest(options.rootDir, shortName))
+    .then(() => npmUninstall(['--save', fullName], options))
 }
-function removeFromSanityManifest(cwd, pluginName) {
-  return readLocalManifest(cwd, 'sanity.json')
+function removeFromSanityManifest(rootDir, pluginName) {
+  return readLocalManifest(rootDir, 'sanity.json')
     .then(manifest => {
       manifest.plugins = without(manifest.plugins || [], pluginName)
       return manifest
     })
-    .then(manifest => fsp.writeJson(path.join(cwd, 'sanity.json'), manifest, {spaces: 2}))
+    .then(manifest => fsp.writeJson(path.join(rootDir, 'sanity.json'), manifest, {spaces: 2}))
 }
 
-function removeConfiguration(cwd, fullName, shortName, prompt) {
-  const localConfigPath = path.join(cwd, 'config', `${shortName}.json`)
+function removeConfiguration(rootDir, fullName, shortName, prompt) {
+  const localConfigPath = path.join(rootDir, 'config', `${shortName}.json`)
 
   return fsp.stat(localConfigPath).then(() => {
     // Configuration exists, check if user has local configuration already
     return fsp.stat(localConfigPath)
       .then(() => generateConfigChecksum(localConfigPath))
-      .then(localChecksum => hasSameChecksum(cwd, fullName, localChecksum))
+      .then(localChecksum => hasSameChecksum(rootDir, fullName, localChecksum))
       .then(sameChecksum => promptOnAlteredConfiguration(shortName, sameChecksum, prompt))
       .then(({deleteConfig}) => deleteConfiguration(localConfigPath, deleteConfig))
       .catch(() => Promise.resolve()) // Destination file does not exist predictable, proceed with uninstall

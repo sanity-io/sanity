@@ -8,7 +8,7 @@ export default {
   name: 'init',
   signature: 'init [plugin]',
   description: 'Initialize a new Sanity project',
-  action: args => {
+  action: (args, opts) => {
     const type = args.options._[1]
     if (!type) {
       return initSanity(args)
@@ -36,9 +36,9 @@ function initSanity({print, prompt, spinner, error, options}) {
 
   const spin = spinner('Installing dependencies...')
 
-  return getProjectDefaults(options.cwd, {})
+  return getProjectDefaults(options.rootDir, options)
     .then(defaults => gatherInput(prompt, defaults))
-    .then(answers => bootstrapSanity(options.cwd, answers, print))
+    .then(answers => bootstrapSanity(options.rootDir, answers, print))
     .then(() => spin.start())
     .then(() => npmInstall())
     .then(() => spin.stop())
@@ -58,26 +58,23 @@ function initPlugin({print, prompt, error, options}, initOpts = {}) {
   print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   print('Press ^C at any time to quit.')
 
-  let sanityDir = options.cwd
-  return getProjectDefaults(sanityDir, {isPlugin: true})
-    .then(defaults => {
-      sanityDir = defaults.sanityRoot || sanityDir
-      return gatherInput(prompt, defaults, {isPlugin: true})
-    })
+  const rootDir = options.rootDir
+  return getProjectDefaults(rootDir, {isPlugin: true})
+    .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
     .then(answers => warnOnNonStandardPluginName(answers, print))
     .then(answers => bootstrapPlugin(answers, {print, ...initOpts}))
-    .then(answers => addPluginOnUserConfirm(sanityDir, answers))
+    .then(answers => addPluginOnUserConfirm(rootDir, answers))
     .then(answers => print(`Success! Plugin initialized at ${answers.outputPath}`))
     .catch(error)
 }
 
-function addPluginOnUserConfirm(sanityDir, answers) {
+function addPluginOnUserConfirm(rootDir, answers) {
   if (!answers.addPluginToManifest) {
     return answers
   }
 
   return addPluginToManifest(
-    sanityDir,
+    rootDir,
     answers.name.replace(/^sanity-plugin-/, '')
   ).then(() => answers)
 }

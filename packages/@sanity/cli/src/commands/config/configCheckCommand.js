@@ -1,4 +1,4 @@
-import reinitializePluginConfigs from '../../util/reinitializePluginConfigs'
+import reinitializePluginConfigs from '../../actions/config/reinitializePluginConfigs'
 
 export default {
   name: 'configcheck',
@@ -6,7 +6,7 @@ export default {
   description: 'Checks if the required configuration files for plugins exists and are up to date',
   action: ({print, options}) => {
     return reinitializePluginConfigs({
-      sanityDir: options.cwd,
+      rootDir: options.rootDir,
       print: print
     })
   }

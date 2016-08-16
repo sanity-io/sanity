@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import ora from 'ora'
-import colors from 'colors/safe'
+import chalk from 'chalk'
 
 export default {
   print(...args) {
@@ -9,7 +9,7 @@ export default {
 
   error(...args) {
     if (args[0] instanceof Error) {
-      console.error(colors.red(args[0].stack))
+      console.error(chalk.red(args[0].stack))
     } else {
       console.error(...args)
     }

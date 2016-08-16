@@ -2,17 +2,17 @@ import path from 'path'
 import pathExists from 'path-exists'
 import fsp from 'fs-promise'
 import resolveTree from '@sanity/resolver'
-import normalizePluginName from './normalizePluginName'
-import generateConfigChecksum from './generateConfigChecksum'
-import {getChecksums, setChecksums, localConfigExists} from './pluginChecksumManifest'
+import normalizePluginName from '../../util/normalizePluginName'
+import generateConfigChecksum from '../../util/generateConfigChecksum'
+import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
 export default function reinitializePluginConfigs(options) {
-  const {sanityDir, print} = options
+  const {rootDir, print} = options
   const localChecksums = {}
 
-  return getChecksums(sanityDir)
+  return getChecksums(rootDir)
     .then(checksums => Object.assign(localChecksums, checksums))
-    .then(() => resolveTree({basePath: sanityDir}))
+    .then(() => resolveTree({basePath: rootDir}))
     .then(plugins => Promise.all(plugins.map(pluginHasDistConfig)))
     .then(plugins => plugins.filter(Boolean))
     .then(plugins => Promise.all(plugins.map(getPluginConfigChecksum)))
@@ -22,7 +22,7 @@ export default function reinitializePluginConfigs(options) {
     .then(saveNewChecksums)
 
   function hasLocalConfig(plugin) {
-    return localConfigExists(sanityDir, plugin.name)
+    return localConfigExists(rootDir, plugin.name)
       .then(configDeployed => Object.assign({}, plugin, {configDeployed}))
   }
 
@@ -32,8 +32,8 @@ export default function reinitializePluginConfigs(options) {
     }
 
     const srcPath = path.join(plugin.path, 'config.dist.json')
-    const dstPath = path.join(sanityDir, 'config', `${normalizePluginName(plugin.name)}.json`)
-    const prtPath = path.relative(sanityDir, dstPath)
+    const dstPath = path.join(rootDir, 'config', `${normalizePluginName(plugin.name)}.json`)
+    const prtPath = path.relative(rootDir, dstPath)
 
     print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
     return fsp.copy(srcPath, dstPath).then(() => plugin)
@@ -57,7 +57,7 @@ export default function reinitializePluginConfigs(options) {
       }
     })
 
-    return setChecksums(sanityDir, sums)
+    return setChecksums(rootDir, sums)
   }
 }
 

@@ -1,5 +1,17 @@
 #!/usr/bin/env node
 /* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync */
+let cwd = null
+try {
+  cwd = process.cwd()
+} catch (err) {
+  if (err.code === 'ENOENT') {
+    console.error('[ERR] Could not resolve working directory, does the current folder exist?')
+    process.exit(1)
+  } else {
+    throw err
+  }
+}
+
 const fs = require('fs')
 const path = require('path')
 const thenify = require('thenify')
@@ -37,7 +49,7 @@ if (preferGlobal) {
 if (preferGlobal) {
   loadCli()
 } else {
-  checkLocalCli(process.cwd()).then(loadCli).catch(function (err) {
+  checkLocalCli(cwd).then(loadCli).catch(function (err) {
     console.error(err.stack)
     process.exit(1)
   })

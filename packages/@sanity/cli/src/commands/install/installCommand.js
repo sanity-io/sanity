@@ -33,9 +33,9 @@ function installPlugin(plugin, {print, spinner, error, options}) {
   const spin = spinner('Installing plugin...')
   spin.start()
 
-  return npmInstall(['--save', fullName])
-    .then(() => addPluginToManifest(options.cwd, shortName))
-    .then(() => copyConfiguration(options.cwd, fullName, shortName, print))
+  return npmInstall(['--save', fullName], options)
+    .then(() => addPluginToManifest(options.rootDir, shortName))
+    .then(() => copyConfiguration(options.rootDir, fullName, shortName, print))
     .then(() => spin.stop())
     .then(() => print(`Plugin '${fullName}' installed`))
     .catch(err => {
@@ -52,21 +52,21 @@ function handleNpmError(err, printError, pluginName) {
   printError(err)
 }
 
-function copyConfiguration(cwd, fullName, shortName, print) {
-  const configPath = path.join(cwd, 'node_modules', fullName, 'config.dist.json')
-  const dstPath = path.join(cwd, 'config', `${shortName}.json`)
+function copyConfiguration(rootDir, fullName, shortName, print) {
+  const configPath = path.join(rootDir, 'node_modules', fullName, 'config.dist.json')
+  const dstPath = path.join(rootDir, 'config', `${shortName}.json`)
 
   return fsp.stat(configPath).then(() => {
     // Configuration exists, check if user has local configuration already
     return fsp.stat(dstPath)
       .then(() => generateConfigChecksum(configPath))
-      .then(distChecksum => hasSameChecksum(cwd, fullName, distChecksum))
+      .then(distChecksum => hasSameChecksum(rootDir, fullName, distChecksum))
       .then(sameChecksum => warnOnDifferentChecksum(shortName, sameChecksum, print))
       .catch(() => {
         // Destination file does not exist, copy
         return fsp.copy(configPath, dstPath)
           .then(() => generateConfigChecksum(configPath))
-          .then(checksum => setChecksum(cwd, fullName, checksum))
+          .then(checksum => setChecksum(rootDir, fullName, checksum))
       })
   })
 }

@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
+import {resolveProjectRoot} from '@sanity/resolver'
 import {getCliRunner} from './CommandRunner'
 import checkForUpdates from './util/checkForUpdates'
 import commands from './commands'
 import pkg from '../package.json'
 
-const updateCheck = checkForUpdates()
+const rootDir = resolveProjectRoot({
+  basePath: process.cwd(),
+  sync: true
+}) || process.cwd()
+
+const updateCheck = checkForUpdates({rootDir})
 const program = yargs
   .version(pkg.version)
   .demand(1)
@@ -22,7 +28,7 @@ export function run(args) {
     return program.showHelp()
   }
 
-  cmdRunner.runCommand(cmdName, Object.assign({cwd: process.cwd()}, argv))
+  cmdRunner.runCommand(cmdName, Object.assign({rootDir}, argv))
     .then(() => outputVersionCheckResult())
     .catch(err => {
       console.error(err.stack) // eslint-disable-line no-console

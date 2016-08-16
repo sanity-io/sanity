@@ -9,8 +9,10 @@ const npmEnv = {
   })
 }
 
-function getLocalVersion(pkg) {
-  return execute(['ls'], npmEnv)
+function getLocalVersion(pkg, opts = {}) {
+  const options = Object.assign({}, npmEnv, opts)
+
+  return execute(['ls'], npmEnv, options)
     .then(res => parseJson(res, {}))
     .then(mani => (
       mani

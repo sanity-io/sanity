@@ -15,12 +15,12 @@ export default {
   signature: 'build [outputDir]',
   description: 'Builds the current Sanity configuration to a static bundle',
   action: ({print, spinner, error, options}) => {
-    const outputDir = options._[1] || path.join(options.cwd, 'dist')
-    const config = getConfig(options.cwd).get('server')
+    const outputDir = options._[1] || path.join(options.rootDir, 'dist')
+    const config = getConfig(options.rootDir).get('server')
     const compilationConfig = {
       env: 'production',
-      staticPath: resolveStaticPath(options.cwd, config),
-      basePath: options.cwd,
+      staticPath: resolveStaticPath(options.rootDir, config),
+      basePath: options.rootDir,
       outputPath: path.join(outputDir, 'static')
     }
 
@@ -86,9 +86,9 @@ export default {
   }
 }
 
-function resolveStaticPath(cwd, config) {
+function resolveStaticPath(rootDir, config) {
   const {staticPath} = config
   return path.isAbsolute(staticPath)
     ? staticPath
-    : path.resolve(path.join(cwd, staticPath))
+    : path.resolve(path.join(rootDir, staticPath))
 }

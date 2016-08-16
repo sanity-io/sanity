@@ -16,8 +16,8 @@ const configContainer = values => ({
     get(values, dotPath, defaultValue)
 })
 
-const getConfig = cwd => {
-  const localConfig = cwd && loadJson(path.join(cwd, 'sanity.json'))
+const getConfig = rootDir => {
+  const localConfig = rootDir && loadJson(path.join(rootDir, 'sanity.json'))
   const config = localConfig ? merge({}, defaults, localConfig) : defaults
 
   return configContainer(config)
