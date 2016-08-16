@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
     "test": "BABEL_DISABLE_CACHE=1 tap --node-arg -r --node-arg ./test/.init.js ./test/*.js",
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@sanity/base": "^2.1.56",
+    "@sanity/check": "^1.0.0",
     "@sanity/cli": "^1.0.38",
     "@sanity/components": "^1.0.20",
     "@sanity/theme": "^1.0.5",
