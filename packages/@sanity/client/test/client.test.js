@@ -3,27 +3,27 @@ import test from 'ava'
 import sanityClient from '../src/client'
 
 const noop = () => {} // eslint-disable-line no-empty-function
-const baseUrl = 'https://gradient.url'
-const clientConfig = {url: baseUrl, dataset: 'foo'}
+const baseUrl = 'https://api.sanity.url'
+const clientConfig = {baseUrl, dataset: 'foo', projectId: '76bc'}
 const getClient = () => sanityClient(clientConfig)
 
 test('can get and set config', t => {
-  nock(baseUrl).post('/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
-  nock(baseUrl).post('/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
+  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
+  nock(baseUrl).post('/1bc3/v1/data/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
 
   const client = getClient()
   return client.fetch('query')
     .then(res => t.is(res.ms, 123))
     .then(() =>
       client
-        .config({dataset: 'bar'})
+        .config({dataset: 'bar', projectId: '1bc3'})
         .fetch('query')
         .then(res => t.is(res.ms, 456)))
 })
 
 test('can do simple requests', t => {
   nock(baseUrl)
-    .post('/q/foo', {query: 'query'})
+    .post('/76bc/v1/data/q/foo', {query: 'query'})
     .reply(200, {
       ms: 123,
       result: [{foo: 'bar'}, {bar: 'foo'}]
@@ -39,7 +39,7 @@ test('can do update mutations', t => {
   const patch = {description: 'foo'}
 
   nock(baseUrl)
-    .post('/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
+    .post('/76bc/v1/data/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
     .reply(200, {})
 
   return getClient().update('foo:raptor', patch)
@@ -49,7 +49,7 @@ test('can create something', t => {
   const doc = {title: 'Baloney'}
 
   nock(baseUrl)
-    .post('/m/foo?returnIds=true', {'foo:': {$$create: doc}})
+    .post('/76bc/v1/data/m/foo?returnIds=true', {'foo:': {$$create: doc}})
     .reply(201, {ms: 123, transactionId: 'bar', docIds: ['foo:99']})
 
   return getClient().create(doc).then(res => {
@@ -60,7 +60,7 @@ test('can create something', t => {
 
 test('can delete', t => {
   nock(baseUrl)
-    .post('/m/foo?returnIds=true', {foo: {$$delete: null}})
+    .post('/76bc/v1/data/m/foo?returnIds=true', {foo: {$$delete: null}})
     .reply(200, {ms: 123, transactionId: 'bar'})
 
   return getClient().delete('foo').then(res => {
@@ -70,7 +70,7 @@ test('can delete', t => {
 
 test('request errors are captured as errors', t => {
   nock(baseUrl)
-    .post('/q/foo', {query: 'some invalid query'})
+    .post('/76bc/v1/data/q/foo', {query: 'some invalid query'})
     .reply(400, {errors: [{message: 'Some error', line: 1, column: 13}]})
 
   return t.throws(
@@ -97,7 +97,7 @@ test.cb('event handlers can be added and triggered', t => {
 
 test.cb('request event handlers are run pre-request', t => {
   nock(baseUrl)
-    .post('/q/foo', {query: '*'})
+    .post('/76bc/v1/data/q/foo', {query: '*'})
     .reply(200, {ms: 123, result: []})
 
   let requestHookHasBeenResolved = false
@@ -132,8 +132,8 @@ test.cb('request event handlers are run pre-request', t => {
 })
 
 test('can add and remove event handlers', t => {
-  nock(baseUrl).post('/q/foo', {query: 'foo'}).reply(200, {ms: 1, result: []})
-  nock(baseUrl).post('/q/foo', {query: 'bar'}).reply(200, {ms: 1, result: []})
+  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'foo'}).reply(200, {ms: 1, result: []})
+  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'bar'}).reply(200, {ms: 1, result: []})
 
   let callCount = 0
   const client = getClient()
@@ -166,23 +166,48 @@ test('throws if trying to remove handler that is not registered', t => {
 
 test('can set and get new configuration', t => {
   nock(baseUrl)
-    .post('/m/bar?returnIds=true', {doc: {$$delete: null}})
+    .post('/76bc/v1/data/m/bar?returnIds=true', {doc: {$$delete: null}})
     .reply(200, {ms: 123, transactionId: 'bar'})
 
+  const url = 'https://api.sanity.url/76bc/v1'
   const client = getClient()
-  t.deepEqual(client.config(), clientConfig)
+  t.deepEqual(client.config(), Object.assign({url}, clientConfig))
   client.config({dataset: 'bar'})
-  t.deepEqual(client.config(), Object.assign({}, clientConfig, {dataset: 'bar'}))
+  t.deepEqual(client.config(), Object.assign({url}, clientConfig, {dataset: 'bar'}))
 
   return client.delete('doc').then(res => t.is(res.transactionId, 'bar'))
 })
 
 test('can change client configuration in pre-request hook', t => {
-  nock(baseUrl).post('/q/bar', {query: '*'}).reply(200, {ms: 1337, result: []})
+  nock(baseUrl).post('/76bc/v1/data/q/bar', {query: '*'}).reply(200, {ms: 1337, result: []})
 
   const client = getClient()
   return client
     .on('request', () => client.config({dataset: 'bar'}))
     .fetch('*')
     .then(res => t.is(res.ms, 1337))
+})
+
+test('can create a new dataset', t => {
+  nock(baseUrl).put('/76bc/v1/datasets/unicorns').reply(200)
+  t.notThrows(getClient().createDataset('unicorns'))
+})
+
+test('rejects if dataset creation fails', t => {
+  nock(baseUrl).put('/76bc/v1/datasets/ponies').reply(400, {
+    error: 'Dataset "ponies" already exists'
+  })
+  t.throws(getClient().createDataset('ponies'))
+})
+
+test('can delete a dataset', t => {
+  nock(baseUrl).delete('/76bc/v1/datasets/unicorns').reply(200)
+  t.notThrows(getClient().deleteDataset('unicorns'))
+})
+
+test('rejects if dataset deletion fails', t => {
+  nock(baseUrl).delete('/76bc/v1/datasets/ponies').reply(400, {
+    error: 'Dataset "ponies" does not exist'
+  })
+  t.throws(getClient().deleteDataset('ponies'))
 })

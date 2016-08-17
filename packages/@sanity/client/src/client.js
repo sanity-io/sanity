@@ -1,7 +1,12 @@
 import pify from 'pify'
+import httpRequest from './httpRequest'
 import gradient from '@sanity/gradient-client'
+import validators from './validators'
 
 const allowedEvents = ['request']
+const defaultConfig = {
+  baseUrl: 'https://api.sanity.io'
+}
 
 const verifyEvent = (event, handler) => {
   if (allowedEvents.indexOf(event) === -1) {
@@ -13,9 +18,33 @@ const verifyEvent = (event, handler) => {
   }
 }
 
+const initConfig = (config, prevConfig = {}) => {
+  const newConfig = {...defaultConfig, ...prevConfig, ...config}
+  if (!newConfig.projectId) {
+    throw new Error('Configuration must contain `projectId`')
+  }
+
+  if (!/^\d/.test(newConfig.projectId)) {
+    throw new Error('`projectId` must start with a number')
+  }
+
+  if (!config.url) {
+    newConfig.url = `${newConfig.baseUrl}/${newConfig.projectId}/v1`
+  }
+
+  return newConfig
+}
+
+const getGradientConfig = config => ({
+  url: `${config.url}/data`,
+  dataset: config.dataset,
+  token: config.token
+})
+
 class SanityClient {
-  constructor(config = {}) {
-    const client = this.client = gradient(config)
+  constructor(config = defaultConfig) {
+    this.clientConfig = initConfig(config)
+    const client = this.gradientClient = gradient(getGradientConfig(this.clientConfig))
 
     this.eventHandlers = allowedEvents.reduce((handlers, event) => {
       handlers[event] = []
@@ -31,9 +60,13 @@ class SanityClient {
   }
 
   config(newConfig) {
-    return typeof newConfig === 'undefined'
-      ? this.client.getConfig()
-      : this.client.setConfig(newConfig) && this
+    if (typeof newConfig === 'undefined') {
+      return this.clientConfig
+    }
+
+    this.clientConfig = initConfig(newConfig, this.clientConfig)
+    const gradientConfig = getGradientConfig(this.clientConfig)
+    return this.gradientClient.setConfig(gradientConfig) && this
   }
 
   on(event, handler) {
@@ -60,25 +93,43 @@ class SanityClient {
       : Promise.resolve()
   }
 
-  request(method, ...args) {
+  dataRequest(method, ...args) {
     return this.emit('request', method, ...args)
       .then(() => this.gradient[method](...args))
   }
 
   fetch(query, params) {
-    return this.request('fetch', query, params)
+    return this.dataRequest('fetch', query, params)
   }
 
   update(documentId, patch, opts) {
-    return this.request('update', documentId, patch, opts)
+    return this.dataRequest('update', documentId, patch, opts)
   }
 
   create(doc, opts) {
-    return this.request('create', doc, opts)
+    return this.dataRequest('create', doc, opts)
   }
 
   delete(documentId, opts) {
-    return this.request('delete', documentId, opts)
+    return this.dataRequest('delete', documentId, opts)
+  }
+
+  modifyDataset(method, name) {
+    validators.dataset(name)
+
+    return httpRequest({
+      method,
+      uri: `${this.clientConfig.url}/datasets/${name}`,
+      json: true
+    })
+  }
+
+  createDataset(name) {
+    return this.modifyDataset('PUT', name)
+  }
+
+  deleteDataset(name) {
+    return this.modifyDataset('DELETE', name)
   }
 }
 
