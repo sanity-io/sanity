@@ -16,7 +16,8 @@ export default class SearchableSelect extends React.Component {
     onOpen: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
-    value: PropTypes.string,
+    onClose: PropTypes.func,
+    value: PropTypes.object,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     loading: PropTypes.bool,
@@ -28,13 +29,13 @@ export default class SearchableSelect extends React.Component {
   }
 
   static defaultProps = {
-    value: '',
     placeholder: 'Type to search…',
     loading: false,
     onChange() {},
     onBlur() {},
     onSearch() {},
-    onOpen() {}
+    onOpen() {},
+    onClose() {}
   }
 
   constructor(props, context) {
@@ -43,11 +44,14 @@ export default class SearchableSelect extends React.Component {
     this.handleBlur = this.handleBlur.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
-    this.handleOpen = this.handleOpen.bind(this)
+    this.handleOpenList = this.handleOpenList.bind(this)
+    this.handleCloseList = this.handleCloseList.bind(this)
+    this.handleArrowClick = this.handleArrowClick.bind(this)
     this.state = {
       hasFocus: false,
-      value: this.props.value || '',
-      searchResult: this.props.items || []
+      searchResult: this.props.items || [],
+      inputValue: this.props.value && this.props.value.title,
+      inputSelected: false
     }
     const fuseOptions = {
       keys: ['title']
@@ -62,45 +66,84 @@ export default class SearchableSelect extends React.Component {
         showList: true
       })
     }
+    if (nextProps.value != this.props.value) {
+      this.setState({
+        inputValue: nextProps.value.title,
+        inputSelected: true,
+        value: nextProps.value.title,
+        showList: false
+      })
+    }
   }
 
-  handleFocus() {
+  handleFocus(event) {
     this.setState({
-      hasFocus: true
+      hasFocus: true,
+      inputSelected: true
     })
-    this.props.onFocus()
+
+    this.props.onFocus(event)
   }
 
   handleBlur(event) {
     this.setState({
-      hasFocus: false
+      hasFocus: false,
+      inputSelected: false
     })
+    this.props.onBlur(event)
   }
 
   handleSelect(item) {
     this.setState({
-      value: item.title,
+      //value: item.title,
       searchResult: [],
       showList: false
     })
     this.props.onChange(item)
   }
 
-  handleOpen() {
-    this.setState({
-      showList: true,
-      searchResult: this.fuse.search(this.state.value)
-    })
+  handleOpenList() {
+    if (this.state.query) {
+      this.setState({
+        showList: true,
+        searchResult: this.fuse.search(this.state.query)
+      })
+    } else {
+      this.setState({
+        showList: true,
+        searchResult: this.props.items
+      })
+    }
+
     this.props.onOpen()
   }
 
-  handleInputChange(event) {
-    const value = event.target.value
+  handleCloseList() {
+    this.setState({
+      showList: false
+    })
+    this.props.onClose()
+  }
 
-    if (!this.props.onSearch(value) && this.props.items) {
+  handleArrowClick() {
+    if (this.state.showList) {
+      this.handleCloseList()
+    } else {
+      this.handleOpenList()
+    }
+  }
+
+  handleInputChange(event) {
+    const query = event.target.value
+
+    // When no props.onSearch is given, search inside the items
+    if (!this.props.onSearch(query) && this.props.items) {
       this.setState({
-        searchResult: this.fuse.search(value),
-        showList: true
+        searchResult: this.fuse.search(query),
+        query: query,
+        inputValue: query,
+        showList: true,
+        inputSelected: false
       })
     }
 
@@ -111,8 +154,9 @@ export default class SearchableSelect extends React.Component {
   }
 
   render() {
-    const {label, error, placeholder, loading} = this.props
+    const {label, error, placeholder, loading, value} = this.props
     const {hasFocus, searchResult, showList} = this.state
+
 
     return (
       <DefaultFormField
@@ -129,14 +173,16 @@ export default class SearchableSelect extends React.Component {
             onChange={this.handleInputChange}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
-            value={this.state.value}
+            value={this.state.inputValue}
+            selected={this.state.inputSelected}
+            hasFocus={this.state.hasFocus}
           />
 
         {
           loading && <div className={styles.spinner}><Spinner /></div>
         }
         {
-          !loading && <div className={styles.icon} onClick={this.handleOpen}>
+          !loading && <div className={styles.icon} onClick={this.handleArrowClick}>
             <FaAngleDown color="inherit" />
           </div>
         }
@@ -149,6 +195,7 @@ export default class SearchableSelect extends React.Component {
           }
           <DefaultList
             items={searchResult}
+            selectedItem={value}
             onSelect={this.handleSelect}
           />
         </div>

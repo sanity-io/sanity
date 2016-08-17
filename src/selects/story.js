@@ -95,6 +95,29 @@ storiesOf('Selects')
   }
 )
 .addWithInfo(
+  'Default other value',
+  `
+    Default select. Works as a normal <select />
+  `,
+  () => {
+    return (
+      <DefaultSelect
+        label="This is the label"
+        placeholder="This is the placeholder"
+        onChange={action('onChange')}
+        onFocus={action('onFocus')}
+        onBlur={action('onBlur')}
+        value={items[10]}
+        items={items}
+      />
+    )
+  },
+  {
+    propTables: [DefaultSelect],
+    role: 'component:@sanity/components/selects/default'
+  }
+)
+.addWithInfo(
   'Searchable items',
   `
     When provided with items, the component searches inside these when no onSearch is provided
@@ -108,6 +131,31 @@ storiesOf('Selects')
         onFocus={action('onChange')}
         onBlur={action('onBlur')}
         onOpen={action('onOpen')}
+        items={items}
+      />
+    )
+  },
+  {
+    propTables: [SearchableSelect],
+    role: 'component:@sanity/components/selects/searchable'
+  }
+)
+
+.addWithInfo(
+  'Searchable (selected value)',
+  `
+    When provided with items, the component searches inside these when no onSearch is provided
+  `,
+  () => {
+    return (
+      <SearchableSelect
+        label="This is the label"
+        placeholder="This is the placeholder"
+        onChange={action('onChange')}
+        onFocus={action('onChange')}
+        onBlur={action('onBlur')}
+        onOpen={action('onOpen')}
+        value={items[5]}
         items={items}
       />
     )

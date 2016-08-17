@@ -11,10 +11,12 @@ export default class DefaultTextInput extends React.Component {
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
+    selected: PropTypes.bool,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
-    id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired,
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -34,6 +36,8 @@ export default class DefaultTextInput extends React.Component {
     this.handleFocus = this.handleFocus.bind(this)
     this.handleClear = this.handleClear.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
+    this.setInputElement = this.setInputElement.bind(this)
     this.state = {
       value: this.props.value
     }
@@ -44,6 +48,12 @@ export default class DefaultTextInput extends React.Component {
       this.setState({
         value: nextProps.value
       })
+    }
+    if (nextProps.selected !== this.props.selected) {
+      this._input.select()
+    }
+    if (nextProps.hasFocus !== this.props.hasFocus) {
+      this._input.focus()
     }
   }
 
@@ -66,12 +76,26 @@ export default class DefaultTextInput extends React.Component {
     this.props.onBlur(event)
   }
 
+  handleSelect(event) {
+    this._input.select()
+  }
+
   handleClear(event) {
     this.setState({
       value: ''
     })
     this.props.onChange(event)
     this.props.onClear(event)
+  }
+
+  setInputElement(element) {
+    this._input = element
+  }
+
+  componentDidMount() {
+    if (this.props.selected) {
+      this.handleSelect()
+    }
   }
 
   render() {
@@ -94,6 +118,7 @@ export default class DefaultTextInput extends React.Component {
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
+          ref={this.setInputElement}
         />
         {
           showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>

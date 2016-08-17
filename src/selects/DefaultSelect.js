@@ -2,15 +2,17 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/selects/default'
 import lodash from 'lodash'
 import {FaAngleDown} from 'react-icons/lib/fa'
+import FormField from 'component:@sanity/components/formfields/default'
 
 export default class DefaultSelect extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
-    value: PropTypes.string,
+    value: PropTypes.object,
     error: PropTypes.bool,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
+    hasFocus: PropTypes.bool,
     showClearButton: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -23,6 +25,12 @@ export default class DefaultSelect extends React.Component {
     value: '',
     onChange() {},
     onBlur() {}
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.hasFocus != this.props.hasFocus) {
+      this.handleFocus()
+    }
   }
 
   constructor(props, context) {
@@ -58,23 +66,13 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {label, error, items} = this.props
+    const {label, error, items, value} = this.props
     const {hasFocus} = this.state
 
     const rootClass = error ? styles.error : styles.root
 
     return (
-      <div className={`${rootClass} ${hasFocus && styles.focused}`}>
-        {
-          label
-          && <label
-            htmlFor={this._inputId}
-            className={`${error ? styles.errorLabel : styles.label}`}
-             >
-              {label}
-          </label>
-        }
-
+      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId}>
         <div className={styles.selectContainer}>
           <select
             className={styles.select}
@@ -82,6 +80,7 @@ export default class DefaultSelect extends React.Component {
             onChange={this.handleChange}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
+            value={items.indexOf(value)}
           >
             {
               items.map((item, i) => {
@@ -95,7 +94,7 @@ export default class DefaultSelect extends React.Component {
             <FaAngleDown color="inherit" />
           </div>
         </div>
-      </div>
+      </FormField>
     )
   }
 }
