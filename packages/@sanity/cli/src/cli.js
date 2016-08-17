@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
 import {resolveProjectRoot} from '@sanity/resolver'
+import chalk from 'chalk'
 import {getCliRunner} from './CommandRunner'
 import checkForUpdates from './util/checkForUpdates'
 import commands from './commands'
@@ -31,7 +32,7 @@ export function run(args) {
   cmdRunner.runCommand(cmdName, Object.assign({rootDir}, argv))
     .then(() => outputVersionCheckResult())
     .catch(err => {
-      console.error(err.stack) // eslint-disable-line no-console
+      console.error(chalk.red(err.stack)) // eslint-disable-line no-console
       process.exit(err.code || 1) // eslint-disable-line no-process-exit
     })
 }

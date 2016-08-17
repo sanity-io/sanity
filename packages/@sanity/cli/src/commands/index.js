@@ -5,12 +5,14 @@ import installCommand from './install/installCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
 import versionCommand from './version/versionCommand'
 import configCheckCommand from './config/configCheckCommand'
+import checkCommand from './check/checkCommand'
 
 export default [
   initCommand,
   buildCommand,
   startCommand,
   installCommand,
+  checkCommand,
   configCheckCommand,
   uninstallCommand,
   versionCommand
