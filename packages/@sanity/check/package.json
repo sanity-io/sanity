@@ -2,7 +2,7 @@
   "name": "@sanity/check",
   "version": "1.0.0",
   "description": "Sanity check Sanity plugins and projects",
-  "main": "lib/index.js",
+  "main": "lib/sanityCheck.js",
   "bin": {
     "sanity-check": "./lib/bin.js"
   },
