@@ -19,10 +19,19 @@ export default class DefaultButton extends React.Component {
 
   static defaultProps = {
     ripple: true,
-    icon: false
+    icon: false,
+    onClick() {}
   }
 
-  handleOnClick() {
+  constructor(...args) {
+    super(...args)
+
+    this.handleClick = this.handleClick.bind(this)
+  }
+
+  handleClick(event) {
+    event.stopPropagation()
+    event.preventDefault()
     this.props.onClick()
   }
 
@@ -43,7 +52,7 @@ export default class DefaultButton extends React.Component {
         {...rest}
         className={style}
         type="button"
-        onClick={this.props.onClick}
+        onClick={this.handleClick}
       >
         {
           loading && <Spinner />

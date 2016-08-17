@@ -210,6 +210,10 @@
       "description": "Default list item"
     },
     {
+      "name": "component:@sanity/components/lists/items/blank",
+      "description": "Blank list item"
+    },
+    {
       "name": "style:@sanity/components/lists/items/default",
       "description": "Default list item styling"
     },
@@ -236,6 +240,14 @@
     {
       "name": "style:@sanity/components/referencepickers/default",
       "description": "Reference picker styling"
+    },
+    {
+      "name": "component:@sanity/components/edititem/popover",
+      "description": "Edit item. Popover that points to the element"
+    },
+    {
+      "name": "component:@sanity/components/previews/default",
+      "description": "Default preview item"
     },
     {
       "implements": "component:@sanity/components/autocomplete/default",
@@ -337,7 +349,14 @@
       "implements": "component:@sanity/components/snackbar/default",
       "path": "snackbar/DefaultSnackbar.js"
     },
-
+    {
+      "implements": "component:@sanity/components/edititem/popover",
+      "path": "edititem/PopOver.js"
+    },
+    {
+      "implements": "component:@sanity/components/previews/default",
+      "path": "previews/DefaultPreview.js"
+    },
     {
       "implements": "style:@sanity/components/autocomplete/default",
       "path": "autocomplete/styles/DefaultAutocomplete.css"
@@ -443,6 +462,10 @@
       "path": "lists/items/DefaultItem.js"
     },
     {
+      "implements": "component:@sanity/components/lists/items/blank",
+      "path": "lists/items/BlankItem.js"
+    },
+    {
       "implements": "style:@sanity/components/lists/items/default",
       "path": "lists/items/styles/DefaultItem.css"
     },
@@ -469,6 +492,14 @@
     {
       "implements": "style:@sanity/components/referencepickers/default",
       "path":    "referencepickers/styles/ReferencePickerDefault.css"
+    },
+    {
+      "implements": "style:@sanity/components/edititem/popover",
+      "path": "edititem/styles/PopOver.css"
+    },
+    {
+      "implements": "style:@sanity/components/previews/default",
+      "path": "previews/styles/DefaultPreview.css"
     },
     {
       "implements": "story:@sanity/base/component",
@@ -553,6 +584,14 @@
     {
       "implements": "story:@sanity/base/component",
       "path": "textareas/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "edititem/story.js"
+    },
+    {
+      "implements": "story:@sanity/base/component",
+      "path": "previews/story.js"
     }
 
   ]

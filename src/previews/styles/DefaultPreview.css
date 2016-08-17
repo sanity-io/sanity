@@ -1,0 +1,28 @@
+.root {
+  display: block;
+}
+
+.heading {
+  vertical-align: baseline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  padding: 0;
+  font-weight: 600;
+  display: inline;
+  padding-right: 0.5em;
+}
+
+.subtitle {
+  padding: 0;
+  font-weight: 100;
+  display: inline;
+}
+
+.description {
+  padding: 0;
+  margin: 0;
+  font-size: 0.75em;
+}

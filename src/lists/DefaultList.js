@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/default'
 import ListItem from 'component:@sanity/components/lists/items/default'
+import BlankListItem from 'component:@sanity/components/lists/items/blank'
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -19,7 +20,8 @@ export default class DefaultList extends React.Component {
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
-    layout: PropTypes.oneOf(['media', 'block', 'string'])
+    layout: PropTypes.oneOf(['media', 'block', 'string']),
+    renderItem: PropTypes.func
   }
 
   static defaultProps = {
@@ -39,14 +41,25 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, children, layout, className, selectedItem} = this.props
+    const {items, layout, className, selectedItem, renderItem} = this.props
 
     return (
       <div className={`${className} ${styles.root}`}>
         <div className={styles.inner}>
           <ul className={styles.list}>
+
             {
-              !children && items && items.map((item, i) => {
+              renderItem && items && items.map((item, i) => {
+                return (
+                  <BlankListItem className={styles.item} key={i}>
+                    {renderItem(item, i)}
+                  </BlankListItem>
+                )
+              })
+            }
+
+            {
+              !renderItem && items && items.map((item, i) => {
                 return (
                   <ListItem
                     layout={layout}

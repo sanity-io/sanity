@@ -1,16 +1,12 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/items/default'
 
-export default class DefaultListItem extends React.Component {
+export default class BlankListItem extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
-    content: PropTypes.node,
-    extraContent: PropTypes.node,
-    icon: PropTypes.node,
-    layout: PropTypes.string,
     selected: PropTypes.bool,
     onSelect: PropTypes.func,
-    index: PropTypes.string
+    index: PropTypes.string,
+    children: PropTypes.node
   }
 
   static defaultProps = {
@@ -43,11 +39,11 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {layout, title, icon, selected, index, content} = this.props
+    const {selected, children} = this.props
     const {mouseIsDown} = this.state
 
     const rootClasses = `
-      ${styles[layout] || styles.root}
+      ${styles.root}
       ${selected ? styles.selected : styles.unSelected}
       ${mouseIsDown && styles.active}
     `
@@ -55,15 +51,10 @@ export default class DefaultListItem extends React.Component {
       <li
         className={rootClasses}
         onClick={this.handleClick}
-        data-item-index={index}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
       >
-        <div className={styles.icon}>{icon}</div>
-        <div className={styles.title}>{title}</div>
-        <div>
-          {content}
-        </div>
+        {children}
       </li>
     )
   }

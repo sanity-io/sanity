@@ -1,0 +1,141 @@
+@import 'style:@sanity/base/theme/variables';
+@use postcss-font-awesome;
+@use postcss-cssnext;
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: scaleY(0);
+  }
+  100% {
+    opacity: 1;
+    max-height: 100vh;
+    transform: scaleY(1);
+  }
+}
+
+:root {
+  --array--add-item-color: var(--brand-primary);
+  --array--add-item-triangle-color: color(var(--form-builder--array--add-item-color) lightness(-20%));
+}
+
+.root {
+  background-color: #fff;
+  padding: 0;
+  position: relative;
+
+  &::before {
+    /* Overlay */
+    content: "";
+    background-color: rgba(0, 0, 0, 0.3);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    box-sizing: border-box;
+    z-index: 500;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: scroll;
+  }
+}
+
+.inner {
+  position: relative;
+  background-color: #fff;
+  z-index: 2;
+  padding: 1rem;
+  margin-top: 0.25em;
+
+  &::before {
+    content: "";
+    height: 1em;
+    width: 1em;
+    background-color: #fff;
+    position: absolute;
+    top: -0.35em;
+    left: 2em;
+    transform: rotate(45deg);
+    z-index: 1;
+  }
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    box-sizing: border-box;
+    z-index: 500;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: scroll;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  border: 0;
+  background: none;
+  font-size: 2rem;
+  color: var(--array--add-item-color);
+  cursor: pointer;
+  color: transparent;
+
+  &::before {
+    font-awesome: chevron-left;
+    color: #fff;
+    float: left;
+  }
+
+  @media (--screen-medium) {
+    font-awesome: close;
+  }
+
+}
+
+.content {
+  padding: 1rem;
+  padding-top: 5rem;
+
+  @media (--screen-medium) {
+    padding: 0;
+  }
+}
+
+.head {
+  overflow: hidden;
+  background-color: var(--array--add-item-color);
+  color: #fff;
+  font-size: 1em;
+  padding: 1em;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+
+  @media (--screen-medium) {
+    display: none;
+  }
+}
+
+.title {
+  font-weight: bold;
+  text-transform: uppercase;
+  padding-left: 3rem;
+}
+
+.primaryFunctions {
+  margin-top: 1rem;
+}

@@ -12,7 +12,8 @@ export default class TagsTextField extends React.Component {
     error: PropTypes.bool,
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
-    tags: PropTypes.arrayOf(PropTypes.string)
+    tags: PropTypes.arrayOf(PropTypes.string),
+    description: PropTypes.string
   }
 
   static defaultProps = {
@@ -94,7 +95,7 @@ export default class TagsTextField extends React.Component {
   }
 
   render() {
-    const {tags, label} = this.props
+    const {tags, label, description} = this.props
     const setInput = component => {
       this._input = component
     }
@@ -106,6 +107,7 @@ export default class TagsTextField extends React.Component {
         `}
         label={label}
         labelHtmlFor={this._inputId}
+        description={description}
       >
         <div className={`${styles.inner}`}>
           <div className={styles.content} onClick={this.handleSetFocus}>
