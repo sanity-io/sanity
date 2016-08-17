@@ -5,7 +5,7 @@ import sanityClient from '../src/client'
 const noop = () => {} // eslint-disable-line no-empty-function
 const baseUrl = 'https://api.sanity.url'
 const clientConfig = {baseUrl, dataset: 'foo', projectId: '76bc'}
-const getClient = () => sanityClient(clientConfig)
+const getClient = (conf = {}) => sanityClient({...clientConfig, ...conf})
 
 test('can get and set config', t => {
   nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
@@ -210,4 +210,23 @@ test('rejects if dataset deletion fails', t => {
     error: 'Dataset "ponies" does not exist'
   })
   t.throws(getClient().deleteDataset('ponies'))
+})
+
+test('sends token header if token is set (data)', t => {
+  nock(baseUrl, {reqheaders: {'Sanity-Token': 'fjasebengel'}})
+    .post('/76bc/v1/data/q/foo', {query: 'query'})
+    .reply(200, {
+      ms: 123,
+      result: []
+    })
+
+  return getClient({token: 'fjasebengel'}).fetch('query')
+})
+
+test('sends token header if token is set (datasets)', t => {
+  nock(baseUrl, {reqheaders: {'Sanity-Token': 'fjasebengel'}})
+    .put('/76bc/v1/datasets/fiskesaus')
+    .reply(200)
+
+  return getClient({token: 'fjasebengel'}).createDataset('fiskesaus')
 })

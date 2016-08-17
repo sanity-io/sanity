@@ -13,7 +13,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "@sanity/gradient-client": "^1.0.16",
+    "@sanity/gradient-client": "^1.0.17",
     "@sanity/request": "^1.0.1",
     "in-publish": "^2.0.0",
     "pify": "^2.3.0"

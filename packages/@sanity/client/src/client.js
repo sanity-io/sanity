@@ -3,6 +3,7 @@ import httpRequest from './httpRequest'
 import gradient from '@sanity/gradient-client'
 import validators from './validators'
 
+const tokenHeader = 'Sanity-Token'
 const allowedEvents = ['request']
 const defaultConfig = {
   baseUrl: 'https://api.sanity.io'
@@ -37,8 +38,11 @@ const initConfig = (config, prevConfig = {}) => {
 
 const getGradientConfig = config => ({
   url: `${config.url}/data`,
-  dataset: config.dataset,
-  token: config.token
+  dataset: config.dataset
+})
+
+const getReqOptions = config => ({
+  headers: config.token ? {[tokenHeader]: config.token} : {}
 })
 
 class SanityClient {
@@ -95,29 +99,31 @@ class SanityClient {
 
   dataRequest(method, ...args) {
     return this.emit('request', method, ...args)
-      .then(() => this.gradient[method](...args))
+      .then(() => this.gradient[method](...args, getReqOptions(this.clientConfig)))
   }
 
   fetch(query, params) {
     return this.dataRequest('fetch', query, params)
   }
 
-  update(documentId, patch, opts) {
-    return this.dataRequest('update', documentId, patch, opts)
+  update(documentId, patch) {
+    return this.dataRequest('update', documentId, patch)
   }
 
-  create(doc, opts) {
-    return this.dataRequest('create', doc, opts)
+  create(doc) {
+    return this.dataRequest('create', doc)
   }
 
-  delete(documentId, opts) {
-    return this.dataRequest('delete', documentId, opts)
+  delete(documentId) {
+    return this.dataRequest('delete', documentId)
   }
 
   modifyDataset(method, name) {
     validators.dataset(name)
 
     return httpRequest({
+      ...getReqOptions(this.clientConfig),
+
       method,
       uri: `${this.clientConfig.url}/datasets/${name}`,
       json: true
