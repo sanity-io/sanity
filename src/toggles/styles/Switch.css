@@ -1,5 +1,6 @@
 @import "style:@sanity/base/theme/variables";
 @import "style:@sanity/base/theme/animation";
+
 @use postcss-cssnext;
 
 :root {
@@ -47,7 +48,6 @@
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
-
   cursor: pointer;
 
   @nest .checked & {
@@ -99,15 +99,12 @@
   position: absolute;
   top: 50%;
   left: 50%;
-
   transform: translate(-50%, -50%);
   display: inline-block;
-
   box-sizing: border-box;
   width: var(--switch-helper-size);
   height: var(--switch-helper-size);
   border-radius: 50%;
-
   background-color: transparent;
 
   @nest .focused & {
@@ -158,7 +155,6 @@
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
-
   cursor: pointer;
 
   @nest .checked & {

@@ -1,4 +1,5 @@
 @import "style:@sanity/base/theme/variables";
+
 @use postcss-cssnext;
 @use postcss-font-awesome;
 
@@ -54,11 +55,13 @@
   background-color: transparent;
   border-color: var(--gray-base);
   box-shadow: none;
+
   &.danger {
     background-color: inherit;
     border-color: var(--brand-danger);
     color: var(--brand-danger);
   }
+
   &.colored {
     background-color: inherit;
     border-color: var(--brand-primary);

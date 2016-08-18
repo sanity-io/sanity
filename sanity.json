@@ -218,20 +218,20 @@
       "description": "Default list item styling"
     },
     {
-      "name": "component:@sanity/components/lists/thumbs",
-      "description": "Thumbs list"
+      "name": "component:@sanity/components/lists/grid",
+      "description": "Grid list"
     },
     {
-      "name": "style:@sanity/components/lists/thumbs",
-      "description": "Styling for thumbs list"
+      "name": "style:@sanity/components/lists/grid",
+      "description": "Styling for grid list"
     },
     {
-      "name": "component:@sanity/components/lists/items/thumb",
-      "description": "Thumb item"
+      "name": "component:@sanity/components/lists/items/grid",
+      "description": "Grid item"
     },
     {
-      "name": "style:@sanity/components/lists/items/thumb",
-      "description": "Thumb item styling"
+      "name": "style:@sanity/components/lists/items/grid",
+      "description": "Grid item styling"
     },
     {
       "name": "component:@sanity/components/referencepickers/default",
@@ -470,20 +470,20 @@
       "path": "lists/items/styles/DefaultItem.css"
     },
     {
-      "implements": "component:@sanity/components/lists/thumbs",
-      "path": "lists/Thumbs.js"
+      "implements": "component:@sanity/components/lists/grid",
+      "path": "lists/GridList.js"
     },
     {
-      "implements": "style:@sanity/components/lists/thumbs",
-      "path": "lists/styles/Thumbs.css"
+      "implements": "style:@sanity/components/lists/grid",
+      "path": "lists/styles/GridList.css"
     },
     {
-      "implements": "component:@sanity/components/lists/items/thumb",
-      "path": "lists/items/Thumb.js"
+      "implements": "component:@sanity/components/lists/items/grid",
+      "path": "lists/items/GridItem.js"
     },
     {
-      "implements": "style:@sanity/components/lists/items/thumb",
-      "path":    "lists/items/styles/Thumb.css"
+      "implements": "style:@sanity/components/lists/items/grid",
+      "path":    "lists/items/styles/GridItem.css"
     },
     {
       "implements": "component:@sanity/components/referencepickers/default",

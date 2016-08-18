@@ -4,7 +4,7 @@ import styles from 'style:@sanity/components/referencepickers/default'
 import SearchField from 'component:@sanity/components/textfields/search'
 import TextField from 'component:@sanity/components/textfields/default'
 import List from 'component:@sanity/components/lists/default'
-import ThumbList from 'component:@sanity/components/lists/thumbs'
+import GridList from 'component:@sanity/components/lists/grid'
 import ToggleButtons from 'component:@sanity/components/toggles/buttons'
 
 export default class DefaultList extends React.Component {
@@ -98,7 +98,7 @@ export default class DefaultList extends React.Component {
             }
             {
               this.state.view == 'thumbs'
-              && <ThumbList items={items} scrollable className={styles.list} />
+              && <GridList items={items} scrollable className={styles.list} />
             }
             {
               this.state.view == 'details'

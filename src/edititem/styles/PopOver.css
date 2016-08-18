@@ -1,6 +1,10 @@
 @import 'style:@sanity/base/theme/variables';
-@use postcss-font-awesome;
+
 @use postcss-cssnext;
+
+/*
+  Never use transform on this component. It destroys the layering combined with overlay
+*/
 
 @keyframes appear {
   0% {
@@ -8,6 +12,7 @@
     max-height: 0;
     transform: scaleY(0);
   }
+
   100% {
     opacity: 1;
     max-height: 100vh;
@@ -21,12 +26,12 @@
 }
 
 .root {
-  background-color: #fff;
   padding: 0;
-  position: relative;
+  position: absolute;
+  z-index: 1;
 
+  /*
   &::before {
-    /* Overlay */
     content: "";
     background-color: rgba(0, 0, 0, 0.3);
     position: fixed;
@@ -34,8 +39,9 @@
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 10;
   }
+  */
 
   @media (--max-screen-medium) {
     position: fixed;
@@ -50,24 +56,42 @@
   }
 }
 
-.inner {
-  position: relative;
-  background-color: #fff;
-  z-index: 2;
-  padding: 1rem;
-  margin-top: 0.25em;
+.overlay {
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.arrow {
+  position: absolute;
+  top: -0.35em;
+  left: 2em;
+  z-index: 0;
 
   &::before {
+    z-index: 1;
     content: "";
+    position: absolute;
     height: 1em;
     width: 1em;
     background-color: #fff;
-    position: absolute;
-    top: -0.35em;
-    left: 2em;
     transform: rotate(45deg);
-    z-index: 1;
   }
+}
+
+.inner {
+  background-color: #fff;
+  z-index: 11;
+  padding: 1em;
+  margin-top: 0.25em;
+  margin-bottom: 2em;
+  box-sizing: border-box;
+  position: relative;
+  composes: shadow-5dp from 'style:@sanity/base/theme/shadows';
 
   @media (--max-screen-medium) {
     position: fixed;
@@ -93,16 +117,19 @@
   cursor: pointer;
   color: transparent;
 
+  /*
   &::before {
     font-awesome: chevron-left;
     color: #fff;
     float: left;
   }
+  */
 
+  /*
   @media (--screen-medium) {
     font-awesome: close;
   }
-
+  */
 }
 
 .content {

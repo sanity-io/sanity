@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/lists/thumbs'
-import Thumb from 'component:@sanity/components/lists/items/thumb'
+import styles from 'style:@sanity/components/lists/grid'
+import GridItem from 'component:@sanity/components/lists/items/grid'
 
-export default class Thumbs extends React.Component {
+export default class GridList extends React.Component {
   static propTypes = {
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -21,7 +21,8 @@ export default class Thumbs extends React.Component {
     square: PropTypes.bool,
     layout: PropTypes.oneOf(['media', 'block', 'string']),
     scrollable: PropTypes.bool,
-    showInfo: PropTypes.bool
+    showInfo: PropTypes.bool,
+    renderItem: PropTypes.func
   }
 
   handleSelect(index) {
@@ -31,7 +32,7 @@ export default class Thumbs extends React.Component {
 
   render() {
 
-    const {items, children, layout, className, scrollable, loading, showInfo} = this.props
+    const {items, children, layout, className, scrollable, loading, showInfo, renderItem} = this.props
 
     const rootStyle = `
       ${className}
@@ -45,10 +46,19 @@ export default class Thumbs extends React.Component {
         <div className={styles.inner}>
           <ul className={styles.list}>
             {
-              !children && items && items.map((item, i) => {
+              renderItem && items && items.map((item, i) => {
+                return (
+                  <GridItem className={styles.item} key={i}>
+                    {renderItem(item, i)}
+                  </GridItem>
+                )
+              })
+            }
+            {
+              !renderItem && !children && items && items.map((item, i) => {
                 return (
                   <li className={styles.item} key={i}>
-                    <Thumb
+                    <GridItem
                       layout={layout}
                       key={i}
                       index={item.index}
@@ -60,7 +70,7 @@ export default class Thumbs extends React.Component {
                       showInfo={showInfo}
                     >
                       {item.extraContent}
-                    </Thumb>
+                    </GridItem>
                   </li>
                 )
               })

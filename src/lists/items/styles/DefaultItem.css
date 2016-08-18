@@ -1,4 +1,5 @@
 @import 'style:@sanity/base/theme/variables';
+
 @use postcss-cssnext;
 
 :root {
@@ -13,39 +14,50 @@
 .zebra-stripes {
   &:nth-child(even) {
     background-color: var(--default-item-background-color);
+
     &.selected {
       background-color: color(var(--default-item-background-color) blend(var(--default-item-selected-color) 40%));
     }
+
     &.active {
       background-color: var(--default-item-active-color);
       color: #fff;
+
       &:hover {
         background-color: var(--default-item-active-color);
         color: #fff;
       }
     }
+
     &:hover {
       background-color: var(--default-item-background-color-hover);
+
       &.selected {
         background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
       }
     }
   }
+
   &:nth-child(odd) {
     background-color: var(--default-item-odd-background-color);
+
     &.selected {
       background-color: color(var(--default-item-odd-background-color) blend(var(--default-item-selected-color) 40%));
     }
+
     &.active {
       background-color: var(--default-item-active-color);
       color: #fff;
+
       &:hover {
         background-color: var(--default-item-active-color);
         color: #fff;
       }
     }
+
     &:hover {
       background-color: var(--default-item-odd-background-color-hover);
+
       &.selected {
         background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
       }
@@ -60,10 +72,8 @@
 .root {
   composes: zebra-stripes;
   display: block;
-  height: 3rem;
-  line-height: 3rem;
   border-bottom: 1px solid #ccc;
-  padding: 0 1rem;
+  padding: 0;
   width: 100%;
   box-sizing: border-box;
   text-overflow: ellipsis;

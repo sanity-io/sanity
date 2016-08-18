@@ -1,18 +1,20 @@
 .root {
   display: block;
+  padding: 0.5em;
+  user-select: none;
+  overflow: hidden;
 }
 
 .heading {
   vertical-align: baseline;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .title {
   padding: 0;
   font-weight: 600;
   display: inline;
-  padding-right: 0.5em;
+  padding-right: 0.25em;
 }
 
 .subtitle {

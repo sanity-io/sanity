@@ -1,4 +1,5 @@
 @import 'style:@sanity/base/theme/variables';
+
 @use postcss-cssnext;
 
 .root {
@@ -25,6 +26,7 @@
 .selectContainer {
   position: relative;
   color: var(--input-border-color);
+
   &:hover {
     color: var(--input-border-color-focus);
   }
@@ -45,6 +47,7 @@
   pointer-events: none;
   color: inherit;
   cursor: pointer;
+
   svg {
     color: inherit;
   }

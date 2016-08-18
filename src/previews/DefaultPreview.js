@@ -7,11 +7,13 @@ export default class DefaultPreview extends React.Component {
     subtitle: PropTypes.string,
     description: PropTypes.string,
     sanityImage: PropTypes.object,
-    emptyText: PropTypes.string
+    emptyText: PropTypes.string,
+    children: PropTypes.node,
+
   }
 
   render() {
-    const {title, subtitle, description, emptyText} = this.props
+    const {title, subtitle, description, emptyText, children} = this.props
     return (
       <div className={`${styles.root}`}>
         <div className={styles.heading}>
@@ -23,6 +25,7 @@ export default class DefaultPreview extends React.Component {
           </h3>
         </div>
         <p className={styles.description}>{description}</p>
+        {children}
       </div>
     )
   }

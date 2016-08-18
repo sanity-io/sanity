@@ -3,8 +3,8 @@ import {storiesOf, action} from 'component:@sanity/storybook'
 
 import DefaultList from 'component:@sanity/components/lists/default'
 import DefaultListItem from 'component:@sanity/components/lists/items/default'
-import ThumbsList from 'component:@sanity/components/lists/thumbs'
-import Thumb from 'component:@sanity/components/lists/items/thumb'
+import GridList from 'component:@sanity/components/lists/grid'
+import GridItem from 'component:@sanity/components/lists/items/grid'
 
 import {range} from 'lodash'
 import faker from 'faker'
@@ -68,7 +68,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Thumbs',
+  'GridList',
   `
     Showing landscape thumbs in a grid
   `,
@@ -82,18 +82,44 @@ storiesOf('Lists')
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable onSelect={action('Select')} />
+        <GridList items={items} scrollable onSelect={action('Select')} />
       </div>
     )
   },
   {
-    propTables: [ThumbsList],
-    role: 'component:@sanity/components/lists/thumbs'
+    propTables: [GridList],
+    role: 'component:@sanity/components/lists/grid'
   }
 )
 
 .addWithInfo(
-  'Thumbs (portrait)',
+  'GridList with text',
+  `
+    Showing landscape thumbs in a grid
+  `,
+  () => {
+    const items = range(100).map((item, i) => {
+      return {
+        key: `${i}`,
+        title: faker.name.findName(),
+        subTitle: faker.name.findName()
+      }
+    })
+    return (
+      <div style={containerStyle}>
+        <GridList items={items} scrollable onSelect={action('Select')} />
+      </div>
+    )
+  },
+  {
+    propTables: [GridList],
+    role: 'component:@sanity/components/lists/grid'
+  }
+)
+
+
+.addWithInfo(
+  'GridList (portrait)',
   `
     Showing portrait thumbs in a grid
   `,
@@ -107,18 +133,18 @@ storiesOf('Lists')
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable onSelect={action('Select')} />
+        <GridList items={items} scrollable onSelect={action('Select')} />
       </div>
     )
   },
   {
-    propTables: [ThumbsList],
-    role: 'component:@sanity/components/lists/thumbs'
+    propTables: [GridList],
+    role: 'component:@sanity/components/lists/grid'
   }
 )
 
 .addWithInfo(
-  'Thumbs (mixed)',
+  'GridList (mixed)',
   `
     Showing portrait thumbs in a grid
   `,
@@ -134,18 +160,18 @@ storiesOf('Lists')
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable />
+        <GridList items={items} scrollable />
       </div>
     )
   },
   {
-    propTables: [ThumbsList],
-    role: 'component:@sanity/components/lists/thumbs'
+    propTables: [GridList],
+    role: 'component:@sanity/components/lists/grid'
   }
 )
 
 .addWithInfo(
-  'Thumbs (with info)',
+  'GridList (with info)',
   `
     Showing portrait thumbs in a grid
   `,
@@ -159,13 +185,13 @@ storiesOf('Lists')
     })
     return (
       <div style={containerStyle}>
-        <ThumbsList items={items} scrollable showInfo onSelect={action('Select')} />
+        <GridList items={items} scrollable showInfo onSelect={action('Select')} />
       </div>
     )
   },
   {
-    propTables: [ThumbsList],
-    role: 'component:@sanity/components/lists/thumbs'
+    propTables: [GridList],
+    role: 'component:@sanity/components/lists/grid'
   }
 )
 
@@ -187,29 +213,29 @@ storiesOf('Lists items')
   }
 )
 .addWithInfo(
-  'Thumb',
+  'GridItem',
   `
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
     return (
-      <Thumb title={faker.name.findName()} index="1" image={`${faker.image.avatar()}?1`} onClick={action('Click')} />
+      <GridItem title={faker.name.findName()} index="1" image={`${faker.image.avatar()}?1`} onClick={action('Click')} />
     )
   },
   {
-    propTables: [Thumb],
-    role: 'component:@sanity/components/lists/items/thumb'
+    propTables: [GridItem],
+    role: 'component:@sanity/components/lists/items/grid'
   }
 )
 .addWithInfo(
-  'Thumb with info',
+  'Grid with info',
   `
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
     return (
       <div style={{width: '300px'}}>
-        <Thumb
+        <GridItem
           showInfo
           title={faker.name.findName()}
           index="1"
@@ -220,7 +246,7 @@ storiesOf('Lists items')
     )
   },
   {
-    propTables: [Thumb],
-    role: 'component:@sanity/components/lists/items/thumb'
+    propTables: [GridItem],
+    role: 'component:@sanity/components/lists/items/grid'
   }
 )

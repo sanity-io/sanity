@@ -23,7 +23,7 @@
   display: flex;
   list-style: none;
   flex-grow: 1;
-  flex-basis: 7em;
+  flex-basis: 10em;
   margin: 0.25em;
-  min-height: 6em;
+  max-width: 10em;
 }

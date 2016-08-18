@@ -1,4 +1,5 @@
 @import 'style:@sanity/base/theme/variables';
+
 @use postcss-cssnext;
 
 .root {
@@ -36,6 +37,7 @@
   line-height: 1.6em;
   width: 1.5em;
   text-align: center;
+
   &:hover {
     color: #000;
   }
@@ -71,6 +73,7 @@
   margin-top: 0.2em;
   transform: translateY(0.15em);
   padding-left: 0.1em;
+
   &:focus {
     outline: none;
   }

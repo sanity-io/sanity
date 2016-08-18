@@ -1,4 +1,5 @@
 @import "style:@sanity/base/theme/variables";
+
 @use postcss-cssnext;
 
 @keyframes reveal {
@@ -6,9 +7,11 @@
     opacity: 0;
     transform: translateX(-50%) translateY(-50%) scale(0.1);
   }
+
   5% {
     opacity: 1;
   }
+
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(-50%) scale(1);

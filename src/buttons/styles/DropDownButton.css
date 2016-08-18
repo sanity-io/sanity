@@ -11,6 +11,7 @@
   top: 42%;
   transform: translateY(-50%);
   composes: chevron-down from 'style:@sanity/base/theme/icons';
+
   &::before {
     font-size: 1.5em;
   }

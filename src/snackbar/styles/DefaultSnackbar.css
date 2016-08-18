@@ -1,10 +1,12 @@
 @import "style:@sanity/base/theme/variables/state-colors";
+
 @use postcss-cssnext;
 
 @keyframes reveal {
   0% {
     transform: translateY(100%);
   }
+
   100% {
     transform: translateY(0);
   }
