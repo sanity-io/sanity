@@ -5,5 +5,5 @@ export default {
   signature: 'check [directory]',
   description: 'Performs a Sanity check',
   action: ({options}) =>
-    sanityCheck({dir: options.rootDir})
+    sanityCheck({dir: options._[1] || options.rootDir})
 }

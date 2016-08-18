@@ -33,7 +33,7 @@
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
     "@sanity/check": "^1.0.1",
-    "@sanity/client-next": "^1.0.7",
+    "@sanity/client-next": "^1.1.0",
     "@sanity/resolver": "^3.0.1",
     "@sanity/server": "^1.2.32",
     "@sanity/storybook": "^1.0.11",
@@ -60,6 +60,7 @@
     "semver-compare": "^1.0.0",
     "speakingurl": "^9.0.0",
     "thenify": "^3.2.0",
+    "update-notifier": "^1.0.2",
     "validate-npm-package-name": "^2.2.2",
     "which": "^1.2.4",
     "yargs": "^3.32.0"

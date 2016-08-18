@@ -12,8 +12,8 @@ export default [
   buildCommand,
   startCommand,
   installCommand,
+  uninstallCommand,
   checkCommand,
   configCheckCommand,
-  uninstallCommand,
   versionCommand
 ]

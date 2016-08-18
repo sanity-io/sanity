@@ -1,18 +1,14 @@
 #!/usr/bin/env node
 import yargs from 'yargs'
-import {resolveProjectRoot} from '@sanity/resolver'
 import chalk from 'chalk'
+import updateNotifier from 'update-notifier'
+import {resolveProjectRoot} from '@sanity/resolver'
 import {getCliRunner} from './CommandRunner'
-import checkForUpdates from './util/checkForUpdates'
 import commands from './commands'
 import pkg from '../package.json'
 
-const rootDir = resolveProjectRoot({
-  basePath: process.cwd(),
-  sync: true
-}) || process.cwd()
+updateNotifier({pkg}).notify()
 
-const updateCheck = checkForUpdates({rootDir})
 const program = yargs
   .version(pkg.version)
   .demand(1)
@@ -29,20 +25,11 @@ export function run(args) {
     return program.showHelp()
   }
 
-  cmdRunner.runCommand(cmdName, Object.assign({rootDir}, argv))
-    .then(() => outputVersionCheckResult())
+  return resolveProjectRoot({basePath: process.cwd()})
+    .then(dir => Object.assign({rootDir: dir || process.cwd()}, argv))
+    .then(options => cmdRunner.runCommand(cmdName, options))
     .catch(err => {
       console.error(chalk.red(err.stack)) // eslint-disable-line no-console
       process.exit(err.code || 1) // eslint-disable-line no-process-exit
     })
-}
-
-function outputVersionCheckResult() {
-  updateCheck.then(res => {
-    if (res.skip || res.atLatest) {
-      return
-    }
-
-    console.log(`[Sanity] You are using @sanity/cli v${res.current}, latest version is ${res.latest}`) // eslint-disable-line no-console
-  })
 }
