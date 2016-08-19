@@ -47,7 +47,7 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "@sanity/client-next": "^1.0.6",
+    "@sanity/client-next": "1.0.7",
     "@sanity/router": "^1.0.10",
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
