@@ -3,27 +3,28 @@ import test from 'ava'
 import sanityClient from '../src/client'
 
 const noop = () => {} // eslint-disable-line no-empty-function
-const baseUrl = 'https://api.sanity.url'
-const clientConfig = {baseUrl, dataset: 'foo', projectId: '76bc'}
+const apiHost = 'api.sanity.url'
+const projectHost = (projectId = 'bf1942') => `https://${projectId}.${apiHost}`
+const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
 const getClient = (conf = {}) => sanityClient({...clientConfig, ...conf})
 
 test('can get and set config', t => {
-  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
-  nock(baseUrl).post('/1bc3/v1/data/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
+  nock(projectHost()).post('/v1/data/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})
+  nock(projectHost('ce1337')).post('/v1/data/q/bar', {query: 'query'}).reply(200, {ms: 456, result: []})
 
   const client = getClient()
   return client.fetch('query')
     .then(res => t.is(res.ms, 123))
     .then(() =>
       client
-        .config({dataset: 'bar', projectId: '1bc3'})
+        .config({dataset: 'bar', projectId: 'ce1337'})
         .fetch('query')
         .then(res => t.is(res.ms, 456)))
 })
 
 test('can do simple requests', t => {
-  nock(baseUrl)
-    .post('/76bc/v1/data/q/foo', {query: 'query'})
+  nock(projectHost())
+    .post('/v1/data/q/foo', {query: 'query'})
     .reply(200, {
       ms: 123,
       result: [{foo: 'bar'}, {bar: 'foo'}]
@@ -38,8 +39,8 @@ test('can do simple requests', t => {
 test('can do update mutations', t => {
   const patch = {description: 'foo'}
 
-  nock(baseUrl)
-    .post('/76bc/v1/data/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
+  nock(projectHost())
+    .post('/v1/data/m/foo?returnIds=true', {'foo:raptor': {$$update: patch}})
     .reply(200, {})
 
   return getClient().update('foo:raptor', patch)
@@ -48,8 +49,8 @@ test('can do update mutations', t => {
 test('can create something', t => {
   const doc = {title: 'Baloney'}
 
-  nock(baseUrl)
-    .post('/76bc/v1/data/m/foo?returnIds=true', {'foo:': {$$create: doc}})
+  nock(projectHost())
+    .post('/v1/data/m/foo?returnIds=true', {'foo:': {$$create: doc}})
     .reply(201, {ms: 123, transactionId: 'bar', docIds: ['foo:99']})
 
   return getClient().create(doc).then(res => {
@@ -59,8 +60,8 @@ test('can create something', t => {
 })
 
 test('can delete', t => {
-  nock(baseUrl)
-    .post('/76bc/v1/data/m/foo?returnIds=true', {foo: {$$delete: null}})
+  nock(projectHost())
+    .post('/v1/data/m/foo?returnIds=true', {foo: {$$delete: null}})
     .reply(200, {ms: 123, transactionId: 'bar'})
 
   return getClient().delete('foo').then(res => {
@@ -69,8 +70,8 @@ test('can delete', t => {
 })
 
 test('request errors are captured as errors', t => {
-  nock(baseUrl)
-    .post('/76bc/v1/data/q/foo', {query: 'some invalid query'})
+  nock(projectHost())
+    .post('/v1/data/q/foo', {query: 'some invalid query'})
     .reply(400, {errors: [{message: 'Some error', line: 1, column: 13}]})
 
   return t.throws(
@@ -96,8 +97,8 @@ test.cb('event handlers can be added and triggered', t => {
 })
 
 test.cb('request event handlers are run pre-request', t => {
-  nock(baseUrl)
-    .post('/76bc/v1/data/q/foo', {query: '*'})
+  nock(projectHost())
+    .post('/v1/data/q/foo', {query: '*'})
     .reply(200, {ms: 123, result: []})
 
   let requestHookHasBeenResolved = false
@@ -132,8 +133,8 @@ test.cb('request event handlers are run pre-request', t => {
 })
 
 test('can add and remove event handlers', t => {
-  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'foo'}).reply(200, {ms: 1, result: []})
-  nock(baseUrl).post('/76bc/v1/data/q/foo', {query: 'bar'}).reply(200, {ms: 1, result: []})
+  nock(projectHost()).post('/v1/data/q/foo', {query: 'foo'}).reply(200, {ms: 1, result: []})
+  nock(projectHost()).post('/v1/data/q/foo', {query: 'bar'}).reply(200, {ms: 1, result: []})
 
   let callCount = 0
   const client = getClient()
@@ -165,21 +166,21 @@ test('throws if trying to remove handler that is not registered', t => {
 })
 
 test('can set and get new configuration', t => {
-  nock(baseUrl)
-    .post('/76bc/v1/data/m/bar?returnIds=true', {doc: {$$delete: null}})
+  nock(projectHost())
+    .post('/v1/data/m/bar?returnIds=true', {doc: {$$delete: null}})
     .reply(200, {ms: 123, transactionId: 'bar'})
 
-  const url = 'https://api.sanity.url/76bc/v1'
+  const url = 'https://bf1942.api.sanity.url/v1'
   const client = getClient()
-  t.deepEqual(client.config(), Object.assign({url}, clientConfig))
+  t.deepEqual(client.config(), Object.assign({url, useProjectHostname: true}, clientConfig))
   client.config({dataset: 'bar'})
-  t.deepEqual(client.config(), Object.assign({url}, clientConfig, {dataset: 'bar'}))
+  t.deepEqual(client.config(), Object.assign({url, useProjectHostname: true}, clientConfig, {dataset: 'bar'}))
 
   return client.delete('doc').then(res => t.is(res.transactionId, 'bar'))
 })
 
 test('can change client configuration in pre-request hook', t => {
-  nock(baseUrl).post('/76bc/v1/data/q/bar', {query: '*'}).reply(200, {ms: 1337, result: []})
+  nock(projectHost()).post('/v1/data/q/bar', {query: '*'}).reply(200, {ms: 1337, result: []})
 
   const client = getClient()
   return client
@@ -189,32 +190,32 @@ test('can change client configuration in pre-request hook', t => {
 })
 
 test('can create a new dataset', t => {
-  nock(baseUrl).put('/76bc/v1/datasets/unicorns').reply(200)
+  nock(projectHost()).put('/v1/datasets/unicorns').reply(200)
   t.notThrows(getClient().createDataset('unicorns'))
 })
 
 test('rejects if dataset creation fails', t => {
-  nock(baseUrl).put('/76bc/v1/datasets/ponies').reply(400, {
+  nock(projectHost()).put('/v1/datasets/ponies').reply(400, {
     error: 'Dataset "ponies" already exists'
   })
   t.throws(getClient().createDataset('ponies'))
 })
 
 test('can delete a dataset', t => {
-  nock(baseUrl).delete('/76bc/v1/datasets/unicorns').reply(200)
+  nock(projectHost()).delete('/v1/datasets/unicorns').reply(200)
   t.notThrows(getClient().deleteDataset('unicorns'))
 })
 
 test('rejects if dataset deletion fails', t => {
-  nock(baseUrl).delete('/76bc/v1/datasets/ponies').reply(400, {
+  nock(projectHost()).delete('/v1/datasets/ponies').reply(400, {
     error: 'Dataset "ponies" does not exist'
   })
   t.throws(getClient().deleteDataset('ponies'))
 })
 
 test('sends token header if token is set (data)', t => {
-  nock(baseUrl, {reqheaders: {'Sanity-Token': 'fjasebengel'}})
-    .post('/76bc/v1/data/q/foo', {query: 'query'})
+  nock(projectHost(), {reqheaders: {'Sanity-Token': 'fjasebengel'}})
+    .post('/v1/data/q/foo', {query: 'query'})
     .reply(200, {
       ms: 123,
       result: []
@@ -224,9 +225,18 @@ test('sends token header if token is set (data)', t => {
 })
 
 test('sends token header if token is set (datasets)', t => {
-  nock(baseUrl, {reqheaders: {'Sanity-Token': 'fjasebengel'}})
-    .put('/76bc/v1/datasets/fiskesaus')
+  nock(projectHost(), {reqheaders: {'Sanity-Token': 'fjasebengel'}})
+    .put('/v1/datasets/fiskesaus')
     .reply(200)
 
   return getClient({token: 'fjasebengel'}).createDataset('fiskesaus')
+})
+
+test('can be told to use hostname without project ID', t => {
+  nock(`https://${apiHost}`, {reqheaders: {'Sanity-Project-ID': 'bf1942'}})
+    .put('/v1/datasets/unicorns')
+    .reply(200)
+
+  const client = getClient({useProjectHostname: false})
+  t.notThrows(client.createDataset('unicorns'))
 })

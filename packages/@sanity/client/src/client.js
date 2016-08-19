@@ -4,9 +4,11 @@ import gradient from '@sanity/gradient-client'
 import validators from './validators'
 
 const tokenHeader = 'Sanity-Token'
+const projectHeader = 'Sanity-Project-ID'
 const allowedEvents = ['request']
 const defaultConfig = {
-  baseUrl: 'https://api.sanity.io'
+  apiHost: 'https://api.sanity.io',
+  useProjectHostname: true
 }
 
 const verifyEvent = (event, handler) => {
@@ -25,12 +27,15 @@ const initConfig = (config, prevConfig = {}) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  if (!/^\d/.test(newConfig.projectId)) {
+  if (!/^[-a-f0-9]+$/.test(newConfig.projectId)) {
     throw new Error('`projectId` must start with a number')
   }
 
-  if (!config.url) {
-    newConfig.url = `${newConfig.baseUrl}/${newConfig.projectId}/v1`
+  const [protocol, host] = newConfig.apiHost.split('://', 2)
+  if (newConfig.useProjectHostname) {
+    newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v1`
+  } else {
+    newConfig.url = `${newConfig.apiHost}/v1`
   }
 
   return newConfig
@@ -41,9 +46,19 @@ const getGradientConfig = config => ({
   dataset: config.dataset
 })
 
-const getReqOptions = config => ({
-  headers: config.token ? {[tokenHeader]: config.token} : {}
-})
+const getReqOptions = config => {
+  const headers = {}
+
+  if (config.token) {
+    headers[tokenHeader] = config.token
+  }
+
+  if (!config.useProjectHostname) {
+    headers[projectHeader] = config.projectId
+  }
+
+  return {headers}
+}
 
 class SanityClient {
   constructor(config = defaultConfig) {
