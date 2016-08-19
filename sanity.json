@@ -197,10 +197,6 @@
     },
 
     {
-      "name": "style:@sanity/base/theme/typography/base",
-      "description": "Base typography to but on the root for setting font-sizes etc."
-    },
-    {
       "name": "style:@sanity/base/theme/typography/text-blocks",
       "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
     },
@@ -386,10 +382,6 @@
     {
       "implements": "style:@sanity/base/theme/forms/clear-button",
       "path": "styles/forms/clear-button.css"
-    },
-    {
-      "implements": "style:@sanity/base/theme/typography/base",
-      "path": "styles/typography/base.css"
     },
     {
       "implements": "style:@sanity/base/theme/typography/headings",
