@@ -14,7 +14,9 @@ subscription.unsubscribe()
 ```
 
 ## How it works
-When you add a subscriber to a document the first thing that happens is that the subscriber function is called with a snapshot of the document's current state. This happens immediately and synchronously. From that moment on, you will receive a new event every time something happens to the document, until you unsubscribe again.
+When you add a subscriber to a document the first thing that happens is that the subscriber function is called with a snapshot of the document's current state. This happens as soon as the snapshot is retrieved. If there is a cached version of it on the client, the snapshot is received immediately (synchronously).
+
+From that moment on, you will receive a new event every time something happens to the document, until you unsubscribe again.
 
 ## API
 
