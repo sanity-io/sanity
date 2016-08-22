@@ -8,9 +8,9 @@ import reinitializePluginConfigs from '../../actions/config/reinitializePluginCo
 
 export default {
   name: 'start',
-  signature: 'start',
-  description: 'Starts a webserver that serves Sanity',
-  action: ({print, options}) => {
+  command: 'start',
+  describe: 'Starts a webserver that serves Sanity',
+  handler: ({print, options}) => {
     const sanityConfig = getConfig(options.rootDir)
     const config = sanityConfig.get('server')
     const getServer = isProduction ? getProdServer : getDevServer

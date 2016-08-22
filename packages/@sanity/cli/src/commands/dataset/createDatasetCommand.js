@@ -1,14 +1,13 @@
-import createDataset from '../../actions/dataset/createDataset'
-
 export default {
-  name: 'dataset create',
-  signature: 'dataset create',
-  description: 'Create a new dataset within your organization',
-  action: (args, opts) => {
-    return (args.options._[1]
-      ? Promise.resolve(args.options._[1])
-      : promptForDatasetName(args.prompt)
-    ).then(createDataset)
+  name: 'create',
+  command: 'create [datasetName]',
+  describe: 'Create a new dataset within your project',
+  action: ({apiClient, options, prompt}) => {
+    const client = apiClient()
+    return (options.datasetName
+      ? Promise.resolve({name: options.datasetName})
+      : promptForDatasetName(prompt)
+    ).then(info => client.createDataset(info.name))
   }
 }
 

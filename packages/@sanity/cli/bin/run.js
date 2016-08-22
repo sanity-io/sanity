@@ -49,7 +49,7 @@ if (preferGlobal) {
 if (preferGlobal) {
   loadCli()
 } else {
-  checkLocalCli(cwd).then(loadCli).catch(function (err) {
+  checkLocalCli().then(loadCli).catch(function (err) {
     console.error(err.stack)
     process.exit(1)
   })
@@ -66,18 +66,18 @@ function loadCli(localCliPath) {
   }
 }
 
-function checkLocalCli(cwd) {
+function checkLocalCli() {
   return readManifestIfExists(path.join(cwd, 'package.json'), {encoding: 'utf8'})
     .then(parseManifest)
     .then(hasLocalCliDeclared)
-    .then(isDeclared => hasLocalCliInstalled(cwd, isDeclared))
+    .then(hasLocalCliInstalled)
 }
 
 function hasLocalCliDeclared(manifest) {
   return manifest && manifest.dependencies && manifest.dependencies[pkg.name]
 }
 
-function hasLocalCliInstalled(cwd, isDeclared) {
+function hasLocalCliInstalled(isDeclared) {
   if (!isDeclared) {
     return false
   }

@@ -8,9 +8,9 @@ import {hasSameChecksum} from '../../util/pluginChecksumManifest'
 
 export default {
   name: 'uninstall',
-  signature: 'uninstall [plugin]',
-  description: 'Removes a Sanity plugin from the current Sanity configuration',
-  action: args => {
+  command: 'uninstall [plugin]',
+  describe: 'Removes a Sanity plugin from the current Sanity configuration',
+  handler: args => {
     const plugins = args.options._.slice(1)
     if (!plugins.length) {
       return args.error(new Error('Plugin name must be specified'))

@@ -7,9 +7,9 @@ import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
 
 export default {
   name: 'install',
-  signature: 'install [plugin]',
-  description: 'Installs a Sanity plugin to the current Sanity configuration',
-  action: args => {
+  command: 'install [plugin]',
+  describe: 'Installs a Sanity plugin to the current Sanity configuration',
+  handler: args => {
     const plugins = args.options._.slice(1)
     if (!plugins.length) {
       return args.error(new Error('Plugin name must be specified'))

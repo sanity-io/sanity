@@ -6,6 +6,10 @@ import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
 import debug from './debug'
 
+const cmdHasName = cmdName => {
+  return cmd => cmd.name === cmdName
+}
+
 export default class CommandRunner {
   constructor(handlers = {}, commands = defaultCommands) {
     this.handlers = handlers
@@ -17,23 +21,31 @@ export default class CommandRunner {
   }
 
   runCommand(cmdName, options) {
-    const command = this.commands.find(cmd => cmd.name === cmdName)
-    if (!command) {
-      return Promise.reject(new Error(`Command "${cmdName}" not defined`))
+    const subCommandName = options._[1]
+    const baseCommand = this.commands.find(cmdHasName(cmdName))
+
+    if (!baseCommand) {
+      return Promise.reject(new Error(`Command not found, run "sanity help"`))
     }
 
+    const subCommand = subCommandName && (baseCommand.subCommands || []).find(cmdHasName(subCommandName))
+    if (subCommandName && !subCommand) {
+      return Promise.reject(new Error(`Subcommand "${subCommandName}" not found, run "sanity help"`))
+    }
+
+    const action = subCommand ? subCommand.action : baseCommand.handler
     const {print, error, spinner} = this.handlers.outputter
     const {prompt} = this.handlers.prompter
 
     const manifestPath = path.join(options.rootDir, 'sanity.json')
     debug(`Reading "${manifestPath}"`)
-    return fsp.readJson()
+    return fsp.readJson(manifestPath)
       .catch(() => null)
       .then(manifest => {
         const apiClient = clientWrapper(manifest, manifestPath)
 
-        debug(`Running command "${cmdName}"`)
-        return command.action({print, error, spinner, prompt, apiClient, options})
+        debug(`Running command "${(subCommand || baseCommand).name}"`)
+        return action({print, error, spinner, prompt, apiClient, options})
       })
   }
 }

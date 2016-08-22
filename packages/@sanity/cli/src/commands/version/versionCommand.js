@@ -5,9 +5,9 @@ import pkg from '../../../package.json'
 
 export default {
   name: 'version',
-  signature: 'version',
-  description: 'Shows the installed versions of core Sanity components',
-  action: ({print}) =>
+  command: 'version',
+  describe: 'Shows the installed versions of core Sanity components',
+  handler: ({print}) =>
     promiseProps({
       local: getLocalVersion(pkg.name),
       global: getGlobalSanityCliVersion()

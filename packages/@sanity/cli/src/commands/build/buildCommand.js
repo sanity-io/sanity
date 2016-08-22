@@ -12,9 +12,9 @@ import {
 
 export default {
   name: 'build',
-  signature: 'build [outputDir]',
-  description: 'Builds the current Sanity configuration to a static bundle',
-  action: ({print, spinner, error, options}) => {
+  command: 'build [outputDir]',
+  describe: 'Builds the current Sanity configuration to a static bundle',
+  handler: ({print, spinner, error, options}) => {
     const outputDir = options._[1] || path.join(options.rootDir, 'dist')
     const config = getConfig(options.rootDir).get('server')
     const compilationConfig = {

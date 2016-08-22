@@ -6,9 +6,9 @@ import addPluginToManifest from '../../util/addPluginToManifest'
 
 export default {
   name: 'init',
-  signature: 'init [plugin]',
-  description: 'Initialize a new Sanity project',
-  action: (args, opts) => {
+  command: 'init [plugin]',
+  describe: 'Initialize a new Sanity project',
+  handler: (args, opts) => {
     const type = args.options._[1]
 
     if (!type) {
