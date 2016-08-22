@@ -196,9 +196,10 @@ test('can create a new dataset', t => {
 
 test('rejects if dataset creation fails', t => {
   nock(projectHost()).put('/v1/datasets/ponies').reply(400, {
-    error: 'Dataset "ponies" already exists'
+    error: 'Bad Request',
+    message: 'Dataset "ponies" already exists'
   })
-  t.throws(getClient().createDataset('ponies'))
+  t.throws(getClient().createDataset('ponies'), /"ponies" already exists/)
 })
 
 test('can delete a dataset', t => {
@@ -208,7 +209,8 @@ test('can delete a dataset', t => {
 
 test('rejects if dataset deletion fails', t => {
   nock(projectHost()).delete('/v1/datasets/ponies').reply(400, {
-    error: 'Dataset "ponies" does not exist'
+    error: 'Bad Request',
+    message: 'Dataset "ponies" does not exist'
   })
   t.throws(getClient().deleteDataset('ponies'))
 })

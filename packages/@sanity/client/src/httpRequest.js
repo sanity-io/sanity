@@ -29,15 +29,12 @@ export default function httpRequest(options, callback) {
 
       const isHttpError = res.statusCode >= 400
 
-      if (isHttpError && body && body.error) {
-        return reject(new Error(body.error))
-      }
-
-      if (isHttpError) {
-        const message = (res.body && res.body.message) || res.body || ''
-
+      if (isHttpError && body) {
+        const msg = [body.error, body.message].filter(Boolean).join('\n')
+        return reject(new Error(msg))
+      } else if (isHttpError) {
         return reject(new Error(
-          `HTTP ${res.statusCode} ${res.statusMessage || ''}\n${message}`
+          `Server responded with HTTP ${res.statusCode} ${res.statusMessage || ''}, no description`
         ))
       }
 
