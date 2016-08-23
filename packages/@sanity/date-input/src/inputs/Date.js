@@ -1,6 +1,9 @@
 import React, {PropTypes} from 'react'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
+import styles from './Date.css'
+import FormField from 'component:@sanity/components/formfields/default'
+import lodash from 'lodash'
 
 const getLocale = context => {
   const intl = context.intl || {}
@@ -14,6 +17,9 @@ const getLocale = context => {
 export default class DateInput extends React.Component {
   static propTypes = {
     value: PropTypes.string,
+    field: PropTypes.shape({
+      title: PropTypes.string.isRequired
+    }),
     onChange: PropTypes.func
   };
 
@@ -36,13 +42,21 @@ export default class DateInput extends React.Component {
   }
 
   render() {
-    const {value} = this.props
+    const {value, field} = this.props
+    const inputId = lodash.uniqueId('FormBuilderText')
     return (
-      <DatePicker
-        locale={getLocale(this.context)}
-        selected={value && moment(value)}
-        onChange={this.handleFieldChange}
-      />
+      <FormField labelHtmlFor={inputId} label={field.title}>
+        <div className={styles.root}>
+          <DatePicker
+            id={inputId}
+            locale={getLocale(this.context)}
+            selected={value && moment(value)}
+            onChange={this.handleFieldChange}
+            showYearDropdown
+            className={styles.datepicker}
+          />
+        </div>
+      </FormField>
     )
   }
 }

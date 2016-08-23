@@ -1,0 +1,17 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "at-rule-no-unknown": [true,{
+      ignoreAtRules: ["use", "nest"]
+      }
+    ],
+    "selector-pseudo-class-no-unknown": [true,{
+      ignorePseudoClasses: ["global"]
+      }
+    ],
+    "unit-no-unknown": [true, {
+      ignoreUnits: ["composes"]
+    }]
+
+  }
+}
