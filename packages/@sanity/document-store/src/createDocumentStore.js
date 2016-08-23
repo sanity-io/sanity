@@ -20,7 +20,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     byId,
     byIds,
     query,
-    // create,
+    create,
     // replace,
     // createOrReplace,
     update,
@@ -64,8 +64,11 @@ module.exports = function createDocumentStore({serverConnection}) {
     return Observable.merge(...documentIds.map(byId))
   }
 
-  function query(query) {
-    return serverConnection.query(query)
+  function query(query, params) {
+    return serverConnection.query(query, params)
+  }
+  function create(document) {
+    return serverConnection.create(document)
   }
 
 }

@@ -30,7 +30,7 @@ module.exports = function canonicalize(getKey, producerFn) {
     return cache.fetch(key, () => {
       debug('creating new observable for key #%s', key)
       return new Observable(observer => {
-        const subscription = producerFn()
+        const subscription = producerFn(...args)
           .subscribe(observer)
 
         return () => {

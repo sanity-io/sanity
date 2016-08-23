@@ -21,7 +21,9 @@ class Record {
       this._events = pubsubber()
     }
     return new Observable(observer => {
-      observer.next({type: 'snapshot', document: this._snapshot})
+      if (this._snapshot) {
+        observer.next({type: 'snapshot', document: this._snapshot})
+      }
       return this._events.subscribe(ev => observer.next(ev))
     })
   }
@@ -48,7 +50,11 @@ class Record {
 
   // receive an event from server
   sync(document) {
+    const hadSnapshot = !!this._snapshot
     this._snapshot = document
+    if (!hadSnapshot) {
+      this.publishSnapshot()
+    }
   }
 
   publish(ev) {

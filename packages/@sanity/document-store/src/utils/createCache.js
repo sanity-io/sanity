@@ -11,8 +11,7 @@ module.exports = function createObservableCache() {
       if (this.has(key)) {
         return this.get(key)
       }
-      cache[key] = producerFn()
-      return cache[key]
+      return put(key, producerFn())
     },
     remove(key) {
       delete cache[key]
@@ -21,4 +20,10 @@ module.exports = function createObservableCache() {
       return hasOwn(cache, key)
     }
   }
+
+  function put(key, value) {
+    cache[key] = value
+    return cache[key]
+  }
+
 }
