@@ -30,6 +30,9 @@ const bundledTypes = {
 const coreTypes = Object.assign({}, primitiveTypes, bundledTypes)
 
 const inputResolver = (field, fieldType) => {
+  if (field.component || fieldType.component) {
+    return field.component || fieldType.component
+  }
   const inputRole = coreTypes[field.type] || coreTypes[fieldType.name]
   return field.input || inputRole
 }

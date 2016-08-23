@@ -10,10 +10,12 @@ export default {
       title: PropTypes.string,
       fields: PropTypes.array.isRequired,
       fieldsets: PropTypes.array,
-      displayField: PropTypes.string
+      displayField: PropTypes.string,
+      options: PropTypes.object
     },
     defaultOptions: {
-      fieldsets: []
+      fieldsets: [],
+      options: {}
     },
     parse(typeDef, types) {
       if (!typeDef.fields) {
@@ -50,7 +52,8 @@ export default {
 
       return {
         fields: validatedFields,
-        fieldsets: validatedFieldsets
+        fieldsets: validatedFieldsets,
+        options: typeDef.options
       }
 
       function validateFields(fields) {

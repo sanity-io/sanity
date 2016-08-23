@@ -70,6 +70,7 @@ export default {
         },
         {
           name: 'content',
+          title: 'Content',
           type: 'array',
           of: [
             {
@@ -87,6 +88,7 @@ export default {
     },
     {
       name: 'address',
+      title: 'Address',
       type: 'object',
       fieldsets: [
         {

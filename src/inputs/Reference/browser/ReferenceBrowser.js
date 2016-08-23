@@ -104,7 +104,7 @@ export default class ReferenceBrowser extends React.Component {
   handleDialogAction(action) {
     const {onChange} = this.props
     switch (action.index) {
-      case 'set':
+      case 'set': {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
           const patch = {
@@ -117,11 +117,14 @@ export default class ReferenceBrowser extends React.Component {
         }
         this.setState({dialogSelectedItem: null, showDialog: false})
         break
-      case 'cancel':
+      }
+      case 'cancel': {
         this.setState({showDialog: false})
         break
-      default:
-        console.error('Unsupported action: ', action)
+      }
+      default: {
+        console.error('Unsupported action: ', action) // eslint-disable-line
+      }
     }
   }
 

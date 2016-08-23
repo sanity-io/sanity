@@ -1,9 +1,7 @@
 import * as defaultInputs from './defaultInputComponents'
-import * as defaultFields from './defaultFieldComponents'
 import * as ReferenceInput from './inputs/Reference'
 
 export {defaultInputs}
-export {defaultFields}
 
 export {default as Schema} from './Schema'
 export {default as defaultConfig} from './defaultConfig'

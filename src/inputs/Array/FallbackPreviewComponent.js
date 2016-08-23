@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/FallbackPreviewComponent.css'
+import SanityPreview from 'component:@sanity/components/previews/default' // eslint-disable-line
 
 function renderPrimitive(value) {
   return value
 }
 
 const GUESS_PROPERTIES = 'title,name,label'.split(',')
+
 function renderObject(value) {
   const objectProperties = Object.keys(value)
   const displayProperty = objectProperties.find(key => GUESS_PROPERTIES.includes(key))
@@ -26,7 +28,18 @@ function renderArray(array) {
   return array.map(render).join(', ')
 }
 
-function render(value) {
+function resolvePreviewPath(fieldName, value) {
+  const fieldValue = value.value[fieldName] && value.value[fieldName].value
+  const type = resolveJSType(fieldValue)
+
+  if (fieldName && type == 'array') {
+    return fieldValue.join(', ')
+  }
+
+  return fieldValue
+}
+
+function render(value, fieldType, field) {
   const type = resolveJSType(value)
   if (type === 'object') {
     if (resolveJSType(value.serialize) === 'function') {
@@ -39,10 +52,25 @@ function render(value) {
   }
   return renderPrimitive(value)
 }
+
 export default function FallbackPreviewComponent(props) {
+
+  // Preview defined in schema
+  if (props.type.options && props.type.options.preview) {
+    const preview = props.type.options.preview
+    return (<SanityPreview
+      title={resolvePreviewPath(preview.title, props.value)}
+      subtitle={resolvePreviewPath(preview.subtitle, props.value)}
+      description={resolvePreviewPath(preview.description, props.value)}
+      emptyText={preview.emptyText}
+      sanityImage={false}
+      />
+    )
+  }
+
   return (
     <div className={styles.root}>
-      {render(props.value) || <pre>[{props.field.type}: {JSON.stringify(props.value)}]</pre>}
+      {render(props.value, props.type, props.field) || <pre>[{props.field.type}: {JSON.stringify(props.value)}]</pre>}
     </div>
   )
 }
@@ -50,5 +78,6 @@ export default function FallbackPreviewComponent(props) {
 FallbackPreviewComponent.propTypes = {
   value: PropTypes.any.isRequired,
   field: PropTypes.object.isRequired,
-  type: PropTypes.object.isRequired
+  type: PropTypes.object.isRequired,
+  options: PropTypes.object
 }

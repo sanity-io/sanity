@@ -22,7 +22,10 @@ const PERSISTKEY = `form-builder-value-${params.schemaName}-${params.typeName}`
 
 const FormBuilder = schema && createFormBuilder({
   schema: schema,
-  resolveInputComponent(field, type) {
+  resolveInputComponent(field, fieldType) {
+    if (field.component || fieldType.component) {
+      return field.component || fieldType.component
+    }
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
     }
@@ -46,7 +49,8 @@ export default class Main extends React.Component {
     }
     bindAll(this, [
       'handleDispatchCommand',
-      'handleChange'
+      'handleChange',
+      'CommandButton'
     ])
   }
 
@@ -58,7 +62,7 @@ export default class Main extends React.Component {
   }
 
   cmdSave(event) {
-    save(PERSISTKEY, this.state.value)
+    save(PERSISTKEY, this.state.value.serialize())
     this.setState({saved: true})
   }
   cmdLog(event) {
@@ -68,7 +72,7 @@ export default class Main extends React.Component {
     this.setState({value: FormBuilder.createEmpty(params.typeName)})
   }
   cmdRevert(event) {
-    this.setState({value: FormBuilder.deserialize(restore(PERSISTKEY))})
+    this.setState({value: FormBuilder.deserialize(restore(PERSISTKEY), params.typeName)})
   }
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})
@@ -88,14 +92,26 @@ export default class Main extends React.Component {
     }
   }
 
+  CommandButton(props) {
+    return (
+      <button
+        type="button"
+        className={styles.toolbarButton}
+        data-cmd={props.command}
+        onClick={this.handleDispatchCommand}
+      >
+        {props.children}
+      </button>
+    )
+  }
   renderToolbar() {
     const {inspect, saved} = this.state
     return (
       <div>
-        <button className={styles.toolbarButton} data-cmd="Save" onClick={this.handleDispatchCommand}>{saved ? '✓ Saved' : '  Save'}</button>
-        <button className={styles.toolbarButton} data-cmd="Revert" onClick={this.handleDispatchCommand}>Load saved</button>
-        <button className={styles.toolbarButton} data-cmd="Clear" onClick={this.handleDispatchCommand}>Clear</button>
-        <button className={styles.toolbarButton} data-cmd="Log" onClick={this.handleDispatchCommand}>console.log value</button>
+        <this.CommandButton command="Save">{saved ? '✓ Saved' : '  Save'}</this.CommandButton>
+        <this.CommandButton command="Revert">Load saved</this.CommandButton>
+        <this.CommandButton command="Clear">Clear</this.CommandButton>
+        <this.CommandButton command="Log">console.log value</this.CommandButton>
         {' '}
         <label>
           <input data-cmd="InspectLive" checked={inspect} type="checkbox" onChange={this.handleDispatchCommand} />

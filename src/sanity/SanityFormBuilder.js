@@ -51,8 +51,8 @@ class SanityFormBuilder extends React.Component {
 
   getStateForProps(props) {
     const value = props.initialValue
-      ? FormBuilder.deserialize(unprefixType(props.initialValue))
-      : FormBuilder.createEmpty(this.props.typeName)
+      ? FormBuilder.deserialize(unprefixType(props.initialValue), props.typeName)
+      : FormBuilder.createEmpty(props.typeName)
 
     return {
       value: value,

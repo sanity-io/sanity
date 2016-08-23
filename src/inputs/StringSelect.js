@@ -1,17 +1,14 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import DefaultTextField from 'component:@sanity/components/textfields/default'
+import Select from 'component:@sanity/components/selects/default'
 
-export default class Str extends React.Component {
-  static displayName = 'String';
+export default class StringSelect extends React.Component {
+  static displayName = 'StringSelect';
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.string,
-    validation: PropTypes.shape({
-      messages: PropTypes.array
-    }),
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
@@ -20,13 +17,13 @@ export default class Str extends React.Component {
   static defaultProps = {
     value: '',
     onChange() {},
-    onEnter() {}
+    onEnter() {},
+    onFocus() {}
   };
 
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
     this.setInputElement = this.setInputElement.bind(this)
   }
 
@@ -34,19 +31,16 @@ export default class Str extends React.Component {
     this.inputElement = element
   }
 
-  componentDidMount() {
-    // if (this.props.focus) {
-    //   this.focus()
-    // }
-  }
   shouldComponentUpdate(nextProps) {
     return !equals(this.props, nextProps)
   }
 
-  handleChange(event) {
-    const value = event.target.value || undefined
-    const op = value ? '$set' : '$delete'
-    this.props.onChange({patch: {[op]: value}})
+  handleChange(item) {
+    this.props.onChange({patch: {$set: item.title}})
+  }
+
+  handleFocus(event) {
+    // Handle focus here
   }
 
   handleKeyPress(event) {
@@ -56,16 +50,26 @@ export default class Str extends React.Component {
   }
 
   render() {
-    const {value, field, validation, focus} = this.props
+    const {value, field, focus} = this.props
+
+    const items = field.options.list.map(item => {
+      return {title: item}
+    })
+
+    const currentItem = items.find(item => {
+      return item.title == value
+    })
 
     return (
-      <DefaultTextField
+      <Select
         label={field.title}
-        validation={validation}
+        type="text"
+        value={currentItem || items[0]}
         placeholder={field.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
-        value={value}
+        onFocus={this.handleFocus}
+        items={items}
         focus={focus}
         ref={this.setInputElement}
       />

@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import styles from './styles/Number.css'
+import DefaultTextField from 'component:@sanity/components/textfields/default'
 
 export default class Num extends React.Component {
   static displayName = 'Number';
@@ -8,7 +8,8 @@ export default class Num extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field,
     value: PropTypes.number,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    focus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -26,17 +27,18 @@ export default class Num extends React.Component {
   }
 
   render() {
-    const {value} = this.props
+    const {value, field, focus} = this.props
     return (
-      <div className={styles.root}>
-        <input
-          type="number"
-          className={styles.input}
-          onChange={this.handleChange}
-          placeholder="Must be a number ex. 123"
-          value={value || ''}
-        />
-      </div>
+      <DefaultTextField
+        label={field.title}
+        type="number"
+        placeholder={field.placeholder || 'Must be a number. Ex 1234'}
+        onChange={this.handleChange}
+        onKeyPress={this.handleKeyPress}
+        value={value}
+        focus={focus}
+        ref={this.setInputElement}
+      />
     )
   }
 }

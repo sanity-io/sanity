@@ -1,7 +1,6 @@
-import ClearButton from '../buttons/ClearButton'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import styles from './styles/Email.css'
+import DefaultTextField from 'component:@sanity/components/textfields/default'
 
 export default class Email extends React.Component {
   constructor(props, context) {
@@ -25,14 +24,18 @@ export default class Email extends React.Component {
   }
 
   render() {
-    const {value} = this.props
+    const {field, value} = this.props
     return (
-      <div className={styles.root}>
-        <div className={styles.inner}>
-          <ClearButton className={styles.clearButton} />
-          <input className={styles.input} type="email" value={value} onChange={this.handleChange} />
-        </div>
-      </div>
+      <DefaultTextField
+        label={field.title}
+        type="email"
+        placeholder={field.placeholder}
+        onChange={this.handleChange}
+        onKeyPress={this.handleKeyPress}
+        value={value}
+        focus={focus}
+        ref={this.setInputElement}
+      />
     )
   }
 }

@@ -6,12 +6,7 @@
 }
 
 .item {
-  transition: margin 0.1s linear;
-
-  list-style-type: none;
-  &:first-child > .itemInner {
-    border-top: var(--list-border);
-  }
+  /**/
 }
 
 .list {
@@ -25,8 +20,6 @@
 
 .itemActive {
   composes: item;
-  margin-right: -3rem;
-  transition: margin 0.2s linear;
 }
 
 .itemInner {
@@ -38,18 +31,4 @@
   &:hover {
     background-color: var(--gray-lighter);
   }
-}
-
-.itemActive > .itemInner {
-  margin-top: -1px;
-  background-color: #fff;
-  border-top: var(--list-border);
-  border-bottom: 0;
-  border-left: 2px solid var(--brand-primary);
-  font-weight: bold;
-  border-right: var(--list-border);
-}
-
-.primaryFunctions {
-
 }

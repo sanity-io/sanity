@@ -11,5 +11,13 @@ export function restore(key) {
 }
 
 export function save(key, value) {
+  if (value === undefined) {
+    remove(key)
+    return
+  }
   localStorage.setItem(key, JSON.stringify(value))
+}
+
+function remove(key) {
+  localStorage.removeItem(key)
 }

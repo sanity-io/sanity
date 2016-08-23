@@ -1,3 +1,5 @@
+import StyledInput from '../components/custom/StyledInput'
+
 export default {
   name: 'exampleBlog',
   types: [
@@ -9,6 +11,13 @@ export default {
           name: 'title',
           title: 'Title',
           type: 'string',
+          component: StyledInput,
+          options: {
+            style: {
+              backgroundColor: '#075d9c',
+              color: '#fff'
+            }
+          },
           required: true
         },
         {
@@ -40,6 +49,7 @@ export default {
         },
         {
           name: 'content',
+          title: 'Content',
           type: 'array',
           of: [
             {
@@ -82,6 +92,8 @@ export default {
     {
       name: 'author',
       type: 'object',
+      title: 'Author',
+      description: 'Fill inn information about the author',
       fields: [
         {
           name: 'name',

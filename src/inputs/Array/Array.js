@@ -1,12 +1,15 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import ItemForm from './ItemForm'
 import ItemPreview from './ItemPreview'
 import ArrayContainer from './ArrayContainer'
-import styles from './styles/Array.css'
-import EditItem from './EditItem'
 import DropDownButton from 'component:@sanity/components/buttons/dropdown'
 import Button from 'component:@sanity/components/buttons/default'
+import Fieldset from 'component:@sanity/components/fieldsets/default'
+import EditItemPopOver from 'component:@sanity/components/edititem/popover'
+import DefaultList from 'component:@sanity/components/lists/default'
+import GridList from 'component:@sanity/components/lists/grid'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -18,7 +21,8 @@ export default class Arr extends React.Component {
     field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
     level: PropTypes.number,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    description: PropTypes.string
   };
 
   static defaultProps = {
@@ -39,6 +43,8 @@ export default class Arr extends React.Component {
     this.handleClose = this.handleClose.bind(this)
     this.handleDropDownAction = this.handleDropDownAction.bind(this)
     this.addItemAtEnd = this.addItemAtEnd.bind(this)
+    this.renderItem = this.renderItem.bind(this)
+    this.renderList = this.renderList.bind(this)
 
     this.state = {
       addItemField: null,
@@ -121,6 +127,7 @@ export default class Arr extends React.Component {
   handleItemChange(event, index) {
     const patch = {[index]: event.patch}
     this.props.onChange({patch})
+
   }
 
   handleItemEdit(index) {
@@ -135,7 +142,7 @@ export default class Arr extends React.Component {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
     return (
-      <EditItem title={itemField.title} onClose={this.handleClose}>
+      <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
           index={index}
@@ -146,7 +153,7 @@ export default class Arr extends React.Component {
           onEnter={this.handleItemEnter}
           onRemove={this.handleRemoveItem}
         />
-      </EditItem>
+      </EditItemPopOver>
     )
   }
 
@@ -155,49 +162,54 @@ export default class Arr extends React.Component {
     return type.of.find(ofType => ofType.type === item.context.field.type)
   }
 
-  render() {
-    const {type, value} = this.props
+  renderItem(item, i) {
+    const {type} = this.props
     const {editIndex} = this.state
+    const itemField = this.getItemField(item)
+
+    if (!itemField) {
+      return (
+        <div>
+          <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
+          <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
+        </div>
+      )
+    }
+
     return (
-      <div className={styles.root}>
-        <ul className={styles.list}>
-          {value && value.map((item, i) => {
+      <div key={i}>
+        <ItemPreview
+          index={i}
+          field={itemField}
+          value={item}
+          onEdit={this.handleItemEdit}
+          onRemove={this.handleRemoveItem}
+        />
+        {editIndex === i && this.renderEditItemForm(editIndex)}
+      </div>
+    )
+  }
 
-            const itemField = this.getItemField(item)
+  renderList() {
+    const {value, type} = this.props
+    if (type.options && type.options.view == 'grid') {
+      return <GridList renderItem={this.renderItem} items={value.value} />
+    }
+    return <DefaultList renderItem={this.renderItem} items={value.value} />
+  }
 
-            if (!itemField) {
-              return (
-                <div>
-                  <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
-                  <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
-                </div>
-              )
-            }
+  render() {
+    const {field} = this.props
 
-            const itemClass = editIndex == i ? styles.itemActive : styles.item
+    return (
+      <Fieldset legend={field.title} description={field.description}>
 
-            return (
-              <li key={i} className={itemClass}>
-                {editIndex !== i && (
-                  <div className={styles.itemInner}>
-                    <ItemPreview
-                      index={i}
-                      field={itemField}
-                      value={item}
-                      onEdit={this.handleItemEdit}
-                      onRemove={this.handleRemoveItem}
-                    />
-                  </div>
-                )}
-                {editIndex === i && this.renderEditItemForm(editIndex)}
-              </li>
-            )
-          })}
-        </ul>
-        <div className={styles.primaryFunctions}>
+        {this.renderList()}
+
+        <div>
           {
             this.props.type.of.length == 1
-            && <Button onClick={this.handleAddBtnClick} ripple inverted kind="add">
+            && <Button onClick={this.handleAddBtnClick} ripple kind="add">
               Add
             </Button>
           }
@@ -206,7 +218,8 @@ export default class Arr extends React.Component {
           }
 
         </div>
-      </div>
+
+      </Fieldset>
     )
   }
 }

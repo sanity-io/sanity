@@ -1,9 +1,9 @@
-import ClearButton from '../buttons/ClearButton'
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import styles from './styles/Text.css'
-
+import FormField from 'component:@sanity/components/formfields/default'
+import TextArea from 'component:@sanity/components/textareas/default'
+import {uniqueId} from 'lodash'
 
 export default class Str extends React.Component {
   static displayName = 'Text';
@@ -33,22 +33,20 @@ export default class Str extends React.Component {
     this.props.onChange({patch: {$set: val}})
   }
 
+
   render() {
     const {value, field} = this.props
+    const inputId = uniqueId('FormBuilderText')
     return (
-      <div className={styles.root}>
-        <div className={styles.inner}>
-          <ClearButton className={styles.clearButton} />
-          <textarea
-            className={styles.textarea}
-            placeholder={field.placeholder}
-            onChange={this.handleChange}
-            rows={field.rows || 10}
-            value={value}
-          >
-          </textarea>
-        </div>
-      </div>
+      <FormField label={field.title} labelHtmlFor={inputId}>
+        <TextArea
+          id={inputId}
+          placeholder={field.placeholder}
+          onChange={this.handleChange}
+          rows={field.rows}
+          value={value}
+        />
+      </FormField>
     )
   }
 }

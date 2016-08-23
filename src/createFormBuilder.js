@@ -32,6 +32,10 @@ export default function createFormBuilder(config = {}) {
   }
 
   function createValue(value, typeName) {
+    if (value && value.$type !== typeName) {
+      throw new Error(`Type mismatch: Trying to edit data of type ${value.$type} as ${typeName}`)
+    }
+
     return createFormBuilderState(value, {
       type: schema.getType(typeName), // todo: support primitives!
       schema: schema,
@@ -39,8 +43,8 @@ export default function createFormBuilder(config = {}) {
     })
   }
 
-  function deserialize(value) {
-    return createValue(value, value.$type)
+  function deserialize(value, asType) {
+    return createValue(value, asType)
   }
 
   function createEmpty(typeName) {

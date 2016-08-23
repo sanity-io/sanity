@@ -13,7 +13,29 @@ export default {
         },
         {
           name: 'pet',
-          title: 'Pet',
+          title: 'Browse for pet',
+          type: 'reference',
+          to: [
+            {
+              type: 'pet',
+              title: 'Pet'
+            }
+          ]
+        },
+        {
+          name: 'pet2',
+          title: 'Select pet',
+          type: 'reference',
+          to: [
+            {
+              type: 'pet',
+              title: 'Pet'
+            }
+          ]
+        },
+        {
+          name: 'pet3',
+          title: 'Type to find pet',
           type: 'reference',
           to: [
             {

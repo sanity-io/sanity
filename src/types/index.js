@@ -10,7 +10,9 @@ const IMPLICIT_OPTIONS = {
   name: PropTypes.string,
   primitive: PropTypes.string,
   description: PropTypes.string,
-  required: PropTypes.bool
+  required: PropTypes.bool,
+  component: PropTypes.func,
+  options: PropTypes.object
 }
 
 export function wrapBaseType(baseType) {

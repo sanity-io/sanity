@@ -20,8 +20,8 @@ export default class Bool extends React.Component {
     this.handleChange = this.handleChange.bind(this)
   }
 
-  handleChange(e) {
-    this.props.onChange({patch: {$set: e.target.checked}})
+  handleChange(event) {
+    this.props.onChange({patch: {$set: event.target.checked}})
   }
 
   render() {
