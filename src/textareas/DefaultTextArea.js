@@ -35,23 +35,9 @@ export default class DefaultTextArea extends React.Component {
     this.handleFocus = this.handleFocus.bind(this)
     this.handleClear = this.handleClear.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
-    this.state = {
-      value: this.props.value
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.setState({
-        value: nextProps.value
-      })
-    }
   }
 
   handleChange(event) {
-    this.setState({
-      value: event.target.value
-    })
     this.props.onChange(event)
   }
 
@@ -68,15 +54,11 @@ export default class DefaultTextArea extends React.Component {
   }
 
   handleClear(event) {
-    this.setState({
-      value: ''
-    })
-    this.props.onChange(event)
     this.props.onClear(event)
   }
 
   render() {
-    const {placeholder, error, showClearButton, id, rows} = this.props
+    const {value, placeholder, error, showClearButton, id, rows} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
@@ -90,7 +72,7 @@ export default class DefaultTextArea extends React.Component {
           `}
           rows={rows}
           id={id}
-          value={this.state.value}
+          value={value}
           placeholder={placeholder}
           onChange={this.handleChange}
           onKeyPress={this.handleKeyPress}

@@ -32,36 +32,11 @@ export default class DefaultTextInput extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.handleChange = this.handleChange.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.handleClear = this.handleClear.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.setInputElement = this.setInputElement.bind(this)
-    this.state = {
-      value: this.props.value
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.setState({
-        value: nextProps.value
-      })
-    }
-    if (nextProps.selected !== this.props.selected) {
-      this._input.select()
-    }
-    if (nextProps.hasFocus !== this.props.hasFocus) {
-      this._input.focus()
-    }
-  }
-
-  handleChange(event) {
-    this.setState({
-      value: event.target.value
-    })
-    this.props.onChange(event)
   }
 
   handleKeyPress(event) {
@@ -81,10 +56,7 @@ export default class DefaultTextInput extends React.Component {
   }
 
   handleClear(event) {
-    this.setState({
-      value: ''
-    })
-    this.props.onChange(event)
+    // this.props.onChange(event)
     this.props.onClear(event)
   }
 
@@ -99,22 +71,23 @@ export default class DefaultTextInput extends React.Component {
   }
 
   render() {
-    const {placeholder, error, showClearButton, id, type} = this.props
+    const {value, placeholder, error, showClearButton, id, type, hasFocus, ...rest} = this.props
 
     const rootClass = error ? styles.error : styles.root
 
     return (
       <div className={rootClass}>
         <input
+          {...rest}
           className={`
             ${error ? styles.inputError : styles.input}
             ${showClearButton && styles.hasClearButton}
+            ${hasFocus && styles.hasFocus}
           `}
           id={id}
           type={type}
-          value={this.state.value}
+          value={value}
           placeholder={placeholder}
-          onChange={this.handleChange}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}

@@ -9,24 +9,21 @@ export default class Switch extends React.Component {
     disabled: PropTypes.bool
   }
 
+  static defaultProps = {
+    onChange() {}
+  }
+
   constructor(...args) {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
-    this.state = {
-      checked: this.props.checked
-    }
   }
 
   handleChange(event) {
-    this.setState({
-      checked: !this.state.checked
-    })
     this.props.onChange(event)
   }
 
   render() {
-    const {disabled} = this.props
-    const {checked} = this.state
+    const {disabled, checked} = this.props
     const rootStyle = disabled ? styles.disabled : styles.enabled
     const checkedStyle = checked ? styles.checked : styles.unchecked
 
@@ -39,6 +36,7 @@ export default class Switch extends React.Component {
           type="checkbox"
           checked={checked}
           onChange={this.handleChange}
+          readOnly={disabled}
         />
         <div className={styles.label}>{this.props.label}</div>
         <div className={styles.focusHelper} />
