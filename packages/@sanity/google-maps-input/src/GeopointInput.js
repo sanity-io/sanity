@@ -7,7 +7,8 @@ import {formatMessage} from 'role:@sanity/base/locale/formatters'
 //import Fieldset from 'component:@sanity/components/fieldsets/default'
 import Button from 'component:@sanity/components/buttons/default'
 import Dialog from 'component:@sanity/components/dialogs/default'
-import Styles from '../styles/GeopointInput.css'
+import Fieldset from 'component:@sanity/components/fieldsets/default'
+import styles from '../styles/GeopointInput.css'
 
 class GeopointInput extends React.Component {
   static propTypes = {
@@ -17,6 +18,9 @@ class GeopointInput extends React.Component {
     value: PropTypes.shape({
       lat: PropTypes.number,
       lng: PropTypes.number
+    }),
+    field: PropTypes.shape({
+      title: PropTypes.string.isRequired
     })
   };
 
@@ -69,7 +73,7 @@ class GeopointInput extends React.Component {
   }
 
   render() {
-    const {value} = this.props
+    const {value, field} = this.props
 
     const actions = [
       {
@@ -96,21 +100,25 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <div>
-        {value && <div><img src={this.getStaticImageUrl(value)} /></div>}
+      <Fieldset legend={field.title} descriptions={field.description} className={styles.root}>
+        {value && <div>
+          <img className={styles.previewImage} src={this.getStaticImageUrl(value)} />
+        </div>}
 
-        <Button onClick={this.handleToggleModal}>
-          {formatMessage(value
-            ? 'google-maps.button.edit'
-            : 'google-maps.button.setLocation'
-          )}
-        </Button>
-
-        {value && (
-          <Button type="button">
-            {formatMessage('google-maps.button.remove')}
+        <div className={styles.functions}>
+          <Button onClick={this.handleToggleModal}>
+            {formatMessage(value
+              ? 'google-maps.button.edit'
+              : 'google-maps.button.setLocation'
+            )}
           </Button>
-        )}
+
+          {value && (
+            <Button type="button">
+              {formatMessage('google-maps.button.remove')}
+            </Button>
+          )}
+        </div>
 
         {this.state.modalOpen && (
           <Dialog
@@ -135,7 +143,7 @@ class GeopointInput extends React.Component {
 
           </Dialog>
         )}
-      </div>
+      </Fieldset>
     )
   }
 }

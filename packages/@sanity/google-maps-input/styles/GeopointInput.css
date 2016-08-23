@@ -1,5 +1,8 @@
-:global(.pac-container) {
-  border: 10px solid red;
-  z-index: 500000;
-  position: fixed;
+.previewImage {
+  width: 100%;
+  height: auto;
+}
+
+.functions {
+  composes: functions from 'style:@sanity/components/fieldsets/default';
 }
