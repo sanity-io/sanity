@@ -26,6 +26,7 @@ export default class EditItemPopOver extends React.Component {
     this.setArrowElement = this.setArrowElement.bind(this)
     this.repositionElement = this.repositionElement.bind(this)
     this.handleResize = debounce(this.handleResize.bind(this), 17) // 60fps
+    this.resetPosition = this.resetPosition.bind(this)
   }
 
   handleClose() {
@@ -58,14 +59,27 @@ export default class EditItemPopOver extends React.Component {
         innerElement.style.marginLeft = `${diff}px`
         this._arrowElement.style.transform = `translateX(${diff * -1}px)`
       } else {
-        innerElement.style.marginLeft = '0'
-        this._arrowElement.style.transform = 'translateX(0px)'
+        this.resetPosition()
       }
     }
   }
 
+  resetPosition() {
+    this._innerElement.style.marginLeft = '0'
+    this._arrowElement.style.transform = 'translateX(0px)'
+  }
+
   handleResize() {
-    this.repositionElement()
+    // Uses the css the determine if it should reposition with an Media Query
+    const computedStyle = window.getComputedStyle(this._rootElement, '::before')
+    const contentValue = computedStyle.getPropertyValue('content')
+    const shouldReposition = contentValue === '"shouldReposition"' // Is quoted
+
+    if (shouldReposition) {
+      this.repositionElement()
+    } else {
+      this.resetPosition()
+    }
   }
 
 

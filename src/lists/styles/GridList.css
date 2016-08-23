@@ -17,6 +17,7 @@
   padding: 0;
   align-content: flex-start;
   justify-content: flex-start;
+  user-select: none;
 }
 
 .item {

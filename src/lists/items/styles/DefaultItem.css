@@ -77,4 +77,6 @@
   width: 100%;
   box-sizing: border-box;
   text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none;
 }
