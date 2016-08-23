@@ -5,11 +5,11 @@ import Spinner from 'component:@sanity/components/loading/spinner'
 
 export default class DefaultButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['add', 'danger', 'colored']),
+    kind: PropTypes.oneOf(['add', 'danger', 'colored', 'secondary']),
     onClick: PropTypes.func,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
-    icon: PropTypes.node,
+    icon: PropTypes.func,
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
@@ -19,7 +19,9 @@ export default class DefaultButton extends React.Component {
 
   static defaultProps = {
     ripple: true,
-    icon: false,
+    icon() {
+      return null
+    },
     onClick() {}
   }
 
@@ -30,9 +32,7 @@ export default class DefaultButton extends React.Component {
   }
 
   handleClick(event) {
-    event.stopPropagation()
-    event.preventDefault()
-    this.props.onClick()
+    this.props.onClick(event)
   }
 
   render() {

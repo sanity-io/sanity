@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/edititem/popover'
 import Button from 'component:@sanity/components/buttons/default'
+import {debounce} from 'lodash'
 
 export default class EditItemPopOver extends React.Component {
   static propTypes = {
@@ -24,7 +25,7 @@ export default class EditItemPopOver extends React.Component {
     this.setInnerElement = this.setInnerElement.bind(this)
     this.setArrowElement = this.setArrowElement.bind(this)
     this.repositionElement = this.repositionElement.bind(this)
-    this.handleResize = this.handleResize.bind(this)
+    this.handleResize = debounce(this.handleResize.bind(this), 17) // 60fps
   }
 
   handleClose() {
@@ -40,43 +41,33 @@ export default class EditItemPopOver extends React.Component {
   }
 
   repositionElement() {
-    // TODO: lodash debounce resize updates
-
+    const rootElement = this._rootElement
     const innerElement = this._innerElement
 
-    const width = this._rootElement.offsetWidth
-    const left = this._rootElement.offsetLeft
+    if (rootElement && innerElement) {
+      const width = rootElement.offsetWidth
+      const left = rootElement.offsetLeft
 
-    const windowWidth = window.innerWidth
-    const padding = 30
+      const windowWidth = window.innerWidth
+      const padding = 30
 
-    // Transform approach
-    // Right side crash
-    // if ((width + left) > windowWidth) {
-    //   const diff = windowWidth - width - padding - left
-    //   innerElement.style.transform = `translateX(${diff}px)`
-    //   this._arrowElement.style.transform = `translateX(${diff * -1}px)`
-    // } else {
-    //   innerElement.style.transform = 'translateX(0px)'
-    //   this._arrowElement.style.transform = 'translateX(0px)'
-    // }
+      const margin = parseInt(innerElement.style.marginLeft, 10) || 0
 
-    const margin = parseInt(innerElement.style.marginLeft, 10) || 0
-
-    if ((width + left - margin + padding) > windowWidth) {
-      const diff = windowWidth - width - padding - left + margin
-      innerElement.style.marginLeft = `${diff}px`
-      this._arrowElement.style.transform = `translateX(${diff * -1}px)`
-    } else {
-      innerElement.style.marginLeft = '0'
-      this._arrowElement.style.transform = 'translateX(0px)'
+      if ((width + left - margin + padding) > windowWidth) {
+        const diff = windowWidth - width - padding - left + margin
+        innerElement.style.marginLeft = `${diff}px`
+        this._arrowElement.style.transform = `translateX(${diff * -1}px)`
+      } else {
+        innerElement.style.marginLeft = '0'
+        this._arrowElement.style.transform = 'translateX(0px)'
+      }
     }
-
   }
 
   handleResize() {
     this.repositionElement()
   }
+
 
   componentDidMount() {
     this.repositionElement(this._rootElement)

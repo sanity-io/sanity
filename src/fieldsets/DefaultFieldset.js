@@ -1,4 +1,4 @@
-import styles from './styles/DefaultFieldset.css'
+import styles from 'style:@sanity/components/fieldsets/default'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {

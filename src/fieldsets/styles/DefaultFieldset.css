@@ -8,6 +8,7 @@
   padding: 0;
   margin-bottom: var(--large-padding);
   border: 0;
+  max-width: 100%;
 
   /* nested inside itself */
   & & {
@@ -20,6 +21,7 @@
   background-color: #fff;
   border: 1px solid var(--gray-lighter);
   padding: var(--medium-padding);
+  margin-top: var(--medium-padding);
 
   /* nested inside itself */
   & & {
@@ -33,7 +35,7 @@
 }
 
 .legend {
-  composes: heading1 from 'style:@sanity/base/theme/typography/headings';
+  composes: heading4 from 'style:@sanity/base/theme/typography/headings';
   display: block;
   width: 100%;
   margin: 0;
@@ -42,8 +44,13 @@
   /* Should compose heading3, but it is not allowed */
   @nest .root .root & {
     font-size: var(--font-size-h3);
+    text-transform: none;
     padding-top: var(--medium-padding);
   }
+}
+
+.functions {
+  margin-top: 1em;
 }
 
 .description {

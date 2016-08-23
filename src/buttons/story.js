@@ -65,11 +65,9 @@ storiesOf('Buttons')
       {index: '3', title: 'Test 3'}
     ]
     return (
-      <div>
-        <DropDownButton items={items} onAction={action('Clicked item')}>
-          This is a dropdown
-        </DropDownButton>
-      </div>
+      <DropDownButton items={items} onAction={action('Clicked item')}>
+        This is a dropdown
+      </DropDownButton>
     )
   },
   {propTables: [DropDownButton], role: 'component:@sanity/components/buttons/dropdown'}

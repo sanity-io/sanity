@@ -8,7 +8,6 @@ export default class ToggleButtons extends React.Component {
     onChange: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
-        key: PropTypes.string.isRequired,
         icon: PropTypes.node,
         title: PropTypes.string,
         action: PropTypes.func.isRequired
