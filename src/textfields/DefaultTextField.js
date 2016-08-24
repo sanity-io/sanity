@@ -3,7 +3,7 @@ import styles from 'style:@sanity/components/textfields/default'
 import DefaultTextInput from 'component:@sanity/components/textinputs/default'
 import FormField from 'component:@sanity/components/formfields/default'
 
-import lodash from 'lodash'
+import {uniqueId} from 'lodash'
 
 export default class DefaultTextField extends React.Component {
   static propTypes = {
@@ -57,7 +57,7 @@ export default class DefaultTextField extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = this.props.id || lodash.uniqueId('DefaultTextField')
+    this._inputId = this.props.id || uniqueId('DefaultTextField')
   }
 
   render() {

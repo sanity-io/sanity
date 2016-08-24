@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/textfields/search'
-import lodash from 'lodash'
+import {uniqueId} from 'lodash'
 
 export default class SearchFieldField extends React.Component {
   static propTypes = {
@@ -41,7 +41,7 @@ export default class SearchFieldField extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = lodash.uniqueId('searchfield')
+    this._inputId = uniqueId('searchfield')
   }
 
   render() {

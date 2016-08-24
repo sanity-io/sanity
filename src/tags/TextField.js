@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import lodash from 'lodash'
+import {uniqueId} from 'lodash'
 
 import styles from 'style:@sanity/components/tags/textfield'
 import DefaultFormField from 'component:@sanity/components/formfields/default'
@@ -91,7 +91,7 @@ export default class TagsTextField extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = lodash.uniqueId('DefaultTextField')
+    this._inputId = uniqueId('DefaultTextField')
   }
 
   render() {
