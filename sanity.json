@@ -18,10 +18,6 @@
       "description": "Statically positioned elements that should live on the page regardless of routing."
     },
     {
-      "name": "component:@sanity/base/buttons/default",
-      "description": "Default button"
-    },
-    {
       "name": "tool:@sanity/base/tool",
       "description": "Tools available for use within a Sanity configuration"
     },
@@ -35,14 +31,9 @@
       "path": "schema/baseSchema.js"
     },
     {
-      "name": "component:@sanity/base/action-button",
-      "description": "Reusable action button"
-    },
-    {
       "name": "story:@sanity/base/component",
       "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },
-
     {
       "name": "style:@sanity/base/theme/variables",
       "description": "Base theme variables for Sanity. Dont override this unless you provide all the new variables"
@@ -62,10 +53,6 @@
     {
       "name": "style:@sanity/base/theme/shadows",
       "description": "Provides a bunch of shadows to pick from. Based on Material Design Lite"
-    },
-    {
-      "name": "style:@sanity/base/theme/icons",
-      "description": "Provides icons"
     },
     {
       "name": "style:@sanity/base/theme/normalize",
@@ -246,10 +233,6 @@
       "implements": "style:@sanity/base/theme/shadows",
       "path": "styles/shadows.css"
     },
-    {
-      "implements": "style:@sanity/base/theme/icons",
-      "path": "styles/icons.css"
-    },
 
     {
       "implements": "style:@sanity/base/theme/variables/code",
@@ -355,10 +338,6 @@
       "path": "components/IntlWrapper.js"
     },
     {
-      "implements": "component:@sanity/base/buttons/default",
-      "path": "components/buttons/DefaultButton.js"
-    },
-    {
       "implements": "component:@sanity/base/login-wrapper",
       "path": "components/login/LoginWrapper.js"
     },
@@ -405,6 +384,38 @@
     {
       "implements": "style:@sanity/base/theme/body",
       "path": "styles/body.css"
+    },
+    {
+      "name": "icon:@sanity/close",
+      "description": "Used in dialogs and popups"
+    },
+    {
+      "implements": "icon:@sanity/close",
+      "path": "components/icons/CloseIcon.js"
+    },
+    {
+      "name": "icon:@sanity/angle-down",
+      "description": "Used selects and dropdowns"
+    },
+    {
+      "implements": "icon:@sanity/angle-down",
+      "path": "components/icons/AngleDownIcon.js"
+    },
+    {
+      "name": "icon:@sanity/spinner",
+      "description": "Used selects and dropdowns"
+    },
+    {
+      "implements": "icon:@sanity/spinner",
+      "path": "components/icons/SpinnerIcon.js"
+    },
+    {
+      "name": "icon:@sanity/sanity-logo",
+      "description": "Used selects and dropdowns"
+    },
+    {
+      "implements": "icon:@sanity/sanity-logo",
+      "path": "components/icons/SanityLogo.js"
     }
   ]
 }

@@ -2,7 +2,6 @@
 @import 'style:@sanity/base/theme/variables/code';
 
 .root {
-  border: 10px solid red;
   background-color: var(--code-bg);
   line-height: 17px;
   font-size: 13px;
