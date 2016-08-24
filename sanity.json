@@ -68,6 +68,10 @@
       "description": "Provides icons"
     },
     {
+      "name": "style:@sanity/base/theme/normalize",
+      "description": "Normalizes css"
+    },
+    {
       "name": "style:@sanity/base/theme/variables/brand-colors",
       "description": "Brand colors. Other colors are based on this"
     },
@@ -214,7 +218,10 @@
       "implements": "role:@sanity/base/schema-creator",
       "path": "schema/createSchema.js"
     },
-
+    {
+      "implements": "style:@sanity/base/theme/normalize",
+      "path": "styles/normalize.css"
+    },
     {
       "implements": "style:@sanity/base/theme/variables",
       "path": "styles/variables.css"
