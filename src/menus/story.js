@@ -1,7 +1,7 @@
 import React from 'react'
 import Menu from 'component:@sanity/components/menus/default'
 import {storiesOf, action} from 'component:@sanity/storybook'
-import FaBeer from 'react-icons/lib/fa/beer'
+import SanityIcon from 'icon:@sanity/sanity-logo'
 
 storiesOf('Menus')
 .addWithInfo(
@@ -54,17 +54,17 @@ storiesOf('Menus')
     const items = [
       {
         title: 'First item',
-        icon: FaBeer,
+        icon: SanityIcon,
         index: '1'
       },
       {
         title: 'Second item',
-        icon: FaBeer,
+        icon: SanityIcon,
         index: '2'
       },
       {
         title: 'Third item',
-        icon: FaBeer,
+        icon: SanityIcon,
         index: '3'
       },
       {
@@ -73,7 +73,7 @@ storiesOf('Menus')
       {
         title: 'Extra item',
         index: '4',
-        icon: FaBeer
+        icon: SanityIcon
       }
     ]
     return (

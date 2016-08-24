@@ -1,16 +1,53 @@
 import React from 'react'
 import {storiesOf} from 'component:@sanity/storybook'
 
-import * as FontAwesome from 'react-icons/lib/fa'
-import * as MaterialDesignIcons from 'react-icons/lib/md'
-import * as Typicons from 'react-icons/lib/ti'
-import * as GithubOcticons from 'react-icons/lib/go'
-import * as Ionicons from 'react-icons/lib/io'
+// import * as FontAwesome from 'react-icons/lib/fa'
+// import * as MaterialDesignIcons from 'react-icons/lib/md'
+// import * as Typicons from 'react-icons/lib/ti'
+// import * as GithubOcticons from 'react-icons/lib/go'
+// import * as Ionicons from 'react-icons/lib/io'
 
-import {keysIn} from 'lodash'
+// import {keysIn} from 'lodash'
 import styles from './styles/iconStory.css'
 
-storiesOf('Icons').add(
+// Sanity icons
+import CloseIcon from 'icon:@sanity/close'
+import AngleDownIcon from 'icon:@sanity/angle-down'
+import SpinnerIcon from 'icon:@sanity/spinner'
+import SanityLogoIcon from 'icon:@sanity/sanity-logo'
+
+function createIconPreview(title, Icon, role) {
+  return (
+    <li className={styles.sanityIcon}>
+      <div className={styles.title}>{title}</div>
+      <div className={styles.role}>import {Icon.name} from '{role}'</div>
+      <span className={styles.iconPreviewXL}><Icon /></span>
+      <span className={styles.iconPreviewL}><Icon /></span>
+      <span className={styles.iconPreviewM}><Icon /></span>
+      <span className={styles.iconPreviewS}><Icon /></span>
+      <span className={styles.iconPreviewXS}><Icon /></span>
+    </li>
+  )
+}
+
+storiesOf('Icons')
+.add(
+  'Used icons',
+  () => {
+    return (
+      <ul className={styles.sanityIcons}>
+        {createIconPreview('Sanity logo', SanityLogoIcon, 'icon:@sanity/sanity-logo')}
+        {createIconPreview('Close', CloseIcon, 'icon:@sanity/close')}
+        {createIconPreview('Angle Down', AngleDownIcon, 'icon:@sanity/angle-down')}
+        {createIconPreview('Spinner', SpinnerIcon, 'icon:@sanity/spinner')}
+      </ul>
+    )
+  },
+  {inline: false}
+)
+
+/*
+.add(
   'Font awesome',
   () => {
 
@@ -155,3 +192,4 @@ storiesOf('Icons').add(
     )
   }
 )
+*/

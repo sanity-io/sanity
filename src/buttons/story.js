@@ -3,7 +3,7 @@ import Button from 'component:@sanity/components/buttons/default'
 import Fab from 'component:@sanity/components/buttons/fab'
 import DropDownButton from 'component:@sanity/components/buttons/dropdown'
 import {storiesOf, action} from 'component:@sanity/storybook'
-import FaBeer from 'react-icons/lib/fa/beer'
+import SanityLogoIcon from 'icon:@sanity/sanity-logo'
 
 storiesOf('Buttons')
   .addWithInfo(
@@ -25,16 +25,16 @@ storiesOf('Buttons')
     <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>
     <Button onClick={action('clicked')} kind="danger" inverted>Kind=danger inverted</Button>
     <Button onClick={action('clicked')} colored inverted>colored inverted</Button>
-    <Button onClick={action('clicked')} kind="secondary" icon={FaBeer} inverted>
+    <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} inverted>
       Secondary
     </Button>
-    <Button onClick={action('clicked')} icon={FaBeer}>
+    <Button onClick={action('clicked')} icon={SanityLogoIcon}>
       With icon
     </Button>
-    <Button onClick={action('clicked')} colored icon={FaBeer}>
+    <Button onClick={action('clicked')} colored icon={SanityLogoIcon}>
       Colored with icon
     </Button>
-    <Button onClick={action('clicked')} kind="danger" icon={FaBeer} inverted>
+    <Button onClick={action('clicked')} kind="danger" icon={SanityLogoIcon} inverted>
       Danger, inverted & icon
     </Button>
   </div>

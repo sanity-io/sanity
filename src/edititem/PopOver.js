@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/edititem/popover'
 import Button from 'component:@sanity/components/buttons/default'
 import {debounce} from 'lodash'
-import CloseIcon from 'react-icons/lib/md/close'
+import CloseIcon from 'icon:@sanity/close'
 
 export default class EditItemPopOver extends React.Component {
   static propTypes = {

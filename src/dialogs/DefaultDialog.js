@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import CloseIcon from 'react-icons/lib/md/close'
+import CloseIcon from 'icon:@sanity/close'
 import styles from 'style:@sanity/components/dialogs/default'
 import Button from 'component:@sanity/components/buttons/default'
 import dialogPolyfill from 'dialog-polyfill'
