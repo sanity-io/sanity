@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@sanity/base": "^2.1.59",
-    "@sanity/components": "^1.0.44",
+    "@sanity/components": "^1.0.56",
     "@sanity/date-input": "^1.0.1",
     "@sanity/google-maps-input": "^1.0.7",
     "debounce-promise": "^1.1.0",
