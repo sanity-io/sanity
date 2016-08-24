@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/selects/default'
 import lodash from 'lodash'
-import {FaAngleDown} from 'react-icons/lib/fa'
+import FaAngleDown from 'react-icons/lib/fa/angle-down'
 import FormField from 'component:@sanity/components/formfields/default'
 
 export default class DefaultSelect extends React.Component {

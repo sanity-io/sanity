@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/selects/searchable'
 import lodash from 'lodash'
-import {FaAngleDown} from 'react-icons/lib/fa'
+import FaAngleDown from 'react-icons/lib/fa/angle-down'
 import DefaultFormField from 'component:@sanity/components/formfields/default'
 import DefaultTextInput from 'component:@sanity/components/textinputs/default'
 import DefaultList from 'component:@sanity/components/lists/default'
