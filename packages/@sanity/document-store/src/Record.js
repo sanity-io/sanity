@@ -58,7 +58,7 @@ class Record {
   }
 
   publish(ev) {
-    this._events.publish(ev)
+    this.events.publish(ev)
   }
 
   publishSnapshot() {

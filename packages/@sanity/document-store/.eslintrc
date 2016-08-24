@@ -1,0 +1,24 @@
+{
+  "env": {
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "extends": [
+    "bengler",
+    "bengler/react",
+    "bengler/import"
+  ],
+  "settings": {
+    "import/ignore": ["\\.css$", "node_modules", ".*:.*"],
+  },
+  "rules": {
+    "import/no-unresolved": ["error", {
+      "ignore": [".*:.*"]
+    }],
+    "sort-imports": [1, {
+      "ignoreCase": true,
+      "ignoreMemberSort": true,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }]
+  }
+}

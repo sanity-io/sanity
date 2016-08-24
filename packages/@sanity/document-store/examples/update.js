@@ -1,4 +1,4 @@
-const createDocumentStore = require('../')
+const createDocumentStore = require('../src')
 const mockServerConnection = require('./helpers/mockServerConnection')
 
 const documents = createDocumentStore({serverConnection: mockServerConnection})
