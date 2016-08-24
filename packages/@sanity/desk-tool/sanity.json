@@ -49,11 +49,6 @@
     {
       "name": "component:desk-tool/query-pane",
       "path": "pane/QueryPane.js"
-    },
-
-    {
-      "name": "component:desk-tool/editor-container",
-      "path": "editor/EditorContainer.js"
     }
   ]
 }
