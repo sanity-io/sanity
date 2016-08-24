@@ -9,8 +9,8 @@ export default class Checkbox extends React.Component {
     disabled: PropTypes.bool
   }
 
-  componentDidMount() {
-
+  static defaultProps = {
+    onChange() {}
   }
 
   render() {

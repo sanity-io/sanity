@@ -4,10 +4,13 @@ import TextInput from 'component:@sanity/components/textinputs/default'
 import styles from 'style:@sanity/components/autocomplete/default'
 import List from 'component:@sanity/components/lists/default'
 
+import {uniqueId} from 'lodash'
+
 export default class DefaultAutocomplete extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    onSelect: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
     onKeyPress: PropTypes.func,
@@ -15,6 +18,7 @@ export default class DefaultAutocomplete extends React.Component {
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
     isOpen: PropTypes.bool,
+    id: PropTypes.string,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string
@@ -29,6 +33,8 @@ export default class DefaultAutocomplete extends React.Component {
 
   static defaultProps = {
     value: '',
+    onChange() {},
+    onSelect() {},
     suggestions: []
   }
 
@@ -36,10 +42,7 @@ export default class DefaultAutocomplete extends React.Component {
     super(props, context)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.state = {
-      value: this.props.value,
-      isOpen: this.props.isOpen
-    }
+    this.handleChange = this.handleChange.bind(this)
   }
 
   handleKeyPress() {
@@ -47,21 +50,40 @@ export default class DefaultAutocomplete extends React.Component {
   }
 
   handleSelect(item) {
-    // this.props.onSelect(item)
+    this.props.onSelect(item)
+  }
+
+  handleChange(event) {
+    this.props.onChange(event)
+  }
+
+  componentWillMount() {
+    this._inputId = this.props.id || uniqueId('Autocomplete')
   }
 
   render() {
-    const {suggestions, label} = this.state.suggestions || this.props
+    const {suggestions, label, value} = this.props
+
+    const isOpen = suggestions.length > 1
 
     return (
-      <FormField className={`${this.state.isOpen ? styles.opened : styles.closed}`} label={label}>
+      <FormField className={`${isOpen ? styles.opened : styles.closed}`} label={label} labelHtmlFor={this._inputId}>
         <div className={styles.input}>
-          <TextInput {...this.props} value={this.state.value} onKeyPress={this.handleKeyPress} className={styles.textField} />
+          <TextInput
+            id={this._inputId}
+            value={value}
+            onKeyPress={this.handleKeyPress}
+            className={styles.textField}
+            onChange={this.handleChange}
+          />
         </div>
         <div className={styles.suggestionsContainer}>
-          <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />
+          <List
+            items={suggestions}
+            className={styles.suggestions}
+            onSelect={this.handleSelect}
+          />
         </div>
-
       </FormField>
     )
   }

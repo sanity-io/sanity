@@ -27,11 +27,15 @@ export default class DefaultSnackbar extends React.Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
+    this.timeOut = setTimeout(() => {
       this.setState({
         visible: false
       })
     }, this.props.time * 1000)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeOut)
   }
 
   handleAction() {

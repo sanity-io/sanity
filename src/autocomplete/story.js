@@ -4,7 +4,7 @@ import Autocomplete from 'component:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import faker from 'faker'
 
-const formStyle = {'width': '30em', 'margin': '0 auto', 'padding-bottom': '20em'}
+const formStyle = {width: '30em', margin: '0 auto', paddingBottom: '20em'}
 
 storiesOf('Autocomplete')
   .addWithInfo(
@@ -15,37 +15,13 @@ storiesOf('Autocomplete')
   () => {
     return (
       <form style={formStyle}>
-        <Autocomplete placeholder="Type to autocomplete…" label="Autocomplete" />
+        <Autocomplete placeholder="Type to autocomplete…" label="Autocomplete" onChange={action('onChange')} suggestions={[]} />
       </form>
     )
   },
   {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
 )
 
-storiesOf('Autocomplete')
-  .addWithInfo(
-  'Local search',
-  `
-    Default textfield
-  `,
-  () => {
-    const items = range(100).map((item, i) => {
-      const width = Math.round(Math.random() * 100)
-      const height = Math.round(Math.random() * 100)
-      return {
-        id: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl(width, height)}?${i}`,
-      }
-    })
-    return (
-      <form style={formStyle}>
-        <Autocomplete placeholder="Type to autocomplete…" suggestions={items} label="Autocomplete" onSelect={action('onSelect')} />
-      </form>
-    )
-  },
-  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
-)
 
 .addWithInfo(
   'Default with suggestions',

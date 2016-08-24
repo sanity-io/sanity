@@ -22,7 +22,6 @@ export default class DefaultSelect extends React.Component {
   }
 
   static defaultProps = {
-    value: '',
     onChange() {},
     onBlur() {}
   }

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/textinputs/default'
 import IoAndroidClose from 'icon:@sanity/close'
+import {omit} from 'lodash'
 
 export default class DefaultTextInput extends React.Component {
   static propTypes = {
@@ -71,7 +72,7 @@ export default class DefaultTextInput extends React.Component {
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, type, hasFocus, ...rest} = this.props
+    const {value, placeholder, error, showClearButton, id, type, hasFocus, ...rest} = omit(this.props, 'onClear')
 
     const rootClass = error ? styles.error : styles.root
 

@@ -42,9 +42,9 @@ storiesOf('Toggles')
   () => {
     return (
       <div>
-        <Checkbox label="This is a checkbox" />
+        <Checkbox label="This is a checkbox" onChange={action('onChange')} />
         <Checkbox label="This is a disabled checkbox" disabled />
-        <Checkbox label="This is a checked checkbox" checked />
+        <Checkbox label="This is a checked checkbox" checked onChange={action('onChange')} />
         <Checkbox label="This is a disabled checked checkbox" checked disabled />
       </div>
     )
@@ -62,24 +62,21 @@ storiesOf('Toggles')
         default: true,
         action() {
           action('Clicked the good')
-        },
-        icon: false
+        }
       },
       {
         title: 'The Bad',
         default: true,
         action() {
           action('Clicked')
-        },
-        icon: false
+        }
       },
       {
         title: 'The ugly',
         default: true,
         action() {
           action('Clicked the ugly')
-        },
-        icon: false
+        }
       }
     ]
     return (

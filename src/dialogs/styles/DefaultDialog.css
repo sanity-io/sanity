@@ -18,6 +18,16 @@
   }
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 :root {
   --dialog-padding: var(--small-padding);
   --dialog-header-height: 2.5em;
@@ -102,6 +112,10 @@
 /* Native dialog backdrop */
 :global(::backdrop) {
   background-color: rgba(0, 0, 0, 0.3);
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
 }
 
 .functions {
