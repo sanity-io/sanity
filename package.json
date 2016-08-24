@@ -12,8 +12,7 @@
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
-    "example-quickstart": "cd examples/quickstart && sanity start",
-    "postinstall": "echo 'POSTINSTALL'"
+    "example-quickstart": "cd examples/quickstart && sanity start"
   },
   "keywords": [],
   "author": "",
