@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-
+import CloseIcon from 'react-icons/lib/md/close'
 import styles from 'style:@sanity/components/dialogs/default'
 import Button from 'component:@sanity/components/buttons/default'
 import dialogPolyfill from 'dialog-polyfill'
@@ -95,7 +95,9 @@ export default class DefaultDialog extends React.Component {
         {
           showHeader && <div className={styles.header}>
             <h1 className={styles.title}>{title}</h1>
-            <button className={styles.closeButton} onClick={this.handleCloseClick} />
+            <button className={styles.closeButton} onClick={this.handleCloseClick}>
+              <CloseIcon color="inherit" />
+            </button>
           </div>
         }
 

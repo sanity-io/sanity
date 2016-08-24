@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 
 import styles from 'style:@sanity/components/dialogs/fullscreen'
+import CloseIcon from 'react-icons/lib/md/close'
 
 export default class FullScreenDialog extends React.Component {
   static propTypes = {
@@ -20,7 +21,9 @@ export default class FullScreenDialog extends React.Component {
 
     return (
       <div className={style}>
-        <button className={styles.closeButton} onClick={onClose} />
+        <button className={styles.closeButton} onClick={onClose}>
+          <CloseIcon color="inherit" />
+        </button>
         <div className={styles.inner}>
           <h1 className={styles.heading}>{title}</h1>
           <div className={styles.content}>

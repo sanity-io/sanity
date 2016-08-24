@@ -6,15 +6,7 @@
 }
 
 .arrow {
-  position: absolute;
-  right: 1em;
-  top: 42%;
-  transform: translateY(-50%);
-  composes: chevron-down from 'style:@sanity/base/theme/icons';
-
-  &::before {
-    font-size: 1.5em;
-  }
+  color: red;
 }
 
 .menu {

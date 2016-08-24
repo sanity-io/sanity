@@ -97,7 +97,6 @@
   font-size: 1rem;
   line-height: 1.5rem;
   outline: none;
-  composes: close from 'style:@sanity/base/theme/icons';
 }
 
 /* Native dialog backdrop */

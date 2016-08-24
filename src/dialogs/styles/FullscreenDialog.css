@@ -48,5 +48,4 @@
   background-color: transparent;
   border: none;
   color: #fff;
-  composes: close from 'style:@sanity/base/theme/icons';
 }

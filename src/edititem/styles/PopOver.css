@@ -98,39 +98,27 @@
     right: 0;
     height: 100vh;
     width: 100vw;
+    margin: 0;
+    padding: 0;
     overflow: scroll;
   }
 }
 
 .close {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: 0;
+  right: 0.5em;
   border: 0;
   background: none;
-  font-size: 2rem;
-  color: var(--array--add-item-color);
+  font-size: 1.5em;
   cursor: pointer;
   color: transparent;
-
-  /*
-  &::before {
-    font-awesome: chevron-left;
-    color: #fff;
-    float: left;
-  }
-  */
-
-  /*
-  @media (--screen-medium) {
-    font-awesome: close;
-  }
-  */
+  color: #fff;
 }
 
 .content {
-  padding: 1rem;
-  padding-top: 5rem;
+  padding: 1em;
+  padding-top: 5em;
 
   @media (--screen-medium) {
     padding: 0;
@@ -138,12 +126,13 @@
 }
 
 .head {
+  /* Mobile header */
+  font-size: 1em;
+  padding: 0.5em;
   overflow: hidden;
   background-color: var(--array--add-item-color);
   color: #fff;
-  font-size: 1em;
-  padding: 1em;
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 100%;
   left: 0;
@@ -154,11 +143,9 @@
 }
 
 .title {
-  font-weight: bold;
-  text-transform: uppercase;
-  padding-left: 3rem;
+  /* padding-left: 1em; */
 }
 
 .primaryFunctions {
-  margin-top: 1rem;
+  margin-top: 1em;
 }

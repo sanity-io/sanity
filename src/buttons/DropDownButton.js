@@ -3,6 +3,7 @@ import styles from 'style:@sanity/components/buttons/dropdown'
 import Button from 'component:@sanity/components/buttons/default'
 import enhanceWithClickOutside from 'react-click-outside'
 import Menu from 'component:@sanity/components/menus/default'
+import ArrowIcon from 'react-icons/lib/fa/angle-down'
 
 class DropDownButton extends React.Component {
   static propTypes = {
@@ -52,7 +53,9 @@ class DropDownButton extends React.Component {
           {this.props.children}
         </span>
 
-        <span className={styles.arrow}></span>
+        <span className={styles.arrow}>
+          <ArrowIcon color="inherit" />
+        </span>
 
         <Menu
           items={items}

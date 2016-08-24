@@ -9,7 +9,6 @@ export default class DefaultPreview extends React.Component {
     sanityImage: PropTypes.object,
     emptyText: PropTypes.string,
     children: PropTypes.node,
-
   }
 
   render() {

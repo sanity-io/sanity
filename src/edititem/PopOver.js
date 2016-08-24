@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/edititem/popover'
 import Button from 'component:@sanity/components/buttons/default'
 import {debounce} from 'lodash'
+import CloseIcon from 'react-icons/lib/md/close'
 
 export default class EditItemPopOver extends React.Component {
   static propTypes = {
@@ -84,7 +85,7 @@ export default class EditItemPopOver extends React.Component {
 
 
   componentDidMount() {
-    this.repositionElement(this._rootElement)
+    this.handleResize()
     window.addEventListener('resize', this.handleResize)
   }
 
@@ -117,7 +118,9 @@ export default class EditItemPopOver extends React.Component {
               }
               {title}
             </h3>
-            <button className={styles.close} type="button" onClick={this.handleClose}>Close</button>
+            <button className={styles.close} type="button" onClick={this.handleClose}>
+              <CloseIcon style={{color: 'inherit'}} />
+            </button>
           </div>
 
           <div className={styles.content}>
