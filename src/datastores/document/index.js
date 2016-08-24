@@ -1,7 +1,6 @@
 import createDocumentStore from '@sanity/document-store'
 import client from 'client:@sanity/base/client'
 import observableTimer from '../utils/observableTimer'
-import Observable from '../utils/SanityStoreObservable'
 import promiseToObservable from '../utils/promiseToObservable'
 
 const hasOwn = {}.hasOwnProperty

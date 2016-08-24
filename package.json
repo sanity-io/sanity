@@ -59,7 +59,7 @@
     "postcss-font-awesome": "^0.3.3",
     "react-icons": "^2.2.1",
     "react-intl": "^2.1.2",
-    "zen-observable": "^0.3.0"
+    "rxjs": "^5.0.0-beta.11"
   },
   "peerDependencies": {
     "react": ">=15.0"
