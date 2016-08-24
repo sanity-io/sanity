@@ -65,10 +65,10 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function query(query, params) {
-    return serverConnection.query(query, params)
+    return Observable.from(serverConnection.query(query, params))
   }
   function create(document) {
-    return serverConnection.create(document)
+    return Observable.from(serverConnection.create(document))
   }
 
 }
