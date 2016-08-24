@@ -5,7 +5,7 @@ const pubsubber = require('./utils/pubsubber')
 class Record {
   constructor(snapshot) {
     this._snapshot = snapshot
-    this._events = null
+    this._pubsub = pubsubber()
   }
 
   get snapshot() {
@@ -17,14 +17,11 @@ class Record {
   }
 
   get events() {
-    if (!this._events) {
-      this._events = pubsubber()
-    }
     return new Observable(observer => {
       if (this._snapshot) {
         observer.next({type: 'snapshot', document: this._snapshot})
       }
-      return this._events.subscribe(ev => observer.next(ev))
+      return this._pubsub.subscribe(ev => observer.next(ev))
     })
   }
 
@@ -58,7 +55,7 @@ class Record {
   }
 
   publish(ev) {
-    this.events.publish(ev)
+    this._pubsub.publish(ev)
   }
 
   publishSnapshot() {
