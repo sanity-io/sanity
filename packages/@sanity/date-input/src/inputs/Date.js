@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker'
 import moment from 'moment'
 import styles from './Date.css'
 import FormField from 'component:@sanity/components/formfields/default'
-import lodash from 'lodash'
+import {uniqueId} from 'lodash'
 
 const getLocale = context => {
   const intl = context.intl || {}
@@ -43,7 +43,7 @@ export default class DateInput extends React.Component {
 
   render() {
     const {value, field} = this.props
-    const inputId = lodash.uniqueId('FormBuilderText')
+    const inputId = uniqueId('FormBuilderText')
     return (
       <FormField labelHtmlFor={inputId} label={field.title}>
         <div className={styles.root}>
