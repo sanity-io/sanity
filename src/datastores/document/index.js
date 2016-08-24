@@ -1,7 +1,6 @@
 import createDocumentStore from '@sanity/document-store'
 import client from 'client:@sanity/base/client'
-import observableTimer from '../utils/observableTimer'
-import promiseToObservable from '../utils/promiseToObservable'
+import {Observable} from 'rxjs'
 
 const hasOwn = {}.hasOwnProperty
 function flattenPatch(patch) {
@@ -16,9 +15,8 @@ function flattenPatch(patch) {
 
 const serverConnection = {
   byId(id) {
-    return observableTimer(0, 5000)
-      .map(() => client.fetch('*[.$id == %id]', {id}))
-      .flatMap(promiseToObservable)
+    return Observable.timer(0, 5000)
+      .flatMap(() => client.fetch('*[.$id == %id]', {id}))
       // .do(response => console.log('response', response))
       .map(response => ({
         type: 'snapshot',
@@ -27,9 +25,8 @@ const serverConnection = {
   },
 
   query(query, params) {
-    return observableTimer(0, 50000)
-      .map(() => client.fetch(query, params))
-      .flatMap(promiseToObservable)
+    return Observable.timer(0, 50000)
+      .flatMap(() => client.fetch(query, params))
       .map(response => ({
         type: 'snapshot',
         documents: response.result
@@ -37,11 +34,11 @@ const serverConnection = {
   },
 
   update(id, patch) {
-    return promiseToObservable(client.update(id, flattenPatch(patch)))
+    return Observable.from(client.update(id, flattenPatch(patch)))
   },
 
   create(document) {
-    return promiseToObservable(client.create(document))
+    return Observable.from(client.create(document))
       .map(response => ({
         documentId: response.docIds[0]
       }))

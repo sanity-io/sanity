@@ -1,3 +1,3 @@
-import Observable from 'zen-observable'
+import {Observable} from 'rxjs'
 
 export default Observable

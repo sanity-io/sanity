@@ -1,16 +1,16 @@
 import Observable from './SanityStoreObservable'
 
-export default function timer(initialWait, interval) {
+export default function timer(initialDelay, period) {
   return new Observable(observer => {
     let n = 0
     let intervalId = -1
 
     const timeoutId = setTimeout(() => {
       next()
-      if (interval !== undefined) {
+      if (period !== undefined) {
         intervalId = setInterval(next, interval)
       }
-    }, initialWait)
+    }, initialDelay)
 
     function next() {
       observer.next(n++)
