@@ -41,22 +41,25 @@ module.exports = function createDocumentStore({serverConnection}) {
 
     const record = RECORDS_CACHE.fetch(documentId, () => Record.create())
 
-    // Open connection to server and subscribe
-    const serverSubscription = server
-      .byId(documentId)
-      .subscribe(event => {
-        if (event.type === 'snapshot') {
-          record.sync(event.document)
-        }
-        if (event.type === 'update') {
-          record.update(event.patch)
-        }
-      })
-
     return new Observable(observer => {
+
+      // Listen for changes in document on server
+      const serverSubscription = server
+        .byId(documentId)
+        .subscribe(event => {
+          if (event.type === 'snapshot') {
+            record.sync(event.document)
+          }
+          if (event.type === 'update') {
+            record.update(event.patch)
+          }
+        })
+
       const eventsSubscription = record.events.subscribe(observer)
-      eventsSubscription.add(serverSubscription)
-      return eventsSubscription
+      return () => {
+        eventsSubscription.unsubscribe()
+        serverSubscription.unsubscribe()
+      }
     })
   }
 

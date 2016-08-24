@@ -45,13 +45,10 @@ class Record {
     this.publishSnapshot()
   }
 
-  // receive an event from server
+  // receive an sync event from server
   sync(document) {
-    const hadSnapshot = !!this._snapshot
     this._snapshot = document
-    if (!hadSnapshot) {
-      this.publishSnapshot()
-    }
+    this.publishSnapshot()
   }
 
   publish(ev) {
