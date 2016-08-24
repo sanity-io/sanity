@@ -1,4 +1,4 @@
-import merge from 'lodash/merge'
+import {merge} from 'lodash'
 import rawMessages from 'all:locale:@sanity/base/locale-messages'
 
 const mergedMessages = rawMessages.reduce((prev, curr) => merge(prev, curr), {})
