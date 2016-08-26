@@ -1,5 +1,5 @@
-
 import client from '@sanity/client-next'
+import getUserConfig from './getUserConfig'
 
 /**
  * Creates a wrapper/getter function to retrieve a Sanity API client.
@@ -8,6 +8,12 @@ import client from '@sanity/client-next'
  */
 export default function clientWrapper(manifest, path) {
   return function () {
+    const token = getUserConfig().get('authToken')
+
+    if (!token) {
+      throw new Error('You must login first')
+    }
+
     if (!manifest || !manifest.api || !manifest.api.projectId) {
       throw new Error(
         `"${path}" does not contain a project identifier ("api.projectId"), `
@@ -15,6 +21,6 @@ export default function clientWrapper(manifest, path) {
       )
     }
 
-    return client(manifest.api)
+    return client(Object.assign({}, manifest.api, {token}))
   }
 }

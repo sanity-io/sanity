@@ -1,3 +1,4 @@
+import authCommand from './auth/authCommand'
 import initCommand from './init/initCommand'
 import buildCommand from './build/buildCommand'
 import startCommand from './start/startCommand'
@@ -9,6 +10,7 @@ import configCheckCommand from './config/configCheckCommand'
 import checkCommand from './check/checkCommand'
 
 export default [
+  authCommand,
   initCommand,
   buildCommand,
   startCommand,
