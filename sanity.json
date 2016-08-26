@@ -535,10 +535,6 @@
     },
     {
       "implements": "story:@sanity/base/component",
-      "path": "datepickers/story.js"
-    },
-    {
-      "implements": "story:@sanity/base/component",
       "path": "textfields/story.js"
     },
     {
