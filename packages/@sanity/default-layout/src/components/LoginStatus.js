@@ -40,7 +40,7 @@ export default class LoginStatus extends React.Component {
       return null
     }
     return (
-      <div className={styles.loginStatus}>
+      <div className={`${styles.loginStatus} ${this.props.className}`}>
         <img onClick={this.toggleLoginStatusMenu} src={user.profileImage} className={styles.userImage} />
         {this.state.menuVisible && (
           <div style={{float: 'left'}}>

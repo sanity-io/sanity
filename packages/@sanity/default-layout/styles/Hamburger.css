@@ -1,0 +1,58 @@
+@import 'style:@sanity/base/theme/variables';
+@import 'style:@sanity/base/theme/responsive';
+@use postcss-cssnext;
+
+.root {
+  display: block;
+}
+
+.content {
+  display: block;
+}
+
+.button {
+  display: block;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  font-size: 1.5em;
+  outline: none;
+  cursor: pointer;
+  
+  @nest .isOpen & {
+    color: #fff;
+  }
+  @media (--screen-medium) {
+    display: none;
+  }
+}
+
+.isOpen {
+  composes: root;
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  width: 100%;
+  @media (--screen-medium) {
+    position: relative;
+    height: auto;
+    width: auto;
+    background-color: transparent;
+  }
+}
+
+.content {
+  @nest .isOpen {
+    display: block;
+  }
+  @nest .isClosed & {
+    display: none;
+    @media (--screen-medium) {
+      display: block;
+    }
+  }
+}

@@ -2,9 +2,7 @@
 @use postcss-cssnext;
 
 .loginStatus {
-  position: absolute;
-  top: var(--medium-padding);
-  right: var(--medium-padding);
+  display: block;
 }
 
 .userImage {

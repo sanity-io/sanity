@@ -7,6 +7,7 @@ import tools from 'all:tool:@sanity/base/tool'
 import absolutes from 'all:component:@sanity/base/absolutes'
 import LoginStatus from './LoginStatus'
 import Logo from './Logo'
+import Hamburger from './Hamburger'
 
 class DefaultLayout extends React.Component {
   render() {
@@ -19,8 +20,12 @@ class DefaultLayout extends React.Component {
           <div className={styles.logoContainer}>
             <Logo />
           </div>
-          <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
-          <LoginStatus />
+          <div className={styles.menu}>
+            <Hamburger>
+              <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
+              <LoginStatus className={styles.loginStatus} />
+            </Hamburger>
+          </div>
         </div>
 
 
