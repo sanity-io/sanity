@@ -9,10 +9,10 @@ class Pane extends React.Component {
   }
 
   render() {
-    const {basePath, loading, items, activeItem} = this.props
+    const {basePath, loading, items, activeItem, isActive} = this.props
 
     return (
-      <div className={styles.pane}>
+      <div className={isActive ? styles.isActive : styles.pane}>
         <ul className={styles.paneItems}>
         {loading
           ? <li>Loading...</li>
@@ -39,14 +39,16 @@ class Pane extends React.Component {
 }
 
 Pane.defaultProps = {
-  basePath: '/'
+  basePath: '/',
+  isActive: false
 }
 
 Pane.propTypes = {
   basePath: PropTypes.string,
   loading: PropTypes.bool,
   items: PropTypes.array,
-  activeItem: PropTypes.any
+  activeItem: PropTypes.any,
+  isActive: PropTypes.bool
 }
 
 export default Pane

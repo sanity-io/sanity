@@ -28,13 +28,31 @@
 }
 
 .main {
+  background-color: var(--body-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   overflow-y: auto;
-  position: relative;
+  overflow-x: hidden;
+  z-index: 1;
+
 
   @media (--screen-medium) {
+    position: relative;
+    height: auto;
     flex-grow: 10;
   }
+}
 
+.editor {
+  padding: 1em;
+  @media (--screen-medium) {
+    max-width: 30em;
+    padding: 1em;
+    margin: 0 auto;
+  }
 }
 
 .nothingSelected {

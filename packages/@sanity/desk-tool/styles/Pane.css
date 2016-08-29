@@ -1,7 +1,19 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
+@keyframes revealFromRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 .panes {
+  display: block;
+  position: relative;
   @media (--screen-medium) {
     display: flex;
     flex-grow: 1;
@@ -17,11 +29,29 @@
 .pane {
   max-width: 100%;
   align-self: stretch;
+  position: relative;
+  width: 100%;
+  /*min-height: 100vh;*/
+  z-index: 1;
+  display: none;
+  animation-name: revealFromRight;
+  animation-iteration-count: 1;
+  animation-duration: 0.2s;
+  padding-top: 1em;
+  /* composes: animation-default from 'style:@sanity/base/theme/animation'; */
+
+  &:last-child {
+    display: block;
+  }
 
   @media (--screen-medium) {
+    padding-top: 0;
+    top: auto;
+    left: auto;
+    display: block;
+    width: auto;
+    min-height: auto;
     flex-grow: 1;
-    position: relative;
-    overflow-y: auto;
     max-height: 100%;
   }
 }

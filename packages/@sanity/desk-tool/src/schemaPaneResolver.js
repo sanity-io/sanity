@@ -68,10 +68,12 @@ class SchemaPaneResolver extends React.Component {
     }
 
     const editor = selectedItem && (
-      <FormBuilderContainer
-        documentId={selectedItem}
-        typeName={selectedType}
-      />
+      <div className={styles.editor}>
+        <FormBuilderContainer
+          documentId={selectedItem}
+          typeName={selectedType}
+        />
+      </div>
     )
 
     return (
@@ -79,9 +81,11 @@ class SchemaPaneResolver extends React.Component {
         <PaneContainer className={styles.paneContainer}>
           {panes}
         </PaneContainer>
-        <main className={styles.main}>
-          {editor}
-        </main>
+        {
+          selectedItem && <main className={styles.main}>
+            {editor}
+          </main>
+        }
       </div>
     )
   }
