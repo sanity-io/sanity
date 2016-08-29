@@ -15,6 +15,7 @@ import CloseIcon from 'icon:@sanity/close'
 import AngleDownIcon from 'icon:@sanity/angle-down'
 import SpinnerIcon from 'icon:@sanity/spinner'
 import SanityLogoIcon from 'icon:@sanity/sanity-logo'
+import HamburgerIcon from 'icon:@sanity/hamburger'
 
 function createIconPreview(title, Icon, role) {
   return (
@@ -40,6 +41,7 @@ storiesOf('Icons')
         {createIconPreview('Close', CloseIcon, 'icon:@sanity/close')}
         {createIconPreview('Angle Down', AngleDownIcon, 'icon:@sanity/angle-down')}
         {createIconPreview('Spinner', SpinnerIcon, 'icon:@sanity/spinner')}
+        {createIconPreview('Hamburger', HamburgerIcon, 'icon:@sanity/hamburger')}
       </ul>
     )
   },
