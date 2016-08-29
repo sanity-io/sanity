@@ -416,6 +416,10 @@
     {
       "implements": "icon:@sanity/sanity-logo",
       "path": "components/icons/SanityLogo.js"
+    },
+    {
+      "implements": "icon:@sanity/hamburger",
+      "path": "components/icons/Hamburger.js"
     }
   ]
 }
