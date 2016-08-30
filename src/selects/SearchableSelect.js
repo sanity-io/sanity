@@ -47,6 +47,9 @@ export default class SearchableSelect extends React.Component {
     this.handleOpenList = this.handleOpenList.bind(this)
     this.handleCloseList = this.handleCloseList.bind(this)
     this.handleArrowClick = this.handleArrowClick.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.handleKeyUp = this.handleKeyUp.bind(this)
+
     this.state = {
       hasFocus: false,
       searchResult: this.props.items || [],
@@ -146,7 +149,20 @@ export default class SearchableSelect extends React.Component {
         inputSelected: false
       })
     }
+  }
+  handleKeyDown(event) {
 
+    if (event.key == 'ArrowUp') {
+      console.log('up')
+    }
+
+    if (event.key == 'ArrowDown') {
+      console.log('down')
+    }
+  }
+
+  handleKeyUp(event) {
+    // console.log('handleKeyUp', event.key)
   }
 
   componentWillMount() {
@@ -171,6 +187,8 @@ export default class SearchableSelect extends React.Component {
             id={this._inputId}
             placeholder={placeholder}
             onChange={this.handleInputChange}
+            onKeyDown={this.handleKeyDown}
+            onKeyUp={this.handleKeyUp}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             value={this.state.inputValue}

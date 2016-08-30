@@ -87,44 +87,47 @@ export default class DefaultDialog extends React.Component {
     const style = `
       ${isOpen ? styles.isOpen : styles.root}
       ${showHeader ? styles.hasHeader : ''}
+      ${actions && actions.length > 0 ? styles.hasFunctions : ''}
     `
 
     return (
       <dialog className={style}>
-
-        {
-          showHeader && <div className={styles.header}>
-            <h1 className={styles.title}>{title}</h1>
-            <button className={styles.closeButton} onClick={this.handleCloseClick}>
-              <CloseIcon color="inherit" />
-            </button>
-          </div>
-        }
-
         <div className={styles.inner}>
+          {
+            showHeader && <div className={styles.header}>
+              <h1 className={styles.title}>{title}</h1>
+              <button className={styles.closeButton} onClick={this.handleCloseClick}>
+                <CloseIcon color="inherit" />
+              </button>
+            </div>
+          }
+
 
           <div className={styles.content}>
             {this.props.children}
           </div>
-          {
-            actions.length > 0 && <div className={styles.functions}>
-              {
-                actions.map((action, i) => {
-                  return (
-                    <Button
-                      key={i}
-                      onClick={this.handleActionClick}
-                      data-action-index={i}
-                      kind={action.kind}
-                      className={styles[`button_${action.kind}`] || styles.button}
-                    >
-                      {action.title}
-                    </Button>
-                  )
-                })
-              }
-            </div>
-          }
+
+          <div className={styles.footer}>
+            {
+              actions.length > 0 && <div className={styles.functions}>
+                {
+                  actions.map((action, i) => {
+                    return (
+                      <Button
+                        key={i}
+                        onClick={this.handleActionClick}
+                        data-action-index={i}
+                        kind={action.kind}
+                        className={styles[`button_${action.kind}`] || styles.button}
+                      >
+                        {action.title}
+                      </Button>
+                    )
+                  })
+                }
+              </div>
+            }
+          </div>
         </div>
       </dialog>
     )

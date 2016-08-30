@@ -28,6 +28,7 @@
   margin-right: var(--extra-small-padding);
   composes: shadow-1dp from "style:@sanity/base/theme/shadows";
   line-height: 1em;
+  user-select: none;
 }
 
 .colored {

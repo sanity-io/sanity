@@ -47,7 +47,7 @@ export default class DefaultListItem extends React.Component {
     const {mouseIsDown} = this.state
 
     const rootClasses = `
-      ${styles[layout] || styles.root}
+      ${styles[layout] || styles.default}
       ${selected ? styles.selected : styles.unSelected}
       ${mouseIsDown && styles.active}
     `

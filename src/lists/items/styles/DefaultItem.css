@@ -67,13 +67,13 @@
 
 .default {
   composes: zebra-stripes;
+  padding: 1em;
 }
 
 .root {
   composes: zebra-stripes;
   display: block;
   border-bottom: 1px solid #ccc;
-  padding: 0;
   width: 100%;
   box-sizing: border-box;
   text-overflow: ellipsis;

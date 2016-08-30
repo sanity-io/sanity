@@ -38,19 +38,34 @@
   composes: shadow-10dp from "style:@sanity/base/theme/shadows";
   z-index: 1000;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 80%;
-  height: 80%;
   border: 0;
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: once;
-  transform: translateX(-50%) translateY(-50%) scale(1);
-  overflow: hidden;
   background-color: var(--component-background-color);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+
+  @media (--screen-medium) {
+    display: table-cell;
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    width: 100%;
+    min-width: 50%;
+    min-height: 30%;
+
+
+    max-width: 80%;
+    max-height: 80%;
+
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
 }
 
 .isClosed {
@@ -63,29 +78,40 @@
 
 .header {
   background-color: var(--brand-primary);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: var(--dialog-header-height);
 }
 
 .inner {
-  padding: var(--dialog-padding);
-  position: relative;
   height: 100%;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
 
-  @nest .hasHeader & {
-    height: calc(100% - var(--dialog-header-height) - var(--dialog-padding) * 2);
-    margin-top: var(--dialog-header-height);
-  }
+}
+
+.footer {
+
 }
 
 .content {
+  box-sizing: border-box;
+  max-height: 100%;
   position: relative;
-  height: calc(100% - var(--dialog-padding) * 2 - 4rem);
-  overflow-x: hidden;
+  overflow: hidden;
   overflow-y: auto;
+
+  @nest .hasFunctions & {
+    max-height: calc(100% - var(--dialog-functions-height));
+  }
+
+  @nest .hasHeader & {
+    max-height: calc(100% - var(--dialog-header-height));
+  }
+
+  @nest .hasFunctions.hasHeader & {
+    max-height: calc(100% - var(--dialog-header-height) - var(--dialog-functions-height));
+  }
+
 }
 
 .title {
@@ -119,11 +145,11 @@
 }
 
 .functions {
-  text-align: right;
-  position: absolute;
+  /*position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
+  right: 0;*/
+  box-sizing: border-box;
   padding: var(--dialog-padding);
   background-color: var(--gray-lightest);
   border-top: 1px solid var(--gray-lighter);

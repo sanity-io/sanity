@@ -127,6 +127,46 @@ storiesOf('Dialogs')
           onAction={action('onAction')}
         >
           This is the content
+          {faker.lorem.paragraphs(50)}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'component:@sanity/components/dialogs/fullscreen'
+  }
+)
+.addWithInfo(
+  'Default (with actions nad header)',
+  '',
+  () => {
+    const actions = [
+      {
+        index: '1',
+        title: 'Finish'
+      },
+      {
+        index: '2',
+        title: 'Cancel',
+      },
+      {
+        index: '3',
+        title: 'Secondary',
+        kind: 'secondary'
+      }
+    ]
+    return (
+      <div>
+        <DefaultDialog
+          title="This is the title"
+          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
+          showHeader
+          actions={actions}
+          onAction={action('onAction')}
+        >
+          This is the content
+          {faker.lorem.paragraphs(50)}
         </DefaultDialog>
       </div>
     )
