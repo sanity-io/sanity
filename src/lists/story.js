@@ -11,11 +11,10 @@ import faker from 'faker'
 
 const containerStyle = {
   maxWidth: '40em',
-  maxHeight: '20em',
-  overflowX: 'hidden',
-  overflowY: 'auto',
+  height: '20em',
   boxShadow: '0 0 10px #ccc',
-  position: 'relative'
+  position: 'relative',
+  overflow: 'hidden'
 }
 
 const defaultItems = range(100).map((item, i) => {
@@ -46,7 +45,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Default witih selected item',
+  'Default, scrollable with selected item',
   `
     The default fieldset is used to gather a collection of fields.
   `,
@@ -57,7 +56,7 @@ storiesOf('Lists')
     }
     return (
       <div style={containerStyle}>
-        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} />
+        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} scrollable />
       </div>
     )
   },
@@ -66,6 +65,29 @@ storiesOf('Lists')
     role: 'component:@sanity/components/lists/default'
   }
 )
+
+.addWithInfo(
+  'Default scrollable, with selected item outside view',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    let selectedItem = defaultItems[50]
+    const setSelectedItem = function (item) {
+      selectedItem = item
+    }
+    return (
+      <div style={containerStyle}>
+        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} scrollable />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'component:@sanity/components/lists/default'
+  }
+)
+
 
 .addWithInfo(
   'GridList',

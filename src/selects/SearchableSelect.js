@@ -54,7 +54,8 @@ export default class SearchableSelect extends React.Component {
       hasFocus: false,
       searchResult: this.props.items || [],
       inputValue: this.props.value && this.props.value.title,
-      inputSelected: false
+      inputSelected: false,
+      arrowNavigationPosition: 0
     }
     const fuseOptions = {
       keys: ['title']
@@ -150,19 +151,41 @@ export default class SearchableSelect extends React.Component {
       })
     }
   }
+
   handleKeyDown(event) {
+    const {arrowNavigationPosition, searchResult} = this.state
+    if (searchResult) {
+      if (event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
+        this.setState({
+          arrowNavigationPosition: arrowNavigationPosition - 1,
+          inputValue: searchResult[arrowNavigationPosition - 1].title,
+          showList: true
+        })
+        return false
+      }
 
-    if (event.key == 'ArrowUp') {
-      console.log('up')
+      if (event.key == 'ArrowDown' && arrowNavigationPosition < searchResult.length - 1) {
+        this.setState({
+          arrowNavigationPosition: arrowNavigationPosition + 1,
+          inputValue: searchResult[arrowNavigationPosition + 1].title,
+          showList: true
+        })
+        return false
+      }
     }
-
-    if (event.key == 'ArrowDown') {
-      console.log('down')
-    }
+    return true
   }
 
   handleKeyUp(event) {
-    // console.log('handleKeyUp', event.key)
+    const {arrowNavigationPosition, searchResult} = this.state
+    if (event.key == 'Enter' && arrowNavigationPosition) {
+      this.handleSelect(searchResult[arrowNavigationPosition])
+      this.setState({
+        hasFocus: false
+      })
+      return false
+    }
+    return true
   }
 
   componentWillMount() {
@@ -171,7 +194,7 @@ export default class SearchableSelect extends React.Component {
 
   render() {
     const {label, error, placeholder, loading, value} = this.props
-    const {hasFocus, searchResult, showList} = this.state
+    const {hasFocus, searchResult, showList, arrowNavigationPosition} = this.state
 
 
     return (
@@ -213,7 +236,8 @@ export default class SearchableSelect extends React.Component {
           }
           <DefaultList
             items={searchResult}
-            selectedItem={value}
+            scrollable
+            selectedItem={(searchResult && searchResult[arrowNavigationPosition]) || value}
             onSelect={this.handleSelect}
           />
         </div>

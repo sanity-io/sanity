@@ -3,14 +3,21 @@
   margin: 0;
   padding: 0;
   width: 100%;
+  user-select: none;
+}
+
+.scrollable {
+  composes: root;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .list {
+  display: block;
   border: 0;
   margin: 0;
   padding: 0;
-  width: 100%;
-  user-select: none;
 }
 
 .item {

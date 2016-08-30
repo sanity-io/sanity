@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/default'
 import ListItem from 'component:@sanity/components/lists/items/default'
 import BlankListItem from 'component:@sanity/components/lists/items/blank'
+import ReactDOM from 'react-dom'
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -15,6 +16,7 @@ export default class DefaultList extends React.Component {
       })
     ),
     onSelect: PropTypes.func,
+    scrollable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectedItem: PropTypes.object,
     loading: PropTypes.bool,
@@ -32,6 +34,8 @@ export default class DefaultList extends React.Component {
     super(context, props)
 
     this.handleSelect = this.handleSelect.bind(this)
+    this.setListContainer = this.setListContainer.bind(this)
+    this.scrollElementIntoViewIfNeeded = this.scrollElementIntoViewIfNeeded.bind(this)
   }
 
   handleSelect(event) {
@@ -39,14 +43,31 @@ export default class DefaultList extends React.Component {
     this.props.onSelect(this.props.items[itemIndex])
   }
 
+  setListContainer(element) {
+    this._listContainer = element
+  }
+
+  scrollElementIntoViewIfNeeded(domNode) {
+    const containerDomNode = ReactDOM.findDOMNode(this)
+    const offset = domNode.offsetTop
+    if ((containerDomNode.scrollTop + containerDomNode.offsetHeight) < offset) {
+      // Todo think more about this
+      // Moving down
+      containerDomNode.scrollTop = offset
+    } else if ((containerDomNode.scrollTop + containerDomNode.offsetHeight) > offset) {
+      // Moving down
+      containerDomNode.scrollTop = offset
+    }
+  }
+
   render() {
 
-    const {items, layout, className, selectedItem, renderItem} = this.props
+    const {items, layout, className, selectedItem, renderItem, scrollable} = this.props
 
     return (
-      <div className={`${className} ${styles.root}`}>
+      <div className={`${scrollable ? styles.scrollable : styles.root} ${className} `}>
         <div className={styles.inner}>
-          <ul className={styles.list}>
+          <ul className={styles.list} ref={this.setListContainer}>
 
             {
               renderItem && items && items.map((item, i) => {
@@ -70,6 +91,7 @@ export default class DefaultList extends React.Component {
                     index={`${i}`}
                     onSelect={this.handleSelect}
                     className={styles.item}
+                    scrollIntoView={this.scrollElementIntoViewIfNeeded}
                   >
                     {item.content}
                   </ListItem>

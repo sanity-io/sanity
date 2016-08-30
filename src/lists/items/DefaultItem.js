@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/lists/items/default'
+import ReactDOM from 'react-dom'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
@@ -10,7 +11,8 @@ export default class DefaultListItem extends React.Component {
     layout: PropTypes.string,
     selected: PropTypes.bool,
     onSelect: PropTypes.func,
-    index: PropTypes.string
+    index: PropTypes.string,
+    scrollIntoView: PropTypes.func
   }
 
   static defaultProps = {
@@ -22,6 +24,7 @@ export default class DefaultListItem extends React.Component {
     this.handleClick = this.handleClick.bind(this)
     this.handleMouseDown = this.handleMouseDown.bind(this)
     this.handleMouseUp = this.handleMouseUp.bind(this)
+    this.ensureVisible = this.ensureVisible.bind(this)
     this.state = {
       mouseIsDown: false
     }
@@ -40,6 +43,20 @@ export default class DefaultListItem extends React.Component {
     this.setState({
       mouseIsDown: false
     })
+  }
+
+  componentDidMount() {
+    this.ensureVisible()
+  }
+
+  componentDidUpdate() {
+    this.ensureVisible()
+  }
+
+  ensureVisible() {
+    if (this.props.selected) {
+      this.props.scrollIntoView(ReactDOM.findDOMNode(this))
+    }
   }
 
   render() {
