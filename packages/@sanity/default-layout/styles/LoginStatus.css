@@ -1,20 +1,38 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
-.loginStatus {
+.root {
   display: block;
+  text-align: center;
+
+  @media(--medium-screen) {
+    text-align: left;
+    line-height: var(--header-height);
+  }
 }
 
 .userImage {
-  height: calc(var(--header-height) - var(--medium-padding));
-  width: calc(var(--header-height) - var(--medium-padding));
+  height: 5em;
+  width: 5em;
   border-radius: 50%;
-  background-color: #ccc;
+  margin: 0 auto;
 
-  @media (--screen-medium) {
+  @media(--screen-medium) {
+    display: inline-block;
     height: calc(var(--header-height) - var(--medium-padding));
     width: calc(var(--header-height) - var(--medium-padding));
-    border-radius: 50%;
-    background-color: #ccc;
+    margin: 0;
+  }
+}
+
+.userName {
+  @media(--screen-medium) {
+    display: inline-block;
+  }
+}
+
+.logoutButton {
+  @media(--screen-medium) {
+    display: inline-block;
   }
 }

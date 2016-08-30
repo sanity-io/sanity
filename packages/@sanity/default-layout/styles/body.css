@@ -4,6 +4,7 @@
 :global(body) {
   font-family: var(--font-family-sans-serif);
   background-color: var(--body-bg);
+  overflow-x: hidden;
 
   @media (--screen-medium) {
     max-height: 100%;

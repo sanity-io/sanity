@@ -52,6 +52,13 @@
 
   @media (--screen-medium) {
     position: relative;
+    width: 100%;
+  }
+}
+
+.toolSwitcher {
+  @media (--screen-medium) {
+    float: left;
   }
 }
 

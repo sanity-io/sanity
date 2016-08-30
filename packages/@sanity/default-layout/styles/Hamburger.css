@@ -4,6 +4,9 @@
 
 .root {
   display: block;
+  @media (--screen-medium) {
+    overflow: hidden;
+  }
 }
 
 .content {
@@ -18,13 +21,17 @@
   font-size: 1.5em;
   outline: none;
   cursor: pointer;
-  
+
   @nest .isOpen & {
     color: #fff;
   }
   @media (--screen-medium) {
     display: none;
   }
+}
+
+.isClosed {
+  composes: root;
 }
 
 .isOpen {

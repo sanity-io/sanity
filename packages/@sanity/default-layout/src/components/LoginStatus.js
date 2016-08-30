@@ -1,14 +1,17 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import styles from '../../styles/LoginStatus.css'
 import userStore from 'datastore:@sanity/base/user'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
-import config from 'config:sanity'
+// import config from 'config:sanity'
 
 export default class LoginStatus extends React.Component {
 
+  static propTypes = {
+    className: PropTypes.string
+  }
+
   constructor() {
     super()
-    this.toggleLoginStatusMenu = this.toggleLoginStatusMenu.bind(this)
     this.handleLogoutButtonClicked = this.handleLogoutButtonClicked.bind(this)
     this.state = {user: null, menuVisible: false}
   }
@@ -25,9 +28,6 @@ export default class LoginStatus extends React.Component {
     this.userSubscription.unsubscribe()
   }
 
-  toggleLoginStatusMenu() {
-    this.setState({menuVisible: !this.state.menuVisible})
-  }
 
   handleLogoutButtonClicked(evnt) {
     evnt.preventDefault()
@@ -35,23 +35,24 @@ export default class LoginStatus extends React.Component {
   }
 
   render() {
-    const user = this.state.user
+    const {className} = this.props
+    const {user} = this.state
     if (!user) {
       return null
     }
     return (
-      <div className={`${styles.loginStatus} ${this.props.className}`}>
-        <img onClick={this.toggleLoginStatusMenu} src={user.profileImage} className={styles.userImage} />
-        {this.state.menuVisible && (
-          <div style={{float: 'left'}}>
-            <p>{user.name}</p>
-            <p>
-              <button onClick={this.handleLogoutButtonClicked}>
-                <FormattedMessage id="logoutButtonText" />
-              </button>
-            </p>
-          </div>
-        )}
+      <div className={`${styles.root} ${className}`}>
+        <img src={user.profileImage} className={styles.userImage} />
+
+        <div className={styles.userName}>{user.name}</div>
+        <button
+          className={styles.logoutButton}
+          onClick={this.handleLogoutButtonClicked}
+        >
+          <FormattedMessage id="logoutButtonText" />
+        </button>
+
+
       </div>
     )
   }
