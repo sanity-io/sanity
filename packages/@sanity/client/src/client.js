@@ -57,7 +57,7 @@ const getReqOptions = config => {
     headers[projectHeader] = config.projectId
   }
 
-  return {headers}
+  return {headers, json: true}
 }
 
 class SanityClient {
@@ -140,8 +140,7 @@ class SanityClient {
       ...getReqOptions(this.clientConfig),
 
       method,
-      uri: `${this.clientConfig.url}/datasets/${name}`,
-      json: true
+      uri: `${this.clientConfig.url}/datasets/${name}`
     })
   }
 
@@ -151,6 +150,13 @@ class SanityClient {
 
   deleteDataset(name) {
     return this.modifyDataset('DELETE', name)
+  }
+
+  getProjects() {
+    return httpRequest({
+      ...getReqOptions(this.clientConfig),
+      uri: `${this.clientConfig.url}/projects`
+    })
   }
 }
 

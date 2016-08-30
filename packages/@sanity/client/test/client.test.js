@@ -242,3 +242,13 @@ test('can be told to use hostname without project ID', t => {
   const client = getClient({useProjectHostname: false})
   t.notThrows(client.createDataset('unicorns'))
 })
+
+test('can ask for projects', t => {
+  nock(projectHost(), {reqheaders: {'Sanity-Token': 'fjasebengel'}})
+    .get('/v1/projects')
+    .reply(200, [{$id: 'sanity.projects:abc123', displayName: 'Fiskesaus'}])
+
+  return getClient({token: 'fjasebengel'}).getProjects().then(projects => {
+    t.is(projects[0].displayName, 'Fiskesaus')
+  })
+})
