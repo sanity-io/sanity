@@ -2,6 +2,8 @@
 @use postcss-cssnext;
 
 .textInput {
+  appearance: none;
+  box-shadow: none !important;
   border: 0;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg);
