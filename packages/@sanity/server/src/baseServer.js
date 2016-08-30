@@ -32,7 +32,12 @@ export function getDocumentElement({basePath}, props = {}) {
     .then(Document =>
       React.createElement(Document, Object.assign({
         stylesheets: ['css/main.css'].map(assetify),
-        scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map(assetify)
+        scripts: [
+          // @todo figure out a better way to include polyfill when necessary
+          'https://cdn.polyill.io/v2/polyfill.min.js?features=Intl.~locale.en',
+          'js/vendor.bundle.js',
+          'js/app.bundle.js'
+        ].map(assetify)
       }, props))
     )
 }
