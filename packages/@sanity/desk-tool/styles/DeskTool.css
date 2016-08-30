@@ -38,11 +38,15 @@
   overflow-x: hidden;
   z-index: 1;
 
+  composes: slide-in-from-right from './animations.css';
+
 
   @media (--screen-medium) {
-    position: relative;
+    width: auto;
     height: auto;
+    position: relative;
     flex-grow: 10;
+    z-index: inherit;
   }
 }
 

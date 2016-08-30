@@ -1,16 +1,6 @@
 @import 'style:@sanity/base/theme/variables';
 @use postcss-cssnext;
 
-@keyframes revealFromRight {
-  from {
-    transform: translateX(100%);
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
 .panes {
   display: block;
   position: relative;
@@ -26,25 +16,53 @@
 
 }
 
+@keyframes slideOut {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+    display: none;
+  }
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+
 .pane {
+  display: none;
   max-width: 100%;
   align-self: stretch;
   position: relative;
   width: 100%;
-  /*min-height: 100vh;*/
   z-index: 1;
-  display: none;
-  animation-name: revealFromRight;
+  padding-top: 1em;
+  animation-name: slideOut;
+  animation-timing-function: linear;
   animation-iteration-count: 1;
   animation-duration: 0.2s;
-  padding-top: 1em;
-  /* composes: animation-default from 'style:@sanity/base/theme/animation'; */
 
   &:last-child {
     display: block;
+    animation-name: slideIn;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    animation-duration: 0.2s;
+
   }
 
   @media (--screen-medium) {
+    animation-name: none;
     padding-top: 0;
     top: auto;
     left: auto;
@@ -53,6 +71,9 @@
     min-height: auto;
     flex-grow: 1;
     max-height: 100%;
+    max-width: 15em;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
@@ -91,7 +112,6 @@
   }
 
   @media (--screen-medium) {
-    max-width: 15em;
 
   }
 
