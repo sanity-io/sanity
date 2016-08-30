@@ -34,7 +34,7 @@ export function getDocumentElement({basePath}, props = {}) {
         stylesheets: ['css/main.css'].map(assetify),
         scripts: [
           // @todo figure out a better way to include polyfill when necessary
-          'https://cdn.polyill.io/v2/polyfill.min.js?features=Intl.~locale.en',
+          'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
           'js/vendor.bundle.js',
           'js/app.bundle.js'
         ].map(assetify)
