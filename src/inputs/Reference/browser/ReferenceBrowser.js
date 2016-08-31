@@ -181,6 +181,10 @@ export default class ReferenceBrowser extends React.Component {
       return true
     })
 
+    const currentItem = items.find(item => {
+      return this.props.value.value.$ref == item.key
+    })
+
     return (
       <Dialog
         className={styles.dialog}
@@ -197,7 +201,7 @@ export default class ReferenceBrowser extends React.Component {
           items={items}
           scrollable
           onSelect={this.handleDialogSelectItem}
-          selectedItem={dialogSelectedItem}
+          selectedItem={dialogSelectedItem || currentItem}
         />
       </Dialog>
     )
