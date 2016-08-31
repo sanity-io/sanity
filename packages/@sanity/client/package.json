@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client-next",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/client.js",
   "scripts": {
