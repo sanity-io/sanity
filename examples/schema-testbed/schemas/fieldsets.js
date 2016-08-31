@@ -9,15 +9,26 @@ export default {
         {
           name: 'headings',
           title: 'Headings',
-          description: 'FIELDSET HEADINGS DESCRIPTION'
+          description: 'FIELDSET HEADINGS DESCRIPTION',
+          options: {
+            columns: 2
+          }
         },
         {
           name: 'author',
-          title: 'Author details'
+          title: 'Author details',
+          description: 'Author details with 2 column grid',
+          options: {
+            columns: 2
+          }
         },
         {
           name: 'checkboxes',
-          title: 'Checkbox Mc. Checkboxface'
+          title: 'Checkbox Mc. Checkboxface',
+          description: 'Lets put 3 checkboxes in an a 3 column',
+          options: {
+            columns: 3
+          }
         }
       ],
       fields: [
@@ -40,6 +51,12 @@ export default {
           fieldset: 'author'
         },
         {
+          name: 'test',
+          title: 'Author details extra string',
+          type: 'string',
+          fieldset: 'author'
+        },
+        {
           name: 'murgh',
           type: 'string',
           title: 'Murgh'
@@ -58,7 +75,7 @@ export default {
         },
         {
           name: 'check-two',
-          title: 'Check two?',
+          title: 'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
           type: 'boolean',
           fieldset: 'checkboxes'
         },
@@ -94,23 +111,31 @@ export default {
         {
           name: 'basics',
           title: 'Basics',
+          description: 'This is a fieldset'
         },
         {
           name: 'street',
-          title: 'Street'
+          title: 'Street',
+          description: 'This is a fieldset'
         }
       ],
       fields: [
         {
-          name: 'street', type: 'string', title: 'Street',
+          name: 'street',
+          type: 'string',
+          title: 'Street',
           fieldset: 'street'
         },
         {
-          name: 'zip', type: 'string', title: 'Zip',
+          name: 'zip',
+          type: 'string',
+          title: 'Zip',
           fieldset: 'basics'
         },
         {
-          name: 'place', type: 'string', title: 'Place',
+          name: 'place',
+          type: 'string',
+          title: 'Place',
           fieldset: 'basics'
         }
       ]

@@ -2,8 +2,9 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
-import Fieldset from 'component:@sanity/components/fieldsets/default'
+import Fieldset, {FieldWrapper} from 'component:@sanity/components/fieldsets/default'
 import equals from 'shallow-equals'
+
 
 export default class Obj extends React.Component {
   static displayName = 'Object'
@@ -76,15 +77,21 @@ export default class Obj extends React.Component {
 
   renderFieldset(fieldset, index) {
     const {level} = this.props
+    const columns = fieldset.options && fieldset.options.columns
     return (
       <Fieldset
         key={fieldset.name}
         legend={fieldset.title}
         description={fieldset.description}
         level={level}
+        columns={columns}
       >
         {fieldset.fields.map((field, fieldIndex) => {
-          return this.renderField(field, level + 1, index + fieldIndex)
+          return (
+            <FieldWrapper key={fieldIndex}>
+              {this.renderField(field, level + 1, index + fieldIndex)}
+            </FieldWrapper>
+          )
         })}
       </Fieldset>
     )
