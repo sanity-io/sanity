@@ -92,7 +92,8 @@ export default class SearchableSelect extends React.Component {
   handleBlur(event) {
     this.setState({
       hasFocus: false,
-      inputSelected: false
+      inputSelected: false,
+      showList: false
     })
     this.props.onBlur(event)
   }

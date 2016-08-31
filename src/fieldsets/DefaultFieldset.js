@@ -1,12 +1,19 @@
+/* eslint-disable react/no-multi-comp */
+
 import styles from 'style:@sanity/components/fieldsets/default'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {
-  const {fieldset, legend, description} = props
+  const {fieldset, legend, description, columns} = props
+  const rootClass = `
+    ${styles.root}
+    ${columns ? styles[`columns${columns}`] : styles.columns1}
+  `
   return (
-    <fieldset className={styles.root} data-nesting-level={props.level}>
-      <legend className={styles.legend}>{legend || fieldset.legend}</legend>
+    <fieldset className={rootClass} data-nesting-level={props.level}>
+
       <div className={styles.inner}>
+        <legend className={styles.legend}>{legend || fieldset.legend}</legend>
         {
           (description || fieldset.description)
           && <p className={styles.description}>
@@ -21,13 +28,26 @@ export default function Fieldset(props) {
   )
 }
 
+export function FieldWrapper(props) {
+  return (
+    <div className={styles.fieldWrapper}>
+      {props.children}
+    </div>
+  )
+}
+
 Fieldset.defaultProps = {
   fieldset: {}
+}
+
+FieldWrapper.propTypes = {
+  children: PropTypes.node
 }
 
 Fieldset.propTypes = {
   description: PropTypes.string,
   legend: PropTypes.string.isRequired,
+  columns: PropTypes.number,
   fieldset: PropTypes.shape({
     description: PropTypes.string,
     legend: PropTypes.string

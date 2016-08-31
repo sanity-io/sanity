@@ -82,5 +82,4 @@
 .label {
   composes: label from 'style:@sanity/components/labels/default';
   display: block;
-  clear: both;
 }
