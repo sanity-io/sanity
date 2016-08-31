@@ -3,5 +3,9 @@
     "node": true
   },
   "parser": "babel-eslint",
-  "extends": "bengler"
+  "extends": "bengler",
+  "rules": {
+    "max-depth": [2, 4],
+    "no-undefined": 0
+  }
 }

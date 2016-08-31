@@ -54,7 +54,7 @@ export default {
       .then(chunkMap => {
         spin.text = 'Building index document'
         return getDocumentElement(compilationConfig, {
-          scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => ({
+          scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => ({
             path: `js/${asset}`,
             hash: chunkMap[asset]
           }))

@@ -118,7 +118,9 @@ export function createSanityManifest(data, opts) {
     root: true,
 
     api: {
-      dataset: data.dataset
+      projectId: data.projectId,
+      dataset: data.dataset,
+      token: data.provisionalToken
     },
 
     plugins: [

@@ -6,21 +6,33 @@ import getUserConfig from './getUserConfig'
  * Instead of spreading the error checking logic around the project,
  * we call it here when (and only when) a command needs to use the API
  */
-export default function clientWrapper(manifest, path) {
-  return function () {
-    const token = getUserConfig().get('authToken')
+const defaults = {
+  requireUser: true,
+  requireProject: true
+}
 
-    if (!token) {
+export default function clientWrapper(manifest, path) {
+  return function (opts = {}) {
+    const {requireUser, requireProject, api} = {...defaults, ...opts}
+    const token = getUserConfig().get('authToken')
+    const apiConfig = api || (manifest && manifest.api) || {}
+
+    if (requireUser && !token) {
       throw new Error('You must login first')
     }
 
-    if (!manifest || !manifest.api || !manifest.api.projectId) {
+    if (requireProject && !apiConfig.projectId) {
       throw new Error(
         `"${path}" does not contain a project identifier ("api.projectId"), `
         + 'which is required for the Sanity CLI to communicate with the Sanity API'
       )
     }
 
-    return client(Object.assign({}, manifest.api, {token}))
+    return client({
+      ...apiConfig,
+      dataset: apiConfig.dataset || 'dummy',
+      token: token,
+      useProjectHostname: requireProject
+    })
   }
 }

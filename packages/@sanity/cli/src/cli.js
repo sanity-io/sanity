@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'babel-polyfill'
 import yargs from 'yargs'
 import chalk from 'chalk'
 import updateNotifier from 'update-notifier'
@@ -9,6 +10,7 @@ import pkg from '../package.json'
 
 updateNotifier({pkg}).notify()
 
+const debug = process.env.DEBUG // eslint-disable-line no-process-env
 const argp = args => args
 const program = yargs
   .version(pkg.version)
@@ -34,7 +36,8 @@ export function run(args) {
     .then(dir => Object.assign({rootDir: dir || process.cwd()}, argv))
     .then(options => cmdRunner.runCommand(cmdName, options))
     .catch(err => {
-      console.error(chalk.red(err.message)) // eslint-disable-line no-console
-      process.exit(err.code || 1) // eslint-disable-line no-process-exit
+      const error = debug && err.details || err
+      console.error(chalk.red(debug ? error.stack : error.message)) // eslint-disable-line no-console
+      process.exit(error.code || 1) // eslint-disable-line no-process-exit
     })
 }

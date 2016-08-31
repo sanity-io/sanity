@@ -4,24 +4,22 @@ import isGitUrl from 'is-git-url'
 
 export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
   const thing = isPlugin ? 'Plugin' : 'Project'
-  const questions = [{
+  const questions = isPlugin ? [{
     type: 'input',
     name: 'name',
-    message: `${thing} name:`,
+    message: 'Plugin name:',
     default: defaults.projectName || '',
     validate: name => {
       const {validForNewPackages, errors} = validateNpmPackageName(name)
       return validForNewPackages ? true : errors[0]
     }
-  }, {
+  }] : []
+
+  questions.push({
     type: 'input',
     name: 'description',
     message: `${thing} description:`,
-    default: defaults.description,
-    validate: description => (
-      (description || '').length < 1000
-      || 'Project descriptions should be less than 1000 characters'
-    )
+    default: defaults.description
   }, {
     type: 'input',
     name: 'gitRemote',
@@ -40,7 +38,7 @@ export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
     name: 'license',
     message: 'License:',
     default: 'UNLICENSED'
-  }]
+  })
 
   if (isPlugin) {
     questions.push({
@@ -65,14 +63,6 @@ export default function gatherInput(prompt, defaults, {isPlugin} = {}) {
         default: true
       })
     }
-  } else {
-    // @todo how do we explain what a dataset is?
-    questions.push({
-      type: 'input',
-      name: 'dataset',
-      message: 'Dataset name:',
-      default: answers => answers.name.replace(/[^-\w]/g, '')
-    })
   }
 
   return prompt(questions)

@@ -1,0 +1,116 @@
+import fs from 'fs'
+import path from 'path'
+import http from 'http'
+import url from 'url'
+import got from 'got'
+import open from 'opn'
+import chalk from 'chalk'
+import debug from '../../debug'
+import getUserConfig from '../../util/getUserConfig'
+
+const baseUrl = 'https://api.sanity.io/v1'
+const providersUrl = `${baseUrl}/auth/providers`
+const exchangeUrl = `${baseUrl}/auth/tokens/fetch`
+
+export default async function auth(helpers) {
+  const {prompt, spinner} = helpers
+  const spin = spinner('Fetching providers...').start()
+  const {body} = await got(providersUrl, {json: true})
+  const providers = body.providers
+  const provider = await promptProviders(prompt, providers)
+  spin.stop()
+
+  return new Promise((...args) => authFlow({provider, ...helpers}, ...args))
+}
+
+function authFlow({print, spinner, provider}, resolve, reject) {
+  debug('Starting OAuth receiver webserver')
+  const spin = spinner('Waiting for login flow to complete...')
+  const server = http
+    .createServer(onServerRequest)
+    .listen(0, '127.0.0.1', onListen)
+
+  function onListen() {
+    debug('Webserver listening, opening browser')
+
+    const providerUrl = url.parse(provider.url, true)
+    providerUrl.query.target = generateUrl('/return')
+    providerUrl.query.type = 'token'
+
+    const loginUrl = url.format(providerUrl)
+    print(`\nOpening browser at ${loginUrl}\n`)
+    spin.start()
+    open(loginUrl)
+  }
+
+  function onServerRequest(req, res) {
+    if (req.url.indexOf('/return') === 0) {
+      debug('Request received, exchanging token for a long-lived one')
+      return exchangeToken(req, res)
+    }
+
+    res.writeHead(404, {'Content-Type': 'text/plain'})
+    return res.end('File not found')
+  }
+
+  function exchangeToken(req, res) {
+    const returnUrl = url.parse(req.url, true)
+    const tmpToken = (returnUrl.query || {}).fetcher
+    got(`${exchangeUrl}/${tmpToken}`, {json: true})
+      .then(httpRes => onTokenExchanged(httpRes, res))
+      .catch(onTokenExchangeError)
+  }
+
+  function onTokenExchanged(httpRes, res) {
+    const token = httpRes.body.token
+    if (!token) {
+      debug('Token exchange failed, body: %s', JSON.stringify(httpRes.body))
+      return onTokenExchangeError(new Error(
+        'Failed to exchange temporary token - no token returned from server'
+      ))
+    }
+
+    // Serve the "login successful"-page
+    debug('Token exchange complete, serving page')
+    fs.createReadStream(path.join(__dirname, 'authResponse.html')).pipe(res)
+
+    // Store the token
+    debug('Storing the auth token')
+    getUserConfig().set({
+      authToken: token,
+      authType: 'normal'
+    })
+
+    spin.stop()
+    print(chalk.green('Authentication successful'))
+    server.close(() => {
+      debug('Server closed')
+      resolve()
+    })
+  }
+
+  function onTokenExchangeError(err) {
+    spin.stop()
+    server.close(() => {
+      debug('Server closed')
+      reject(err)
+    })
+  }
+
+  function generateUrl(urlPath) {
+    return `http://localhost:${server.address().port}${urlPath}`
+  }
+}
+
+
+function promptProviders(prompt, providers) {
+  if (providers.length === 1) {
+    return providers[0]
+  }
+
+  return prompt.single({
+    type: 'list',
+    message: 'Login type',
+    choices: providers.map(provider => provider.title)
+  }).then(provider => providers.find(prov => prov.title === provider))
+}

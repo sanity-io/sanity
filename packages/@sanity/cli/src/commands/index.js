@@ -8,6 +8,7 @@ import datasetCommand from './dataset/datasetCommand'
 import versionCommand from './version/versionCommand'
 import configCheckCommand from './config/configCheckCommand'
 import checkCommand from './check/checkCommand'
+import logoutCommand from './logout/logoutCommand'
 
 export default [
   authCommand,
@@ -19,5 +20,6 @@ export default [
   datasetCommand,
   checkCommand,
   configCheckCommand,
+  logoutCommand,
   versionCommand
 ]
