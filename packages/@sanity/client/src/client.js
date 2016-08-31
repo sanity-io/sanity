@@ -135,13 +135,7 @@ class SanityClient {
 
   modifyDataset(method, name) {
     validators.dataset(name)
-
-    return httpRequest({
-      ...getReqOptions(this.clientConfig),
-
-      method,
-      uri: `${this.clientConfig.url}/datasets/${name}`
-    })
+    return this.request({method, uri: `/datasets/${name}`})
   }
 
   createDataset(name) {
@@ -153,9 +147,14 @@ class SanityClient {
   }
 
   getProjects() {
+    return this.request({uri: '/projects'})
+  }
+
+  request(options) {
     return httpRequest({
       ...getReqOptions(this.clientConfig),
-      uri: `${this.clientConfig.url}/projects`
+      ...options,
+      uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`
     })
   }
 }
