@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export default function httpRequest(options, callback) {
   if (debug) {
-    log('HTTP %s %s', options.method, options.uri)
+    log('HTTP %s %s', options.method || 'GET', options.uri)
     if (options.method === 'POST' && options.json) {
       log('Request body: %s', JSON.stringify(options.json, null, 2))
     }

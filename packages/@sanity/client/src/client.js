@@ -28,8 +28,8 @@ const initConfig = (config, prevConfig = {}) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  if (projectBased && !/^[-a-f0-9]+$/.test(newConfig.projectId)) {
-    throw new Error('`projectId` must start with a number')
+  if (projectBased && !/^[-a-z0-9]+$/i.test(newConfig.projectId)) {
+    throw new Error('`projectId` can only contain only a-z, 0-9 and dashes')
   }
 
   const [protocol, host] = newConfig.apiHost.split('://', 2)
