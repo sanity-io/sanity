@@ -54,10 +54,10 @@ export default class DefaultList extends React.Component {
       // Todo think more about this
       // Moving down
       containerDomNode.scrollTop = offset
-    } else if ((containerDomNode.scrollTop + containerDomNode.offsetHeight) > offset) {
-      // Moving down
-      containerDomNode.scrollTop = offset
-    }
+    }// } else if ((containerDomNode.scrollTop + containerDomNode.offsetHeight) > offset) {
+    //   // Moving down
+    //   containerDomNode.scrollTop = offset
+    // }
   }
 
   render() {
