@@ -54,19 +54,19 @@ export default {
           name: 'check-one',
           title: 'Check one?',
           type: 'boolean',
-          //fieldset: 'checkboxes'
+          fieldset: 'checkboxes'
         },
         {
           name: 'check-two',
           title: 'Check two?',
           type: 'boolean',
-          //fieldset: 'checkboxes'
+          fieldset: 'checkboxes'
         },
         {
           name: 'check-three',
           title: 'Check three?',
           type: 'boolean',
-          //fieldset: 'checkboxes'
+          fieldset: 'checkboxes'
         },
         {
           name: 'content',

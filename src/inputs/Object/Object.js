@@ -90,9 +90,9 @@ export default class Obj extends React.Component {
   }
 
   render() {
-    const {type, level} = this.props
+    const {field, type, level} = this.props
     return (
-      <div>
+      <Fieldset legend={field.title} description={field.description}>
         {type.fieldsets.map((fieldset, i) => {
           return (
             <div key={i}>
@@ -103,7 +103,7 @@ export default class Obj extends React.Component {
             </div>
           )
         })}
-      </div>
+      </Fieldset>
     )
   }
 }
