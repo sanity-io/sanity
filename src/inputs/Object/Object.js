@@ -18,7 +18,8 @@ export default class Obj extends React.Component {
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
-    level: PropTypes.number
+    level: PropTypes.number,
+    isRoot: PropTypes.bool
   };
 
   static defaultProps = {
@@ -90,19 +91,21 @@ export default class Obj extends React.Component {
   }
 
   render() {
-    const {field, type, level} = this.props
+    const {isRoot, field, type, level} = this.props
+
+    const renderedFields = type.fieldsets.map((fieldset, i) => {
+      return fieldset.single
+            ? this.renderField(fieldset.field, level, i)
+            : this.renderFieldset(fieldset, i)
+    })
+
+    if (isRoot) {
+      return <div>{renderedFields}</div>
+    }
+
     return (
       <Fieldset legend={field.title} description={field.description}>
-        {type.fieldsets.map((fieldset, i) => {
-          return (
-            <div key={i}>
-              {fieldset.single
-                  ? this.renderField(fieldset.field, level, i)
-                  : this.renderFieldset(fieldset, i)
-              }
-            </div>
-          )
-        })}
+        {renderedFields}
       </Fieldset>
     )
   }
