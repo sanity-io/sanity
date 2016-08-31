@@ -23,11 +23,12 @@ const verifyEvent = (event, handler) => {
 
 const initConfig = (config, prevConfig = {}) => {
   const newConfig = {...defaultConfig, ...prevConfig, ...config}
-  if (!newConfig.projectId) {
+  const projectBased = newConfig.useProjectHostname
+  if (projectBased && !newConfig.projectId) {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  if (!/^[-a-f0-9]+$/.test(newConfig.projectId)) {
+  if (projectBased && !/^[-a-f0-9]+$/.test(newConfig.projectId)) {
     throw new Error('`projectId` must start with a number')
   }
 
