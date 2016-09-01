@@ -1,5 +1,6 @@
 /* eslint-disable no-empty-function, no-process-env */
 import request from '@sanity/request'
+import queryString from './queryString'
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
 
@@ -9,6 +10,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default function httpRequest(options, callback) {
+  if (options.query) {
+    options.uri += `?${queryString.stringify(options.query)}`
+  }
+
   if (debug) {
     log('HTTP %s %s', options.method || 'GET', options.uri)
     if (options.method === 'POST' && options.json) {
@@ -30,7 +35,9 @@ export default function httpRequest(options, callback) {
       const isHttpError = res.statusCode >= 400
 
       if (isHttpError && body) {
-        const msg = [body.error, body.message].filter(Boolean).join('\n')
+        const msg = (body.errors ? body.errors.map(error => error.message) : [])
+          .concat([body.error, body.message]).filter(Boolean).join('\n')
+
         return reject(new Error(msg))
       } else if (isHttpError) {
         return reject(new Error(

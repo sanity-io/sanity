@@ -1,10 +1,9 @@
-import pify from 'pify'
 import httpRequest from './httpRequest'
-import gradient from '@sanity/gradient-client'
 import validators from './validators'
 
 const tokenHeader = 'Sanity-Token'
 const projectHeader = 'Sanity-Project-ID'
+const mutationDefaults = {returnIds: true}
 const allowedEvents = ['request']
 const defaultConfig = {
   apiHost: 'https://api.sanity.io',
@@ -32,6 +31,10 @@ const initConfig = (config, prevConfig = {}) => {
     throw new Error('`projectId` can only contain only a-z, 0-9 and dashes')
   }
 
+  if (newConfig.dataset) {
+    validators.dataset(newConfig.dataset)
+  }
+
   const [protocol, host] = newConfig.apiHost.split('://', 2)
   if (newConfig.useProjectHostname) {
     newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v1`
@@ -41,11 +44,6 @@ const initConfig = (config, prevConfig = {}) => {
 
   return newConfig
 }
-
-const getGradientConfig = config => ({
-  url: `${config.url}/data`,
-  dataset: config.dataset
-})
 
 const getReqOptions = config => {
   const headers = {}
@@ -64,19 +62,11 @@ const getReqOptions = config => {
 class SanityClient {
   constructor(config = defaultConfig) {
     this.clientConfig = initConfig(config)
-    const client = this.gradientClient = gradient(getGradientConfig(this.clientConfig))
 
     this.eventHandlers = allowedEvents.reduce((handlers, event) => {
       handlers[event] = []
       return handlers
     }, {})
-
-    this.gradient = pify({
-      fetch: client.fetch.bind(client),
-      update: client.update.bind(client),
-      create: client.create.bind(client),
-      delete: client.delete.bind(client)
-    })
   }
 
   config(newConfig) {
@@ -85,8 +75,7 @@ class SanityClient {
     }
 
     this.clientConfig = initConfig(newConfig, this.clientConfig)
-    const gradientConfig = getGradientConfig(this.clientConfig)
-    return this.gradientClient.setConfig(gradientConfig) && this
+    return this
   }
 
   on(event, handler) {
@@ -113,25 +102,37 @@ class SanityClient {
       : Promise.resolve()
   }
 
-  dataRequest(method, ...args) {
-    return this.emit('request', method, ...args)
-      .then(() => this.gradient[method](...args, getReqOptions(this.clientConfig)))
+  create(doc) {
+    const dataset = checkDataset(this.clientConfig)
+    const docId = doc.$id || `${dataset}:`
+    const creation = {...doc}
+    delete creation.$id
+    return this.dataRequest('create', 'm', {[docId]: {$$create: creation}})
   }
 
   fetch(query, params) {
-    return this.dataRequest('fetch', query, params)
+    return this.dataRequest('fetch', 'q', {query, params})
   }
 
   update(documentId, patch) {
-    return this.dataRequest('update', documentId, patch)
-  }
-
-  create(doc) {
-    return this.dataRequest('create', doc)
+    return this.dataRequest('update', 'm', {[documentId]: {$$update: patch}})
   }
 
   delete(documentId) {
-    return this.dataRequest('delete', documentId)
+    return this.dataRequest('delete', 'm', {[documentId]: {$$delete: null}})
+  }
+
+  dataRequest(method, endpoint, body) {
+    const query = endpoint === 'm' && mutationDefaults
+    return this.emit('request', method, body).then(() => {
+      const dataset = checkDataset(this.clientConfig)
+      return this.request({
+        method: 'POST',
+        uri: `/data/${endpoint}/${dataset}`,
+        json: body,
+        query
+      })
+    })
   }
 
   modifyDataset(method, name) {
@@ -158,6 +159,14 @@ class SanityClient {
       uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`
     })
   }
+}
+
+function checkDataset(config) {
+  if (!config.dataset) {
+    throw new Error('`dataset` must be provided to perform queries')
+  }
+
+  return config.dataset
 }
 
 function createClient(config) {

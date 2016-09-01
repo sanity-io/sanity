@@ -15,11 +15,14 @@ test('can get and set config', t => {
   const client = getClient()
   return client.fetch('query')
     .then(res => t.is(res.ms, 123))
-    .then(() =>
+    .then(() => {
       client
         .config({dataset: 'bar', projectId: 'ce1337'})
         .fetch('query')
-        .then(res => t.is(res.ms, 456)))
+        .then(res => {
+          t.is(res.ms, 456)
+        })
+    })
 })
 
 test('can do simple requests', t => {
@@ -34,6 +37,21 @@ test('can do simple requests', t => {
     t.is(res.result[0].foo, 'bar')
     t.is(res.result[1].bar, 'foo')
   })
+})
+
+test('throws if no projectId is passed', t => {
+  return t.throws(sanityClient, /projectId/)
+})
+
+test('throws if projectId format is not valid', t => {
+  return t.throws(() => sanityClient({projectId: '_test_'}), /only contain/)
+})
+
+test('rejects on data request if no dataset has been passed', t => {
+  return t.throws(
+    sanityClient({projectId: 'abc123'}).fetch('something'),
+    /`dataset` must be provided/
+  )
 })
 
 test('can do update mutations', t => {

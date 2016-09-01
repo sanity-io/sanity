@@ -13,13 +13,11 @@
     "test": "ava"
   },
   "dependencies": {
-    "@sanity/gradient-client": "^1.0.17",
     "@sanity/request": "^1.0.1",
-    "in-publish": "^2.0.0",
-    "pify": "^2.3.0"
+    "in-publish": "^2.0.0"
   },
   "devDependencies": {
-    "ava": "^0.15.2",
+    "ava": "^0.16.0",
     "babel-cli": "^6.7.5",
     "babel-eslint": "^6.0.2",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
