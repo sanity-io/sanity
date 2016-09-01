@@ -5,7 +5,7 @@ const styles = {
   border: '10px solid red'
 }
 
-const CenterDecorator = (story) => (
+const CenterDecorator = story => (
   <div style={styles}>
     {story()}
   </div>
