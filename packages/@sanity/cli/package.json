@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
+    "@kadira/storybook": "^2.6.1",
     "@sanity/check": "^1.0.1",
     "@sanity/client-next": "^1.1.6",
     "@sanity/resolver": "^3.0.1",
