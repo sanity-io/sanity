@@ -117,13 +117,22 @@
 .closeButton {
   position: absolute;
   top: 0;
-  right: var(--dialog-padding);
+  right: 0;
   background-color: transparent;
   border: none;
   color: #fff;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 1.5em;
   outline: none;
+  cursor: pointer;
+  transition: transform 0.1s linear;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.8);
+  }
 }
 
 /* Native dialog backdrop */
