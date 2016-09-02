@@ -3,6 +3,7 @@
   "version": "1.1.7",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/client.cjs.js",
+  "umd": "umd/bundle.min.js",
   "scripts": {
     "build": "npm run compile && npm run minify",
     "clean": "rimraf lib && rimraf coverage",
