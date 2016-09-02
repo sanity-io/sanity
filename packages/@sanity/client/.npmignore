@@ -1,1 +1,9 @@
-src/
+.nyc_output
+node_modules
+src
+.babelrc
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+rollup.config.js
