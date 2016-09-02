@@ -13,13 +13,21 @@ export default {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')
-    if (token && cfg.get('authType') !== 'provisional') {
+    const type = cfg.get('authType')
+    if (!token) {
+      print(chalk.red('No login credentials found'))
+      return
+    }
+
+    if (token && type !== 'provisional') {
       logout(cfg)
       return
     }
 
-    print(chalk.yellow.inverse('[WARN]') + chalk.yellow(' You are currently logged in as a temporary user!'))
-    print(chalk.yellow('Logging out will make it super hard to claim your beautiful project :\'('))
+    if (type === 'provisional') {
+      print(chalk.yellow.inverse('[WARN]') + chalk.yellow(' You are currently logged in as a temporary user!'))
+      print(chalk.yellow('Logging out will make it super hard to claim your beautiful project :\'('))
+    }
 
     const confirm = await prompt.single({
       type: 'confirm',
