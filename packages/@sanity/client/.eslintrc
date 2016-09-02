@@ -3,6 +3,9 @@
     "node": true,
     "browser": true
   },
-  "parser": "babel-eslint",
-  "extends": "sanity"
+  "extends": "sanity",
+  "rules": {
+    "no-var": 0,
+    "prefer-template": 0
+  }
 }

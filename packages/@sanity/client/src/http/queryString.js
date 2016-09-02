@@ -7,6 +7,4 @@ function queryString(params) {
   return Object.keys(params).reduce(reduceQueryParam, []).join('&')
 }
 
-export default {
-  stringify: queryString
-}
+exports.stringify = queryString

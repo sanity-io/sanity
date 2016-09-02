@@ -1,6 +1,6 @@
 /* eslint-disable no-empty-function, no-process-env */
-import request from '@sanity/request'
-import queryString from './queryString'
+const request = require('request') // src/browser/request in browsers
+const queryString = require('./queryString')
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
 
@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
   log = require('debug')('sanity:client')
 }
 
-export default function httpRequest(options, callback) {
+module.exports = function httpRequest(options, callback) {
   if (options.query) {
     options.uri += `?${queryString.stringify(options.query)}`
   }
@@ -21,7 +21,8 @@ export default function httpRequest(options, callback) {
     }
   }
 
-  return new Promise((resolve, reject) => {
+  const Promised = options.promise
+  return new Promised((resolve, reject) => {
     request(options, (err, res, body) => {
       if (err) {
         return reject(err)
