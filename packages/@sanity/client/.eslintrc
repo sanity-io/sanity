@@ -3,9 +3,5 @@
     "node": true,
     "browser": true
   },
-  "extends": "sanity",
-  "rules": {
-    "no-var": 0,
-    "prefer-template": 0
-  }
+  "extends": "sanity"
 }

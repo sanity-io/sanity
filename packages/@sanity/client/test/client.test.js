@@ -1,7 +1,7 @@
 const test = require('tape')
 const nock = require('nock')
 const assign = require('xtend')
-const sanityClient = require('../src/client')
+const sanityClient = require('../src/sanityClient')
 
 const apiHost = 'api.sanity.url'
 const projectHost = (projectId = 'bf1942') => `https://${projectId}.${apiHost}`
