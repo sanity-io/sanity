@@ -16,9 +16,9 @@
     "test": "tape -r babel-register test/**/*.test.js"
   },
   "dependencies": {
+    "@sanity/request": "^1.0.1",
     "deep-assign": "^2.0.0",
     "in-publish": "^2.0.0",
-    "request": "^2.74.0",
     "xtend": "^4.0.1"
   },
   "browser": {

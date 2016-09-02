@@ -1,5 +1,5 @@
 /* eslint-disable no-empty-function, no-process-env */
-const request = require('request') // src/browser/request in browsers
+const request = require('@sanity/request') // `request` in node, `xhr` in browsers
 const queryString = require('./queryString')
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
