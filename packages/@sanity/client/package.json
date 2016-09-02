@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client-next",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/client.cjs.js",
   "umd": "umd/bundle.min.js",
@@ -37,7 +37,9 @@
   },
   "ava": {
     "babel": "inherit",
-    "require": ["babel-register"]
+    "require": [
+      "babel-register"
+    ]
   },
   "repository": {
     "type": "git",
