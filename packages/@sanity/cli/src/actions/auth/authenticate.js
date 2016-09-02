@@ -57,17 +57,26 @@ function authFlow({print, spinner, provider}, resolve, reject) {
     const returnUrl = url.parse(req.url, true)
     const tmpToken = (returnUrl.query || {}).fetcher
     got(`${exchangeUrl}/${tmpToken}`, {json: true})
-      .then(httpRes => onTokenExchanged(httpRes, res))
+      .then(httpRes => onTokenExchanged(httpRes, req, res))
       .catch(onTokenExchangeError)
   }
 
-  function onTokenExchanged(httpRes, res) {
+  function onTokenExchanged(httpRes, req, res) {
     const token = httpRes.body.token
     if (!token) {
+      const query = url.parse(req.url, true).query || {}
+      const error = query.error ? safeJson(query.error, {}) : {}
+
       debug('Token exchange failed, body: %s', JSON.stringify(httpRes.body))
-      return onTokenExchangeError(new Error(
-        'Failed to exchange temporary token - no token returned from server'
-      ))
+      if (error) {
+        debug('Error details: %s', JSON.stringify(error))
+      }
+
+      return fs.createReadStream(path.join(__dirname, 'authError.html')).pipe(res).on('finish', () =>
+        onTokenExchangeError(new Error(
+          'Failed to exchange temporary token - no token returned from server'
+        ))
+      )
     }
 
     // Serve the "login successful"-page
@@ -83,18 +92,14 @@ function authFlow({print, spinner, provider}, resolve, reject) {
 
     spin.stop()
     print(chalk.green('Authentication successful'))
-    server.close(() => {
-      debug('Server closed')
-      resolve()
-    })
+    server.close(() => debug('Server closed'))
+    resolve()
   }
 
   function onTokenExchangeError(err) {
     spin.stop()
-    server.close(() => {
-      debug('Server closed')
-      reject(err)
-    })
+    server.close(() => debug('Server closed'))
+    reject(err)
   }
 
   function generateUrl(urlPath) {
@@ -102,6 +107,13 @@ function authFlow({print, spinner, provider}, resolve, reject) {
   }
 }
 
+function safeJson(str, defaultVal) {
+  try {
+    return JSON.parse(str)
+  } catch (err) {
+    return defaultVal
+  }
+}
 
 function promptProviders(prompt, providers) {
   if (providers.length === 1) {
