@@ -1,4 +1,4 @@
-/* eslint-disable no-bitwise */
+/* eslint-disable no-bitwise, no-mixed-operators */
 function generateUuid() {
   let date = Date.now()
   if (window.performance && typeof window.performance.now === 'function') {

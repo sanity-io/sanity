@@ -1,12 +1,13 @@
 import nock from 'nock'
 import test from 'ava'
+import objectAssign from 'object-assign'
 import sanityClient from '../src/client'
 
 const noop = () => {} // eslint-disable-line no-empty-function
 const apiHost = 'api.sanity.url'
 const projectHost = (projectId = 'bf1942') => `https://${projectId}.${apiHost}`
 const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
-const getClient = (conf = {}) => sanityClient({...clientConfig, ...conf})
+const getClient = (conf = {}) => sanityClient(objectAssign({}, clientConfig, conf))
 
 test('can get and set config', t => {
   nock(projectHost()).post('/v1/data/q/foo', {query: 'query'}).reply(200, {ms: 123, result: []})

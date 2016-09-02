@@ -1,5 +1,6 @@
 import httpRequest from './httpRequest'
-import validators from './validators'
+import {dataset as validateDataset} from './validators'
+import objectAssign from 'object-assign'
 
 const tokenHeader = 'Sanity-Token'
 const projectHeader = 'Sanity-Project-ID'
@@ -21,7 +22,7 @@ const verifyEvent = (event, handler) => {
 }
 
 const initConfig = (config, prevConfig = {}) => {
-  const newConfig = {...defaultConfig, ...prevConfig, ...config}
+  const newConfig = objectAssign({}, defaultConfig, prevConfig, config)
   const projectBased = newConfig.useProjectHostname
   if (projectBased && !newConfig.projectId) {
     throw new Error('Configuration must contain `projectId`')
@@ -32,7 +33,7 @@ const initConfig = (config, prevConfig = {}) => {
   }
 
   if (newConfig.dataset) {
-    validators.dataset(newConfig.dataset)
+    validateDataset(newConfig.dataset)
   }
 
   const [protocol, host] = newConfig.apiHost.split('://', 2)
@@ -105,9 +106,9 @@ class SanityClient {
   create(doc) {
     const dataset = checkDataset(this.clientConfig)
     const docId = doc.$id || `${dataset}:`
-    const creation = {...doc}
+    const creation = objectAssign({}, doc)
     delete creation.$id
-    return this.dataRequest('create', 'm', {[docId]: {$$create: creation}})
+    return this.dataRequest('create', 'm', wrapDoc(docId, {$$create: creation}))
   }
 
   fetch(query, params) {
@@ -115,11 +116,11 @@ class SanityClient {
   }
 
   update(documentId, patch) {
-    return this.dataRequest('update', 'm', {[documentId]: {$$update: patch}})
+    return this.dataRequest('update', 'm', wrapDoc(documentId, {$$update: patch}))
   }
 
   delete(documentId) {
-    return this.dataRequest('delete', 'm', {[documentId]: {$$delete: null}})
+    return this.dataRequest('delete', 'm', wrapDoc(documentId, {$$delete: null}))
   }
 
   dataRequest(method, endpoint, body) {
@@ -136,7 +137,7 @@ class SanityClient {
   }
 
   modifyDataset(method, name) {
-    validators.dataset(name)
+    validateDataset(name)
     return this.request({method, uri: `/datasets/${name}`})
   }
 
@@ -153,12 +154,19 @@ class SanityClient {
   }
 
   request(options) {
-    return httpRequest({
-      ...getReqOptions(this.clientConfig),
-      ...options,
-      uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`
-    })
+    return httpRequest(objectAssign(
+      {},
+      getReqOptions(this.clientConfig),
+      options,
+      {uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`}
+    ))
   }
+}
+
+function wrapDoc(id, val) {
+  const obj = {}
+  obj[id] = val
+  return obj
 }
 
 function checkDataset(config) {
