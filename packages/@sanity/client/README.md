@@ -1,67 +1,85 @@
 # Sanity client
 
-A thin wrapper around https://github.com/sanity-io/gradient-client
+Javascript client for Sanity. Works in browsers (IE8+) and node.js.
 
+## Installation
+
+The client can be installed from npm:
+
+```
+npm install --save @sanity/client-next
+```
 
 ## Usage
 
-`npm i --save @sanity/client-next`
-
 ```js
-import sanityClient from '@sanity/client-next'
+const sanityClient = require('@sanity/client-next')
 const client = sanityClient({
-  url: 'https://gradient.url',
-  dataset: 'foo',
-  token: 'gradient-auth-token'
+  projectId: 'your-project-id',
+  dataset: 'bikeshop',
+  token: 'sanity-auth-token' // or leave blank to be anonymous user
 })
 ```
 
-### Fetch
-```js
-const query = 'foo.comment[] {.body, .createdAt}'
-client.fetch('query').then(res => {
-  // {
-  //   transactionId: 'bar',
-  //   result: [{comment1}, {comment2}]
-  // }
-})
-```
-Check out https://github.com/sanity-io/gradientql to see how queries are composed.
+### Performing queries
 
-
-### Create
 ```js
-const doc = {title: 'Baloney'}
-client.create(doc).then(res => {
-  // {
-  //   transactionId: 'bar',
-  //   docIds: ['foo:99']
-  // }
+const query = 'bikeshop.bikes[.seats > 1] {.name, .seats}'
+client.data.fetch(query).then(bikes => {
+  console.log('Bikes with more than one seat:')
+  bikes.forEach(bike => {
+    console.log(`${bike.name} (${bike.seats} seats)`)
+  })
 })
 ```
 
-### Update
+
+### Creating documents
+
 ```js
-const patch = {description: 'new desc'}
-return client.update('foo:99', patch).then(res => {
-  //
+const doc = {name: 'Bengler Tandem Extraordinaire', seats: 2}
+client.data.create(doc).then(res => {
+  console.log(`Bike was created, document ID is ${res.documentId}`)
 })
 ```
 
-### Delete
+### Patch/update a document
+
 ```js
-return client.delete('foo').then(res => {
-  // {transactionId: 'bar'}
-})
+return client.data
+  .patch('bikeshop:bike-123') // Document ID to patch
+  .set({inStock: false}) // Shallow merge
+  .inc({numSold: 1}) // Increment field by count
+  .commit() // Perform the patch and return a promise
+  .then(() => {
+    console.log('Hurray, the bike is updated!')
+  })
+  .catch(err => {
+    console.error('Oh no, the update failed: ', err.message)
+  })
+```
+
+### Delete a document
+
+```js
+return client.data.delete('bikeshop:bike-123')
+  .then(res => {
+    console.log('Bike deleted')
+  })
+  .catch(err => {
+    console.error('Delete failed: ', err.message'
+  })
 ```
 
 ### Get client configuration
+
 ```js
 const config = client.config()
 console.log(config.dataset)
 ```
 
 ### Set client configuration
+
 ```js
 client.config({dataset: 'newDataset'})
 ```
