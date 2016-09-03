@@ -9,7 +9,7 @@
     "build": "npm run clean && npm run compile && npm run browserify && npm run minify",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
-    "coverage": "nyc --reporter=html tape -- test/**/*.test.js",
+    "coverage": "DEBUG=sanity nyc --reporter=html tape -- test/**/*.test.js",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
