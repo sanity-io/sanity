@@ -258,7 +258,7 @@ test('can create documents', t => {
   getClient().data.create(doc)
     .then(res => {
       t.ok(res.transactionId, 'transaction id returned')
-      t.equal(res.docIds[0], doc.$id, 'document id returned')
+      t.equal(res.documentId, doc.$id, 'document id returned')
       t.end()
     })
     .catch(t.ifError)
@@ -276,7 +276,7 @@ test('can create documents without specifying ID', t => {
   getClient().data.create(doc)
     .then(res => {
       t.ok(res.transactionId, 'transaction id returned')
-      t.equal(res.docIds[0], 'foo:456', 'document id returned')
+      t.equal(res.documentId, 'foo:456', 'document id returned')
       t.end()
     })
     .catch(t.ifError)
@@ -396,14 +396,14 @@ test('executes patch when commit() is called', t => {
   const expectedPatch = {patch: {id: 'foo:123', inc: {count: 1}, set: {visited: true}}}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', expectedPatch)
-    .reply(200, {docIds: ['foo:123']})
+    .reply(200, {transactionId: 'blatti'})
 
   getClient().data.patch('foo:123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
     .then(res => {
-      t.equal(res.docIds[0], 'foo:123', 'applies given patch')
+      t.equal(res.transactionId, 'blatti', 'applies given patch')
       t.end()
     })
     .catch(t.ifError)

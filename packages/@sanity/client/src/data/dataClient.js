@@ -57,7 +57,10 @@ assign(DataClient.prototype, {
     const dataset = checkDataset(this.client.clientConfig)
     const mutation = {}
     mutation[op] = assign({}, doc, {$id: doc.$id || `${dataset}:`})
-    return this.dataRequest(op, 'm', mutation)
+    return this.dataRequest(op, 'm', mutation).then(res => ({
+      transactionId: res.transactionId,
+      documentId: res.docIds[0]
+    }))
   }
 })
 
