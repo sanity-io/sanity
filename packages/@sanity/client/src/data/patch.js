@@ -8,9 +8,17 @@ function Patch(client, documentId, operations = {}) {
 }
 
 assign(Patch.prototype, {
+  clone(addOps = {}) {
+    return new Patch(
+      this.client,
+      this.documentId,
+      assign({}, this.operations, addOps)
+    )
+  },
+
   merge(props) {
-    this.operations.merge = deepAssign(this.operations.merge || {}, props)
-    return this
+    validateObject('merge', props)
+    return this.clone({merge: deepAssign(this.operations.merge || {}, props)})
   },
 
   set(props) {
@@ -22,8 +30,8 @@ assign(Patch.prototype, {
   },
 
   replace(props) {
-    this.operations.replace = props
-    return this
+    validateObject('replace', props)
+    return this.clone({replace: props})
   },
 
   inc(props) {
@@ -58,31 +66,24 @@ assign(Patch.prototype, {
     return assign({id: this.documentId}, this.operations)
   },
 
-  then(...args) {
-    return this._commit().then(...args)
-  },
-
-  catch(handler) {
-    return this._commit().catch(handler)
-  },
-
-  _commit() {
-    if (!this.documentId) {
-      throw new Error('Document ID must be specified to perform patch operations')
-    }
-
+  commit() {
     return this.client.mutate({patch: this.serialize()})
   },
 
-  _assign(op, props) {
-    const propType = typeof props
-    if (propType !== 'object') {
-      throw new Error(`${op}() takes an object of properties, received ${propType}`)
-    }
+  reset() {
+    return new Patch(this.client, this.documentId)
+  },
 
-    this.operations[op] = assign(this.operations[op] || {}, props)
-    return this
+  _assign(op, props) {
+    validateObject(op, props)
+    return this.clone({[op]: assign({}, this.operations[op] || {}, props)})
   }
 })
+
+function validateObject(op, val) {
+  if (val === null || typeof val !== 'object' || Array.isArray(val)) {
+    throw new Error(`${op}() takes an object of properties`)
+  }
+}
 
 module.exports = Patch
