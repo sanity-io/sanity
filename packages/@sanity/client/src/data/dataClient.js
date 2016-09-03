@@ -33,7 +33,7 @@ assign(DataClient.prototype, {
   },
 
   delete(id) {
-    return this.dataRequest('delete', 'm', {id: id})
+    return this.dataRequest('delete', 'm', {delete: {id: id}})
   },
 
   mutate(mutations) {
