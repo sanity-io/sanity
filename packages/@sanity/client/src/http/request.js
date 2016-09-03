@@ -39,16 +39,20 @@ module.exports = function httpRequest(options, callback) {
         const msg = (body.errors ? body.errors.map(error => error.message) : [])
           .concat([body.error, body.message]).filter(Boolean).join('\n')
 
-        return reject(new Error(msg))
+        const error = new Error(msg || httpError(res))
+        error.responseBody = stringifyBody(body, res)
+        return reject(error)
       } else if (isHttpError) {
-        return reject(new Error(
-          `Server responded with HTTP ${res.statusCode} ${res.statusMessage || ''}, no description`
-        ))
+        return reject(new Error(httpError(res)))
       }
 
       return resolve(body)
     })
   })
+}
+
+function httpError(res) {
+  return `Server responded with HTTP ${res.statusCode} ${res.statusMessage || ''}, no description`
 }
 
 function stringifyBody(body, res) {
