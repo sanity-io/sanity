@@ -77,8 +77,17 @@ assign(Patch.prototype, {
   _assign(op, props) {
     validateObject(op, props)
     return this.clone({[op]: assign({}, this.operations[op] || {}, props)})
-  }
+  },
+
+  then: throwPromiseError('then'),
+  catch: throwPromiseError('catch')
 })
+
+function throwPromiseError(op) {
+  return () => {
+    throw new Error(`${op}() called on an uncommited patch, did you forget to call commit()?`)
+  }
+}
 
 function validateObject(op, val) {
   if (val === null || typeof val !== 'object' || Array.isArray(val)) {

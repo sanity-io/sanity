@@ -457,6 +457,13 @@ test('can reset patches to no operations, keeping document ID', t => {
   t.end()
 })
 
+test('throws when trying to use patch as a promise without calling commit()', t => {
+  const patch = getClient().data.patch('foo:123').inc({count: 1})
+  t.throws(() => patch.then(noop), /uncommited patch/, 'throws on then()')
+  t.throws(() => patch.catch(noop), /uncommited patch/, 'throws on catch()')
+  t.end()
+})
+
 /*****************
  * HTTP REQUESTS *
  *****************/
