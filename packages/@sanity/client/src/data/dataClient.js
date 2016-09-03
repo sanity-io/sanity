@@ -9,7 +9,11 @@ function DataClient(client) {
 
 assign(DataClient.prototype, {
   fetch(query, params) {
-    return this.dataRequest('fetch', 'q', {query, params})
+    return this.dataRequest('fetch', 'q', {query, params}).then(res => res.result || [])
+  },
+
+  getDocument(id) {
+    return this.fetch('*[.$id == %id]', {id}).then(results => results[0])
   },
 
   create(doc) {
