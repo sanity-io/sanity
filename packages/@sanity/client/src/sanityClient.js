@@ -50,16 +50,15 @@ assign(SanityClient.prototype, {
   removeListener(event, handler) {
     verifyEvent(event, handler)
     const handlerIndex = this.eventHandlers[event].indexOf(handler)
-    if (handlerIndex === -1) {
-      throw new Error('Event handler given is not registered for this event')
+    if (handlerIndex !== -1) {
+      this.eventHandlers[event].splice(handlerIndex, 1)
     }
 
-    this.eventHandlers[event].splice(handlerIndex, 1)
     return this
   },
 
   emit(event, ...args) {
-    const handlers = this.eventHandlers[event] || []
+    const handlers = this.eventHandlers[event]
     const promise = this.clientConfig.promise
     return handlers.length
       ? promise.all(handlers.map(handler => handler(...args)))
