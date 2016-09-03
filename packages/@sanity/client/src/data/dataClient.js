@@ -29,8 +29,7 @@ assign(DataClient.prototype, {
   },
 
   patch(documentId, operations) {
-    const patch = new Patch(this, documentId, operations)
-    return operations ? patch.commit() : patch
+    return new Patch(this, documentId, operations)
   },
 
   delete(id) {
