@@ -12,5 +12,9 @@ exports.getRequestOptions = config => {
     headers[projectHeader] = config.projectId
   }
 
-  return {headers: headers, json: true}
+  return {
+    headers: headers,
+    timeout: config.timeout || 15000,
+    json: true
+  }
 }
