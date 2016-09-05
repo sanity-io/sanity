@@ -465,6 +465,160 @@ test('throws when trying to use patch as a promise without calling commit()', t 
 })
 
 /*****************
+ * TRANSACTIONS  *
+ *****************/
+test('can build and serialize a transaction of operations', t => {
+  const trans = getClient().data.transaction()
+    .create({$id: 'foo:moo', name: 'foobar'})
+    .delete('foo:nznjkAJnjgnk')
+    .serialize()
+
+  t.deepEqual(trans, [
+    {create: {$id: 'foo:moo', name: 'foobar'}},
+    {delete: {id: 'foo:nznjkAJnjgnk'}}
+  ])
+  t.end()
+})
+
+test('each transaction operation clones transaction', t => {
+  const trans = getClient().data.transaction()
+  const create = trans.create({count: 1})
+  const del = trans.delete('foo:bar')
+  const combined = create.delete('foo:bar')
+
+  t.notEqual(trans, create, 'should be cloned')
+  t.notEqual(create, del, 'should be cloned')
+  t.notEqual(create, combined, 'should be cloned')
+
+  t.deepEqual(trans.serialize(), [], 'base transaction should be empty')
+  t.deepEqual(create.serialize(), [{create: {$id: 'foo:', count: 1}}], 'create mutation should have create op')
+  t.deepEqual(del.serialize(), [{delete: {id: 'foo:bar'}}], 'delete mutation should have delete op')
+  t.deepEqual(
+    combined.serialize(),
+    [{create: {$id: 'foo:', count: 1}}, {delete: {id: 'foo:bar'}}],
+    'combined transaction should have both create and delete ops'
+  )
+
+  t.end()
+})
+
+test('methods are chainable', t => {
+  const trans = getClient().data.transaction()
+    .create({moo: 'tools'})
+    .createIfNotExists({j: 'query'})
+    .createOrReplace({do: 'jo'})
+    .delete('proto:type')
+    .patch('foo:bar', {})
+
+  t.deepEqual(trans.serialize(), [{
+    create: {
+      $id: 'foo:',
+      moo: 'tools'
+    }
+  }, {
+    createIfNotExists: {
+      $id: 'foo:',
+      j: 'query'
+    }
+  }, {
+    createOrReplace: {
+      $id: 'foo:',
+      do: 'jo'
+    }
+  }, {
+    delete: {
+      id: 'proto:type'
+    }
+  }, {
+    patch: {
+      id: 'foo:bar'
+    }
+  }])
+
+  t.equal(trans.reset().serialize().length, 0, 'resets to 0 operations')
+  t.end()
+})
+
+test('patches can be built with callback', t => {
+  const trans = getClient().data.transaction()
+    .patch('foo:moo', p => p.inc({sales: 1}).dec({stock: 1}))
+    .serialize()
+
+  t.deepEqual(trans, [{
+    patch: {
+      id: 'foo:moo',
+      inc: {sales: 1},
+      dec: {stock: 1}
+    }
+  }])
+  t.end()
+})
+
+test('throws if patch builder does not return patch', t => {
+  t.throws(
+    () => getClient().data.transaction().patch('foo:moo', noop),
+    /must return the patch/
+  )
+  t.end()
+})
+
+test('patch can take an existing patch', t => {
+  const client = getClient()
+  const incPatch = client.data.patch('foo:bar').inc({sales: 1})
+  const trans = getClient().data.transaction().patch(incPatch).serialize()
+
+  t.deepEqual(trans, [{
+    patch: {
+      id: 'foo:bar',
+      inc: {sales: 1}
+    }
+  }])
+  t.end()
+})
+
+test('executes transaction when commit() is called', t => {
+  const expectedTransaction = [{create: {$id: 'foo:', bar: true}}, {delete: {id: 'foo:bar'}}]
+  nock(projectHost())
+    .post('/v1/data/m/foo?returnIds=true', expectedTransaction)
+    .reply(200, {transactionId: 'blatti'})
+
+  getClient().data.transaction()
+    .create({bar: true})
+    .delete('foo:bar')
+    .commit()
+    .then(res => {
+      t.equal(res.transactionId, 'blatti', 'applies given transaction')
+      t.end()
+    })
+    .catch(t.ifError)
+})
+
+test('throws when trying to use transaction as a promise without calling commit()', t => {
+  const trans = getClient().data.transaction().delete('foo:bar')
+  t.throws(() => trans.then(noop), /uncommited transaction/, 'throws on then()')
+  t.throws(() => trans.catch(noop), /uncommited transaction/, 'throws on catch()')
+  t.end()
+})
+
+test('throws when passing incorrect input to transaction operations', t => {
+  const trans = getClient().data.transaction()
+  t.throws(() => trans.create('foo'), /object of prop/, 'throws on create()')
+  t.throws(() => trans.createIfNotExists('foo'), /object of prop/, 'throws on createIfNotExists()')
+  t.throws(() => trans.createOrReplace('foo'), /object of prop/, 'throws on createOrReplace()')
+  t.throws(() => trans.delete({id: 'foo:bar'}), /document ID in format/, 'throws on delete()')
+  t.end()
+})
+
+test('can manually call clone on transaction', t => {
+  const trans1 = getClient().data.transaction().delete('foo:bar')
+  const trans2 = trans1.clone()
+
+  t.notEqual(trans1, trans2, 'actually cloned')
+  t.deepEqual(trans1.serialize(), trans2.serialize(), 'serialized to the same')
+  t.end()
+})
+
+/*****************
  * HTTP REQUESTS *
  *****************/
 

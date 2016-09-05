@@ -1,5 +1,7 @@
 const assign = require('xtend/mutable')
+const Transaction = require('./transaction')
 const Patch = require('./patch')
+const validators = require('../validators')
 
 const mutationDefaults = {returnIds: true}
 
@@ -40,10 +42,14 @@ assign(DataClient.prototype, {
     return this.dataRequest('mutate', 'm', mutations)
   },
 
+  transaction(operations) {
+    return new Transaction(this, operations)
+  },
+
   dataRequest(method, endpoint, body) {
     const query = endpoint === 'm' && mutationDefaults
     return this.client.emit('request', method, body).then(() => {
-      const dataset = checkDataset(this.client.clientConfig)
+      const dataset = validators.hasDataset(this.client.clientConfig)
       return this.client.request({
         method: 'POST',
         uri: `/data/${endpoint}/${dataset}`,
@@ -54,22 +60,13 @@ assign(DataClient.prototype, {
   },
 
   _create(doc, op) {
-    const dataset = checkDataset(this.client.clientConfig)
-    const mutation = {}
-    mutation[op] = assign({}, doc, {$id: doc.$id || `${dataset}:`})
+    const dataset = validators.hasDataset(this.client.clientConfig)
+    const mutation = {[op]: assign({}, doc, {$id: doc.$id || `${dataset}:`})}
     return this.dataRequest(op, 'm', mutation).then(res => ({
       transactionId: res.transactionId,
       documentId: res.docIds[0]
     }))
   }
 })
-
-function checkDataset(config) {
-  if (!config.dataset) {
-    throw new Error('`dataset` must be provided to perform queries')
-  }
-
-  return config.dataset
-}
 
 module.exports = DataClient

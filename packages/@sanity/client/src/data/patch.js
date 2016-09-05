@@ -1,5 +1,6 @@
 const deepAssign = require('deep-assign')
 const assign = require('xtend/mutable')
+const validateObject = require('../validators').validateObject
 
 function Patch(client, documentId, operations = {}) {
   this.operations = assign({}, operations)
@@ -86,12 +87,6 @@ assign(Patch.prototype, {
 function throwPromiseError(op) {
   return () => {
     throw new Error(`${op}() called on an uncommited patch, did you forget to call commit()?`)
-  }
-}
-
-function validateObject(op, val) {
-  if (val === null || typeof val !== 'object' || Array.isArray(val)) {
-    throw new Error(`${op}() takes an object of properties`)
   }
 }
 
