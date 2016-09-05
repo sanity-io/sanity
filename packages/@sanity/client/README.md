@@ -46,7 +46,7 @@ client.data.create(doc).then(res => {
 ### Patch/update a document
 
 ```js
-return client.data
+client.data
   .patch('bikeshop:bike-123') // Document ID to patch
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
@@ -62,12 +62,47 @@ return client.data
 ### Delete a document
 
 ```js
-return client.data.delete('bikeshop:bike-123')
+client.data.delete('bikeshop:bike-123')
   .then(res => {
     console.log('Bike deleted')
   })
   .catch(err => {
-    console.error('Delete failed: ', err.message'
+    console.error('Delete failed: ', err.message)
+  })
+```
+
+### Multiple mutations in a transaction
+
+```js
+const namePatch = client.data
+  .patch('bikeshop:bike-310')
+  .set({name: 'A Bike To Go'})
+
+client.data.transaction()
+  .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
+  .delete('bikeshop:bike-123')
+  .patch(namePatch)
+  .commit()
+  .then(res => {
+    console.log('Whole lot of stuff just happened')
+  })
+  .catch(err => {
+    console.error('Transaction failed: ', err.message)
+  })
+```
+
+Patches can also be built inline:
+
+```js
+client.data.transaction()
+  .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
+  .patch('bikeshop:bike-123', p => p.set({inStock: false}))
+  .commit()
+  .then(res => {
+    console.log('Bike created and a different bike is updated')
+  })
+  .catch(err => {
+    console.error('Transaction failed: ', err.message)
   })
 ```
 

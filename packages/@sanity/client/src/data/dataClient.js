@@ -31,11 +31,13 @@ assign(DataClient.prototype, {
   },
 
   patch(documentId, operations) {
+    validators.validateDocumentId('patch', documentId)
     return new Patch(this, documentId, operations)
   },
 
-  delete(id) {
-    return this.dataRequest('delete', 'm', {delete: {id: id}})
+  delete(documentId) {
+    validators.validateDocumentId('delete', documentId)
+    return this.dataRequest('delete', 'm', {delete: {id: documentId}})
   },
 
   mutate(mutations) {

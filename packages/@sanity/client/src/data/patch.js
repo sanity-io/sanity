@@ -58,8 +58,8 @@ assign(Patch.prototype, {
     throw new Error('Not implemented yet')
   },
 
-  // @todo slice? splice? implement when in gradient
-  slice(props) {
+  // @todo implement when in gradient
+  splice(props) {
     throw new Error('Not implemented yet')
   },
 
