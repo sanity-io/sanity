@@ -72,7 +72,7 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
     default: sluggedName
   })
 
-  await apiClient({api: {projectId}}).createDataset(datasetName)
+  await apiClient({api: {projectId}}).datasets.create(datasetName)
 
   // Gather project defaults based on environment
   const defaults = await getProjectDefaults(options.rootDir, options)
@@ -156,7 +156,7 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
   }
 
   async function getOrCreateProject() {
-    const projects = await apiClient({requireProject: false}).getProjects()
+    const projects = await apiClient({requireProject: false}).projects.list()
 
     if (projects.length === 0) {
       debug('No projects found for user, prompting for name')

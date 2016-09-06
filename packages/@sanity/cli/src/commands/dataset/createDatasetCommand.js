@@ -9,7 +9,7 @@ export default {
     return (options.datasetName
       ? Promise.resolve(options.datasetName)
       : promptForDatasetName(prompt)
-    ).then(name => client.createDataset(name))
+    ).then(name => client.datasets.create(name))
   }
 }
 

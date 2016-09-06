@@ -10,6 +10,6 @@ export default {
       throw new Error('Dataset name must be provided')
     }
 
-    client.deleteDataset(name)
+    client.datasets.delete(name)
   }
 }

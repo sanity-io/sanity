@@ -32,7 +32,7 @@
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
     "@sanity/check": "^1.0.1",
-    "@sanity/client-next": "^1.1.6",
+    "@sanity/client-next": "^2.0.0",
     "@sanity/resolver": "^3.0.1",
     "@sanity/server": "^1.2.33",
     "@sanity/storybook": "^2.0.6",
