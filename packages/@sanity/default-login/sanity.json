@@ -14,8 +14,8 @@
       "path": "authenticationFetcher.js"
     },
     {
-      "implements": "machine:@sanity/base/installation-fetcher",
-      "path": "installationFetcher.js"
+      "implements": "machine:@sanity/base/project-fetcher",
+      "path": "projectFetcher.js"
     },
     {
       "implements": "locale:@sanity/base/locale-messages",

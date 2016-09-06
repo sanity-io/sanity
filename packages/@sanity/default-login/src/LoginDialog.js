@@ -1,5 +1,5 @@
-import React, {PropTypes} from 'react'
-import installationStore from 'datastore:@sanity/base/installation'
+import React from 'react'
+import projectStore from 'datastore:@sanity/base/project'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
 import config from 'config:sanity'
 import pluginConfig from 'config:@sanity/default-login'
@@ -8,19 +8,19 @@ export default class LoginDialog extends React.Component {
 
   constructor() {
     super()
-    this.state = {installation: null}
+    this.state = {project: null}
   }
 
   componentWillMount() {
-    this.installationSubscription = installationStore.currentInstallation
-      .map(ev => ev.installation)
+    this.projectSubscription = projectStore.currentProject
+      .map(ev => ev.project)
       .subscribe({
-        next: installation => {
-          this.setState({installation: installation})
+        next: project => {
+          this.setState({project: project})
         },
         error: error => {
-          if (error instanceof installationStore.errors.NotFoundError) {
-            this.setState({installation: null, error: error})
+          if (error instanceof projectStore.errors.NotFoundError) {
+            this.setState({project: null, error: error})
             return
           }
           throw error
@@ -29,13 +29,13 @@ export default class LoginDialog extends React.Component {
   }
 
   componentWillUnmount() {
-    this.installationSubscription.unsubscribe()
+    this.projectSubscription.unsubscribe()
   }
 
   handleLoginButtonClicked(evnt) {
     evnt.preventDefault()
     const providerName = this
-    window.location = `${pluginConfig.defaultLogin.host}/api/sanction/v1/installations/`
+    window.location = `${pluginConfig.defaultLogin.host}/api/sanction/v1/projects/`
       + `${config.api.dataset}/login/${providerName}?target=${encodeURIComponent(window.location)}`
   }
 
@@ -45,7 +45,7 @@ export default class LoginDialog extends React.Component {
         <h3>
           <FormattedMessage id="loginWithProvider" />
         </h3>
-        {this.state.installation.loginProviders.map(providerName => {
+        {this.state.project.loginProviders.map(providerName => {
           return (
             <div key={providerName}>
               <button onClick={this.handleLoginButtonClicked.bind(providerName)}>
@@ -71,7 +71,7 @@ export default class LoginDialog extends React.Component {
             </div>
           )
         }
-        {this.state.installation && this.renderLoginScreen()}
+        {this.state.project && this.renderLoginScreen()}
       </div>
     )
   }

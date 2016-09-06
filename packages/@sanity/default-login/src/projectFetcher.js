@@ -1,13 +1,13 @@
 import request from '@sanity/request'
 import pluginConfig from 'config:@sanity/default-login'
 
-const getInstallationUrl = `${pluginConfig.defaultLogin.host}/api/sanction/v1/installations`
+const getProjectUrl = `${pluginConfig.defaultLogin.host}/api/sanction/v1/project`
 
 export default {
-  getInstallation: label => {
+  getProject: label => {
     return new Promise((resolve, reject) => {
       request({
-        url: `${getInstallationUrl}/${label}`,
+        url: `${getProjectUrl}/${label}`,
         withCredentials: false
       }, (err, res, body) => {
         let json
