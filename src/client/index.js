@@ -2,15 +2,15 @@ import sanityClient from '@sanity/client-next'
 import config from 'config:sanity'
 import userStore from 'datastore:@sanity/base/user'
 
-const MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN = 60*2*1000 // How many ms left of token expiration time before we obtain a new token
+const MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN = 60 * 2 * 1000 // How many ms left of token expiration time before we obtain a new token
 let currentTokenPayload = null
 
 function base64urlDecode(str) {
   return window.atob(base64urlUnescape(str))
 }
 
-function base64urlUnescape(str) {
-  str += new Array(5 - str.length % 4).join('=')
+function base64urlUnescape(string) {
+  const str = string + new Array(5 - string.length % 4).join('=')
   return str.replace(/\-/g, '+').replace(/_/g, '/')
 }
 
@@ -24,18 +24,15 @@ function tokenIsExpired(tokenPayload) {
   if (!tokenPayload) {
     return true
   }
+
   const tokenTime = currentTokenPayload.x * 1000
-  const now = Date.now()
-  if ((tokenTime - now) > MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN) {
-    return false
-  }
-  return true
+  return (tokenTime - Date.now()) <= MS_BEFORE_EXPIRATION_TO_RENEW_TOKEN
 }
 
 const client = sanityClient(config.api)
-client.on('request', updateClientTokenPromise)
+client.on('request', updateClientToken)
 
-function updateClientTokenPromise() {
+function updateClientToken() {
   if (!tokenIsExpired(currentTokenPayload)) {
     return Promise.resolve()
   }

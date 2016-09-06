@@ -147,8 +147,8 @@
       "description": "Fetches the logged in user and JSON web token."
     },
     {
-      "name": "machine:@sanity/base/installation-fetcher",
-      "description": "Fetches data about an installation."
+      "name": "machine:@sanity/base/project-fetcher",
+      "description": "Fetches data about an project."
     },
     {
       "name": "component:@sanity/base/sanity-intl-provider",
@@ -296,8 +296,8 @@
       "path": "datastores/user"
     },
     {
-      "name": "datastore:@sanity/base/installation",
-      "path": "datastores/installation"
+      "name": "datastore:@sanity/base/project",
+      "path": "datastores/project"
     },
     {
       "name": "router:@sanity/base/router",

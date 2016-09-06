@@ -1,7 +1,7 @@
 import Observable from '../utils/SanityStoreObservable'
 import createActions from '../utils/createActions'
 import pubsubber from '../utils/pubsubber'
-import installationFetcher from 'machine:@sanity/base/installation-fetcher'
+import projectFetcher from 'machine:@sanity/base/project-fetcher'
 import config from 'config:sanity'
 
 function AccessDeniedError(message) {
@@ -32,33 +32,33 @@ function handleApiError(errObj, observer) {
   }
   if (errObj.code === 'NOT_FOUND_ERROR') {
     return observer.error(
-      new NotFoundError(`An installation with label '${config.api.dataset}' not found. Check your installation's sanity.json file.`)
+      new NotFoundError(`An project with label '${config.api.dataset}' not found. Check your project's sanity.json file.`)
     )
   }
   return observer.error(new UnknownApiError(errObj))
 }
 
 
-const installationChannel = pubsubber()
+const projectChannel = pubsubber()
 
-let _currentInstallation = null
+let _currentProject = null
 
-installationChannel.subscribe(val => {
-  _currentInstallation = val
+projectChannel.subscribe(val => {
+  _currentProject = val
 })
 
-function currentInstallation() {
+function currentProject() {
 
   return new Observable(observer => {
 
-    emitInstallation('snapshot')
+    emitProject('snapshot')
 
-    function emitInstallation(eventName) {
-      installationFetcher.getInstallation(config.api.dataset)
-        .then(installation => {
+    function emitProject(eventName) {
+      projectFetcher.getProject(config.api.dataset)
+        .then(project => {
           observer.next({
             event: eventName,
-            installation: installation
+            project: project
           })
         })
         .catch(error => {
@@ -68,10 +68,10 @@ function currentInstallation() {
   })
 }
 
-export default function createInstallationsStore(options = {}) {
+export default function createProjectsStore(options = {}) {
   return {
     actions: createActions({}),
-    currentInstallation: currentInstallation(),
+    currentProject: currentProject(),
     errors: {
       AccessDeniedError: AccessDeniedError,
       NotFoundError: NotFoundError,
