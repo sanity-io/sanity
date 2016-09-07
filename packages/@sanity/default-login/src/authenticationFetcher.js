@@ -1,51 +1,46 @@
 import request from '@sanity/request'
 import pluginConfig from 'config:@sanity/default-login'
 
-const getCurrentUserUrl = `${pluginConfig.defaultLogin.host}/api/sanction/v1/users/me`
-const getTokenUrl = `${pluginConfig.defaultLogin.host}/api/sanction/v1/users/me/token`
-const logoutUrl = `${pluginConfig.defaultLogin.host}/api/sanction/v1/users/logout`
+const getCurrentUserUrl = `${pluginConfig.defaultLogin.host}/users/me`
+const getProvidersUrl = `${pluginConfig.defaultLogin.host}/auth/providers`
+const logoutUrl = `${pluginConfig.defaultLogin.host}/auth/logout`
 
 export default {
+  getProviders: () => {
+    return new Promise((resolve, reject) => {
+      request({
+        url: getProvidersUrl,
+        json: true,
+        withCredentials: true
+      }, (err, res, body) => {
+        if (err) {
+          return reject(err)
+        }
+        if (res.statusCode === 200) {
+          return resolve(body.providers)
+        }
+        return reject(new Error(JSON.stringify(body)))
+      })
+    })
+  },
   getCurrentUser: () => {
     return new Promise((resolve, reject) => {
       request({
         url: getCurrentUserUrl,
+        json: true,
         withCredentials: true
-      }, (err, res, body) => {
-        let json
-        if (body) {
-          json = JSON.parse(body)
-        }
-        if (!err && json && res.statusCode === 200) {
-          return resolve(json)
-        }
-        if (json && json.error) {
-          if (json.error.code === 'NO_CURRENT_USER') {
-            return resolve(null)
+      }, (err, res, user) => {
+        if (!err && res.statusCode === 200) {
+          if (err) {
+            return reject(err)
           }
-          return reject(json.error)
+          if (Object.keys(user).length === 0 && user.constructor === Object) {
+            return resolve(null)
+          } else {
+            return resolve(user)
+          }
         }
-        return reject(err)
-      })
-    })
-  },
-  getToken: () => {
-    return new Promise((resolve, reject) => {
-      request({
-        url: getTokenUrl,
-        withCredentials: true
-      }, (err, res, body) => {
-        let json
-        if (body) {
-          json = JSON.parse(body)
-        }
-        if (!err && json && res.statusCode === 200) {
-          return resolve(json.token)
-        }
-        if (json && json.error) {
-          return reject(json.error)
-        }
-        return reject(err)
+        return reject(new Error(JSON.stringify(body)))
       })
     })
   },
@@ -53,19 +48,16 @@ export default {
     return new Promise((resolve, reject) => {
       request({
         url: logoutUrl,
-        withCredentials: true
+        withCredentials: true,
+        json: true
       }, (err, res, body) => {
-        let json
-        if (body) {
-          json = JSON.parse(body)
+        if (err) {
+          return reject(err)
         }
-        if (!err && res.statusCode === 200) {
+        if (res.statusCode === 200) {
           return resolve()
         }
-        if (json && json.error) {
-          return reject(json.error)
-        }
-        return reject(err)
+        return reject(new Error(JSON.stringify(body)))
       })
     })
   }

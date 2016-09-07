@@ -1,5 +1,5 @@
 import React from 'react'
-import projectStore from 'datastore:@sanity/base/project'
+import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
 import config from 'config:sanity'
 import pluginConfig from 'config:@sanity/default-login'
@@ -8,35 +8,21 @@ export default class LoginDialog extends React.Component {
 
   constructor() {
     super()
-    this.state = {project: null}
+    this.state = {providers: [], error: null}
   }
 
   componentWillMount() {
-    this.projectSubscription = projectStore.currentProject
-      .map(ev => ev.project)
-      .subscribe({
-        next: project => {
-          this.setState({project: project})
-        },
-        error: error => {
-          if (error instanceof projectStore.errors.NotFoundError) {
-            this.setState({project: null, error: error})
-            return
-          }
-          throw error
-        }
-      })
-  }
-
-  componentWillUnmount() {
-    this.projectSubscription.unsubscribe()
+    authenticationFetcher.getProviders().then(providers => {
+      this.setState({providers: providers})
+    }).catch(err => {
+      this.setState({error: err})
+    })
   }
 
   handleLoginButtonClicked(evnt) {
     evnt.preventDefault()
     const providerName = this
-    window.location = `${pluginConfig.defaultLogin.host}/api/sanction/v1/projects/`
-      + `${config.api.dataset}/login/${providerName}?target=${encodeURIComponent(window.location)}`
+    window.location = `${pluginConfig.defaultLogin.host}/auth/login/${providerName}?target=${encodeURIComponent(window.location)}`
   }
 
   renderLoginScreen() {
@@ -45,11 +31,11 @@ export default class LoginDialog extends React.Component {
         <h3>
           <FormattedMessage id="loginWithProvider" />
         </h3>
-        {this.state.project.loginProviders.map(providerName => {
+        {this.state.providers.map(provider => {
           return (
-            <div key={providerName}>
-              <button onClick={this.handleLoginButtonClicked.bind(providerName)}>
-                <FormattedMessage id={providerName} />
+            <div key={provider.name}>
+              <button onClick={this.handleLoginButtonClicked.bind(provider.name)}>
+                <FormattedMessage id={provider.name} />
               </button>
             </div>
           )
@@ -65,13 +51,10 @@ export default class LoginDialog extends React.Component {
           this.state.error && (
             <div className="error">
               {this.state.error.message}
-              {this.state.error.details && this.state.error.details.map((detail, index) => {
-                return <div key={`errorDetail-${index}`}>{detail.message}</div>
-              })}
             </div>
           )
         }
-        {this.state.project && this.renderLoginScreen()}
+        {this.state.providers.length > 0 && this.renderLoginScreen()}
       </div>
     )
   }
