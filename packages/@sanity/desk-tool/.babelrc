@@ -1,7 +1,9 @@
 {
   "presets": ["es2015", "react"],
   "plugins": [
+    "syntax-class-properties",
+    "syntax-object-rest-spread",
     "transform-object-rest-spread",
-    "syntax-object-rest-spread"
+    "transform-class-properties"
   ]
 }
