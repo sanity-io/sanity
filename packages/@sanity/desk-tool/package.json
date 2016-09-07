@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^1.0.4",
-    "@sanity/form-builder": "^1.1.19",
+    "@sanity/form-builder": "^1.1.22",
     "@sanity/state-router": "0.0.0",
     "shallow-equals": "0.0.0"
   },
