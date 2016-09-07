@@ -6,18 +6,24 @@ import FormBuilder from './SanityFormBuilder'
 import equals from 'shallow-equals'
 import {unprefixType} from './utils/unprefixType'
 import schema from 'schema:@sanity/base/schema'
-import location from 'datastore:@sanity/base/location'
 
 const preventDefault = ev => ev.preventDefault()
 
 function createFormBuilderStateFrom(serialized, typeName) {
   return serialized ? FormBuilder.deserialize(unprefixType(serialized), typeName) : FormBuilder.createEmpty(typeName)
 }
+const noop = () => {}
 
 export default class SanityFormBuilder extends React.Component {
   static propTypes = {
     documentId: PropTypes.string,
+    onCreated: PropTypes.func,
+    onUpdated: PropTypes.func,
     typeName: PropTypes.string
+  };
+  static defaultProps = {
+    onCreated: noop,
+    onUpdated: noop,
   };
 
   constructor(props, ...rest) {
@@ -93,21 +99,14 @@ export default class SanityFormBuilder extends React.Component {
     if (this.creating) {
       return
     }
-    const {typeName} = this.props
+    const {typeName, onCreate} = this.props
     const prefixedType = `${schema.name}.${typeName}`
     const nextValue = this.state.value.patch(patch)
     this.creating = true
     return documentStore
       .create(Object.assign(nextValue.serialize(), {$type: prefixedType}))
       .delay(1000) // Need to wait for document to actual exist in ES index
-      .do(result => {
-        // todo: fix this
-        location.actions.navigate(document.location.pathname
-          .split('/')
-          .slice(0, -1)
-          .concat(result.documentId)
-          .join('/'))
-      })
+      .do(onCreated)
   }
 
   handleDocPatch(patch) {
