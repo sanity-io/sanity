@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import ToolSwitcher from './ToolSwitcher'
 import RenderTool from './RenderTool'
-import {Router, Route, Redirect} from 'router:@sanity/base/router'
+import {RouteScope} from '@sanity/state-router'
 import styles from '../../styles/DefaultLayout.css'
 import tools from 'all:tool:@sanity/base/tool'
 import absolutes from 'all:component:@sanity/base/absolutes'
@@ -10,9 +10,18 @@ import Logo from './Logo'
 import Hamburger from './Hamburger'
 
 class DefaultLayout extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object,
+  }
+  componentWillMount() {
+    const {router} = this.context
+    console.log(router.state)
+    if (!router.state.tool) {
+      router.navigate({tool: tools[0].name})
+    }
+  }
   render() {
-    const activeToolName = this.props.location.pathname.split('/', 2)[1]
-
+    const {router} = this.context
     return (
       <div className={styles.defaultLayout}>
 
@@ -22,7 +31,7 @@ class DefaultLayout extends React.Component {
           </div>
           <div className={styles.menu}>
             <Hamburger>
-              <ToolSwitcher tools={tools} activeToolName={activeToolName} className={styles.toolSwitcher} />
+              <ToolSwitcher tools={tools} activeToolName={router.state.tool} className={styles.toolSwitcher} />
               <LoginStatus className={styles.loginStatus} />
             </Hamburger>
           </div>
@@ -30,10 +39,9 @@ class DefaultLayout extends React.Component {
 
 
         <div className={styles.toolContainer}>
-          <Router>
-            <Redirect path="/" to={`/${tools.length ? tools[0].name : ''}`} />
-            <Route path="/:tool/*" component={RenderTool} />
-          </Router>
+          <RouteScope scope={router.state.tool}>
+            <RenderTool tool={router.state.tool} />
+          </RouteScope>
         </div>
 
 

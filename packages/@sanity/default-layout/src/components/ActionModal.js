@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
-import {Link} from 'router:@sanity/base/router'
-import locationStore from 'datastore:@sanity/base/location'
+import {StateLink} from '@sanity/state-router'
 import FullScreenDialog from 'component:@sanity/components/dialogs/fullscreen'
 import styles from 'style:@sanity/default-layout/action-modal'
 
@@ -10,13 +9,13 @@ function ActionModal(props) {
       <ul className={styles.content}>
         {props.actions.map(action =>
           <li className={styles.item} key={action.title}>
-            <Link
+            <StateLink
               onClick={props.onClose}
-              href={action.url}
+              state={action.nextState}
               className={styles.actionLink}
             >
               {action.title}
-            </Link>
+            </StateLink>
           </li>
         )}
       </ul>
