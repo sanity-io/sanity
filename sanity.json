@@ -147,10 +147,6 @@
       "description": "Fetches the logged in user and JSON web token."
     },
     {
-      "name": "machine:@sanity/base/project-fetcher",
-      "description": "Fetches data about an project."
-    },
-    {
       "name": "component:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
