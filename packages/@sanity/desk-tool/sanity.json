@@ -22,7 +22,7 @@
 
     {
       "implements": "config:desk-tool/pane-resolver",
-      "path": "schemaPaneResolver.js"
+      "path": "SchemaPaneResolver.js"
     },
 
     {
