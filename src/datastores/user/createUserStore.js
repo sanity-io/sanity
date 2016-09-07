@@ -24,17 +24,9 @@ function refreshUser() {
   })
 }
 
-function refreshToken() {
-  return authenticationFetcher.getToken().then(token => {
-    tokenChannel.publish(token)
-    return token
-  })
-}
-
 // Set initial value for user
 refreshUser()
-// Set initial value for user
-refreshToken()
+
 
 function logout() {
   return authenticationFetcher.logout().then(() => {
