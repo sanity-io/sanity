@@ -25,7 +25,6 @@ class DefaultLayoutRouter extends React.Component {
   }
 
   handleNavigate(newUrl, options) {
-    debugger
     locationStore.actions.navigate(newUrl, options)
   }
 
