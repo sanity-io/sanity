@@ -2,6 +2,7 @@
 
 import React, {PropTypes} from 'react'
 import documentStore from 'datastore:@sanity/base/document'
+import Spinner from 'component:@sanity/components/loading/spinner'
 import FormBuilder from './SanityFormBuilder'
 import equals from 'shallow-equals'
 import {unprefixType} from './utils/unprefixType'
@@ -12,7 +13,8 @@ const preventDefault = ev => ev.preventDefault()
 function createFormBuilderStateFrom(serialized, typeName) {
   return serialized ? FormBuilder.deserialize(unprefixType(serialized), typeName) : FormBuilder.createEmpty(typeName)
 }
-const noop = () => {}
+const noop = () => {
+}
 
 export default class SanityFormBuilder extends React.Component {
   static propTypes = {
@@ -29,7 +31,10 @@ export default class SanityFormBuilder extends React.Component {
   constructor(props, ...rest) {
     super(props, ...rest)
 
-    this.state = {value: FormBuilder.createEmpty(props.typeName)}
+    this.state = {
+      value: FormBuilder.createEmpty(props.typeName),
+      progress: null
+    }
 
     this.handleChange = this.handleChange.bind(this)
     this.handleDocPatch = this.handleDocPatch.bind(this)
@@ -62,12 +67,15 @@ export default class SanityFormBuilder extends React.Component {
 
     this.subscriptions = [initialSubscription, updateSubscription]
   }
+
   tearDownSubscriptions() {
     this.subscriptions.forEach(sub => sub.unsubscribe())
   }
+
   componentWillMount() {
     this.setupSubscriptions(this.props)
   }
+
   componentWillUnmount() {
     this.tearDownSubscriptions()
   }
@@ -86,27 +94,38 @@ export default class SanityFormBuilder extends React.Component {
 
     const id = this.state.value.getFieldValue('$id')
 
-    const op = id ? this.update(id, event.patch) : this.create(event.patch)
+    if (id) {
+      this.update(id, event.patch)
+    } else {
+      this.create(event.patch)
+    }
+  }
 
-    op.subscribe(() => {
-      console.log('Document saved…')
-    })
-  }
   update(id, patch) {
-    return documentStore.update(id, patch)
+    this.setState({progress: 'Saving…'})
+    return documentStore
+      .update(id, patch)
+      .subscribe(result => {
+        this.setState({progress: null})
+      })
   }
+
   create(patch) {
     if (this.creating) {
       return
     }
-    const {typeName, onCreate} = this.props
+    const {typeName, onCreated} = this.props
     const prefixedType = `${schema.name}.${typeName}`
     const nextValue = this.state.value.patch(patch)
     this.creating = true
+    this.setState({progress: 'Creating…'})
     return documentStore
       .create(Object.assign(nextValue.serialize(), {$type: prefixedType}))
-      .delay(1000) // Need to wait for document to actual exist in ES index
-      .do(onCreated)
+      .delay(1100) // Need to wait for document to actual exist in ES index
+      .subscribe(result => {
+        this.setState({progress: null})
+        onCreated({id: result.documentId})
+      })
   }
 
   handleDocPatch(patch) {
@@ -115,18 +134,25 @@ export default class SanityFormBuilder extends React.Component {
   }
 
   render() {
-    const {value, saving, validation} = this.state
+    const {value, progress, saving, validation} = this.state
 
     return (
       <div className="content">
         <form className="form-container" onSubmit={preventDefault}>
+          <div style={{float: 'right', top: 0, right: 5, height: '1rem'}}>
+            {progress && (
+              <div>
+                <div style={{paddingRight: 5, display: 'inline-block'}}><Spinner/></div>
+                {progress}
+              </div>
+            )}
+          </div>
           <FormBuilder
             value={value}
             validation={validation}
             onChange={this.handleChange}
           />
         </form>
-
         <p>
           <button disabled={saving} onClick={this.handleSave}>
             {saving ? 'Saving...' : 'Save'}
