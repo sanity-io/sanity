@@ -1,37 +1,22 @@
 import React, {PropTypes} from 'react'
 import styles from '../../styles/Pane.css'
-import PaneItem from './PaneItem'
-import equals from 'shallow-equals'
 
 class Pane extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
-  }
 
   render() {
-    const {basePath, loading, items, activeItem, isActive} = this.props
-
+    const {loading, items, renderItem, isActive} = this.props
     return (
       <div className={isActive ? styles.isActive : styles.pane}>
         <ul className={styles.paneItems}>
-        {loading
-          ? <li>Loading...</li>
-          : items && items.map(item => {
-            const href = `${basePath}/${item.pathSegment}`.replace(/^\/+/, '/')
-            const className = activeItem === item.pathSegment
-              ? styles.activePaneItemLink
-              : styles.paneItemLink
-
+          {loading && <li>Loading...</li>}
+          {items.map((item, i) => {
             return (
-              <PaneItem
-                key={item.pathSegment}
-                title={item.title}
-                className={className}
-                href={href}
-              />
+              <li className={styles.paneItem} key={item.key}>
+                {renderItem(item, i)}
+              </li>
             )
           })
-        }
+          }
         </ul>
       </div>
     )
@@ -39,16 +24,14 @@ class Pane extends React.Component {
 }
 
 Pane.defaultProps = {
-  basePath: '/',
-  isActive: false
+  isActive: false,
+  items: []
 }
 
 Pane.propTypes = {
-  basePath: PropTypes.string,
   loading: PropTypes.bool,
   items: PropTypes.array,
-  activeItem: PropTypes.any,
-  isActive: PropTypes.bool
+  renderItem: PropTypes.func
 }
 
 export default Pane

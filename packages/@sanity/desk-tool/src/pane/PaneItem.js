@@ -1,7 +1,5 @@
 import React, {PropTypes} from 'react'
-import {Link} from 'router:@sanity/base/router'
 import equals from 'shallow-equals'
-import styles from '../../styles/Pane.css'
 
 class PaneItem extends React.Component {
   shouldComponentUpdate(nextProps) {
@@ -9,19 +7,18 @@ class PaneItem extends React.Component {
   }
 
   render() {
-    const {href, className, title} = this.props
+    const {children} = this.props
 
     return (
       <li className={styles.paneItem}>
-        <Link className={className} href={href}>{title}</Link>
+        {children}
       </li>
     )
   }
 }
 
 PaneItem.propTypes = {
-  href: PropTypes.string,
-  title: PropTypes.string,
+  children: PropTypes.string,
   className: PropTypes.string
 }
 

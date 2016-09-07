@@ -3,18 +3,16 @@ import styles from '../styles/DeskTool.css'
 import PaneResolver from 'config:desk-tool/pane-resolver'
 import ActionButton from 'component:@sanity/base/action-button?'
 import schema from 'schema:@sanity/base/schema'
-import config from 'config:sanity'
 
-function DeskTool({location}) {
+function DeskTool() {
   const actions = (schema.types || []).map(type => ({
-    url: `/${type.name}/${config.api.dataset}:`,
-    title: type.name.substr(0, 1).toUpperCase() + type.name.substr(1)
+    nextState: {selectedType: type.name, action: 'create', selectedDocumentId: `${type.name}:`},
+    title: type.name.substr(0, 1).toUpperCase() + type.name.substring(1)
   }))
 
   return (
     <div className={styles.deskTool}>
-      <PaneResolver location={location.pathname} />
-
+      <PaneResolver />
       {ActionButton && <ActionButton actions={actions} />}
     </div>
   )
