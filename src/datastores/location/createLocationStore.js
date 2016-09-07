@@ -12,7 +12,7 @@ function readLocation() {
 
 const interceptors = []
 
-function navigate(nextUrl) {
+function navigate(nextUrl, options) {
   if (interceptors.length > 0) {
     let cancelled = false
     const nextNavigation = {
@@ -32,7 +32,11 @@ function navigate(nextUrl) {
     }
   }
 
-  history.push(nextUrl)
+  if (options.replace) {
+    history.replace(nextUrl)
+  } else {
+    history.push(nextUrl)
+  }
   return {progress: new Observable(noop)}
 }
 
