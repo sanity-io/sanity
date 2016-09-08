@@ -464,6 +464,31 @@ test('throws when trying to use patch as a promise without calling commit()', t 
   t.end()
 })
 
+test('patch has toJSON() which serializes patch', t => {
+  const patch = getClient().data.patch('foo:123').inc({count: 1})
+  t.deepEqual(
+    JSON.parse(JSON.stringify(patch)),
+    JSON.parse(JSON.stringify({id: 'foo:123', inc: {count: 1}}))
+  )
+  t.end()
+})
+
+test('Patch is available on client and can be used without instantiated client', t => {
+  const patch = new sanityClient.Patch('foo:bar')
+  t.deepEqual(
+    patch.inc({foo: 1}).dec({bar: 2}).serialize(),
+    {id: 'foo:bar', inc: {foo: 1}, dec: {bar: 2}},
+    'patch should work without context'
+  )
+  t.end()
+})
+
+test('patch commit() throws if called without a client', t => {
+  const patch = new sanityClient.Patch('foo:bar')
+  t.throws(() => patch.dec({bar: 2}).commit(), /client.*mutate/i)
+  t.end()
+})
+
 /*****************
  * TRANSACTIONS  *
  *****************/
@@ -615,6 +640,37 @@ test('can manually call clone on transaction', t => {
 
   t.notEqual(trans1, trans2, 'actually cloned')
   t.deepEqual(trans1.serialize(), trans2.serialize(), 'serialized to the same')
+  t.end()
+})
+
+test('transaction has toJSON() which serializes patch', t => {
+  const trans = getClient().data.transaction().create({count: 1})
+  t.deepEqual(
+    JSON.parse(JSON.stringify(trans)),
+    JSON.parse(JSON.stringify([{create: {$id: 'foo:', count: 1}}]))
+  )
+  t.end()
+})
+
+test('Transaction is available on client and can be used without instantiated client', t => {
+  const trans = new sanityClient.Transaction()
+  t.deepEqual(
+    trans.delete('foo:bar').serialize(),
+    [{delete: {id: 'foo:bar'}}],
+    'transaction should work without context'
+  )
+  t.end()
+})
+
+test('transaction create() throws if called without a client and document lacks id', t => {
+  const trans = new sanityClient.Transaction()
+  t.throws(() => trans.create({foo: 'bar'}), /document needs an \$id/i)
+  t.end()
+})
+
+test('transaction commit() throws if called without a client', t => {
+  const trans = new sanityClient.Transaction()
+  t.throws(() => trans.delete('foo:bar').commit(), /client.*mutate/i)
   t.end()
 })
 

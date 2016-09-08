@@ -106,6 +106,32 @@ client.data.transaction()
   })
 ```
 
+Transactions and patches can also be built outside the scope of a client:
+
+```js
+const sanityClient = require('@sanity/client-next')
+const client = sanityClient({
+  projectId: 'your-project-id',
+  dataset: 'bikeshop'
+})
+
+// Patches:
+const patch = new sanityClient.Patch('<documentId>')
+client.data.mutate(patch.inc({count: 1}).unset(['visits']))
+
+// Transactions:
+const transcation = new sanityClient.Transaction()
+  .create({$id: 'foo:123', name: 'FooBike'})
+  .delete('foo:bar')
+
+client.data.mutate(transaction)
+```
+
+A few notes on this approach, however:
+
+* You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.data.mutate()`
+* Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `$id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `$id` to `<datasetName:>`
+
 ### Get client configuration
 
 ```js

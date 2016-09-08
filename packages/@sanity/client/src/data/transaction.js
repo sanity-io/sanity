@@ -2,16 +2,16 @@ const assign = require('xtend/mutable')
 const Patch = require('./patch')
 const validators = require('../validators')
 
-function Transaction(dataClient, operations = []) {
-  this.dataClient = dataClient
+function Transaction(operations = [], dataClient) {
   this.operations = operations
+  this.dataClient = dataClient
 }
 
 assign(Transaction.prototype, {
   clone(addMutations = []) {
     return new Transaction(
-      this.dataClient,
-      this.operations.concat(addMutations)
+      this.operations.concat(addMutations),
+      this.dataClient
     )
   },
 
@@ -43,7 +43,7 @@ assign(Transaction.prototype, {
 
     // patch => patch.inc({visits: 1}).set({foo: 'bar'})
     if (isBuilder) {
-      const patch = patchOps(new Patch(this.dataClient.client, documentId))
+      const patch = patchOps(new Patch(documentId, {}, this.dataClient && this.dataClient.client))
       if (!(patch instanceof Patch)) {
         throw new Error('function passed to `patch()` must return the patch')
       }
@@ -58,8 +58,19 @@ assign(Transaction.prototype, {
     return this.operations.slice()
   },
 
+  toJSON() {
+    return this.serialize()
+  },
+
   commit() {
-    return this.dataClient.mutate(this.serialize())
+    if (this.dataClient) {
+      return this.dataClient.mutate(this.serialize())
+    }
+
+    throw new Error(
+      'No `client` passed to transaction, either provide one or pass the '
+      + 'transaction to a clients `data.mutate()` method'
+    )
   },
 
   reset() {
@@ -68,6 +79,13 @@ assign(Transaction.prototype, {
   },
 
   _create(doc, op) {
+    if (!doc.$id && !this.dataClient) {
+      throw new Error(
+        'Document needs an $id property when transaction is create outside a client scope. '
+        + 'Pass `{$id: "<datasetName>:"}` to have Sanity generate an ID for you.'
+      )
+    }
+
     validators.validateObject(op, doc)
     const dataset = validators.hasDataset(this.dataClient.client.clientConfig)
     const mutation = {[op]: assign({}, doc, {$id: doc.$id || `${dataset}:`})}

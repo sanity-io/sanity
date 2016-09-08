@@ -32,7 +32,7 @@ assign(DataClient.prototype, {
 
   patch(documentId, operations) {
     validators.validateDocumentId('patch', documentId)
-    return new Patch(this, documentId, operations)
+    return new Patch(documentId, operations, this)
   },
 
   delete(documentId) {
@@ -41,11 +41,15 @@ assign(DataClient.prototype, {
   },
 
   mutate(mutations) {
-    return this.dataRequest('mutate', 'm', mutations)
+    return this.dataRequest('mutate', 'm',
+      mutations instanceof Patch
+        ? mutations.serialize()
+        : mutations
+    )
   },
 
   transaction(operations) {
-    return new Transaction(this, operations)
+    return new Transaction(operations, this)
   },
 
   dataRequest(method, endpoint, body) {

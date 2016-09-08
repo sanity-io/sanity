@@ -2,18 +2,18 @@ const deepAssign = require('deep-assign')
 const assign = require('xtend/mutable')
 const validateObject = require('../validators').validateObject
 
-function Patch(client, documentId, operations = {}) {
+function Patch(documentId, operations = {}, client = null) {
+  this.documentId = documentId
   this.operations = assign({}, operations)
   this.client = client
-  this.documentId = documentId
 }
 
 assign(Patch.prototype, {
   clone(addOps = {}) {
     return new Patch(
-      this.client,
       this.documentId,
-      assign({}, this.operations, addOps)
+      assign({}, this.operations, addOps),
+      this.client
     )
   },
 
@@ -44,7 +44,7 @@ assign(Patch.prototype, {
   },
 
   // @todo implement when in gradient
-  delete(props) {
+  unset(props) {
     throw new Error('Not implemented yet')
   },
 
@@ -67,12 +67,23 @@ assign(Patch.prototype, {
     return assign({id: this.documentId}, this.operations)
   },
 
+  toJSON() {
+    return this.serialize()
+  },
+
   commit() {
-    return this.client.mutate({patch: this.serialize()})
+    if (this.client) {
+      return this.client.mutate({patch: this.serialize()})
+    }
+
+    throw new Error(
+      'No `client` passed to patch, either provide one or pass the '
+      + 'patch to a clients `data.mutate()` method'
+    )
   },
 
   reset() {
-    return new Patch(this.client, this.documentId)
+    return new Patch(this.documentId, {}, this.client)
   },
 
   _assign(op, props) {

@@ -1,4 +1,6 @@
 const assign = require('xtend/mutable')
+const Patch = require('./data/patch')
+const Transaction = require('./data/transaction')
 const DataClient = require('./data/dataClient')
 const DatasetsClient = require('./datasets/datasetsClient')
 const ProjectsClient = require('./projects/projectsClient')
@@ -78,5 +80,8 @@ assign(SanityClient.prototype, {
 function createClient(config) {
   return new SanityClient(config)
 }
+
+createClient.Patch = Patch
+createClient.Transaction = Transaction
 
 module.exports = createClient
