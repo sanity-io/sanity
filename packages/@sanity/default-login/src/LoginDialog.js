@@ -1,7 +1,6 @@
 import React from 'react'
 import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
-import config from 'config:sanity'
 import pluginConfig from 'config:@sanity/default-login'
 
 export default class LoginDialog extends React.Component {
