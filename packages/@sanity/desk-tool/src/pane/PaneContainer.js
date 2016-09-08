@@ -6,4 +6,8 @@ const PaneContainer = ({children}) =>
     {children}
   </nav>
 
+PaneContainer.propTypes = {
+  children: PropTypes.node
+}
+
 export default PaneContainer

@@ -29,6 +29,7 @@ Pane.defaultProps = {
 }
 
 Pane.propTypes = {
+  isActive: PropTypes.bool,
   loading: PropTypes.bool,
   items: PropTypes.array,
   renderItem: PropTypes.func

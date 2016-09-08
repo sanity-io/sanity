@@ -10,7 +10,7 @@ class PaneItem extends React.Component {
     const {children} = this.props
 
     return (
-      <li className={styles.paneItem}>
+      <li>
         {children}
       </li>
     )

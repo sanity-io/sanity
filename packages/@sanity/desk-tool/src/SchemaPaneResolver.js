@@ -94,7 +94,7 @@ export default class SchemaPaneResolver extends React.Component {
     const selectedTypeQuery = dataAspects.getListQuery(queryOpts)
     return (
       <QueryContainer query={selectedTypeQuery} mapFn={mapQueryResultToProps}>
-        <Pane renderItem={this.renderDocumentPaneItem}/>
+        <Pane renderItem={this.renderDocumentPaneItem} />
       </QueryContainer>
     )
   }
@@ -117,14 +117,14 @@ export default class SchemaPaneResolver extends React.Component {
     const documentsPane = selectedType && this.getDocumentsPane(selectedType)
 
     const editor = ['edit', 'create'].includes(action) && (
-        <div className={styles.editor}>
-          <FormBuilderContainer
-            documentId={selectedDocumentId}
-            typeName={selectedType}
-            onCreated={this.handleDocumentCreated}
-          />
-        </div>
-      )
+      <div className={styles.editor}>
+        <FormBuilderContainer
+          documentId={selectedDocumentId}
+          typeName={selectedType}
+          onCreated={this.handleDocumentCreated}
+        />
+      </div>
+    )
 
     return (
       <div className={styles.container}>
