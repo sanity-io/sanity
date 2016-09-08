@@ -29,15 +29,15 @@ export default {
         url: getCurrentUserUrl,
         json: true,
         withCredentials: true
-      }, (err, res, user) => {
+      }, (err, res, body) => {
         if (!err && res.statusCode === 200) {
           if (err) {
             return reject(err)
           }
-          if (Object.keys(user).length === 0 && user.constructor === Object) {
+          if (Object.keys(body).length === 0 && body.constructor === Object) {
             return resolve(null)
           } else {
-            return resolve(user)
+            return resolve(body)
           }
         }
         return reject(new Error(JSON.stringify(body)))
