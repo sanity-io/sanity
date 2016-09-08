@@ -4,17 +4,11 @@ import pubsubber from '../utils/pubsubber'
 import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
 
 const userChannel = pubsubber()
-const tokenChannel = pubsubber()
 
 let _currentUser = null
-let _currentToken = null
 
 userChannel.subscribe(val => {
   _currentUser = val
-})
-
-tokenChannel.subscribe(val => {
-  _currentToken = val
 })
 
 function refreshUser() {
@@ -34,20 +28,6 @@ function logout() {
   })
 }
 
-const currentToken = new Observable(observer => {
-  pushToken('snapshot', _currentToken)
-
-  return tokenChannel.subscribe(_nextToken => {
-    pushToken('change', _nextToken)
-  })
-
-  function pushToken(type, token) {
-    observer.next({
-      type: type,
-      token: token
-    })
-  }
-})
 
 const currentUser = new Observable(observer => {
 
@@ -65,24 +45,11 @@ const currentUser = new Observable(observer => {
   }
 })
 
-function refreshTokenAction() {
-  const progress = new Observable(observer => {
-    refreshToken().then(
-      token => observer.next(token),
-      error => observer.error(error)
-    )
-      .then(() => observer.complete())
-  })
-  return {progress}
-}
-
 export default function createUserStore(options = {}) {
   return {
     actions: createActions({
-      logout,
-      refreshToken: refreshTokenAction
+      logout
     }),
-    currentUser,
-    currentToken
+    currentUser
   }
 }
