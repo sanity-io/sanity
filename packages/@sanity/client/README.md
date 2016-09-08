@@ -122,7 +122,7 @@ const patch = new sanityClient.Patch('<documentId>')
 client.data.mutate(patch.inc({count: 1}).unset(['visits']))
 
 // Transactions:
-const transcation = new sanityClient.Transaction()
+const transaction = new sanityClient.Transaction()
   .create({$id: 'foo:123', name: 'FooBike'})
   .delete('foo:bar')
 
