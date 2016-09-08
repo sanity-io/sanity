@@ -1,10 +1,9 @@
 import React from 'react'
 import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
 import {FormattedMessage} from 'component:@sanity/base/locale/intl'
-import pluginConfig from 'config:@sanity/default-login'
+import client from 'client:@sanity/base/client'
 
 export default class LoginDialog extends React.Component {
-
   constructor() {
     super()
     this.state = {providers: [], error: null}
@@ -18,10 +17,11 @@ export default class LoginDialog extends React.Component {
     })
   }
 
-  handleLoginButtonClicked(evnt) {
+  handleLoginButtonClicked(providerName, evnt) {
     evnt.preventDefault()
-    const providerName = this
-    window.location = `${pluginConfig.defaultLogin.host}/auth/login/${providerName}?target=${encodeURIComponent(window.location)}`
+    const currentUrl = encodeURIComponent(window.location.toString())
+    const url = client.getUrl(`/auth/login/${providerName}?target=${currentUrl}`)
+    window.location = url
   }
 
   renderLoginScreen() {
@@ -31,9 +31,10 @@ export default class LoginDialog extends React.Component {
           <FormattedMessage id="loginWithProvider" />
         </h3>
         {this.state.providers.map(provider => {
+          const onLoginClick = this.handleLoginButtonClicked.bind(this, provider.name)
           return (
             <div key={provider.name}>
-              <button onClick={this.handleLoginButtonClicked.bind(provider.name)}>
+              <button onClick={onLoginClick}>
                 <FormattedMessage id={provider.name} />
               </button>
             </div>
