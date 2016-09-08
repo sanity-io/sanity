@@ -10,7 +10,7 @@ export default class LoginWrapper extends React.Component {
 
   constructor() {
     super()
-    this.state = {user: null}
+    this.state = {}
   }
 
   componentWillMount() {
@@ -29,7 +29,7 @@ export default class LoginWrapper extends React.Component {
     return (
       <div>
         {this.state.user && this.props.children}
-        {!this.state.user && <LoginDialog/>}
+        {this.state.user === null && <LoginDialog/>}
       </div>
     )
   }
