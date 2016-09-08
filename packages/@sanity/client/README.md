@@ -106,6 +106,8 @@ client.data.transaction()
   })
 ```
 
+### Clientless patches & transactions
+
 Transactions and patches can also be built outside the scope of a client:
 
 ```js
