@@ -15,7 +15,7 @@ export default {
   command: 'init [plugin]',
   describe: 'Initialize a new Sanity project',
   handler: args => {
-    const type = args.options._[1]
+    const type = args.options.plugin
 
     if (!type) {
       return initSanity(args)

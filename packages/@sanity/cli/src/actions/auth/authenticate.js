@@ -49,7 +49,7 @@ function authFlow({print, spinner, provider}, resolve, reject) {
       return exchangeToken(req, res)
     }
 
-    res.writeHead(404, {'Content-Type': 'text/plain'})
+    res.writeHead(404, {'Content-Type': 'text/plain', 'Connection': 'close'})
     return res.end('File not found')
   }
 
@@ -58,7 +58,7 @@ function authFlow({print, spinner, provider}, resolve, reject) {
     const tmpToken = (returnUrl.query || {}).fetcher
     got(`${exchangeUrl}/${tmpToken}`, {json: true})
       .then(httpRes => onTokenExchanged(httpRes, req, res))
-      .catch(onTokenExchangeError)
+      .catch(err => onTokenExchangeError(err, res))
   }
 
   function onTokenExchanged(httpRes, req, res) {
@@ -72,15 +72,13 @@ function authFlow({print, spinner, provider}, resolve, reject) {
         debug('Error details: %s', JSON.stringify(error))
       }
 
-      return fs.createReadStream(path.join(__dirname, 'authError.html')).pipe(res).on('finish', () =>
-        onTokenExchangeError(new Error(
-          'Failed to exchange temporary token - no token returned from server'
-        ))
-      )
+      const err = new Error('Failed to exchange temporary token - no token returned from server')
+      return onTokenExchangeError(err, res)
     }
 
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
+    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
     fs.createReadStream(path.join(__dirname, 'authResponse.html')).pipe(res)
 
     // Store the token
@@ -96,9 +94,13 @@ function authFlow({print, spinner, provider}, resolve, reject) {
     resolve()
   }
 
-  function onTokenExchangeError(err) {
+  function onTokenExchangeError(err, res) {
+    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
+    fs.createReadStream(path.join(__dirname, 'authError.html'))
+      .pipe(res)
+      .on('finish', () => server.close(() => debug('Server closed')))
+
     spin.stop()
-    server.close(() => debug('Server closed'))
     reject(err)
   }
 
