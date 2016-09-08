@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@sanity/base": "^2.1.20",
-    "@sanity/state-router": "0.0.0",
+    "@sanity/state-router": "0.0.1",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "eslint-plugin-react": "^5.0.1",
