@@ -15,6 +15,7 @@ exports.getRequestOptions = config => {
   return {
     headers: headers,
     timeout: config.timeout || 15000,
+    withCredentials: true,
     json: true
   }
 }
