@@ -67,12 +67,16 @@ assign(SanityClient.prototype, {
       : promise.resolve()
   },
 
+  getUrl(uri) {
+    return `${this.clientConfig.url}/${uri.replace(/^\//, '')}`
+  },
+
   request(options) {
     return httpRequest(assign(
       {promise: this.clientConfig.promise},
       getRequestOptions(this.clientConfig),
       options,
-      {uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`}
+      {uri: this.getUrl(options.uri)}
     ))
   }
 })

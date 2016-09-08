@@ -89,6 +89,20 @@ test('can remove registered handlers', t => {
   t.end()
 })
 
+test('can use request() for API-relative requests', t => {
+  nock(projectHost()).get('/v1/ping').reply(200, {pong: true})
+
+  getClient().request({uri: '/ping'})
+    .then(res => t.equal(res.pong, true))
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('can use getUrl() to get API-relative paths', t => {
+  t.equal(getClient().getUrl('/foo/bar'), `${projectHost()}/v1/foo/bar`)
+  t.end()
+})
+
 /*****************
  * PROJECTS      *
  *****************/
