@@ -16,32 +16,32 @@ function flattenPatch(patch) {
 const serverConnection = {
   byId(id) {
     return Observable.timer(0, 5000)
-      .flatMap(() => client.fetch('*[.$id == %id]', {id}))
+      .flatMap(() => client.data.getDocument(id))
       // .do(response => console.log('response', response))
-      .map(response => ({
+      .map(doc => ({
         type: 'snapshot',
-        document: response.result[0]
+        document: doc
       }))
   },
 
   query(query, params) {
     return Observable.timer(0, 50000)
-      .flatMap(() => client.fetch(query, params))
-      .map(response => ({
+      .flatMap(() => client.data.fetch(query, params))
+      .map(documents => ({
         type: 'snapshot',
-        documents: response.result
+        documents: documents
       }))
   },
 
   update(id, patch) {
-    return Observable.from(client.update(id, flattenPatch(patch)))
+    return Observable.from(client.data
+      .patch(id)
+      .set(flattenPatch(patch))
+      .commit())
   },
 
-  create(document) {
-    return Observable.from(client.create(document))
-      .map(response => ({
-        documentId: response.docIds[0]
-      }))
+  create(doc) {
+    return Observable.from(client.data.create(doc))
   }
 }
 
