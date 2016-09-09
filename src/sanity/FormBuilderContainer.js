@@ -142,7 +142,7 @@ export default class SanityFormBuilder extends React.Component {
           <div style={{float: 'right', top: 0, right: 5, height: '1rem'}}>
             {progress && (
               <div>
-                <div style={{paddingRight: 5, display: 'inline-block'}}><Spinner/></div>
+                <div style={{paddingRight: 5, display: 'inline-block'}}><Spinner /></div>
                 {progress}
               </div>
             )}
