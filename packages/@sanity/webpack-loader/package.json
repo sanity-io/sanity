@@ -24,27 +24,15 @@
   "homepage": "https://github.com/sanity-io/webpack-loader#readme",
   "dependencies": {
     "@sanity/resolver": "^3.0.0",
-    "css-loader": "^0.23.1",
-    "fs-extra": "^0.26.5",
-    "fs-promise": "^0.4.1",
-    "loader-utils": "^0.2.12",
-    "lodash": "^4.6.1",
-    "postcss": "^5.0.19",
-    "postcss-loader": "^0.8.2",
-    "promise-props-recursive": "^1.0.0",
-    "style-loader": "^0.13.0"
+    "loader-utils": "^0.2.12"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "chai-as-promised": "^5.2.0",
     "eslint": "^2.4.0",
     "eslint-config-sanity": "^1.0.7",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
-    "mock-fs": "^3.8.0",
-    "proxyquire": "^1.7.4",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0",
-    "webpack": "^1.12.14"
+    "sinon-chai": "^2.8.0"
   }
 }
