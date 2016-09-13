@@ -14,8 +14,10 @@ const defaults = {
 export default function clientWrapper(manifest, path) {
   return function (opts = {}) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
-    const token = getUserConfig().get('authToken')
-    const apiConfig = api || (manifest && manifest.api) || {}
+    const userConfig = getUserConfig()
+    const userApiConf = userConfig.get('api')
+    const token = userConfig.get('authToken')
+    const apiConfig = api || (manifest && manifest.api) || userApiConf || {}
 
     if (requireUser && !token) {
       throw new Error('You must login first')
