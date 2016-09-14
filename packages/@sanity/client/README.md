@@ -10,7 +10,7 @@ The client can be installed from npm:
 npm install --save @sanity/client-next
 ```
 
-## Usage
+# API
 
 ```js
 const sanityClient = require('@sanity/client-next')
@@ -21,7 +21,12 @@ const client = sanityClient({
 })
 ```
 
-### Performing queries
+`const client = sanityClient(options)`
+
+Initializes a new Sanity Client. Required options are `projectId`, `dataset` and `token`.
+
+
+## Performing queries
 
 ```js
 const query = 'bikeshop.bikes[.seats > 1] {.name, .seats}'
@@ -33,8 +38,12 @@ client.data.fetch(query).then(bikes => {
 })
 ```
 
+`client.data.fetch(query)`
 
-### Creating documents
+Perform a query using. Query string must be valid GQL syntax.
+
+
+## Creating documents
 
 ```js
 const doc = {name: 'Bengler Tandem Extraordinaire', seats: 2}
@@ -43,7 +52,12 @@ client.data.create(doc).then(res => {
 })
 ```
 
-### Patch/update a document
+`client.data.create(doc)`
+
+Create a document. Parameter is a plain JS object representing the document.
+
+
+## Patch/update a document
 
 ```js
 client.data
@@ -59,7 +73,12 @@ client.data
   })
 ```
 
-### Delete a document
+`client.data.patch(docId).set(partialDoc).inc({key: value}).commit()`
+
+Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`.
+
+
+## Delete a document
 
 ```js
 client.data.delete('bikeshop:bike-123')
@@ -71,7 +90,11 @@ client.data.delete('bikeshop:bike-123')
   })
 ```
 
-### Multiple mutations in a transaction
+`client.data.delete(docId)`
+
+Delete a document. Parameter is a document ID.
+
+## Multiple mutations in a transaction
 
 ```js
 const namePatch = client.data
@@ -90,8 +113,10 @@ client.data.transaction()
     console.error('Transaction failed: ', err.message)
   })
 ```
+`client.data.transaction().create(doc).delete(docId).patch(patch).commit()`
 
-Patches can also be built inline:
+Create a transaction to perform chained mutations.
+
 
 ```js
 client.data.transaction()
@@ -106,7 +131,12 @@ client.data.transaction()
   })
 ```
 
-### Clientless patches & transactions
+`client.data.transaction().create(doc).patch(docId, p => p.set(partialDoc)).commit()`
+
+A `patch` can be performed inline on a `transaction`.
+
+
+## Clientless patches & transactions
 
 Transactions and patches can also be built outside the scope of a client:
 
@@ -129,24 +159,33 @@ const transaction = new sanityClient.Transaction()
 client.data.mutate(transaction)
 ```
 
-A few notes on this approach, however:
+`const patch = new sanityClient.Patch(docId)`
+
+`const transaction = new sanityClient.Transaction()`
+
+A few notes on this approach:
 
 * You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.data.mutate()`
 * Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `$id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `$id` to `<datasetName:>`
 
-### Get client configuration
+## Get client configuration
 
 ```js
 const config = client.config()
 console.log(config.dataset)
 ```
 
-### Set client configuration
+`client.config()`
+
+Get client configuration.
+
+
+## Set client configuration
 
 ```js
 client.config({dataset: 'newDataset'})
 ```
 
-Yes, these examples use ES6-flavored JS.
+`client.config(options)`
 
-![Deal with it](http://i.imgur.com/ZGxjoYC.gif)
+Set client configuration. Required options are `projectId`, `dataset` and `token`.
