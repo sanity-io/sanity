@@ -4,8 +4,7 @@
   },
   "plugins": [
     "@sanity/base",
-    "@sanity/components",
-    "@sanity/theme"
+    "@sanity/components"
   ],
   "roles": [
     {
