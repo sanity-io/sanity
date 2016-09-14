@@ -74,6 +74,7 @@ export default class QueryContainer extends React.Component {
   }
 
   error(error) {
+    console.error(error) // @todo make sure some kind of error dialog is shown, somewhere
     this.setState({error})
   }
 
