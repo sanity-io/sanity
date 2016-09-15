@@ -142,7 +142,7 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
       }
 
       print("Good stuff, you now have a token for a temporary account. You'll also need")
-      print('project to keep your data sets and collaborators safe and snug')
+      print('a project to keep your data sets and collaborators safe and snug')
 
       return Promise.resolve({isProvisional: true})
     }
