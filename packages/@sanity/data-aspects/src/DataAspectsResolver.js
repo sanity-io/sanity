@@ -1,6 +1,6 @@
 import config from 'config:@sanity/data-aspects'
 import bundledTypes from 'role:@sanity/base/bundled-types'
-
+const bundledTypeNames = bundledTypes.types.map(baseType => baseType.name)
 
 class DataAspectsResolver {
 
@@ -25,7 +25,7 @@ class DataAspectsResolver {
     let defaultTypes = this.schema.types || []
     defaultTypes = defaultTypes.filter(type => {
       // Exclude types which come bundled with Sanity
-      return !Object.keys(bundledTypes).includes(type.name)
+      return !bundledTypeNames.includes(type.name)
     })
     if (this.config.hiddenTypes) {
       // Exclude types which are explicitly named in hiddenTypes
