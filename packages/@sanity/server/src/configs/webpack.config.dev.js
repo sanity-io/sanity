@@ -6,7 +6,7 @@ export default config => {
   const baseConfig = getBaseConfig(config)
 
   return Object.assign({}, baseConfig, {
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'module-eval-source-map',
     output: Object.assign({pathinfo: true}, baseConfig.output),
     entry: Object.assign({}, baseConfig.entry, {
       vendor: [
