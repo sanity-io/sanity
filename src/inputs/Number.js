@@ -35,7 +35,7 @@ export default class Num extends React.Component {
         placeholder={field.placeholder || 'Must be a number. Ex 1234'}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
-        value={value}
+        value={String(value)}
         focus={focus}
         ref={this.setInputElement}
       />
