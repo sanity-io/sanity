@@ -4,6 +4,7 @@ const Transaction = require('./data/transaction')
 const DataClient = require('./data/dataClient')
 const DatasetsClient = require('./datasets/datasetsClient')
 const ProjectsClient = require('./projects/projectsClient')
+const UsersClient = require('./projects/usersClient')
 const httpRequest = require('./http/request')
 const {getRequestOptions} = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
@@ -26,6 +27,7 @@ function SanityClient(config = defaultConfig) {
   this.data = new DataClient(this)
   this.datasets = new DatasetsClient(this)
   this.projects = new ProjectsClient(this)
+  this.users = new UsersClient(this)
 
   this.eventHandlers = allowedEvents.reduce((handlers, event) => {
     handlers[event] = []
