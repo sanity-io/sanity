@@ -18,10 +18,11 @@
   margin: 0 auto;
 
   @media(--screen-medium) {
-    display: inline-block;
-    height: calc(var(--header-height) - var(--medium-padding));
-    width: calc(var(--header-height) - var(--medium-padding));
-    margin: 0;
+    float: right;
+    display: block;
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-top: 0.5rem;
   }
 }
 
@@ -29,6 +30,14 @@
   @media(--screen-medium) {
     display: inline-block;
   }
+}
+
+.userMenu {
+  position: absolute;
+  top: 2em;
+  right: 0;
+  z-index: 10;
+  width: 100%;
 }
 
 .logoutButton {

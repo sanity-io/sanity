@@ -22,7 +22,6 @@
   @media (--screen-medium) {
     height: 3rem;
     line-height: 1rem;
-    border-bottom: 3px solid transparent;
     float: left;
   }
 
