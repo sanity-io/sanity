@@ -8,7 +8,7 @@ exports.getRequestOptions = config => {
     headers[tokenHeader] = config.token
   }
 
-  if (!config.useProjectHostname) {
+  if (!config.useProjectHostname && config.projectId) {
     headers[projectHeader] = config.projectId
   }
 
