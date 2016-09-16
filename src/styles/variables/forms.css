@@ -4,6 +4,8 @@
 :root {
 
   --default-button-color: var(--gray-lighter);
+  --default-button-color--hover: var(--gray-light);
+  --default-button-color--active: var(--gray);
 
   --input-bg: #fff;
   --input-bg-disabled: var(--gray-lighter);

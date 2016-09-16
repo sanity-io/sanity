@@ -8,7 +8,7 @@
   --link-hover-color: color(var(--brand-success) lightness(+25%));
   --link-hover-decoration: underline;
 
-  --font-family-sans-serif: "Helvetica Neue", helvetica, arial, sans-serif;
+  --font-family-sans-serif: "Roboto", helvetica, arial, sans-serif;
   --font-family-serif: Georgia, "Times New Roman", Times, serif;
   --font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
   --font-family-base: var(--font-family-sans-serif);

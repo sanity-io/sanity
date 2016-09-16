@@ -416,6 +416,30 @@
     {
       "implements": "icon:@sanity/hamburger",
       "path": "components/icons/Hamburger.js"
+    },
+    {
+      "implements": "icon:@sanity/sort-alpha-desc",
+      "path": "components/icons/SortAlphaDesc.js"
+    },
+    {
+      "implements": "icon:@sanity/bars",
+      "path": "components/icons/Bars.js"
+    },
+    {
+      "implements": "icon:@sanity/th-list",
+      "path": "components/icons/ThList.js"
+    },
+    {
+      "implements": "icon:@sanity/th-large",
+      "path": "components/icons/ThLarge.js"
+    },
+    {
+      "implements": "icon:@sanity/cog",
+      "path": "components/icons/Cog.js"
+    },
+    {
+      "implements": "icon:@sanity/sign-out",
+      "path": "components/icons/SignOut.js"
     }
   ]
 }

@@ -8,5 +8,5 @@
   --gray: color(var(--gray-base) lightness(+40%));
   --gray-light: color(var(--gray-base) lightness(+50%));
   --gray-lighter: color(var(--gray-base) lightness(+75%));
-  --gray-lightest: color(var(--gray-base) lightness(+93%));
+  --gray-lightest: color(var(--gray-base) lightness(+77%));
 }
