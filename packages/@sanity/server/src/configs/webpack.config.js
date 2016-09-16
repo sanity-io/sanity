@@ -4,9 +4,7 @@ import webpack from 'webpack'
 import parents from 'parents'
 import RoleResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
-import postcssUse from 'postcss-use'
-import postcssImport from 'postcss-import'
-import resolveStyleImport from '../util/resolveStyleImport'
+import postcssPlugins from './postcssPlugins'
 
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
@@ -89,16 +87,7 @@ export default (config = {}) => {
       new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
       commonChunkPlugin
     ].filter(Boolean),
-    postcss: wp => [
-      postcssImport({
-        addDependencyTo: wp,
-        resolve: resolveStyleImport
-      }),
-      postcssUse({
-        modules: '*',
-        resolveFromFile: true
-      })
-    ]
+    postcss: postcssPlugins
   }
 }
 
