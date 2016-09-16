@@ -3,11 +3,13 @@ import styles from '../styles/DeskTool.css'
 import PaneResolver from 'config:desk-tool/pane-resolver'
 import ActionButton from 'component:@sanity/base/action-button?'
 import schema from 'schema:@sanity/base/schema'
+import DataAspectsResolver from 'role:@sanity/data-aspects/resolver'
+const dataAspects = new DataAspectsResolver(schema)
 
 function DeskTool() {
-  const actions = (schema.types || []).map(type => ({
+  const actions = (dataAspects.getInferredTypes()).map(type => ({
     nextState: {selectedType: type.name, action: 'create', selectedDocumentId: `${type.name}:`},
-    title: type.name.substr(0, 1).toUpperCase() + type.name.substring(1)
+    title: dataAspects.getDisplayName(type.name)
   }))
 
   return (
