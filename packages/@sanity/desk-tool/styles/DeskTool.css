@@ -28,7 +28,8 @@
 }
 
 .main {
-  background-color: var(--body-bg);
+  background-color: var(--gray-lightest);
+  box-shadow: 2px 2px 5px var(--gray-light) inset;
   position: fixed;
   top: 0;
   left: 0;

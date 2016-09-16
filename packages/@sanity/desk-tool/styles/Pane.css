@@ -84,7 +84,7 @@
   padding: 0;
 
   @media (--screen-medium) {
-    padding-top: 1rem;
+    padding-top: 3rem;
   }
 }
 
@@ -141,7 +141,14 @@
       color: var(--selected-item-color-hover);
     }
   }
+}
 
+.menuButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  border: 1px solid red;
 }
 
 .panes {
