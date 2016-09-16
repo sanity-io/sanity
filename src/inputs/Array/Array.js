@@ -10,6 +10,7 @@ import Fieldset from 'component:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'component:@sanity/components/edititem/popover'
 import DefaultList from 'component:@sanity/components/lists/default'
 import GridList from 'component:@sanity/components/lists/grid'
+import {bindAll} from 'lodash'
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -35,16 +36,19 @@ export default class Arr extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this.handleAddBtnClick = this.handleAddBtnClick.bind(this)
-    this.handleItemChange = this.handleItemChange.bind(this)
-    this.handleItemEdit = this.handleItemEdit.bind(this)
-    this.handleRemoveItem = this.handleRemoveItem.bind(this)
-    this.handleItemEnter = this.handleItemEnter.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.handleDropDownAction = this.handleDropDownAction.bind(this)
-    this.addItemAtEnd = this.addItemAtEnd.bind(this)
-    this.renderItem = this.renderItem.bind(this)
-    this.renderList = this.renderList.bind(this)
+
+    bindAll(this, [
+      'handleAddBtnClick',
+      'handleItemChange',
+      'handleItemEdit',
+      'handleRemoveItem',
+      'handleItemEnter',
+      'handleClose',
+      'handleDropDownAction',
+      'addItemAtEnd',
+      'renderItem',
+      'renderList'
+    ])
 
     this.state = {
       addItemField: null,

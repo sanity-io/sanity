@@ -3,22 +3,32 @@
 @use postcss-cssnext;
 
 .root {
+
 }
+
 .inner {
-  margin-bottom: 270px;
+  margin: 40px 40px 270px;
   padding: 10px;
+  background-color: #fff;
 }
 
 .inspectPaneInner {
   max-height: 250px;
 }
+.toolbar {
+  background-color: #f0f0f0;
+  margin-bottom: 40px;
+  padding: 5px;
+}
+
 .toolbarButton {
-  border: 0;
+  border: 1px solid #ccc;
   min-width: 85px;
   margin: 2px;
+  padding: 10px;
   border-radius: 2px;
-  color: #c47054;
-  background-color: #f0f0f0;
+  color: #096c85;
+  background-color: transparent;
 }
 .inspectPaneInnerFullscreen {
   max-height: 100%;

@@ -1,14 +1,11 @@
-// import toProseMirror from './conversion/toProseMirror'
-// import fromProseMirror from './conversion/fromProseMirror'
-import {Raw, Plain, Selection} from 'slate'
-import prose from './prose'
-
+import toSlate from './conversion/toSlate'
+import fromSlate from './conversion/fromSlate'
 
 import patchHandlers from './patchTypes'
 
 export default class SlateValueContainer {
   static deserialize(value, context) {
-    const state = value ? Raw.deserialize(value) : Plain.deserialize(prose)
+    const state = toSlate(value || [], context)
 
     return new SlateValueContainer(state, context)
   }
@@ -24,21 +21,21 @@ export default class SlateValueContainer {
 
   patch(patch) {
     // eslint-disable-next-line no-console
-    // console.log('patch', patch)
+    console.log('patch', patch)
 
+    let nextState
     if (patch.localState) {
-      return new SlateValueContainer(patch.localState, this.context)
+      nextState = patch.localState
+    } else {
+      nextState = Object.keys(patch).reduce((state, key) => {
+        const result = patchHandlers[key] ? patchHandlers[key](state, patch) : state
+        return result === undefined ? state : result
+      }, this.state)
     }
-
-    const nextState = Object.keys(patch).reduce((state, key) => {
-      const result = patchHandlers[key] ? patchHandlers[key](state, patch) : state
-      return result === undefined ? state : result
-    }, this.state)
-
     return (nextState === this.state) ? this : new SlateValueContainer(nextState, this.context)
   }
 
   serialize() {
-    return Raw.deserialize(this.state)
+    return fromSlate(this.state)
   }
 }

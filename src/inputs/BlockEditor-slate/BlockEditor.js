@@ -1,11 +1,14 @@
 import React, {PropTypes} from 'react'
 import SlateValueContainer from './SlateValueContainer'
 import {Editor} from 'slate'
-import FormBuilderSlatePlugin from './FormBuilderSlatePlugin'
+import Video from './tmp/Video'
 import {bindAll} from 'lodash'
+import mapToObject from './util/mapToObject'
+import createPreviewNode from './createFormBuilderPreviewNode'
+
 // import CorePlugin from 'slate/dist/plugins/core'
 // import EditBlock from './EditBlock'
-// import createProseMirrorSchema from './createProseMirrorSchema'
+// import createSlateSchema from './createSlateSchema'
 import styles from './styles/BlockEditor.css'
 
 export default class BlockEditor extends React.Component {
@@ -26,46 +29,88 @@ export default class BlockEditor extends React.Component {
   }
 
   static contextTypes = {
-    schema: PropTypes.object,
-    resolveInputComponent: PropTypes.func,
-    resolvePreviewComponent: PropTypes.func
+    formBuilder: PropTypes.object
   }
 
   constructor(props, context) {
     super(props, context)
 
     bindAll(this, [
-      'handlePatch'
+      'handleEditorChange',
+      'handleInsertBlock'
     ])
-    this.corePlugin = FormBuilderSlatePlugin({onPatch: this.handlePatch})
+
+    this.slateNodes = mapToObject(this.props.field.of.filter(ofType => ofType.type !== 'paragraph'), ofField => {
+      return [ofField.type, createPreviewNode(ofField)]
+    })
+    this.slateNodes.video = Video
   }
 
   componentDidMount() {
-
   }
 
   componentWillUnmount() {
   }
 
-  handlePatch(patch) {
-    this.props.onChange({patch: patch})
+  handleInsertBlock(event) {
+    const {value, onChange, field} = this.props
+    const type = event.currentTarget.dataset.type
+
+    const ofField = field.of.find(it => it.type === type)
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofField)
+
+    const nextState = value.state
+      .transform()
+      .insertBlock({
+        type: type,
+        isVoid: true,
+        data: {
+          value: addItemValue
+        }
+      })
+      .apply()
+
+    onChange({patch: {localState: nextState}})
   }
 
+  handleEditorChange(nextState) {
+    this.props.onChange({patch: {localState: nextState}})
+  }
+
+  insertVideo = () => {
+    const {value, onChange} = this.props
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, {type: 'video'})
+
+    const nextState = value.state
+      .transform()
+      .insertBlock({
+        type: 'video',
+        isVoid: true,
+        data: {
+          value: addItemValue
+        }
+      })
+      .apply()
+    onChange({patch: {localState: nextState}})
+  }
   renderInsertMenu() {
     const {field} = this.props
     return (
       <div>
-        {field.of.map(ofField => {
-          return (
-            <button
-              key={ofField.type}
-              data-type={ofField.type}
-              onClick={this.handleInsertBlock}
-            >
-              Insert {ofField.title}
-            </button>
-          )
-        })}
+        <button type="button" onClick={this.insertVideo}>Insert video</button>
+        {field.of
+          .filter(ofField => ofField.type !== 'paragraph')
+          .map(ofField => {
+            return (
+              <button
+                key={ofField.type}
+                data-type={ofField.type}
+                onClick={this.handleInsertBlock}
+              >
+                Insert {ofField.title}
+              </button>
+            )
+          })}
       </div>
     )
   }
@@ -77,11 +122,10 @@ export default class BlockEditor extends React.Component {
       <div className={hasError ? styles.error : styles.root}>
         {this.renderInsertMenu()}
         <Editor
+          onChange={this.handleEditorChange}
           placeholder=""
           state={value.state}
-          renderNode={this.renderNode}
-          renderMark={this.renderMark}
-          {...this.corePlugin}
+          schema={{nodes: this.slateNodes}}
         />
       </div>
     )

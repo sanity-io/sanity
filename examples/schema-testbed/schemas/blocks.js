@@ -32,6 +32,10 @@ export default {
               type: 'paragraph'
             },
             {
+              title: 'String',
+              type: 'string'
+            },
+            {
               title: 'Image',
               type: 'simpleImage'
             },
@@ -52,10 +56,12 @@ export default {
       type: 'object',
       fields: [
         {
+          title: 'Image address (url)',
           name: 'url',
           type: 'url'
         },
         {
+          title: 'Caption',
           name: 'caption',
           type: 'string'
         }
