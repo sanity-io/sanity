@@ -147,8 +147,15 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
+  z-index: 1;
+}
+
+.menu {
+  position: absolute;
   z-index: 10;
-  border: 1px solid red;
+  top: 2em;
+  right: 0.5em;
+  width: 100%;
 }
 
 .panes {

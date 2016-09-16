@@ -22,6 +22,8 @@
     "@sanity/data-aspects": "^1.1.0",
     "@sanity/form-builder": "^1.1.24",
     "@sanity/state-router": "0.0.1",
+    "react": ">=15.1.0",
+    "react-dom": ">=15.1.0",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
@@ -39,12 +41,11 @@
     "eslint-plugin-react": "^6.2.1",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
-    "postcss-media-variables": "^2.0.0",
-    "postcss-nested": "^1.0.0",
     "rimraf": "^2.5.3"
   },
   "peerDependencies": {
-    "react": "^15.0.0"
+    "react": ">=15.1.0",
+    "react-dom": ">=15.1.0"
   },
   "repository": {
     "type": "git",

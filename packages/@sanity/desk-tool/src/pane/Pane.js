@@ -15,9 +15,26 @@ export default class Pane extends React.Component {
 
   constructor(...args) {
     super(...args)
+
+    this.handleMenuOpen = this.handleMenuOpen.bind(this)
+    this.handleMenuClose = this.handleMenuClose.bind(this)
+    this.handleMenuButtonClick = this.handleMenuButtonClick.bind(this)
+
     this.state = {
       menuOpened: false
     }
+  }
+
+  handleMenuOpen() {
+    this.setState({
+      menuOpened: true
+    })
+  }
+
+  handleMenuClose() {
+    this.setState({
+      menuOpened: false
+    })
   }
 
   handleMenuButtonClick() {
@@ -31,9 +48,17 @@ export default class Pane extends React.Component {
     return (
       <div className={isActive ? styles.isActive : styles.pane}>
         <div className={styles.menuButton} onClick={this.handleMenuButtonClick}>
-          <IconHamburger />
+          {
+            <IconHamburger />
+          }
+
         </div>
-        <PaneMenu opened={menuOpened} />
+        {
+          menuOpened && <div className={styles.menu}>
+            <PaneMenu opened onClickOutside={this.handleMenuClose} />
+          </div>
+        }
+
         <ul className={styles.paneItems}>
           {loading && <Spinner />}
           {items.map((item, i) => {

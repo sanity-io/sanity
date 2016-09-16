@@ -17,16 +17,12 @@ class PaneMenu extends React.Component {
   constructor(...args) {
     super(...args)
     this.handleItemClick = this.handleItemClick.bind(this)
-    this.handleClickOutside = this.handleClickOutside.bind(this)
   }
 
   handleItemClick(item) {
-    console.log('clicked item', item) // eslint-disable-line no-console
+    // Handle item click
   }
 
-  handleClickOutside() {
-    console.log('handleClickOutside') // eslint-disable-line no-console
-  }
 
   render() {
 
@@ -38,12 +34,12 @@ class PaneMenu extends React.Component {
       },
       {
         title: 'Last edited',
-        icon: IconSortAlphaDesc,
+        icon: undefined,
         index: 'sortByLastEdited'
       },
       {
         title: 'Created',
-        icon: IconSortAlphaDesc,
+        icon: undefined,
         index: 'sortByCreated'
       },
       {
@@ -79,7 +75,7 @@ class PaneMenu extends React.Component {
         items={menuItems}
         opened={opened}
         origin="top-right"
-        onClickOutside={this.handleClickOutside}
+        onClickOutside={this.props.onClickOutside}
       />
     )
   }
