@@ -38,14 +38,14 @@
     "babel-register": "^6.5.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
-    "eslint": "^2.5.3",
+    "eslint": "^3.3.0",
     "eslint-config-sanity": "^1.0.7",
-    "eslint-plugin-react": "^4.2.3",
+    "eslint-plugin-react": "^6.2.2",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
     "proxyquire": "^1.7.9",
-    "react": ">=15.1.0",
-    "react-dom": ">=15.1.0",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
