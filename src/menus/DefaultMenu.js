@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'style:@sanity/components/menus/default'
 import Ink from 'react-ink'
-// import enhanceWithClickOutside from 'react-click-outside'
+import enhanceWithClickOutside from 'react-click-outside'
 
 class DefaultMenu extends React.Component {
   static propTypes = {
@@ -11,10 +11,11 @@ class DefaultMenu extends React.Component {
     ripple: PropTypes.bool,
     fullWidth: PropTypes.bool,
     className: PropTypes.string,
+    onClickOutside: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
-        icon: PropTypes.node
+        icon: PropTypes.func
       })
     )
   }
@@ -23,19 +24,16 @@ class DefaultMenu extends React.Component {
     menuOpened: false,
     origin: 'top-left',
     icon: false,
-    ripple: true
+    ripple: true,
+    onClickOutside() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleItemClick = this.handleItemClick.bind(this)
+  handleClickOutside = () => {
+    console.log('handleClickOutside (defaultMenu)', this.props.onClickOutside)
+    this.props.onClickOutside()
   }
 
-  handleClickOutside() {
-    this.setState({menuOpened: false})
-  }
-
-  handleItemClick(event) {
+  handleItemClick = event => {
     const actionId = event.currentTarget.getAttribute('data-action-id')
     this.props.onAction(this.props.items[actionId])
   }
@@ -61,7 +59,9 @@ class DefaultMenu extends React.Component {
                       Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
                     }
                     {item.title}
-                    {ripple && <Ink />}
+                    {
+                      ripple && <Ink />
+                    }
                   </a>
                 </li>
               )
@@ -73,4 +73,4 @@ class DefaultMenu extends React.Component {
   }
 }
 
-export default DefaultMenu
+export default enhanceWithClickOutside(DefaultMenu)

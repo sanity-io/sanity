@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import Ink from 'react-ink'
+// import Ink from 'react-ink'
 import styles from 'style:@sanity/components/buttons/fab'
 
 export default class Fab extends React.Component {
@@ -31,7 +31,7 @@ export default class Fab extends React.Component {
       >
         <span className={styles.content}>+</span>
         {
-          ripple && <span className={styles.ripple}><Ink /></span>
+          // ripple && <span className={styles.ripple}><Ink /></span>
         }
       </button>
     )
