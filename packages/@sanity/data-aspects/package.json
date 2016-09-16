@@ -16,7 +16,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "lodash": "^4.15.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
