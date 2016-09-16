@@ -9,7 +9,7 @@ export default class Pane extends React.Component {
   static propTypes = {
     isActive: PropTypes.bool,
     loading: PropTypes.bool,
-    items: PropTypes.array,
+    items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func
   }
 

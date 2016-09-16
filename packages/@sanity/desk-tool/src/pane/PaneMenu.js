@@ -21,11 +21,11 @@ class PaneMenu extends React.Component {
   }
 
   handleItemClick(item) {
-    console.log('clicked item', item)
+    console.log('clicked item', item) // eslint-disable-line no-console
   }
 
   handleClickOutside() {
-    console.log('handleClickOutside')
+    console.log('handleClickOutside') // eslint-disable-line no-console
   }
 
   render() {
