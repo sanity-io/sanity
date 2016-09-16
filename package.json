@@ -56,7 +56,6 @@
     "in-publish": "^2.0.0",
     "lodash": "^4.13.1",
     "postcss-cssnext": "^2.7.0",
-    "postcss-font-awesome": "^0.3.3",
     "react-icons": "^2.2.1",
     "react-intl": "^2.1.2",
     "rxjs": "^5.0.0-beta.11"
