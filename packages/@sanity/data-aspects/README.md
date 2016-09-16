@@ -1,6 +1,6 @@
 # @sanity/data-aspects
 
-Sanity plugin which controls how your data will be presented.
+Sanity plugin which controls how your data is presented.
 
 
 ## BIG FAT DISCLAIMER
@@ -8,8 +8,10 @@ Sanity plugin which controls how your data will be presented.
 This is alpha software. Nothing should be expected to work.
 
 ## TODO
-- In sanity/form-builder, ensure that the implemented role `role:@sanity/base/core-types` also exposes sanity types image, imageAsset, imageVersion, geopoint.
-- When gql/gradient supports limit, offset and order, make sure DataAspectsResolver rolls the query cigar correctly.
+[x] refactor options file, as per usage
+[x] implement displayName for type
+[ ] make desk-tool filter the create/new list based on data-aspects
+[ ] When gql/gradient supports limit, offset and order, make sure DataAspectsResolver rolls the query cigar correctly.
 
 ## Usage
 
@@ -20,18 +22,18 @@ The config file `config/@sanity/data-aspects.json` lets you control how your dat
 ```
 {
   "hiddenTypes": [
-    "image",
-    "imageAsset",
-    "imageVersion"
+    "secretTypeName"
   ],
-  "listOptions": {
-    "beer": {
+  "typeOptions": {
+    "article": {
+      "displayName": "Article",
+      "itemDisplayField": "name",
       "limit": 100,
-      "offset": 0,
-      "displayField": "name"
+      "offset": 0
     },
-    "brewery": {
-      "displayField": "name"
+    "siteConfig": {
+      "displayName": "Site configuration",
+      "itemDisplayField": "title"
     }
   }
 }
