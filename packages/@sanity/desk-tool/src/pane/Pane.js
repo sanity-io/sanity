@@ -21,7 +21,6 @@ export default class Pane extends React.Component {
   }
 
   handleMenuButtonClick() {
-    console.log('handleMenuButtonClick')
     this.handleMenuOpen()
   }
 
