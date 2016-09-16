@@ -1,80 +1,83 @@
 import {createFieldValue} from '../../../state/FormBuilderState'
 // Converts a persisted array to a slate compatible json document
 import {Plain, Raw} from 'slate'
-import dummyText from './dummyText'
-import dummyRawState from './dummyRawState'
+import dummyRawState from '../tests/slate'
+import Block from 'slate/lib/models/block'
+import Document from 'slate/lib/models/document'
+import State from 'slate/lib/models/state'
+import Character from 'slate/lib/models/character'
+import Mark from 'slate/lib/models/mark'
+import Text from 'slate/lib/models/text'
 
-const TRANSFORMS = {
-  paragraph(item) {
-    return {
+
+const tap = inspector => value => {
+  inspector(value)
+  return value
+}
+const DESERIALIZE = {
+  paragraph(para, context) {
+    return Block.create({
       type: 'paragraph',
-      content: (item.content || []).map(convertPMType)
-    }
+      data: {},
+      isVoid: false,
+      nodes: Block.createList([
+        Text.create({
+          key: para.key,
+          characters: para.ranges.reduce((characters, range) => {
+            return characters.concat(DESERIALIZE.range(range, context))
+          }, Character.createList())
+        })
+      ])
+    })
   },
-  listItem(node) {
-    return {
-      type: 'list_item',
-      content: (node.content || []).map(convertPMType)
-    }
-  },
-  bulletList(node) {
-    return {
-      type: 'bullet_list',
-      content: (node.content || []).map(convertPMType)
-    }
-  },
-  hardBreak(node) {
-    return {
-      type: 'hard_break',
-      content: (node.content || []).map(convertPMType)
-    }
-  },
-  text(item) {
-    return {
-      type: 'text',
-      text: item.text,
-      marks: item.marks.map(convertMark)
-    }
-  }
-}
 
-function convertMark(mark) {
-  return {_: mark.type, ...mark.attributes}
-}
+  range(range, context = {}) {
+    return Character.createList(range.text
+      .split('')
+      .map(char => {
+        return Character.create({
+          text: char,
+          marks: Mark.createSet(range.marks.map(mark => {
+            return DESERIALIZE.mark(mark, context)
+          }))
+        })
+      }))
+  },
 
-function convertPMType(item) {
-  const pmConverter = TRANSFORMS[item.$type]
-  if (pmConverter) {
-    return pmConverter(item)
+  node(node, context) {
+    switch (node.$type) {
+      case 'paragraph':
+        return DESERIALIZE.paragraph(node)
+      case 'text':
+        return DESERIALIZE.text(node)
+    }
+    const {$type, ...rest} = node
+
+    // find type in of
+    const fieldDef = context.field.of.find(ofType => ofType.type === $type)
+
+    const value = createFieldValue(node, {field: fieldDef, schema: context.schema, resolveInputComponent: context.resolveInputComponent})
+
+    console.log('context', context)
+    console.log('create form builder value from ', node)
+    debugger
+    return Block.create({
+      data: {value: value},
+      key: node.key,
+      type: $type,
+      isVoid: true
+    })
   }
-  throw new Error(`Not a slate type: ${item}`)
 }
 
 export default function toSlate(array, context) {
-
   if (array.length === 0) {
-    // return Plain.deserialize(dummyText)
+    // return Plain.deserialize('')
     return Raw.deserialize(dummyRawState)
   }
-  return array
-  return {
-    type: 'document',
-    content: array.map(item => {
-      const isPMType = TRANSFORMS[item.$type]
-      if (isPMType) {
-        return convertPMType(item)
-      }
-
-      const itemField = context.field.of.find(ofType => ofType.type === item.$type)
-      const value = createFieldValue(item, {
-        field: itemField,
-        schema: context.schema,
-        resolveInputComponent: context.resolveInputComponent
-      })
-      return {
-        type: itemField.type,
-        attrs: {value: value}
-      }
+  return tap(v => console.log(Raw.serialize(v)))(State.create({
+    document: Document.create({
+      nodes: Block.createList(array.map(node => DESERIALIZE.node(node, context)))
     })
-  }
+  }))
 }

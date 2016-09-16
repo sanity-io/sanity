@@ -24,7 +24,6 @@ export default class ItemPreview extends React.Component {
     return getFieldType(this.context.formBuilder.schema, field)
   }
 
-
   render() {
     const {value, field} = this.props
 

@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react'
 import SlateValueContainer from './SlateValueContainer'
 import {Editor} from 'slate'
-import Video from './tmp/Video'
-import {bindAll} from 'lodash'
 import mapToObject from './util/mapToObject'
 import createPreviewNode from './createFormBuilderPreviewNode'
 
@@ -38,7 +36,6 @@ export default class BlockEditor extends React.Component {
     this.slateNodes = mapToObject(this.props.field.of.filter(ofType => ofType.type !== 'paragraph'), ofField => {
       return [ofField.type, createPreviewNode(ofField)]
     })
-    this.slateNodes.video = Video
   }
 
   handleInsertBlock = event => {
@@ -66,28 +63,17 @@ export default class BlockEditor extends React.Component {
     this.props.onChange({patch: {localState: nextState}})
   }
 
-  insertVideo = () => {
-    const {value, onChange} = this.props
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, {type: 'video'})
-
-    const nextState = value.state
-      .transform()
-      .insertBlock({
-        type: 'video',
-        isVoid: true,
-        data: {
-          value: addItemValue
-        }
-      })
-      .apply()
-    onChange({patch: {localState: nextState}})
+  handleDrop = (event, data, state, editor) => {
+    switch (data.type) {
+      case 'node': console.log('DROP', data)
+      default: return undefined
+    }
   }
 
   renderInsertMenu() {
     const {field} = this.props
     return (
       <div>
-        <button type="button" onClick={this.insertVideo}>Insert video</button>
         {field.of
           .filter(ofField => ofField.type !== 'paragraph')
           .map(ofField => {

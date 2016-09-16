@@ -27,7 +27,7 @@
     "proptypes": "^0.14.3",
     "prosemirror": "^0.10.1",
     "shallow-equals": "0.0.0",
-    "slate": "^0.14.6"
+    "slate": "^0.14.8"
   },
   "devDependencies": {
     "@sanity/base": "^2.1.80",

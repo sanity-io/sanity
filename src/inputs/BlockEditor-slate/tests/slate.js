@@ -31,7 +31,8 @@ export default {
         type: 'paragraph',
         nodes: [
           {
-            key: 'ea65', kind: 'text',
+            key: 'ea65',
+            kind: 'text',
             ranges: [
               {kind: 'range', text: '', marks: []}
             ]

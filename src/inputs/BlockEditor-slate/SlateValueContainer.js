@@ -33,6 +33,6 @@ export default class SlateValueContainer {
   }
 
   serialize() {
-    return fromSlate(this.state)
+    return fromSlate(this.state, this.context)
   }
 }
