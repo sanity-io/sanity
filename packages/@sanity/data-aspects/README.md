@@ -8,9 +8,6 @@ Sanity plugin which controls how your data is presented.
 This is alpha software. Nothing should be expected to work.
 
 ## TODO
-[x] refactor options file, as per usage
-[x] implement displayName for type
-[x] make desk-tool filter the create/new list based on data-aspects
 [ ] When gql/gradient supports limit, offset and order, make sure DataAspectsResolver rolls the query cigar correctly.
 
 ## Usage
