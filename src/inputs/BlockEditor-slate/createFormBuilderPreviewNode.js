@@ -1,17 +1,20 @@
 import React, {PropTypes} from 'react'
 import ItemPreview from './ItemPreview'
-import {bindAll} from 'lodash'
+import styles from './styles/BlockPreview.css'
 import ItemForm from './ItemForm'
 const stopPropagation = e => e.stopPropagation()
 
 export default function createFormBuilderPreviewNode(ofField) {
   return class PreviewNode extends React.Component {
-    state = {isEditing: false}
+    static propTypes = {
+      node: PropTypes.object,
+      editor: PropTypes.object,
+      attributes: PropTypes.object
+    }
 
     handleChange = event => {
-      const {node, state, editor} = this.props
-      const next = editor
-        .getState()
+      const {node, editor} = this.props
+      const next = editor.getState()
         .transform()
         .setNodeByKey(node.key, {
           data: {value: node.data.get('value').patch(event.patch)}
@@ -21,32 +24,8 @@ export default function createFormBuilderPreviewNode(ofField) {
       editor.onChange(next)
     }
 
-    handleEndEdit = () => {
-      this.setState({isEditing: false})
-    }
-
-    handleStartEdit = () => {
-      this.setState({isEditing: true})
-    }
-
     getValue() {
       return this.props.node.data.get('value')
-    }
-
-    renderEdit() {
-      const {key} = this.props.node
-
-      return (
-        <div onClick={stopPropagation}>
-          <ItemForm
-            field={ofField}
-            level={0}
-            value={this.getValue()}
-            onChange={this.handleChange}
-          />
-          <button type="button" onClick={this.handleEndEdit}>OK</button>
-        </div>
-      )
     }
 
     renderPreview() {
@@ -59,28 +38,29 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     renderInput() {
-      const {isEditing} = this.state
-      return (
-        <div>
-          {!isEditing && <button onClick={this.handleStartEdit}>EDIT</button>}
-          {isEditing && (
-            <div onClick={stopPropagation}>
-              <ItemForm
-                field={ofField}
-                level={0}
-                value={this.getValue()}
-                onChange={this.handleChange}
-              />
-              <button onClick={this.handleEndEdit}>OK</button>
-            </div>
-          )}
+      const {node, editor} = this.props
+
+      const isFocused = editor.getState().selection.hasEdgeIn(node)
+
+      return isFocused ? (
+        <div onClick={stopPropagation}>
+          <ItemForm
+            field={ofField}
+            level={0}
+            value={this.getValue()}
+            onChange={this.handleChange}
+          />
         </div>
-      )
+      ) : null
     }
 
     render() {
+      const {node, editor} = this.props
+      const isFocused = editor.getState().selection.hasEdgeIn(node)
+      const className = isFocused ? styles.active : styles.root
+
       return (
-        <div {...this.props.attributes} style={{border: '1px dashed #aaa'}}>
+        <div {...this.props.attributes} draggable className={className}>
           {this.renderPreview()}
           {this.renderInput()}
         </div>

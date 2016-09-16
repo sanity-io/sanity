@@ -35,24 +35,13 @@ export default class BlockEditor extends React.Component {
   constructor(props, context) {
     super(props, context)
 
-    bindAll(this, [
-      'handleEditorChange',
-      'handleInsertBlock'
-    ])
-
     this.slateNodes = mapToObject(this.props.field.of.filter(ofType => ofType.type !== 'paragraph'), ofField => {
       return [ofField.type, createPreviewNode(ofField)]
     })
     this.slateNodes.video = Video
   }
 
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
-  }
-
-  handleInsertBlock(event) {
+  handleInsertBlock = event => {
     const {value, onChange, field} = this.props
     const type = event.currentTarget.dataset.type
 
@@ -73,7 +62,7 @@ export default class BlockEditor extends React.Component {
     onChange({patch: {localState: nextState}})
   }
 
-  handleEditorChange(nextState) {
+  handleEditorChange = nextState => {
     this.props.onChange({patch: {localState: nextState}})
   }
 
@@ -93,6 +82,7 @@ export default class BlockEditor extends React.Component {
       .apply()
     onChange({patch: {localState: nextState}})
   }
+
   renderInsertMenu() {
     const {field} = this.props
     return (
@@ -103,6 +93,7 @@ export default class BlockEditor extends React.Component {
           .map(ofField => {
             return (
               <button
+                type="button"
                 key={ofField.type}
                 data-type={ofField.type}
                 onClick={this.handleInsertBlock}
