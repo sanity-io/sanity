@@ -20,9 +20,6 @@ export default class SlateValueContainer {
   }
 
   patch(patch) {
-    // eslint-disable-next-line no-console
-    console.log('patch', patch)
-
     let nextState
     if (patch.localState) {
       nextState = patch.localState

@@ -35,7 +35,6 @@ export default class Str extends React.Component {
   }
 
   componentDidMount() {
-    console.log('STRING DID MOUNT')
     // if (this.props.focus) {
     //   this.focus()
     // }
