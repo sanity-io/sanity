@@ -8,7 +8,6 @@ import styles from '../styles/DeskTool.css'
 import paneStyles from '../styles/Pane.css'
 import DataAspectsResolver from 'role:@sanity/data-aspects/resolver'
 import QueryContainer from 'component:@sanity/base/query-container'
-import {startCase} from 'lodash'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -26,7 +25,7 @@ function mapQueryResultToProps(props) {
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(type => ({
   key: type.name,
   name: type.name,
-  title: startCase(type.name)
+  title: dataAspects.getDisplayName(type.name)
 }))
 
 export default class SchemaPaneResolver extends React.Component {
