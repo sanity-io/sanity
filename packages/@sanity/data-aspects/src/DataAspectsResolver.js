@@ -1,12 +1,14 @@
 import config from 'config:@sanity/data-aspects'
 import bundledTypes from 'role:@sanity/base/bundled-types'
+import {startCase} from 'lodash'
 const bundledTypeNames = bundledTypes.types.map(baseType => baseType.name)
+
 
 class DataAspectsResolver {
 
   constructor(schema) {
     this.schema = schema
-    this.config = Object.assign({listOptions: {}}, config || {})
+    this.config = Object.assign({typeOptions: {}}, config || {})
   }
 
   getConfig() {
@@ -36,7 +38,7 @@ class DataAspectsResolver {
     return defaultTypes
   }
 
-  fallbackDisplayFieldName(typeName) {
+  fallbackItemDisplayField(typeName) {
     const type = this.getType(typeName)
     const field = type.fields.find(currField => {
       return ['name', 'title', 'label'].includes(currField.name)
@@ -44,38 +46,43 @@ class DataAspectsResolver {
     return field ? field.name : null
   }
 
-  getDisplayFieldName(typeName) {
-    const listOptions = this.config.listOptions[typeName]
-    if (listOptions && listOptions.displayField) {
-      return listOptions.displayField
+  getItemDisplayField(typeName) {
+    const typeOption = this.config.typeOptions[typeName]
+    if (typeOption && typeOption.itemDisplayField) {
+      return typeOption.itemDisplayField
     }
-    return this.fallbackDisplayFieldName(typeName)
+    return this.fallbackItemDisplayField(typeName)
+  }
+
+  getDisplayName(typeName) {
+    const typeOption = this.config.typeOptions[typeName] || {}
+    return typeOption.displayName || startCase(typeName)
   }
 
   // TODO: limit and offset is not yet implemented i gradient and only works partly because of a fluke
   // fix this when gql support limit, offset and order
   getListConstraints(typeName) {
-    const listOptions = this.config.listOptions[typeName]
-    if (!listOptions) {
+    const typeOption = this.config.typeOptions[typeName]
+    if (!typeOption) {
       return ''
     }
     const constraints = []
-    if (listOptions.order) {
+    if (typeOption.order) {
       // prefix order items with . because that's what gql requires
-      //constraints.push(listOptions.order)
+      //constraints.push(typeOptions.order)
     }
-    if (listOptions.limit || listOptions.limit == 0) {
-      constraints.push(`limit: ${listOptions.limit}`)
+    if (typeOption.limit || typeOption.limit == 0) {
+      constraints.push(`limit: ${typeOption.limit}`)
     }
-    if (listOptions.offset) {
-      constraints.push(`offset: ${listOptions.offset}`)
+    if (typeOption.offset) {
+      constraints.push(`offset: ${typeOption.offset}`)
     }
     return constraints.filter(Boolean).join(', ')
   }
 
   getListQuery(options) {
     const {typeName, keyForId, keyForDisplayFieldName} = options
-    const fieldName = this.getDisplayFieldName(typeName)
+    const fieldName = this.getItemDisplayField(typeName)
     const constraints = this.getListConstraints(typeName)
     const selection = `"${keyForId}": .$id, "${keyForDisplayFieldName}": .${fieldName}`
     return `${this.schema.name}.${typeName} [${constraints}] {${selection}}`
