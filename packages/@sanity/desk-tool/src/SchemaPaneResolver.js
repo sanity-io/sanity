@@ -65,7 +65,8 @@ export default class SchemaPaneResolver extends React.Component {
     return (
       <StateLink
         className={className}
-        state={{selectedType: type.name}}>
+        state={{selectedType: type.name}}
+      >
         {type.title}
       </StateLink>
     )
@@ -77,7 +78,8 @@ export default class SchemaPaneResolver extends React.Component {
     return (
       <StateLink
         className={className}
-        state={{selectedType, action: 'edit', selectedDocumentId: document.id}}>
+        state={{selectedType, action: 'edit', selectedDocumentId: document.id}}
+      >
         {document.title}
       </StateLink>
     )
