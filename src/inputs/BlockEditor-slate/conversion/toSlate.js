@@ -58,9 +58,6 @@ const DESERIALIZE = {
 
     const value = createFieldValue(node, {field: fieldDef, schema: context.schema, resolveInputComponent: context.resolveInputComponent})
 
-    console.log('context', context)
-    console.log('create form builder value from ', node)
-    debugger
     return Block.create({
       data: {value: value},
       key: node.key,
