@@ -1,6 +1,6 @@
 import DeskTool from './DeskTool'
 import Icon from './Icon'
-import {createRoute} from '@sanity/state-router'
+import {createRoute} from 'router:@sanity/base/router'
 
 export default {
   router: createRoute('/:selectedType/*', [

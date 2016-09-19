@@ -6,6 +6,8 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "example-testbed": "cd examples/testbed && sanity start",
+    "start": "npm run example-testbed",
     "clean": "rimraf lib",
     "test": "sanity-check",
     "compile": "babel -d lib/ src/",
@@ -19,15 +21,19 @@
     "sanity-tool"
   ],
   "dependencies": {
+    "@sanity/base": "^2.1.86",
+    "@sanity/client-next": "^2.0.12",
     "@sanity/data-aspects": "^1.1.0",
-    "@sanity/form-builder": "^1.1.24",
-    "@sanity/state-router": "0.0.1",
+    "@sanity/form-builder": "^1.2.4",
     "react": ">=15.1.0",
     "react-dom": ">=15.1.0",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
+    "@sanity/base": "^2.1.87",
     "@sanity/check": "^1.0.0",
+    "@sanity/cli": "^1.2.14",
+    "@sanity/data-aspects": "^1.1.0",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
@@ -39,6 +45,8 @@
     "eslint": "^3.3.0",
     "eslint-config-sanity": "^1.1.2",
     "eslint-plugin-react": "^6.2.1",
+    "faker": "^3.1.0",
+    "history": "^4.2.0",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
     "rimraf": "^2.5.3"

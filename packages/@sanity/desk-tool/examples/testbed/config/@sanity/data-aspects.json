@@ -1,0 +1,17 @@
+{
+  "hiddenTypes": [
+    "latlon"
+  ],
+  "typeOptions": {
+    "article": {
+      "displayName": "Article",
+      "itemDisplayField": "name",
+      "limit": 100,
+      "offset": 0
+    },
+    "siteConfig": {
+      "displayName": "Site configuration",
+      "itemDisplayField": "title"
+    }
+  }
+}

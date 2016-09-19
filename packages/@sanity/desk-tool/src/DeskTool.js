@@ -9,7 +9,7 @@ const dataAspects = new DataAspectsResolver(schema)
 function DeskTool() {
   const actions = (dataAspects.getInferredTypes()).map(type => ({
     nextState: {selectedType: type.name, action: 'create', selectedDocumentId: `${type.name}:`},
-    title: dataAspects.getDisplayName(type.name)
+    title: `Create ${dataAspects.getDisplayName(type.name)}`
   }))
 
   return (

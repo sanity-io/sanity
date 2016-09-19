@@ -2,8 +2,8 @@ import React, {PropTypes} from 'react'
 import Pane from 'component:desk-tool/pane'
 import schema from 'schema:@sanity/base/schema'
 import PaneContainer from 'component:desk-tool/pane-container'
-import {StateLink} from '@sanity/state-router'
-import FormBuilderContainer from 'role:@sanity/form-builder/container'
+import {StateLink} from 'router:@sanity/base/router'
+import EditorPane from './EditorPane'
 import styles from '../styles/DeskTool.css'
 import paneStyles from '../styles/Pane.css'
 import DataAspectsResolver from 'role:@sanity/data-aspects/resolver'
@@ -119,7 +119,7 @@ export default class SchemaPaneResolver extends React.Component {
 
     const editor = ['edit', 'create'].includes(action) && (
       <div className={styles.editor}>
-        <FormBuilderContainer
+        <EditorPane
           documentId={selectedDocumentId}
           typeName={selectedType}
           onCreated={this.handleDocumentCreated}
