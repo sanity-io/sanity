@@ -32,10 +32,13 @@ export default function getDevServer(config = {}) {
   // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
   app.use(webpackDevMiddleware(compiler, {
+    quiet: true,
     noInfo: true,
+    watchOptions: {
+      ignored: /node_modules/
+    },
     publicPath: webpackConfig.output.publicPath,
-    stats: true,
-    debug: true
+    stats: true
   }))
 
   app.use(webpackHotMiddleware(compiler))
@@ -46,6 +49,9 @@ export default function getDevServer(config = {}) {
     res.set('Content-Type', 'text/css')
     res.send()
   })
+
+  // Expose webpack compiler on server instance
+  app.locals.compiler = compiler
 
   return applyStaticRoutes(app, config)
 }
