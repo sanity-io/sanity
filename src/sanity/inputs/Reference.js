@@ -1,5 +1,5 @@
 import client from 'client:@sanity/base/client'
-import {ReferenceInput} from 'role:@sanity/form-builder'
+import {ReferenceInput} from '../../index'
 import {unprefixType} from '../utils/unprefixType'
 
 function fetchSingle(id) {
