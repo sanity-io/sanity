@@ -1,6 +1,10 @@
 #!/usr/bin/env node
-/* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync */
-let cwd = null
+/* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync, no-var */
+
+/**
+ * NOTE: KEEP THIS FILE NODE 4 COMPATIBLE, ERGO; DONT USE LET/CONST, ARROW FUNCTIONS ETC
+ */
+var cwd = null
 try {
   cwd = process.cwd()
 } catch (err) {
@@ -12,16 +16,16 @@ try {
   }
 }
 
-const fs = require('fs')
-const path = require('path')
-const thenify = require('thenify')
-const pkg = require('../package.json')
-const stat = thenify(fs.stat)
+var fs = require('fs')
+var path = require('path')
+var thenify = require('thenify')
+var pkg = require('../package.json')
+var stat = thenify(fs.stat)
 
-const devMode = isDevMode()
-const preferGlobal = devMode && process.argv[2] === '-g'
-const argv = process.argv.slice(2)
-const debug = require(devMode ? '../src/debug' : '../lib/debug')
+var devMode = isDevMode()
+var preferGlobal = devMode && process.argv[2] === '-g'
+var argv = process.argv.slice(2)
+var debug = require(devMode ? '../src/debug' : '../lib/debug')
 
 // If we're in development mode, compile ES6 on the fly
 if (devMode) {
@@ -82,7 +86,7 @@ function hasLocalCliInstalled(isDeclared) {
     return false
   }
 
-  const fullPath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
+  var fullPath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
   return stat(fullPath).then(() => fullPath).catch(err => {
     if (err.code === 'ENOENT') {
       throw new Error(
