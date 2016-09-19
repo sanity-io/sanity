@@ -300,7 +300,7 @@
       "path": "router"
     },
     {
-      "name": "client:@sanity/base/client",
+      "implements": "client:@sanity/base/client",
       "path": "client"
     },
     {
