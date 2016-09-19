@@ -72,6 +72,7 @@ export default class RenderField extends React.Component {
     }
 
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
+
     return (
       <FieldInput
         fieldName={fieldName}

@@ -7,6 +7,7 @@ export default class Bool extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field,
+    level: PropTypes.number.isRequired,
     value: PropTypes.bool,
     onChange: PropTypes.func
   };

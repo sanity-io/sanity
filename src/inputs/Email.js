@@ -10,6 +10,7 @@ export default class Email extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
+    level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
   };
@@ -24,11 +25,12 @@ export default class Email extends React.Component {
   }
 
   render() {
-    const {field, value} = this.props
+    const {field, value, level} = this.props
     return (
       <DefaultTextField
         label={field.title}
         type="email"
+        level={level}
         placeholder={field.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}

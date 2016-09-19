@@ -7,6 +7,7 @@ export default class Num extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field,
+    level: PropTypes.number.isRequired,
     value: PropTypes.number,
     onChange: PropTypes.func,
     focus: PropTypes.bool
@@ -27,11 +28,12 @@ export default class Num extends React.Component {
   }
 
   render() {
-    const {value, field, focus} = this.props
+    const {value, field, focus, level} = this.props
     return (
       <DefaultTextField
         label={field.title}
         type="number"
+        level={level}
         placeholder={field.placeholder || 'Must be a number. Ex 1234'}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}

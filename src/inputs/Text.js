@@ -10,6 +10,7 @@ export default class Str extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
+    level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
   };
@@ -35,10 +36,10 @@ export default class Str extends React.Component {
 
 
   render() {
-    const {value, field} = this.props
+    const {value, field, level} = this.props
     const inputId = uniqueId('FormBuilderText')
     return (
-      <FormField label={field.title} labelHtmlFor={inputId}>
+      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
         <TextArea
           id={inputId}
           placeholder={field.placeholder}

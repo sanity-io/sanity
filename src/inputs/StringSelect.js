@@ -8,6 +8,7 @@ export default class StringSelect extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
+    level: PropTypes.number.isRequired,
     value: PropTypes.string,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
@@ -50,7 +51,7 @@ export default class StringSelect extends React.Component {
   }
 
   render() {
-    const {value, field, focus} = this.props
+    const {value, field, focus, level} = this.props
 
     const items = field.options.list.map(item => {
       return {title: item}
@@ -63,6 +64,7 @@ export default class StringSelect extends React.Component {
     return (
       <Select
         label={field.title}
+        level={level}
         type="text"
         value={currentItem || items[0]}
         placeholder={field.placeholder}
