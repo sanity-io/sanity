@@ -82,15 +82,9 @@
       "implements": "locale:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
     },
-
-    {
-      "implements": "role:@sanity/form-builder/container",
-      "path": "sanity/FormBuilderContainer.js"
-    },
-
     {
       "implements": "role:@sanity/form-builder",
-      "path": "index.js"
+      "path": "sanity/SanityFormBuilder.js"
     }
   ]
 }
