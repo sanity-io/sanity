@@ -1,7 +1,6 @@
-import {createFieldValue} from '../../../state/FormBuilderState'
 // Converts a persisted array to a slate compatible json document
-import {Plain, Raw} from 'slate'
-import dummyRawState from '../tests/slate'
+import {createFieldValue} from '../../../state/FormBuilderState'
+import {Plain} from 'slate'
 import Block from 'slate/lib/models/block'
 import Document from 'slate/lib/models/document'
 import State from 'slate/lib/models/state'
@@ -9,11 +8,6 @@ import Character from 'slate/lib/models/character'
 import Mark from 'slate/lib/models/mark'
 import Text from 'slate/lib/models/text'
 
-
-const tap = inspector => value => {
-  inspector(value)
-  return value
-}
 const DESERIALIZE = {
   paragraph(para, context) {
     return Block.create({
@@ -45,23 +39,23 @@ const DESERIALIZE = {
   },
 
   node(node, context) {
-    switch (node.$type) {
-      case 'paragraph':
-        return DESERIALIZE.paragraph(node)
-      case 'text':
-        return DESERIALIZE.text(node)
+    if (node.$type === 'paragraph') {
+      return DESERIALIZE.paragraph(node)
     }
-    const {$type, ...rest} = node
 
-    // find type in of
-    const fieldDef = context.field.of.find(ofType => ofType.type === $type)
+    if (node.$type === 'text') {
+      return DESERIALIZE.text(node)
+    }
+
+    // find type in field definition's `of` property
+    const fieldDef = context.field.of.find(ofType => ofType.type === node.$type)
 
     const value = createFieldValue(node, {field: fieldDef, schema: context.schema, resolveInputComponent: context.resolveInputComponent})
 
     return Block.create({
       data: {value: value},
       key: node.key,
-      type: $type,
+      type: node.$type,
       isVoid: true
     })
   }
@@ -69,12 +63,11 @@ const DESERIALIZE = {
 
 export default function toSlate(array, context) {
   if (array.length === 0) {
-    // return Plain.deserialize('')
-    return Raw.deserialize(dummyRawState)
+    return Plain.deserialize('')
   }
-  return tap(v => console.log(Raw.serialize(v)))(State.create({
+  return State.create({
     document: Document.create({
       nodes: Block.createList(array.map(node => DESERIALIZE.node(node, context)))
     })
-  }))
+  })
 }
