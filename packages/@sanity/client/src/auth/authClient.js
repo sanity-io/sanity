@@ -8,6 +8,10 @@ assign(AuthClient.prototype, {
 
   getLoginProviders() {
     return this.client.request({uri: '/auth/providers'})
+  },
+
+  logout() {
+    return this.client.request({uri: '/auth/logout'})
   }
 
 })
