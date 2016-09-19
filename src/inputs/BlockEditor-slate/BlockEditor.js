@@ -3,10 +3,6 @@ import SlateValueContainer from './SlateValueContainer'
 import {Editor} from 'slate'
 import mapToObject from './util/mapToObject'
 import createPreviewNode from './createFormBuilderPreviewNode'
-
-// import CorePlugin from 'slate/dist/plugins/core'
-// import EditBlock from './EditBlock'
-// import createSlateSchema from './createSlateSchema'
 import styles from './styles/BlockEditor.css'
 
 export default class BlockEditor extends React.Component {
@@ -99,6 +95,7 @@ export default class BlockEditor extends React.Component {
       <div className={hasError ? styles.error : styles.root}>
         {this.renderInsertMenu()}
         <Editor
+          className={styles.input}
           onChange={this.handleEditorChange}
           placeholder=""
           state={value.state}
