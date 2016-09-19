@@ -7,7 +7,7 @@ import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
 export default function reinitializePluginConfigs(options) {
-  const {rootDir, print} = options
+  const {rootDir, output} = options
   const localChecksums = {}
 
   return getChecksums(rootDir)
@@ -35,7 +35,7 @@ export default function reinitializePluginConfigs(options) {
     const dstPath = path.join(rootDir, 'config', `${normalizePluginName(plugin.name)}.json`)
     const prtPath = path.relative(rootDir, dstPath)
 
-    print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
+    output.print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
     return fsp.copy(srcPath, dstPath).then(() => plugin)
   }
 
@@ -43,7 +43,7 @@ export default function reinitializePluginConfigs(options) {
     const local = localChecksums[plugin.name]
     if (typeof local !== 'undefined' && local !== plugin.configChecksum) {
       const name = normalizePluginName(plugin.name)
-      print(`[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`)
+      output.print(`[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`)
     }
 
     return plugin

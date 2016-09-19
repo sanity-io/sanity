@@ -8,8 +8,8 @@ import {
   createPluginManifest
 } from './createManifest'
 
-export function bootstrapSanity(targetPath, data, print) {
-  const writeIfNotExists = partialRight(writeFileIfNotExists, print)
+export function bootstrapSanity(targetPath, data, output) {
+  const writeIfNotExists = partialRight(writeFileIfNotExists, output)
 
   return Promise.all([
     fsp.ensureDir(path.join(targetPath, 'config')),
@@ -40,7 +40,7 @@ export function bootstrapSanity(targetPath, data, print) {
 }
 
 export function bootstrapPlugin(data, opts = {}) {
-  const writeIfNotExists = partialRight(writeFileIfNotExists, opts.print)
+  const writeIfNotExists = partialRight(writeFileIfNotExists, opts.output)
   const collect = {
     pluginConfig: readTemplate('plugin-config'),
     gitIgnore: readTemplate('gitignore'),
@@ -109,11 +109,11 @@ function readTemplate(file) {
   return fsp.readFile(path.join(__dirname, 'templates', file))
 }
 
-function writeFileIfNotExists(filePath, content, print) {
+function writeFileIfNotExists(filePath, content, output) {
   return fsp.writeFile(filePath, content, {flag: 'wx'})
     .catch(err => {
       if (err.code === 'EEXIST') {
-        print(`[WARN] File "${filePath}" already exists, skipping`)
+        output.print(`[WARN] File "${filePath}" already exists, skipping`)
       } else {
         throw err
       }

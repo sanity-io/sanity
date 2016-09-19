@@ -22,16 +22,10 @@ var thenify = require('thenify')
 var pkg = require('../package.json')
 var stat = thenify(fs.stat)
 
-var devMode = isDevMode()
-var preferGlobal = devMode && process.argv[2] === '-g'
+var devMode = hasDevMode()
+var preferGlobal = process.argv[2] === '-g'
 var argv = process.argv.slice(2)
-var debug = require(devMode ? '../src/debug' : '../lib/debug')
-
-// If we're in development mode, compile ES6 on the fly
-if (devMode) {
-  require('babel-register')
-  debug('CLI running in development mode')
-}
+var debug = require('../lib/debug')
 
 if (devMode) {
   process.on('unhandledRejection', (reason, promise) => {
@@ -61,12 +55,12 @@ if (preferGlobal) {
 
 function loadCli(localCliPath) {
   if (localCliPath) {
-    // The local CLI exists, warn the user that we are using it and run it
-    console.log(`[Sanity] Local "${pkg.name}"-dependency found, using that over global version`)
+    // The local CLI exists, use that
     require(localCliPath).run(argv)
   } else {
     // No local CLI found, use global version
-    require(devMode ? '../src/cli.js' : '../lib/cli.js').run(argv)
+    console.log(`[Sanity] Using global "${pkg.name}"`)
+    require('../lib/cli.js').run(argv)
   }
 }
 
@@ -120,8 +114,7 @@ function readManifestIfExists(manifestPath, opts) {
   })
 }
 
-// @todo Figure out a better way to detect if we're running in "development mode"
-function isDevMode() {
+function hasDevMode() {
   try {
     fs.statSync(path.join(__dirname, '..', 'src'))
     return true

@@ -13,8 +13,8 @@ const providersUrl = `${baseUrl}/auth/providers`
 const exchangeUrl = `${baseUrl}/auth/tokens/fetch`
 
 export default async function auth(helpers) {
-  const {prompt, spinner} = helpers
-  const spin = spinner('Fetching providers...').start()
+  const {prompt, output} = helpers
+  const spin = output.spinner('Fetching providers...').start()
   const {body} = await got(providersUrl, {json: true})
   const providers = body.providers
   const provider = await promptProviders(prompt, providers)
@@ -23,9 +23,9 @@ export default async function auth(helpers) {
   return new Promise((...args) => authFlow({provider, ...helpers}, ...args))
 }
 
-function authFlow({print, spinner, provider}, resolve, reject) {
+function authFlow({output, provider}, resolve, reject) {
   debug('Starting OAuth receiver webserver')
-  const spin = spinner('Waiting for login flow to complete...')
+  const spin = output.spinner('Waiting for login flow to complete...')
   const server = http
     .createServer(onServerRequest)
     .listen(0, '127.0.0.1', onListen)
@@ -38,7 +38,7 @@ function authFlow({print, spinner, provider}, resolve, reject) {
     providerUrl.query.type = 'token'
 
     const loginUrl = url.format(providerUrl)
-    print(`\nOpening browser at ${loginUrl}\n`)
+    output.print(`\nOpening browser at ${loginUrl}\n`)
     spin.start()
     open(loginUrl)
   }
@@ -89,7 +89,7 @@ function authFlow({print, spinner, provider}, resolve, reject) {
     })
 
     spin.stop()
-    print(chalk.green('Authentication successful'))
+    output.print(chalk.green('Authentication successful'))
     server.close(() => debug('Server closed'))
     resolve()
   }

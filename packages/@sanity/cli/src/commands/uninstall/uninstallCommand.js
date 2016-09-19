@@ -4,23 +4,24 @@ import without from 'lodash/without'
 import {uninstall as npmUninstall} from '../../npm-bridge/install'
 import readLocalManifest from '../../util/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
-import {hasSameChecksum} from '../../util/pluginChecksumManifest'
+import {hasSameChecksum, localConfigExists} from '../../util/pluginChecksumManifest'
 
 export default {
   name: 'uninstall',
   command: 'uninstall [plugin]',
   describe: 'Removes a Sanity plugin from the current Sanity configuration',
   handler: args => {
-    const plugins = args.options._.slice(1)
-    if (!plugins.length) {
+    const plugin = args.options.plugin || ''
+    if (!plugin.length) {
       return args.error(new Error('Plugin name must be specified'))
     }
 
-    return Promise.all(plugins.map(plugin => uninstallPlugin(plugin, args)))
+    // @todo add support for multiple simultaneous plugins to be uninstalled
+    return uninstallPlugin(plugin, args)
   }
 }
 
-function uninstallPlugin(plugin, {print, error, prompt, options}) {
+function uninstallPlugin(plugin, {prompt, options}) {
   const isFullName = plugin.indexOf('sanity-plugin-') === 0
   const shortName = isFullName ? plugin.substr(14) : plugin
   const fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
@@ -29,6 +30,19 @@ function uninstallPlugin(plugin, {print, error, prompt, options}) {
     .then(() => removeFromSanityManifest(options.rootDir, shortName))
     .then(() => npmUninstall(['--save', fullName], options))
 }
+
+function removeConfiguration(rootDir, fullName, shortName, prompt) {
+  const localConfigPath = path.join(rootDir, 'config', `${shortName}.json`)
+
+  return localConfigExists(rootDir, shortName).then(exists => {
+    return generateConfigChecksum(localConfigPath)
+      .then(localChecksum => hasSameChecksum(rootDir, fullName, localChecksum))
+      .then(sameChecksum => promptOnAlteredConfiguration(shortName, sameChecksum, prompt))
+      .then(({deleteConfig}) => deleteConfiguration(localConfigPath, deleteConfig))
+      .catch(() => Promise.resolve()) // Destination file does not exist, predictable, proceed with uninstall
+  })
+}
+
 function removeFromSanityManifest(rootDir, pluginName) {
   return readLocalManifest(rootDir, 'sanity.json')
     .then(manifest => {
@@ -36,20 +50,6 @@ function removeFromSanityManifest(rootDir, pluginName) {
       return manifest
     })
     .then(manifest => fsp.writeJson(path.join(rootDir, 'sanity.json'), manifest, {spaces: 2}))
-}
-
-function removeConfiguration(rootDir, fullName, shortName, prompt) {
-  const localConfigPath = path.join(rootDir, 'config', `${shortName}.json`)
-
-  return fsp.stat(localConfigPath).then(() => {
-    // Configuration exists, check if user has local configuration already
-    return fsp.stat(localConfigPath)
-      .then(() => generateConfigChecksum(localConfigPath))
-      .then(localChecksum => hasSameChecksum(rootDir, fullName, localChecksum))
-      .then(sameChecksum => promptOnAlteredConfiguration(shortName, sameChecksum, prompt))
-      .then(({deleteConfig}) => deleteConfiguration(localConfigPath, deleteConfig))
-      .catch(() => Promise.resolve()) // Destination file does not exist predictable, proceed with uninstall
-  })
 }
 
 function deleteConfiguration(configPath, userConfirmed) {

@@ -9,13 +9,13 @@ export default {
   name: 'logout',
   command: 'logout',
   describe: 'Logs out of the Sanity.io session',
-  async handler({print, error, prompt, spinner}) {
+  async handler({output, prompt}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')
     const type = cfg.get('authType')
     if (!token) {
-      print(chalk.red('No login credentials found'))
+      output.print(chalk.red('No login credentials found'))
       return
     }
 
@@ -25,8 +25,8 @@ export default {
     }
 
     if (type === 'provisional') {
-      print(chalk.yellow.inverse('[WARN]') + chalk.yellow(' You are currently logged in as a temporary user!'))
-      print(chalk.yellow('Logging out will make it super hard to claim your beautiful project :\'('))
+      output.print(chalk.yellow.inverse('[WARN]') + chalk.yellow(' You are currently logged in as a temporary user!'))
+      output.print(chalk.yellow('Logging out will make it super hard to claim your beautiful project :\'('))
     }
 
     const confirm = await prompt.single({
@@ -36,7 +36,7 @@ export default {
     })
 
     if (!confirm) {
-      print(chalk.red('Aborted'))
+      output.print(chalk.red('Aborted'))
       return
     }
 
@@ -50,7 +50,7 @@ export default {
       cfg.del('authType')
       cfg.del('authToken')
 
-      print(chalk.green('Logged out'))
+      output.print(chalk.green('Logged out'))
     }
   }
 }

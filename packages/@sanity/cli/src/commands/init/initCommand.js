@@ -36,9 +36,9 @@ export default {
   }
 }
 
-async function initSanity({print, prompt, spinner, options, apiClient}) {
-  print('This utility walks you through creating a Sanity installation.')
-  print('Press ^C at any time to quit.\n')
+async function initSanity({output, prompt, options, apiClient}) {
+  output.print('This utility walks you through creating a Sanity installation.')
+  output.print('Press ^C at any time to quit.\n')
 
   const userConfig = getUserConfig()
 
@@ -49,10 +49,10 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
   debug(hasToken ? 'User already has a token' : 'User has no token')
 
   if (hasToken && isProvisional) {
-    print("We found some temporary auth credentials in your Sanity config - we're gonna use")
-    print('those, but make sure to claim your account before it expires!\n')
+    output.print("We found some temporary auth credentials in your Sanity config - we're gonna use")
+    output.print('those, but make sure to claim your account before it expires!\n')
   } else if (hasToken) {
-    print('Looks like you already have a Sanity-account. Sweet!\n')
+    output.print('Looks like you already have a Sanity-account. Sweet!\n')
   }
 
   if (!hasToken) {
@@ -87,10 +87,10 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
     ...answers
-  }, print)
+  }, output.print)
 
   // Now for the slow part... installing dependencies
-  const spin = spinner('Installing dependencies...')
+  const spin = output.spinner('Installing dependencies...')
   try {
     spin.start()
     await npmInstall()
@@ -100,14 +100,14 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
     throw err
   }
 
-  print('Success! You can now run `sanity start`')
+  output.print('Success! You can now run `sanity start`')
 
   // Create a provisional user and store the token
   async function getOrCreateUser() {
-    print("We can't find any auth credentials in your Sanity config - looks like you")
-    print("haven't used Sanity on this system before?\n")
-    print("If you're looking to try out Sanity and haven't registered we can just set up")
-    print('a temp account for testing. You can always claim it later.\n')
+    output.print("We can't find any auth credentials in your Sanity config - looks like you")
+    output.print("haven't used Sanity on this system before?\n")
+    output.print("If you're looking to try out Sanity and haven't registered we can just set up")
+    output.print('a temp account for testing. You can always claim it later.\n')
 
     // Provide login options
     const authMethod = await prompt.single({
@@ -121,7 +121,7 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
     })
 
     if (authMethod === 'arrow') {
-      print("Cool story bout the arrow, guess you're in a hurry. Creating temp account.")
+      output.print("Cool story bout the arrow, guess you're in a hurry. Creating temp account.")
     }
 
     if (authMethod === 'arrow' || authMethod === 'provisional') {
@@ -141,17 +141,17 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
         throw userError
       }
 
-      print("Good stuff, you now have a token for a temporary account. You'll also need")
-      print('a project to keep your data sets and collaborators safe and snug')
+      output.print("Good stuff, you now have a token for a temporary account. You'll also need")
+      output.print('a project to keep your data sets and collaborators safe and snug')
 
       return Promise.resolve({isProvisional: true})
     }
 
     // Provide login options (`sanity auth`)
-    await authenticate({print, prompt, spinner})
+    await authenticate({output, prompt})
 
-    print("Good stuff, you're now authenticated. You'll need a project to keep your")
-    print('data sets and collaborators safe and snug.')
+    output.print("Good stuff, you're now authenticated. You'll need a project to keep your")
+    output.print('data sets and collaborators safe and snug.')
     return Promise.resolve({isProvisional: false})
   }
 
@@ -196,16 +196,16 @@ async function initSanity({print, prompt, spinner, options, apiClient}) {
   }
 }
 
-function initPlugin({print, prompt, error, options}, initOpts = {}) {
+function initPlugin({output, prompt, options}, initOpts = {}) {
   if (initOpts.sanityStyle) {
-    print('[WARNING]: Bootstrapping with Sanity.io style guide')
+    output.print('[WARNING]: Bootstrapping with Sanity.io style guide')
   }
 
-  print('This utility will walk you through creating a new Sanity plugin.')
-  print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
-  print('Press ^C at any time to quit.\n')
+  output.print('This utility will walk you through creating a new Sanity plugin.')
+  output.print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
+  output.print('Press ^C at any time to quit.\n')
 
-  print(
+  output.print(
     'If you intend to publish the plugin for reuse by others, it is '
     + 'recommended that the plugin name is prefixed with `sanity-plugin-`'
   )
@@ -213,10 +213,10 @@ function initPlugin({print, prompt, error, options}, initOpts = {}) {
   const rootDir = options.rootDir
   return getProjectDefaults(rootDir, {isPlugin: true})
     .then(defaults => gatherInput(prompt, defaults, {isPlugin: true}))
-    .then(answers => bootstrapPlugin(answers, {print, ...initOpts}))
+    .then(answers => bootstrapPlugin(answers, {output, ...initOpts}))
     .then(answers => addPluginOnUserConfirm(rootDir, answers))
-    .then(answers => print(`Success! Plugin initialized at ${answers.outputPath}`))
-    .catch(error)
+    .then(answers => output.print(`Success! Plugin initialized at ${answers.outputPath}`))
+    .catch(output.error)
 }
 
 function addPluginOnUserConfirm(rootDir, answers) {

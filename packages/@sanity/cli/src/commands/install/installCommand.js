@@ -10,16 +10,17 @@ export default {
   command: 'install [plugin]',
   describe: 'Installs a Sanity plugin to the current Sanity configuration',
   handler: args => {
-    const plugins = args.options._.slice(1)
-    if (!plugins.length) {
+    const plugin = args.options.plugin || ''
+    if (!plugin.length) {
       return args.error(new Error('Plugin name must be specified'))
     }
 
-    return Promise.all(plugins.map(plugin => installPlugin(plugin, args)))
+    // @todo add support for multiple simultaneous plugins to be installed
+    return installPlugin(plugin, args)
   }
 }
 
-function installPlugin(plugin, {print, spinner, error, options}) {
+function installPlugin(plugin, {output, options}) {
   const isNamespaced = plugin[0] === '@'
   let shortName = plugin
   let fullName = plugin
@@ -30,17 +31,17 @@ function installPlugin(plugin, {print, spinner, error, options}) {
     fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
   }
 
-  const spin = spinner('Installing plugin...')
+  const spin = output.spinner('Installing plugin...')
   spin.start()
 
   return npmInstall(['--save', fullName], options)
     .then(() => addPluginToManifest(options.rootDir, shortName))
-    .then(() => copyConfiguration(options.rootDir, fullName, shortName, print))
+    .then(() => copyConfiguration(options.rootDir, fullName, shortName, output))
     .then(() => spin.stop())
-    .then(() => print(`Plugin '${fullName}' installed`))
+    .then(() => output.print(`Plugin '${fullName}' installed`))
     .catch(err => {
       spin.stop()
-      handleNpmError(err, error, fullName)
+      handleNpmError(err, output.error, fullName)
     })
 }
 
@@ -52,7 +53,7 @@ function handleNpmError(err, printError, pluginName) {
   printError(err)
 }
 
-function copyConfiguration(rootDir, fullName, shortName, print) {
+function copyConfiguration(rootDir, fullName, shortName, output) {
   const configPath = path.join(rootDir, 'node_modules', fullName, 'config.dist.json')
   const dstPath = path.join(rootDir, 'config', `${shortName}.json`)
 
@@ -61,7 +62,7 @@ function copyConfiguration(rootDir, fullName, shortName, print) {
     return fsp.stat(dstPath)
       .then(() => generateConfigChecksum(configPath))
       .then(distChecksum => hasSameChecksum(rootDir, fullName, distChecksum))
-      .then(sameChecksum => warnOnDifferentChecksum(shortName, sameChecksum, print))
+      .then(sameChecksum => warnOnDifferentChecksum(shortName, sameChecksum, output.print))
       .catch(() => {
         // Destination file does not exist, copy
         return fsp.copy(configPath, dstPath)

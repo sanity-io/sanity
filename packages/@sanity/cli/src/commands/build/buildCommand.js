@@ -14,7 +14,7 @@ export default {
   name: 'build',
   command: 'build [outputDir]',
   describe: 'Builds the current Sanity configuration to a static bundle',
-  handler: ({print, spinner, error, options}) => {
+  handler: ({output, options}) => {
     const outputDir = options._[1] || path.join(options.rootDir, 'dist')
     const config = getConfig(options.rootDir).get('server')
     const compilationConfig = {
@@ -27,7 +27,7 @@ export default {
     const compiler = getWebpackCompiler(compilationConfig)
     const compile = thenify(compiler.run.bind(compiler))
 
-    const spin = spinner('Building Sanity...')
+    const spin = output.spinner('Building Sanity...')
     spin.start()
 
     const bundle = {}
@@ -68,20 +68,20 @@ export default {
       )
       .then(() => spin.stop())
       .then(() => {
-        bundle.stats.warnings.forEach(print)
+        bundle.stats.warnings.forEach(output.print)
 
-        print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
+        output.print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
 
         if (options.stats) {
-          print('\nLargest modules (unminified, uncompressed sizes):')
+          output.print('\nLargest modules (unminified, uncompressed sizes):')
           sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
-            print(`[${filesize(module.size)}] ${module.name}`)
+            output.print(`[${filesize(module.size)}] ${module.name}`)
           )
         }
       })
       .catch(err => {
         spin.stop()
-        error(err)
+        output.error(err)
       })
   }
 }

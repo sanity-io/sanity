@@ -34,7 +34,7 @@ export default class CommandRunner {
     }
 
     const action = subCommand ? subCommand.action : baseCommand.handler
-    const {print, error, spinner} = this.handlers.outputter
+    const output = this.handlers.outputter
     const {prompt} = this.handlers.prompter
 
     const manifestPath = path.join(options.rootDir, 'sanity.json')
@@ -45,7 +45,7 @@ export default class CommandRunner {
         const apiClient = clientWrapper(manifest, manifestPath)
 
         debug(`Running command "${(subCommand || baseCommand).name}"`)
-        return action({print, error, spinner, prompt, apiClient, options})
+        return action({output, prompt, apiClient, options})
       })
   }
 }
