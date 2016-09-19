@@ -51,7 +51,7 @@
   "dependencies": {
     "@sanity/client-next": "^2.0.5",
     "@sanity/document-store": "^1.0.4",
-    "@sanity/router": "^1.0.10",
+    "@sanity/state-router": "0.0.1",
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
     "in-publish": "^2.0.0",

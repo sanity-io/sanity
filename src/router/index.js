@@ -1,1 +1,1 @@
-export * from '@sanity/router'
+export * from '@sanity/state-router'
