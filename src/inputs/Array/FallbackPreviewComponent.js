@@ -64,7 +64,7 @@ export default function FallbackPreviewComponent(props) {
       description={resolvePreviewPath(preview.description, props.value)}
       emptyText={preview.emptyText}
       sanityImage={false}
-      />
+            />
     )
   }
 

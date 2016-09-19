@@ -12,6 +12,8 @@ import {parseParams, preventDefault} from '../lib/utils'
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomReferenceBrowser from './custom/MyCustomReferenceBrowser'
+import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
+import SimpleImagePreview from './custom/SimpleImagePreview'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -29,8 +31,17 @@ const FormBuilder = schema && createFormBuilder({
     if (field.type === 'latlon') {
       return MyCustomLatLonInput
     }
+    if (field.type === 'array' && field.editor === 'slate') {
+      return BlockEditorSlate
+    }
     if (field.type === 'reference') {
       return MyCustomReferenceBrowser
+    }
+    return undefined // signal to use default
+  },
+  resolvePreviewComponent(field, fieldType) {
+    if (field.type === 'simpleImage') {
+      return SimpleImagePreview
     }
     return undefined // signal to use default
   },
@@ -107,7 +118,7 @@ export default class Main extends React.Component {
   renderToolbar() {
     const {inspect, saved} = this.state
     return (
-      <div>
+      <div className={styles.toolbar}>
         <this.CommandButton command="Save">{saved ? '✓ Saved' : '  Save'}</this.CommandButton>
         <this.CommandButton command="Revert">Load saved</this.CommandButton>
         <this.CommandButton command="Clear">Clear</this.CommandButton>
@@ -149,9 +160,9 @@ export default class Main extends React.Component {
           selectedSchemaName={params.schemaName}
           selectedTypeName={params.typeName}
         />
+        {this.renderToolbar()}
         <div className={styles.inner}>
           <form onSubmit={preventDefault}>
-            {this.renderToolbar()}
             <div>
               <FormBuilder
                 value={value}

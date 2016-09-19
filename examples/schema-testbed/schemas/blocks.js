@@ -24,12 +24,16 @@ export default {
         {
           name: 'content',
           type: 'array',
-          title: 'Content array',
-          editor: 'prosemirror',
+          title: 'Blocks',
+          editor: 'slate',
           of: [
             {
               title: 'Paragraph',
               type: 'paragraph'
+            },
+            {
+              title: 'String',
+              type: 'string'
             },
             {
               title: 'Image',
@@ -52,10 +56,12 @@ export default {
       type: 'object',
       fields: [
         {
+          title: 'Image address (url)',
           name: 'url',
           type: 'url'
         },
         {
+          title: 'Caption',
           name: 'caption',
           type: 'string'
         }

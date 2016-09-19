@@ -1,4 +1,10 @@
 @import './shared.css';
-.root {
+
+:global body {
   background-color: #fafafa;
+}
+
+.root {
+  margin: 0;
+  padding: 0;
 }

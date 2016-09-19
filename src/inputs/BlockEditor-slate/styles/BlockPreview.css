@@ -1,0 +1,11 @@
+@use postcss-cssnext;
+
+.root {
+  padding: 2px;
+  border: 1px #aaa solid;
+  box-shadow: 1px 1px 5px 0px rgba(217,217,217,1);
+}
+.active {
+  composes: root;
+  border-color: #9d261d;
+}

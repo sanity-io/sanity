@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
+import DefaultTextField from 'component:@sanity/components/textfields/default'
 
 export default class Url extends React.Component {
   constructor(props, context) {
@@ -8,9 +9,10 @@ export default class Url extends React.Component {
   }
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
-    value: PropTypes.string,
-    onChange: PropTypes.func
+    field: FormBuilderPropTypes.field,
+    value: PropTypes.number,
+    onChange: PropTypes.func,
+    focus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -19,13 +21,22 @@ export default class Url extends React.Component {
   };
 
   handleChange(event) {
-    this.props.onChange({$set: event.target.value})
+    this.props.onChange({patch: {$set: event.target.value}})
   }
 
   render() {
-    const {value} = this.props
+    const {value, field, focus} = this.props
     return (
-      <input type="url" value={value} onChange={this.handleChange} />
+      <DefaultTextField
+        label={field.title}
+        type="url"
+        placeholder={field.placeholder}
+        onChange={this.handleChange}
+        onKeyPress={this.handleKeyPress}
+        value={value}
+        focus={focus}
+        ref={this.setInputElement}
+      />
     )
   }
 }

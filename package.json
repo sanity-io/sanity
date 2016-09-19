@@ -21,16 +21,19 @@
     "@sanity/base": "^2.1.72",
     "@sanity/components": "^1.0.61",
     "debug": "^2.2.0",
+    "is-empty": "^1.0.0",
     "lodash": "^4.15.0",
     "object-inspect": "^1.2.1",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.10.1",
-    "shallow-equals": "0.0.0"
+    "shallow-equals": "0.0.0",
+    "slate": "^0.14.8"
   },
   "devDependencies": {
     "@sanity/base": "^2.1.80",
     "@sanity/check": "^1.0.1",
     "@sanity/cli": "^1.2.11",
+    "@sanity/server": "^1.2.35",
     "babel-cli": "^6.14.0",
     "babel-eslint": "^6.1.2",
     "babel-plugin-css-modules-transform": "^1.0.0",

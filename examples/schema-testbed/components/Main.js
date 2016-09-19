@@ -10,8 +10,9 @@ import styles from './styles/Main.css'
 // whyDidYouUpdate(React)
 
 Debug.disable('*')
+// Debug.enable('slate*')
 if (process.env.DEBUG) {
-  Debug.enable(process.env.DEBUG)
+  // Debug.enable('slate:*')
 }
 
 export default function Main() {
