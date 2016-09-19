@@ -36,7 +36,7 @@ The config file `config/@sanity/data-aspects.json` lets you control how your dat
 }
 ```
 
-Refer to https://github.com/sanity-io/desk-tool/blob/master/src/schemaPaneResolver.js for an example on how the DataAspectsResolver can be used.
+Refer to https://github.com/sanity-io/desk-tool/blob/master/src/SchemaPaneResolver.js for an example on how the DataAspectsResolver can be used.
 
 ## License
 
