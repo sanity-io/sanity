@@ -4,5 +4,5 @@
 }
 
 .functions {
-  composes: functions from 'style:@sanity/components/fieldsets/default';
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }

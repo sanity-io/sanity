@@ -4,14 +4,14 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "name": "role:@sanity/google-maps-input/input/geopoint",
-      "implements": "role:@sanity/form-builder/input/geopoint",
+      "name": "part:@sanity/google-maps-input/input/geopoint",
+      "implements": "part:@sanity/form-builder/input/geopoint",
       "path": "GeopointInput.js"
     },
     {
-      "implements": "locale:@sanity/base/locale-messages",
+      "implements": "part:@sanity/base/locale-messages",
       "path": "./locale/strings.json"
     }
   ]

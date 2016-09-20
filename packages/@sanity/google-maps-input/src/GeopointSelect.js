@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
-import {intlShape} from 'component:@sanity/base/locale/intl'
-import {formatMessage} from 'role:@sanity/base/locale/formatters'
-import SearchField from 'component:@sanity/components/textfields/default'
+import {intlShape} from 'part:@sanity/base/locale/intl'
+import {formatMessage} from 'part:@sanity/base/locale/formatters'
 import styles from '../styles/GeopointSelect.css'
 
 class GeopointSelect extends React.Component {
