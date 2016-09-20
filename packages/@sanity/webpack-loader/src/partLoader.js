@@ -5,43 +5,43 @@ const loaderUtils = require('loader-utils')
 const resolver = require('@sanity/resolver')
 const multiImplementationHandler = require('./multiImplementationHandler')
 
-function sanityRoleLoader(input) {
+function sanityPartLoader(input) {
   const callback = this.async()
 
-  const role = this.data.sanityRole
+  const part = this.data.sanityPart
   const basePath = this.data.basePath
 
-  if (!role) {
-    return callback(new Error('`sanityRole` property must be passed to the role loader'))
+  if (!part) {
+    return callback(new Error('`sanityPart` property must be passed to the part loader'))
   }
 
   if (!basePath) {
-    return callback(new Error('`basePath` property must be passed to role loader'))
+    return callback(new Error('`basePath` property must be passed to part loader'))
   }
 
   this.addDependency(path.join(basePath, 'sanity.json'))
 
   return resolver
-    .resolveRoles({basePath: basePath})
-    .then(roles => {
+    .resolveParts({basePath: basePath})
+    .then(parts => {
       if (this.cacheable) {
         this.cacheable()
       }
 
-      // Also add plugin manifests as dependencies, as roles and paths may change
-      roles.plugins.forEach(plugin => {
+      // Also add plugin manifests as dependencies, as parts and paths may change
+      parts.plugins.forEach(plugin => {
         this.addDependency(path.join(plugin.path, 'sanity.json'))
       })
 
-      const loadAll = role.indexOf('all:') === 0
-      const roleName = loadAll ? role.substr(4) : role
-      const opts = {role: roleName, input, roles}
+      const loadAll = part.indexOf('all:') === 0
+      const partName = loadAll ? part.substr(4) : part
+      const opts = {part: partName, input, parts}
 
-      if (roleName === 'sanity:debug') {
+      if (partName === 'sanity:debug') {
         return setImmediate(
           callback,
           null,
-          `module.exports = ${JSON.stringify(roles, null, 2)}\n`
+          `module.exports = ${JSON.stringify(parts, null, 2)}\n`
         )
       }
 
@@ -55,8 +55,8 @@ function sanityRoleLoader(input) {
     })
 }
 
-sanityRoleLoader.pitch = function (remaining, preceding, data) {
-  if (remaining.indexOf('sanityRole=') === -1) {
+sanityPartLoader.pitch = function (remaining, preceding, data) {
+  if (remaining.indexOf('sanityPart=') === -1) {
     return
   }
 
@@ -64,4 +64,4 @@ sanityRoleLoader.pitch = function (remaining, preceding, data) {
   Object.assign(data, loaderUtils.parseQuery(qs) || {})
 }
 
-module.exports = sanityRoleLoader
+module.exports = sanityPartLoader

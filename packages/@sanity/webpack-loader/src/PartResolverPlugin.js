@@ -2,20 +2,20 @@
 
 const qs = require('querystring')
 const path = require('path')
-const roleResolver = require('@sanity/resolver')
-const emptyRole = require.resolve('./emptyRole')
-const debugRole = require.resolve('./debugRole')
-const unimplementedRole = require.resolve('./unimplementedRole')
-const roleMatcher = /^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
+const partResolver = require('@sanity/resolver')
+const emptyPart = require.resolve('./emptyPart')
+const debugPart = require.resolve('./debugPart')
+const unimplementedPart = require.resolve('./unimplementedPart')
+const partMatcher = /^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 
-const isSanityRole = request =>
-  roleMatcher.test(request.request) || configMatcher.test(request.request)
+const isSanityPart = request =>
+  partMatcher.test(request.request) || configMatcher.test(request.request)
 
-const RoleResolverPlugin = function (options) {
+const PartResolverPlugin = function (options) {
   if (!options || !options.basePath) {
     throw new Error(
-      '`basePath` option must be specified in role resolver plugin constructor'
+      '`basePath` option must be specified in part resolver plugin constructor'
     )
   }
 
@@ -23,28 +23,28 @@ const RoleResolverPlugin = function (options) {
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
-      // The debug role should return the whole role/plugin tree
+      // The debug part should return the whole part/plugin tree
       if (request.request === 'sanity:debug') {
         this.doResolve(['file'], {
-          request: debugRole,
+          request: debugPart,
           query: `?${qs.stringify({
-            sanityRole: request.request,
+            sanityPart: request.request,
             basePath: options.basePath
           })}`
         }, callback)
         return
       }
 
-      if (!isSanityRole(request)) {
+      if (!isSanityPart(request)) {
         callback()
         return
       }
 
-      const sanityRole = request.request.replace(/^all:/, '')
+      const sanityPart = request.request.replace(/^all:/, '')
 
-      roleResolver
-        .resolveRoles({basePath: options.basePath})
-        .then(roles => {
+      partResolver
+        .resolveParts({basePath: options.basePath})
+        .then(parts => {
           // Configuration files resolve to a specific path
           // Either the root sanity.json or a plugins JSON config
           const configMatch = request.request.match(configMatcher)
@@ -64,29 +64,29 @@ const RoleResolverPlugin = function (options) {
           // Imports throw if they are not implemented, except if they
           // are prefixed with `all:` (returns an empty array) or they
           // are postfixed with `?` (returns undefined)
-          const role = roles.implementations[sanityRole]
-          if (!role) {
+          const part = parts.implementations[sanityPart]
+          if (!part) {
             if (allowUnimplemented) {
-              return this.doResolve(['file'], {request: unimplementedRole}, callback)
+              return this.doResolve(['file'], {request: unimplementedPart}, callback)
             }
 
             if (loadAll) {
-              return this.doResolve(['file'], {request: emptyRole}, callback)
+              return this.doResolve(['file'], {request: emptyPart}, callback)
             }
 
             return callback(new Error(
-              `Role "${sanityRole}" not implemented by any plugins`
+              `Part "${sanityPart}" not implemented by any plugins`
             ))
           }
 
           const reqQuery = (request.query || '').replace(/^\?/, '')
           const query = Object.assign({}, qs.parse(reqQuery) || {}, {
-            sanityRole: request.request,
+            sanityPart: request.request,
             basePath: options.basePath
           })
 
           return this.doResolve(['file', 'directory'], Object.assign({}, request, {
-            request: role[0].path,
+            request: part[0].path,
             query: `?${qs.stringify(query)}`
           }), callback)
         })
@@ -95,4 +95,4 @@ const RoleResolverPlugin = function (options) {
   }
 }
 
-module.exports = RoleResolverPlugin
+module.exports = PartResolverPlugin

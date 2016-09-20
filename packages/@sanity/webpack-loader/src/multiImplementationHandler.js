@@ -2,7 +2,7 @@
 
 const banner = [
   '/**',
-  ' * Sanity role: ROLE_NAME',
+  ' * Sanity part: PART_NAME',
   ' * ',
   ' * Sanity plugin loader multi-implementation wrapper',
   ' * Imports all implementers, then exports them as an array',
@@ -16,7 +16,7 @@ const normalizer = [
 ]
 
 module.exports = function multiImplementationHandler(opts, callback) {
-  const implementations = opts.roles.implementations[opts.role]
+  const implementations = opts.parts.implementations[opts.part]
 
   const result = banner
     .concat(normalizer)
@@ -26,7 +26,7 @@ module.exports = function multiImplementationHandler(opts, callback) {
     ).join(',\n'))
     .concat(['].map(normalize)\n'])
     .join('\n')
-    .replace(/ROLE_NAME/g, opts.role)
+    .replace(/PART_NAME/g, opts.part)
 
   callback(null, result)
 }

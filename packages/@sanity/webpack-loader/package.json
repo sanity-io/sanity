@@ -1,10 +1,10 @@
 {
   "name": "@sanity/webpack-loader",
   "version": "2.0.1",
-  "description": "Plugin loader for Sanity. Resolves roles based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
-  "main": "src/RoleResolverPlugin.js",
+  "description": "Plugin loader for Sanity. Resolves parts based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
+  "main": "src/PartResolverPlugin.js",
   "scripts": {
-    "coverage": "istanbul cover _mocha -- test/**/*.test.js",
+    "coverage": "nyc _mocha -- test/**/*.test.js",
     "posttest": "eslint .",
     "test": "mocha test/**/*.test.js"
   },
@@ -24,14 +24,15 @@
   "homepage": "https://github.com/sanity-io/webpack-loader#readme",
   "dependencies": {
     "@sanity/resolver": "^3.0.0",
-    "loader-utils": "^0.2.12"
+    "loader-utils": "^0.2.16"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^2.4.0",
+    "chai-as-promised": "^5.3.0",
+    "eslint": "^3.3.0",
     "eslint-config-sanity": "^1.0.7",
-    "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
+    "nyc": "^8.3.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   }

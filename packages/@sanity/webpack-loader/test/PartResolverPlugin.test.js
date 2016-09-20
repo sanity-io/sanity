@@ -3,20 +3,20 @@
 const mocha = require('mocha')
 const expect = require('chai').expect
 const sinon = require('sinon')
-const RoleResolverPlugin = require('../src/RoleResolverPlugin')
+const PartResolverPlugin = require('../src/PartResolverPlugin')
 
 const it = mocha.it
 const describe = mocha.describe
 
-describe('RoleResolverPlugin', () => {
+describe('PartResolverPlugin', () => {
   it('throws if basePath is not set', () => {
-    expect(() => new RoleResolverPlugin()).to.throw(/basePath/)
+    expect(() => new PartResolverPlugin()).to.throw(/basePath/)
   })
 
   it('calls back immediately if not a sanity request', done => {
     const cb = sinon.spy()
 
-    const plug = new RoleResolverPlugin({basePath: '/sanity'})
+    const plug = new PartResolverPlugin({basePath: '/sanity'})
     plug.apply(getResolver({
       request: 'foo',
       callback: cb
