@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import Autocomplete from 'component:@sanity/components/autocomplete/default'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import Autocomplete from 'part:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
 import faker from 'faker'
 
@@ -19,7 +19,7 @@ storiesOf('Autocomplete')
       </form>
     )
   },
-  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
+  {propTables: [Autocomplete], role: 'part:@sanity/components/autocomplete/default'}
 )
 
 
@@ -42,5 +42,5 @@ storiesOf('Autocomplete')
       </form>
     )
   },
-  {propTables: [Autocomplete], role: 'component:@sanity/components/autocomplete/default'}
+  {propTables: [Autocomplete], role: 'part:@sanity/components/autocomplete/default'}
 )

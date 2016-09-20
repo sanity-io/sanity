@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 
-import styles from 'style:@sanity/components/formfields/default'
-import DefaultLabel from 'component:@sanity/components/labels/default'
+import styles from 'part:@sanity/components/formfields/default-style'
+import DefaultLabel from 'part:@sanity/components/labels/default'
 
 export default class DefaultFormField extends React.Component {
   static propTypes = {

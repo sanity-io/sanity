@@ -1,4 +1,4 @@
-@import "style:@sanity/base/theme/variables";
+@import "part:@sanity/base/theme/variables-style";
 
 @use postcss-cssnext;
 
@@ -35,7 +35,7 @@
 }
 
 .root {
-  composes: shadow-10dp from "style:@sanity/base/theme/shadows";
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   z-index: 1000;
   position: fixed;
   border: 0;

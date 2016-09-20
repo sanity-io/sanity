@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 
 @use postcss-cssnext;
 
@@ -48,7 +48,7 @@
 }
 
 .content {
-  composes: input from 'style:@sanity/components/textinputs/default';
+  composes: input from 'part:@sanity/components/textinputs/default-style';
   min-height: 2em;
   overflow: hidden;
   height: auto;
@@ -80,6 +80,6 @@
 }
 
 .label {
-  composes: label from 'style:@sanity/components/labels/default';
+  composes: label from 'part:@sanity/components/labels/default-style';
   display: block;
 }

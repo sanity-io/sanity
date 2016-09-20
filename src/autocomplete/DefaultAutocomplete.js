@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import FormField from 'component:@sanity/components/formfields/default'
-import TextInput from 'component:@sanity/components/textinputs/default'
-import styles from 'style:@sanity/components/autocomplete/default'
-import List from 'component:@sanity/components/lists/default'
+import FormField from 'part:@sanity/components/formfields/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import styles from 'part:@sanity/components/autocomplete/default-style'
+import List from 'part:@sanity/components/lists/default'
 
 import {uniqueId} from 'lodash'
 

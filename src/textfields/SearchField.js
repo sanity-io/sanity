@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textfields/search'
+import styles from 'part:@sanity/components/textfields/search-style'
 import {uniqueId} from 'lodash'
 
 export default class SearchFieldField extends React.Component {

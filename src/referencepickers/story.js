@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 
-import ReferencePickerDefault from 'component:@sanity/components/referencepickers/default'
-import DefaultDialog from 'component:@sanity/components/dialogs/default'
+import ReferencePickerDefault from 'part:@sanity/components/referencepickers/default'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 
 import {range} from 'lodash'
 import faker from 'faker'
@@ -29,7 +29,7 @@ storiesOf('Reference picker')
   },
   {
     propTables: [ReferencePickerDefault],
-    role: 'component:@sanity/components/referencepickers/default'
+    role: 'part:@sanity/components/referencepickers/default'
   }
 )
 .addWithInfo(
@@ -53,7 +53,7 @@ storiesOf('Reference picker')
   },
   {
     propTables: [ReferencePickerDefault],
-    role: 'component:@sanity/components/referencepickers/default'
+    role: 'part:@sanity/components/referencepickers/default'
   }
 )
 
@@ -87,6 +87,6 @@ storiesOf('Reference picker')
   },
   {
     propTables: [ReferencePickerDefault],
-    role: 'component:@sanity/components/referencepickers/default'
+    role: 'part:@sanity/components/referencepickers/default'
   }
 )

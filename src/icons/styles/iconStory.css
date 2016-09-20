@@ -38,7 +38,7 @@
 }
 
 .role {
-  composes: root from 'style:@sanity/base/theme/typography/code';
+  composes: root from 'part:@sanity/base/theme/typography/code-style';
 }
 
 .iconPreview {

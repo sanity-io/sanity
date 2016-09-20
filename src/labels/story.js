@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
-import DefaultLabel from 'component:@sanity/components/labels/default'
+import {storiesOf} from 'part:@sanity/storybook'
+import DefaultLabel from 'part:@sanity/components/labels/default'
 
 storiesOf('Labels')
   .addWithInfo(
@@ -15,6 +15,6 @@ storiesOf('Labels')
   },
   {
     propTables: [DefaultLabel],
-    role: 'component:@sanity/components/labels/default'
+    role: 'part:@sanity/components/labels/default'
   }
 )

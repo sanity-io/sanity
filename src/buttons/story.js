@@ -1,18 +1,18 @@
 import React from 'react'
-import Button from 'component:@sanity/components/buttons/default'
-import Fab from 'component:@sanity/components/buttons/fab'
-import DropDownButton from 'component:@sanity/components/buttons/dropdown'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import SanityLogoIcon from 'icon:@sanity/sanity-logo'
+import Button from 'part:@sanity/components/buttons/default'
+import Fab from 'part:@sanity/components/buttons/fab'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
 storiesOf('Buttons')
   .addWithInfo(
     'Default Button',
-    'Standard button Role: component:@sanity/components/buttons/default',
+    'Standard button Role: part:@sanity/components/buttons/default',
     () => (
       <Button onClick={action('clicked')}>Touch me!</Button>
     ),
-    {propTables: [Button], role: 'component:@sanity/components/buttons/default'}
+    {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )
 .addWithInfo(
 'Variations',
@@ -39,7 +39,7 @@ storiesOf('Buttons')
     </Button>
   </div>
 ),
-{propTables: [Button], role: 'component:@sanity/components/buttons/default'}
+{propTables: [Button], role: 'part:@sanity/components/buttons/default'}
 )
 
 .addWithInfo(
@@ -52,7 +52,7 @@ storiesOf('Buttons')
       </div>
     )
   },
-  {propTables: [Fab], role: 'component:@sanity/components/buttons/fab'}
+  {propTables: [Fab], role: 'part:@sanity/components/buttons/fab'}
 )
 
 .addWithInfo(
@@ -70,5 +70,5 @@ storiesOf('Buttons')
       </DropDownButton>
     )
   },
-  {propTables: [DropDownButton], role: 'component:@sanity/components/buttons/dropdown'}
+  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
 )

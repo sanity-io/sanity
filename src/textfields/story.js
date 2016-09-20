@@ -1,7 +1,7 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import DefaultTextField from 'component:@sanity/components/textfields/default'
-import SearchTextField from 'component:@sanity/components/textfields/search'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import DefaultTextField from 'part:@sanity/components/textfields/default'
+import SearchTextField from 'part:@sanity/components/textfields/search'
 
 storiesOf('Textfields')
   .addWithInfo(
@@ -21,7 +21,7 @@ storiesOf('Textfields')
   },
   {
     propTables: [DefaultTextField],
-    role: 'component:@sanity/components/textfields/default'
+    role: 'part:@sanity/components/textfields/default'
   }
 )
 .addWithInfo(
@@ -42,7 +42,7 @@ storiesOf('Textfields')
   },
   {
     propTables: [DefaultTextField],
-    role: 'component:@sanity/components/textfields/default'
+    role: 'part:@sanity/components/textfields/default'
   }
 )
 .addWithInfo(
@@ -64,7 +64,7 @@ storiesOf('Textfields')
   },
   {
     propTables: [DefaultTextField],
-    role: 'component:@sanity/components/textfields/default'
+    role: 'part:@sanity/components/textfields/default'
   }
 )
 .addWithInfo(
@@ -83,7 +83,7 @@ storiesOf('Textfields')
   },
   {
     propTables: [DefaultTextField],
-    role: 'component:@sanity/components/textfields/default'
+    role: 'part:@sanity/components/textfields/default'
   }
 )
 .addWithInfo(
@@ -102,6 +102,6 @@ storiesOf('Textfields')
   },
   {
     propTables: [SearchTextField],
-    role: 'component:@sanity/components/textfields/search'
+    role: 'part:@sanity/components/textfields/search'
   }
 )

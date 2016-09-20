@@ -1,10 +1,10 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 
-import DefaultList from 'component:@sanity/components/lists/default'
-import DefaultListItem from 'component:@sanity/components/lists/items/default'
-import GridList from 'component:@sanity/components/lists/grid'
-import GridItem from 'component:@sanity/components/lists/items/grid'
+import DefaultList from 'part:@sanity/components/lists/default'
+import DefaultListItem from 'part:@sanity/components/lists/items/default'
+import GridList from 'part:@sanity/components/lists/grid'
+import GridItem from 'part:@sanity/components/lists/items/grid'
 
 import {range} from 'lodash'
 import faker from 'faker'
@@ -40,7 +40,7 @@ storiesOf('Lists')
   },
   {
     propTables: [DefaultList],
-    role: 'component:@sanity/components/lists/default'
+    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -62,7 +62,7 @@ storiesOf('Lists')
   },
   {
     propTables: [DefaultList],
-    role: 'component:@sanity/components/lists/default'
+    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -84,7 +84,7 @@ storiesOf('Lists')
   },
   {
     propTables: [DefaultList],
-    role: 'component:@sanity/components/lists/default'
+    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -110,7 +110,7 @@ storiesOf('Lists')
   },
   {
     propTables: [GridList],
-    role: 'component:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid'
   }
 )
 
@@ -135,7 +135,7 @@ storiesOf('Lists')
   },
   {
     propTables: [GridList],
-    role: 'component:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid'
   }
 )
 
@@ -161,7 +161,7 @@ storiesOf('Lists')
   },
   {
     propTables: [GridList],
-    role: 'component:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid'
   }
 )
 
@@ -188,7 +188,7 @@ storiesOf('Lists')
   },
   {
     propTables: [GridList],
-    role: 'component:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid'
   }
 )
 
@@ -213,7 +213,7 @@ storiesOf('Lists')
   },
   {
     propTables: [GridList],
-    role: 'component:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid'
   }
 )
 
@@ -231,7 +231,7 @@ storiesOf('Lists items')
   },
   {
     propTables: [DefaultListItem],
-    role: 'component:@sanity/components/lists/items/default'
+    role: 'part:@sanity/components/lists/items/default'
   }
 )
 .addWithInfo(
@@ -246,7 +246,7 @@ storiesOf('Lists items')
   },
   {
     propTables: [GridItem],
-    role: 'component:@sanity/components/lists/items/grid'
+    role: 'part:@sanity/components/lists/items/grid'
   }
 )
 .addWithInfo(
@@ -269,6 +269,6 @@ storiesOf('Lists items')
   },
   {
     propTables: [GridItem],
-    role: 'component:@sanity/components/lists/items/grid'
+    role: 'part:@sanity/components/lists/items/grid'
   }
 )

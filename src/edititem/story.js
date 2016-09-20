@@ -1,7 +1,7 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 
-import EditItemPopOver from 'component:@sanity/components/edititem/popover'
+import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 
 storiesOf('Edit item')
 .addWithInfo(
@@ -18,6 +18,6 @@ storiesOf('Edit item')
   },
   {
     propTables: [EditItemPopOver],
-    role: 'component:@sanity/components/edititem/popover'
+    role: 'part:@sanity/components/edititem/popover'
   }
 )

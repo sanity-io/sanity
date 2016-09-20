@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import {uniqueId} from 'lodash'
 
-import styles from 'style:@sanity/components/tags/textfield'
-import DefaultFormField from 'component:@sanity/components/formfields/default'
+import styles from 'part:@sanity/components/tags/textfield-style'
+import DefaultFormField from 'part:@sanity/components/formfields/default'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {

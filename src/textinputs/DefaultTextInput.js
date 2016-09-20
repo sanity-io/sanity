@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textinputs/default'
-import IoAndroidClose from 'icon:@sanity/close'
+import styles from 'part:@sanity/components/textinputs/default-style'
+import IoAndroidClose from 'part:@sanity/base/close-icon'
 import {omit} from 'lodash'
 
 export default class DefaultTextInput extends React.Component {

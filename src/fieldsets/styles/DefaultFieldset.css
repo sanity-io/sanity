@@ -1,5 +1,5 @@
-@import 'style:@sanity/base/theme/variables';
-@import 'style:@sanity/base/theme/body';
+@import 'part:@sanity/base/theme/variables-style';
+@import 'part:@sanity/base/theme/body-style';
 
 @use postcss-cssnext;
 @use lost;
@@ -69,7 +69,7 @@
 }
 
 .legend {
-  composes: heading4 from 'style:@sanity/base/theme/typography/headings';
+  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
   display: block;
   width: 100%;
   margin: 0;
@@ -88,7 +88,7 @@
 }
 
 .description {
-  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
   margin-bottom: 0;
   padding-bottom: 0;
 }

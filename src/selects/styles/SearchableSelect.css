@@ -1,21 +1,21 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 
 @use postcss-cssnext;
 
 .root {
-  composes: root from 'style:@sanity/components/selects/default';
+  composes: root from 'part:@sanity/components/selects/default-style';
 }
 
 .selectContainer {
-  composes: selectContainer from 'style:@sanity/components/selects/default';
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
 }
 
 .selectContainer {
-  composes: selectContainer from 'style:@sanity/components/selects/default';
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
 }
 
 .icon {
-  composes: icon from 'style:@sanity/components/selects/default';
+  composes: icon from 'part:@sanity/components/selects/default-style';
   cursor: pointer;
   pointer-events: unset;
 }

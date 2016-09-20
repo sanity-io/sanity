@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/labels/default'
+import styles from 'part:@sanity/components/labels/default-style'
 
 export default class DefaultLabel extends React.Component {
   static propTypes = {

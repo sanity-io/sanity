@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
-import Fieldset from 'component:@sanity/components/fieldsets/default'
+import {storiesOf} from 'part:@sanity/storybook'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import faker from 'faker'
 
 storiesOf('Fieldsets')
@@ -18,7 +18,7 @@ storiesOf('Fieldsets')
   },
   {
     propTables: [Fieldset],
-    role: 'component:@sanity/components/fieldsets/default'
+    role: 'part:@sanity/components/fieldsets/default'
   }
 )
 .addWithInfo(
@@ -37,7 +37,7 @@ storiesOf('Fieldsets')
   },
   {
     propTables: [Fieldset],
-    role: 'component:@sanity/components/fieldsets/default'
+    role: 'part:@sanity/components/fieldsets/default'
   }
 )
 
@@ -59,6 +59,6 @@ storiesOf('Fieldsets')
   },
   {
     propTables: [Fieldset],
-    role: 'component:@sanity/components/fieldsets/default'
+    role: 'part:@sanity/components/fieldsets/default'
   }
 )

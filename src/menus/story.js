@@ -1,7 +1,7 @@
 import React from 'react'
-import Menu from 'component:@sanity/components/menus/default'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import SanityIcon from 'icon:@sanity/sanity-logo'
+import Menu from 'part:@sanity/components/menus/default'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
 
 storiesOf('Menus')
 .addWithInfo(
@@ -42,7 +42,7 @@ storiesOf('Menus')
   },
   {
     propTables: [Menu],
-    role: 'component:@sanity/components/menus/default'
+    role: 'part:@sanity/components/menus/default'
   }
 )
 .addWithInfo(
@@ -86,6 +86,6 @@ storiesOf('Menus')
   },
   {
     propTables: [Menu],
-    role: 'component:@sanity/components/menus/default'
+    role: 'part:@sanity/components/menus/default'
   }
 )

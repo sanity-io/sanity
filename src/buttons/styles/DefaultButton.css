@@ -1,4 +1,4 @@
-@import "style:@sanity/base/theme/variables";
+@import "part:@sanity/base/theme/variables-style";
 
 @use postcss-cssnext;
 
@@ -13,7 +13,7 @@
   background-color: var(--default-button-color);
   border: none;
   margin-right: var(--extra-small-padding);
-  composes: shadow-1dp from "style:@sanity/base/theme/shadows";
+  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
   line-height: 1em;
   user-select: none;
 }

@@ -1,6 +1,6 @@
 import React from 'react'
-import ProgressBar from 'component:@sanity/components/progress/bar'
-import {storiesOf} from 'component:@sanity/storybook'
+import ProgressBar from 'part:@sanity/components/progress/bar'
+import {storiesOf} from 'part:@sanity/storybook'
 
 class ProgressBarImplementation extends React.Component {
 
@@ -47,7 +47,7 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )
 .addWithInfo(
@@ -60,7 +60,7 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )
 .addWithInfo(
@@ -73,7 +73,7 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )
 .addWithInfo(
@@ -86,7 +86,7 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )
 
@@ -100,7 +100,7 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )
 .addWithInfo(
@@ -113,6 +113,6 @@ storiesOf('Progress')
   ),
   {
     propTables: [ProgressBar],
-    role: 'component:@sanity/components/progress/bar'
+    role: 'part:@sanity/components/progress/bar'
   }
 )

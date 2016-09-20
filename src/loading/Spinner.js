@@ -1,6 +1,6 @@
 import React from 'react'
-import styles from 'style:@sanity/components/loading/spinner'
-import SpinnerIcon from 'icon:@sanity/spinner'
+import styles from 'part:@sanity/components/loading/spinner-style'
+import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 
 export default class Spinner extends React.Component {
   render() {

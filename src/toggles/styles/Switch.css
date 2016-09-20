@@ -1,5 +1,5 @@
-@import "style:@sanity/base/theme/variables";
-@import "style:@sanity/base/theme/animation";
+@import "part:@sanity/base/theme/variables-style";
+@import "part:@sanity/base/theme/animation-style";
 
 @use postcss-cssnext;
 
@@ -37,7 +37,7 @@
 
 .root {
   position: relative;
-  composes: root from 'style:@sanity/components/formfields/default';
+  composes: root from 'part:@sanity/components/formfields/default-style';
 }
 
 .switch {
@@ -78,8 +78,8 @@
   width: var(--switch-thumb-size);
   border-radius: 50%;
   cursor: pointer;
-  composes: shadow-2dp from "style:@sanity/base/theme/shadows";
-  composes: animation-default from "style:@sanity/base/theme/animation";
+  composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
+  composes: animation-default from "part:@sanity/base/theme/animation-style";
   transition-property: left;
 
   @nest .disabled & {
@@ -92,7 +92,7 @@
   composes: thumb;
   background: var(--switch-thumb-color);
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
-  composes: shadow-3dp from "style:@sanity/base/theme/shadows";
+  composes: shadow-3dp from "part:@sanity/base/theme/shadows-style";
 }
 
 .focusHelper {

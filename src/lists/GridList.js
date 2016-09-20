@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/lists/grid'
-import GridItem from 'component:@sanity/components/lists/items/grid'
+import styles from 'part:@sanity/components/lists/grid-style'
+import GridItem from 'part:@sanity/components/lists/items/grid'
 
 export default class GridList extends React.Component {
   static propTypes = {

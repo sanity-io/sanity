@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import DefaultTextArea from 'component:@sanity/components/textareas/default'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import DefaultTextArea from 'part:@sanity/components/textareas/default'
 
 storiesOf('Text areas')
 .addWithInfo(
@@ -23,7 +23,7 @@ storiesOf('Text areas')
   },
   {
     propTables: [DefaultTextArea],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )
 .addWithInfo(
@@ -46,6 +46,6 @@ storiesOf('Text areas')
   },
   {
     propTables: [DefaultTextArea],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )

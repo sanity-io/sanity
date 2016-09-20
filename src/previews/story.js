@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
-import DefaultPreview from 'component:@sanity/components/previews/default'
+import {storiesOf} from 'part:@sanity/storybook'
+import DefaultPreview from 'part:@sanity/components/previews/default'
 
 storiesOf('Previews')
   .addWithInfo(
@@ -19,6 +19,6 @@ storiesOf('Previews')
   },
   {
     propTables: [DefaultPreview],
-    role: 'component:@sanity/components/labels/default'
+    role: 'part:@sanity/components/labels/default'
   }
 )

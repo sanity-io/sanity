@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/referencepickers/default'
+import styles from 'part:@sanity/components/referencepickers/default-style'
 
-import SearchField from 'component:@sanity/components/textfields/search'
-import TextField from 'component:@sanity/components/textfields/default'
-import List from 'component:@sanity/components/lists/default'
-import GridList from 'component:@sanity/components/lists/grid'
-import ToggleButtons from 'component:@sanity/components/toggles/buttons'
+import SearchField from 'part:@sanity/components/textfields/search'
+import TextField from 'part:@sanity/components/textfields/default'
+import List from 'part:@sanity/components/lists/default'
+import GridList from 'part:@sanity/components/lists/grid'
+import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 
 export default class DefaultList extends React.Component {
   static propTypes = {

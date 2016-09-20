@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/toggles/switch'
+import styles from 'part:@sanity/components/toggles/switch-style'
 
 export default class Switch extends React.Component {
   static propTypes = {

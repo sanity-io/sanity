@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 
-import DefaultSelect from 'component:@sanity/components/selects/default'
-import SearchableSelect from 'component:@sanity/components/selects/searchable'
+import DefaultSelect from 'part:@sanity/components/selects/default'
+import SearchableSelect from 'part:@sanity/components/selects/searchable'
 
 import {range} from 'lodash'
 import faker from 'faker'
@@ -91,7 +91,7 @@ storiesOf('Selects')
   },
   {
     propTables: [DefaultSelect],
-    role: 'component:@sanity/components/selects/default'
+    role: 'part:@sanity/components/selects/default'
   }
 )
 .addWithInfo(
@@ -114,7 +114,7 @@ storiesOf('Selects')
   },
   {
     propTables: [DefaultSelect],
-    role: 'component:@sanity/components/selects/default'
+    role: 'part:@sanity/components/selects/default'
   }
 )
 .addWithInfo(
@@ -137,7 +137,7 @@ storiesOf('Selects')
   },
   {
     propTables: [SearchableSelect],
-    role: 'component:@sanity/components/selects/searchable'
+    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -162,7 +162,7 @@ storiesOf('Selects')
   },
   {
     propTables: [SearchableSelect],
-    role: 'component:@sanity/components/selects/searchable'
+    role: 'part:@sanity/components/selects/searchable'
   }
 )
 .addWithInfo(
@@ -186,7 +186,7 @@ storiesOf('Selects')
   },
   {
     propTables: [SearchableSelect],
-    role: 'component:@sanity/components/selects/searchable'
+    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -212,7 +212,7 @@ storiesOf('Selects')
   },
   {
     propTables: [SearchableSelect],
-    role: 'component:@sanity/components/selects/searchable'
+    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -230,6 +230,6 @@ storiesOf('Selects')
   },
   {
     propTables: [SearchableSelect],
-    role: 'component:@sanity/components/selects/searchable'
+    role: 'part:@sanity/components/selects/searchable'
   }
 )

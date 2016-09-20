@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/progress/bar'
+import styles from 'part:@sanity/components/progress/bar-style'
 
 export default class ProgressBar extends React.Component {
   static propTypes = {

@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import CloseIcon from 'icon:@sanity/close'
-import styles from 'style:@sanity/components/dialogs/default'
-import Button from 'component:@sanity/components/buttons/default'
+import CloseIcon from 'part:@sanity/base/close-icon'
+import styles from 'part:@sanity/components/dialogs/default-style'
+import Button from 'part:@sanity/components/buttons/default'
 import dialogPolyfill from 'dialog-polyfill'
 
 export default class DefaultDialog extends React.Component {

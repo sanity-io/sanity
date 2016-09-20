@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/selects/default'
+import styles from 'part:@sanity/components/selects/default-style'
 import {uniqueId} from 'lodash'
-import FaAngleDown from 'icon:@sanity/angle-down'
-import FormField from 'component:@sanity/components/formfields/default'
+import FaAngleDown from 'part:@sanity/base/angle-down-icon'
+import FormField from 'part:@sanity/components/formfields/default'
 
 export default class DefaultSelect extends React.Component {
   static propTypes = {

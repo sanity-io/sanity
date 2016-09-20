@@ -1,7 +1,7 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 
-import Spinner from 'component:@sanity/components/loading/spinner'
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 storiesOf('Loading')
 .addWithInfo(
@@ -16,6 +16,6 @@ storiesOf('Loading')
   },
   {
     propTables: [Spinner],
-    role: 'component:@sanity/components/loading/spinner'
+    role: 'part:@sanity/components/loading/spinner'
   }
 )

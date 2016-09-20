@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/toggles/buttons'
-import Button from 'component:@sanity/components/buttons/default'
+import styles from 'part:@sanity/components/toggles/buttons-style'
+import Button from 'part:@sanity/components/buttons/default'
 
 export default class ToggleButtons extends React.Component {
   static propTypes = {

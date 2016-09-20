@@ -15,7 +15,7 @@
 }
 
 .title {
-  composes: heading2 from 'style:@sanity/base/theme/typography/headings';
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
 }
 
 .content {

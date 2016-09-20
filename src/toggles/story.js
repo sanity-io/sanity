@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
-import ToggleButtons from 'component:@sanity/components/toggles/buttons'
-import Switch from 'component:@sanity/components/toggles/switch'
-import Checkbox from 'component:@sanity/components/toggles/checkbox'
+import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
+import ToggleButtons from 'part:@sanity/components/toggles/buttons'
+import Switch from 'part:@sanity/components/toggles/switch'
+import Checkbox from 'part:@sanity/components/toggles/checkbox'
 
 storiesOf('Toggles')
 .addWithInfo(
@@ -13,7 +13,7 @@ storiesOf('Toggles')
       <Switch onChange={action('change')} label="Switch is off" />
     )
   },
-  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
+  {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
 )
 .addWithInfo(
   'Switch (on)',
@@ -23,7 +23,7 @@ storiesOf('Toggles')
       <Switch checked label="Switch is on" onChange={linkTo('Switch (off)')} />
     )
   },
-  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
+  {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
 )
 .addWithInfo(
   'Switch (disabled)',
@@ -33,7 +33,7 @@ storiesOf('Toggles')
       <Switch label="This checkbox is disabled" disabled />
     )
   },
-  {propTables: [Switch], role: 'component:@sanity/components/toggles/switch'}
+  {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
 )
 
 .addWithInfo(
@@ -49,7 +49,7 @@ storiesOf('Toggles')
       </div>
     )
   },
-  {propTables: [Checkbox], role: 'component:@sanity/components/toggles/checkbox'}
+  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
 )
 
 .addWithInfo(
@@ -83,5 +83,5 @@ storiesOf('Toggles')
       <ToggleButtons items={items} label="Select something" />
     )
   },
-  {propTables: [ToggleButtons], role: 'component:@sanity/components/toggles/buttons'}
+  {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
 )

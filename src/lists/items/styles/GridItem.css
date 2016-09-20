@@ -1,4 +1,4 @@
-@import "style:@sanity/base/theme/variables";
+@import "part:@sanity/base/theme/variables-style";
 
 @use postcss-cssnext;
 

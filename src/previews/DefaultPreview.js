@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/previews/default'
+import styles from 'part:@sanity/components/previews/default-style'
 
 export default class DefaultPreview extends React.Component {
   static propTypes = {

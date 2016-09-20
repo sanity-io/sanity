@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 
 @use postcss-cssnext;
 
@@ -12,7 +12,7 @@
 }
 
 .select {
-  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   appearance: none;
   position: relative;
   overflow: hidden;

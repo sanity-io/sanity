@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 
 @use postcss-cssnext;
 
@@ -87,7 +87,7 @@
   margin-bottom: 2em;
   box-sizing: border-box;
   position: relative;
-  composes: shadow-5dp from 'style:@sanity/base/theme/shadows';
+  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
 
   @media (--max-screen-medium) {
     position: fixed;

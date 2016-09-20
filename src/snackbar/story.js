@@ -1,6 +1,6 @@
 import React from 'react'
-import Snackbar from 'component:@sanity/components/snackbar/default'
-import {storiesOf, action} from 'component:@sanity/storybook'
+import Snackbar from 'part:@sanity/components/snackbar/default'
+import {storiesOf, action} from 'part:@sanity/storybook'
 
 storiesOf('Snackbar')
 .addWithInfo(
@@ -13,7 +13,7 @@ storiesOf('Snackbar')
   ),
   {
     propTables: [Snackbar],
-    role: 'component:@sanity/components/snackbar/default'
+    role: 'part:@sanity/components/snackbar/default'
   }
 ).addWithInfo(
   'Snackbar (warning)',
@@ -25,7 +25,7 @@ storiesOf('Snackbar')
   ),
   {
     propTables: [Snackbar],
-    role: 'component:@sanity/components/snackbar/default'
+    role: 'part:@sanity/components/snackbar/default'
   }
 )
 .addWithInfo(
@@ -38,7 +38,7 @@ storiesOf('Snackbar')
   ),
   {
     propTables: [Snackbar],
-    role: 'component:@sanity/components/snackbar/default'
+    role: 'part:@sanity/components/snackbar/default'
   }
 )
 .addWithInfo(
@@ -51,7 +51,7 @@ storiesOf('Snackbar')
   ),
   {
     propTables: [Snackbar],
-    role: 'component:@sanity/components/snackbar/default'
+    role: 'part:@sanity/components/snackbar/default'
   }
 )
 .addWithInfo(
@@ -72,6 +72,6 @@ storiesOf('Snackbar')
   },
   {
     propTables: [Snackbar],
-    role: 'component:@sanity/components/snackbar/default'
+    role: 'part:@sanity/components/snackbar/default'
   }
 )

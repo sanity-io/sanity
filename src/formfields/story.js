@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 
-import DefaultFormField from 'component:@sanity/components/formfields/default'
-import DefaultTextInput from 'component:@sanity/components/textinputs/default'
+import DefaultFormField from 'part:@sanity/components/formfields/default'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
 import faker from 'faker'
 
@@ -26,7 +26,7 @@ storiesOf('Form fields')
   },
   {
     propTables: [DefaultFormField],
-    role: 'component:@sanity/components/formfields/default'
+    role: 'part:@sanity/components/formfields/default'
   }
 )
 .addWithInfo(
@@ -49,7 +49,7 @@ storiesOf('Form fields')
   },
   {
     propTables: [DefaultFormField],
-    role: 'component:@sanity/components/formfields/default'
+    role: 'part:@sanity/components/formfields/default'
   }
 )
 
@@ -73,6 +73,6 @@ storiesOf('Form fields')
   },
   {
     propTables: [DefaultFormField],
-    role: 'component:@sanity/components/formfields/default'
+    role: 'part:@sanity/components/formfields/default'
   }
 )

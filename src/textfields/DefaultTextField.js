@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textfields/default'
-import DefaultTextInput from 'component:@sanity/components/textinputs/default'
-import FormField from 'component:@sanity/components/formfields/default'
+import styles from 'part:@sanity/components/textfields/default-style'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+import FormField from 'part:@sanity/components/formfields/default'
 
 import {uniqueId} from 'lodash'
 

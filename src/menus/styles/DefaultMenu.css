@@ -1,4 +1,4 @@
-@import "style:@sanity/base/theme/variables/typography";
+@import "part:@sanity/base/theme/variables/typography-style";
 
 @use postcss-cssnext;
 
@@ -6,7 +6,7 @@
   position: absolute;
   width: auto;
   background-color: #fff;
-  composes: shadow-2dp from 'style:@sanity/base/theme/shadows';
+  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-small);
   user-select: none;
   text-align: left;

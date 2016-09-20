@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
-import DatePicker from 'role:@sanity/form-builder/input/date'
+import {storiesOf} from 'part:@sanity/storybook'
+import DatePicker from 'part:@sanity/form-builder/input/date'
 import InfiniteCalendar from 'react-infinite-calendar'
 import styles from './styles.css'
 import 'react-infinite-calendar/styles.css'
@@ -17,7 +17,7 @@ storiesOf('Date pickers')
       <DatePicker />
     )
   },
-  {PropTables: [DatePicker], role: 'role:@sanity/form-builder/input/date'}
+  {PropTables: [DatePicker], role: 'part:@sanity/form-builder/input/date'}
 )
 .addWithInfo(
   'react-infinite-calendar',

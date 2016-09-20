@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 // import Ink from 'react-ink'
-import styles from 'style:@sanity/components/buttons/fab'
+import styles from 'part:@sanity/components/buttons/fab-style'
 
 export default class Fab extends React.Component {
   static propTypes = {

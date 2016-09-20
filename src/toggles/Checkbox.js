@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/toggles/checkbox'
+import styles from 'part:@sanity/components/toggles/checkbox-style'
 
 export default class Checkbox extends React.Component {
   static propTypes = {

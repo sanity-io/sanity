@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import TagsTextField from 'component:@sanity/components/tags/textfield'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import TagsTextField from 'part:@sanity/components/tags/textfield'
 
 class DefaultTextFieldTagsImplementation extends React.Component {
   static propTypes = {
@@ -67,7 +67,7 @@ storiesOf('Tags')
   },
   {
     propTables: [TagsTextField],
-    role: 'component:@sanity/components/tags/textfield'
+    role: 'part:@sanity/components/tags/textfield'
   }
 )
 
@@ -85,6 +85,6 @@ storiesOf('Tags')
   },
   {
     propTables: [TagsTextField],
-    role: 'component:@sanity/components/tags/textfield'
+    role: 'part:@sanity/components/tags/textfield'
   }
 )

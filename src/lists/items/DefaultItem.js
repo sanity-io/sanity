@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/lists/items/default'
+import styles from 'part:@sanity/components/lists/items/default-style'
 import ReactDOM from 'react-dom'
 
 export default class DefaultListItem extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react'
-import {storiesOf, action} from 'component:@sanity/storybook'
-import DefaultTextInput from 'component:@sanity/components/textinputs/default'
+import {storiesOf, action} from 'part:@sanity/storybook'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
 
 class DefaultTextInputTest extends React.Component {
@@ -57,7 +57,7 @@ storiesOf('Text inputs')
   },
   {
     propTables: [DefaultTextInput],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )
 .addWithInfo(
@@ -79,7 +79,7 @@ storiesOf('Text inputs')
   },
   {
     propTables: [DefaultTextInput],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )
 .addWithInfo(
@@ -104,7 +104,7 @@ storiesOf('Text inputs')
   },
   {
     propTables: [DefaultTextInput],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )
 
@@ -131,6 +131,6 @@ storiesOf('Text inputs')
   },
   {
     propTables: [DefaultTextInput],
-    role: 'component:@sanity/components/textinputs/default'
+    role: 'part:@sanity/components/textinputs/default'
   }
 )

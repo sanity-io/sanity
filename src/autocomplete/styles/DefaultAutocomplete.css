@@ -21,7 +21,7 @@
   overflow-x: hidden;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  composes: shadow-2dp from "style:@sanity/base/theme/shadows";
+  composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
 
   @nest .closed & {
     display: none;

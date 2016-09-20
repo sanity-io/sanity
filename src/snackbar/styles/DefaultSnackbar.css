@@ -1,4 +1,4 @@
-@import "style:@sanity/base/theme/variables/state-colors";
+@import "part:@sanity/base/theme/variables/state-colors-style";
 
 @use postcss-cssnext;
 

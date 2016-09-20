@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 
-import styles from 'style:@sanity/components/fieldsets/default'
+import styles from 'part:@sanity/components/fieldsets/default-style'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {

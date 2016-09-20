@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/cards/default'
+import styles from 'part:@sanity/components/cards/default-style'
 
 export default class DefaultCard extends React.Component {
   static propTypes = {

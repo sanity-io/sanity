@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 
-import styles from 'style:@sanity/components/dialogs/fullscreen'
-import CloseIcon from 'icon:@sanity/close'
+import styles from 'part:@sanity/components/dialogs/fullscreen-style'
+import CloseIcon from 'part:@sanity/base/close-icon'
 
 export default class FullScreenDialog extends React.Component {
   static propTypes = {

@@ -1,10 +1,10 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 import faker from 'faker'
 
 import styles from './styles/story.css'
-import headings from 'style:@sanity/base/theme/typography/headings'
-import textBlocks from 'style:@sanity/base/theme/typography/text-blocks'
+import headings from 'part:@sanity/base/theme/typography/headings-style'
+import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
 
 storiesOf('Typography').addWithInfo(
   'Basic',
@@ -12,11 +12,11 @@ storiesOf('Typography').addWithInfo(
     ## Headings
 
     ### Use in JS
-    import headings from 'style:@sanity/base/theme/typography/headings'
+    import headings from 'part:@sanity/base/theme/typography/headings-style'
     <h1 className={headings.heading1}>This is the big heading</h1>
 
     ### Use in CSS
-    - composes: heading1 from "style:@sanity/base/theme/typography/headings"
+    - composes: heading1 from "part:@sanity/base/theme/typography/headings-style"
     - composes: heading2 from ...
     - composes: heading3 from ...
     - composes: heading4 from ...
@@ -25,11 +25,11 @@ storiesOf('Typography').addWithInfo(
     ## Text blocks
 
     ### Use in JS
-    import textBlocks from 'style:@sanity/base/theme/typography/text-blocks'
+    import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
     <p className={textBlocks.paragraph}</p>
 
     ### Use in CSS
-    - composes: lead from "style:@sanity/base/theme/typography/text-blocks"
+    - composes: lead from "part:@sanity/base/theme/typography/text-blocks-style"
     - composes: paragraph from ...
 
 

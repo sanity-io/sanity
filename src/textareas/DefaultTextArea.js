@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/textareas/default'
-import IoAndroidClose from 'icon:@sanity/close'
+import styles from 'part:@sanity/components/textareas/default-style'
+import IoAndroidClose from 'part:@sanity/base/close-icon'
 
 export default class DefaultTextArea extends React.Component {
   static propTypes = {

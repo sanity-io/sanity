@@ -1,12 +1,12 @@
 import React, {PropTypes} from 'react'
-import styles from 'style:@sanity/components/selects/searchable'
+import styles from 'part:@sanity/components/selects/searchable-style'
 import {uniqueId} from 'lodash'
-import FaAngleDown from 'icon:@sanity/angle-down'
-import DefaultFormField from 'component:@sanity/components/formfields/default'
-import DefaultTextInput from 'component:@sanity/components/textinputs/default'
-import DefaultList from 'component:@sanity/components/lists/default'
+import FaAngleDown from 'part:@sanity/base/angle-down-icon'
+import DefaultFormField from 'part:@sanity/components/formfields/default'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+import DefaultList from 'part:@sanity/components/lists/default'
 import Fuse from 'fuse.js'
-import Spinner from 'component:@sanity/components/loading/spinner'
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 export default class SearchableSelect extends React.Component {
   static propTypes = {

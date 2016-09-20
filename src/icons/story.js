@@ -1,5 +1,5 @@
 import React from 'react'
-import {storiesOf} from 'component:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 
 // import * as FontAwesome from 'react-icons/lib/fa'
 // import * as MaterialDesignIcons from 'react-icons/lib/md'
@@ -11,11 +11,11 @@ import {storiesOf} from 'component:@sanity/storybook'
 import styles from './styles/iconStory.css'
 
 // Sanity icons
-import CloseIcon from 'icon:@sanity/close'
-import AngleDownIcon from 'icon:@sanity/angle-down'
-import SpinnerIcon from 'icon:@sanity/spinner'
-import SanityLogoIcon from 'icon:@sanity/sanity-logo'
-import HamburgerIcon from 'icon:@sanity/hamburger'
+import CloseIcon from 'part:@sanity/base/close-icon'
+import AngleDownIcon from 'part:@sanity/base/angle-down-icon'
+import SpinnerIcon from 'part:@sanity/base/spinner-icon'
+import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
+import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 
 function createIconPreview(title, Icon, role) {
   return (
@@ -37,11 +37,11 @@ storiesOf('Icons')
   () => {
     return (
       <ul className={styles.sanityIcons}>
-        {createIconPreview('Sanity logo', SanityLogoIcon, 'icon:@sanity/sanity-logo')}
-        {createIconPreview('Close', CloseIcon, 'icon:@sanity/close')}
-        {createIconPreview('Angle Down', AngleDownIcon, 'icon:@sanity/angle-down')}
-        {createIconPreview('Spinner', SpinnerIcon, 'icon:@sanity/spinner')}
-        {createIconPreview('Hamburger', HamburgerIcon, 'icon:@sanity/hamburger')}
+        {createIconPreview('Sanity logo', SanityLogoIcon, 'part:@sanity/base/sanity-logo-icon')}
+        {createIconPreview('Close', CloseIcon, 'part:@sanity/base/close-icon')}
+        {createIconPreview('Angle Down', AngleDownIcon, 'part:@sanity/base/angle-down-icon')}
+        {createIconPreview('Spinner', SpinnerIcon, 'part:@sanity/base/spinner-icon')}
+        {createIconPreview('Hamburger', HamburgerIcon, 'part:@sanity/base/hamburger-icon')}
       </ul>
     )
   },

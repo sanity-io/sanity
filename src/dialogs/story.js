@@ -1,8 +1,8 @@
 import React from 'react'
-import {storiesOf, action, linkTo} from 'component:@sanity/storybook'
-import Button from 'component:@sanity/components/buttons/default'
-import DefaultDialog from 'component:@sanity/components/dialogs/default'
-import FullscreenDialog from 'component:@sanity/components/dialogs/fullscreen'
+import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
+import Button from 'part:@sanity/components/buttons/default'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import faker from 'faker'
 
 storiesOf('Dialogs')
@@ -21,7 +21,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog, DefaultDialog.propTypes.actions],
-    role: 'component:@sanity/components/dialogs/default'
+    role: 'part:@sanity/components/dialogs/default'
   }
 )
 .addWithInfo(
@@ -40,7 +40,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/default'
+    role: 'part:@sanity/components/dialogs/default'
   }
 )
 .addWithInfo(
@@ -59,7 +59,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/default'
+    role: 'part:@sanity/components/dialogs/default'
   }
 )
 
@@ -78,7 +78,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/fullscreen'
+    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
 .addWithInfo(
@@ -95,7 +95,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/fullscreen'
+    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
 
@@ -134,7 +134,7 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/fullscreen'
+    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
 .addWithInfo(
@@ -173,6 +173,6 @@ storiesOf('Dialogs')
   },
   {
     propTables: [DefaultDialog],
-    role: 'component:@sanity/components/dialogs/fullscreen'
+    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )

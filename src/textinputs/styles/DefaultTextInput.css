@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 
 @use postcss-cssnext;
 
@@ -7,11 +7,11 @@
 }
 
 .input {
-  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
 .inputError {
-  composes: error from 'style:@sanity/base/theme/forms/text-input';
+  composes: error from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
 .hasClearButton {
@@ -19,7 +19,7 @@
 }
 
 .clearButton {
-  composes: textInput from 'style:@sanity/base/theme/forms/clear-button';
+  composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
   z-index: 1;
   top: 0.35em;
   right: 0.1em;

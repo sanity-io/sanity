@@ -1,5 +1,5 @@
-@import 'style:@sanity/base/theme/variables';
-@import 'style:@sanity/base/theme/body';
+@import 'part:@sanity/base/theme/variables-style';
+@import 'part:@sanity/base/theme/body-style';
 
 @use postcss-cssnext;
 
@@ -22,7 +22,7 @@
 }
 
 .description {
-  composes: description from 'style:@sanity/base/theme/typography/text-blocks';
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
 
   @nest .inline & {
     font-size: var(--font-size-tiny);
