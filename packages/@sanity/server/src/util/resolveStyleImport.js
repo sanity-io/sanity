@@ -1,14 +1,14 @@
-import {resolveRoles as resolveSanityRoles} from '@sanity/resolver'
+import {resolveParts as resolveSanityParts} from '@sanity/resolver'
 import resolveNodeModule from 'resolve'
 
-const resolveRoles = canonicalize(resolveSanityRoles)
+const resolveParts = canonicalize(resolveSanityParts)
 
 function resolveStyleImports(id, basedir, opts) {
-  if (!isSanityRole(id)) {
+  if (!isSanityPart(id)) {
     return resolveModule(id, basedir, opts)
   }
 
-  return resolveRoles({basePath: opts.root})
+  return resolveParts({basePath: opts.root})
     .then(parts => {
       const loadAll = id.indexOf('all:') === 0
       const partName = loadAll ? id.substr(4) : id
@@ -77,7 +77,7 @@ function resolveModule(id, basedir, opts) {
   })
 }
 
-function isSanityRole(part) {
+function isSanityPart(part) {
   return part.match(/^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/)
 }
 
