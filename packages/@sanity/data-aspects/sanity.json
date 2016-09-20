@@ -3,13 +3,13 @@
     "source": "./src",
     "compiled": "./lib"
   },
-  "roles": [
+  "parts": [
     {
-      "name": "role:@sanity/data-aspects/resolver",
+      "name": "part:@sanity/data-aspects/resolver",
       "description": "Figures out what your data should look like"
     },
     {
-      "implements": "role:@sanity/data-aspects/resolver",
+      "implements": "part:@sanity/data-aspects/resolver",
       "path": "DataAspectsResolver.js"
     }
   ]

@@ -1,5 +1,5 @@
 import config from 'config:@sanity/data-aspects'
-import bundledTypes from 'role:@sanity/base/bundled-types'
+import bundledTypes from 'part:@sanity/base/bundled-types'
 import {startCase} from 'lodash'
 const bundledTypeNames = bundledTypes.types.map(baseType => baseType.name)
 
