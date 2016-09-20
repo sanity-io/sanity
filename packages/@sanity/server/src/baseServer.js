@@ -13,13 +13,13 @@ const getDefaultModule = mod => {
 
 const getDocumentComponent = basePath =>
   resolveRoles({basePath}).then(res => {
-    const role = res.implementations[docRole]
-    if (!role) {
-      throw new Error(`Role '${docRole}' is not implemented by any plugins, are you missing @sanity/base?`)
+    const part = res.implementations[docRole]
+    if (!part) {
+      throw new Error(`Part '${docRole}' is not implemented by any plugins, are you missing @sanity/base?`)
     }
 
     return getDefaultModule(
-      requireUncached(role[0].path)
+      requireUncached(part[0].path)
     )
   })
 

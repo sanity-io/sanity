@@ -9,16 +9,16 @@ function resolveStyleImports(id, basedir, opts) {
   }
 
   return resolveRoles({basePath: opts.root})
-    .then(roles => {
+    .then(parts => {
       const loadAll = id.indexOf('all:') === 0
-      const roleName = loadAll ? id.substr(4) : id
+      const partName = loadAll ? id.substr(4) : id
 
-      const role = roles.implementations[roleName]
-      if (!role) {
-        throw new Error(`No implementers of role '${roleName}'`)
+      const part = parts.implementations[partName]
+      if (!part) {
+        throw new Error(`No implementers of part '${partName}'`)
       }
 
-      const paths = role.map(implementer => implementer.path)
+      const paths = part.map(implementer => implementer.path)
       return loadAll
         ? paths.reverse()
         : paths[0]
@@ -26,7 +26,7 @@ function resolveStyleImports(id, basedir, opts) {
 }
 
 /**
- * Resolve operations are quite IO-intensive, and there is little chance of roles
+ * Resolve operations are quite IO-intensive, and there is little chance of parts
  * changing multiple times per second. To reduce the load on the filesystem,
  * we canonicalize the lookups. Basically: If a resolve operations is currently
  * underway, don't do another resolve operation - instead, wait for the first
@@ -77,8 +77,8 @@ function resolveModule(id, basedir, opts) {
   })
 }
 
-function isSanityRole(role) {
-  return role.match(/^(all:)?[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/)
+function isSanityRole(part) {
+  return part.match(/^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/)
 }
 
 export default resolveStyleImports

@@ -9,7 +9,7 @@ import postcssPlugins from './postcssPlugins'
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
 
-const roleLoaderPath = require.resolve('@sanity/webpack-loader/src/roleLoader')
+const partLoaderPath = require.resolve('@sanity/webpack-loader/src/partLoader')
 
 export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
@@ -77,8 +77,8 @@ export default (config = {}) => {
           name: 'assets/[name]-[hash].[ext]'
         }
       }, {
-        test: /[?&]sanityRole=/,
-        loader: roleLoaderPath
+        test: /[?&]sanityPart=/,
+        loader: partLoaderPath
       }]
     },
     plugins: [
