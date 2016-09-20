@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/server'
 import {resolveRoles} from '@sanity/resolver'
 import requireUncached from 'require-uncached'
 
-const docRole = 'component:@sanity/base/document'
+const docRole = 'part:@sanity/base/document'
 const assetify = assetPath => ({path: assetPath})
 const getDefaultModule = mod => {
   return mod && mod.__esModule ? mod.default : mod
