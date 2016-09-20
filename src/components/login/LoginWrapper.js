@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
-import userStore from 'datastore:@sanity/base/user'
-import LoginDialog from 'component:@sanity/base/login-dialog'
+import userStore from 'part:@sanity/base/user'
+import LoginDialog from 'part:@sanity/base/login-dialog'
 
 export default class LoginWrapper extends React.Component {
 

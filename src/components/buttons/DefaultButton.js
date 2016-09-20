@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 // import Ink from 'react-inc'
-// import styles from 'style:@sanity/base/theme/buttons/default'
+// import styles from 'part:@sanity/base/theme/buttons/default-style'
 
 export default class DefaultButton extends React.Component {
   static propTypes = {

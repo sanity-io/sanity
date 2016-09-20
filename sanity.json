@@ -4,441 +4,441 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "name": "component:@sanity/base/document",
+      "name": "part:@sanity/base/document",
       "description": "The document component wrapping the root component. Statically built for production, Rendered dynamically on the server in development."
     },
     {
-      "name": "component:@sanity/base/root",
+      "name": "part:@sanity/base/root",
       "description": "The root component in the DOM-tree. Usually a layout."
     },
     {
-      "name": "component:@sanity/base/absolutes",
+      "name": "part:@sanity/base/absolutes",
       "description": "Statically positioned elements that should live on the page regardless of routing."
     },
     {
-      "name": "tool:@sanity/base/tool",
+      "name": "part:@sanity/base/tool",
       "description": "Tools available for use within a Sanity configuration"
     },
     {
-      "name": "role:@sanity/base/schema-creator",
+      "name": "part:@sanity/base/schema-creator",
       "description": "Function that creates a schema, merging the default Sanity types with user-specific types"
     },
     {
-      "name": "role:@sanity/base/bundled-types",
+      "name": "part:@sanity/base/bundled-types",
       "description": "Commonly used data types which are bundled with Sanity for the sake of convenience.",
       "path": "schema/baseSchema.js"
     },
     {
-      "name": "story:@sanity/base/component",
+      "name": "part:@sanity/base/component",
       "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },
     {
-      "name": "style:@sanity/base/theme/variables",
+      "name": "part:@sanity/base/theme/variables-style",
       "description": "Base theme variables for Sanity. Dont override this unless you provide all the new variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/globals",
+      "name": "part:@sanity/base/theme/variables/globals-style",
       "description": "Global generic variables"
     },
     {
-      "name": "style:@sanity/base/theme/responsive",
+      "name": "part:@sanity/base/theme/responsive-style",
       "description": "Responsive breakpoints"
     },
     {
-      "name": "style:@sanity/base/theme/animation",
+      "name": "part:@sanity/base/theme/animation-style",
       "description": "Provides basic animation"
     },
     {
-      "name": "style:@sanity/base/theme/shadows",
+      "name": "part:@sanity/base/theme/shadows-style",
       "description": "Provides a bunch of shadows to pick from. Based on Material Design Lite"
     },
     {
-      "name": "style:@sanity/base/theme/normalize",
+      "name": "part:@sanity/base/theme/normalize-style",
       "description": "Normalizes css"
     },
     {
-      "name": "style:@sanity/base/theme/variables/brand-colors",
+      "name": "part:@sanity/base/theme/variables/brand-colors-style",
       "description": "Brand colors. Other colors are based on this"
     },
     {
-      "name": "style:@sanity/base/theme/variables/code",
+      "name": "part:@sanity/base/theme/variables/code-style",
       "description": "Syntax highlighting variables for color and styling"
     },
     {
-      "name": "style:@sanity/base/theme/variables/forms",
+      "name": "part:@sanity/base/theme/variables/forms-style",
       "description": "Form variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/gray-colors",
+      "name": "part:@sanity/base/theme/variables/gray-colors-style",
       "description": "Shades of var(--gray-base)"
     },
     {
-      "name": "style:@sanity/base/theme/variables/layers",
+      "name": "part:@sanity/base/theme/variables/layers-style",
       "description": "Z-Index variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/list-group",
+      "name": "part:@sanity/base/theme/variables/list-group-style",
       "description": "List group variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/list",
+      "name": "part:@sanity/base/theme/variables/list-style",
       "description": "List variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/progress",
+      "name": "part:@sanity/base/theme/variables/progress-style",
       "description": "Progress bar variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/selectable-item",
+      "name": "part:@sanity/base/theme/variables/selectable-item-style",
       "description": "Selectable item variables"
     },
     {
-      "name": "style:@sanity/base/theme/variables/state-colors",
+      "name": "part:@sanity/base/theme/variables/state-colors-style",
       "description": "State color variables. Shades of warning, info and danger"
     },
     {
-      "name": "style:@sanity/base/theme/variables/typography",
+      "name": "part:@sanity/base/theme/variables/typography-style",
       "description": "Typography variables"
     },
     {
-      "name": "style:@sanity/base/theme/typography/headings",
+      "name": "part:@sanity/base/theme/typography/headings-style",
       "description": "Basic headings"
     },
     {
-      "name": "style:@sanity/base/theme/layout/positioning",
+      "name": "part:@sanity/base/theme/layout/positioning-style",
       "description": "Basic positioning helpers"
     },
     {
-      "name": "style:@sanity/base/theme/body",
+      "name": "part:@sanity/base/theme/body-style",
       "description": "Resets, fontsize, font-family etc"
     },
     {
-      "name": "locale:@sanity/base/locale-messages",
+      "name": "part:@sanity/base/locale-messages",
       "description": "Messages across all known locales"
     },
     {
-      "name": "machine:@sanity/base/language-resolver",
+      "name": "part:@sanity/base/language-resolver",
       "description": "Figures out which locale the client should use"
     },
     {
-      "name": "machine:@sanity/base/locale-message-fetcher",
+      "name": "part:@sanity/base/locale-message-fetcher",
       "description": "Fetches locale messages for the given locale"
     },
     {
-      "name": "component:@sanity/base/locale/intl",
+      "name": "part:@sanity/base/locale/intl",
       "description": "Exposes the current ReactIntl module instance"
     },
     {
-      "name": "role:@sanity/base/locale/formatters",
+      "name": "part:@sanity/base/locale/formatters",
       "description": "Functions to format based on resolved locale"
     },
     {
-      "name": "component:@sanity/base/login-wrapper",
+      "name": "part:@sanity/base/login-wrapper",
       "description": "Checks if user is logged in or not, and displays login screen or content for logged in users."
     },
     {
-      "name": "component:@sanity/base/login-dialog",
+      "name": "part:@sanity/base/login-dialog",
       "description": "Lets the user log in to Sanity."
     },
     {
-      "name": "machine:@sanity/base/authentication-fetcher",
+      "name": "part:@sanity/base/authentication-fetcher",
       "description": "Fetches the logged in user and JSON web token."
     },
     {
-      "name": "component:@sanity/base/sanity-intl-provider",
+      "name": "part:@sanity/base/sanity-intl-provider",
       "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
     {
-      "name": "component:@sanity/base/query-container",
+      "name": "part:@sanity/base/query-container",
       "description": "Wraps a query and passes down results as props to its child component"
     },
     {
-      "name": "style:@sanity/base/theme/layout/resets",
+      "name": "part:@sanity/base/theme/layout/resets-style",
       "description": "Provides resets for resetting browser styling"
     },
     {
-      "name": "style:@sanity/base/theme/layout/box",
+      "name": "part:@sanity/base/theme/layout/box-style",
       "description": "Provides boxes"
     },
     {
-      "name": "style:@sanity/base/theme/forms/text-input",
+      "name": "part:@sanity/base/theme/forms/text-input-style",
       "description": "Styling for <input>"
     },
     {
-      "name": "style:@sanity/base/theme/forms/control",
+      "name": "part:@sanity/base/theme/forms/control-style",
       "description": "Wrapper for control elements like <input>"
     },
     {
-      "name": "style:@sanity/base/theme/forms/textarea",
+      "name": "part:@sanity/base/theme/forms/textarea-style",
       "description": "Styling for <textarea>"
     },
     {
-      "name": "style:@sanity/base/theme/buttons/default",
+      "name": "part:@sanity/base/theme/buttons/default-style",
       "description": "Styling for default button"
     },
     {
-      "name": "style:@sanity/base/theme/forms/clear-button",
+      "name": "part:@sanity/base/theme/forms/clear-button-style",
       "description": "Styling for for clear button connected to a form control"
     },
 
     {
-      "name": "style:@sanity/base/theme/typography/text-blocks",
+      "name": "part:@sanity/base/theme/typography/text-blocks-style",
       "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
     },
     {
-      "name": "style:@sanity/base/theme/typography/code",
+      "name": "part:@sanity/base/theme/typography/code-style",
       "description": "Styling for code"
     },
 
 
     {
-      "implements": "component:@sanity/base/root",
+      "implements": "part:@sanity/base/root",
       "path": "components/DefaultRootComponent.js"
     },
     {
-      "implements": "role:@sanity/base/schema-creator",
+      "implements": "part:@sanity/base/schema-creator",
       "path": "schema/createSchema.js"
     },
     {
-      "implements": "style:@sanity/base/theme/normalize",
+      "implements": "part:@sanity/base/theme/normalize-style",
       "path": "styles/normalize.css"
     },
     {
-      "implements": "style:@sanity/base/theme/variables",
+      "implements": "part:@sanity/base/theme/variables-style",
       "path": "styles/variables.css"
     },
     {
-      "implements": "style:@sanity/base/theme/variables/globals",
+      "implements": "part:@sanity/base/theme/variables/globals-style",
       "path": "styles/variables/globals.css"
     },
     {
-      "implements": "style:@sanity/base/theme/variables/brand-colors",
+      "implements": "part:@sanity/base/theme/variables/brand-colors-style",
       "path": "styles/variables/brand-colors.css"
     },
     {
-      "implements": "style:@sanity/base/theme/animation",
+      "implements": "part:@sanity/base/theme/animation-style",
       "path": "styles/animation.css"
     },
     {
-      "implements": "style:@sanity/base/theme/responsive",
+      "implements": "part:@sanity/base/theme/responsive-style",
       "path": "styles/responsive.css"
     },
     {
-      "implements": "style:@sanity/base/theme/shadows",
+      "implements": "part:@sanity/base/theme/shadows-style",
       "path": "styles/shadows.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/code",
+      "implements": "part:@sanity/base/theme/variables/code-style",
       "path": "styles/variables/code.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/forms",
+      "implements": "part:@sanity/base/theme/variables/forms-style",
       "path": "styles/variables/forms.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/gray-colors",
+      "implements": "part:@sanity/base/theme/variables/gray-colors-style",
       "path": "styles/variables/gray-colors.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/layers",
+      "implements": "part:@sanity/base/theme/variables/layers-style",
       "path": "styles/variables/layers.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/list-group",
+      "implements": "part:@sanity/base/theme/variables/list-group-style",
       "path": "styles/variables/list-group.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/list",
+      "implements": "part:@sanity/base/theme/variables/list-style",
       "path": "styles/variables/list.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/progress",
+      "implements": "part:@sanity/base/theme/variables/progress-style",
       "path": "styles/variables/progress.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/selectable-item",
+      "implements": "part:@sanity/base/theme/variables/selectable-item-style",
       "path": "styles/variables/selectable-item.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/state-colors",
+      "implements": "part:@sanity/base/theme/variables/state-colors-style",
       "path": "styles/variables/state-colors.css"
     },
 
     {
-      "implements": "style:@sanity/base/theme/variables/typography",
+      "implements": "part:@sanity/base/theme/variables/typography-style",
       "path": "styles/variables/typography.css"
     },
     {
-      "name": "datastore:@sanity/base/location",
+      "name": "part:@sanity/base/location",
       "path": "datastores/location"
     },
     {
-      "name": "datastore:@sanity/base/document",
+      "name": "part:@sanity/base/datastore/document",
       "path": "datastores/document"
     },
     {
-      "name": "datastore:@sanity/base/user",
+      "name": "part:@sanity/base/user",
       "path": "datastores/user"
     },
     {
-      "name": "datastore:@sanity/base/project",
+      "name": "part:@sanity/base/project",
       "path": "datastores/project"
     },
     {
-      "name": "router:@sanity/base/router",
+      "name": "part:@sanity/base/router",
       "path": "router"
     },
     {
-      "implements": "client:@sanity/base/client",
+      "implements": "part:@sanity/base/client",
       "path": "client"
     },
     {
-      "name": "component:@sanity/base/document-default",
-      "implements": "component:@sanity/base/document",
+      "name": "part:@sanity/base/document-default",
+      "implements": "part:@sanity/base/document",
       "path": "components/Document"
     },
 
     {
-      "implements": "machine:@sanity/base/language-resolver",
+      "implements": "part:@sanity/base/language-resolver",
       "path": "locale/languageResolver.js"
     },
     {
-      "implements": "machine:@sanity/base/locale-message-fetcher",
+      "implements": "part:@sanity/base/locale-message-fetcher",
       "path": "locale/messageFetcher.js"
     },
     {
-      "implements": "component:@sanity/base/locale/intl",
+      "implements": "part:@sanity/base/locale/intl",
       "path": "locale/intl.js"
     },
     {
-      "implements": "component:@sanity/base/sanity-intl-provider",
+      "implements": "part:@sanity/base/sanity-intl-provider",
       "path": "components/SanityIntlProvider"
     },
     {
-      "implements": "component:@sanity/base/query-container",
+      "implements": "part:@sanity/base/query-container",
       "path": "components/QueryContainer"
     },
     {
-      "implements": "role:@sanity/base/locale/formatters",
+      "implements": "part:@sanity/base/locale/formatters",
       "path": "components/IntlWrapper.js"
     },
     {
-      "implements": "component:@sanity/base/login-wrapper",
+      "implements": "part:@sanity/base/login-wrapper",
       "path": "components/login/LoginWrapper.js"
     },
     {
-      "implements": "style:@sanity/base/theme/layout/box",
+      "implements": "part:@sanity/base/theme/layout/box-style",
       "path": "styles/layout/box.css"
     },
     {
-      "implements": "style:@sanity/base/theme/layout/positioning",
+      "implements": "part:@sanity/base/theme/layout/positioning-style",
       "path": "styles/layout/positioning.css"
     },
     {
-      "implements": "style:@sanity/base/theme/buttons/default",
+      "implements": "part:@sanity/base/theme/buttons/default-style",
       "path": "styles/buttons/default.css"
     },
     {
-      "implements": "style:@sanity/base/theme/forms/text-input",
+      "implements": "part:@sanity/base/theme/forms/text-input-style",
       "path": "styles/forms/text-input.css"
     },
     {
-      "implements": "style:@sanity/base/theme/forms/control",
+      "implements": "part:@sanity/base/theme/forms/control-style",
       "path": "styles/forms/control.css"
     },
     {
-      "implements": "style:@sanity/base/theme/forms/textarea",
+      "implements": "part:@sanity/base/theme/forms/textarea-style",
       "path": "styles/forms/textarea.css"
     },
     {
-      "implements": "style:@sanity/base/theme/forms/clear-button",
+      "implements": "part:@sanity/base/theme/forms/clear-button-style",
       "path": "styles/forms/clear-button.css"
     },
     {
-      "implements": "style:@sanity/base/theme/typography/headings",
+      "implements": "part:@sanity/base/theme/typography/headings-style",
       "path": "styles/typography/headings.css"
     },
     {
-      "implements": "style:@sanity/base/theme/typography/text-blocks",
+      "implements": "part:@sanity/base/theme/typography/text-blocks-style",
       "path": "styles/typography/text-blocks.css"
     },
     {
-      "implements": "style:@sanity/base/theme/typography/code",
+      "implements": "part:@sanity/base/theme/typography/code-style",
       "path": "styles/typography/code.css"
     },
     {
-      "implements": "style:@sanity/base/theme/body",
+      "implements": "part:@sanity/base/theme/body-style",
       "path": "styles/body.css"
     },
     {
-      "name": "icon:@sanity/close",
+      "name": "part:@sanity/base/close-icon",
       "description": "Used in dialogs and popups"
     },
     {
-      "implements": "icon:@sanity/close",
+      "implements": "part:@sanity/base/close-icon",
       "path": "components/icons/CloseIcon.js"
     },
     {
-      "name": "icon:@sanity/angle-down",
+      "name": "part:@sanity/base/angle-down-icon",
       "description": "Used selects and dropdowns"
     },
     {
-      "implements": "icon:@sanity/angle-down",
+      "implements": "part:@sanity/base/angle-down-icon",
       "path": "components/icons/AngleDownIcon.js"
     },
     {
-      "name": "icon:@sanity/spinner",
+      "name": "part:@sanity/base/spinner-icon",
       "description": "Used selects and dropdowns"
     },
     {
-      "implements": "icon:@sanity/spinner",
+      "implements": "part:@sanity/base/spinner-icon",
       "path": "components/icons/SpinnerIcon.js"
     },
     {
-      "name": "icon:@sanity/sanity-logo",
+      "name": "part:@sanity/base/sanity-logo-icon",
       "description": "Used selects and dropdowns"
     },
     {
-      "implements": "icon:@sanity/sanity-logo",
+      "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
     {
-      "implements": "icon:@sanity/hamburger",
+      "implements": "part:@sanity/base/hamburger-icon",
       "path": "components/icons/Hamburger.js"
     },
     {
-      "implements": "icon:@sanity/sort-alpha-desc",
+      "implements": "part:@sanity/base/sort-alpha-desc-icon",
       "path": "components/icons/SortAlphaDesc.js"
     },
     {
-      "implements": "icon:@sanity/bars",
+      "implements": "part:@sanity/base/bars-icon",
       "path": "components/icons/Bars.js"
     },
     {
-      "implements": "icon:@sanity/th-list",
+      "implements": "part:@sanity/base/th-list-icon",
       "path": "components/icons/ThList.js"
     },
     {
-      "implements": "icon:@sanity/th-large",
+      "implements": "part:@sanity/base/th-large-icon",
       "path": "components/icons/ThLarge.js"
     },
     {
-      "implements": "icon:@sanity/cog",
+      "implements": "part:@sanity/base/cog-icon",
       "path": "components/icons/Cog.js"
     },
     {
-      "implements": "icon:@sanity/sign-out",
+      "implements": "part:@sanity/base/sign-out-icon",
       "path": "components/icons/SignOut.js"
     }
   ]

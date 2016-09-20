@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {intlShape} from 'component:@sanity/base/locale/intl'
+import {intlShape} from 'part:@sanity/base/locale/intl'
 
 let intl = null
 

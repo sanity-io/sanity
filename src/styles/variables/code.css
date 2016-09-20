@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables/gray-colors';
+@import 'part:@sanity/base/theme/variables/gray-colors-style';
 
 :root {
   --code-color: #c7254e;

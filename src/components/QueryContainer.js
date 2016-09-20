@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import {bindAll} from 'lodash'
-import store from 'datastore:@sanity/base/document'
+import store from 'part:@sanity/base/datastore/document'
 
 // todo: make configurable
 const DEFAULT_PROPS_MAPPING = {

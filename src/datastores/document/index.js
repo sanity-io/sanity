@@ -1,5 +1,5 @@
 import createDocumentStore from '@sanity/document-store'
-import client from 'client:@sanity/base/client'
+import client from 'part:@sanity/base/client'
 import {Observable} from 'rxjs'
 
 const hasOwn = {}.hasOwnProperty

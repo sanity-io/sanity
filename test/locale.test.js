@@ -36,12 +36,12 @@ const rawMessagesStub = [
 
 // proxy all require statements which use sanity plugin syntax
 const messageFetcher = proxyquire('../src/locale/messageFetcher', {
-  'all:locale:@sanity/base/locale-messages': rawMessagesStub
+  'all:part:@sanity/base/locale-messages': rawMessagesStub
 })
 const SanityIntlProvider = proxyquire('../src/components/SanityIntlProvider', {
-  'component:@sanity/base/locale/intl': require('react-intl'),
-  'machine:@sanity/base/language-resolver': languageResolver,
-  'machine:@sanity/base/locale-message-fetcher': require('../src/locale/messageFetcher')
+  'part:@sanity/base/locale/intl': require('react-intl'),
+  'part:@sanity/base/language-resolver': languageResolver,
+  'part:@sanity/base/locale-message-fetcher': require('../src/locale/messageFetcher')
 })
 
 

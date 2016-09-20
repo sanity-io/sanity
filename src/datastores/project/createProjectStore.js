@@ -1,7 +1,7 @@
 import Observable from '../utils/SanityStoreObservable'
 import createActions from '../utils/createActions'
 import pubsubber from '../utils/pubsubber'
-import projectFetcher from 'machine:@sanity/base/project-fetcher'
+import projectFetcher from 'part:@sanity/base/project-fetcher'
 import config from 'config:sanity'
 
 function AccessDeniedError(message) {

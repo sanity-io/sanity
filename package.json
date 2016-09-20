@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel --copy-files -d lib/ src/",
-    "coverage": "babel-node ./node_modules/.bin/isparta cover --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
@@ -41,8 +41,8 @@
     "eslint": "^3.3.0",
     "eslint-config-sanity": "^1.0.7",
     "eslint-plugin-react": "^6.2.2",
-    "isparta": "^4.0.0",
     "mocha": "^2.4.5",
+    "nyc": "^8.3.0",
     "proxyquire": "^1.7.9",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",

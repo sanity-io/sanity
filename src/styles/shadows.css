@@ -1,6 +1,6 @@
 @use postcss-cssnext;
 
-/* role: "style:@sanity/base/theme/shadows" */
+/* role: "part:@sanity/base/theme/shadows-style" */
 
 :root {
   --shadow-key-umbra-opacity: 0.2;

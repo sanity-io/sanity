@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables/brand-colors';
+@import 'part:@sanity/base/theme/variables/brand-colors-style';
 @use postcss-cssnext;
 
 :root {

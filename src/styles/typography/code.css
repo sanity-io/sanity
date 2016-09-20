@@ -1,5 +1,5 @@
-@import 'style:@sanity/base/theme/variables/typography';
-@import 'style:@sanity/base/theme/variables/code';
+@import 'part:@sanity/base/theme/variables/typography-style';
+@import 'part:@sanity/base/theme/variables/code-style';
 
 .root {
   background-color: var(--code-bg);

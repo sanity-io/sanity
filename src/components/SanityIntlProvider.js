@@ -1,9 +1,9 @@
 import React from 'react'
-import {addLocaleData, IntlProvider} from 'component:@sanity/base/locale/intl'
-import {IntlWrapper} from 'role:@sanity/base/locale/formatters'
+import {addLocaleData, IntlProvider} from 'part:@sanity/base/locale/intl'
+import {IntlWrapper} from 'part:@sanity/base/locale/formatters'
 
-import {resolveLanguage} from 'machine:@sanity/base/language-resolver'
-import messageFetcher from 'machine:@sanity/base/locale-message-fetcher'
+import {resolveLanguage} from 'part:@sanity/base/language-resolver'
+import messageFetcher from 'part:@sanity/base/locale-message-fetcher'
 
 class SanityIntlProvider extends React.Component {
 

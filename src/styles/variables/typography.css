@@ -1,5 +1,5 @@
-@import "style:@sanity/base/theme/variables/brand-colors";
-@import "style:@sanity/base/theme/variables/gray-colors";
+@import "part:@sanity/base/theme/variables/brand-colors-style";
+@import "part:@sanity/base/theme/variables/gray-colors-style";
 @use postcss-cssnext;
 
 :root {

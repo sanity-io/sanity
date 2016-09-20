@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables/globals';
+@import 'part:@sanity/base/theme/variables/globals-style';
 @use postcss-cssnext;
 
 .root {

@@ -1,7 +1,7 @@
 import Observable from '../utils/SanityStoreObservable'
 import createActions from '../utils/createActions'
 import pubsubber from '../utils/pubsubber'
-import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
+import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 
 const userChannel = pubsubber()
 

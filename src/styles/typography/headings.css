@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables/typography';
+@import 'part:@sanity/base/theme/variables/typography-style';
 @use postcss-cssnext;
 
 .root {
