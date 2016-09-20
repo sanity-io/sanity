@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import styles from '../../styles/LoginStatus.css'
-import userStore from 'datastore:@sanity/base/user'
-import {FormattedMessage} from 'component:@sanity/base/locale/intl'
-import Menu from 'component:@sanity/components/menus/default'
-import IconSignOut from 'icon:@sanity/sign-out'
+import userStore from 'part:@sanity/base/user'
+import {FormattedMessage} from 'part:@sanity/base/locale/intl'
+import Menu from 'part:@sanity/components/menus/default'
+import IconSignOut from 'part:@sanity/base/sign-out-icon'
 // import config from 'config:sanity'
 
 export default class LoginStatus extends React.Component {

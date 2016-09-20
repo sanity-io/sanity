@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import {StateLink} from '@sanity/state-router'
-import FullScreenDialog from 'component:@sanity/components/dialogs/fullscreen'
-import styles from 'style:@sanity/default-layout/action-modal'
+import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import styles from 'part:@sanity/default-layout/action-modal-style'
 
 function ActionModal(props) {
   return (

@@ -1,7 +1,6 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 @import './reset.css';
 @import './body.css';
-@use postcss-cssnext;
 
 .defaultLayout {
   padding: 0;

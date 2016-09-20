@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {Link} from 'router:@sanity/base/router'
+import {Link} from 'part:@sanity/base/router'
 
 import styles from '../../styles/ToolSwitcher.css'
 

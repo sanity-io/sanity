@@ -4,25 +4,25 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "name": "style:@sanity/default-layout/action-modal",
+      "name": "part:@sanity/default-layout/action-modal-style",
       "description": "Styles for the action picker modal"
     },
 
     {
-      "implements": "component:@sanity/base/root",
-      "name": "component:@sanity/default-layout/root",
+      "implements": "part:@sanity/base/root",
+      "name": "part:@sanity/default-layout/root",
       "path": "components/DefaultLayoutRouter"
     },
     {
-      "implements": "component:@sanity/base/action-button",
-      "name": "component:@sanity/default-layout/action-button",
+      "implements": "part:@sanity/base/action-button",
+      "name": "part:@sanity/default-layout/action-button",
       "path": "components/ActionButton"
     },
     {
-      "implements": "style:@sanity/default-layout/action-modal",
-      "name": "style:@sanity/default-layout/action-modal/default",
+      "implements": "part:@sanity/default-layout/action-modal-style",
+      "name": "part:@sanity/default-layout/action-modal/default-style",
       "path": "./styles/ActionModal.css"
     }
   ]

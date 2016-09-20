@@ -1,5 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
-@use postcss-cssnext;
+@import 'part:@sanity/base/theme/variables-style';
 
 :global(body) {
   font-family: var(--font-family-sans-serif);

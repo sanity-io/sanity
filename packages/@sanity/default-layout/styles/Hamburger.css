@@ -1,6 +1,5 @@
-@import 'style:@sanity/base/theme/variables';
-@import 'style:@sanity/base/theme/responsive';
-@use postcss-cssnext;
+@import 'part:@sanity/base/theme/variables-style';
+@import 'part:@sanity/base/theme/responsive-style';
 
 .root {
   display: block;

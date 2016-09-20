@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import ActionModal from './ActionModal'
-import Fab from 'component:@sanity/components/buttons/fab'
+import Fab from 'part:@sanity/components/buttons/fab'
 
 class ActionButton extends React.Component {
   static propTypes = {
