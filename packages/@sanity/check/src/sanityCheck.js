@@ -8,7 +8,7 @@ function sanityCheck(options) {
   return resolveRoles({
     basePath: options.dir,
     useCompiledPaths: options.productionMode
-  }).then(roles => checkImplementations(roles, options))
+  }).then(parts => checkImplementations(parts, options))
 }
 
 function checkImplementations({implementations}, options) {
@@ -16,10 +16,10 @@ function checkImplementations({implementations}, options) {
     return Promise.resolve('No implementations found, nothing to check')
   }
 
-  const fulfillers = Object.keys(implementations).reduce((impls, roleName) => {
+  const fulfillers = Object.keys(implementations).reduce((impls, partName) => {
     return impls.concat(
-      implementations[roleName].map(impl => ({
-        roleName: roleName,
+      implementations[partName].map(impl => ({
+        partName: partName,
         plugin: impl.plugin,
         path: impl.path,
         dirName: path.dirname(impl.path),
@@ -84,7 +84,7 @@ function verifyImplementationExists(impl, parentDirContent) {
 
   if (found) {
     return new Error(
-      `Role "${impl.roleName}" was attempted to be implemented by "${impl.path}",`
+      `Role "${impl.partName}" was attempted to be implemented by "${impl.path}",`
       + `but the file is actually located at "${path.join(impl.dirName, found)}" -`
       + ' Sanity uses case-sensitive file names.'
     )
@@ -108,7 +108,7 @@ function isFileOrDirectoryWithIndex(impl) {
       ? directoryHasIndex(impl)
       : true
   }).catch(() => new Error(
-    `Role "${impl.roleName}" was attempted to be implemented by "${impl.path}", `
+    `Role "${impl.partName}" was attempted to be implemented by "${impl.path}", `
     + `which does not seem to exist. ${checkImplementationMsg(impl)}`
   ))
 }
@@ -118,7 +118,7 @@ function directoryHasIndex(impl) {
     return dirContent.includes('index.js')
       ? true
       : new Error(
-        `Role "${impl.roleName}" was attempted to be implemented by "${impl.path}", `
+        `Role "${impl.partName}" was attempted to be implemented by "${impl.path}", `
         + 'which is a directory without an "index.js". Please point to a filename.'
       )
   })
