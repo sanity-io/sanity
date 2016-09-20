@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
 import styles from './Date.css'
-import FormField from 'component:@sanity/components/formfields/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import {uniqueId} from 'lodash'
 
 const getLocale = context => {

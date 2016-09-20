@@ -4,13 +4,13 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "implements": "role:@sanity/form-builder/input/date",
+      "implements": "part:@sanity/form-builder/input/date",
       "path": "inputs/Date"
     },
     {
-      "implements": "story:@sanity/base/component",
+      "implements": "part:@sanity/base/component",
       "path": "inputs/story.js"
     }
   ]
