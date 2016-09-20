@@ -33,8 +33,8 @@
   "dependencies": {
     "@sanity/check": "^1.0.1",
     "@sanity/client-next": "^2.0.0",
-    "@sanity/resolver": "^3.0.1",
-    "@sanity/server": "^1.3.1",
+    "@sanity/resolver": "^3.0.4",
+    "@sanity/server": "^1.3.4",
     "@sanity/storybook": "^2.0.6",
     "babel-polyfill": "^6.13.0",
     "chalk": "^1.1.3",
