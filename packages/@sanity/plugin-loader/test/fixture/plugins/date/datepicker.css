@@ -1,5 +1,5 @@
 .something {
-  composes: base from 'style:date/base';
+  composes: base from 'part:date/base-style';
   color: #333;
 }
 

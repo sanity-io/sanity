@@ -6,7 +6,7 @@
 
   "parts": [
     {
-      "name": "function:base/bar",
+      "name": "part:base/bar",
       "description": "Returns 'bar' when called",
       "path": "./getBar.js"
     }

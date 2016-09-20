@@ -1,7 +1,7 @@
 {
   "parts": [
     {
-      "implements": "function:date/timestamp",
+      "implements": "part:date/timestamp",
       "path": "./getBetterTimestamp.js"
     }
   ]
