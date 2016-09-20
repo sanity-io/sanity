@@ -97,16 +97,16 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
         compiled: './lib'
       },
 
-      roles: [{
-        name: `component:${prefix}/my-component`,
+      parts: [{
+        name: `part:${prefix}/my-component`,
         path: 'MyComponent.js'
       }]
     }
   }
 
   return {
-    roles: [{
-      implements: `component:${prefix}/my-component`,
+    parts: [{
+      implements: `part:${prefix}/my-component`,
       description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
       path: 'lib/MyComponent.js'
     }]
@@ -131,9 +131,9 @@ export function createSanityManifest(data, opts) {
       '@sanity/desk-tool'
     ],
 
-    roles: [
+    parts: [
       {
-        name: 'schema:@sanity/base/schema',
+        name: 'part:@sanity/base/schema',
         path: './schemas/schema.js'
       }
     ]

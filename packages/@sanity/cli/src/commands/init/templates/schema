@@ -1,4 +1,4 @@
-import createSchema from 'role:@sanity/base/schema-creator'
+import createSchema from 'part:@sanity/base/schema-creator'
 
 export default createSchema({
   name: 'example-blog',
