@@ -29,7 +29,8 @@ class DefaultMenu extends React.Component {
   }
 
   handleClickOutside = () => {
-    console.log('handleClickOutside (defaultMenu)', this.props.onClickOutside)
+    // @todo remove
+    console.log('handleClickOutside (defaultMenu)', this.props.onClickOutside) // eslint-disable-line
     this.props.onClickOutside()
   }
 

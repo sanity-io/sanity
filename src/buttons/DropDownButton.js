@@ -45,8 +45,6 @@ class DropDownButton extends React.Component {
   }
 
   render() {
-    const {items} = this.props
-
     return (
       <Button
         className={styles.root}

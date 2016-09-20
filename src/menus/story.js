@@ -11,9 +11,7 @@ storiesOf('Menus')
   `,
   () => {
     return (
-      <div style={{
-        width: '300px',
-        position: 'relative'}}>
+      <div style={{width: '300px', position: 'relative'}}>
         <Menu
           onAction={action('Clicked item')}
           items={[
@@ -77,9 +75,7 @@ storiesOf('Menus')
       }
     ]
     return (
-      <div style={{
-        width: '300px',
-        position: 'relative'}}>
+      <div style={{width: '300px', position: 'relative'}}>
         <Menu onAction={action('Clicked item')} items={items} opened />
       </div>
     )

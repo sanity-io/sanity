@@ -108,7 +108,7 @@ export default class EditItemPopOver extends React.Component {
     const {title, children, className, isCreatingNewItem} = this.props
     return (
       <div className={`${styles.root} ${className}`} onClick={this.handleClick} onMouseDown={this.handleMouseDown} ref={this.setRootElement}>
-        <div className={styles.overlay}></div>
+        <div className={styles.overlay} />
         <div className={styles.inner} ref={this.setInnerElement}>
           <div className={styles.arrow} ref={this.setArrowElement} />
           <div className={styles.head}>

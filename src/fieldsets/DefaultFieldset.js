@@ -17,7 +17,7 @@ export default function Fieldset(props) {
         {
           (description || fieldset.description)
           && <p className={styles.description}>
-              {description || fieldset.description}
+            {description || fieldset.description}
           </p>
         }
         <div className={styles.content}>

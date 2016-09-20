@@ -19,7 +19,7 @@ export default class Fab extends React.Component {
   }
 
   render() {
-    const {ripple, onClick, colored, fixed} = this.props
+    const {onClick, colored, fixed} = this.props
 
     const style = `${colored ? styles.colored : styles.root} ${fixed ? styles.fixed : ''}`
 

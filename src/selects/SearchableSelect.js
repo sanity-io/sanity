@@ -220,14 +220,10 @@ export default class SearchableSelect extends React.Component {
             hasFocus={this.state.hasFocus}
           />
 
-        {
-          loading && <div className={styles.spinner}><Spinner /></div>
-        }
-        {
-          !loading && <div className={styles.icon} onClick={this.handleArrowClick}>
+          {loading && <div className={styles.spinner}><Spinner /></div>}
+          {!loading && <div className={styles.icon} onClick={this.handleArrowClick}>
             <FaAngleDown color="inherit" />
-          </div>
-        }
+          </div>}
 
         </div>
 

@@ -77,7 +77,7 @@ storiesOf('Tags')
     Default tags
   `,
   () => {
-    let tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
+    const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
 
     return (
       <DefaultTextFieldTagsImplementation tags={tags} />
