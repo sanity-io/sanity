@@ -16,6 +16,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "lodash": "^4.16.0",
     "moment": "^2.13.0",
     "postcss-cssnext": "^2.7.0",
     "postcss-simple-extend": "^1.0.0",
@@ -27,7 +28,7 @@
   },
   "devDependencies": {
     "@sanity/check": "^1.0.0",
-    "babel-cli": "^6.9.0",
+    "babel-cli": "^6.14.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-lodash": "^3.2.8",
     "babel-plugin-syntax-class-properties": "^6.8.0",

@@ -2,9 +2,6 @@
 @import "part:@sanity/base/theme/variables-style";
 @import './variables.css';
 
-@use postcss-cssnext;
-
-
 .datepicker {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
 }
