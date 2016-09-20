@@ -21,19 +21,15 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/base": "^2.1.86",
-    "@sanity/client-next": "^2.0.12",
     "@sanity/data-aspects": "^1.1.0",
     "@sanity/form-builder": "^1.2.4",
-    "react": ">=15.1.0",
-    "react-dom": ">=15.1.0",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^2.1.87",
+    "@sanity/base": "^2.1.88",
     "@sanity/check": "^1.0.0",
     "@sanity/cli": "^1.2.14",
-    "@sanity/data-aspects": "^1.1.0",
+    "@sanity/client-next": "^2.0.12",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
@@ -49,6 +45,8 @@
     "history": "^4.2.0",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.7.0",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "rimraf": "^2.5.3"
   },
   "peerDependencies": {

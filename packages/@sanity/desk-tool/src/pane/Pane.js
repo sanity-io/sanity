@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import styles from '../../styles/Pane.css'
-import Spinner from 'component:@sanity/components/loading/spinner'
+import Spinner from 'part:@sanity/components/loading/spinner'
 import PaneMenu from './PaneMenu.js'
-import IconHamburger from 'icon:@sanity/hamburger'
+import IconHamburger from 'part:@sanity/base/hamburger-icon'
 
 export default class Pane extends React.Component {
 

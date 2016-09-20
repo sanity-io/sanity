@@ -9,40 +9,40 @@
     "@sanity/data-aspects"
   ],
 
-  "roles": [
+  "parts": [
     {
-      "name": "config:desk-tool/pane-resolver",
+      "name": "part:@sanity/desk-tool/pane-resolver",
       "description": "Function that resolves the different panes in the desk tool"
     },
 
     {
-      "name": "style:desk-tool/styles",
+      "name": "part:@sanity/desk-tool/styles",
       "description": "Styling for the desk tool"
     },
 
     {
-      "implements": "config:desk-tool/pane-resolver",
+      "implements": "part:@sanity/desk-tool/pane-resolver",
       "path": "SchemaPaneResolver.js"
     },
 
     {
-      "implements": "style:desk-tool/styles",
-      "name": "style:desk-tool/default",
+      "implements": "part:@sanity/desk-tool/styles",
+      "name": "part:@sanity/desk-tool/style-default",
       "path": "./styles/DeskTool.css"
     },
 
     {
-      "implements": "tool:@sanity/base/tool",
+      "implements": "part:@sanity/base/tool",
       "path": "index.js"
     },
 
     {
-      "name": "component:desk-tool/pane-container",
+      "name": "part:@sanity/desk-tool/pane-container",
       "path": "pane/PaneContainer.js"
     },
 
     {
-      "name": "component:desk-tool/pane",
+      "name": "part:@sanity/desk-tool/pane",
       "path": "pane/Pane.js"
     }
   ]

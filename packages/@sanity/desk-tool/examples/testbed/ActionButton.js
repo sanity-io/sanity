@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {StateLink} from 'router:@sanity/base/router'
+import {StateLink} from 'part:@sanity/base/router'
 
 const WRAPPER_STYLE = {
   position: 'fixed',

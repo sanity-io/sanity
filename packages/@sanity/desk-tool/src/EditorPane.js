@@ -1,11 +1,11 @@
 // Connects the FormBuilder with various sanity roles
 import React, {PropTypes} from 'react'
-import documentStore from 'datastore:@sanity/base/document'
-import Spinner from 'component:@sanity/components/loading/spinner'
-import FormBuilder from 'role:@sanity/form-builder'
+import documentStore from 'part:@sanity/base/datastore/document'
+import Spinner from 'part:@sanity/components/loading/spinner'
+import FormBuilder from 'part:@sanity/form-builder'
 import equals from 'shallow-equals'
 import {unprefixType} from './utils/unprefixType'
-import schema from 'schema:@sanity/base/schema'
+import schema from 'part:@sanity/base/schema'
 
 const preventDefault = ev => ev.preventDefault()
 

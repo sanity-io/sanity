@@ -1,4 +1,4 @@
-@import 'style:@sanity/base/theme/variables';
+@import 'part:@sanity/base/theme/variables-style';
 @use postcss-cssnext;
 
 .deskTool {
@@ -61,7 +61,7 @@
 }
 
 .nothingSelected {
-  composes: center-both from 'style:@sanity/base/theme/layout/positioning';
-  composes: heading2 from 'style:@sanity/base/theme/typography/headings';
+  composes: center-both from 'part:@sanity/base/theme/layout/positioning-style';
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
   color: var(--text-muted);
 }

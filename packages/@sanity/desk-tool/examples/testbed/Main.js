@@ -1,6 +1,6 @@
 import React from 'react'
 import deskTool from '../../src'
-import {RouterProvider} from 'router:@sanity/base/router'
+import {RouterProvider} from 'part:@sanity/base/router'
 import createHistory from 'history/createBrowserHistory'
 
 const router = deskTool.router

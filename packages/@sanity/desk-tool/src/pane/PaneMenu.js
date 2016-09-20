@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react'
-import Menu from 'component:@sanity/components/menus/default'
+import Menu from 'part:@sanity/components/menus/default'
 
-import IconSortAlphaDesc from 'icon:@sanity/sort-alpha-desc'
-import IconList from 'icon:@sanity/bars'
-import IconDetails from 'icon:@sanity/th-list'
-import IconThumbnails from 'icon:@sanity/th-large'
-import IconSettings from 'icon:@sanity/cog'
+import IconSortAlphaDesc from 'part:@sanity/base/sort-alpha-desc-icon'
+import IconList from 'part:@sanity/base/bars-icon'
+import IconDetails from 'part:@sanity/base/th-list-icon'
+import IconThumbnails from 'part:@sanity/base/th-large-icon'
+import IconSettings from 'part:@sanity/base/cog-icon'
 
 class PaneMenu extends React.Component {
 

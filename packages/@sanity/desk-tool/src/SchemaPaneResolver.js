@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react'
-import Pane from 'component:desk-tool/pane'
-import schema from 'schema:@sanity/base/schema'
-import PaneContainer from 'component:desk-tool/pane-container'
-import {StateLink} from 'router:@sanity/base/router'
+import Pane from 'part:@sanity/desk-tool/pane'
+import schema from 'part:@sanity/base/schema'
+import PaneContainer from 'part:@sanity/desk-tool/pane-container'
+import {StateLink} from 'part:@sanity/base/router'
 import EditorPane from './EditorPane'
 import styles from '../styles/DeskTool.css'
 import paneStyles from '../styles/Pane.css'
-import DataAspectsResolver from 'role:@sanity/data-aspects/resolver'
-import QueryContainer from 'component:@sanity/base/query-container'
+import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
+import QueryContainer from 'part:@sanity/base/query-container'
 
 const dataAspects = new DataAspectsResolver(schema)
 

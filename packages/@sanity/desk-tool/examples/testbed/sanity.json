@@ -12,33 +12,33 @@
     "@sanity/components",
     "@sanity/data-aspects"
   ],
-  "roles": [
+  "parts": [
     {
-      "implements": "component:@sanity/base/root",
+      "implements": "part:@sanity/base/root",
       "path": "./Main.js"
     },
     {
-      "implements": "component:@sanity/base/action-button",
+      "implements": "part:@sanity/base/action-button",
       "path": "./ActionButton"
     },
     {
-      "implements": "client:@sanity/base/client",
+      "implements": "part:@sanity/base/client",
       "path": "./mock/sanityClient.js"
     },
     {
-      "implements": "schema:@sanity/base/schema",
+      "implements": "part:@sanity/base/schema",
       "path": "./schema.js"
     },
     {
-      "implements": "config:desk-tool/pane-resolver",
+      "implements": "part:@sanity/desk-tool/pane-resolver",
       "path": "../../src/SchemaPaneResolver"
     },
     {
-      "implements": "component:desk-tool/pane",
+      "implements": "part:@sanity/desk-tool/pane",
       "path": "../../src/pane/Pane"
     },
     {
-      "name": "component:desk-tool/pane-container",
+      "name": "part:@sanity/desk-tool/pane-container",
       "path": "../../src/pane/PaneContainer.js"
     }
   ]
