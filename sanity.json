@@ -1,17 +1,17 @@
 {
-  "roles": [
+  "parts": [
     {
-      "name": "component:@sanity/storybook",
+      "name": "part:@sanity/storybook",
       "description": "Sanity wrapped version of Kadira's React Storybook",
       "path": "./index.js"
     },
     {
-      "name": "component:@sanity/storybook/decorators/center",
+      "name": "part:@sanity/storybook/decorators/center",
       "description": "Center decorator for storybook",
       "path": "addons/Center.js"
     },
     {
-      "name": "component:@sanity/storybook/addons/role",
+      "name": "part:@sanity/storybook/addons/role",
       "description": "Role addons for storybook",
       "path": "addons/Role.js"
     }
