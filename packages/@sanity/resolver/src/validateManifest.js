@@ -1,55 +1,57 @@
-import Joi from 'joi'
 import generateHelpUrl from '@sanity/generate-help-url'
 
 const matchers = {
-  rolePrefix: /^[a-z]+:/,
-  rolePackage: /^[a-z]+:[@A-Za-z0-9_-]+\//,
-  roleComponent: /^[a-z]+:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/,
-  roleMultiPrefixed: /:.*?:/
+  partPrefix: /^part:/,
+  partPackage: /^part:[@A-Za-z0-9_-]+\//,
+  partComponent: /^part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/,
+  partMultiPrefixed: /:.*?:/
 }
 
-const schema = Joi.object({
-  plugins: Joi.array().items(Joi.string().lowercase()).unique(),
-  roles: Joi.array().items(Joi.object())
-}).unknown(true)
-
 export default function validateManifest(manifest, plugin) {
-  const {error} = Joi.validate(manifest, schema, {convert: false})
-  if (error) {
-    throw error
+  const hasPlugins = isDefined(manifest.plugins)
+  if (hasPlugins && !Array.isArray(manifest.plugins)) {
+    throw new Error(`Plugin "${plugin}" has a non-array "plugins" property. Must be an array.`)
   }
 
-  (manifest.roles || []).forEach((role, i) => {
-    const baseError = `Role defined at index ${i} of plugin "${plugin}" is invalid`
-    const isImplementation = isDefined(role.path)
+  if (hasPlugins && manifest.plugins.some(hasDuplicate)) {
+    throw new Error(`Plugin "${plugin}" has duplicate values in its "plugins" property.`)
+  }
 
-    const hasRole = isDefined(role.name) || isDefined(role.implements)
-    if (isImplementation && !hasRole) {
+  if (isDefined(manifest.parts) && !Array.isArray(manifest.parts)) {
+    throw new Error(`Plugin "${plugin}" has a non-array "parts" property. Must be an array.`)
+  }
+
+  (manifest.parts || []).forEach((part, i) => {
+    const baseError = `Part defined at index ${i} of plugin "${plugin}" is invalid`
+    const isImplementation = isDefined(part.path)
+
+    const hasPart = isDefined(part.name) || isDefined(part.implements)
+    if (isImplementation && !hasPart) {
       throw new Error([
         baseError,
-        'A role that has a defined `path` needs to also define either `name` or `implements`',
-        `See ${generateHelpUrl('plugin-roles-syntax')}`
+        'A part that has a defined `path` needs to also define either `name` or `implements`',
+        `See ${generateHelpUrl('plugin-parts-syntax')}`
       ].join('\n'))
     }
 
-    if (!isDefined(role.path) && !isDefined(role.description)) {
+    if (!isDefined(part.path) && !isDefined(part.description)) {
       throw new Error([
         baseError,
-        'A role that has not defined a `path` needs to include a `description`',
-        `See ${generateHelpUrl('plugin-roles-syntax')}`
+        'A part that has not defined a `path` needs to include a `description`',
+        `See ${generateHelpUrl('plugin-parts-syntax')}`
       ].join('\n'))
     }
 
-    if (isDefined(role.name)) {
-      validateRoleName(role.name, baseError)
+    if (isDefined(part.name)) {
+      validatePartName(part.name, baseError)
     }
 
-    if (isDefined(role.implements)) {
-      validateRoleName(role.implements, baseError)
+    if (isDefined(part.implements)) {
+      validatePartName(part.implements, baseError)
     }
 
-    if (isDefined(role.description)) {
-      validateDescription(role.description, baseError)
+    if (isDefined(part.description)) {
+      validateDescription(part.description, baseError)
     }
   })
 
@@ -62,45 +64,49 @@ function validateDescription(desc, baseError) {
   }
 }
 
-function validateRoleName(name, baseError) {
+function validatePartName(name, baseError) {
   const examples = [
     'Examples:',
-    '- component:package-name/role-name',
-    '- style:package-name/role-name', '',
-    `See ${generateHelpUrl('role-name-format')}`
+    '- part:package-name/part-name',
+    '- part:package-name/part-name-style', '',
+    `See ${generateHelpUrl('part-name-format')}`
   ].join('\n')
 
   if (name.indexOf('all:') !== -1) {
     throw new Error(
-      `${baseError}\nRole "${name}" is invalid - can't contain "all:". ${examples}`
+      `${baseError}\nPart "${name}" is invalid - can't contain "all:". ${examples}`
     )
   }
 
-  if (matchers.roleMultiPrefixed.test(name)) {
+  if (matchers.partMultiPrefixed.test(name)) {
     throw new Error(
-      `${baseError}\nRole "${name}" is invalid - can't contain multiple ":". ${examples}`
+      `${baseError}\nPart "${name}" is invalid - can't contain multiple ":". ${examples}`
     )
   }
 
-  if (!matchers.rolePrefix.test(name)) {
+  if (!matchers.partPrefix.test(name)) {
     throw new Error(
-      `${baseError}\nRole "${name}" is invalid - it needs a prefix. ${examples}`
+      `${baseError}\nPart "${name}" is invalid - it needs a "part:"-prefix. ${examples}`
     )
   }
 
-  if (!matchers.rolePackage.test(name)) {
+  if (!matchers.partPackage.test(name)) {
     throw new Error(
-      `${baseError}\nRole "${name}" is invalid - it needs to include the plugin name. ${examples}`
+      `${baseError}\nPart "${name}" is invalid - it needs to include the plugin name. ${examples}`
     )
   }
 
-  if (!matchers.roleComponent.test(name)) {
+  if (!matchers.partComponent.test(name)) {
     throw new Error(
-      `${baseError}\nRole "${name}" is invalid - it needs to include a name after the plugin name. ${examples}`
+      `${baseError}\nPart "${name}" is invalid - it needs to include a name after the plugin name. ${examples}`
     )
   }
 }
 
 function isDefined(thing) {
   return typeof thing !== 'undefined'
+}
+
+function hasDuplicate(value, index, array) {
+  return array.indexOf(value, index + 1) !== -1
 }

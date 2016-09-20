@@ -8,7 +8,7 @@ import removeDuplicatePlugins from './removeDuplicatePlugins'
 
 export const resolveProjectRoot = resolveSanityRoot
 
-export function resolveRoles(options = {}) {
+export function resolveParts(options = {}) {
   if (options.sync) {
     return mergeResult(resolveTree(options), options)
   }
@@ -64,35 +64,35 @@ function mergeResult(plugins, options = {}) {
   const implementations = {}
   const result = {definitions, implementations, plugins}
 
-  // Find plugins that define roles, and do a basic validation on the syntax
-  const rolePlugins = plugins.map(plugin => {
-    if (!plugin.manifest.roles) {
+  // Find plugins that define parts, and do a basic validation on the syntax
+  const partPlugins = plugins.map(plugin => {
+    if (!plugin.manifest.parts) {
       return false
     }
 
-    if (!Array.isArray(plugin.manifest.roles)) {
-      const help = `See ${generateHelpUrl('plugin-roles-syntax')}`
+    if (!Array.isArray(plugin.manifest.parts)) {
+      const help = `See ${generateHelpUrl('plugin-parts-syntax')}`
       throw new Error(
-        `Plugin "${plugin.name}" has a "roles" property which is not an array\n${help}`
+        `Plugin "${plugin.name}" has a "parts" property which is not an array\n${help}`
       )
     }
 
     return {
-      roles: plugin.manifest.roles,
+      parts: plugin.manifest.parts,
       plugin: plugin
     }
   }).filter(Boolean).reverse()
 
-  rolePlugins.forEach(({roles, plugin}) => {
-    roles.forEach(role => {
-      if (role.name && role.path) {
-        assignNonOverridableRole(plugin, role, implementations, definitions, options)
-      } else if (role.name) {
-        assignDefinitionForAbstractRole(plugin, role, definitions)
+  partPlugins.forEach(({parts, plugin}) => {
+    parts.forEach(part => {
+      if (part.name && part.path) {
+        assignNonOverridablePart(plugin, part, implementations, definitions, options)
+      } else if (part.name) {
+        assignDefinitionForAbstractPart(plugin, part, definitions)
       }
 
-      if (role.implements) {
-        assignRoleImplementation(plugin, role, implementations, definitions, options)
+      if (part.implements) {
+        assignPartImplementation(plugin, part, implementations, definitions, options)
       }
     })
   })
@@ -100,109 +100,109 @@ function mergeResult(plugins, options = {}) {
   return result
 }
 
-function assignNonOverridableRole(plugin, role, implementations, definitions, options) {
-  // Actual, non-overridable role
-  const prevDefinition = definitions[role.name]
+function assignNonOverridablePart(plugin, part, implementations, definitions, options) {
+  // Actual, non-overridable part
+  const prevDefinition = definitions[part.name]
   if (prevDefinition) {
-    // Role already exists, non-overridable roles can't be redefined
+    // Part already exists, non-overridable parts can't be redefined
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `Plugins ${existing} and ${current} both define role "${role.name}"`
+      `Plugins ${existing} and ${current} both define part "${part.name}"`
       + ' - did you mean to use "implements"?\n'
-      + 'See ' + generateHelpUrl('role-declare-vs-implement')
+      + 'See ' + generateHelpUrl('part-declare-vs-implement')
     )
   }
 
-  definitions[role.name] = getDefinitionDeclaration(plugin, role)
-  implementations[role.name] = [getImplementationDeclaration(plugin, role, options)]
+  definitions[part.name] = getDefinitionDeclaration(plugin, part)
+  implementations[part.name] = [getImplementationDeclaration(plugin, part, options)]
 }
 
-function assignDefinitionForAbstractRole(plugin, role, definitions) {
-  const prevDefinition = definitions[role.name]
+function assignDefinitionForAbstractPart(plugin, part, definitions) {
+  const prevDefinition = definitions[part.name]
   if (prevDefinition && !prevDefinition.loose) {
-    // Role already exists, non-overridable roles can't be redefined
+    // Part already exists, non-overridable parts can't be redefined
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `Plugins ${existing} and ${current} both define role "${role.name}"`
+      `Plugins ${existing} and ${current} both define part "${part.name}"`
       + ' - did you mean to use "implements"?\n'
-      + 'See ' + generateHelpUrl('role-declare-vs-implement')
+      + 'See ' + generateHelpUrl('part-declare-vs-implement')
     )
   }
 
-  definitions[role.name] = getDefinitionDeclaration(plugin, role)
+  definitions[part.name] = getDefinitionDeclaration(plugin, part)
 }
 
-function assignRoleImplementation(plugin, role, implementations, definitions, options) {
-  const roleName = role.implements
-  if (!role.path) {
+function assignPartImplementation(plugin, part, implementations, definitions, options) {
+  const partName = part.implements
+  if (!part.path) {
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `Plugin ${current} tries to implement a role "${roleName}",`
+      `Plugin ${current} tries to implement a part "${partName}",`
       + ' but did not define a path. Did you mean to use "name"?\n'
-      + 'See ' + generateHelpUrl('role-declare-vs-implement')
+      + 'See ' + generateHelpUrl('part-declare-vs-implement')
     )
   }
 
-  const prevDefinition = definitions[roleName]
+  const prevDefinition = definitions[partName]
   if (prevDefinition && !prevDefinition.isAbstract) {
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `Plugin ${current} tried to implement role "${roleName}", which is already declared`
-      + ` as a non-overridable role by ${existing} - `
-      + 'See ' + generateHelpUrl('implement-non-overridable-role')
+      `Plugin ${current} tried to implement part "${partName}", which is already declared`
+      + ` as a non-overridable part by ${existing} - `
+      + 'See ' + generateHelpUrl('implement-non-overridable-part')
     )
   } else if (!prevDefinition) {
-    // In some cases, a user might want to declare a new role name and
+    // In some cases, a user might want to declare a new part name and
     // assign it a non-overridable implementation, while simulatenously
-    // fulfilling an existing role using `implements`. In this case,
-    // `name`, `implements` and `path` are all set, and we want the role
-    // referenced in `implements` to be treated as a non-abstract role.
+    // fulfilling an existing part using `implements`. In this case,
+    // `name`, `implements` and `path` are all set, and we want the part
+    // referenced in `implements` to be treated as a non-abstract part.
     // This is why we're explicitly setting `isAbstract` to true below
-    // `loose` means that this declaration is "implicit" - the role isn't
+    // `loose` means that this declaration is "implicit" - the part isn't
     // defined as a `name` + `description` combination, so if we come across
-    // a plugin that declares the role outright, we want to use that over this
-    definitions[roleName] = getDefinitionDeclaration(plugin, role, {
+    // a plugin that declares the part outright, we want to use that over this
+    definitions[partName] = getDefinitionDeclaration(plugin, part, {
       isAbstract: true,
       loose: true
     })
   }
 
-  if (!implementations[roleName]) {
-    implementations[roleName] = []
+  if (!implementations[partName]) {
+    implementations[partName] = []
   }
 
-  implementations[roleName].push(getImplementationDeclaration(plugin, role, options))
+  implementations[partName].push(getImplementationDeclaration(plugin, part, options))
 }
 
-function getDefinitionDeclaration(plugin, role, options = {}) {
+function getDefinitionDeclaration(plugin, part, options = {}) {
   const isAbstract = typeof options.isAbstract === 'undefined'
-    ? typeof role.path === 'undefined'
+    ? typeof part.path === 'undefined'
     : options.isAbstract
 
   return {
     plugin: plugin.name,
     path: plugin.path,
-    description: role.description,
+    description: part.description,
     isAbstract: isAbstract,
     loose: options.loose
   }
 }
 
-function getImplementationDeclaration(plugin, role, options) {
+function getImplementationDeclaration(plugin, part, options) {
   const paths = plugin.manifest.paths || {}
   const isLib = options.useCompiledPaths || plugin.path.split(path.sep).includes('node_modules')
-  const isDotPath = /^\.{1,2}[\\/]/.test(role.path)
+  const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
 
   const basePath = isDotPath
     ? plugin.path
     : path.join(plugin.path, (isLib ? paths.compiled : paths.source) || '')
 
-  const filePath = path.isAbsolute(role.path)
-    ? role.path
-    : path.resolve(path.join(basePath, role.path))
+  const filePath = path.isAbsolute(part.path)
+    ? part.path
+    : path.resolve(path.join(basePath, part.path))
 
   return {
     plugin: plugin.name,

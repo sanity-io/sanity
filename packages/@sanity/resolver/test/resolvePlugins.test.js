@@ -1,7 +1,7 @@
 import path from 'path'
 import assert from 'assert'
 import mockFs from 'mock-fs'
-import resolvePlugins, {resolveRoles, resolveProjectRoot} from '../src/resolver'
+import resolvePlugins, {resolveParts, resolveProjectRoot} from '../src/resolver'
 import {afterEach, describe, it} from 'mocha'
 import {
   getBasicTree,
@@ -13,11 +13,11 @@ import {
   getScopedPluginsTree,
   getStyleTree,
   getMultiTree,
-  getDuplicateRoleTree,
-  getInvalidRoleDeclaration,
+  getDuplicatePartTree,
+  getInvalidPartDeclaration,
   getStyleOverriderTree,
-  getNonAbstractRoleTree,
-  getRootLevelRolesTree,
+  getNonAbstractPartTree,
+  getRootLevelPartsTree,
   getNodeResolutionTree,
   getPathAlternatives,
   getDuplicatePluginTree
@@ -43,34 +43,34 @@ describe('plugin resolver', () => {
 
   it('rejects on invalid root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: true}))
-    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/i)
   })
 
   it('rejects on invalid non-root-level manifest', () => {
     mockFs(getInvalidManifest({atRoot: false}))
-    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/)
+    return resolvePlugins(opts).should.be.rejectedWith(Error, /must be an array/i)
   })
 
-  describe('rejects on invalid roles declaration', () => {
-    it('roles with no path needs a description', () => {
-      mockFs(getInvalidRoleDeclaration({missingDescription: true}))
+  describe('rejects on invalid parts declaration', () => {
+    it('parts with no path needs a description', () => {
+      mockFs(getInvalidPartDeclaration({missingDescription: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 0')
         err.message.should.contain('`description`')
       })
     })
 
-    it('role names need a prefix', () => {
-      mockFs(getInvalidRoleDeclaration({unprefixed: true}))
+    it('part names need a prefix', () => {
+      mockFs(getInvalidPartDeclaration({unprefixed: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 1')
-        err.message.should.contain('needs a prefix')
+        err.message.should.contain('needs a "part:"-prefix')
         err.message.should.contain('xamples')
       })
     })
 
-    it('role names should not include reserved keywords', () => {
-      mockFs(getInvalidRoleDeclaration({allPrefixed: true}))
+    it('part names should not include reserved keywords', () => {
+      mockFs(getInvalidPartDeclaration({allPrefixed: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 2')
         err.message.should.contain('"all:"')
@@ -78,8 +78,8 @@ describe('plugin resolver', () => {
       })
     })
 
-    it('role names should not have more than one prefix', () => {
-      mockFs(getInvalidRoleDeclaration({doublePrefix: true}))
+    it('part names should not have more than one prefix', () => {
+      mockFs(getInvalidPartDeclaration({doublePrefix: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 3')
         err.message.should.contain('":"')
@@ -87,8 +87,8 @@ describe('plugin resolver', () => {
       })
     })
 
-    it('role names should include plugin name', () => {
-      mockFs(getInvalidRoleDeclaration({noPluginName: true}))
+    it('part names should include plugin name', () => {
+      mockFs(getInvalidPartDeclaration({noPluginName: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 4')
         err.message.should.contain('plugin name')
@@ -96,8 +96,8 @@ describe('plugin resolver', () => {
       })
     })
 
-    it('role names should include role name after plugin name', () => {
-      mockFs(getInvalidRoleDeclaration({noRoleName: true}))
+    it('part names should include part name after plugin name', () => {
+      mockFs(getInvalidPartDeclaration({noPartName: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 5')
         err.message.should.contain('after the plugin name')
@@ -105,24 +105,24 @@ describe('plugin resolver', () => {
       })
     })
 
-    it('roles with `path` should contain `implements` or `name`', () => {
-      mockFs(getInvalidRoleDeclaration({missingImplements: true}))
+    it('parts with `path` should contain `implements` or `name`', () => {
+      mockFs(getInvalidPartDeclaration({missingImplements: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 6')
         err.message.should.contain('either `name` or `implements`')
       })
     })
 
-    it('roles with `path` should contain `implements` or `name`', () => {
-      mockFs(getInvalidRoleDeclaration({missingName: true}))
+    it('parts with `path` should contain `implements` or `name`', () => {
+      mockFs(getInvalidPartDeclaration({missingName: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 7')
         err.message.should.contain('either `name` or `implements`')
       })
     })
 
-    it('roles with `implements` should contain `path`', () => {
-      mockFs(getInvalidRoleDeclaration({missingPath: true}))
+    it('parts with `implements` should contain `path`', () => {
+      mockFs(getInvalidPartDeclaration({missingPath: true}))
       return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
         err.message.should.contain('index 8')
       })
@@ -139,9 +139,9 @@ describe('plugin resolver', () => {
     return resolvePlugins(opts).should.be.rejectedWith(Error, /"sanity\.json"/)
   })
 
-  it('rejects if two plugins define the same role', () => {
-    mockFs(getDuplicateRoleTree())
-    return resolveRoles(opts).should.be.rejectedWith(Error, 'both define role "component:snarkel/foo"')
+  it('rejects if two plugins define the same part', () => {
+    mockFs(getDuplicatePartTree())
+    return resolveParts(opts).should.be.rejectedWith(Error, 'both define part "part:snarkel/foo"')
   })
 
   it('resolves plugins in the right order', () => {
@@ -221,27 +221,27 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('can resolve roles for a basic setup', () => {
+  it('can resolve parts for a basic setup', () => {
     mockFs(getBasicTree())
-    return resolveRoles(opts).then(res => {
-      const settings = res.definitions['component:@sanity/default-layout/settingsPane']
+    return resolveParts(opts).then(res => {
+      const settings = res.definitions['part:@sanity/default-layout/settingsPane']
       settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
 
-      const tool = res.implementations['component:@sanity/default-layout/tool']
+      const tool = res.implementations['part:@sanity/default-layout/tool']
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
 
-      const main = res.implementations['component:@sanity/core/root']
+      const main = res.implementations['part:@sanity/core/root']
       main.should.have.length(1)
       main[0].should.eql({
         plugin: '@sanity/default-layout',
         path: '/sanity/node_modules/@sanity/default-layout/lib/components/Root'
       })
 
-      const comments = res.implementations['component:instagram/commentsList']
+      const comments = res.implementations['part:instagram/commentsList']
       comments[0].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
@@ -249,9 +249,9 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('resolves plugins as well as roles', () => {
+  it('resolves plugins as well as parts', () => {
     mockFs(getBasicTree())
-    return resolveRoles(opts).then(res => {
+    return resolveParts(opts).then(res => {
       res.plugins.should.have.length(4)
       res.plugins.map(plugin => plugin.path).should.eql([
         '/sanity/node_modules/@sanity/default-layout',
@@ -262,10 +262,10 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('can resolve roles synchronously', () => {
+  it('can resolve parts synchronously', () => {
     mockFs(getBasicTree())
 
-    const res = resolveRoles(syncOpts)
+    const res = resolveParts(syncOpts)
     res.plugins.should.have.length(4)
     res.plugins.map(plugin => plugin.path).should.eql([
       '/sanity/node_modules/@sanity/default-layout',
@@ -277,7 +277,7 @@ describe('plugin resolver', () => {
 
   it('doesnt try to look up the same location twice', () => {
     mockFs(getScopedPluginsTree())
-    return resolveRoles(opts).catch(err => {
+    return resolveParts(opts).catch(err => {
       err.locations.some((location, index) =>
         err.locations.indexOf(location, index + 1) !== -1
       ).should.equal(false)
@@ -286,13 +286,13 @@ describe('plugin resolver', () => {
 
   it('resolves path to "compiled" path for node_modules, "source" for plugins', () => {
     mockFs(getMixedPluginTree())
-    return resolveRoles(opts).then(res => {
-      res.implementations['component:@sanity/default-layout/tool'][0].should.eql({
+    return resolveParts(opts).then(res => {
+      res.implementations['part:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/File'
       })
 
-      res.implementations['component:@sanity/default-layout/tool'][1].should.eql({
+      res.implementations['part:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
@@ -301,13 +301,13 @@ describe('plugin resolver', () => {
 
   it('resolves path to "compiled" if "useCompiledPaths"-option is set to true', () => {
     mockFs(getMixedPluginTree())
-    return resolveRoles(Object.assign({}, opts, {useCompiledPaths: true})).then(res => {
-      res.implementations['component:@sanity/default-layout/tool'][0].should.eql({
+    return resolveParts(Object.assign({}, opts, {useCompiledPaths: true})).then(res => {
+      res.implementations['part:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/lib/File'
       })
 
-      res.implementations['component:@sanity/default-layout/tool'][1].should.eql({
+      res.implementations['part:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
         path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
       })
@@ -316,18 +316,18 @@ describe('plugin resolver', () => {
 
   it('treats dot-paths as relative to sanity.json, absolute as absolute', () => {
     mockFs(getPathAlternatives())
-    return resolveRoles(opts).then(res => {
-      res.implementations['component:foo/relative'][0].should.eql({
+    return resolveParts(opts).then(res => {
+      res.implementations['part:foo/relative'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/src/relative/Path.js'
       })
 
-      res.implementations['component:foo/absolute'][0].should.eql({
+      res.implementations['part:foo/absolute'][0].should.eql({
         plugin: 'foo',
         path: '/absolute/path/to/File.js'
       })
 
-      res.implementations['component:foo/dot-path'][0].should.eql({
+      res.implementations['part:foo/dot-path'][0].should.eql({
         plugin: 'foo',
         path: '/sanity/plugins/foo/locale/en-us.json'
       })
@@ -336,8 +336,8 @@ describe('plugin resolver', () => {
 
   it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
-    return resolveRoles(opts).then(res => {
-      const fulfillers = res.implementations['component:instagram/commentsList']
+    return resolveParts(opts).then(res => {
+      const fulfillers = res.implementations['part:instagram/commentsList']
       fulfillers.should.have.length(2)
       fulfillers[0].should.eql({
         plugin: 'foo',
@@ -346,19 +346,19 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('resolves multi-fulfiller roles correctly', () => {
+  it('resolves multi-fulfiller parts correctly', () => {
     mockFs(getMultiTree())
-    return resolveRoles(opts).then(res => {
-      res.definitions.should.have.property('component:@sanity/base/absolute')
-      res.implementations.should.have.property('component:@sanity/base/absolute')
-      res.implementations['component:@sanity/base/absolute'].should.have.length(2)
+    return resolveParts(opts).then(res => {
+      res.definitions.should.have.property('part:@sanity/base/absolute')
+      res.implementations.should.have.property('part:@sanity/base/absolute')
+      res.implementations['part:@sanity/base/absolute'].should.have.length(2)
     })
   })
 
-  it('handles style roles as regular roles', () => {
+  it('handles style parts as regular parts', () => {
     mockFs(getStyleTree())
-    return resolveRoles(opts).then(res => {
-      res.implementations['style:@sanity/default-layout/header'].should.eql([
+    return resolveParts(opts).then(res => {
+      res.implementations['part:@sanity/default-layout/header-style'].should.eql([
         {
           path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
           plugin: 'screaming-dev-badge'
@@ -375,30 +375,30 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('allows a role to both implement a role and define a new one', () => {
+  it('allows a part to both implement a part and define a new one', () => {
     mockFs(getStyleOverriderTree())
-    return resolveRoles(opts).then(res => {
-      res.definitions.should.have.property('style:foo/button')
-      res.definitions.should.have.property('style:foo/button-default')
+    return resolveParts(opts).then(res => {
+      res.definitions.should.have.property('part:foo/button-style')
+      res.definitions.should.have.property('part:foo/button-default-style')
 
-      res.implementations.should.have.property('style:foo/button')
-      res.implementations.should.have.property('style:foo/button-default')
+      res.implementations.should.have.property('part:foo/button-style')
+      res.implementations.should.have.property('part:foo/button-default-style')
     })
   })
 
-  it('does not allow a non-abstract role to be implemented by others', () => {
-    mockFs(getNonAbstractRoleTree())
-    return resolveRoles(opts).should.be.rejectedWith(Error, 'both define role')
+  it('does not allow a non-abstract part to be implemented by others', () => {
+    mockFs(getNonAbstractPartTree())
+    return resolveParts(opts).should.be.rejectedWith(Error, 'both define part')
   })
 
-  it('should include roles defined in base manifest', () => {
-    mockFs(getRootLevelRolesTree())
-    return resolveRoles(opts).then(res => {
-      res.definitions.should.have.property('config:@sanity/config/schema')
-      res.definitions['config:@sanity/config/schema'].path.should.eql('/sanity')
+  it('should include parts defined in base manifest', () => {
+    mockFs(getRootLevelPartsTree())
+    return resolveParts(opts).then(res => {
+      res.definitions.should.have.property('part:@sanity/config/schema')
+      res.definitions['part:@sanity/config/schema'].path.should.eql('/sanity')
 
-      res.implementations.should.have.property('config:@sanity/config/schema')
-      res.implementations['config:@sanity/config/schema'][0].path.should.eql(
+      res.implementations.should.have.property('part:@sanity/config/schema')
+      res.implementations['part:@sanity/config/schema'][0].path.should.eql(
         path.join('/sanity', 'schema', 'schema.js')
       )
 
@@ -408,14 +408,14 @@ describe('plugin resolver', () => {
     })
   })
 
-  it('should treat base manifest roles as most significant', () => {
-    mockFs(getRootLevelRolesTree({}))
-    return resolveRoles(opts).then(res => {
-      res.definitions.should.have.property('component:@sanity/core/root')
-      res.definitions['component:@sanity/core/root'].plugin.should.eql('@sanity/core')
+  it('should treat base manifest parts as most significant', () => {
+    mockFs(getRootLevelPartsTree({}))
+    return resolveParts(opts).then(res => {
+      res.definitions.should.have.property('part:@sanity/core/root')
+      res.definitions['part:@sanity/core/root'].plugin.should.eql('@sanity/core')
 
-      res.implementations.should.have.property('component:@sanity/core/root')
-      res.implementations['component:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
+      res.implementations.should.have.property('part:@sanity/core/root')
+      res.implementations['part:@sanity/core/root'][0].path.should.eql('/sanity/myRootComponent.js')
     })
   })
 
@@ -433,11 +433,11 @@ describe('plugin resolver', () => {
   it('should resolve project root if option is passed', () => {
     mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
 
-    return resolveRoles({
+    return resolveParts({
       basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
       resolveProjectRoot: true
-    }).then(roles => {
-      roles.plugins[roles.plugins.length - 1].path.should.eql('/sanity')
+    }).then(parts => {
+      parts.plugins[parts.plugins.length - 1].path.should.eql('/sanity')
     })
   })
 })
