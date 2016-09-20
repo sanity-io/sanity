@@ -5,7 +5,7 @@ const resolver = require('@sanity/resolver')
 const cssHook = require('css-modules-require-hook')
 
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
-const resolveRoles = resolver.resolveRoles
+const resolveParts = resolver.resolveParts
 const defaultResult = {
   definitions: {},
   implementations: {},
@@ -17,10 +17,10 @@ function registerLoader(options) {
     throw new Error('`registerLoader()` requires an options object')
   }
 
-  // Resolve actual roles only if basePath is set,
+  // Resolve actual parts only if basePath is set,
   // otherwise use empty defaults
-  const roles = options.basePath
-    ? resolveRoles({basePath: options.basePath, sync: true})
+  const parts = options.basePath
+    ? resolveParts({basePath: options.basePath, sync: true})
     : Object.assign({}, defaultResult)
 
   // Configuration files are loaded with a custom prefix
@@ -29,23 +29,23 @@ function registerLoader(options) {
     'config'
   )
 
-  // Turn {"roleName": [{path: "/foo/bar.js"}]} into {"roleName": ["/foo/bar.js"]}
-  roles.implementations = Object.keys(roles.implementations).reduce((implementations, role) => {
-    implementations[role] = roles.implementations[role].map(impl => impl.path)
+  // Turn {"partName": [{path: "/foo/bar.js"}]} into {"partName": ["/foo/bar.js"]}
+  parts.implementations = Object.keys(parts.implementations).reduce((implementations, part) => {
+    implementations[part] = parts.implementations[part].map(impl => impl.path)
     return implementations
   }, {})
 
-  // Allow passing specific overrides for roles
+  // Allow passing specific overrides for parts
   const overrides = options.overrides
   if (overrides) {
-    Object.keys(overrides).forEach(role => {
-      if (!Array.isArray(overrides[role])) {
-        throw new Error(`Override for role '${role}' is not an array`)
+    Object.keys(overrides).forEach(part => {
+      if (!Array.isArray(overrides[part])) {
+        throw new Error(`Override for part '${part}' is not an array`)
       }
     })
 
-    roles.implementations = Object.assign(
-      roles.implementations,
+    parts.implementations = Object.assign(
+      parts.implementations,
       overrides
     )
   }
@@ -54,7 +54,7 @@ function registerLoader(options) {
   Module._resolveFilename = (request, parent) => {
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {
-      require.cache['sanity:debug'] = getModule('sanity:debug', roles)
+      require.cache['sanity:debug'] = getModule('sanity:debug', parts)
       return request
     }
 
@@ -68,19 +68,19 @@ function registerLoader(options) {
 
     // Should we load all the implementations or just a single one
     const loadAll = request.indexOf('all:') === 0
-    const roleName = request.replace(/^all:/, '').replace(/\?$/, '')
+    const partName = request.replace(/^all:/, '').replace(/\?$/, '')
     const allowUnimplemented = request.match(/\?$/)
 
-    // If we're loading all the implementations of a role, we can't point to
+    // If we're loading all the implementations of a part, we can't point to
     // one single file - instead we need to manually "construct" a module
     // consisting of an array which holds all the implementations, then add it
     // to the require cache
     if (loadAll) {
-      const implementers = roles.implementations[roleName]
+      const implementers = parts.implementations[partName]
 
       // Overrides should be plain objects, not paths to modules
-      // Actual resolved roles are paths to implementations
-      const implementations = overrides && overrides[roleName]
+      // Actual resolved parts are paths to implementations
+      const implementations = overrides && overrides[partName]
         ? implementers
         : implementers.map(interopRequire)
 
@@ -88,9 +88,9 @@ function registerLoader(options) {
       return request
     }
 
-    // If we have no implementations of the role, fall back to the default resolver
+    // If we have no implementations of the part, fall back to the default resolver
     // Note that `all:`-requests should return an empty array, not throw
-    if (!roles.implementations[roleName]) {
+    if (!parts.implementations[partName]) {
       // If using the "allow unimplemented" (?)-postfix, we want to return undefined
       if (allowUnimplemented) {
         require.cache[request] = getModule(request, undefined)
@@ -102,13 +102,13 @@ function registerLoader(options) {
 
     // "Most significant"-imports can be directly resolved to their implementation,
     // HOWEVER; overwritten implementations needs to be put into cache
-    const override = overrides && overrides[roleName]
+    const override = overrides && overrides[partName]
     if (override) {
       require.cache[request] = getModule(request, override[0])
       return request
     }
 
-    return roles.implementations[roleName][0]
+    return parts.implementations[partName][0]
   }
 
   // Register CSS hook

@@ -4,7 +4,7 @@
     "better-date"
   ],
 
-  "roles": [
+  "parts": [
     {
       "name": "function:base/bar",
       "description": "Returns 'bar' when called",

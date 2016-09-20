@@ -1,7 +1,7 @@
 {
   "name": "@sanity/plugin-loader",
   "version": "2.0.0",
-  "description": "Monkey-patches node's require algorithm to allow requiring of Sanity roles",
+  "description": "Monkey-patches node's require algorithm to allow requiring of Sanity parts",
   "main": "loader.js",
   "scripts": {
     "test": "ava",
@@ -15,7 +15,7 @@
   "keywords": [
     "sanity",
     "plugin",
-    "role",
+    "parts",
     "require"
   ],
   "author": "Sanity.io <hello@sanity.io>",
