@@ -41,7 +41,7 @@
     "eslint-plugin-react": "^6.3.0",
     "mocha": "^2.4.5",
     "nyc": "^8.3.0",
-    "react": "^15.3.1",
+    "react": "^15.3.2",
     "rimraf": "^2.5.2"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
   },
   "peerDependencies": {
     "@sanity/base": "^2.1.88",
-    "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
   }
 }
