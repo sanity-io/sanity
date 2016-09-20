@@ -1,6 +1,6 @@
 {
   "name": "@sanity/data-aspects",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Sanity plugin which controls how your data is presented",
   "main": "lib/DataAspectsResolver.js",
   "author": "Sanity.io <hello@sanity.io>",
