@@ -4,17 +4,17 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "implements": "component:@sanity/base/login-dialog",
+      "implements": "part:@sanity/base/login-dialog",
       "path": "LoginDialog.js"
     },
     {
-      "implements": "machine:@sanity/base/authentication-fetcher",
+      "implements": "part:@sanity/base/authentication-fetcher",
       "path": "authenticationFetcher.js"
     },
     {
-      "implements": "locale:@sanity/base/locale-messages",
+      "implements": "part:@sanity/base/locale-messages",
       "path": "./locale/en-US.json"
     }
   ]

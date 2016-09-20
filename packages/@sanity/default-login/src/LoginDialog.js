@@ -1,7 +1,7 @@
 import React from 'react'
-import authenticationFetcher from 'machine:@sanity/base/authentication-fetcher'
-import {FormattedMessage} from 'component:@sanity/base/locale/intl'
-import client from 'client:@sanity/base/client'
+import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
+import {FormattedMessage} from 'part:@sanity/base/locale/intl'
+import client from 'part:@sanity/base/client'
 
 export default class LoginDialog extends React.Component {
   constructor() {

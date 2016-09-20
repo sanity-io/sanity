@@ -1,4 +1,4 @@
-import client from 'client:@sanity/base/client'
+import client from 'part:@sanity/base/client'
 
 export default {
   getProviders: () => client.request({
