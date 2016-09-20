@@ -2,20 +2,20 @@ import path from 'path'
 import express from 'express'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import {resolveRoles} from '@sanity/resolver'
+import {resolveParts} from '@sanity/resolver'
 import requireUncached from 'require-uncached'
 
-const docRole = 'part:@sanity/base/document'
+const docPart = 'part:@sanity/base/document'
 const assetify = assetPath => ({path: assetPath})
 const getDefaultModule = mod => {
   return mod && mod.__esModule ? mod.default : mod
 }
 
 const getDocumentComponent = basePath =>
-  resolveRoles({basePath}).then(res => {
-    const part = res.implementations[docRole]
+  resolveParts({basePath}).then(res => {
+    const part = res.implementations[docPart]
     if (!part) {
-      throw new Error(`Part '${docRole}' is not implemented by any plugins, are you missing @sanity/base?`)
+      throw new Error(`Part '${docPart}' is not implemented by any plugins, are you missing @sanity/base?`)
     }
 
     return getDefaultModule(
