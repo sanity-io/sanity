@@ -1,11 +1,11 @@
 import path from 'path'
 import fsp from 'fs-promise'
-import {resolveRoles} from '@sanity/resolver'
+import {resolveParts} from '@sanity/resolver'
 import promiseProps from 'promise-props-recursive'
 import generateHelpUrl from '@sanity/generate-help-url'
 
 function sanityCheck(options) {
-  return resolveRoles({
+  return resolveParts({
     basePath: options.dir,
     useCompiledPaths: options.productionMode
   }).then(parts => checkImplementations(parts, options))
@@ -84,7 +84,7 @@ function verifyImplementationExists(impl, parentDirContent) {
 
   if (found) {
     return new Error(
-      `Role "${impl.partName}" was attempted to be implemented by "${impl.path}",`
+      `Part "${impl.partName}" was attempted to be implemented by "${impl.path}",`
       + `but the file is actually located at "${path.join(impl.dirName, found)}" -`
       + ' Sanity uses case-sensitive file names.'
     )
@@ -108,7 +108,7 @@ function isFileOrDirectoryWithIndex(impl) {
       ? directoryHasIndex(impl)
       : true
   }).catch(() => new Error(
-    `Role "${impl.partName}" was attempted to be implemented by "${impl.path}", `
+    `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", `
     + `which does not seem to exist. ${checkImplementationMsg(impl)}`
   ))
 }
@@ -118,7 +118,7 @@ function directoryHasIndex(impl) {
     return dirContent.includes('index.js')
       ? true
       : new Error(
-        `Role "${impl.partName}" was attempted to be implemented by "${impl.path}", `
+        `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", `
         + 'which is a directory without an "index.js". Please point to a filename.'
       )
   })
