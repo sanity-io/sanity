@@ -2,23 +2,23 @@
 
 .root {
   position: relative;
-  composes: root from 'style:@sanity/base/theme/forms/control';
+  composes: root from 'part:@sanity/base/theme/forms/control-style';
 }
 
 .inner {
-  composes: inner from 'style:@sanity/base/theme/forms/control';
+  composes: inner from 'part:@sanity/base/theme/forms/control-style';
 }
 
 .input {
-  composes: textInput from 'style:@sanity/base/theme/forms/text-input';
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
 .inputError {
-  composes: error from 'style:@sanity/base/theme/forms/text-input';
+  composes: error from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
 .clearButton {
-  composes: textInput from 'style:@sanity/base/theme/forms/clear-button';
+  composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
 }
 
 .error {

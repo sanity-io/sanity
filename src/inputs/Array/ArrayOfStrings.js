@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import Arr from './Array'
 import React, {PropTypes} from 'react'
-import TagInput from 'component:@sanity/components/tags/textfield'
+import TagInput from 'part:@sanity/components/tags/textfield'
 import ArrayContainer from './ArrayContainer'
 
 export default class ArrayOfStrings extends React.Component {

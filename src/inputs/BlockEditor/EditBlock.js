@@ -3,7 +3,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../utils/getFieldType'
 import styles from './styles/EditBlock.css'
-import Button from 'component:@sanity/components/buttons/default'
+import Button from 'part:@sanity/components/buttons/default'
 
 export default class EntityForm extends React.Component {
   constructor(props, context) {

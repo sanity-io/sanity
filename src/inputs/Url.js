@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import DefaultTextField from 'component:@sanity/components/textfields/default'
+import DefaultTextField from 'part:@sanity/components/textfields/default'
 
 export default class Url extends React.Component {
   constructor(props, context) {

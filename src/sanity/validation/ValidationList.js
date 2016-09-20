@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {FormattedMessage} from 'component:@sanity/base/locale/intl'
+import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 
 function ValidationList(props) {
   const messages = props.messages

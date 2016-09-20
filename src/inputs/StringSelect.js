@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import Select from 'component:@sanity/components/selects/default'
+import Select from 'part:@sanity/components/selects/default'
 
 export default class StringSelect extends React.Component {
   static displayName = 'StringSelect';

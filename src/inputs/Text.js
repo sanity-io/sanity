@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import FormField from 'component:@sanity/components/formfields/default'
-import TextArea from 'component:@sanity/components/textareas/default'
+import FormField from 'part:@sanity/components/formfields/default'
+import TextArea from 'part:@sanity/components/textareas/default'
 import {uniqueId} from 'lodash'
 
 export default class Str extends React.Component {

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReferenceAutocomplete from './autocomplete/ReferenceAutocomplete'
 import ValueContainer from './common/ValueContainer'
-import FormField from 'component:@sanity/components/formfields/default'
+import FormField from 'part:@sanity/components/formfields/default'
 
 export default function createReferenceInput({search, materializeReferences}) {
 

@@ -2,11 +2,11 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import ItemPreview from '../common/ItemPreview'
-import Button from 'component:@sanity/components/buttons/default' //eslint-disable-line
-import Dialog from 'component:@sanity/components/dialogs/default' //eslint-disable-line
+import Button from 'part:@sanity/components/buttons/default' //eslint-disable-line
+import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
-import DefaultList from 'component:@sanity/components/lists/default' //eslint-disable-line
-import Spinner from 'component:@sanity/components/loading/spinner' //eslint-disable-line
+import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable-line
+import Spinner from 'part:@sanity/components/loading/spinner' //eslint-disable-line
 
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {

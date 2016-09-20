@@ -15,11 +15,9 @@
     "example-quickstart": "cd examples/quickstart && sanity start"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
   "dependencies": {
-    "@sanity/base": "^2.1.72",
-    "@sanity/components": "^1.0.61",
     "debug": "^2.2.0",
     "is-empty": "^1.0.0",
     "lodash": "^4.15.0",
@@ -31,6 +29,7 @@
   },
   "devDependencies": {
     "@sanity/base": "^2.1.80",
+    "@sanity/components": "^1.0.61",
     "@sanity/check": "^1.0.1",
     "@sanity/cli": "^1.2.11",
     "@sanity/server": "^1.2.35",

@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import ItemPreview from '../common/ItemPreview'
-import Button from 'component:@sanity/components/buttons/default'
+import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/ReferenceAutocomplete.css'
-import AutoComplete from 'component:@sanity/components/autocomplete/default'
+import AutoComplete from 'part:@sanity/components/autocomplete/default'
 
 export default class Reference extends React.Component {
   static propTypes = {

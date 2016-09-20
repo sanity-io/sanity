@@ -6,9 +6,9 @@
     "@sanity/base",
     "@sanity/components"
   ],
-  "roles": [
+  "parts": [
     {
-      "implements": "component:@sanity/base/root",
+      "implements": "part:@sanity/base/root",
       "path": "./Main"
     }
   ]

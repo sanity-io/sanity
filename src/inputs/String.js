@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import DefaultTextField from 'component:@sanity/components/textfields/default'
+import DefaultTextField from 'part:@sanity/components/textfields/default'
 
 export default class Str extends React.Component {
   static displayName = 'String';

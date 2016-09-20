@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import {resolveJSType} from '../../types/utils'
 import styles from './styles/FallbackPreviewComponent.css'
-import SanityPreview from 'component:@sanity/components/previews/default' // eslint-disable-line
+import SanityPreview from 'part:@sanity/components/previews/default' // eslint-disable-line
 
 function renderPrimitive(value) {
   return value

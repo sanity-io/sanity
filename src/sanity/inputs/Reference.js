@@ -1,4 +1,4 @@
-import client from 'client:@sanity/base/client'
+import client from 'part:@sanity/base/client'
 import {ReferenceInput} from '../../index'
 import {unprefixType} from '../utils/unprefixType'
 

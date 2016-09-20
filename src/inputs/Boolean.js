@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import Switch from 'component:@sanity/components/toggles/switch'
+import Switch from 'part:@sanity/components/toggles/switch'
 
 export default class Bool extends React.Component {
   static displayName = 'Boolean';

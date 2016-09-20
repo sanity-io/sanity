@@ -4,86 +4,86 @@
     "compiled": "./lib"
   },
 
-  "roles": [
+  "parts": [
     {
-      "name": "function:@sanity/form-builder/input-resolver",
+      "name": "part:@sanity/form-builder/input-resolver",
       "description": "Function that resolves the input component to use for a given field"
     },
 
     {
-      "name": "component:@sanity/form-builder/validation-list",
+      "name": "part:@sanity/form-builder/validation-list",
       "description": "Component that renders a list of validation feedback items"
     },
 
     {
-      "name": "role:@sanity/form-builder",
+      "name": "part:@sanity/form-builder",
       "description": "Sanity form builder module"
     },
 
     {
-      "name": "role:@sanity/form-builder/container",
+      "name": "part:@sanity/form-builder/container",
       "description": "Container component that abstracts loading of documents, schemas etc"
     },
     {
-      "name": "role:@sanity/form-builder/input/array",
+      "name": "part:@sanity/form-builder/input/array",
       "description": "Input component for the core array type"
     },
     {
-      "name": "role:@sanity/form-builder/input/boolean",
+      "name": "part:@sanity/form-builder/input/boolean",
       "description": "Input component for the core boolean type"
     },
     {
-      "name": "role:@sanity/form-builder/input/date",
+      "name": "part:@sanity/form-builder/input/date",
       "description": "Input component for the core date type"
     },
     {
-      "name": "role:@sanity/form-builder/input/email",
+      "name": "part:@sanity/form-builder/input/email",
       "description": "Input component for the core email type"
     },
     {
-      "name": "role:@sanity/form-builder/input/geopoint",
+      "name": "part:@sanity/form-builder/input/geopoint",
       "description": "Input component for the core geopoint type"
     },
     {
-      "name": "role:@sanity/form-builder/input/number",
+      "name": "part:@sanity/form-builder/input/number",
       "description": "Input component for the core number type"
     },
     {
-      "name": "role:@sanity/form-builder/input/object",
+      "name": "part:@sanity/form-builder/input/object",
       "description": "Input component for the core object type"
     },
     {
-      "name": "role:@sanity/form-builder/input/reference",
+      "name": "part:@sanity/form-builder/input/reference",
       "description": "Input component for the core reference type"
     },
     {
-      "name": "role:@sanity/form-builder/input/string",
+      "name": "part:@sanity/form-builder/input/string",
       "description": "Input component for the core string type"
     },
     {
-      "name": "role:@sanity/form-builder/input/text",
+      "name": "part:@sanity/form-builder/input/text",
       "description": "Input component for the core text type"
     },
     {
-      "name": "role:@sanity/form-builder/input/url",
+      "name": "part:@sanity/form-builder/input/url",
       "description": "Input component for the core url type"
     },
     {
-      "implements": "function:@sanity/form-builder/input-resolver",
+      "implements": "part:@sanity/form-builder/input-resolver",
       "path": "sanity/inputResolver/inputResolver.js"
     },
 
     {
-      "implements": "component:@sanity/form-builder/validation-list",
+      "implements": "part:@sanity/form-builder/validation-list",
       "path": "sanity/validation/ValidationList.js"
     },
 
     {
-      "implements": "locale:@sanity/base/locale-messages",
+      "implements": "part:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
     },
     {
-      "implements": "role:@sanity/form-builder",
+      "implements": "part:@sanity/form-builder",
       "path": "sanity/SanityFormBuilder.js"
     }
   ]

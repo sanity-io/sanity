@@ -1,7 +1,7 @@
 import React from 'react'
 import ReferenceBrowser from './browser/ReferenceBrowser'
 import ValueContainer from './common/ValueContainer'
-import Fieldset from 'component:@sanity/components/fieldsets/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 
 export default function createReferenceInput({fetch, materializeReferences}) {
 

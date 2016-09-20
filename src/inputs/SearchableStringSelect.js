@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import SearchableSelect from 'component:@sanity/components/selects/searchable'
+import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import {find} from 'lodash'
 
 export default class SearchableStringSelect extends React.Component {
