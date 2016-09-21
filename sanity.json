@@ -187,6 +187,12 @@
       "name": "part:@sanity/base/theme/typography/text-blocks-style",
       "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
     },
+
+    {
+      "name": "style:@sanity/base/theme/typography/forms",
+      "description": "Typography for the forms. Levels, headings, label, legends. etc"
+    },
+
     {
       "name": "part:@sanity/base/theme/typography/code-style",
       "description": "Styling for code"
@@ -376,6 +382,10 @@
     {
       "implements": "part:@sanity/base/theme/typography/code-style",
       "path": "styles/typography/code.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/typography/forms-style",
+      "path": "styles/typography/forms.css"
     },
     {
       "implements": "part:@sanity/base/theme/body-style",

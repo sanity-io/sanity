@@ -1,0 +1,24 @@
+@import 'style:@sanity/base/theme/variables';
+
+.headingLevel_0 {
+  font-size: var(--font-size-large);
+  font-weight: 500;
+  color: var(--black);
+  color: blue;
+}
+
+.headingLevel_1 {
+  color: red;
+}
+
+.headingLevel_2 {
+  color: green;
+}
+
+.headingLevel_3 {
+  color: magenta;
+}
+
+.headingLevel_4 {
+  color: yellow;
+}

@@ -2,6 +2,7 @@
 @use postcss-cssnext;
 
 :root {
+  --black: #000;
   --gray-darkest: color(var(--gray-base) lightness(+5%));
   --gray-darker: color(var(--gray-base) lightness(+12%));
   --gray-dark: color(var(--gray-base) lightness(+30%));
