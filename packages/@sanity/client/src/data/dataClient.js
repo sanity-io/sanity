@@ -1,7 +1,7 @@
 const assign = require('xtend/mutable')
+const validators = require('../validators')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
-const validators = require('../validators')
 
 const mutationDefaults = {returnIds: true}
 

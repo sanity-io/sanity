@@ -1,6 +1,6 @@
 const assign = require('xtend/mutable')
-const Patch = require('./patch')
 const validators = require('../validators')
+const Patch = require('./patch')
 
 function Transaction(operations = [], dataClient) {
   this.operations = operations
