@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Sanity wrapper for Kadira's Storybook",
   "main": "index.js",
   "author": "Sanity.io <hello@sanity.io>",
