@@ -78,7 +78,7 @@
     "rimraf": "^2.5.2"
   },
   "peerDependencies": {
-    "@sanity/base": ">=2.0.0",
+    "@sanity/base": ">=0.0.1",
     "react": "^15.0.0",
     "react-dom": "^15.0.0"
   }
