@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "1.0.64",
+  "version": "0.0.1",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -40,7 +40,7 @@
     "stylelint-config-standard": "^12.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^1.0.0",
+    "@sanity/check": "^0.0.1",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-lodash": "^3.2.8",
