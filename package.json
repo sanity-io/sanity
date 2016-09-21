@@ -22,7 +22,7 @@
     "react": "^15.3.1"
   },
   "peerDependencies": {
-    "@sanity/server": "^1.2.28"
+    "@sanity/server": "^0.0.1"
   },
   "devDependencies": {
     "@sanity/check": "^0.0.1",
