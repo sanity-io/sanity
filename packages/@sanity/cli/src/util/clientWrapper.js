@@ -1,4 +1,4 @@
-import client from '@sanity/client-next'
+import client from '@sanity/client'
 import getUserConfig from './getUserConfig'
 
 /**
