@@ -34,7 +34,7 @@
     "@sanity/check": "^0.0.1",
     "@sanity/client": "^0.0.1",
     "@sanity/resolver": "^0.0.1",
-    "@sanity/server": "^0.0.1",
+    "@sanity/server": "^0.0.2",
     "@sanity/storybook": "^0.0.1",
     "babel-polyfill": "^6.13.0",
     "chalk": "^1.1.3",
