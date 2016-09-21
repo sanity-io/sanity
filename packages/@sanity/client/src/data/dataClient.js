@@ -1,9 +1,11 @@
 const assign = require('xtend/mutable')
 const validators = require('../validators')
+const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
 
 const mutationDefaults = {returnIds: true}
+const getQuerySizeLimit = 1948
 
 function DataClient(client) {
   this.client = client
@@ -53,14 +55,21 @@ assign(DataClient.prototype, {
   },
 
   dataRequest(method, endpoint, body) {
-    const query = endpoint === 'm' && mutationDefaults
+    const isMutation = endpoint === 'm'
+
+    // Check if the query string is within a configured threshold,
+    // in which case we can use GET. Otherwise, use POST.
+    const strQuery = !isMutation && encodeQueryString(body)
+    const useGet = !isMutation && strQuery.length < getQuerySizeLimit
+    const stringQuery = useGet ? strQuery : ''
+
     return this.client.emit('request', method, body).then(() => {
       const dataset = validators.hasDataset(this.client.clientConfig)
       return this.client.request({
-        method: 'POST',
-        uri: `/data/${endpoint}/${dataset}`,
-        json: body,
-        query: query
+        method: useGet ? 'GET' : 'POST',
+        uri: `/data/${endpoint}/${dataset}${stringQuery}`,
+        json: useGet ? true : body,
+        query: isMutation && mutationDefaults
       })
     })
   },

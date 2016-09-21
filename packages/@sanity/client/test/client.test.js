@@ -161,8 +161,9 @@ test('can delete dataset', t => {
 test('can query for documents', t => {
   const query = 'beerfiesta.beer[.title == %beerName]'
   const params = {beerName: 'Headroom Double IPA'}
+  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%25beerName%5D&beerName=%22Headroom%20Double%20IPA%22'
 
-  nock(projectHost()).post('/v1/data/q/foo', {query, params}).reply(200, {
+  nock(projectHost()).get(`/v1/data/q/foo?query=${qs}`).reply(200, {
     ms: 123,
     q: query,
     result: [{$id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
@@ -182,7 +183,7 @@ test('handles errors gracefully', t => {
     message: 'You are not allowed to access this resource'
   }
 
-  nock(projectHost()).post('/v1/data/q/foo', {query: 'area51'}).reply(403, response)
+  nock(projectHost()).get('/v1/data/q/foo?query=area51').reply(403, response)
 
   getClient().data.fetch('area51')
     .then(res => t.fail('Resolve handler should not be called on failure'))
@@ -197,9 +198,9 @@ test('handles errors gracefully', t => {
 
 test('can query for single document', t => {
   const query = '*[.$id == %id]'
-  const params = {id: 'foo:123'}
+  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
 
-  nock(projectHost()).post('/v1/data/q/foo', {query, params}).reply(200, {
+  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(200, {
     ms: 123,
     q: query,
     result: [{$id: 'foo:123', mood: 'lax'}]
@@ -212,7 +213,9 @@ test('can query for single document', t => {
 })
 
 test('joins multi-error into one message', t => {
-  nock(projectHost()).post('/v1/data/q/foo').reply(400, {
+  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
+
+  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(400, {
     statusCode: 400,
     errors: [{message: '2 slow'}, {message: '2 placid'}]
   })
@@ -228,7 +231,8 @@ test('joins multi-error into one message', t => {
 })
 
 test('gives http statuscode as error if no body is present on >= 400', t => {
-  nock(projectHost()).post('/v1/data/q/foo').reply(500)
+  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
+  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(500)
 
   getClient().data.getDocument('foo:123')
     .then(res => t.fail('Resolve handler should not be called on failure'))
@@ -240,7 +244,8 @@ test('gives http statuscode as error if no body is present on >= 400', t => {
 })
 
 test('populates response body on errors', t => {
-  nock(projectHost()).post('/v1/data/q/foo').reply(500, 'Internal Server Error')
+  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
+  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(500, 'Internal Server Error')
 
   getClient().data.getDocument('foo:123')
     .then(res => t.fail('Resolve handler should not be called on failure'))
@@ -340,6 +345,34 @@ test('mutate() accepts multiple mutations', t => {
     .reply(200)
 
   getClient().data.mutate(mutations).then(() => t.end()).catch(t.ifError)
+})
+
+test('uses POST for long queries', t => {
+  // Please dont ever do this. Just... don't.
+  const clause = []
+  const params = {}
+  for (let i = 1866; i <= 2016; i++) {
+    clause.push(`.title == %beerName${i}`)
+    params[`beerName${i}`] = `some beer ${i}`
+  }
+
+  // Again, just... don't do this.
+  const query = `beerfiesta.beer[${clause.join(' || ')}]`
+
+  nock(projectHost())
+    .filteringRequestBody(/.*/, '*')
+    .post('/v1/data/q/foo', '*')
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{$id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
+    })
+
+  getClient().data.fetch(query, params).then(res => {
+    t.equal(res.length, 1, 'length should match')
+    t.equal(res[0].rating, 5, 'data should match')
+    t.end()
+  }).catch(t.ifError)
 })
 
 /*****************
@@ -693,11 +726,10 @@ test('transaction commit() throws if called without a client', t => {
  *****************/
 
 test('includes token if set', t => {
+  const qs = '?query=foo.bar'
   const token = 'abcdefghijklmnopqrstuvwxyz'
   const reqheaders = {'Sanity-Token': token}
-  nock(projectHost(), {reqheaders})
-    .post('/v1/data/q/foo', {query: 'foo.bar'})
-    .reply(200, {})
+  nock(projectHost(), {reqheaders}).get(`/v1/data/q/foo${qs}`).reply(200, {})
 
   getClient({token}).data.fetch('foo.bar')
     .then(docs => {
