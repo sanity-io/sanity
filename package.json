@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "2.1.89",
+  "version": "0.0.1",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/sanity-io/base#readme",
   "devDependencies": {
-    "@sanity/check": "^1.0.0",
+    "@sanity/check": "^0.0.1",
     "babel-cli": "^6.5.1",
     "babel-eslint": "^6.0.0",
     "babel-plugin-lodash": "^3.2.8",
@@ -49,9 +49,9 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "@sanity/client-next": "^2.0.5",
-    "@sanity/document-store": "^1.0.4",
-    "@sanity/state-router": "0.0.1",
+    "@sanity/client-next": "^0.0.1",
+    "@sanity/document-store": "^0.0.1",
+    "@sanity/state-router": "^0.0.1",
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
     "in-publish": "^2.0.0",
