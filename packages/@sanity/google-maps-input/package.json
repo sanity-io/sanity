@@ -1,6 +1,6 @@
 {
   "name": "@sanity/google-maps-input",
-  "version": "1.0.10",
+  "version": "0.0.1",
   "description": "Sanity plugin providing input handlers for geo-related input types using Google Maps",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +19,7 @@
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^1.0.0",
+    "@sanity/check": "^0.0.1",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.8.0",
