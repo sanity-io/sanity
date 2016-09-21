@@ -19,7 +19,7 @@ const containerStyle = {
 
 const defaultItems = range(100).map((item, i) => {
   return {
-    key: `${i}`,
+    index: `${i}`,
     title: faker.name.findName()
   }
 })
@@ -56,7 +56,11 @@ storiesOf('Lists')
     }
     return (
       <div style={containerStyle}>
-        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} scrollable />
+        <DefaultList
+          items={defaultItems}
+          selectedItem={selectedItem}
+          onSelect={setSelectedItem} scrollable
+        />
       </div>
     )
   },
@@ -200,8 +204,8 @@ storiesOf('Lists')
   () => {
     const items = range(100).map((item, i) => {
       return {
-        key: `${i}`,
         title: faker.name.findName(),
+        index: `${i}`,
         image: `${faker.image.imageUrl()}?${i}`
       }
     })
@@ -226,7 +230,7 @@ storiesOf('Lists items')
   `,
   () => {
     return (
-      <DefaultListItem title={faker.name.findName()} index={2} onClick={action('Click')} />
+      <DefaultListItem title={faker.name.findName()} index="2" onClick={action('Click')} />
     )
   },
   {

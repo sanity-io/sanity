@@ -50,10 +50,8 @@
 
 .content {
   display: block;
-  background-color: #fff;
-  border: 1px solid var(--gray-lighter);
   padding: var(--medium-padding);
-  margin-top: var(--small-padding);
+  background-color: var(--gray-lighter);
   position: relative;
   lost-utility: clearfix;
 
@@ -69,7 +67,7 @@
 }
 
 .legend {
-  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
   display: block;
   width: 100%;
   margin: 0;

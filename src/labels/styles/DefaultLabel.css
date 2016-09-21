@@ -1,3 +1,15 @@
 .root {
   display: block;
 }
+
+.level_0 {
+  composes: headingLevel_0 from 'style:@sanity/base/theme/typography/forms';
+}
+
+.level_1 {
+  composes: headingLevel_1 from 'style:@sanity/base/theme/typography/forms';
+}
+
+.level_2 {
+  composes: headingLevel_2 from 'style:@sanity/base/theme/typography/forms';
+}

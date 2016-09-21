@@ -16,6 +16,7 @@ export default class DefaultTextField extends React.Component {
     onKeyPress: PropTypes.func,
     value: PropTypes.string,
     error: PropTypes.bool,
+    level: PropTypes.number,
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
     className: PropTypes.string
@@ -61,15 +62,16 @@ export default class DefaultTextField extends React.Component {
   }
 
   render() {
-    const {label, placeholder, error, showClearButton, type, className} = this.props
+    const {label, placeholder, error, showClearButton, type, className, level} = this.props
 
     const rootClass = `
       ${error ? styles.error : styles.root}
       ${className}
     `
+    console.info('DefaultTextField level:' + level)
 
     return (
-      <FormField className={rootClass} labelHtmlFor={this._inputId} label={label}>
+      <FormField className={rootClass} level={level} labelHtmlFor={this._inputId} label={label}>
         <DefaultTextInput
           className={`${error ? styles.inputError : styles.input}`}
           id={this._inputId}

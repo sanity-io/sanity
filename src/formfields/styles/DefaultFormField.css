@@ -1,8 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 @import 'part:@sanity/base/theme/body-style';
 
-@use postcss-cssnext;
-
 .root {
   display: block;
   width: 100%;

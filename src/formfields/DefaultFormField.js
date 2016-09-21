@@ -26,7 +26,13 @@ export default class DefaultFormField extends React.Component {
     const levelClass = `level_${level}`
 
     return (
-      <div className={`${inline ? styles.inline : styles.block} ${wrapped && styles.wrapped} ${levelClass} ${className}`}>
+      <div className={`
+          ${inline ? styles.inline : styles.block}
+          ${styles[levelClass]}
+          ${wrapped && styles.wrapped}
+          ${className}`
+        }
+      >
         <div className={styles.inner}>
           <div className={styles.labelAndDescriptionWrapper}>
             <DefaultLabel
