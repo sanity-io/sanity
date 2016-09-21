@@ -1,5 +1,5 @@
 {
-  "name": "@sanity/client-next",
+  "name": "@sanity/client",
   "version": "0.0.1",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/sanityClient.js",
