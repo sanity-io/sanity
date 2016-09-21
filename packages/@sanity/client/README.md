@@ -7,13 +7,13 @@ Javascript client for Sanity. Works in browsers (IE8+) and node.js.
 The client can be installed from npm:
 
 ```
-npm install --save @sanity/client-next
+npm install --save @sanity/client
 ```
 
 # API
 
 ```js
-const sanityClient = require('@sanity/client-next')
+const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
   dataset: 'bikeshop',
@@ -141,7 +141,7 @@ A `patch` can be performed inline on a `transaction`.
 Transactions and patches can also be built outside the scope of a client:
 
 ```js
-const sanityClient = require('@sanity/client-next')
+const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
   dataset: 'bikeshop'
