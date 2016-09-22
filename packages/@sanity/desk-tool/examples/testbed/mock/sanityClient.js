@@ -1,5 +1,5 @@
 import {range} from 'lodash'
-import {Patch} from '@sanity/client-next'
+import {Patch} from '@sanity/client'
 
 const MOCK_BLOGPOSTS = range(10).map(id => {
   return {
