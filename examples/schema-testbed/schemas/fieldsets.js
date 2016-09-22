@@ -100,6 +100,23 @@ export default {
           name: 'standalone-check',
           title: 'Standalone checkbox',
           type: 'boolean'
+        },
+        {
+          name: 'gnargh',
+          title: 'Inline/anonymous object',
+          type: 'object',
+          fields: [
+            {
+              name: 'petpeeve',
+              type: 'string',
+              title: 'Pet peeve'
+            },
+            {
+              name: 'color',
+              type: 'string',
+              title: 'Color'
+            }
+          ]
         }
       ]
     },

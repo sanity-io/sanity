@@ -76,7 +76,7 @@ export default class RenderField extends React.Component {
     return (
       <FieldInput
         fieldName={fieldName}
-        level={level + 1}
+        level={level}
         value={passValue}
         field={field}
         type={fieldType}

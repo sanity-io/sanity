@@ -75,20 +75,18 @@ export default class Obj extends React.Component {
     )
   }
 
-  renderFieldset(fieldset, index) {
-    const {level} = this.props
+  renderFieldset(fieldset, level, index) {
     const columns = fieldset.options && fieldset.options.columns
     return (
       <Fieldset
         key={fieldset.name}
         legend={fieldset.title}
         description={fieldset.description}
-        level={level}
         columns={columns}
       >
         {fieldset.fields.map((field, fieldIndex) => {
           return (
-            <FieldWrapper key={fieldIndex}>
+            <FieldWrapper key={field.name}>
               {this.renderField(field, level + 1, index + fieldIndex)}
             </FieldWrapper>
           )
@@ -102,8 +100,8 @@ export default class Obj extends React.Component {
 
     const renderedFields = type.fieldsets.map((fieldset, i) => {
       return fieldset.single
-            ? this.renderField(fieldset.field, level, i)
-            : this.renderFieldset(fieldset, i)
+            ? this.renderField(fieldset.field, level + 1, i)
+            : this.renderFieldset(fieldset, level, i)
     })
 
     if (isRoot) {
