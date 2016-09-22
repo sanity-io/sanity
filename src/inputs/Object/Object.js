@@ -101,7 +101,7 @@ export default class Obj extends React.Component {
 
     const renderedFields = type.fieldsets.map((fieldset, i) => {
       return fieldset.single
-            ? this.renderField(fieldset.field, level + 1, i)
+            ? this.renderField(fieldset.field, isRoot ? level : level + 1, i)
             : this.renderFieldset(fieldset, level, i)
     })
 
