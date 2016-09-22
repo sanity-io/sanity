@@ -1,29 +1,29 @@
-import {on, off} from "dom-event";
-import {findDOMNode} from 'react-dom';
-import Debug from "debug";
+import {on, off} from 'dom-event'
+import {findDOMNode} from 'react-dom'
+import Debug from 'debug'
 
-const debug = Debug('sanity-imagetool');
+const debug = Debug('sanity-imagetool')
 
 function getPositionRelativeToRect(x, y, rect) {
   return {
     x: x - rect.left,
     y: y - rect.top
-  };
+  }
 }
 
 function getWindow() {
   /* global window */
-  return typeof window === 'undefined' ? null : window;
+  return typeof window === 'undefined' ? null : window
 }
 
 // Todo: use symbol
-const getDisposablesKey = '__DraggableMixin_disposables';
+const getDisposablesKey = '__DraggableMixin_disposables'
 
 function getPos(event) {
   return {
     x: event.clientX,
     y: event.clientY
-  };
+  }
 }
 
 function diffPos(pos, otherPos) {
@@ -34,11 +34,11 @@ function diffPos(pos, otherPos) {
 }
 
 function listen(element, type, handler) {
-  on(element, type, handler);
+  on(element, type, handler)
 
   return {
     dispose() {
-      off(element, type, handler);
+      off(element, type, handler)
     }
   }
 }
@@ -46,71 +46,71 @@ function listen(element, type, handler) {
 
 module.exports = {
   componentDidMount() {
-    debug('Draggable component did mount');
-    const win = getWindow();
+    debug('Draggable component did mount')
+    const win = getWindow()
     const domNode = findDOMNode(this)
 
-    const self = this;
+    const self = this
 
-    let dragging = false;
-    let prevPos = null;
+    let dragging = false
+    let prevPos = null
 
-    let mouseMoveListener;
-    let mouseUpListener;
-    let mouseDownListener = listen(win, 'mousedown', start);
-    let touchStartListener = listen(win, 'touchstart', start);
+    let mouseMoveListener
+    let mouseUpListener
+    const mouseDownListener = listen(win, 'mousedown', start)
+    const touchStartListener = listen(win, 'touchstart', start)
 
-    self[getDisposablesKey] = function() {
+    self[getDisposablesKey] = function () {
       return [
         mouseMoveListener,
         mouseUpListener,
         mouseDownListener,
         touchStartListener
       ]
-    };
+    }
 
     function start(event) {
       if (dragging) {
-        debug('Start cancelled, already a drag in progress');
-        return;
+        debug('Start cancelled, already a drag in progress')
+        return
       }
       if (event.target !== domNode) {
-        debug('Event target (%o) was not my dom node (%o)', event.target, domNode);
-        return;
+        debug('Event target (%o) was not my dom node (%o)', event.target, domNode)
+        return
       }
-      dragging = true;
-      prevPos = getPos(event);
-      debug('Drag started %o', prevPos);
-      self.componentDidDragStart(getPositionRelativeToRect(prevPos.x, prevPos.y, domNode.getBoundingClientRect()));
-      mouseMoveListener = listen(win, 'mousemove', move);
-      mouseUpListener = listen(win, 'mouseup', end);
+      dragging = true
+      prevPos = getPos(event)
+      debug('Drag started %o', prevPos)
+      self.componentDidDragStart(getPositionRelativeToRect(prevPos.x, prevPos.y, domNode.getBoundingClientRect()))
+      mouseMoveListener = listen(win, 'mousemove', move)
+      mouseUpListener = listen(win, 'mouseup', end)
     }
 
     function end(event) {
       if (!dragging) {
-        throw new Error("Got mouseup on a component that was not dragging.")
+        throw new Error('Got mouseup on a component that was not dragging.')
       }
-      const pos = getPos(event);
-      self.componentDidDragEnd(getPositionRelativeToRect(pos.x, pos.y, domNode.getBoundingClientRect()));
-      dragging = false;
-      prevPos = null;
-      mouseMoveListener = mouseMoveListener.dispose();
-      mouseUpListener = mouseUpListener.dispose();
+      const pos = getPos(event)
+      self.componentDidDragEnd(getPositionRelativeToRect(pos.x, pos.y, domNode.getBoundingClientRect()))
+      dragging = false
+      prevPos = null
+      mouseMoveListener = mouseMoveListener.dispose()
+      mouseUpListener = mouseUpListener.dispose()
       debug('Done moving %o', pos)
     }
 
     function move(e) {
-      const pos = getPos(e);
-      var diff = diffPos(pos, prevPos);
-      self.componentDidDrag(diff);
-      debug('moving by %o', diff);
-      prevPos = pos;
+      const pos = getPos(e)
+      const diff = diffPos(pos, prevPos)
+      self.componentDidDrag(diff)
+      debug('moving by %o', diff)
+      prevPos = pos
     }
   },
   componentWillUnmount() {
     if (typeof self[getDisposablesKey] === 'function') {
-      debug("Disposing event listeners");
-      self[getDisposablesKey]().filter(Boolean).forEach(disposable => disposable.dispose());
+      debug('Disposing event listeners')
+      self[getDisposablesKey]().filter(Boolean).forEach(disposable => disposable.dispose())
     }
   }
-};
+}

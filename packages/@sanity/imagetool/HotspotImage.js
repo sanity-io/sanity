@@ -1,1 +1,1 @@
-module.exports = require('./lib/HotspotImage');
+module.exports = require('./lib/HotspotImage')

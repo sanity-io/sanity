@@ -1,35 +1,55 @@
-var React = require('react');
-var cx = require('classnames');
-var HotspotImage = require("../../src/HotspotImage");
-var calculateStyles = require("../../src/calculateStyles");
+import React, {PropTypes} from 'react'
+import HotspotImage from '../../src/HotspotImage'
+import calculateStyles from '../../src/calculateStyles'
 
 /**
  * Takes an imageUrl and a hotspot object and returns an optimal previews of the image
  */
 
-module.exports = React.createClass({
+export default React.createClass({
   displayName: 'HotspotPreview',
   propTypes: {
-    imageUrl: React.PropTypes.string,
-    hotspot: React.PropTypes.object,
-    crop: React.PropTypes.object
+    imageUrl: PropTypes.string,
+    hotspot: PropTypes.shape({
+      height: PropTypes.number,
+      width: PropTypes.number,
+      x: PropTypes.number,
+      y: PropTypes.number,
+    }),
+    crop: PropTypes.shape({
+      top: PropTypes.number,
+      left: PropTypes.number,
+      bottom: PropTypes.number,
+      right: PropTypes.number
+    }),
+    width: PropTypes.number,
+    height: PropTypes.number,
+    aspectRatio: PropTypes.number,
   },
   getInitialState() {
     return {
       loaded: false,
-      imageSize: null
-    };
+      imageSize: null,
+      error: null
+    }
+  },
+  handleImageLoadError(error) {
+    this.setState({
+      loaded: false,
+      error: error
+    })
   },
   handleImageLoaded(e) {
-    var {width, height} = e.target;
+    const {width, height} = e.target
     this.setState({
       loaded: true,
+      error: null,
       imageSize: {
         width: width,
         height: height,
         ratio: width / height
       }
-    });
+    })
   },
 
   componentWillReceiveProps(nextProps) {
@@ -40,28 +60,31 @@ module.exports = React.createClass({
 
   render() {
     const {imageUrl, hotspot, crop, width, aspectRatio} = this.props
-    if (!this.state.loaded) {
+    const {error, loaded, imageSize} = this.state
+    if (error) {
+      return (
+        <div>Image load error: {error.message}</div>
+      )
+    }
+    if (!loaded) {
       return (
         <div style={{overflow: 'hidden', height: 1, width: 1}}>
-          <img src={this.props.imageUrl} onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
+          <img src={this.props.imageUrl} onLoad={this.handleImageLoaded} onError={this.handleImageLoadError} />
         </div>
-      );
+      )
     }
 
-    const rawImageSize = this.state.imageSize;
-
-    const imageAspectRatio = rawImageSize.width / rawImageSize.height;
-
+    const imageAspectRatio = imageSize.width / imageSize.height
     const styles = calculateStyles({
-      container: { aspectRatio },
-      image: { aspectRatio: imageAspectRatio },
+      container: {aspectRatio},
+      image: {aspectRatio: imageAspectRatio},
       hotspot: hotspot,
       crop: crop,
       align: {
         x: 'center',
         y: 'center'
       }
-    });
+    })
 
     return (
       <div style={{border: '1px solid #eee'}}>
@@ -75,8 +98,8 @@ module.exports = React.createClass({
           alignX="center"
           alignY="center"
           style={{outline: '1px solid rgb(189, 240, 164)', width: width || '100%'}}
-          />
+        />
       </div>
     )
   }
-});
+})

@@ -1,12 +1,12 @@
-const calculateStyles = require('../src/calculateStyles');
-require('should');
+const calculateStyles = require('../src/calculateStyles')
+require('should')
 
 // Todo: write test for cropping container too
 
-describe('calculateStyles', function () {
+describe('calculateStyles', () => {
 
-  describe('default aspect ratio', function () {
-    it('defaults to the source image aspect ratio when no crop is given', function () {
+  describe('default aspect ratio', () => {
+    it('defaults to the source image aspect ratio when no crop is given', () => {
       const style = calculateStyles({
         image: {height: 100, width: 100}
       })
@@ -15,7 +15,7 @@ describe('calculateStyles', function () {
         width: '100%'
       })
     })
-    it('considers the cropping when calculating image aspect', function () {
+    it('considers the cropping when calculating image aspect', () => {
       const style = calculateStyles({
         image: {height: 200, width: 100},
         hotspot: {
@@ -44,20 +44,20 @@ describe('calculateStyles', function () {
       })
     })
   })
-  describe('landscape oriented images', function () {
+  describe('landscape oriented images', () => {
     const image = {
       height: 100,
       width: 150
-    };
+    }
 
     const hotspot = {
       height: 0.75,
       width: 0.5,
       x: 0.5,
       y: 0.5
-    };
+    }
 
-    it('displays well in a portrait oriented container', function () {
+    it('displays well in a portrait oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -65,24 +65,24 @@ describe('calculateStyles', function () {
           height: 150,
           width: 100
         }
-      });
+      })
       style.image.should.containEql({
         position: 'absolute',
         height: '100%',
         width: '100%',
         left: 0,
         top: 0
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '150%'
-      });
-    });
+      })
+    })
 
-    it('display in a landscape oriented container', function () {
+    it('display in a landscape oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -90,7 +90,7 @@ describe('calculateStyles', function () {
           height: 100,
           width: 150
         }
-      });
+      })
 
       style.image.should.containEql({
         position: 'absolute',
@@ -98,17 +98,17 @@ describe('calculateStyles', function () {
         width: '100%',
         left: 0,
         top: 0
-      });
+      })
 
       style.container.should.containEql({
         height: '66.67%',
         overflow: 'hidden',
         position: 'relative',
         width: '100%'
-      });
-    });
+      })
+    })
 
-    it('display as a square', function () {
+    it('display as a square', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -116,7 +116,7 @@ describe('calculateStyles', function () {
           height: 100,
           width: 100
         }
-      });
+      })
 
       style.image.should.containEql({
         position: 'absolute',
@@ -124,31 +124,31 @@ describe('calculateStyles', function () {
         width: '100%',
         top: 0,
         left: 0
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '100%'
-      });
-    });
-  });
+      })
+    })
+  })
 
-  describe('portrait oriented images', function () {
+  describe('portrait oriented images', () => {
     const image = {
       height: 150,
       width: 100
-    };
+    }
 
     const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
       y: 0.5
-    };
+    }
 
-    it('display in a portrait oriented container', function () {
+    it('display in a portrait oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -156,24 +156,24 @@ describe('calculateStyles', function () {
           height: 150,
           width: 100
         }
-      });
+      })
       style.image.should.containEql({
         position: 'absolute',
         height: '100%',
         width: '100%',
         left: 0,
         top: 0
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '150%'
-      });
-    });
+      })
+    })
 
-    it('display in a landscape oriented container', function () {
+    it('display in a landscape oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -181,7 +181,7 @@ describe('calculateStyles', function () {
           height: 100,
           width: 150
         }
-      });
+      })
 
       style.image.should.containEql({
         top: 0,
@@ -189,17 +189,17 @@ describe('calculateStyles', function () {
         position: 'absolute',
         height: '100%',
         width: '100%'
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '66.67%'
-      });
-    });
+      })
+    })
 
-    it('display as a square', function () {
+    it('display as a square', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -207,7 +207,7 @@ describe('calculateStyles', function () {
           height: 100,
           width: 100
         }
-      });
+      })
 
       style.image.should.containEql({
         position: 'absolute',
@@ -215,31 +215,31 @@ describe('calculateStyles', function () {
         width: '100%',
         top: 0,
         left: 0
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '100%'
-      });
-    });
-  });
+      })
+    })
+  })
 
-  describe('square images', function () {
+  describe('square images', () => {
     const image = {
       height: 100,
       width: 100
-    };
+    }
 
     const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
       y: 0.5
-    };
+    }
 
-    it('display in a portrait oriented container', function () {
+    it('display in a portrait oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -247,24 +247,24 @@ describe('calculateStyles', function () {
           height: 100,
           width: 100
         }
-      });
+      })
       style.image.should.containEql({
         position: 'absolute',
         top: 0,
         left: 0,
         height: '100%',
         width: '100%'
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '100%'
-      });
-    });
+      })
+    })
 
-    it('display in a landscape oriented container', function () {
+    it('display in a landscape oriented container', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -272,7 +272,7 @@ describe('calculateStyles', function () {
           height: 100,
           width: 150
         }
-      });
+      })
 
       style.image.should.containEql({
         position: 'absolute',
@@ -280,17 +280,17 @@ describe('calculateStyles', function () {
         left: 0,
         height: '100%',
         width: '100%'
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '66.67%'
-      });
-    });
+      })
+    })
 
-    it('display as a square', function () {
+    it('display as a square', () => {
       const style = calculateStyles({
         hotspot,
         image,
@@ -298,21 +298,21 @@ describe('calculateStyles', function () {
           height: 100,
           width: 100
         }
-      });
+      })
 
       style.image.should.containEql({
         top: 0,
         left: 0,
         height: '100%',
         width: '100%'
-      });
+      })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
         height: '100%'
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})

@@ -1,1 +1,1 @@
-module.exports = require('./lib/calculateStyles');
+module.exports = require('./lib/calculateStyles')

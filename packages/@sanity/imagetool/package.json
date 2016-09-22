@@ -1,49 +1,66 @@
 {
-  "name": "@sanity-legacy/imagetool",
-  "version": "2.0.0",
+  "name": "@sanity/imagetool",
+  "version": "0.0.1",
   "description": "The image hotspot selector / cropper used in Sanity",
   "main": "index.js",
   "scripts": {
-    "bloat": "browserify --extension=.jsx -t babelify --full-paths ./src/index.js | discify --open",
+    "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",
     "build": "babel src --out-dir lib --copy-files",
     "lint": "eslint .",
     "pre-commit-check": "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
     "prepublish": "npm run build",
-    "start": "remon --require babel/register ./example/app.js",
-    "test": "mocha --recursive --require babel/register test",
+    "start": "remon --require babel-core/register ./example/app.js",
+    "test": "mocha --recursive --require babel-core/register test",
     "watch": "npm run build -- --watch"
   },
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "classnames": "^2.1.3",
+    "classnames": "^2.2.5",
     "debug": "^2.2.0",
-    "dom-event": "0.0.5",
-    "react": "0.14.x",
-    "react-addons-pure-render-mixin": "0.14.x",
-    "react-dom": "0.14.x"
+    "dom-event": "1.0.0",
+    "react": "15.3.x",
+    "react-addons-pure-render-mixin": "15.3.x",
+    "react-dom": "15.3.x"
   },
   "devDependencies": {
-    "babel": "^5.4.7",
-    "babelify": "^6.1.1",
-    "browserify": "^10.2.1",
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
+    "babel-plugin-transform-class-properties": "^6.11.5",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
     "disc": "^1.3.2",
-    "envify": "^3.4.0",
+    "envify": "^3.4.1",
     "error-capture-middleware": "0.0.2",
-    "eslint": "^1.0.0",
-    "eslint-config-bengler": "^0.2.0",
-    "eslint-plugin-react": "^3.2.0",
-    "express": "^4.12.3",
-    "mocha": "^2.2.4",
-    "node-sass": "^3.4.2",
-    "quickreload": "^1.0.6",
-    "rebundler": "^0.1.0",
-    "remon": "^1.0.1",
-    "should": "^6.0.1",
-    "staticr": "^2.1.2"
+    "eslint": "^3.5.0",
+    "eslint-config-sanity": "^1.1.3",
+    "eslint-plugin-react": "^6.3.0",
+    "express": "^4.14.0",
+    "mocha": "^3.0.2",
+    "node-sass": "^3.10.0",
+    "quickreload": "^2.1.2",
+    "rebundler": "^0.3.0",
+    "remon": "^1.0.2",
+    "should": "^11.1.0",
+    "staticr": "^4.0.2"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/bengler/sanity-imagetool.git"
-  }
+    "url": "git+ssh://git@github.com/sanity-io/imagetool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/imagetool/issues"
+  },
+  "homepage": "https://github.com/sanity-io/imagetool#readme",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "keywords": []
 }

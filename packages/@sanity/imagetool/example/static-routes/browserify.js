@@ -1,21 +1,20 @@
-var browserify = require('browserify');
-var rebundler = require("rebundler");
-var babelify = require("babelify");
-var envify = require("envify");
+const browserify = require('browserify')
+const rebundler = require('rebundler')
+const babelify = require('babelify')
+const envify = require('envify')
 
-var browser = rebundler(function(cache, pkgCache) {
+const browser = rebundler((cache, pkgCache) => {
   return browserify(require.resolve('../browser.js'), {
-    cache:         cache,
-    packageCache:  pkgCache,
-    extensions:    ['.jsx'],
-    debug:         true,
-    fullPaths:     true
+    cache: cache,
+    packageCache: pkgCache,
+    debug: true,
+    fullPaths: true
   })
     .transform(babelify)
     .transform(envify)
-});
+})
 
 
 module.exports = {
   '/browser.js': () => browser().bundle()
-};
+}

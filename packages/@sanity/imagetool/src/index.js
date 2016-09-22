@@ -1,1 +1,1 @@
-module.exports = require('./LoadImageProxy');
+export {default} from './LoadImageProxy'

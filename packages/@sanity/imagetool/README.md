@@ -1,4 +1,4 @@
-# The all awesome Image tool used in sanity
+# The image tool used in sanity
 
 ## Getting started
 
@@ -9,42 +9,41 @@
 
 ### ImageTool widget
 
-```jsx
+```js
+import React from 'react'
+import ImageTool from '@sanity/imagetool'
 
-import ImageTool from "@sanity/imagetool";
-
-export default React.createClass({
-
-  getInitialState() {
-    return {
-      imageMetadata: {
-        hotspot: {
-          x: 0.4,
-          y: 0.3,
-          height: 0.6,
-          width: 0.4
-        },
-        crop: {
-          left: 0.1,
-          right: 0.2,
-          top: 0.1,
-          bottom: 0.21,
-        }
+class MyComponent extends React.Component {
+  state = {
+    value: {
+      hotspot: {
+        x: 0.4,
+        y: 0.3,
+        height: 0.6,
+        width: 0.4
+      },
+      crop: {
+        left: 0.1,
+        right: 0.2,
+        top: 0.1,
+        bottom: 0.21,
       }
     }
-  },
+  }
 
-  handleImageToolValue(newValue) {
-    this.setState({imageMetadata: newValue})
-  },
+  handleImageToolchange = newValue => {
+    this.setState({value: newValue})
+  }
 
   render() {
     return (
-      <ImageTool image="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg" value={this.state.imageMetadata}></ImageTool>
+      <ImageTool
+        image="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg"
+        onChange={handleImageToolchange}
+        value={this.state.value} />
     )
   }
-})
-
+}
 ```
 
 ## Usage
@@ -54,7 +53,7 @@ export default React.createClass({
 ```js
 import calculateStyles from "@sanity/imagetool/calculateStyles";
 
-const metadata = {
+calculateStyles({
   hotspot: {
     x: 0.4,
     y: 0.3,
@@ -66,13 +65,8 @@ const metadata = {
     right: 0.2,
     top: 0.1,
     bottom: 0.21,
-  }
-}
-
-calculateStyles({
-  hotspot: metadata.hotspot,
-  crop: metadata.crop,
-  image: {aspectRatio: 5/4},
+  },
+  image: {height: 100, width: 125},
   container: {aspectRatio: 16/10},
   align: {
     x: 'left',
@@ -81,10 +75,10 @@ calculateStyles({
 });
 ```
 
-`=>`
+returns the following styles object that can be passed to jsx markup
 
 ```json
- {
+{
   image: {
     position: 'absolute',
     height: '144.93%',
@@ -108,10 +102,3 @@ calculateStyles({
   }
 }
 ```
-
-## Developing
-
-    git clone git@github.com:bengler/sanity-imagetool
-    cd sanity-imagetool
-    npm install
-    npm start

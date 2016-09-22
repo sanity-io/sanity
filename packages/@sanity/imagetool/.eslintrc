@@ -1,8 +1,7 @@
 {
   "extends": [
-    "bengler",
-    "bengler/react",
-    "bengler/legacy-overrides/base",
-    "bengler/legacy-overrides/react"
-  ]
+    "sanity",
+    "sanity/react"
+  ],
+  "parser": "babel-eslint"
 }

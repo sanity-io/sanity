@@ -1,9 +1,9 @@
-import React, {PropTypes} from 'react';
-import calculateStyles from './calculateStyles';
-import Debug from "debug";
-import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants';
+import React, {PropTypes} from 'react'
+import calculateStyles from './calculateStyles'
+import Debug from 'debug'
+import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
-const debug = Debug('sanity-imagetool');
+const debug = Debug('sanity-imagetool')
 
 export default React.createClass({
   displayName: 'HotspotImage',
@@ -24,15 +24,19 @@ export default React.createClass({
   },
 
   componentDidMount() {
-    const imageElement = this.refs.image
+    const imageElement = this.imageElement
     // Fixes issues that may happen if the component is mounted after the image is done loading
     // In these situations, neither the onLoad or the onError events will be called.
     // Derived from http://imagesloaded.desandro.com/
     const alreadyLoaded = (imageElement.src && imageElement.complete && imageElement.naturalWidth !== undefined)
     if (alreadyLoaded) {
-      debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", this.props.src);
-      imageElement.src = imageElement.src;
+      debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", this.props.src)
+      imageElement.src = imageElement.src
     }
+  },
+
+  setImageElement(el) {
+    this.imageElement = el
   },
 
   getDefaultProps() {
@@ -41,24 +45,24 @@ export default React.createClass({
       alignY: 'center',
       crop: DEFAULT_CROP,
       hotspot: DEFAULT_HOTSPOT
-    };
+    }
   },
 
   renderPerimeter(styles, aspectRatio) {
-    const {clipPerimeter} = this.props;
+    const {clipPerimeter} = this.props
     if (!clipPerimeter) {
-      return null;
+      return null
     }
 
-    const points = clipPerimeter.map((point)=> `${point[0] * 2 - 1},${point[1] * 2 - 1}`).join(' L');
+    const points = clipPerimeter.map(point => `${(point[0] * 2) - 1},${(point[1] * 2) - 1}`).join(' L')
 
     return (
-      <svg style={styles.image} viewBox={`-1 -1 2 2`}>
+      <svg style={styles.image} viewBox={'-1 -1 2 2'}>
         <g transform={`scale(${aspectRatio} 1)`} style={{fill: '#fff', strokeWidth: 0.1}}>
-          <path d={`M-2,-2 L-2,2 L2,2 L2,-2 z M${points} z`} style={{fillRule: 'evenodd'}}/>
+          <path d={`M-2,-2 L-2,2 L2,2 L2,-2 z M${points} z`} style={{fillRule: 'evenodd'}} />
         </g>
       </svg>
-    );
+    )
   },
 
 
@@ -76,7 +80,7 @@ export default React.createClass({
       style,
       onError,
       onLoad
-    } = this.props;
+    } = this.props
 
     const targetStyles = calculateStyles({
       container: {aspectRatio},
@@ -87,27 +91,24 @@ export default React.createClass({
         x: alignX,
         y: alignY
       }
-    });
+    })
 
     return (
       <div className={className} style={style}>
-        <div className="sanity-image__container" style={targetStyles.container}>
-          <div className="sanity-image__padding" style={{paddingTop: targetStyles.container.height}}/>
-          <div className="sanity-image__crop-box" style={targetStyles.crop}>
+        <div style={targetStyles.container}>
+          <div style={{paddingTop: targetStyles.container.height}} />
+          <div style={targetStyles.crop}>
             <img
-              className="sanity-image__image"
-              ref="image"
+              ref={this.setImageElement}
               src={src}
               srcSet={srcSet}
               onLoad={onLoad}
               onError={onError}
               style={targetStyles.image}
-              />
+            />
           </div>
-          {/* todo: see if we can move this out of here */}
-          {this.renderPerimeter(targetStyles, aspectRatio)}
         </div>
       </div>
-    );
+    )
   }
-});
+})

@@ -1,21 +1,12 @@
-var sass = require('node-sass');
+const sass = require('node-sass')
 
-function toBase64(str) {
-  return new Buffer(str).toString('base64');
-}
-
-var routes = module.exports = {
-  "/styles.css": function(callback) {
+module.exports = {
+  '/styles.css'(callback) {
     sass.render({
-      file: require.resolve("../styles.scss"),
+      file: require.resolve('../styles.scss'),
       sourceComments: 'map',
       omitSourceMapUrl: true,
       outputStyle: 'nested'
-    }, function(err, result) {
-      if (err) {
-        return callback(err)
-      }
-      callback(null, result.css);
-    });
+    }, (err, result) => callback(err, result && result.css))
   }
-};
+}
