@@ -74,17 +74,20 @@ export default class RenderField extends React.Component {
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
 
     return (
-      <FieldInput
-        fieldName={fieldName}
-        level={level}
-        value={passValue}
-        field={field}
-        type={fieldType}
-        validation={validation}
-        onChange={this.handleChange}
-        onEnter={this.handleEnter}
-        focus={focus}
-      />
+      <div>
+        <h3>Input level: {level}</h3>
+        <FieldInput
+          fieldName={fieldName}
+          level={level}
+          value={passValue}
+          field={field}
+          type={fieldType}
+          validation={validation}
+          onChange={this.handleChange}
+          onEnter={this.handleEnter}
+          focus={focus}
+        />
+      </div>
     )
   }
 }

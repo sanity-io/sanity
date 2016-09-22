@@ -82,6 +82,7 @@ export default class Obj extends React.Component {
         key={fieldset.name}
         legend={fieldset.title}
         description={fieldset.description}
+        level={level}
         columns={columns}
       >
         {fieldset.fields.map((field, fieldIndex) => {
@@ -109,7 +110,7 @@ export default class Obj extends React.Component {
     }
 
     return (
-      <Fieldset legend={field.title} description={field.description}>
+      <Fieldset level={level} legend={field.title} description={field.description}>
         {renderedFields}
       </Fieldset>
     )
