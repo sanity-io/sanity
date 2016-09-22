@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
-import styles from '../../styles/Pane.css'
+import styles from './styles/PaneContainer.css'
 
 const PaneContainer = ({children}) =>
-  <nav className={styles.panes}>
+  <nav className={styles.root}>
     {children}
   </nav>
 

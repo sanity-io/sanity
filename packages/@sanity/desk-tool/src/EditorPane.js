@@ -134,7 +134,6 @@ export default class EditorPane extends React.Component {
 
   render() {
     const {value, progress, validation} = this.state
-
     return (
       <div className="content">
         <form className="form-container" onSubmit={preventDefault}>

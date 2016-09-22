@@ -5,7 +5,7 @@ import PaneContainer from 'part:@sanity/desk-tool/pane-container'
 import {StateLink} from 'part:@sanity/base/router'
 import EditorPane from './EditorPane'
 import styles from '../styles/DeskTool.css'
-import paneStyles from '../styles/Pane.css'
+import paneItemStyles from './pane/styles/PaneItem.css'
 import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
 import QueryContainer from 'part:@sanity/base/query-container'
 
@@ -61,7 +61,7 @@ export default class SchemaPaneResolver extends React.Component {
 
   renderTypePaneItem(type) {
     const {selectedType} = this.context.router.state
-    const className = type.name === selectedType ? paneStyles.activePaneItemLink : paneStyles.paneItemLink
+    const className = type.name === selectedType ? paneItemStyles.activeLink : paneItemStyles.link
     return (
       <StateLink
         className={className}
@@ -74,7 +74,8 @@ export default class SchemaPaneResolver extends React.Component {
 
   renderDocumentPaneItem(document) {
     const {selectedType, selectedDocumentId} = this.context.router.state
-    const className = document.id === selectedDocumentId ? paneStyles.activePaneItemLink : paneStyles.paneItemLink
+    const className = document.id === selectedDocumentId ? paneItemStyles.activeLink : paneItemStyles.link
+
     return (
       <StateLink
         className={className}

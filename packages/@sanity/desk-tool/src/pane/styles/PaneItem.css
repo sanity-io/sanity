@@ -1,0 +1,72 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  line-height: 2em;
+}
+
+.thumbnails {
+  composes: root;
+  height: 5rem;
+  width: 5rem;
+  border: 1px solid red;
+  overflow: hidden;
+  float: left;
+}
+
+.list {
+  composes: root;
+}
+
+.details {
+  composes: root;
+  height: 2rem;
+  border: 1px solid red;
+  margin-bottom: 1rem;
+}
+
+.link {
+  display: block;
+  position: relative;
+  padding: 0 1em;
+  text-decoration: none;
+  color: var(--selectable-item-color);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    right: 0;
+    content: "\232A";
+    opacity: 0.2;
+    color: var(--selectable-item-color);
+  }
+
+  &:hover {
+    color: var(--selectable-item-color-hover);
+  }
+}
+
+.activeLink {
+  composes: link;
+  font-weight: 700;
+  color: var(--selected-item-color);
+
+  @media (--screen-medium) {
+    &::after {
+      opacity: 1;
+      color: var(--selected-item-color);
+      font-weight: 700;
+      font-size: 2em;
+      margin-right: -0.35em;
+    }
+  }
+
+  &:hover {
+    color: var(--selected-item-color-hover);
+    &::after {
+      color: var(--selected-item-color-hover);
+    }
+  }
+}

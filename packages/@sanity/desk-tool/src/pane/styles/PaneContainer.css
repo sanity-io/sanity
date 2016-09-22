@@ -1,0 +1,37 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes slideOut {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+    display: none;
+  }
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.root {
+  display: block;
+  position: relative;
+  @media (--screen-medium) {
+    display: flex;
+    flex-grow: 1;
+    box-sizing: border-box;
+    position: relative;
+    flex-direction: row;
+    overflow: hidden;
+    align-self: stretch;
+  }
+}

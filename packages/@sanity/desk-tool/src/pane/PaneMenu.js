@@ -11,18 +11,9 @@ class PaneMenu extends React.Component {
 
   static propTypes = {
     opened: PropTypes.bool,
-    onClickOutside: PropTypes.func
+    onClickOutside: PropTypes.func,
+    onAction: PropTypes.func
   }
-
-  constructor(...args) {
-    super(...args)
-    this.handleItemClick = this.handleItemClick.bind(this)
-  }
-
-  handleItemClick(item) {
-    // Handle item click
-  }
-
 
   render() {
 
@@ -71,7 +62,7 @@ class PaneMenu extends React.Component {
 
     return (
       <Menu
-        onAction={this.handleItemClick}
+        onAction={this.props.onAction}
         items={menuItems}
         opened={opened}
         origin="top-right"
