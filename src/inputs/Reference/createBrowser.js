@@ -12,7 +12,7 @@ export default function createReferenceInput({fetch, materializeReferences}) {
 
   function ReferenceInput(props) {
     return (
-      <Fieldset legend={props.field.title}>
+      <Fieldset legend={props.field.title} level={props.level}>
         <ReferenceBrowser
           fetchFn={fetch}
           materializeReferences={materializeReferences}

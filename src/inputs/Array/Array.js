@@ -203,10 +203,10 @@ export default class Arr extends React.Component {
   }
 
   render() {
-    const {field} = this.props
+    const {field, level} = this.props
 
     return (
-      <Fieldset legend={field.title} description={field.description}>
+      <Fieldset legend={field.title} description={field.description} level={level}>
 
         {this.renderList()}
 
