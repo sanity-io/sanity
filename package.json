@@ -29,10 +29,10 @@
   },
   "devDependencies": {
     "@sanity/base": "^0.0.1",
-    "@sanity/components": "^0.0.1",
+    "@sanity/components": "0.0.1",
     "@sanity/check": "^0.0.1",
-    "@sanity/cli": "^0.0.1",
-    "@sanity/server": "^0.0.1",
+    "@sanity/cli": "0.0.4",
+    "@sanity/server": "0.0.2",
     "babel-cli": "^6.14.0",
     "babel-eslint": "^6.1.2",
     "babel-plugin-css-modules-transform": "^1.0.0",
@@ -56,7 +56,6 @@
     "postcss-cssnext": "^2.8.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-enroute": "0.0.1",
     "rimraf": "^2.5.4",
     "tap": "^7.1.2",
     "why-did-you-update": "0.0.8"
