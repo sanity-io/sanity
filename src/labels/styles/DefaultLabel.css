@@ -3,13 +3,13 @@
 }
 
 .level_0 {
-  composes: headingLevel_0 from 'style:@sanity/base/theme/typography/forms';
+  composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
 }
 
 .level_1 {
-  composes: headingLevel_1 from 'style:@sanity/base/theme/typography/forms';
+  composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
 }
 
 .level_2 {
-  composes: headingLevel_2 from 'style:@sanity/base/theme/typography/forms';
+  composes: headingLevel_2 from 'part:@sanity/base/theme/typography/forms-style';
 }
