@@ -189,7 +189,7 @@
     },
 
     {
-      "name": "style:@sanity/base/theme/typography/forms",
+      "name": "part:@sanity/base/theme/typography/forms",
       "description": "Typography for the forms. Levels, headings, label, legends. etc"
     },
 
