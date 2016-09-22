@@ -79,26 +79,26 @@ returns the following styles object that can be passed to jsx markup
 
 ```json
 {
-  image: {
-    position: 'absolute',
-    height: '144.93%',
-    width: '142.86%',
-    top: '-14.49%',
-    left: '-14.29%'
+  "image": {
+    "position": "absolute",
+    "height": "144.93%",
+    "width": "142.86%",
+    "top": "-14.49%",
+    "left": "-14.29%"
   },
-  crop: {
-    position: 'absolute',
-    overflow: 'hidden',
-    height: '100%',
-    width: '79.26%',
-    top: '7.97%',
-    left: '17.51%'
+  "crop": {
+    "position": "absolute",
+    "overflow": "hidden",
+    "height": "100%",
+    "width": "79.26%",
+    "top": "7.97%",
+    "left": "17.51%"
   },
-  container: {
-    overflow: 'hidden',
-    position: 'relative',
-    width: '100%',
-    height: '62.5%'
+  "container": {
+    "overflow": "hidden",
+    "position": "relative",
+    "width": "100%",
+    "height": "62.5%"
   }
 }
 ```
