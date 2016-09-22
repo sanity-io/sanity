@@ -45,21 +45,25 @@ function defaultResolveContainer(field, type) {
   return undefined
 }
 
+function resolveInputComponent(...args) {
+  return {valueContainer: defaultResolveContainer(...args)}
+}
+
 const defaultContext = {
-  type: compiledSchema.types.simple,
+  type: compiledSchema.getType('simple'),
   schema: compiledSchema,
-  resolveContainer: defaultResolveContainer
+  resolveInputComponent
 }
 
 test('create from raw value', t => {
   const state = createFormBuilderState(rawValue, defaultContext)
-  t.same(state.unwrap(), rawValue)
+  t.same(state.serialize(), rawValue)
   t.end()
 })
 
 test('create from empty', t => {
   const state = createFormBuilderState(undefined, defaultContext)
-  t.same(state.unwrap(), undefined)
+  t.same(state.serialize(), undefined)
   t.end()
 })
 
@@ -69,7 +73,7 @@ test('create empty, and patch with simple value', t => {
     someString: {$set: 'foobar'}
   })
 
-  t.same(newState.unwrap(), {
+  t.same(newState.serialize(), {
     $type: 'simple',
     someString: 'foobar'
   })
@@ -81,7 +85,7 @@ test('create empty, and patch with simple value', t => {
 test('apply a patch setting a simple value', t => {
   const state = createFormBuilderState(rawValue, defaultContext)
   const newState = state.patch({someString: {$set: 'bar'}})
-  t.same(newState.unwrap(), {
+  t.same(newState.serialize(), {
     $type: 'simple',
     someString: 'bar',
     home: {
@@ -114,7 +118,7 @@ test('apply a patch by replacing a tree', t => {
     }
   })
 
-  t.same(newState.unwrap(), {
+  t.same(newState.serialize(), {
     $type: 'simple',
     someString: 'foo',
     home: {
@@ -152,7 +156,7 @@ test('custom container', t => {
       throw new Error(`Only $set is supported by NumberContainer, got: ${JSON.stringify(patch)}`)
     }
 
-    unwrap() {
+    serialize() {
       return this.value.trim() ? Number(this.value) : undefined
     }
   }
@@ -169,9 +173,9 @@ test('custom container', t => {
   }
 
   const state = createFormBuilderState(rawValue, {
-    type: compiledSchema.types.simple,
+    type: compiledSchema.getType('simple'),
     schema: compiledSchema,
-    resolveContainer
+    resolveInputComponent
   })
 
   const newState = state.patch({
@@ -183,7 +187,7 @@ test('custom container', t => {
     }
   })
 
-  t.same(newState.unwrap(), {
+  t.same(newState.serialize(), {
     $type: 'simple',
     someString: 'foo',
     home: {

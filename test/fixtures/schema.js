@@ -1,33 +1,41 @@
 export default {
   name: 'test-schema',
-  types: {
-    simple: {
+  types: [
+    {
+      name: 'simple',
       type: 'object',
-      fields: {
-        someString: {type: 'string'},
-        someLatLon: {type: 'latlon'},
-        home: {type: 'homeAddress'}
-      }
+      fields: [
+        {
+          name: 'someString',
+          type: 'string'
+        },
+        {name: 'someLatLon', type: 'latlon'},
+        {name: 'home', type: 'homeAddress'}
+      ]
     },
-    homeAddress: {
+    {
+      name: 'homeAddress',
       type: 'object',
-      fields: {
-        zip: {type: 'string'},
-        location: {type: 'latlon'}
-      }
+      fields: [
+        {name: 'zip', type: 'string'},
+        {name: 'location', type: 'latlon'}
+      ]
     },
-    latlon: {
+    {
+      name: 'latlon',
       type: 'object',
-      fields: {
-        lat: {
+      fields: [
+        {
+          name: 'lat',
           title: 'Latitude',
           type: 'number'
         },
-        lon: {
+        {
+          name: 'lon',
           title: 'Longitude',
           type: 'number'
         }
-      }
+      ]
     }
-  }
+  ]
 }
