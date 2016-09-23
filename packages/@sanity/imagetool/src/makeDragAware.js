@@ -1,6 +1,5 @@
 import {on, off} from 'dom-event'
 import React, {PropTypes} from 'react'
-import {findDOMNode} from 'react-dom'
 import Debug from 'debug'
 import omit from 'lodash.omit'
 
@@ -22,7 +21,7 @@ export default function makeDragAware(Component) {
       debug('Draggable component did mount')
       const win = getWindow()
       const supportsTouch = ('ontouchstart' in window)
-      const domNode = findDOMNode(this)
+      const domNode = this.domNode
 
       const EVENT_NAMES = {
         start: supportsTouch ? 'touchstart' : 'mousedown',
@@ -99,8 +98,10 @@ export default function makeDragAware(Component) {
       this.getDisposables().filter(Boolean).forEach(disposable => disposable.dispose())
     }
 
+    setDomNode = node => this.domNode = node
+
     render() {
-      return <Component {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])} />
+      return <Component ref={this.setDomNode} {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])} />
     }
   }
 }

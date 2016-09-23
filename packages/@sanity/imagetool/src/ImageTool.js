@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import {findDOMNode} from 'react-dom'
 import getBackingStoreRatio from './getBackingStoreRatio'
 import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
@@ -182,7 +181,7 @@ export default class ImageTool extends React.PureComponent {
 
   componentDidMount() {
     this.setState({
-      devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(findDOMNode(this).getContext('2d'))
+      devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(this.canvas.domNode.getContext('2d'))
     })
   }
 
@@ -309,7 +308,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   getActualSize() {
-    const node = findDOMNode(this)
+    const node = this.canvas.domNode
     return {height: node.clientHeight, width: node.clientWidth}
   }
 
@@ -490,7 +489,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    const domNode = findDOMNode(this)
+    const domNode = this.canvas.domNode
     const context = domNode.getContext('2d')
     this.paint(context)
     const currentCursor = domNode.style.cursor
@@ -568,6 +567,8 @@ export default class ImageTool extends React.PureComponent {
     })
   }
 
+  setCanvas = node => this.canvas = node
+
   render() {
     const {height, width} = this.props.image
     const ratio = this.state.devicePixelVsBackingStoreRatio
@@ -579,6 +580,7 @@ export default class ImageTool extends React.PureComponent {
     }
     return (
       <DragAwareCanvas
+        ref={this.setCanvas}
         onDrag={this.handleDrag}
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}

@@ -16,13 +16,9 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
-    "classnames": "^2.2.5",
     "debug": "^2.2.0",
     "dom-event": "1.0.0",
-    "lodash.omit": "^4.5.0",
-    "react": "15.3.x",
-    "react-addons-pure-render-mixin": "15.3.x",
-    "react-dom": "15.3.x"
+    "lodash.omit": "^4.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",
@@ -46,10 +42,15 @@
     "mocha": "^3.0.2",
     "node-sass": "^3.10.0",
     "quickreload": "^2.1.2",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
     "should": "^11.1.0",
     "staticr": "^4.0.2"
+  },
+  "peerDependencies": {
+    "react": "15.3.x"
   },
   "repository": {
     "type": "git",
