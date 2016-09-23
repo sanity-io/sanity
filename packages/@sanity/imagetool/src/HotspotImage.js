@@ -22,6 +22,13 @@ export default class HotspotImage extends React.Component {
     onLoad: PropTypes.func
   }
 
+  static defaultProps = {
+    alignX: 'center',
+    alignY: 'center',
+    crop: DEFAULT_CROP,
+    hotspot: DEFAULT_HOTSPOT
+  }
+
   componentDidMount() {
     const imageElement = this.imageElement
     // Fixes issues that may happen if the component is mounted after the image is done loading
@@ -31,19 +38,6 @@ export default class HotspotImage extends React.Component {
     if (alreadyLoaded) {
       debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", this.props.src)
       imageElement.src = imageElement.src
-    }
-  }
-
-  setImageElement(el) {
-    this.imageElement = el
-  }
-
-  getDefaultProps() {
-    return {
-      alignX: 'center',
-      alignY: 'center',
-      crop: DEFAULT_CROP,
-      hotspot: DEFAULT_HOTSPOT
     }
   }
 
@@ -62,6 +56,10 @@ export default class HotspotImage extends React.Component {
         </g>
       </svg>
     )
+  }
+
+  setImageElement = el => {
+    this.imageElement = el
   }
 
   render() {
