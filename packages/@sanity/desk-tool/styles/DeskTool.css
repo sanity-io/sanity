@@ -1,5 +1,4 @@
 @import 'part:@sanity/base/theme/variables-style';
-@use postcss-cssnext;
 
 .deskTool {
   @media (--screen-medium) {
@@ -27,38 +26,6 @@
   }
 }
 
-.main {
-  background-color: var(--gray-lightest);
-  box-shadow: 2px 2px 5px var(--gray-light) inset;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 1;
-
-  composes: slide-in-from-right from './animations.css';
-
-
-  @media (--screen-medium) {
-    width: auto;
-    height: auto;
-    position: relative;
-    flex-grow: 10;
-    z-index: inherit;
-  }
-}
-
-.editor {
-  padding: 1em;
-  @media (--screen-medium) {
-    max-width: 30em;
-    padding: 1em;
-    margin: 0 auto;
-  }
-}
 
 .nothingSelected {
   composes: center-both from 'part:@sanity/base/theme/layout/positioning-style';

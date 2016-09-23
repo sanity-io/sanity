@@ -4,8 +4,10 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import FormBuilder from 'part:@sanity/form-builder'
 import equals from 'shallow-equals'
-import {unprefixType} from './utils/unprefixType'
+import {unprefixType} from '../utils/unprefixType'
 import schema from 'part:@sanity/base/schema'
+
+import styles from './styles/EditorPane.css'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -134,17 +136,20 @@ export default class EditorPane extends React.Component {
 
   render() {
     const {value, progress, validation} = this.state
+
     return (
-      <div className="content">
-        <form className="form-container" onSubmit={preventDefault}>
-          <div style={{float: 'right', top: 0, right: 5, height: '1rem'}}>
-            {progress && (
-              <div>
-                <div style={{paddingRight: 5, display: 'inline-block'}}><Spinner /></div>
-                {progress}
-              </div>
-            )}
+      <div className={styles.root}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>
+            {value.value.name.value || 'Untitled'}
+          </h1>
+
+          <div className={progress ? styles.spinner : styles.spinnerInactive}>
+            <Spinner />
           </div>
+
+        </div>
+        <form className={styles.editor} onSubmit={preventDefault}>
           <FormBuilder
             value={value}
             validation={validation}

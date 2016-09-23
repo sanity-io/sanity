@@ -29,6 +29,18 @@
   }
 }
 
+.contentType--types {
+  @media (--screen-medium) {
+    max-width: 15em;
+  }
+}
+.contentType--documents {
+  @media (--screen-medium) {
+    max-width: 15em;
+  }
+}
+
+
 .isActive {
   background-color: green;
 }

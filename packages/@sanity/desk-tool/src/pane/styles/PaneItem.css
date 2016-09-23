@@ -9,8 +9,10 @@
   composes: root;
   height: 5rem;
   width: 5rem;
-  border: 1px solid red;
   overflow: hidden;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #ccc;
   float: left;
 }
 
@@ -20,9 +22,9 @@
 
 .details {
   composes: root;
-  height: 2rem;
-  border: 1px solid red;
-  margin-bottom: 1rem;
+  height: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
 }
 
 .link {

@@ -11,7 +11,8 @@ export default class Pane extends React.Component {
     isActive: PropTypes.bool,
     loading: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-    renderItem: PropTypes.func
+    renderItem: PropTypes.func,
+    contentType: PropTypes.oneOf(['types', 'documents'])
   }
 
   constructor(...args) {
@@ -62,32 +63,37 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {loading, items, renderItem, isActive} = this.props
+    const {loading, items, renderItem, isActive, contentType} = this.props
     const {menuOpened} = this.state
 
     return (
       <div
         className={`
           ${isActive ? styles.isActive : styles.isDisabled}
+          ${styles[`contentType--${this.props.contentType}`]}
           ${this.state.view == 'list' ? styles.list : ''}
           ${this.state.view == 'thumbnails' ? styles.thumbnails : ''}
           ${this.state.view == 'details' ? styles.details : ''}
         `}
       >
-        <div className={styles.menuButton} onClick={this.handleMenuButtonClick}>
-          {
-            <IconHamburger />
-          }
+        {
+          contentType == 'documents'
+          && <div>
+            <div className={styles.menuButton} onClick={this.handleMenuButtonClick}>
+              {
+                <IconHamburger />
+              }
+            </div>
+            <div className={styles.menu}>
+              <PaneMenu
+                opened={menuOpened}
+                onClickOutside={this.handleMenuClose}
+                onAction={this.handleMenuAction}
+              />
+            </div>
+          </div>
+        }
 
-        </div>
-        <div className={styles.menu}>
-          <PaneMenu
-            opened={menuOpened}
-            onClickOutside={this.handleMenuClose}
-            onAction={this.handleMenuAction}
-          />
-        </div>
-        View: {this.state.view}
         <ul className={styles.items}>
           {loading && <Spinner />}
           {items.map((item, i) => {

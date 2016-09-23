@@ -3,11 +3,12 @@ import Pane from 'part:@sanity/desk-tool/pane'
 import schema from 'part:@sanity/base/schema'
 import PaneContainer from 'part:@sanity/desk-tool/pane-container'
 import {StateLink} from 'part:@sanity/base/router'
-import EditorPane from './EditorPane'
-import styles from '../styles/DeskTool.css'
-import paneItemStyles from './pane/styles/PaneItem.css'
+import EditorPane from './pane/EditorPane'
 import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
 import QueryContainer from 'part:@sanity/base/query-container'
+
+import paneItemStyles from './pane/styles/PaneItem.css'
+import styles from '../styles/DeskTool.css'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -94,9 +95,10 @@ export default class SchemaPaneResolver extends React.Component {
     }
 
     const selectedTypeQuery = dataAspects.getListQuery(queryOpts)
+
     return (
       <QueryContainer query={selectedTypeQuery} mapFn={mapQueryResultToProps}>
-        <Pane renderItem={this.renderDocumentPaneItem} />
+        <Pane contentType="documents" renderItem={this.renderDocumentPaneItem} />
       </QueryContainer>
     )
   }
@@ -112,6 +114,7 @@ export default class SchemaPaneResolver extends React.Component {
     const typesPane = (
       <Pane
         items={TYPE_ITEMS}
+        contentType="types"
         renderItem={this.renderTypePaneItem}
       />
     )
@@ -119,13 +122,11 @@ export default class SchemaPaneResolver extends React.Component {
     const documentsPane = selectedType && this.getDocumentsPane(selectedType)
 
     const editor = ['edit', 'create'].includes(action) && (
-      <div className={styles.editor}>
-        <EditorPane
-          documentId={selectedDocumentId}
-          typeName={selectedType}
-          onCreated={this.handleDocumentCreated}
-        />
-      </div>
+      <EditorPane
+        documentId={selectedDocumentId}
+        typeName={selectedType}
+        onCreated={this.handleDocumentCreated}
+      />
     )
 
     return (
@@ -134,11 +135,7 @@ export default class SchemaPaneResolver extends React.Component {
           {typesPane}
           {documentsPane}
         </PaneContainer>
-        {editor && (
-          <main className={styles.main}>
-            {editor}
-          </main>
-        )}
+        {editor}
       </div>
     )
   }
