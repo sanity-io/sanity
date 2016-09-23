@@ -19,6 +19,7 @@
     "classnames": "^2.2.5",
     "debug": "^2.2.0",
     "dom-event": "1.0.0",
+    "lodash.omit": "^4.5.0",
     "react": "15.3.x",
     "react-addons-pure-render-mixin": "15.3.x",
     "react-dom": "15.3.x"

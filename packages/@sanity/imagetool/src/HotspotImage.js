@@ -5,9 +5,8 @@ import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
 const debug = Debug('sanity-imagetool')
 
-export default React.createClass({
-  displayName: 'HotspotImage',
-  propTypes: {
+export default class HotspotImage extends React.Component {
+  static propTypes = {
     src: React.PropTypes.string,
     srcAspectRatio: PropTypes.number,
     srcSet: React.PropTypes.string,
@@ -21,7 +20,7 @@ export default React.createClass({
     style: PropTypes.object,
     onError: PropTypes.func,
     onLoad: PropTypes.func
-  },
+  }
 
   componentDidMount() {
     const imageElement = this.imageElement
@@ -33,11 +32,11 @@ export default React.createClass({
       debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", this.props.src)
       imageElement.src = imageElement.src
     }
-  },
+  }
 
   setImageElement(el) {
     this.imageElement = el
-  },
+  }
 
   getDefaultProps() {
     return {
@@ -46,7 +45,7 @@ export default React.createClass({
       crop: DEFAULT_CROP,
       hotspot: DEFAULT_HOTSPOT
     }
-  },
+  }
 
   renderPerimeter(styles, aspectRatio) {
     const {clipPerimeter} = this.props
@@ -63,8 +62,7 @@ export default React.createClass({
         </g>
       </svg>
     )
-  },
-
+  }
 
   render() {
     const {
@@ -111,4 +109,5 @@ export default React.createClass({
       </div>
     )
   }
-})
+}
+

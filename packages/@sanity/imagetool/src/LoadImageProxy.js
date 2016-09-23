@@ -1,20 +1,15 @@
 import React, {PropTypes} from 'react'
 import ImageTool from './ImageTool'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
 
-export default React.createClass({
-  displayName: 'LoadImageProxy',
-  mixins: [PureRenderMixin],
-  propTypes: {
+export default class ImageToolLoadImageProxy extends React.PureComponent {
+  static propTypes = {
     imageUrl: PropTypes.string.isRequired
-  },
+  }
 
-  getInitialState() {
-    return {
-      loaded: false,
-      error: null
-    }
-  },
+  state = {
+    loaded: false,
+    error: null
+  }
 
   componentDidMount() {
     this.image = new Image()
@@ -32,13 +27,13 @@ export default React.createClass({
       })
     }
     this.image.src = this.props.imageUrl
-  },
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.imageUrl !== this.props.imageUrl) {
       this.image.src = this.props.imageUrl
     }
-  },
+  }
 
   render() {
     if (this.state.error) {
@@ -49,4 +44,4 @@ export default React.createClass({
     }
     return <ImageTool {...this.props} image={this.image} />
   }
-})
+}

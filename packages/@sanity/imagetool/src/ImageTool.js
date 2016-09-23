@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react'
 import {findDOMNode} from 'react-dom'
 import getBackingStoreRatio from './getBackingStoreRatio'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
-import DraggableMixin from './DraggableMixin'
+import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
 
 import CURSORS from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+
+const DragAwareCanvas = makeDragAware('canvas')
 
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 8
@@ -36,9 +37,9 @@ function getCropCursorForHandle(handle) {
   }
 }
 
-export default React.createClass({
-  displayName: 'ImageTool',
-  propTypes: {
+export default class ImageTool extends React.PureComponent {
+
+  static propTypes = {
     value: PropTypes.shape({
       hotspot: PropTypes.shape({
         x: PropTypes.number,
@@ -55,8 +56,15 @@ export default React.createClass({
     onMove: PropTypes.func,
     onCrop: PropTypes.func,
     onResize: PropTypes.func
-  },
-  mixins: [DraggableMixin, PureRenderMixin],
+  }
+
+  state = {
+    devicePixelVsBackingStoreRatio: null,
+    cropping: false,
+    cropMoving: false,
+    dragging: false,
+    moving: false
+  }
 
   getHotspotRect() {
     const {value, image} = this.props
@@ -70,7 +78,7 @@ export default React.createClass({
         .setSize(image.width, image.height)
         .shrink(MARGIN_PX * this.getScale())
         .multiply(hotspotRect)
-  },
+  }
 
   getCropRect() {
     const {value, image} = this.props
@@ -79,7 +87,7 @@ export default React.createClass({
         .setSize(image.width, image.height)
         .shrink(MARGIN_PX * this.getScale())
         .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
-  },
+  }
 
   getCropHandles() {
 
@@ -102,7 +110,7 @@ export default React.createClass({
       bottomLeft: cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.bottom - halfCropHandleSize),
       bottomRight: cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.bottom - halfCropHandleSize)
     }
-  },
+  }
 
   getActiveCropHandleFor({x, y}) {
     const cropHandles = this.getCropHandles()
@@ -110,67 +118,14 @@ export default React.createClass({
     return Object.keys(cropHandles).find(position => {
       return utils2d.isPointInRect({x, y}, cropHandles[position])
     })
-  },
-
-  componentDidDragStart({x, y}) {
-    const mousePosition = {x: x * this.getScale(), y: y * this.getScale()}
-
-    const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
-
-    const inDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
-
-    const activeCropHandle = this.getActiveCropHandleFor(mousePosition)
-
-    const inCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
-
-    if (activeCropHandle) {
-      this.setState({cropping: activeCropHandle})
-    } else if (inDragHandle) {
-      this.setState({resizing: true})
-    } else if (inHotspot) {
-      this.setState({moving: true})
-    } else if (inCropRect) {
-      this.setState({cropMoving: true})
-    }
-  },
-
-  componentDidDrag(pos) {
-    if (this.state.cropping) {
-      this.emitCrop(this.state.cropping, pos)
-    } else if (this.state.cropMoving) {
-      this.emitCropMove(pos)
-    } else if (this.state.moving) {
-      this.emitMove(pos)
-    } else if (this.state.resizing) {
-      this.emitResize(pos)
-    }
-  },
-
-  componentDidDragEnd(pos) {
-    this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
-    const {hotspot, crop} = this.getClampedValue()
-
-    this.emitChange({
-      crop: {
-        top: crop.top,
-        bottom: 1 - crop.bottom,
-        left: crop.left,
-        right: 1 - crop.right
-      },
-      hotspot: {
-        x: hotspot.center.x,
-        y: hotspot.center.y,
-        height: Math.abs(hotspot.height),
-        width: Math.abs(hotspot.width)
-      }
-    })
-  },
+  }
 
   emitChange(value) {
     if (this.props.onChange) {
       this.props.onChange(value)
     }
-  },
+  }
+
   emitMove(pos) {
     const {height, width} = this.props.image
     const scale = this.getScale()
@@ -179,7 +134,8 @@ export default React.createClass({
       y: pos.y * scale / height
     }
     this.props.onMove(delta)
-  },
+  }
+
   emitCropMove(pos) {
     const {height, width} = this.props.image
     const scale = this.getScale()
@@ -191,7 +147,8 @@ export default React.createClass({
     delta.bottom = -pos.y * scale / height
 
     this.props.onCrop(delta)
-  },
+  }
+
   emitCrop(side, pos) {
     const {height, width} = this.props.image
     const scale = this.getScale()
@@ -210,7 +167,7 @@ export default React.createClass({
     }
 
     this.props.onCrop(delta)
-  },
+  }
 
   emitResize(pos) {
     const {height, width} = this.props.image
@@ -221,43 +178,19 @@ export default React.createClass({
       y: pos.y * scale * 2 / height
     }
     this.props.onResize({height: delta.y, width: delta.x})
-  },
-
-  handleMouseMove(event) {
-    const clientRect = event.target.getBoundingClientRect()
-    this.setState({
-      mousePosition: {
-        x: (event.clientX - clientRect.left) * this.getScale(),
-        y: (event.clientY - clientRect.top) * this.getScale()
-      }
-    })
-  },
-
-  handleMouseOut() {
-    this.setState({mousePosition: null})
-  },
-
-  getInitialState() {
-    return {
-      devicePixelVsBackingStoreRatio: null,
-      cropping: false,
-      cropMoving: false,
-      dragging: false,
-      moving: false
-    }
-  },
+  }
 
   componentDidMount() {
     this.setState({
       devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(findDOMNode(this).getContext('2d'))
     })
-  },
+  }
 
   getDevicePixelVsBackingStoreRatio(context) {
     const devicePixelRatio = window.devicePixelRatio || 1
     const backingStoreRatio = getBackingStoreRatio(context) || 1
     return devicePixelRatio / backingStoreRatio
-  },
+  }
 
   getClampedValue() {
     const value = this.props.value
@@ -272,7 +205,7 @@ export default React.createClass({
       .clamp(crop)
 
     return {crop: crop, hotspot: hotspotRect}
-  },
+  }
 
   paintHotspot(context) {
 
@@ -373,12 +306,12 @@ export default React.createClass({
       context.closePath()
 
     }
-  },
+  }
 
   getActualSize() {
     const node = findDOMNode(this)
     return {height: node.clientHeight, width: node.clientWidth}
-  },
+  }
 
   getDragHandleCoords() {
     const bbox = this.getHotspotRect()
@@ -388,7 +321,7 @@ export default React.createClass({
       y: point.y,
       radius: 8 * this.getScale()
     }
-  },
+  }
 
   debug(context) {
     context.save()
@@ -441,7 +374,8 @@ export default React.createClass({
       context.stroke()
       context.closePath()
     }
-  },
+  }
+
   paintBackground(context) {
     const {image} = this.props
     const inner = new Rect()
@@ -457,7 +391,7 @@ export default React.createClass({
 
     context.drawImage(image, inner.left, inner.top, inner.width, inner.height)
     context.restore()
-  },
+  }
 
   paint(context) {
     context.save()
@@ -478,7 +412,7 @@ export default React.createClass({
     }
 
     context.restore()
-  },
+  }
 
   paintMousePosition(context) {
     const {x, y} = this.state.mousePosition
@@ -487,7 +421,7 @@ export default React.createClass({
     context.fillStyle = 'lightblue'
     context.fill()
     context.restore()
-  },
+  }
 
   paintCropBorder(context) {
     const cropRect = this.getCropRect()
@@ -499,7 +433,7 @@ export default React.createClass({
     context.stroke()
     context.closePath()
     context.restore()
-  },
+  }
 
   highlightCropHandles(context) {
     context.save()
@@ -519,12 +453,12 @@ export default React.createClass({
 
     })
     context.restore()
+  }
 
-  },
   getScale() {
     const actualSize = this.getActualSize()
     return this.props.image.width / actualSize.width
-  },
+  }
 
   getCursor() {
     const {mousePosition} = this.state
@@ -553,7 +487,8 @@ export default React.createClass({
       return `url(${CURSORS.openhand}), move`
     }
     return 'auto'
-  },
+  }
+
   componentDidUpdate() {
     const domNode = findDOMNode(this)
     const context = domNode.getContext('2d')
@@ -563,7 +498,76 @@ export default React.createClass({
     if (currentCursor != newCursor) {
       domNode.style.cursor = newCursor
     }
-  },
+  }
+
+  handleDragStart = ({x, y}) => {
+    const mousePosition = {x: x * this.getScale(), y: y * this.getScale()}
+
+    const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
+
+    const inDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
+
+    const activeCropHandle = this.getActiveCropHandleFor(mousePosition)
+
+    const inCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
+
+    if (activeCropHandle) {
+      this.setState({cropping: activeCropHandle})
+    } else if (inDragHandle) {
+      this.setState({resizing: true})
+    } else if (inHotspot) {
+      this.setState({moving: true})
+    } else if (inCropRect) {
+      this.setState({cropMoving: true})
+    }
+  }
+
+  handleDrag = pos => {
+    if (this.state.cropping) {
+      this.emitCrop(this.state.cropping, pos)
+    } else if (this.state.cropMoving) {
+      this.emitCropMove(pos)
+    } else if (this.state.moving) {
+      this.emitMove(pos)
+    } else if (this.state.resizing) {
+      this.emitResize(pos)
+    }
+  }
+
+  handleDragEnd = pos => {
+    this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
+    const {hotspot, crop} = this.getClampedValue()
+
+    this.emitChange({
+      crop: {
+        top: crop.top,
+        bottom: 1 - crop.bottom,
+        left: crop.left,
+        right: 1 - crop.right
+      },
+      hotspot: {
+        x: hotspot.center.x,
+        y: hotspot.center.y,
+        height: Math.abs(hotspot.height),
+        width: Math.abs(hotspot.width)
+      }
+    })
+  }
+
+  handleMouseOut = () => {
+    this.setState({mousePosition: null})
+  }
+
+  handleMouseMove = event => {
+    const clientRect = event.target.getBoundingClientRect()
+    this.setState({
+      mousePosition: {
+        x: (event.clientX - clientRect.left) * this.getScale(),
+        y: (event.clientY - clientRect.top) * this.getScale()
+      }
+    })
+  }
+
   render() {
     const {height, width} = this.props.image
     const ratio = this.state.devicePixelVsBackingStoreRatio
@@ -574,7 +578,10 @@ export default React.createClass({
       // ,outline: '1px dotted cyan'
     }
     return (
-      <canvas
+      <DragAwareCanvas
+        onDrag={this.handleDrag}
+        onDragStart={this.handleDragStart}
+        onDragEnd={this.handleDragEnd}
         onMouseMove={this.handleMouseMove}
         onMouseOut={this.handleMouseOut}
         style={style}
@@ -583,4 +590,4 @@ export default React.createClass({
       />
     )
   }
-})
+}

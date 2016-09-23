@@ -18,11 +18,11 @@ const IMAGES = [
 export default React.createClass({
   displayName: 'ImageHotspotDemo',
   propTypes: {
-    imageIndex: PropTypes.number
+    imageIndex: PropTypes.string
   },
   getInitialState() {
     return {
-      imageUrl: IMAGES[this.props.imageIndex || 4],
+      imageUrl: IMAGES[this.props.imageIndex || '4'],
       hotspot: {
         x: 0.5,
         y: 0.5,
