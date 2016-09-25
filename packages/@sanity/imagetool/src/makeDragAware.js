@@ -10,7 +10,7 @@ const debug = Debug('sanity-imagetool')
 // - `onDragStart` is called with the {x, y} positions relative from the dom node (e.g. where the mousedown event happened)
 // - `onDrag` and `onDragEnd` are both called with the {x, y} difference from the previous position
 export default function makeDragAware(Component) {
-  return class DragAware extends React.Component {
+  return class DragAware extends React.PureComponent {
     static propTypes = {
       onDragStart: PropTypes.func,
       onDrag: PropTypes.func,
@@ -98,7 +98,9 @@ export default function makeDragAware(Component) {
       this.getDisposables().filter(Boolean).forEach(disposable => disposable.dispose())
     }
 
-    setDomNode = node => this.domNode = node
+    setDomNode = node => {
+      this.domNode = node
+    }
 
     render() {
       return <Component ref={this.setDomNode} {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])} />

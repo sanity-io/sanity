@@ -4,7 +4,7 @@ import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
 
-import CURSORS from './cursors'
+import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 
 const DragAwareCanvas = makeDragAware('canvas')
@@ -51,10 +51,11 @@ export default class ImageTool extends React.PureComponent {
       height: PropTypes.number,
       width: PropTypes.number,
     }),
-    onChange: PropTypes.func,
-    onMove: PropTypes.func,
-    onCrop: PropTypes.func,
-    onResize: PropTypes.func
+    onChange: PropTypes.func
+  }
+
+  static defaultProps = {
+    onChange() {}
   }
 
   state = {
@@ -119,64 +120,88 @@ export default class ImageTool extends React.PureComponent {
     })
   }
 
-  emitChange(value) {
-    if (this.props.onChange) {
-      this.props.onChange(value)
-    }
+  applyHotspotMoveBy(value, delta) {
+    return Object.assign({}, value, {
+      hotspot: Object.assign({}, value.hotspot, {
+        x: value.hotspot.x + delta.x,
+        y: value.hotspot.y + delta.y
+      })
+    })
+  }
+
+  applyHotspotResizeBy(value, delta) {
+    return Object.assign({}, value, {
+      hotspot: Object.assign({}, value.hotspot, {
+        height: value.hotspot.height + delta.height,
+        width: value.hotspot.width + delta.width
+      })
+    })
+  }
+
+  applyCropMoveBy(value, delta) {
+    return Object.assign({}, value, {
+      crop: Object.assign({}, value.crop, {
+        left: value.crop.left + (delta.left || 0),
+        right: value.crop.right + (delta.right || 0),
+        top: value.crop.top + (delta.top || 0),
+        bottom: value.crop.bottom + (delta.bottom || 0)
+      })
+    })
   }
 
   emitMove(pos) {
-    const {height, width} = this.props.image
+    const {image, value, onChange} = this.props
     const scale = this.getScale()
     const delta = {
-      x: pos.x * scale / width,
-      y: pos.y * scale / height
+      x: pos.x * scale / image.width,
+      y: pos.y * scale / image.height
     }
-    this.props.onMove(delta)
+
+    onChange(this.applyHotspotMoveBy(value, delta))
   }
 
   emitCropMove(pos) {
-    const {height, width} = this.props.image
+    const {image, onChange, value} = this.props
     const scale = this.getScale()
     const delta = {}
-    delta.left = pos.x * scale / width
-    delta.right = -pos.x * scale / width
+    delta.left = pos.x * scale / image.width
+    delta.right = -pos.x * scale / image.width
 
-    delta.top = pos.y * scale / height
-    delta.bottom = -pos.y * scale / height
+    delta.top = pos.y * scale / image.height
+    delta.bottom = -pos.y * scale / image.height
 
-    this.props.onCrop(delta)
+    onChange(this.applyCropMoveBy(value, delta))
   }
 
   emitCrop(side, pos) {
-    const {height, width} = this.props.image
+    const {image, onChange, value} = this.props
     const scale = this.getScale()
     const delta = {}
 
     if (side == 'left' || side === 'topLeft' || side === 'bottomLeft') {
-      delta.left = pos.x * scale / width
+      delta.left = pos.x * scale / image.width
     } else if (side == 'right' || side === 'topRight' || side === 'bottomRight') {
-      delta.right = -pos.x * scale / width
+      delta.right = -pos.x * scale / image.width
     }
 
     if (side == 'top' || side === 'topLeft' || side === 'topRight') {
-      delta.top = pos.y * scale / height
+      delta.top = pos.y * scale / image.height
     } else if (side == 'bottom' || side === 'bottomLeft' || side === 'bottomRight') {
-      delta.bottom = -pos.y * scale / height
+      delta.bottom = -pos.y * scale / image.height
     }
 
-    this.props.onCrop(delta)
+    onChange(this.applyCropMoveBy(value, delta))
   }
 
   emitResize(pos) {
-    const {height, width} = this.props.image
+    const {image, onChange, value} = this.props
     const scale = this.getScale()
 
     const delta = {
-      x: pos.x * scale * 2 / width,
-      y: pos.y * scale * 2 / height
+      x: pos.x * scale * 2 / image.width,
+      y: pos.y * scale * 2 / image.height
     }
-    this.props.onResize({height: delta.y, width: delta.x})
+    onChange(this.applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
   }
 
   componentDidMount() {
@@ -477,13 +502,13 @@ export default class ImageTool extends React.PureComponent {
     }
 
     if (this.state.moving || this.state.cropMoving) {
-      return `url(${CURSORS.closedhand}), move`
+      return `url(${cursors.CLOSE_HAND}), move`
     }
 
     const mouseoverHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
     const mouseoverCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
     if (mouseoverHotspot || mouseoverCropRect) {
-      return `url(${CURSORS.openhand}), move`
+      return `url(${cursors.OPEN_HAND}), move`
     }
     return 'auto'
   }
@@ -534,10 +559,11 @@ export default class ImageTool extends React.PureComponent {
   }
 
   handleDragEnd = pos => {
+    const {onChange} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
     const {hotspot, crop} = this.getClampedValue()
 
-    this.emitChange({
+    onChange({
       crop: {
         top: crop.top,
         bottom: 1 - crop.bottom,
@@ -567,7 +593,9 @@ export default class ImageTool extends React.PureComponent {
     })
   }
 
-  setCanvas = node => this.canvas = node
+  setCanvas = node => {
+    this.canvas = node
+  }
 
   render() {
     const {height, width} = this.props.image

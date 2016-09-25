@@ -7,41 +7,47 @@ export default class ImageToolLoadImageProxy extends React.PureComponent {
   }
 
   state = {
-    loaded: false,
+    loadedImage: null,
     error: null
   }
 
-  componentDidMount() {
-    this.image = new Image()
+  componentWillMount() {
+    this.loadImage(this.props.imageUrl)
+  }
 
-    this.image.onload = () => {
+  loadImage(imageUrl) {
+    const image = new Image()
+
+    image.onload = () => {
       this.setState({
-        loaded: true,
+        loadedImage: image,
         error: null
       })
     }
 
-    this.image.onerror = () => {
+    image.onerror = () => {
       this.setState({
         error: new Error(`Could not load image from ${JSON.stringify(this.props.imageUrl)}`)
       })
     }
-    this.image.src = this.props.imageUrl
+
+    image.src = imageUrl
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.imageUrl !== this.props.imageUrl) {
-      this.image.src = this.props.imageUrl
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.imageUrl !== this.props.imageUrl) {
+      this.loadImage(nextProps.imageUrl)
     }
   }
 
   render() {
-    if (this.state.error) {
-      return <div style={{display: 'inline-block'}}>{this.state.error.message}</div>
+    const {error, loadedImage} = this.state
+    if (error) {
+      return <div style={{display: 'inline-block'}}>{error.message}</div>
     }
-    if (!this.state.loaded) {
-      return <div style={{display: 'inline-block'}}>...</div>
+    if (!loadedImage) {
+      return null
     }
-    return <ImageTool {...this.props} image={this.image} />
+    return <ImageTool {...this.props} image={loadedImage} />
   }
 }
