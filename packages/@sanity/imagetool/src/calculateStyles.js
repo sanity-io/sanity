@@ -1,10 +1,59 @@
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
+export default function calculateStyles(options = {}) {
+
+  const imageAspect = readAspectRatio(options.image)
+
+  const hotspot = options.hotspot || DEFAULT_HOTSPOT
+
+  const crop = options.crop || DEFAULT_CROP
+  const containerAspect = readAspectRatio(options.container) || (imageAspect * readCropAspect(crop))
+
+  const align = options.align || {x: 'center', y: 'center'}
+
+  const result = calculateHotSpotCrop(imageAspect, {hotspot, crop}, {
+    aspect: containerAspect,
+    align
+  })
+
+  const containerHeight = styleFormat(round(100 / containerAspect))
+
+  return {
+    debug: {
+      result
+    },
+    container: {
+      //outline: '1px solid cyan',
+      overflow: 'hidden',
+      position: 'relative',
+      width: '100%',
+      height: containerHeight
+    },
+    padding: {
+      marginTop: containerHeight
+    },
+    crop: {
+      position: 'absolute',
+      overflow: 'hidden',
+      height: toStylePercentage(result.crop.height),
+      width: toStylePercentage(result.crop.width),
+      top: toStylePercentage(result.crop.top),
+      left: toStylePercentage(result.crop.left)
+    },
+    image: {
+      position: 'absolute',
+      height: toStylePercentage(result.image.height),
+      width: toStylePercentage(result.image.width),
+      top: toStylePercentage(result.image.top),
+      left: toStylePercentage(result.image.left)
+    }
+  }
+}
+
 function readAspectRatio(opts) {
   if (!opts) {
     return null
   }
-  opts = opts || {}
   if (opts.hasOwnProperty('aspectRatio')) {
     return opts.aspectRatio
   }
@@ -17,9 +66,8 @@ function readAspectRatio(opts) {
   return null
 }
 
-function round(num, decimals) {
-  const _decimals = typeof decimals === 'undefined' ? 2 : decimals
-  const multiplier = Math.pow(10, _decimals)
+function round(num, decimals = 2) {
+  const multiplier = Math.pow(10, decimals)
   return Math.round(num * multiplier) / multiplier
 }
 
@@ -182,56 +230,10 @@ function readCropAspect(crop) {
   return width / height
 }
 
-module.exports = function calculateStyles(options) {
-  options = options || {}
+function styleFormat(num) {
+  return num === 0 ? 0 : `${num}%`
+}
 
-  const imageAspect = readAspectRatio(options.image)
-
-  const hotspot = options.hotspot || DEFAULT_HOTSPOT
-
-  const crop = options.crop || DEFAULT_CROP
-  const containerAspect = readAspectRatio(options.container) || (imageAspect * readCropAspect(crop))
-
-  const align = options.align || {x: 'center', y: 'center'}
-
-  const result = calculateHotSpotCrop(imageAspect, {hotspot, crop}, {
-    aspect: containerAspect,
-    align
-  })
-
-  function styleFormat(n) {
-    return n === 0 ? 0 : `${n}%`
-  }
-
-  function toStylePercentage(n) {
-    return styleFormat(round(n * 100))
-  }
-
-  return {
-    debug: {
-      result
-    },
-    image: {
-      position: 'absolute',
-      height: toStylePercentage(result.image.height),
-      width: toStylePercentage(result.image.width),
-      top: toStylePercentage(result.image.top),
-      left: toStylePercentage(result.image.left)
-    },
-    crop: {
-      position: 'absolute',
-      overflow: 'hidden',
-      height: toStylePercentage(result.crop.height),
-      width: toStylePercentage(result.crop.width),
-      top: toStylePercentage(result.crop.top),
-      left: toStylePercentage(result.crop.left)
-    },
-    container: {
-      //outline: '1px solid cyan',
-      overflow: 'hidden',
-      position: 'relative',
-      width: '100%',
-      height: styleFormat(round(100 / containerAspect))
-    }
-  }
+function toStylePercentage(num) {
+  return styleFormat(round(num * 100))
 }

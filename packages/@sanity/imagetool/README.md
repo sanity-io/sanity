@@ -39,8 +39,9 @@ class MyComponent extends React.Component {
     return (
       <ImageTool
         image="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg"
+        value={this.state.value}
         onChange={handleImageToolchange}
-        value={this.state.value} />
+      />
     )
   }
 }
@@ -53,7 +54,7 @@ class MyComponent extends React.Component {
 ```js
 import calculateStyles from "@sanity/imagetool/calculateStyles";
 
-calculateStyles({
+const styles = calculateStyles({
   hotspot: {
     x: 0.4,
     y: 0.3,
@@ -75,16 +76,15 @@ calculateStyles({
 });
 ```
 
-returns the following styles object that can be passed to jsx markup
+returns an object with style objects that can be used with markup
 
 ```json
 {
-  "image": {
-    "position": "absolute",
-    "height": "144.93%",
-    "width": "142.86%",
-    "top": "-14.49%",
-    "left": "-14.29%"
+  "container": {
+    "overflow": "hidden",
+    "position": "relative",
+    "width": "100%",
+    "height": "62.5%"
   },
   "crop": {
     "position": "absolute",
@@ -94,11 +94,28 @@ returns the following styles object that can be passed to jsx markup
     "top": "7.97%",
     "left": "17.51%"
   },
-  "container": {
-    "overflow": "hidden",
-    "position": "relative",
-    "width": "100%",
-    "height": "62.5%"
+  "image": {
+    "position": "absolute",
+    "height": "144.93%",
+    "width": "142.86%",
+    "top": "-14.49%",
+    "left": "-14.29%"
+  },
+  "padding": {
+    "marginTop": "62.5%"
   }
 }
+```
+
+this can then be passed to jsx markup with the following structure:
+```jsx
+<div style={styles.container}>
+  <div style={styles.padding} />
+  <div style={styles.crop}>
+    <img
+      src="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg"
+      style={styles.image}
+    />
+  </div>
+</div>
 ```

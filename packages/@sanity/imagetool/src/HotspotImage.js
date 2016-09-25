@@ -5,7 +5,7 @@ import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
 const debug = Debug('sanity-imagetool')
 
-export default class HotspotImage extends React.Component {
+export default class HotspotImage extends React.PureComponent {
   static propTypes = {
     src: React.PropTypes.string,
     srcAspectRatio: PropTypes.number,
@@ -92,7 +92,7 @@ export default class HotspotImage extends React.Component {
     return (
       <div className={className} style={style}>
         <div style={targetStyles.container}>
-          <div style={{paddingTop: targetStyles.container.height}} />
+          <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>
             <img
               ref={this.setImageElement}
