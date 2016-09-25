@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+const fs = require('fs')
 const serve = require('staticr/serve')
 const capture = require('error-capture-middleware')
 
@@ -12,6 +13,9 @@ app.use(capture.css())
 app.use(capture.js())
 
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/*', (req, res) => {
+  res.type('text/html').send(fs.readFileSync(path.join(__dirname, 'public', 'index.html')))
+})
 
 const server = app.listen(3000, () => {
   const host = server.address().address

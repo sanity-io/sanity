@@ -1,12 +1,20 @@
 import 'babel-polyfill'
 import Debug from 'debug'
-Debug.disable('')
-Debug.enable(process.env.DEBUG)
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Demo from './src/Demo'
-import querystring from 'querystring'
+import history from './src/history'
 
-const params = querystring.parse(document.location.search.substring(1)) || {}
+Debug.disable('')
+Debug.enable(process.env.DEBUG)
 
-ReactDOM.render(<Demo imageIndex={params.image} />, document.getElementById('content'))
+const DEFAULT_IMAGE_INDEX = '4'
+
+history.listen(render)
+render(history.location)
+
+function render(location) {
+  const imageIndex = location.pathname.split('/')[1] || DEFAULT_IMAGE_INDEX
+  ReactDOM.render(<Demo imageIndex={imageIndex} />, document.getElementById('content'))
+}
+

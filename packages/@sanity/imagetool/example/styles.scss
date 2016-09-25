@@ -2,6 +2,15 @@ body {
   font-family: "Helvetica", sans-serif;
 }
 
+label {
+  display: block;
+  input[type=range] {
+    margin-left: 20px;
+    position: absolute;
+    left: 75px;
+  }
+}
+
 ul.previews {
   margin: 0;
   padding: 0;
