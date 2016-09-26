@@ -37,6 +37,9 @@ export default {
           name: 'pet3',
           title: 'Type to find pet',
           type: 'reference',
+          options: {
+            inputType: 'autocomplete'
+          },
           to: [
             {
               type: 'pet',

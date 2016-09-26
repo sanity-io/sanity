@@ -12,6 +12,7 @@ import {parseParams, preventDefault} from '../lib/utils'
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomReferenceBrowser from './custom/MyCustomReferenceBrowser'
+import MyCustomReferenceAutocomplete from './custom/MyCustomReferenceAutocomplete'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
 import SimpleImagePreview from './custom/SimpleImagePreview'
 
@@ -35,6 +36,9 @@ const FormBuilder = schema && createFormBuilder({
       return BlockEditorSlate
     }
     if (field.type === 'reference') {
+      if ((field.options || {}).inputType === 'autocomplete') {
+        return MyCustomReferenceAutocomplete
+      }
       return MyCustomReferenceBrowser
     }
     return undefined // signal to use default

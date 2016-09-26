@@ -3,7 +3,7 @@ import PETS from './mockdata/pets'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-export default ReferenceInput.createBrowser({
+export default ReferenceInput.createAutoComplete({
   materializeReferences(ids) {
     return delay(1000).then(() => (
       ids.map(id => PETS.find(pet => pet.$id === id))

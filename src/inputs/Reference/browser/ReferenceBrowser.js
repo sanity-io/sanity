@@ -168,7 +168,7 @@ export default class ReferenceBrowser extends React.Component {
 
   renderDialog() {
     const {fetching, items, dialogSelectedItem} = this.state
-    const {field} = this.props
+    const {field, value} = this.props
     const toTypes = field.to.map(toField => toField.type)
     const actions = [
       dialogSelectedItem && {index: 'set', title: 'Change'},
@@ -182,7 +182,7 @@ export default class ReferenceBrowser extends React.Component {
     })
 
     const currentItem = items.find(item => {
-      return this.props.value.value.$ref == item.key
+      return value.refId == item.key
     })
 
     return (
