@@ -4,9 +4,9 @@
   },
   "parser": "babel-eslint",
   "extends": [
-    "bengler",
-    "bengler/react",
-    "bengler/import"
+    "sanity",
+    "sanity/react",
+    "sanity/import"
   ],
   "settings": {
     "import/ignore": ["\\.css$", "node_modules", ".*:.*"],

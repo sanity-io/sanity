@@ -5,8 +5,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import {uniqueId} from 'lodash'
 
-export default class Str extends React.Component {
-  static displayName = 'Text';
+export default class Text extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
