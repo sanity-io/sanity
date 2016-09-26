@@ -41,9 +41,12 @@ module.exports = function httpRequest(options, callback) {
 
         const error = new Error(msg || httpError(res))
         error.responseBody = stringifyBody(body, res)
+        error.statusCode = res.statusCode
         return reject(error)
       } else if (isHttpError) {
-        return reject(new Error(httpError(res)))
+        const httpErr = new Error(httpError(res))
+        httpErr.statusCode = res.statusCode
+        return reject(httpErr)
       }
 
       return resolve(body)
