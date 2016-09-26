@@ -11,10 +11,9 @@ import {parseParams, preventDefault} from '../lib/utils'
 
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
-import MyCustomReferenceBrowser from './custom/MyCustomReferenceBrowser'
-import MyCustomReferenceAutocomplete from './custom/MyCustomReferenceAutocomplete'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
 import SimpleImagePreview from './custom/SimpleImagePreview'
+import resolveReferenceComponent from './custom/resolveReferenceComponent'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -36,10 +35,7 @@ const FormBuilder = schema && createFormBuilder({
       return BlockEditorSlate
     }
     if (field.type === 'reference') {
-      if ((field.options || {}).inputType === 'autocomplete') {
-        return MyCustomReferenceAutocomplete
-      }
-      return MyCustomReferenceBrowser
+      return resolveReferenceComponent(field)
     }
     return undefined // signal to use default
   },

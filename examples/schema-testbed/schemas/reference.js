@@ -26,6 +26,10 @@ export default {
           name: 'pet2',
           title: 'Select pet',
           type: 'reference',
+          options: {
+            inputType: 'select',
+            searchable: false,
+          },
           to: [
             {
               type: 'pet',
@@ -38,7 +42,8 @@ export default {
           title: 'Type to find pet',
           type: 'reference',
           options: {
-            inputType: 'autocomplete'
+            inputType: 'select',
+            searchable: true,
           },
           to: [
             {

@@ -3,6 +3,7 @@ import boolean from 'part:@sanity/form-builder/input/boolean?'
 import date from 'part:@sanity/form-builder/input/date?'
 import email from 'part:@sanity/form-builder/input/email?'
 import geopoint from 'part:@sanity/form-builder/input/geopoint?'
+import image from 'part:@sanity/form-builder/input/image?'
 import number from 'part:@sanity/form-builder/input/number?'
 import object from 'part:@sanity/form-builder/input/object?'
 import reference from 'part:@sanity/form-builder/input/reference?'
@@ -12,6 +13,7 @@ import url from 'part:@sanity/form-builder/input/url?'
 import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
 import DefaultReference from '../inputs/Reference'
+import resolveReference from './resolveReference'
 
 const primitiveTypes = {
   array,
@@ -30,7 +32,7 @@ const bundledTypes = {
 }
 const coreTypes = Object.assign({}, primitiveTypes, bundledTypes)
 
-const inputResolver = (field, fieldType) => {
+export default function inputResolver(field, fieldType) {
   if (field.component || fieldType.component) {
     return field.component || fieldType.component
   }
@@ -38,7 +40,8 @@ const inputResolver = (field, fieldType) => {
   if (field.input === 'slate') {
     return SlateBlockEditor
   }
+  if (field.type === 'reference') {
+    return resolveReference(field)
+  }
   return field.input || inputRole
 }
-
-export default inputResolver
