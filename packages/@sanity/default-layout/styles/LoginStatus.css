@@ -4,7 +4,7 @@
   display: block;
   text-align: center;
 
-  @media(--medium-screen) {
+  @media(--screen-medium) {
     text-align: left;
     line-height: var(--header-height);
   }
