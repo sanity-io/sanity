@@ -1,3 +1,6 @@
+// (Node 4 compat)
+'use strict' // eslint-disable-line strict
+
 const test = require('tape')
 const nock = require('nock')
 const assign = require('xtend')
@@ -5,9 +8,10 @@ const sanityClient = require('../src/sanityClient')
 const noop = () => {} // eslint-disable-line no-empty-function
 
 const apiHost = 'api.sanity.url'
-const projectHost = (projectId = 'bf1942') => `https://${projectId}.${apiHost}`
+const defaultProjectId = 'bf1942'
+const projectHost = projectId => `https://${projectId || defaultProjectId}.${apiHost}`
 const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
-const getClient = (conf = {}) => sanityClient(assign({}, clientConfig, conf))
+const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
 
 /*****************
  * BASE CLIENT   *

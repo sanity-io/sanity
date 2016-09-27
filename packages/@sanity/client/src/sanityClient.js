@@ -7,7 +7,7 @@ const ProjectsClient = require('./projects/projectsClient')
 const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
-const {getRequestOptions} = require('./http/requestOptions')
+const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
 
 const allowedEvents = ['request']

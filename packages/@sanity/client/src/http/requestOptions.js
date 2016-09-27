@@ -1,7 +1,7 @@
 const tokenHeader = 'Sanity-Token'
 const projectHeader = 'Sanity-Project-ID'
 
-exports.getRequestOptions = config => {
+module.exports = config => {
   const headers = {}
 
   if (config.token) {
