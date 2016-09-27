@@ -1,3 +1,5 @@
+[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)
+
 # Sanity client
 
 Javascript client for Sanity. Works in browsers (IE8+) and node.js.
