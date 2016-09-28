@@ -40,7 +40,11 @@ class DataAspectsResolver {
 
   fallbackItemDisplayField(typeName) {
     const type = this.getType(typeName)
-    const field = type.fields.find(currField => {
+    if (!type) {
+      return null
+    }
+    const fieldsForType = type.fields || []
+    const field = fieldsForType.find(currField => {
       return ['name', 'title', 'label'].includes(currField.name)
     })
     return field ? field.name : null
