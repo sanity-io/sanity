@@ -1,4 +1,3 @@
-import React, {PropTypes} from 'react'
 import client from 'part:@sanity/base/client'
 import {ReferenceInput} from '../../index'
 import {unprefixType} from '../utils/unprefixType'
@@ -48,7 +47,7 @@ function search(field) {
     .then(response => response.map(unprefixType))
 }
 
-const ReferenceAutoComplete = ReferenceInput.createAutoComplete({
+const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search,
   materializeReferences
 })
@@ -62,7 +61,7 @@ export default function resolveReference(field) {
   const fieldOptions = field.options || {}
   if (fieldOptions.inputType === 'select') {
     return fieldOptions.searchable
-      ? ReferenceAutoComplete
+      ? ReferenceSearchableSelect
       : ReferenceSelect
   }
   return ReferenceBrowser

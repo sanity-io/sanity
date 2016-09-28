@@ -14,7 +14,24 @@ export default {
         {
           name: 'pet',
           title: 'Browse for pet',
+          description: 'Just the default',
           type: 'reference',
+          to: [
+            {
+              type: 'pet',
+              title: 'Pet'
+            }
+          ]
+        },
+        {
+          name: 'pet4',
+          title: 'Browse for pet with search',
+          type: 'reference',
+          description: 'inputType is browser, and searchable is true',
+          options: {
+            inputType: 'browse',
+            searchable: true,
+          },
           to: [
             {
               type: 'pet',
@@ -26,6 +43,7 @@ export default {
           name: 'pet2',
           title: 'Select pet',
           type: 'reference',
+          description: 'inputType is select, and searchable is false',
           options: {
             inputType: 'select',
             searchable: false,
@@ -40,6 +58,7 @@ export default {
         {
           name: 'pet3',
           title: 'Type to find pet',
+          description: 'inputType is select, and searchable is true',
           type: 'reference',
           options: {
             inputType: 'select',

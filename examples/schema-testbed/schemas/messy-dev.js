@@ -209,7 +209,7 @@ export default {
     },
     {
       name: 'personName',
-      title: 'Autocomplete person',
+      title: 'Autocomplete person (legacy)',
       type: 'string',
       autocompletes: {
         scope: 'person'

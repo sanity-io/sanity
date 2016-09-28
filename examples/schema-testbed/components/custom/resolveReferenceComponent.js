@@ -30,7 +30,7 @@ function search(query, field) {
   ))
 }
 
-const ReferenceAutoComplete = ReferenceInput.createAutoComplete({
+const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search,
   materializeReferences
 })
@@ -49,7 +49,7 @@ export default function resolveReference(field) {
   const fieldOptions = field.options || {}
   if (fieldOptions.inputType === 'select') {
     return fieldOptions.searchable
-      ? ReferenceAutoComplete
+      ? ReferenceSearchableSelect
       : ReferenceSelect
   }
   return ReferenceBrowser

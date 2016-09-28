@@ -14,7 +14,7 @@ export const createReferenceInput = function deprecated(...args) {
   // eslint-disable-next-line no-console
   console.warn(
       '[deprecated] FormBuilder.createReferenceInput is deprecated, use either '
-    + 'FormBuilder.ReferenceInput.createAutoComplete or FormBuilder.ReferenceInput.createBrowser(...)'
+    + 'FormBuilder.ReferenceInput.createSearchableSelect or FormBuilder.ReferenceInput.createBrowser(...)'
   )
-  return ReferenceInput.createAutoComplete(...args)
+  return ReferenceInput.createSearchableSelect(...args)
 }
