@@ -19,7 +19,7 @@ const containerStyle = {
 
 const defaultItems = range(100).map((item, i) => {
   return {
-    index: `${i}`,
+    key: `${i}`,
     title: faker.name.findName()
   }
 })
@@ -69,6 +69,35 @@ storiesOf('Lists')
     role: 'part:@sanity/components/lists/default'
   }
 )
+
+.addWithInfo(
+  'Default, scrollable with selected item and highlighted item',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    let selectedItem = defaultItems[3]
+    const highlightedItem = defaultItems[5]
+    const setSelectedItem = function (item) {
+      selectedItem = item
+    }
+    return (
+      <div style={containerStyle}>
+        <DefaultList
+          items={defaultItems}
+          selectedItem={selectedItem}
+          highlightedItem={highlightedItem}
+          onSelect={setSelectedItem} scrollable
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
 
 .addWithInfo(
   'Default scrollable, with selected item outside view',

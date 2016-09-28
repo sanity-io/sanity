@@ -23,19 +23,19 @@ storiesOf('Menus')
           items={[
             {
               title: 'First item',
-              index: '1'
+              key: '1'
             },
             {
               title: 'Second item',
-              index: '1'
+              key: '1'
             },
             {
               title: 'Third item',
-              index: '3'
+              key: '3'
             },
             {
               title: 'Extra item',
-              index: '4',
+              key: '4',
               divider: true
             }
           ]}
@@ -59,24 +59,24 @@ storiesOf('Menus')
       {
         title: 'First item',
         icon: SanityIcon,
-        index: '1'
+        key: '1'
       },
       {
         title: 'Second item',
         icon: SanityIcon,
-        index: '2'
+        key: '2'
       },
       {
         title: 'Third item',
         icon: SanityIcon,
-        index: '3'
+        key: '3'
       },
       {
         kind: 'divider'
       },
       {
         title: 'Extra item',
-        index: '4',
+        key: '4',
         icon: SanityIcon
       }
     ]

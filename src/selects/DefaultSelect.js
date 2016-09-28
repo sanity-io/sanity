@@ -23,7 +23,8 @@ export default class DefaultSelect extends React.Component {
 
   static defaultProps = {
     onChange() {},
-    onBlur() {}
+    onBlur() {},
+    onFocus() {}
   }
 
   componentWillReceiveProps(nextProps) {
@@ -61,7 +62,7 @@ export default class DefaultSelect extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = uniqueId('DefaultTextField')
+    this._inputId = uniqueId('DefaultSelect')
   }
 
   render() {
@@ -71,7 +72,7 @@ export default class DefaultSelect extends React.Component {
     const rootClass = error ? styles.error : styles.root
 
     return (
-      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId}>
+      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId || ''}>
         <div className={styles.selectContainer}>
           <select
             className={styles.select}

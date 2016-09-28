@@ -19,15 +19,12 @@ export default class DefaultList extends React.Component {
     scrollable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectedItem: PropTypes.object,
+    highlightedItem: PropTypes.object,
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
     layout: PropTypes.oneOf(['media', 'block', 'string']),
     renderItem: PropTypes.func
-  }
-
-  static defaultProps = {
-    selectedItemIndex: null
   }
 
   constructor(context, props) {
@@ -39,8 +36,11 @@ export default class DefaultList extends React.Component {
   }
 
   handleSelect(event) {
-    const itemIndex = event.currentTarget.getAttribute('data-item-index')
-    this.props.onSelect(this.props.items[itemIndex])
+    const key = event.currentTarget.getAttribute('data-item-key')
+    const selectedItem = this.props.items.find(item => {
+      return item.key === key
+    })
+    this.props.onSelect(selectedItem)
   }
 
   setListContainer(element) {
@@ -62,7 +62,7 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, layout, className, selectedItem, renderItem, scrollable} = this.props
+    const {items, layout, className, selectedItem, highlightedItem, renderItem, scrollable} = this.props
 
     return (
       <div className={`${scrollable ? styles.scrollable : styles.root} ${className} `}>
@@ -84,11 +84,10 @@ export default class DefaultList extends React.Component {
                 return (
                   <ListItem
                     layout={layout}
-                    title={item.title}
-                    icon={item.icon}
+                    item={item}
+                    key={item.key}
                     selected={selectedItem == item}
-                    key={i}
-                    index={`${i}`}
+                    highlighted={highlightedItem == item}
                     onSelect={this.handleSelect}
                     className={styles.item}
                     scrollIntoView={this.scrollElementIntoViewIfNeeded}

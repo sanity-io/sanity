@@ -11,6 +11,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 export default class SearchableSelect extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
+    description: PropTypes.string,
     onChange: PropTypes.func,
     onSearch: PropTypes.func,
     onOpen: PropTypes.func,
@@ -90,36 +91,25 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleBlur(event) {
-    this.setState({
-      hasFocus: false,
-      inputSelected: false,
-      showList: false
-    })
+    // this.setState({
+    //   hasFocus: false,
+    //   inputSelected: false,
+    //   showList: false
+    // })
     this.props.onBlur(event)
   }
 
   handleSelect(item) {
+    this.props.onChange(item)
     this.setState({
-      //value: item.title,
-      searchResult: [],
       showList: false
     })
-    this.props.onChange(item)
   }
 
   handleOpenList() {
-    if (this.state.query) {
-      this.setState({
-        showList: true,
-        searchResult: this.fuse.search(this.state.query)
-      })
-    } else {
-      this.setState({
-        showList: true,
-        searchResult: this.props.items
-      })
-    }
-
+    this.setState({
+      showList: true,
+    })
     this.props.onOpen()
   }
 
@@ -140,35 +130,29 @@ export default class SearchableSelect extends React.Component {
 
   handleInputChange(event) {
     const query = event.target.value
-
-    // When no props.onSearch is given, search inside the items
-    if (!this.props.onSearch(query) && this.props.items) {
-      this.setState({
-        searchResult: this.fuse.search(query),
-        query: query,
-        inputValue: query,
-        showList: true,
-        inputSelected: false
-      })
-    }
+    this.setState({
+      inputValue: query
+    })
+    this.props.onSearch(query)
   }
 
   handleKeyDown(event) {
-    const {arrowNavigationPosition, searchResult} = this.state
-    if (searchResult) {
+    const {items} = this.props
+    const {arrowNavigationPosition} = this.state
+    if (items) {
       if (event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition - 1,
-          inputValue: searchResult[arrowNavigationPosition - 1].title,
+          inputValue: items[arrowNavigationPosition - 1].title,
           showList: true
         })
         return false
       }
 
-      if (event.key == 'ArrowDown' && arrowNavigationPosition < searchResult.length - 1) {
+      if (event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition + 1,
-          inputValue: searchResult[arrowNavigationPosition + 1].title,
+          inputValue: items[arrowNavigationPosition + 1].title,
           showList: true
         })
         return false
@@ -178,9 +162,10 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleKeyUp(event) {
-    const {arrowNavigationPosition, searchResult} = this.state
+    const {items} = this.props
+    const {arrowNavigationPosition} = this.state
     if (event.key == 'Enter' && arrowNavigationPosition) {
-      this.handleSelect(searchResult[arrowNavigationPosition])
+      this.handleSelect(items[arrowNavigationPosition])
       this.setState({
         hasFocus: false
       })
@@ -190,22 +175,22 @@ export default class SearchableSelect extends React.Component {
   }
 
   componentWillMount() {
-    this._inputId = uniqueId('SearchAbleSelect')
+    this._inputId = uniqueId('SearchableSelect')
   }
 
   render() {
-    const {label, error, placeholder, loading, value} = this.props
-    const {hasFocus, searchResult, showList, arrowNavigationPosition} = this.state
+    const {label, error, placeholder, loading, value, description, items} = this.props
+    const {hasFocus, showList, arrowNavigationPosition} = this.state
 
 
     return (
       <DefaultFormField
         className={`${styles.root} ${hasFocus && styles.focused} ${error && styles.error}`}
+        description={description}
         labelHtmlFor={this._inputId}
         label={label}
       >
         <div className={styles.selectContainer}>
-
           <DefaultTextInput
             className={styles.select}
             id={this._inputId}
@@ -219,22 +204,21 @@ export default class SearchableSelect extends React.Component {
             selected={this.state.inputSelected}
             hasFocus={this.state.hasFocus}
           />
-
           {loading && <div className={styles.spinner}><Spinner /></div>}
           {!loading && <div className={styles.icon} onClick={this.handleArrowClick}>
             <FaAngleDown color="inherit" />
           </div>}
-
         </div>
 
         <div className={`${showList > 0 ? styles.listContainer : styles.listContainerHidden}`}>
           {
-            searchResult.length == 0 && <p className={styles.noResultText}>No result</p>
+            items.length == 0 && <p className={styles.noResultText}>No result</p>
           }
           <DefaultList
-            items={searchResult}
+            items={items}
             scrollable
-            selectedItem={(searchResult && searchResult[arrowNavigationPosition]) || value}
+            highlightedItem={(items && items[arrowNavigationPosition]) || value}
+            selectedItem={value}
             onSelect={this.handleSelect}
           />
         </div>

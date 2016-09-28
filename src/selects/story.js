@@ -10,7 +10,8 @@ import Fuse from 'fuse.js'
 
 const items = range(100).map((item, i) => {
   return {
-    title: faker.name.findName()
+    title: faker.name.findName(),
+    key: `${i}`
   }
 })
 
@@ -20,15 +21,14 @@ class SearchableTest extends React.Component {
   constructor(...args) {
     super(...args)
 
-    this.handleSearch = this.handleSearch.bind(this)
-
     const fuseOptions = {
       keys: ['title']
     }
 
     this.searchAbleItems = range(100).map((item, i) => {
       return {
-        title: faker.name.findName()
+        title: faker.name.findName(),
+        key: `${i}`
       }
     })
 
@@ -39,7 +39,7 @@ class SearchableTest extends React.Component {
     }
   }
 
-  handleSearch(query) {
+  handleSearch = query => {
     const result = this.fuse.search(query)
     this.setState({
       loading: true
@@ -59,7 +59,7 @@ class SearchableTest extends React.Component {
         label="This is the label"
         placeholder="This is the placeholder"
         onSearch={this.handleSearch}
-        onChange={action('onChange')}
+        onChange={action('handleChange')}
         onFocus={action('onFocus')}
         onOpen={action('onOpen')}
         loading={this.state.loading}
@@ -117,29 +117,6 @@ storiesOf('Selects')
     role: 'part:@sanity/components/selects/default'
   }
 )
-.addWithInfo(
-  'Searchable items',
-  `
-    When provided with items, the component searches inside these when no onSearch is provided
-  `,
-  () => {
-    return (
-      <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onChange')}
-        onBlur={action('onBlur')}
-        onOpen={action('onOpen')}
-        items={items}
-      />
-    )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
-  }
-)
 
 .addWithInfo(
   'Searchable (selected value)',
@@ -157,30 +134,6 @@ storiesOf('Selects')
         onOpen={action('onOpen')}
         value={items[5]}
         items={items}
-      />
-    )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
-  }
-)
-.addWithInfo(
-  'Searchable function',
-  `
-    When an onSearch is provided. Populate the items, and remember to set loading when waiting for server.
-  `,
-  () => {
-
-    return (
-      <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onSearch={action('onSearch')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onOpen={action('onOpen')}
-        items={[]}
       />
     )
   },
@@ -218,7 +171,7 @@ storiesOf('Selects')
 
 
 .addWithInfo(
-  'Searchable ajax example',
+  'Searchable example',
   `
     When an onSearch is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
   `,

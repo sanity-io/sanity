@@ -4,14 +4,14 @@ import ReactDOM from 'react-dom'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
-    content: PropTypes.node,
-    extraContent: PropTypes.node,
-    icon: PropTypes.node,
+    onSelect: PropTypes.func.isRequired,
+    item: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired
+    }),
     layout: PropTypes.string,
     selected: PropTypes.bool,
-    onSelect: PropTypes.func,
-    index: PropTypes.string,
+    highlighted: PropTypes.bool,
     scrollIntoView: PropTypes.func
   }
 
@@ -60,26 +60,27 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {layout, title, icon, selected, index, content} = this.props
+    const {item, layout, selected, highlighted} = this.props
     const {mouseIsDown} = this.state
 
     const rootClasses = `
       ${styles[layout] || styles.default}
       ${selected ? styles.selected : styles.unSelected}
+      ${highlighted ? styles.highlighted : styles.unHighlighted}
       ${mouseIsDown && styles.active}
     `
     return (
       <li
         className={rootClasses}
         onClick={this.handleClick}
-        data-item-index={index}
+        data-item-key={item.key}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
       >
-        <div className={styles.icon}>{icon}</div>
-        <div className={styles.title}>{title}</div>
-        <div>
-          {content}
+        <div className={styles.icon}>{item.icon}</div>
+        <div className={styles.title}>{item.title}</div>
+        <div className={styles.content}>
+          {item.content}
         </div>
       </li>
     )

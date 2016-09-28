@@ -19,6 +19,10 @@
       background-color: color(var(--default-item-background-color) blend(var(--default-item-selected-color) 40%));
     }
 
+    &.highlighted {
+      background-color: color(var(--default-item-background-color) blend(var(--default-item-selected-color) 20%));
+    }
+
     &.active {
       background-color: var(--default-item-active-color);
       color: #fff;
@@ -35,6 +39,10 @@
       &.selected {
         background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
       }
+
+      &.highlighted {
+        background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 20%));
+      }
     }
   }
 
@@ -43,6 +51,10 @@
 
     &.selected {
       background-color: color(var(--default-item-odd-background-color) blend(var(--default-item-selected-color) 40%));
+    }
+
+    &.highlighted {
+      background-color: color(var(--default-item-odd-background-color) blend(var(--default-item-selected-color) 20%));
     }
 
     &.active {
@@ -60,6 +72,10 @@
 
       &.selected {
         background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 50%));
+      }
+
+      &.highlighted {
+        background-color: color(var(--default-item-background-color-hover) blend(var(--default-item-selected-color) 20%));
       }
     }
   }
