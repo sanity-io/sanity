@@ -59,7 +59,7 @@ class SearchableTest extends React.Component {
         label="This is the label"
         placeholder="This is the placeholder"
         onSearch={this.handleSearch}
-        onChange={action('handleChange')}
+        onChange={action('onChange')}
         onFocus={action('onFocus')}
         onOpen={action('onOpen')}
         loading={this.state.loading}
