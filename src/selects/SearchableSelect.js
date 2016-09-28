@@ -41,15 +41,6 @@ export default class SearchableSelect extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleOpenList = this.handleOpenList.bind(this)
-    this.handleCloseList = this.handleCloseList.bind(this)
-    this.handleArrowClick = this.handleArrowClick.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleKeyUp = this.handleKeyUp.bind(this)
 
     this.state = {
       hasFocus: false,
@@ -81,7 +72,7 @@ export default class SearchableSelect extends React.Component {
     }
   }
 
-  handleFocus(event) {
+  handleFocus = event => {
     this.setState({
       hasFocus: true,
       inputSelected: true
@@ -90,7 +81,7 @@ export default class SearchableSelect extends React.Component {
     this.props.onFocus(event)
   }
 
-  handleBlur(event) {
+  handleBlur = event => {
     // this.setState({
     //   hasFocus: false,
     //   inputSelected: false,
@@ -99,28 +90,26 @@ export default class SearchableSelect extends React.Component {
     this.props.onBlur(event)
   }
 
-  handleSelect(item) {
+  handleSelect = item => {
     this.props.onChange(item)
-    this.setState({
-      showList: false
-    })
+    this.handleCloseList()
   }
 
-  handleOpenList() {
+  handleOpenList = () => {
     this.setState({
       showList: true,
     })
     this.props.onOpen()
   }
 
-  handleCloseList() {
+  handleCloseList = () => {
     this.setState({
       showList: false
     })
     this.props.onClose()
   }
 
-  handleArrowClick() {
+  handleArrowClick = () => {
     if (this.state.showList) {
       this.handleCloseList()
     } else {
@@ -128,7 +117,7 @@ export default class SearchableSelect extends React.Component {
     }
   }
 
-  handleInputChange(event) {
+  handleInputChange = event => {
     const query = event.target.value
     this.setState({
       inputValue: query
@@ -136,7 +125,7 @@ export default class SearchableSelect extends React.Component {
     this.props.onSearch(query)
   }
 
-  handleKeyDown(event) {
+  handleKeyDown = event => {
     const {items} = this.props
     const {arrowNavigationPosition} = this.state
     if (items) {
@@ -161,7 +150,7 @@ export default class SearchableSelect extends React.Component {
     return true
   }
 
-  handleKeyUp(event) {
+  handleKeyUp = event => {
     const {items} = this.props
     const {arrowNavigationPosition} = this.state
     if (event.key == 'Enter' && arrowNavigationPosition) {
@@ -210,7 +199,7 @@ export default class SearchableSelect extends React.Component {
           </div>}
         </div>
 
-        <div className={`${showList > 0 ? styles.listContainer : styles.listContainerHidden}`}>
+        <div className={`${showList ? styles.listContainer : styles.listContainerHidden}`}>
           {
             items.length == 0 && <p className={styles.noResultText}>No result</p>
           }
