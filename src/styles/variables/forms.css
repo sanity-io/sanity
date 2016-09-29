@@ -11,6 +11,10 @@
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--gray-light);
   --input-border-color: var(--gray-light);
+  --input-border-size: 1px;
+  --input-line-height: 2em;
+  --input-padding-vertical: 0.5em;
+  --input-padding-horizontal: 0.2em;
 
   --input-border-radius: var(--border-radius-base);
   --input-border-radius-large: var(--border-radius-large);
