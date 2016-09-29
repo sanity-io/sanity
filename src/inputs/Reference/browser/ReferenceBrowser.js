@@ -3,6 +3,7 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import ItemPreview from '../common/ItemPreview'
 import Button from 'part:@sanity/components/buttons/default' //eslint-disable-line
+import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line
 import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
 import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable-line
@@ -219,7 +220,7 @@ export default class ReferenceBrowser extends React.Component {
       const materializedValue = refCache[value.refId]
       if (!materializedValue) {
         return (
-          <div>
+          <div className={styles.preview}>
             <Spinner />
             Loading…
           </div>
@@ -229,7 +230,7 @@ export default class ReferenceBrowser extends React.Component {
       // Todo: make context.field an official / formalized thing
       const itemField = materializedValue.context.field
       return (
-        <div>
+        <div className={styles.preview}>
           <ItemPreview
             field={itemField}
             value={materializedValue}
@@ -240,12 +241,14 @@ export default class ReferenceBrowser extends React.Component {
 
     const renderButtons = () => {
       if (value.isEmpty()) {
-        return <Button className={styles.chooseButton} onClick={this.handleShowDialog}>Browse…</Button>
+        return <div className={styles.buttons}>
+          <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
+        </div>
       }
       return (
-        <div>
-          <Button className={styles.clearButton} onClick={this.handleClearValue}>Delete</Button>
-          <Button className={styles.replaceButton} onClick={this.handleShowDialog}>Change</Button>
+        <div className={styles.buttons}>
+          <InInputButton onClick={this.handleClearValue} kind="danger">Delete</InInputButton>
+          <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
         </div>
       )
     }

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReferenceBrowser from './browser/ReferenceBrowser'
 import ValueContainer from './common/ValueContainer'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import FormField from 'part:@sanity/components/formfields/default'
 
 export default function createReferenceInput({fetch, materializeReferences}) {
 
@@ -12,13 +12,13 @@ export default function createReferenceInput({fetch, materializeReferences}) {
 
   function ReferenceInput(props) {
     return (
-      <Fieldset legend={props.field.title} level={props.level}>
+      <FormField label={props.field.title} level={props.level}>
         <ReferenceBrowser
           fetchFn={fetch}
           materializeReferences={materializeReferences}
           {...props}
         />
-      </Fieldset>
+      </FormField>
     )
   }
 }
