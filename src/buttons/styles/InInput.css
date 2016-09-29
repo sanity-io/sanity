@@ -15,8 +15,7 @@
   float: right;
   margin-top: calc(var(--input-padding-horizontal) * -1);
   padding: 0 1em;
-  height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2 - var(--input-border-size) * 2);
-  border-left: var(--input-border-size) solid  var(--input-border-color);
+  border: 1px solid red;
 
   &:first-child {
     margin-right: calc(var(--input-padding-vertical) * -1);
