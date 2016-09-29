@@ -12,7 +12,6 @@ import text from 'part:@sanity/form-builder/input/text?'
 import url from 'part:@sanity/form-builder/input/url?'
 import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
-import DefaultReference from '../inputs/Reference'
 import resolveReference from './resolveReference'
 
 const primitiveTypes = {
@@ -21,7 +20,7 @@ const primitiveTypes = {
   date,
   number,
   object,
-  reference: reference || DefaultReference,
+  reference: reference,
   string
 }
 const bundledTypes = {
