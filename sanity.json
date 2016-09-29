@@ -55,10 +55,6 @@
       "description": "Provides a bunch of shadows to pick from. Based on Material Design Lite"
     },
     {
-      "name": "part:@sanity/base/theme/normalize-style",
-      "description": "Normalizes css"
-    },
-    {
       "name": "part:@sanity/base/theme/variables/brand-colors-style",
       "description": "Brand colors. Other colors are based on this"
     },
@@ -187,7 +183,6 @@
       "name": "part:@sanity/base/theme/typography/text-blocks-style",
       "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
     },
-
     {
       "name": "part:@sanity/base/theme/typography/forms",
       "description": "Typography for the forms. Levels, headings, label, legends. etc"
@@ -197,8 +192,6 @@
       "name": "part:@sanity/base/theme/typography/code-style",
       "description": "Styling for code"
     },
-
-
     {
       "implements": "part:@sanity/base/root",
       "path": "components/DefaultRootComponent.js"
@@ -206,10 +199,6 @@
     {
       "implements": "part:@sanity/base/schema-creator",
       "path": "schema/createSchema.js"
-    },
-    {
-      "implements": "part:@sanity/base/theme/normalize-style",
-      "path": "styles/normalize.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",
