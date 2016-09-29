@@ -1,5 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
-@import "./normalize.css";
+@import "./reset.css";
 @use postcss-cssnext;
 
 body {
@@ -7,4 +7,7 @@ body {
   font-family: var(--font-family-base);
   line-height: var(--line-height-base);
   color: var(--text-color);
+
+  font-family: var(--font-family-sans-serif);
+  background-color: var(--body-bg);
 }
