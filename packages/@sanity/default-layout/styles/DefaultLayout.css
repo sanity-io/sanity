@@ -1,6 +1,13 @@
-@import 'part:@sanity/base/theme/variables-style';
-@import './reset.css';
-@import './body.css';
+@import "part:@sanity/base/theme/variables-style";
+@import "part:@sanity/base/theme/body-style";
+
+:global(body) {
+  overflow-x: hidden;
+  @media (--screen-medium) {
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
 
 .defaultLayout {
   padding: 0;
