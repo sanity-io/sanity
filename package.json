@@ -28,7 +28,8 @@
     "babel-eslint": "^6.0.4",
     "babel-preset-react-hmre": "^1.1.1",
     "eslint": "^3.3.0",
-    "eslint-config-sanity": "^1.1.1"
+    "eslint-config-sanity": "^1.1.1",
+    "eslint-plugin-react": "^6.3.0"
   },
   "repository": {
     "type": "git",

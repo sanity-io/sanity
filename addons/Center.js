@@ -1,3 +1,5 @@
+import React from 'react'
+
 const styles = {
   position: 'absolute',
   top: '50%',
