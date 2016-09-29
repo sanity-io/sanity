@@ -11,9 +11,72 @@
 }
 
 .root {
-  height: 1rem;
-  width: 1rem;
+  /* root */
+}
+
+.block {
+  composes: root;
   display: block;
+  text-align: center;
+
+  @nest & svg {
+    height: 1em;
+    width: 1em;
+  }
+
+  @nest & .message {
+    display: block;
+  }
+}
+
+.inline {
+  composes: root;
+  display: inline-block;
+
+  @nest & svg {
+    margin-top: -0.2em;
+    height: 1em;
+    width: 1em;
+  }
+
+  @nest & .message {
+    margin-left: 0.5em;
+    display: inline;
+  }
+}
+
+.fullscreen {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  @nest & .inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  @nest & .inner {
+    color: #ccc;
+  }
+
+  @nest & svg {
+    display: inline-block;
+    text-align: center;
+    height: 3em;
+    width: 3em;
+  }
+
+  @nest & .message {
+    text-align: center;
+    line-height: 2em;
+    display: block;
+  }
 }
 
 .root svg {
@@ -22,6 +85,4 @@
   animation-duration: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  height: 1em;
-  width: 1em;
 }
