@@ -5,10 +5,10 @@ import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import DefaultList from 'part:@sanity/components/lists/default'
-import Fuse from 'fuse.js'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import enhanceWithClickOutside from 'react-click-outside'
 
-export default class SearchableSelect extends React.Component {
+class SearchableSelect extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     description: PropTypes.string,
@@ -49,10 +49,10 @@ export default class SearchableSelect extends React.Component {
       inputSelected: false,
       arrowNavigationPosition: 0
     }
-    const fuseOptions = {
-      keys: ['title']
-    }
-    this.fuse = new Fuse(this.props.items, fuseOptions)
+  }
+
+  handleClickOutside = () => {
+    this.handleCloseList()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -216,3 +216,5 @@ export default class SearchableSelect extends React.Component {
     )
   }
 }
+
+export default enhanceWithClickOutside(SearchableSelect)
