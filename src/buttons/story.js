@@ -1,7 +1,11 @@
 import React from 'react'
+
+import styles from './styles/story.css'
+
 import Button from 'part:@sanity/components/buttons/default'
 import Fab from 'part:@sanity/components/buttons/fab'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import InInputButton from 'part:@sanity/components/buttons/in-input'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
@@ -68,6 +72,38 @@ storiesOf('Buttons')
       <DropDownButton items={items} onAction={action('Clicked item')}>
         This is a dropdown
       </DropDownButton>
+    )
+  },
+  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+)
+
+.addWithInfo(
+  'InInput',
+  'Buttons that are inside an input field',
+  () => {
+    return (
+      <div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            This is the input
+            <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+          </div>
+        </div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            This is the with danger button
+            <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+          </div>
+        </div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            More buttons
+            <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
+            <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+          </div>
+        </div>
+      </div>
+
     )
   },
   {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}

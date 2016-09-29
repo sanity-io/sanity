@@ -38,6 +38,14 @@
       "description": "Drop down button styling"
     },
     {
+      "name": "part:@sanity/components/buttons/in-input",
+      "description": "Button inside an input"
+    },
+    {
+      "name": "part:@sanity/components/buttons/in-input-style",
+      "description": "Styling for button inside an input"
+    },
+    {
       "name": "part:@sanity/components/loading/spinner",
       "description": "Spinner to show activity"
     },
@@ -273,6 +281,9 @@
       "implements":  "part:@sanity/components/buttons/dropdown",
       "path": "buttons/DropDownButton.js"
     },
+
+
+
     {
       "implements":  "part:@sanity/components/toggles/switch",
       "path": "toggles/Switch.js"
@@ -372,6 +383,14 @@
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",
       "path": "buttons/styles/DropDownButton.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/in-input",
+      "path": "buttons/InInput.js"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/in-input-style",
+      "path": "buttons/styles/InInput.css"
     },
     {
       "implements": "part:@sanity/components/loading/spinner-style",

@@ -1,0 +1,7 @@
+.inputContainer {
+  margin: 5em;
+}
+
+.input {
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+}

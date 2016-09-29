@@ -1,0 +1,64 @@
+@import "part:@sanity/base/theme/variables-style";
+
+@use postcss-cssnext;
+
+.root {
+  display: block;
+  position: relative;
+  text-transform: uppercase;
+  outline: none;
+  cursor: pointer;
+  background-color: var(--input-bg);
+  border: none;
+  line-height: var(--input-line-height);
+  user-select: none;
+  float: right;
+  margin-top: calc(var(--input-padding-horizontal) * -1);
+  padding: 0 1em;
+  height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2 - var(--input-border-size) * 2);
+  border-left: var(--input-border-size) solid  var(--input-border-color);
+
+  &:first-child {
+    margin-right: calc(var(--input-padding-vertical) * -1);
+  }
+
+  &:hover {
+    background-color: var(--input-border-color-focus);
+    border-color: var(--input-border-color-focus);
+    color: var(--input-bg);
+  }
+}
+
+.colored {
+  composes: root;
+  background-color: var(--brand-primary);
+  color: #fff;
+}
+
+.small {
+  font-size: 0.8em;
+}
+
+.danger {
+  composes: root;
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+
+  &:hover {
+    background-color: var(--brand-danger);
+    border-color: var(--brand-danger);
+    color: var(--input-bg);
+  }
+}
+
+.delete {
+  composes: danger;
+}
+
+.add {
+  composes: colored;
+}
+
+.save {
+  composes: root;
+}
