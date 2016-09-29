@@ -24,8 +24,7 @@
     flex-basis: 10em;
     max-height: 100%;
     width: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
   }
 }
 
@@ -70,8 +69,13 @@
   margin: 0;
   padding: 0;
 
+
   @media (--screen-medium) {
-    padding-top: 3rem;
+    box-sizing: border-box;
+    margin-top: 3rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: calc(100% - 3rem);
   }
 }
 

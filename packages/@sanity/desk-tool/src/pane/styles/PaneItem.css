@@ -30,20 +30,22 @@
 .link {
   display: block;
   position: relative;
-  padding: 0 1em;
   text-decoration: none;
   color: var(--selectable-item-color);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  padding-right: 1em;
+  margin-left: 1em;
 
+  /*
   &::after {
     position: absolute;
     right: 0;
     content: "\232A";
     opacity: 0.2;
     color: var(--selectable-item-color);
-  }
+  }*/
 
   &:hover {
     color: var(--selectable-item-color-hover);
@@ -54,6 +56,7 @@
   composes: link;
   font-weight: 700;
   color: var(--selected-item-color);
+  border-bottom: 0.2em solid var(--selected-item-color);
 
   @media (--screen-medium) {
     &::after {
