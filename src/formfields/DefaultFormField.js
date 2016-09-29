@@ -2,11 +2,12 @@ import React, {PropTypes} from 'react'
 
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import {uniqueId} from 'lodash'
 
 export default class DefaultFormField extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
-    labelHtmlFor: PropTypes.string.isRequired,
+    labelHtmlFor: PropTypes.string,
     className: PropTypes.string,
     inline: PropTypes.bool,
     description: PropTypes.string,
@@ -17,6 +18,10 @@ export default class DefaultFormField extends React.Component {
 
   static defaultProps = {
     level: 0
+  }
+
+  componentWillMount() {
+    this._inputId = uniqueId('DefaultFormField')
   }
 
   render() {
@@ -37,7 +42,7 @@ export default class DefaultFormField extends React.Component {
         <div className={styles.inner}>
           <div className={styles.labelAndDescriptionWrapper}>
             <DefaultLabel
-              htmlFor={labelHtmlFor || ''}
+              htmlFor={labelHtmlFor || this._inputId}
               className={styles.label}
               level={level}
             >

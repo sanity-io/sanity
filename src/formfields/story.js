@@ -20,7 +20,7 @@ storiesOf('Form fields')
         description={faker.lorem.paragraphs(1)}
         labelHtmlFor={id}
       >
-        <DefaultTextInput id={id} />
+        <DefaultTextInput id={id} value="This is the children in form field" />
       </DefaultFormField>
     )
   },
