@@ -41,7 +41,6 @@
 
 .danger {
   composes: root;
-  border-color: var(--brand-danger);
   color: var(--brand-danger);
 
   &:hover {
