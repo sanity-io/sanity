@@ -63,15 +63,15 @@ assign(DataClient.prototype, {
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
 
-    return this.client.emit('request', method, body).then(() => {
-      const dataset = validators.hasDataset(this.client.clientConfig)
-      return this.client.request({
-        method: useGet ? 'GET' : 'POST',
-        uri: `/data/${endpoint}/${dataset}${stringQuery}`,
-        json: useGet ? true : body,
-        query: isMutation && mutationDefaults
+    return new Promise(resolve => resolve(validators.hasDataset(this.client.clientConfig)))
+      .then(dataset => {
+        return this.client.request({
+          method: useGet ? 'GET' : 'POST',
+          uri: `/data/${endpoint}/${dataset}${stringQuery}`,
+          json: useGet ? true : body,
+          query: isMutation && mutationDefaults
+        })
       })
-    })
   },
 
   _create(doc, op) {

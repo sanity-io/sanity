@@ -11,7 +11,7 @@ exports.initConfig = (config, prevConfig) => {
   const newConfig = assign({}, defaultConfig, prevConfig, config)
   const projectBased = newConfig.useProjectHostname
 
-  if (!newConfig.promise && typeof Promise === 'undefined') {
+  if (typeof Promise === 'undefined') {
     // @todo add help url?
     throw new Error('No native `Promise`-implementation found, polyfill needed')
   }

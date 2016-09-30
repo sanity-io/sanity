@@ -21,7 +21,8 @@
     "debug": "^2.2.0",
     "deep-assign": "^2.0.0",
     "in-publish": "^2.0.0",
-    "xtend": "^4.0.1"
+    "xtend": "^4.0.1",
+    "zen-observable": "^0.3.0"
   },
   "browser": {
     "request": "./lib/browser/request.js"

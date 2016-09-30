@@ -4,6 +4,9 @@
 
 Javascript client for Sanity. Works in browsers (IE8+) and node.js.
 
+## Requirements
+Sanity Client requires the JavaScript runtime to have a global ES6-compliant `Promise` available. If your runtime environment doesn't provide a spec compliant `Promise` implementation, we recommend using [native-promise-only](https://www.npmjs.com/package/native-promise-only), [es6-promise](https://www.npmjs.com/package/es6-promise) or another [spec-compliant](https://promisesaplus.com/implementations) implementation.
+
 ## Installation
 
 The client can be installed from npm:

@@ -45,54 +45,6 @@ test('throws on invalid dataset names', t => {
   t.end()
 })
 
-test('can add and emit events', t => {
-  const state = {emitted: false}
-  const client = getClient()
-  t.equal(client.on('request', emitted => Object.assign(state, {emitted})), client, 'on() returns client')
-  t.equal(typeof client.emit('request', 'foo').then, 'function', 'emit returns promise')
-  t.equal(state.emitted, 'foo', 'event handler called')
-  t.end()
-})
-
-test('throws when adding event handler of unknown type', t => {
-  t.throws(() => getClient().on('foo', noop), /Unknown event type/i)
-  t.end()
-})
-
-test('throws when adding event handler that is not a function', t => {
-  t.throws(() => getClient().on('request', 'bar'), /must be a function/i)
-  t.end()
-})
-
-test('throws when removing event handler of unknown type', t => {
-  t.throws(() => getClient().removeListener('foo', noop), /Unknown event type/i)
-  t.end()
-})
-
-test('does not throw when removing unregistered handler', t => {
-  t.doesNotThrow(() => getClient().removeListener('request', noop))
-  t.end()
-})
-
-test('does not throw when emitting without any handlers', t => {
-  t.doesNotThrow(() => getClient().emit('request', 'foo'))
-  t.end()
-})
-
-test('can remove registered handlers', t => {
-  const state = {called: 0}
-  const inc = () => state.called++
-  const client = getClient()
-
-  client.on('request', inc)
-  client.emit('request', 'foo')
-  client.removeListener('request', inc)
-  client.emit('request', 'bar')
-
-  t.equal(state.called, 1, 'count should be one')
-  t.end()
-})
-
 test('can use request() for API-relative requests', t => {
   nock(projectHost()).get('/v1/ping').reply(200, {pong: true})
 

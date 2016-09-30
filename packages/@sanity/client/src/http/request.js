@@ -1,6 +1,7 @@
 /* eslint-disable no-empty-function, no-process-env */
 const request = require('@sanity/request') // `request` in node, `xhr` in browsers
 const queryString = require('./queryString')
+const Observable = require('zen-observable')
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
 
@@ -9,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
   log = require('debug')('sanity:client')
 }
 
-module.exports = function httpRequest(options, callback) {
+module.exports = function httpRequest(options) {
   if (options.query) {
     options.uri += `?${queryString.stringify(options.query)}`
   }
@@ -21,11 +22,11 @@ module.exports = function httpRequest(options, callback) {
     }
   }
 
-  const Promised = options.promise
-  return new Promised((resolve, reject) => {
-    request(options, (err, res, body) => {
+  const observable = new Observable(observer => {
+    const req = request(options, (err, res, body) => {
       if (err) {
-        return reject(err)
+        observer.error(err)
+        return
       }
 
       log('Response code: %s', res.statusCode)
@@ -42,16 +43,53 @@ module.exports = function httpRequest(options, callback) {
         const error = new Error(msg || httpError(res))
         error.responseBody = stringifyBody(body, res)
         error.statusCode = res.statusCode
-        return reject(error)
+        observer.error(error)
+        return
       } else if (isHttpError) {
         const httpErr = new Error(httpError(res))
         httpErr.statusCode = res.statusCode
-        return reject(httpErr)
+        observer.error(httpErr)
+        return
       }
 
-      return resolve(body)
+      observer.next({name: 'response', body})
+      observer.complete()
     })
+    // Todo: shim over node/browser differences
+    if (req.upload) {
+      req.upload.onprogress = event => {
+        const percent = event.lengthComputable ? event.loaded / event.total : -1
+        observer.next({
+          name: 'progress',
+          stage: 'upload',
+          percent: percent
+        })
+      }
+    }
+    req.onprogress = event => {
+      const percent = event.lengthComputable ? event.loaded / event.total : -1
+      observer.next({
+        name: 'progress',
+        stage: 'download',
+        percent: percent
+      })
+    }
+    req.onabort = () => {
+      observer.next({name: 'abort'})
+      observer.complete()
+    }
+    return () => req.abort()
   })
+
+  observable.toPromise = () => {
+    let last
+    return observable
+      .forEach(value => {
+        last = value
+      })
+      .then(() => last.body)
+  }
+  return observable
 }
 
 function httpError(res) {
