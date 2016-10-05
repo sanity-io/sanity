@@ -10,7 +10,7 @@
     "start": "npm run example-testbed",
     "clean": "rimraf lib",
     "test": "sanity-check",
-    "compile": "babel -d lib/ src/",
+    "compile": "babel --out-dir lib/ src/ --copy-files",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish"
