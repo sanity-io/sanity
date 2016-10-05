@@ -1,6 +1,6 @@
 import equals from 'shallow-equals'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import {getFieldType} from '../../utils/getFieldType'
+import {getFieldType} from '../../schema/getFieldType'
 import React, {PropTypes} from 'react'
 
 // This component renders a single field in an object type. It emits onChange events telling the owner about the name of the field

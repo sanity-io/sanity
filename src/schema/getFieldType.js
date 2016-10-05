@@ -1,4 +1,4 @@
-import basicTypes from '../types'
+import basicTypes from './types'
 
 const BASIC_TYPE_NAMES = Object.keys(basicTypes)
 

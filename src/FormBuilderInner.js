@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {getFieldType} from './utils/getFieldType'
+import {getFieldType} from './schema/getFieldType'
 
 export class FormBuilderInner extends React.Component {
   static propTypes = {

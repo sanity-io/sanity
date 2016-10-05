@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from '../../utils/getFieldType'
+import {getFieldType} from '../../schema/getFieldType'
 
 export default class ItemForm extends React.Component {
   static propTypes = {

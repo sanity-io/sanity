@@ -19,7 +19,7 @@ export default {
     },
     parse(typeDef, types) {
       if (!typeDef.fields) {
-        throw new Error('Object types must have fields')
+        throw new Error(`Object types must have fields. Please the check the definition of schema type "${typeDef.name}"`)
       }
 
       const fieldsets = (typeDef.fieldsets || []).map(fieldset => {
@@ -53,7 +53,7 @@ export default {
       return {
         fields: validatedFields,
         fieldsets: validatedFieldsets,
-        options: typeDef.options
+        options: typeDef.options || {}
       }
 
       function validateFields(fields) {

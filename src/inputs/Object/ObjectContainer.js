@@ -1,6 +1,6 @@
 import {clone, keyBy} from 'lodash'
 import {createFieldValue} from '../../state/FormBuilderState'
-import {getFieldType} from '../../utils/getFieldType'
+import {getFieldType} from '../../schema/getFieldType'
 
 const hasOwn = (() => {
   const hO = {}.hasOwnProperty

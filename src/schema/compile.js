@@ -1,7 +1,7 @@
-import types from '../types'
+import types from './types'
 
-import debug from './debug'
-import {ifNotUniqueProp} from '../types/utils'
+import debug from '../utils/debug'
+import {ifNotUniqueProp} from './types/utils'
 
 function defineSchemaType(schemaTypeDef) {
   // maybe warn if toplevel type definition is different from the passed in typeDef

@@ -1,5 +1,5 @@
 import DefaultContainer from './DefaultContainer'
-import {getFieldType} from '../utils/getFieldType'
+import {getFieldType} from '../schema/getFieldType'
 import inspect from 'object-inspect'
 
 export function createFieldValue(value, context) {

@@ -2111,26 +2111,6 @@ export default {
       ]
     },
     {
-      "name": "image",
-      "type": "object",
-      "fields": [
-        {
-          "name": "versions",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "file",
-      "type": "object",
-      "fields": [
-        {
-          "name": "url",
-          "type": "string"
-        }
-      ]
-    },
-    {
       "name": "dateTime",
       "type": "object",
       "fields": [

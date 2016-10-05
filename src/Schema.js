@@ -1,4 +1,4 @@
-import {compile as compileSchema} from './utils/compileSchema'
+import {compile as compileSchema} from './schema/compile'
 
 export default class Schema {
   static compile(schemaDef) {

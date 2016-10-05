@@ -1,6 +1,6 @@
 import {createFieldValue} from '../../state/FormBuilderState'
-import {getFieldType} from '../../utils/getFieldType'
-import {resolveJSType} from '../../types/utils'
+import {getFieldType} from '../../schema/getFieldType'
+import {resolveJSType} from '../../schema/types/utils'
 
 export default class ArrayContainer {
 

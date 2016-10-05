@@ -1,5 +1,5 @@
 import PropTypes from 'proptypes'
-
+import primitives from './primitives'
 export default {
   any: {
     options: {
@@ -40,6 +40,36 @@ export default {
         return type.parse(toField, types)
       })
       return {to: toTypes}
+    }
+  },
+  image: {
+    primitive: 'object',
+    options: {
+      title: PropTypes.string,
+      fields: PropTypes.arrayOf(PropTypes.shape({
+      }))
+    },
+    parse(typeDef, types) {
+      return primitives.object.parse(Object.assign({}, typeDef, {
+        fields: typeDef.fields || []
+      }), types)
+    }
+  },
+  imageAsset: {
+    primitive: 'reference',
+    options: {
+      title: PropTypes.string
+    }
+  },
+  file: {
+    primitive: 'object',
+    options: {
+      title: PropTypes.string
+    },
+    parse(typeDef, types) {
+      return primitives.object.parse(Object.assign({}, typeDef, {
+        fields: typeDef.fields || []
+      }), types)
     }
   },
   text: {
