@@ -7,6 +7,7 @@
   "scripts": {
     "browserify": "NODE_ENV=production DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
     "build": "npm run clean && npm run compile && npm run browserify && npm run minify",
+    "watch": "npm run compile -- --watch",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
     "coverage": "DEBUG=sanity nyc --reporter=html faucet",
