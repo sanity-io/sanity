@@ -55,30 +55,33 @@ module.exports = function httpRequest(options) {
       observer.next({name: 'response', body})
       observer.complete()
     })
+
     // Todo: shim over node/browser differences
-    if (req.upload) {
-      req.upload.onprogress = event => {
-        const percent = event.lengthComputable ? event.loaded / event.total : -1
-        observer.next({
-          name: 'progress',
-          stage: 'upload',
-          percent: percent
-        })
-      }
+    if ('upload' in req && 'onprogress' in req.upload) {
+      req.upload.onprogress = handleProgress('upload')
     }
-    req.onprogress = event => {
-      const percent = event.lengthComputable ? event.loaded / event.total : -1
-      observer.next({
-        name: 'progress',
-        stage: 'download',
-        percent: percent
-      })
+
+    if ('onprogress' in req) {
+      req.onprogress = handleProgress('download')
     }
+
     req.onabort = () => {
       observer.next({name: 'abort'})
       observer.complete()
     }
+
     return () => req.abort()
+
+    function handleProgress(stage) {
+      return event => {
+        const percent = event.lengthComputable ? event.loaded / event.total : -1
+        observer.next({
+          name: 'progress',
+          stage,
+          percent
+        })
+      }
+    }
   })
 
   observable.toPromise = () => {

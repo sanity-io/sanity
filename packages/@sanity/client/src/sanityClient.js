@@ -35,11 +35,15 @@ assign(SanityClient.prototype, {
   },
 
   request(options) {
+    return this.requestObservable(options).toPromise()
+  },
+
+  requestObservable(options) {
     return httpRequest(assign(
       getRequestOptions(this.clientConfig),
       options,
       {uri: this.getUrl(options.uri)}
-    )).toPromise()
+    ))
   }
 })
 
