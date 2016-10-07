@@ -25,9 +25,6 @@
     "xtend": "^4.0.1",
     "zen-observable": "^0.3.0"
   },
-  "browser": {
-    "request": "./lib/browser/request.js"
-  },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-eslint": "^6.1.2",
