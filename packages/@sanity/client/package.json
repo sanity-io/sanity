@@ -15,7 +15,7 @@
     "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run build || not-in-publish",
-    "test": "node -r babel-register ./node_modules/.bin/tape test/*.test.js | faucet"
+    "test": "tape --node-arg -r --node-arg babel-register test/*.test.js | faucet"
   },
   "dependencies": {
     "@sanity/request": "0.0.3",
@@ -38,7 +38,7 @@
     "nock": "^8.0.0",
     "nyc": "^6.4.0",
     "rimraf": "^2.5.4",
-    "tape": "^4.6.0",
+    "tape": "^4.6.2",
     "uglify-js": "^2.7.3",
     "uglifyify": "^3.0.2"
   },
