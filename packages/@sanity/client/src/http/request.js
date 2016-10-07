@@ -52,7 +52,7 @@ module.exports = function httpRequest(options) {
         return
       }
 
-      observer.next({name: 'response', body})
+      observer.next({type: 'response', body})
       observer.complete()
     })
 
@@ -66,7 +66,7 @@ module.exports = function httpRequest(options) {
     }
 
     req.onabort = () => {
-      observer.next({name: 'abort'})
+      observer.next({type: 'abort'})
       observer.complete()
     }
 
@@ -76,7 +76,7 @@ module.exports = function httpRequest(options) {
       return event => {
         const percent = event.lengthComputable ? event.loaded / event.total : -1
         observer.next({
-          name: 'progress',
+          type: 'progress',
           stage,
           percent
         })

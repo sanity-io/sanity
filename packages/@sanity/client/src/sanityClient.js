@@ -39,13 +39,24 @@ assign(SanityClient.prototype, {
   },
 
   requestObservable(options) {
-    return httpRequest(assign(
+    return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
       options,
       {uri: this.getUrl(options.uri)}
     ))
   }
 })
+
+// Merge http options and headers
+function mergeOptions(...opts) {
+  const headers = opts.reduce((merged, options) => {
+    if (!merged || !options.headers) {
+      return null
+    }
+    return assign(merged || {}, options.headers || {})
+  }, null)
+  return assign(...opts, headers ? {headers} : {})
+}
 
 function createClient(config) {
   return new SanityClient(config)
