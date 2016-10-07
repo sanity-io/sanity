@@ -18,7 +18,7 @@
     "test": "node -r babel-register ./node_modules/.bin/tape test/*.test.js | faucet"
   },
   "dependencies": {
-    "@sanity/request": "^0.0.1",
+    "@sanity/request": "0.0.3",
     "debug": "^2.2.0",
     "deep-assign": "^2.0.0",
     "in-publish": "^2.0.0",
