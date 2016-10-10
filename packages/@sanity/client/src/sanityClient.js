@@ -50,7 +50,7 @@ assign(SanityClient.prototype, {
 // Merge http options and headers
 function mergeOptions(...opts) {
   const headers = opts.reduce((merged, options) => {
-    if (!merged || !options.headers) {
+    if (!merged && !options.headers) {
       return null
     }
     return assign(merged || {}, options.headers || {})
