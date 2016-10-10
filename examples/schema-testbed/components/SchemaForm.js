@@ -11,6 +11,8 @@ import {parseParams, preventDefault} from '../lib/utils'
 
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
+import MyCustomImageInput from './custom/MyCustomImageInput'
+import MyCustomFileInput from './custom/MyCustomFileInput'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
 import SimpleImagePreview from './custom/SimpleImagePreview'
 import resolveReferenceComponent from './custom/resolveReferenceComponent'
@@ -36,6 +38,12 @@ const FormBuilder = schema && createFormBuilder({
     }
     if (field.type === 'reference') {
       return resolveReferenceComponent(field)
+    }
+    if (field.type === 'image') {
+      return MyCustomImageInput
+    }
+    if (field.type === 'file') {
+      return MyCustomFileInput
     }
     return undefined // signal to use default
   },

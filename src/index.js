@@ -1,5 +1,7 @@
 import * as defaultInputs from './defaultInputComponents'
 import * as ReferenceInput from './inputs/Reference'
+import * as ImageInput from './inputs/Image'
+import * as FileInput from './inputs/File'
 
 export {defaultInputs}
 
@@ -9,6 +11,8 @@ export {default as createFormBuilder} from './createFormBuilder'
 
 // Input component factories
 export {ReferenceInput}
+export {ImageInput}
+export {FileInput}
 
 export const createReferenceInput = function deprecated(...args) {
   // eslint-disable-next-line no-console

@@ -19,7 +19,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@sanity/imagetool": "^0.1.0",
     "debug": "^2.2.0",
+    "exif-component": "^1.0.1",
     "is-empty": "^1.0.0",
     "lodash": "^4.15.0",
     "object-inspect": "^1.2.1",
@@ -62,7 +64,8 @@
     "react-enroute": "^1.0.0",
     "rimraf": "^2.5.4",
     "tap": "^7.1.2",
-    "why-did-you-update": "0.0.8"
+    "why-did-you-update": "0.0.8",
+    "zen-observable": "^0.3.0"
   },
   "peerDependencies": {
     "react": "^15.x",

@@ -1,5 +1,5 @@
 import {ReferenceInput} from '../../../../src'
-import PETS from './mockdata/pets'
+import PETS from './mock/pets'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 

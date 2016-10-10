@@ -1,4 +1,5 @@
 import arrays from './arrays'
+import assets from './assets'
 import messyDevSchema from './messy-dev'
 import blocks from './blocks'
 import vega from './vega'
@@ -11,6 +12,7 @@ import selects from './selects'
 
 export default {
   arrays,
+  assets,
   exampleBlog,
   fieldsets,
   reference,
@@ -18,5 +20,5 @@ export default {
   blocks,
   oma,
   selects,
-  messyDevSchema: messyDevSchema
+  messyDevSchema
 }

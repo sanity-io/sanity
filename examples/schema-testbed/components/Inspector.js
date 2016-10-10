@@ -10,7 +10,8 @@ function format(value) {
 export default function Inspector(props) {
   return (
     <pre className={styles.root}>
-      <code className={styles.code}
+      <code
+        className={styles.code}
         dangerouslySetInnerHTML={{__html: format(props.inspect)}}
       />
     </pre>

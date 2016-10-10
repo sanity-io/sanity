@@ -13,6 +13,7 @@ import url from 'part:@sanity/form-builder/input/url?'
 import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
 import resolveReference from './resolveReference'
+import Image from '../inputs/Image'
 
 const primitiveTypes = {
   array,
@@ -41,6 +42,9 @@ export default function inputResolver(field, fieldType) {
   }
   if (field.type === 'reference') {
     return resolveReference(field)
+  }
+  if (field.type === 'image') {
+    return Image
   }
   return field.input || inputRole
 }
