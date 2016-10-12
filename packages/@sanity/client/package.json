@@ -15,7 +15,7 @@
     "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run build || not-in-publish",
-    "test": "tape -r babel-register test/*.test.js | faucet"
+    "test": "tape -r babel-register test/*.test.js"
   },
   "dependencies": {
     "@sanity/request": "0.0.3",

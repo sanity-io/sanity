@@ -17,8 +17,8 @@ exports.validateObject = (op, val) => {
 }
 
 exports.validateDocumentId = (op, id) => {
-  if (typeof id !== 'string' || !/^[-\w]{1,128}:[-_a-z0-9]+$/i.test(id)) {
-    throw new Error(`${op}() takes a document ID in format dataset:docId`)
+  if (typeof id !== 'string' || !/^[-\w]{1,128}\/[-_a-z0-9]+$/i.test(id)) {
+    throw new Error(`${op}() takes a document ID in format dataset/docId`)
   }
 }
 
@@ -28,4 +28,8 @@ exports.hasDataset = config => {
   }
 
   return config.dataset
+}
+
+exports.promise = {
+  hasDataset: config => new Promise(resolve => resolve(exports.hasDataset(config)))
 }

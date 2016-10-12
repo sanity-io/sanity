@@ -17,7 +17,10 @@ assign(DataClient.prototype, {
   },
 
   getDocument(id) {
-    return this.fetch('*[.$id == %id]', {id}).then(results => results[0])
+    return this.client.request({
+      uri: `/data/doc/${id}`,
+      json: true
+    }).then(res => res.documents && res.documents[0])
   },
 
   create(doc) {
@@ -63,20 +66,18 @@ assign(DataClient.prototype, {
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
 
-    return new Promise(resolve => resolve(validators.hasDataset(this.client.clientConfig)))
-      .then(dataset => {
-        return this.client.request({
-          method: useGet ? 'GET' : 'POST',
-          uri: `/data/${endpoint}/${dataset}${stringQuery}`,
-          json: useGet ? true : body,
-          query: isMutation && mutationDefaults
-        })
-      })
+    return validators.promise.hasDataset(this.client.clientConfig)
+      .then(dataset => this.client.request({
+        method: useGet ? 'GET' : 'POST',
+        uri: `/data/${endpoint}/${dataset}${stringQuery}`,
+        json: useGet ? true : body,
+        query: isMutation && mutationDefaults
+      }))
   },
 
   _create(doc, op) {
     const dataset = validators.hasDataset(this.client.clientConfig)
-    const mutation = {[op]: assign({}, doc, {$id: doc.$id || `${dataset}:`})}
+    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
     return this.dataRequest(op, 'm', mutation).then(res => ({
       transactionId: res.transactionId,
       documentId: res.docIds[0]

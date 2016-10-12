@@ -66,7 +66,7 @@ Create a document. Parameter is a plain JS object representing the document.
 
 ```js
 client.data
-  .patch('bikeshop:bike-123') // Document ID to patch
+  .patch('bikeshop/bike-123') // Document ID to patch
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
   .commit() // Perform the patch and return a promise
@@ -86,7 +86,7 @@ Modify a document. `patch` takes a document ID. `set` merges the partialDoc with
 ## Delete a document
 
 ```js
-client.data.delete('bikeshop:bike-123')
+client.data.delete('bikeshop/bike-123')
   .then(res => {
     console.log('Bike deleted')
   })
@@ -103,12 +103,12 @@ Delete a document. Parameter is a document ID.
 
 ```js
 const namePatch = client.data
-  .patch('bikeshop:bike-310')
+  .patch('bikeshop/bike-310')
   .set({name: 'A Bike To Go'})
 
 client.data.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
-  .delete('bikeshop:bike-123')
+  .delete('bikeshop/bike-123')
   .patch(namePatch)
   .commit()
   .then(res => {
@@ -126,7 +126,7 @@ Create a transaction to perform chained mutations.
 ```js
 client.data.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
-  .patch('bikeshop:bike-123', p => p.set({inStock: false}))
+  .patch('bikeshop/bike-123', p => p.set({inStock: false}))
   .commit()
   .then(res => {
     console.log('Bike created and a different bike is updated')
@@ -158,8 +158,8 @@ client.data.mutate(patch.inc({count: 1}).unset(['visits']))
 
 // Transactions:
 const transaction = new sanityClient.Transaction()
-  .create({$id: 'foo:123', name: 'FooBike'})
-  .delete('foo:bar')
+  .create({_id: 'foo/123', name: 'FooBike'})
+  .delete('foo/bar')
 
 client.data.mutate(transaction)
 ```
@@ -171,7 +171,7 @@ client.data.mutate(transaction)
 A few notes on this approach:
 
 * You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.data.mutate()`
-* Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `$id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `$id` to `<datasetName:>`
+* Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>/`
 
 ## Get client configuration
 

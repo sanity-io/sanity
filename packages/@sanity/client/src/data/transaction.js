@@ -79,16 +79,16 @@ assign(Transaction.prototype, {
   },
 
   _create(doc, op) {
-    if (!doc.$id && !this.dataClient) {
+    if (!doc._id && !this.dataClient) {
       throw new Error(
-        'Document needs an $id property when transaction is create outside a client scope. '
-        + 'Pass `{$id: "<datasetName>:"}` to have Sanity generate an ID for you.'
+        'Document needs an _id property when transaction is create outside a client scope. '
+        + 'Pass `{_id: "<datasetName>:"}` to have Sanity generate an ID for you.'
       )
     }
 
     validators.validateObject(op, doc)
     const dataset = validators.hasDataset(this.dataClient.client.clientConfig)
-    const mutation = {[op]: assign({}, doc, {$id: doc.$id || `${dataset}:`})}
+    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
     return this._add(mutation)
   },
 

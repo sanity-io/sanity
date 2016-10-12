@@ -122,7 +122,7 @@ test('can query for documents', t => {
   nock(projectHost()).get(`/v1/data/q/foo?query=${qs}`).reply(200, {
     ms: 123,
     q: query,
-    result: [{$id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
+    result: [{_id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
   })
 
   getClient().data.fetch(query, params).then(res => {
@@ -153,30 +153,24 @@ test('handles errors gracefully', t => {
 })
 
 test('can query for single document', t => {
-  const query = '*[.$id == %id]'
-  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
-
-  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(200, {
+  nock(projectHost()).get('/v1/data/doc/foo/123').reply(200, {
     ms: 123,
-    q: query,
-    result: [{$id: 'foo:123', mood: 'lax'}]
+    documents: [{_id: 'foo/123', mood: 'lax'}]
   })
 
-  getClient().data.getDocument('foo:123').then(res => {
+  getClient().data.getDocument('foo/123').then(res => {
     t.equal(res.mood, 'lax', 'data should match')
     t.end()
   }).catch(t.ifError)
 })
 
 test('joins multi-error into one message', t => {
-  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
-
-  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(400, {
+  nock(projectHost()).get('/v1/data/doc/foo/127').reply(400, {
     statusCode: 400,
     errors: [{message: '2 slow'}, {message: '2 placid'}]
   })
 
-  getClient().data.getDocument('foo:123')
+  getClient().data.getDocument('foo/127')
     .then(res => t.fail('Resolve handler should not be called on failure'))
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
@@ -187,10 +181,9 @@ test('joins multi-error into one message', t => {
 })
 
 test('gives http statuscode as error if no body is present on >= 400', t => {
-  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
-  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(500)
+  nock(projectHost()).get('/v1/data/doc/foo/123').reply(500)
 
-  getClient().data.getDocument('foo:123')
+  getClient().data.getDocument('foo/123')
     .then(res => t.fail('Resolve handler should not be called on failure'))
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
@@ -200,10 +193,9 @@ test('gives http statuscode as error if no body is present on >= 400', t => {
 })
 
 test('populates response body on errors', t => {
-  const qs = '?query=*%5B.%24id%20%3D%3D%20%25id%5D&id=%22foo%3A123%22'
-  nock(projectHost()).get(`/v1/data/q/foo${qs}`).reply(500, 'Internal Server Error')
+  nock(projectHost()).get('/v1/data/doc/foo/123').reply(500, 'Internal Server Error')
 
-  getClient().data.getDocument('foo:123')
+  getClient().data.getDocument('foo/123')
     .then(res => t.fail('Resolve handler should not be called on failure'))
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
@@ -214,7 +206,7 @@ test('populates response body on errors', t => {
 })
 
 test('rejects if trying to perform data request without dataset', t => {
-  sanityClient({projectId: 'foo'}).data.getDocument('foo:123')
+  sanityClient({projectId: 'foo'}).data.fetch('blah')
     .then(res => t.fail('Resolve handler should not be called on failure'))
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
@@ -224,16 +216,16 @@ test('rejects if trying to perform data request without dataset', t => {
 })
 
 test('can create documents', t => {
-  const doc = {$id: 'foo:123', name: 'Raptor'}
+  const doc = {_id: 'foo/123', name: 'Raptor'}
   nock(projectHost()).post('/v1/data/m/foo?returnIds=true', {create: doc}).reply(200, {
     transactionId: 'abc123',
-    docIds: ['foo:123']
+    docIds: ['foo/123']
   })
 
   getClient().data.create(doc)
     .then(res => {
       t.ok(res.transactionId, 'transaction id returned')
-      t.equal(res.documentId, doc.$id, 'document id returned')
+      t.equal(res.documentId, doc._id, 'document id returned')
       t.end()
     })
     .catch(t.ifError)
@@ -241,52 +233,52 @@ test('can create documents', t => {
 
 test('can create documents without specifying ID', t => {
   const doc = {name: 'Raptor'}
-  const expectedBody = {create: Object.assign({}, doc, {$id: 'foo:'})}
+  const expectedBody = {create: Object.assign({}, doc, {_id: 'foo/'})}
   nock(projectHost()).post('/v1/data/m/foo?returnIds=true', expectedBody)
     .reply(200, {
       transactionId: '123abc',
-      docIds: ['foo:456']
+      docIds: ['foo/456']
     })
 
   getClient().data.create(doc)
     .then(res => {
       t.ok(res.transactionId, 'transaction id returned')
-      t.equal(res.documentId, 'foo:456', 'document id returned')
+      t.equal(res.documentId, 'foo/456', 'document id returned')
       t.end()
     })
     .catch(t.ifError)
 })
 
 test('createIfNotExists() sends correct mutation', t => {
-  const doc = {$id: 'foo:123', name: 'Raptor'}
+  const doc = {_id: 'foo/123', name: 'Raptor'}
 
   nock(projectHost()).post('/v1/data/m/foo?returnIds=true', {createIfNotExists: doc})
-    .reply(200, {transactionId: '123abc', docIds: ['foo:123']})
+    .reply(200, {transactionId: '123abc', docIds: ['foo/123']})
 
   getClient().data.createIfNotExists(doc).then(() => t.end()).catch(t.ifError)
 })
 
 test('createOrReplace() sends correct mutation', t => {
-  const doc = {$id: 'foo:123', name: 'Raptor'}
+  const doc = {_id: 'foo/123', name: 'Raptor'}
 
   nock(projectHost()).post('/v1/data/m/foo?returnIds=true', {createOrReplace: doc})
-    .reply(200, {transactionId: '123abc', docIds: ['foo:123']})
+    .reply(200, {transactionId: '123abc', docIds: ['foo/123']})
 
   getClient().data.createOrReplace(doc).then(() => t.end()).catch(t.ifError)
 })
 
 test('delete() sends correct mutation', t => {
   nock(projectHost())
-    .post('/v1/data/m/foo?returnIds=true', {delete: {id: 'foo:123'}})
+    .post('/v1/data/m/foo?returnIds=true', {delete: {id: 'foo/123'}})
     .reply(200)
 
-  getClient().data.delete('foo:123').then(() => t.end()).catch(t.ifError)
+  getClient().data.delete('foo/123').then(() => t.end()).catch(t.ifError)
 })
 
 test('mutate() accepts multiple mutations', t => {
   const mutations = [{
     create: {
-      $id: 'movie:raiders-of-the-lost-ark',
+      _id: 'movie:raiders-of-the-lost-ark',
       title: 'Raiders of the Lost Ark',
       year: 1981
     }
@@ -321,7 +313,7 @@ test('uses POST for long queries', t => {
     .reply(200, {
       ms: 123,
       q: query,
-      result: [{$id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
+      result: [{_id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
     })
 
   getClient().data.fetch(query, params).then(res => {
@@ -335,57 +327,57 @@ test('uses POST for long queries', t => {
  * PATCH OPS     *
  *****************/
 test('can build and serialize a patch of operations', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
     .inc({count: 1})
     .set({brownEyes: true})
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo:123', inc: {count: 1}, set: {brownEyes: true}})
+  t.deepEqual(patch, {id: 'foo/123', inc: {count: 1}, set: {brownEyes: true}})
   t.end()
 })
 
 test('merge() patch can be applied multiple times', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
     .merge({count: 1, foo: 'bar'})
     .merge({count: 2, bar: 'foo'})
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo:123', merge: {count: 2, foo: 'bar', bar: 'foo'}})
+  t.deepEqual(patch, {id: 'foo/123', merge: {count: 2, foo: 'bar', bar: 'foo'}})
   t.end()
 })
 
 test('setIfMissing() patch can be applied multiple times', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
     .setIfMissing({count: 1, foo: 'bar'})
     .setIfMissing({count: 2, bar: 'foo'})
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo:123', setIfMissing: {count: 2, foo: 'bar', bar: 'foo'}})
+  t.deepEqual(patch, {id: 'foo/123', setIfMissing: {count: 2, foo: 'bar', bar: 'foo'}})
   t.end()
 })
 
 test('only last replace() patch call gets applied', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
     .replace({count: 1, foo: 'bar'})
     .replace({count: 2, bar: 'foo'})
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo:123', replace: {count: 2, bar: 'foo'}})
+  t.deepEqual(patch, {id: 'foo/123', replace: {count: 2, bar: 'foo'}})
   t.end()
 })
 
 test('can apply inc() and dec()', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
     .inc({count: 1}) // One step forward
     .dec({count: 2}) // Two steps back
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo:123', inc: {count: 1}, dec: {count: 2}})
+  t.deepEqual(patch, {id: 'foo/123', inc: {count: 1}, dec: {count: 2}})
   t.end()
 })
 
 test('all patch methods throw on non-objects being passed as argument', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
   t.throws(() => patch.merge([]), /merge\(\) takes an object of properties/, 'merge throws')
   t.throws(() => patch.set(null), /set\(\) takes an object of properties/, 'set throws')
   t.throws(() => patch.setIfMissing('foo'), /setIfMissing\(\) takes an object of properties/, 'setIfMissing throws')
@@ -396,12 +388,12 @@ test('all patch methods throw on non-objects being passed as argument', t => {
 })
 
 test('executes patch when commit() is called', t => {
-  const expectedPatch = {patch: {id: 'foo:123', inc: {count: 1}, set: {visited: true}}}
+  const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', expectedPatch)
     .reply(200, {transactionId: 'blatti'})
 
-  getClient().data.patch('foo:123')
+  getClient().data.patch('foo/123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
@@ -413,12 +405,12 @@ test('executes patch when commit() is called', t => {
 })
 
 test('commit() returns promise', t => {
-  const expectedPatch = {patch: {id: 'foo:123', inc: {count: 1}, set: {visited: true}}}
+  const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', expectedPatch)
     .reply(400)
 
-  getClient().data.patch('foo:123')
+  getClient().data.patch('foo/123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
@@ -429,7 +421,7 @@ test('commit() returns promise', t => {
 })
 
 test('each patch operation clones patch', t => {
-  const patch = getClient().data.patch('foo:123')
+  const patch = getClient().data.patch('foo/123')
   const inc = patch.inc({count: 1})
   const dec = patch.dec({count: 1})
   const combined = inc.dec({count: 1})
@@ -438,12 +430,12 @@ test('each patch operation clones patch', t => {
   t.notEqual(inc, dec, 'should be cloned')
   t.notEqual(inc, combined, 'should be cloned')
 
-  t.deepEqual(patch.serialize(), {id: 'foo:123'}, 'base patch should have only id')
-  t.deepEqual(inc.serialize(), {id: 'foo:123', inc: {count: 1}}, 'inc patch should have inc op')
-  t.deepEqual(dec.serialize(), {id: 'foo:123', dec: {count: 1}}, 'dec patch should have dec op')
+  t.deepEqual(patch.serialize(), {id: 'foo/123'}, 'base patch should have only id')
+  t.deepEqual(inc.serialize(), {id: 'foo/123', inc: {count: 1}}, 'inc patch should have inc op')
+  t.deepEqual(dec.serialize(), {id: 'foo/123', dec: {count: 1}}, 'dec patch should have dec op')
   t.deepEqual(
     combined.serialize(),
-    {id: 'foo:123', inc: {count: 1}, dec: {count: 1}},
+    {id: 'foo/123', inc: {count: 1}, dec: {count: 1}},
     'combined patch should have both inc and dec ops'
   )
 
@@ -451,43 +443,43 @@ test('each patch operation clones patch', t => {
 })
 
 test('can reset patches to no operations, keeping document ID', t => {
-  const patch = getClient().data.patch('foo:123').inc({count: 1}).dec({visits: 1})
+  const patch = getClient().data.patch('foo/123').inc({count: 1}).dec({visits: 1})
   const reset = patch.reset()
 
-  t.deepEqual(patch.serialize(), {id: 'foo:123', inc: {count: 1}, dec: {visits: 1}}, 'correct patch')
-  t.deepEqual(reset.serialize(), {id: 'foo:123'}, 'reset patch should be empty')
+  t.deepEqual(patch.serialize(), {id: 'foo/123', inc: {count: 1}, dec: {visits: 1}}, 'correct patch')
+  t.deepEqual(reset.serialize(), {id: 'foo/123'}, 'reset patch should be empty')
   t.notEqual(patch, reset, 'reset clones, does not mutate')
   t.end()
 })
 
 test('throws when trying to use patch as a promise without calling commit()', t => {
-  const patch = getClient().data.patch('foo:123').inc({count: 1})
+  const patch = getClient().data.patch('foo/123').inc({count: 1})
   t.throws(() => patch.then(noop), /uncommited patch/, 'throws on then()')
   t.throws(() => patch.catch(noop), /uncommited patch/, 'throws on catch()')
   t.end()
 })
 
 test('patch has toJSON() which serializes patch', t => {
-  const patch = getClient().data.patch('foo:123').inc({count: 1})
+  const patch = getClient().data.patch('foo/123').inc({count: 1})
   t.deepEqual(
     JSON.parse(JSON.stringify(patch)),
-    JSON.parse(JSON.stringify({id: 'foo:123', inc: {count: 1}}))
+    JSON.parse(JSON.stringify({id: 'foo/123', inc: {count: 1}}))
   )
   t.end()
 })
 
 test('Patch is available on client and can be used without instantiated client', t => {
-  const patch = new sanityClient.Patch('foo:bar')
+  const patch = new sanityClient.Patch('foo/bar')
   t.deepEqual(
     patch.inc({foo: 1}).dec({bar: 2}).serialize(),
-    {id: 'foo:bar', inc: {foo: 1}, dec: {bar: 2}},
+    {id: 'foo/bar', inc: {foo: 1}, dec: {bar: 2}},
     'patch should work without context'
   )
   t.end()
 })
 
 test('patch commit() throws if called without a client', t => {
-  const patch = new sanityClient.Patch('foo:bar')
+  const patch = new sanityClient.Patch('foo/bar')
   t.throws(() => patch.dec({bar: 2}).commit(), /client.*mutate/i)
   t.end()
 })
@@ -497,13 +489,13 @@ test('patch commit() throws if called without a client', t => {
  *****************/
 test('can build and serialize a transaction of operations', t => {
   const trans = getClient().data.transaction()
-    .create({$id: 'foo:moo', name: 'foobar'})
-    .delete('foo:nznjkAJnjgnk')
+    .create({_id: 'foo/moo', name: 'foobar'})
+    .delete('foo/nznjkAJnjgnk')
     .serialize()
 
   t.deepEqual(trans, [
-    {create: {$id: 'foo:moo', name: 'foobar'}},
-    {delete: {id: 'foo:nznjkAJnjgnk'}}
+    {create: {_id: 'foo/moo', name: 'foobar'}},
+    {delete: {id: 'foo/nznjkAJnjgnk'}}
   ])
   t.end()
 })
@@ -511,19 +503,19 @@ test('can build and serialize a transaction of operations', t => {
 test('each transaction operation clones transaction', t => {
   const trans = getClient().data.transaction()
   const create = trans.create({count: 1})
-  const del = trans.delete('foo:bar')
-  const combined = create.delete('foo:bar')
+  const del = trans.delete('foo/bar')
+  const combined = create.delete('foo/bar')
 
   t.notEqual(trans, create, 'should be cloned')
   t.notEqual(create, del, 'should be cloned')
   t.notEqual(create, combined, 'should be cloned')
 
   t.deepEqual(trans.serialize(), [], 'base transaction should be empty')
-  t.deepEqual(create.serialize(), [{create: {$id: 'foo:', count: 1}}], 'create mutation should have create op')
-  t.deepEqual(del.serialize(), [{delete: {id: 'foo:bar'}}], 'delete mutation should have delete op')
+  t.deepEqual(create.serialize(), [{create: {_id: 'foo/', count: 1}}], 'create mutation should have create op')
+  t.deepEqual(del.serialize(), [{delete: {id: 'foo/bar'}}], 'delete mutation should have delete op')
   t.deepEqual(
     combined.serialize(),
-    [{create: {$id: 'foo:', count: 1}}, {delete: {id: 'foo:bar'}}],
+    [{create: {_id: 'foo/', count: 1}}, {delete: {id: 'foo/bar'}}],
     'combined transaction should have both create and delete ops'
   )
 
@@ -535,31 +527,31 @@ test('methods are chainable', t => {
     .create({moo: 'tools'})
     .createIfNotExists({j: 'query'})
     .createOrReplace({do: 'jo'})
-    .delete('proto:type')
-    .patch('foo:bar', {})
+    .delete('proto/type')
+    .patch('foo/bar', {})
 
   t.deepEqual(trans.serialize(), [{
     create: {
-      $id: 'foo:',
+      _id: 'foo/',
       moo: 'tools'
     }
   }, {
     createIfNotExists: {
-      $id: 'foo:',
+      _id: 'foo/',
       j: 'query'
     }
   }, {
     createOrReplace: {
-      $id: 'foo:',
+      _id: 'foo/',
       do: 'jo'
     }
   }, {
     delete: {
-      id: 'proto:type'
+      id: 'proto/type'
     }
   }, {
     patch: {
-      id: 'foo:bar'
+      id: 'foo/bar'
     }
   }])
 
@@ -569,12 +561,12 @@ test('methods are chainable', t => {
 
 test('patches can be built with callback', t => {
   const trans = getClient().data.transaction()
-    .patch('foo:moo', p => p.inc({sales: 1}).dec({stock: 1}))
+    .patch('foo/moo', p => p.inc({sales: 1}).dec({stock: 1}))
     .serialize()
 
   t.deepEqual(trans, [{
     patch: {
-      id: 'foo:moo',
+      id: 'foo/moo',
       inc: {sales: 1},
       dec: {stock: 1}
     }
@@ -584,7 +576,7 @@ test('patches can be built with callback', t => {
 
 test('throws if patch builder does not return patch', t => {
   t.throws(
-    () => getClient().data.transaction().patch('foo:moo', noop),
+    () => getClient().data.transaction().patch('foo/moo', noop),
     /must return the patch/
   )
   t.end()
@@ -592,12 +584,12 @@ test('throws if patch builder does not return patch', t => {
 
 test('patch can take an existing patch', t => {
   const client = getClient()
-  const incPatch = client.data.patch('foo:bar').inc({sales: 1})
+  const incPatch = client.data.patch('foo/bar').inc({sales: 1})
   const trans = getClient().data.transaction().patch(incPatch).serialize()
 
   t.deepEqual(trans, [{
     patch: {
-      id: 'foo:bar',
+      id: 'foo/bar',
       inc: {sales: 1}
     }
   }])
@@ -605,14 +597,14 @@ test('patch can take an existing patch', t => {
 })
 
 test('executes transaction when commit() is called', t => {
-  const expectedTransaction = [{create: {$id: 'foo:', bar: true}}, {delete: {id: 'foo:bar'}}]
+  const expectedTransaction = [{create: {_id: 'foo/', bar: true}}, {delete: {id: 'foo/bar'}}]
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', expectedTransaction)
     .reply(200, {transactionId: 'blatti'})
 
   getClient().data.transaction()
     .create({bar: true})
-    .delete('foo:bar')
+    .delete('foo/bar')
     .commit()
     .then(res => {
       t.equal(res.transactionId, 'blatti', 'applies given transaction')
@@ -622,7 +614,7 @@ test('executes transaction when commit() is called', t => {
 })
 
 test('throws when trying to use transaction as a promise without calling commit()', t => {
-  const trans = getClient().data.transaction().delete('foo:bar')
+  const trans = getClient().data.transaction().delete('foo/bar')
   t.throws(() => trans.then(noop), /uncommited transaction/, 'throws on then()')
   t.throws(() => trans.catch(noop), /uncommited transaction/, 'throws on catch()')
   t.end()
@@ -633,12 +625,12 @@ test('throws when passing incorrect input to transaction operations', t => {
   t.throws(() => trans.create('foo'), /object of prop/, 'throws on create()')
   t.throws(() => trans.createIfNotExists('foo'), /object of prop/, 'throws on createIfNotExists()')
   t.throws(() => trans.createOrReplace('foo'), /object of prop/, 'throws on createOrReplace()')
-  t.throws(() => trans.delete({id: 'foo:bar'}), /document ID in format/, 'throws on delete()')
+  t.throws(() => trans.delete({id: 'foo/bar'}), /document ID in format/, 'throws on delete()')
   t.end()
 })
 
 test('can manually call clone on transaction', t => {
-  const trans1 = getClient().data.transaction().delete('foo:bar')
+  const trans1 = getClient().data.transaction().delete('foo/bar')
   const trans2 = trans1.clone()
 
   t.notEqual(trans1, trans2, 'actually cloned')
@@ -650,7 +642,7 @@ test('transaction has toJSON() which serializes patch', t => {
   const trans = getClient().data.transaction().create({count: 1})
   t.deepEqual(
     JSON.parse(JSON.stringify(trans)),
-    JSON.parse(JSON.stringify([{create: {$id: 'foo:', count: 1}}]))
+    JSON.parse(JSON.stringify([{create: {_id: 'foo/', count: 1}}]))
   )
   t.end()
 })
@@ -658,8 +650,8 @@ test('transaction has toJSON() which serializes patch', t => {
 test('Transaction is available on client and can be used without instantiated client', t => {
   const trans = new sanityClient.Transaction()
   t.deepEqual(
-    trans.delete('foo:bar').serialize(),
-    [{delete: {id: 'foo:bar'}}],
+    trans.delete('foo/bar').serialize(),
+    [{delete: {id: 'foo/bar'}}],
     'transaction should work without context'
   )
   t.end()
@@ -667,13 +659,13 @@ test('Transaction is available on client and can be used without instantiated cl
 
 test('transaction create() throws if called without a client and document lacks id', t => {
   const trans = new sanityClient.Transaction()
-  t.throws(() => trans.create({foo: 'bar'}), /document needs an \$id/i)
+  t.throws(() => trans.create({foo: 'bar'}), /document needs an _id/i)
   t.end()
 })
 
 test('transaction commit() throws if called without a client', t => {
   const trans = new sanityClient.Transaction()
-  t.throws(() => trans.delete('foo:bar').commit(), /client.*mutate/i)
+  t.throws(() => trans.delete('foo/bar').commit(), /client.*mutate/i)
   t.end()
 })
 
@@ -696,7 +688,7 @@ test('includes token if set', t => {
 })
 
 test('handles HTTP errors gracefully', t => {
-  const doc = {$id: 'foo:bar', visits: 5}
+  const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', {create: doc})
     .replyWithError(new Error('Something went wrong'))
@@ -711,7 +703,7 @@ test('handles HTTP errors gracefully', t => {
 })
 
 test('handles response timeouts gracefully', t => {
-  const doc = {$id: 'foo:bar', visits: 5}
+  const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', {create: doc})
     .delay(300)
@@ -727,7 +719,7 @@ test('handles response timeouts gracefully', t => {
 })
 
 test('handles connection timeouts gracefully', t => {
-  const doc = {$id: 'foo:bar', visits: 5}
+  const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', {create: doc})
     .delayConnection(300)
@@ -743,7 +735,7 @@ test('handles connection timeouts gracefully', t => {
 })
 
 test('handles socket timeouts gracefully', t => {
-  const doc = {$id: 'foo:bar', visits: 5}
+  const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/m/foo?returnIds=true', {create: doc})
     .socketDelay(300)
