@@ -309,9 +309,11 @@ export default class ImageInput extends React.PureComponent {
               </ImageSelect>
             }
             {
-              uploadingImage
+              uploadingImage && status !== 'complete'
               && <div className={styles.progressContainer}>
-                {progress && <ProgressCircle completion={progress.percent} showPercent />}
+                <div className={styles.progressInner}>
+                  {progress && <ProgressCircle completion={progress.percent} showPercent className={styles.progress} />}
+                </div>
               </div>
             }
             {status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>}

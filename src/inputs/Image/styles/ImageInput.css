@@ -26,10 +26,24 @@
 
 .progressContainer {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: color(var(--gray-lightest) a(0.5));
+}
+
+.progressInner {
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   z-index: 2;
+}
+
+.progress {
+
 }
 
 .image {
@@ -41,12 +55,10 @@
 
 .imageUploading {
   composes: image;
-  opacity: 0.5;
 }
 
 .imageUploaded {
   composes: image;
-  opacity: 1;
 }
 
 .upload {
@@ -60,6 +72,7 @@
   left: 0;
   height: 100%;
   width: 100%;
+
   &:hover {
     background-color: var(--gray);
   }
