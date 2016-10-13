@@ -65,7 +65,7 @@ Create a document. Parameter is a plain JS object representing the document.
 ## Patch/update a document
 
 ```js
-client.data
+client
   .patch('bikeshop/bike-123') // Document ID to patch
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
@@ -102,7 +102,7 @@ Delete a document. Parameter is a document ID.
 ## Multiple mutations in a transaction
 
 ```js
-const namePatch = client.data
+const namePatch = client
   .patch('bikeshop/bike-310')
   .set({name: 'A Bike To Go'})
 
