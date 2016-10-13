@@ -10,7 +10,7 @@
     "watch": "npm run compile -- --watch",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
-    "coverage": "DEBUG=sanity nyc --reporter=html faucet",
+    "coverage": "DEBUG=sanity nyc --reporter=html -- tape -r babel-register test/*.test.js",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
