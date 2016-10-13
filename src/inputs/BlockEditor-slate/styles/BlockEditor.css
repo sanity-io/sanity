@@ -10,7 +10,7 @@
 }
 
 .input {
-  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  composes: root from 'part:@sanity/base/theme/forms/textarea-style';
 }
 
 .inputError {
