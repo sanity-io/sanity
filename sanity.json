@@ -409,6 +409,10 @@
       "description": "Used selects and dropdowns"
     },
     {
+      "name": "part:@sanity/base/upload-icon",
+      "description": "Upload icon"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
@@ -439,6 +443,10 @@
     {
       "implements": "part:@sanity/base/sign-out-icon",
       "path": "components/icons/SignOut.js"
+    },
+    {
+      "implements": "part:@sanity/base/upload-icon",
+      "path": "components/icons/Upload.js"
     }
   ]
 }
