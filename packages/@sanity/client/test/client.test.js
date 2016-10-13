@@ -4,6 +4,8 @@
 const test = require('tape')
 const nock = require('nock')
 const assign = require('xtend')
+const path = require('path')
+const fs = require('fs')
 const sanityClient = require('../src/sanityClient')
 const noop = () => {} // eslint-disable-line no-empty-function
 
@@ -12,6 +14,7 @@ const defaultProjectId = 'bf1942'
 const projectHost = projectId => `https://${projectId || defaultProjectId}.${apiHost}`
 const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
 const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
+const fixture = name => path.join(__dirname, 'fixtures', name)
 
 /*****************
  * BASE CLIENT   *
@@ -686,6 +689,46 @@ test('includes token if set', t => {
       t.end()
     })
     .catch(t.ifError)
+})
+
+test('uploads images', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+
+  nock(projectHost())
+    .post('/v1/assets/image/foo', body =>
+      new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+    )
+    .reply(201, {
+      url: 'https://some.asset.url'
+    })
+
+  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+    .filter(event => event.type === 'response') // todo: test progress events too
+    .map(event => event.body)
+    .subscribe(body => {
+      t.equal(body.url, 'https://some.asset.url')
+      t.end()
+    })
+})
+
+test('uploads files', t => {
+  const fixturePath = fixture('vildanden.pdf')
+
+  nock(projectHost())
+    .post('/v1/assets/file/foo', body =>
+      new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+    )
+    .reply(201, {
+      url: 'https://some.asset.url'
+    })
+
+  getClient().assets.upload('file', fs.createReadStream(fixturePath))
+    .filter(event => event.type === 'response') // todo: test progress events too
+    .map(event => event.body)
+    .subscribe(body => {
+      t.equal(body.url, 'https://some.asset.url')
+      t.end()
+    })
 })
 
 test('handles HTTP errors gracefully', t => {
