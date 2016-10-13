@@ -1,7 +1,7 @@
 const assign = require('xtend/mutable')
 const Patch = require('./data/patch')
 const Transaction = require('./data/transaction')
-const DataClient = require('./data/dataClient')
+const dataMethods = require('./data/dataMethods')
 const DatasetsClient = require('./datasets/datasetsClient')
 const ProjectsClient = require('./projects/projectsClient')
 const UsersClient = require('./users/usersClient')
@@ -13,13 +13,13 @@ const {defaultConfig, initConfig} = require('./config')
 function SanityClient(config = defaultConfig) {
   this.config(config)
 
-  this.data = new DataClient(this)
   this.datasets = new DatasetsClient(this)
   this.projects = new ProjectsClient(this)
   this.users = new UsersClient(this)
   this.auth = new AuthClient(this)
 }
 
+assign(SanityClient.prototype, dataMethods)
 assign(SanityClient.prototype, {
   config(newConfig) {
     if (typeof newConfig === 'undefined') {
@@ -30,10 +30,6 @@ assign(SanityClient.prototype, {
     return this
   },
 
-  getUrl(uri) {
-    return `${this.clientConfig.url}/${uri.replace(/^\//, '')}`
-  },
-
   request(options) {
     return this.requestObservable(options).toPromise()
   },
@@ -42,7 +38,7 @@ assign(SanityClient.prototype, {
     return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
       options,
-      {uri: this.getUrl(options.uri)}
+      {uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`}
     ))
   }
 })

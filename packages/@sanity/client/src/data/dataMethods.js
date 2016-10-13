@@ -7,17 +7,13 @@ const Patch = require('./patch')
 const mutationDefaults = {returnIds: true}
 const getQuerySizeLimit = 1948
 
-function DataClient(client) {
-  this.client = client
-}
-
-assign(DataClient.prototype, {
+module.exports = {
   fetch(query, params) {
     return this.dataRequest('query', {query, params}).then(res => res.result || [])
   },
 
   getDocument(id) {
-    return this.client.request({
+    return this.request({
       uri: `/data/doc/${id}`,
       json: true
     }).then(res => res.documents && res.documents[0])
@@ -66,8 +62,8 @@ assign(DataClient.prototype, {
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
 
-    return validators.promise.hasDataset(this.client.clientConfig)
-      .then(dataset => this.client.request({
+    return validators.promise.hasDataset(this.clientConfig)
+      .then(dataset => this.request({
         method: useGet ? 'GET' : 'POST',
         uri: `/data/${endpoint}/${dataset}${stringQuery}`,
         json: useGet ? true : body,
@@ -76,13 +72,11 @@ assign(DataClient.prototype, {
   },
 
   _create(doc, op) {
-    const dataset = validators.hasDataset(this.client.clientConfig)
+    const dataset = validators.hasDataset(this.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
     return this.dataRequest('mutate', mutation).then(res => ({
       transactionId: res.transactionId,
       documentId: res.docIds[0]
     }))
   }
-})
-
-module.exports = DataClient
+}

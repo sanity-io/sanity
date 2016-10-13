@@ -2,16 +2,16 @@ const assign = require('xtend/mutable')
 const validators = require('../validators')
 const Patch = require('./patch')
 
-function Transaction(operations = [], dataClient) {
+function Transaction(operations = [], client) {
   this.operations = operations
-  this.dataClient = dataClient
+  this.client = client
 }
 
 assign(Transaction.prototype, {
   clone(addMutations = []) {
     return new Transaction(
       this.operations.concat(addMutations),
-      this.dataClient
+      this.client
     )
   },
 
@@ -36,14 +36,14 @@ assign(Transaction.prototype, {
     const isBuilder = typeof patchOps === 'function'
     const isPatch = documentId instanceof Patch
 
-    // transaction.patch(client.data.patch('documentId').inc({visits: 1}))
+    // transaction.patch(client.patch('documentId').inc({visits: 1}))
     if (isPatch) {
       return this._add({patch: documentId.serialize()})
     }
 
     // patch => patch.inc({visits: 1}).set({foo: 'bar'})
     if (isBuilder) {
-      const patch = patchOps(new Patch(documentId, {}, this.dataClient && this.dataClient.client))
+      const patch = patchOps(new Patch(documentId, {}, this.client))
       if (!(patch instanceof Patch)) {
         throw new Error('function passed to `patch()` must return the patch')
       }
@@ -63,13 +63,13 @@ assign(Transaction.prototype, {
   },
 
   commit() {
-    if (this.dataClient) {
-      return this.dataClient.mutate(this.serialize())
+    if (this.client) {
+      return this.client.mutate(this.serialize())
     }
 
     throw new Error(
       'No `client` passed to transaction, either provide one or pass the '
-      + 'transaction to a clients `data.mutate()` method'
+      + 'transaction to a clients `mutate()` method'
     )
   },
 
@@ -79,7 +79,7 @@ assign(Transaction.prototype, {
   },
 
   _create(doc, op) {
-    if (!doc._id && !this.dataClient) {
+    if (!doc._id && !this.client) {
       throw new Error(
         'Document needs an _id property when transaction is create outside a client scope. '
         + 'Pass `{_id: "<datasetName>:"}` to have Sanity generate an ID for you.'
@@ -87,7 +87,7 @@ assign(Transaction.prototype, {
     }
 
     validators.validateObject(op, doc)
-    const dataset = validators.hasDataset(this.dataClient.client.clientConfig)
+    const dataset = validators.hasDataset(this.client.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
     return this._add(mutation)
   },

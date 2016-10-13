@@ -35,7 +35,7 @@ Initializes a new Sanity Client. Required options are `projectId`, `dataset` and
 
 ```js
 const query = 'bikeshop.bikes[.seats > 1] {.name, .seats}'
-client.data.fetch(query).then(bikes => {
+client.fetch(query).then(bikes => {
   console.log('Bikes with more than one seat:')
   bikes.forEach(bike => {
     console.log(`${bike.name} (${bike.seats} seats)`)
@@ -43,7 +43,7 @@ client.data.fetch(query).then(bikes => {
 })
 ```
 
-`client.data.fetch(query)`
+`client.fetch(query)`
 
 Perform a query using. Query string must be valid GQL syntax.
 
@@ -52,12 +52,12 @@ Perform a query using. Query string must be valid GQL syntax.
 
 ```js
 const doc = {name: 'Bengler Tandem Extraordinaire', seats: 2}
-client.data.create(doc).then(res => {
+client.create(doc).then(res => {
   console.log(`Bike was created, document ID is ${res.documentId}`)
 })
 ```
 
-`client.data.create(doc)`
+`client.create(doc)`
 
 Create a document. Parameter is a plain JS object representing the document.
 
@@ -78,7 +78,7 @@ client.data
   })
 ```
 
-`client.data.patch(docId).set(partialDoc).inc({key: value}).commit()`
+`client.patch(docId).set(partialDoc).inc({key: value}).commit()`
 
 Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`.
 
@@ -86,7 +86,7 @@ Modify a document. `patch` takes a document ID. `set` merges the partialDoc with
 ## Delete a document
 
 ```js
-client.data.delete('bikeshop/bike-123')
+client.delete('bikeshop/bike-123')
   .then(res => {
     console.log('Bike deleted')
   })
@@ -95,7 +95,7 @@ client.data.delete('bikeshop/bike-123')
   })
 ```
 
-`client.data.delete(docId)`
+`client.delete(docId)`
 
 Delete a document. Parameter is a document ID.
 
@@ -106,7 +106,7 @@ const namePatch = client.data
   .patch('bikeshop/bike-310')
   .set({name: 'A Bike To Go'})
 
-client.data.transaction()
+client.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
   .delete('bikeshop/bike-123')
   .patch(namePatch)
@@ -118,13 +118,13 @@ client.data.transaction()
     console.error('Transaction failed: ', err.message)
   })
 ```
-`client.data.transaction().create(doc).delete(docId).patch(patch).commit()`
+`client.transaction().create(doc).delete(docId).patch(patch).commit()`
 
 Create a transaction to perform chained mutations.
 
 
 ```js
-client.data.transaction()
+client.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
   .patch('bikeshop/bike-123', p => p.set({inStock: false}))
   .commit()
@@ -136,7 +136,7 @@ client.data.transaction()
   })
 ```
 
-`client.data.transaction().create(doc).patch(docId, p => p.set(partialDoc)).commit()`
+`client.transaction().create(doc).patch(docId, p => p.set(partialDoc)).commit()`
 
 A `patch` can be performed inline on a `transaction`.
 
@@ -154,14 +154,14 @@ const client = sanityClient({
 
 // Patches:
 const patch = new sanityClient.Patch('<documentId>')
-client.data.mutate(patch.inc({count: 1}).unset(['visits']))
+client.mutate(patch.inc({count: 1}).unset(['visits']))
 
 // Transactions:
 const transaction = new sanityClient.Transaction()
   .create({_id: 'foo/123', name: 'FooBike'})
   .delete('foo/bar')
 
-client.data.mutate(transaction)
+client.mutate(transaction)
 ```
 
 `const patch = new sanityClient.Patch(docId)`
@@ -170,7 +170,7 @@ client.data.mutate(transaction)
 
 A few notes on this approach:
 
-* You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.data.mutate()`
+* You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.mutate()`
 * Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>/`
 
 ## Get client configuration

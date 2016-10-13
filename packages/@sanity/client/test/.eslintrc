@@ -1,5 +1,6 @@
 {
   "rules": {
-    "id-length": 0
+    "id-length": 0,
+    "newline-per-chained-call": 0
   }
 }

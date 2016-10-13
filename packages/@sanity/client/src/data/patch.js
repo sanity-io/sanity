@@ -78,7 +78,7 @@ assign(Patch.prototype, {
 
     throw new Error(
       'No `client` passed to patch, either provide one or pass the '
-      + 'patch to a clients `data.mutate()` method'
+      + 'patch to a clients `mutate()` method'
     )
   },
 
