@@ -13,7 +13,7 @@ function DataClient(client) {
 
 assign(DataClient.prototype, {
   fetch(query, params) {
-    return this.dataRequest('fetch', 'q', {query, params}).then(res => res.result || [])
+    return this.dataRequest('query', {query, params}).then(res => res.result || [])
   },
 
   getDocument(id) {
@@ -42,11 +42,11 @@ assign(DataClient.prototype, {
 
   delete(documentId) {
     validators.validateDocumentId('delete', documentId)
-    return this.dataRequest('delete', 'm', {delete: {id: documentId}})
+    return this.dataRequest('mutate', {delete: {id: documentId}})
   },
 
   mutate(mutations) {
-    return this.dataRequest('mutate', 'm',
+    return this.dataRequest('mutate',
       mutations instanceof Patch
         ? mutations.serialize()
         : mutations
@@ -57,8 +57,8 @@ assign(DataClient.prototype, {
     return new Transaction(operations, this)
   },
 
-  dataRequest(method, endpoint, body) {
-    const isMutation = endpoint === 'm'
+  dataRequest(endpoint, body) {
+    const isMutation = endpoint === 'mutate'
 
     // Check if the query string is within a configured threshold,
     // in which case we can use GET. Otherwise, use POST.
@@ -78,7 +78,7 @@ assign(DataClient.prototype, {
   _create(doc, op) {
     const dataset = validators.hasDataset(this.client.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
-    return this.dataRequest(op, 'm', mutation).then(res => ({
+    return this.dataRequest('mutate', mutation).then(res => ({
       transactionId: res.transactionId,
       documentId: res.docIds[0]
     }))
