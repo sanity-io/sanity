@@ -4,8 +4,8 @@ import {Patch} from '@sanity/client'
 const MOCK_BLOGPOSTS = range(10).map(id => {
   return {
     id: `blogpost:${id}`,
-    $id: `blogpost:${id}`,
-    $type: 'exampleBlog.blogpost',
+    _id: `blogpost:${id}`,
+    _type: 'exampleBlog.blogpost',
     title: `Document ${id}`
   }
 })
@@ -13,8 +13,8 @@ const MOCK_BLOGPOSTS = range(10).map(id => {
 const MOCK_AUTHORS = range(10).map(id => {
   return {
     id: `author:${id}`,
-    $id: `author:${id}`,
-    $type: 'exampleBlog.author',
+    _id: `author:${id}`,
+    _type: 'exampleBlog.author',
     title: `Author ${id}`
   }
 })
@@ -40,7 +40,7 @@ export default {
   create(doc) {
     const index = getIndexForType(doc.$type)
     const newLen = index.push(doc)
-    doc.id = doc.$id = `${doc.$type}:${newLen}`
+    doc.id = doc._id = `${doc.$type}:${newLen}`
     return Promise.resolve({documentId: doc.id})
   },
   patch(id) {

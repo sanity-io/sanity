@@ -92,7 +92,7 @@ export default class EditorPane extends React.Component {
 
   handleChange(event) {
 
-    const id = this.state.value.getFieldValue('$id')
+    const id = this.state.value.getFieldValue('_id')
 
     if (id) {
       this.update(id, event.patch)
