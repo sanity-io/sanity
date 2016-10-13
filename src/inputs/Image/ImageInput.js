@@ -3,8 +3,8 @@ import ImageSelect from './common/ImageSelect'
 import {omit, uniqueId, groupBy} from 'lodash'
 import RenderField from '../Object/RenderField'
 import ObjectValueContainer from '../Object/ObjectContainer'
-import FormField from 'part:@sanity/components/formfields/default'
-import ProgressBar from 'part:@sanity/components/progress/bar'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import buttonStyles from 'part:@sanity/components/buttons/default-style'
@@ -12,6 +12,8 @@ import ImageTool from '@sanity/imagetool'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import createImageLoader from './common/createImageLoader'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
+import styles from './styles/ImageInput.css'
+import UploadIcon from 'part:@sanity/base/upload-icon'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -259,32 +261,49 @@ export default class ImageInput extends React.PureComponent {
       return 'other'
     })
 
-    if (!uploadingImage && value.isEmpty()) {
-      return (
-        <ImageSelect
-          name={fieldName}
-          onSelect={this.handleSelect}
-          {...rest}
-        >
-          Upload image…
-        </ImageSelect>
-      )
-    }
+    // if (!uploadingImage && value.isEmpty()) {
+    //   return (
+    //     <ImageSelect
+    //       name={fieldName}
+    //       onSelect={this.handleSelect}
+    //       {...rest}
+    //     >
+    //       Upload image…
+    //     </ImageSelect>
+    //   )
+    // }
 
     const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
 
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
-        <div style={{display: 'flex'}}>
-          <div style={{flexGrow: 1}}>
-            <div>
-              <img src={imageUrl} width="150" />
-              {progress && <ProgressBar completion={progress.percent} showPercent />}
-              {status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>}
-              {status === 'complete' && <div>Uploaded</div>}
-            </div>
+      <Fieldset legend={field.title} level={level}>
+        <div className={styles.grid}>
+          <div className={imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}>
+            {
+              //<img src={imageUrl} width="150" className={styles.imageUploading} />
+            }
+
+            <HotspotImage hotspot={this.state.imageToolValue.hotspot} crop={this.state.imageToolValue.crop} src={imageUrl} />
+
+            {
+              !imageUrl
+              && <ImageSelect
+                className={styles.upload}
+                name={fieldName}
+                onSelect={this.handleSelect}
+                {...rest}
+              >
+                <div className={styles.uploadInner}>
+                  <UploadIcon className={styles.uploadIcon} />
+                  Upload image
+                </div>
+              </ImageSelect>
+            }
+            {progress && <ProgressCircle completion={progress.percent} showPercent />}
+            {status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>}
+            {status === 'complete' && <div>Uploaded</div>}
           </div>
-          <div style={{flexGrow: 1}}>
+          <div className={styles.fields}>
             {this.renderFields(fieldGroups.highlighted || [])}
             <ImageSelect
               className={buttonStyles.root}
@@ -298,7 +317,7 @@ export default class ImageInput extends React.PureComponent {
           </div>
         </div>
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </FormField>
+      </Fieldset>
     )
   }
 }

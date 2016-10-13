@@ -19,6 +19,8 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@sanity/base": "0.0.9",
+    "@sanity/components": "0.0.9",
     "@sanity/imagetool": "^0.1.0",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.2.0",
