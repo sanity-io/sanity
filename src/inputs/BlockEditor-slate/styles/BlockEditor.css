@@ -24,3 +24,7 @@
 .error {
   composes: root;
 }
+
+.formattingToolbar {
+  margin-top: 10px;
+}

@@ -13,6 +13,7 @@ import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
 import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
 import TextFormattingOnKeyDown from './plugins/TextFormattingOnKeyDown'
 
+import DefaultButton from 'part:@sanity/components/buttons/default'
 
 export default class BlockEditor extends React.Component {
   static valueContainer = SlateValueContainer
@@ -41,12 +42,12 @@ export default class BlockEditor extends React.Component {
 
     const {field} = this.props
     const paragraphField = field.of.find(ofField => ofField.type === 'paragraph')
-    const allowedMarks = paragraphField.marks || []
+    this.allowedMarks = paragraphField.marks || []
     this.slateSchema = {
       nodes: mapToObject(field.of.filter(ofField => ofField !== paragraphField), ofField => {
         return [ofField.type, createPreviewNode(ofField)]
       }),
-      marks: mapToObject(allowedMarks, mark => {
+      marks: mapToObject(this.allowedMarks, mark => {
         return [mark, Mark]
       })
     }
@@ -84,6 +85,39 @@ export default class BlockEditor extends React.Component {
     this.props.onChange({patch: {localState: nextState}})
   }
 
+  handleOnClickMarkButton = (event, type) => {
+    event.preventDefault()
+    const {value, onChange} = this.props
+    const nextState = value.state
+      .transform()
+      .toggleMark(type)
+      .apply()
+    onChange({patch: {localState: nextState}})
+  }
+
+  hasMark(type) {
+    const {value} = this.props
+    return value.state.marks.some(mark => mark.type == type)
+  }
+
+  renderFormattingToolbar() {
+    return this.allowedMarks.length ? (
+      <div className={styles.formattingToolbar}>
+        {this.allowedMarks.map(this.renderMarkButton)}
+      </div>
+    ) : null
+  }
+
+  renderMarkButton = type => {
+    const isActive = this.hasMark(type)
+    const onMouseDown = event => this.handleOnClickMarkButton(event, type)
+    return (
+      <DefaultButton key={`markButton${type}`} onMouseDown={onMouseDown} inverted={isActive}>
+        {type}
+      </DefaultButton>
+    )
+  }
+
   renderInsertMenu() {
     const {field} = this.props
     return (
@@ -92,14 +126,13 @@ export default class BlockEditor extends React.Component {
           .filter(ofField => ofField.type !== 'paragraph')
           .map(ofField => {
             return (
-              <button
-                type="button"
+              <DefaultButton
                 key={ofField.type}
                 data-type={ofField.type}
                 onClick={this.handleInsertBlock}
               >
                 Insert {ofField.title}
-              </button>
+              </DefaultButton>
             )
           })}
       </div>
@@ -112,6 +145,7 @@ export default class BlockEditor extends React.Component {
     return (
       <div className={hasError ? styles.error : styles.root}>
         {this.renderInsertMenu()}
+        {this.renderFormattingToolbar()}
         <Editor
           className={styles.input}
           onChange={this.handleEditorChange}
