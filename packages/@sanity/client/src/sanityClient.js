@@ -30,6 +30,10 @@ assign(SanityClient.prototype, {
     return this
   },
 
+  getUrl(uri) {
+    return `${this.clientConfig.url}/${uri.replace(/^\//, '')}`
+  },
+
   request(options) {
     return this.requestObservable(options).toPromise()
   },
@@ -38,7 +42,7 @@ assign(SanityClient.prototype, {
     return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
       options,
-      {uri: `${this.clientConfig.url}/${options.uri.replace(/^\//, '')}`}
+      {uri: this.getUrl(options.uri)}
     ))
   }
 })

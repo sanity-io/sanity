@@ -54,6 +54,11 @@ test('can use request() for API-relative requests', t => {
     .then(t.end)
 })
 
+test('can use getUrl() to get API-relative paths', t => {
+  t.equal(getClient().getUrl('/foo/bar'), `${projectHost()}/v1/foo/bar`)
+  t.end()
+})
+
 /*****************
  * PROJECTS      *
  *****************/
