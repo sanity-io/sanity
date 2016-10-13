@@ -55,11 +55,19 @@
     },
     {
       "name": "part:@sanity/components/progress/bar",
-      "description": "Spinner to show activity"
+      "description": "Progress bar to show percent of a completed activity"
+    },
+    {
+      "name": "part:@sanity/components/progress/circle",
+      "description": "Progress circle to show percent of a completed activity"
     },
     {
       "name": "part:@sanity/components/progress/bar-style",
-      "description": "Spinner style"
+      "description": "Progress bar style"
+    },
+    {
+      "name": "part:@sanity/components/progress/circle-style",
+      "description": "Progress circle style"
     },
     {
       "name": "part:@sanity/components/toggles/switch",
@@ -274,6 +282,10 @@
       "path": "progress/ProgressBar.js"
     },
     {
+      "implements":  "part:@sanity/components/progress/circle",
+      "path": "progress/ProgressCircle.js"
+    },
+    {
       "implements":  "part:@sanity/components/buttons/fab",
       "path": "buttons/Fab.js"
     },
@@ -399,6 +411,10 @@
     {
       "implements": "part:@sanity/components/progress/bar-style",
       "path": "progress/styles/ProgressBar.css"
+    },
+    {
+      "implements": "part:@sanity/components/progress/circle-style",
+      "path": "progress/styles/ProgressCircle.css"
     },
     {
       "implements": "part:@sanity/components/toggles/switch-style",

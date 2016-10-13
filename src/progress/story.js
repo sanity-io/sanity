@@ -1,5 +1,7 @@
 import React from 'react'
 import ProgressBar from 'part:@sanity/components/progress/bar'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
+
 import {storiesOf} from 'part:@sanity/storybook'
 
 class ProgressBarImplementation extends React.Component {
@@ -114,5 +116,72 @@ storiesOf('Progress')
   {
     propTables: [ProgressBar],
     role: 'part:@sanity/components/progress/bar'
+  }
+)
+.addWithInfo(
+  'Progress circle',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/bar'
+  }
+)
+.addWithInfo(
+  'Progress circle 20%',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} completion="20" />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/circle'
+  }
+)
+
+.addWithInfo(
+  'Progress circle 100%',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} completion="100" />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/circle'
+  }
+)
+
+.addWithInfo(
+  'Progress circle (show percent)',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} completion="50" showPercent />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/circle'
+  }
+)
+.addWithInfo(
+  'Progress circle (show percent & text)',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} completion="50" showPercent text="This is text…" />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/circle'
   }
 )

@@ -1,0 +1,40 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  width: 100%;
+  display: block;
+}
+
+.svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.background {
+  stroke: color(var(--black) a(20%));
+  fill: none;
+}
+
+.foreground {
+  transform-origin: center center;
+  stroke: var(--black);
+  fill: none;
+}
+
+.text {
+  font-weight: 200;
+  font-size: 1em;
+  fill: inherit;
+}
+
+.percent {
+  composes: text;
+  font-weight: 400;
+}
+
+.status {
+  composes: text;
+  fill: inherit;
+  font-weight: 200;
+  font-size: 0.8em;
+}
