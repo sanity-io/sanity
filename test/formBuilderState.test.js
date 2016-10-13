@@ -9,19 +9,19 @@ import schemaDef from './fixtures/schema'
 const compiledSchema = Schema.compile(schemaDef)
 
 const rawValue = {
-  $type: 'simple',
+  _type: 'simple',
   someString: 'foo',
   home: {
-    $type: 'homeAddress',
+    _type: 'homeAddress',
     zip: '2012',
     location: {
-      $type: 'latlon',
+      _type: 'latlon',
       lat: 231,
       lon: 31
     }
   },
   someLatLon: {
-    $type: 'latlon',
+    _type: 'latlon',
     lat: 10,
     lon: 10
   }
@@ -74,7 +74,7 @@ test('create empty, and patch with simple value', t => {
   })
 
   t.same(newState.serialize(), {
-    $type: 'simple',
+    _type: 'simple',
     someString: 'foobar'
   })
 
@@ -86,19 +86,19 @@ test('apply a patch setting a simple value', t => {
   const state = createFormBuilderState(rawValue, defaultContext)
   const newState = state.patch({someString: {$set: 'bar'}})
   t.same(newState.serialize(), {
-    $type: 'simple',
+    _type: 'simple',
     someString: 'bar',
     home: {
-      $type: 'homeAddress',
+      _type: 'homeAddress',
       zip: '2012',
       location: {
-        $type: 'latlon',
+        _type: 'latlon',
         lat: 231,
         lon: 31
       }
     },
     someLatLon: {
-      $type: 'latlon',
+      _type: 'latlon',
       lat: 10,
       lon: 10
     }
@@ -119,19 +119,19 @@ test('apply a patch by replacing a tree', t => {
   })
 
   t.same(newState.serialize(), {
-    $type: 'simple',
+    _type: 'simple',
     someString: 'foo',
     home: {
-      $type: 'homeAddress',
+      _type: 'homeAddress',
       zip: '2012',
       location: {
-        $type: 'latlon',
+        _type: 'latlon',
         lat: 666,
         lon: 444
       }
     },
     someLatLon: {
-      $type: 'latlon',
+      _type: 'latlon',
       lat: 10,
       lon: 10
     }
@@ -188,19 +188,19 @@ test('custom container', t => {
   })
 
   t.same(newState.serialize(), {
-    $type: 'simple',
+    _type: 'simple',
     someString: 'foo',
     home: {
-      $type: 'homeAddress',
+      _type: 'homeAddress',
       zip: '2012',
       location: {
-        $type: 'latlon',
+        _type: 'latlon',
         lat: 666,
         lon: 444
       }
     },
     someLatLon: {
-      $type: 'latlon',
+      _type: 'latlon',
       lat: 10,
       lon: 10
     }

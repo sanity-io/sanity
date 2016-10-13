@@ -62,8 +62,8 @@ export default {
           throw new Error(`Duplicate field name: ${dupe.name} Please check the 'fields' property of schema type '${typeDef.name}'`)
         })
         return fields.map(field => {
-          if (field.name === '$type') {
-            throw new Error('`$type` is reserved and cannot be used as field name.')
+          if (field.name === '_type') {
+            throw new Error('`_type` is reserved and cannot be used as field name.')
           }
 
           if (field.fieldset) {

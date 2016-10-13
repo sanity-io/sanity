@@ -18,7 +18,7 @@ const SERIALIZE = {
     // We now have a block that is a form builder field
     const value = block.data.get('value')
     return {
-      $type: block.type,
+      _type: block.type,
       key: block.key,
       ...value.toJSON()
     }
@@ -70,7 +70,7 @@ const SERIALIZE = {
   paragraph(text, context = {}) {
     return {
       key: text.key,
-      $type: 'paragraph',
+      _type: 'paragraph',
       ranges: text
         .getRanges()
         .toArray()

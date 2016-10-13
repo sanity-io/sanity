@@ -47,7 +47,7 @@ export default class Reference extends React.Component {
         this.setState({
           materializedValue: materializedValue,
           refCache: Object.assign({}, refCache, {
-            [materializedValue.value.$id]: materializedValue
+            [materializedValue.value._id]: materializedValue
           })
         })
       })
@@ -73,7 +73,7 @@ export default class Reference extends React.Component {
   }
 
   createValueFromDoc = doc => {
-    return this.context.formBuilder.createFieldValue(doc, this.getItemFieldForType(doc.$type))
+    return this.context.formBuilder.createFieldValue(doc, this.getItemFieldForType(doc._type))
   }
   createValueFromHit = hit => {
     return this.createValueFromDoc(hit.document)
@@ -86,8 +86,8 @@ export default class Reference extends React.Component {
   handleChange = item => {
     const patch = {
       $set: {
-        $type: 'reference',
-        $ref: item.key
+        _type: 'reference',
+        _ref: item.key
       }
     }
     this.props.onChange({patch: patch})
@@ -123,7 +123,7 @@ export default class Reference extends React.Component {
         })
 
         const updatedCache = preparedHits.reduce((cache, hit) => {
-          cache[hit.value.value.$id] = hit.value
+          cache[hit.value.value._id] = hit.value
           return cache
         }, Object.assign({}, this.state.refCache))
 
@@ -146,14 +146,14 @@ export default class Reference extends React.Component {
 
     const items = hits.map((item, i) => {
       return {
-        key: item.value.value.$id,
+        key: item.value.value._id,
         title: item.value.value.name.value
       }
     })
 
     const materializedSelected = materializedValue && {
       title: materializedValue.value.name.value,
-      key: materializedValue.value.$id
+      key: materializedValue.value._id
     }
 
     const selectedItem = items.find(item => item.key === value.refId) || materializedSelected

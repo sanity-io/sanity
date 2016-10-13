@@ -3,31 +3,31 @@ const TRANSFORMS = {
   /* eslint-disable camelcase */
   paragraph(node) {
     return {
-      $type: 'paragraph',
+      _type: 'paragraph',
       content: (node.content || []).map(fromProseMirror)
     }
   },
   list_item(node) {
     return {
-      $type: 'listItem',
+      _type: 'listItem',
       content: (node.content || []).map(fromProseMirror)
     }
   },
   bullet_list(node) {
     return {
-      $type: 'listItem',
+      _type: 'listItem',
       content: (node.content || []).map(fromProseMirror)
     }
   },
   hard_break(node) {
     return {
-      $type: 'listItem',
+      _type: 'listItem',
       content: (node.content || []).map(fromProseMirror)
     }
   },
   text(node) {
     return {
-      $type: 'text',
+      _type: 'text',
       text: node.text,
       marks: (node.marks || []).map(convertMark)
     }

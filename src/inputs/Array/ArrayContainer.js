@@ -14,7 +14,7 @@ export default class ArrayContainer {
     const type = getFieldType(schema, field)
 
     const deserialized = serializedArray.map(item => {
-      const itemType = (item && item.$type) || resolveJSType(item)
+      const itemType = (item && item._type) || resolveJSType(item)
 
       // find type in of
       const fieldDef = type.of.find(ofType => ofType.type === itemType)

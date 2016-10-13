@@ -32,8 +32,8 @@ export default function createFormBuilder(config = {}) {
   }
 
   function createValue(value, typeName) {
-    if (value && value.$type !== typeName) {
-      throw new Error(`Type mismatch: Trying to edit data of type ${value.$type} as ${typeName}`)
+    if (value && value._type !== typeName) {
+      throw new Error(`Type mismatch: Trying to edit data of type ${value._type} as ${typeName}`)
     }
 
     return createFormBuilderState(value, {

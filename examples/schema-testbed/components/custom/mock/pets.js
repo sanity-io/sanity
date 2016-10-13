@@ -3,8 +3,8 @@ export default 'Alpaca;Bali cattle;Cat;Cattle;Chicken;Dog;Domestic Bactrian came
   .map(petName => {
     const id = petName.toLowerCase().replace(/\s/g, '-')
     return ({
-      $id: id,
-      $type: 'pet',
+      _id: id,
+      _type: 'pet',
       name: petName
     })
   })

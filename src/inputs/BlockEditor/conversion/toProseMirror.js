@@ -40,7 +40,7 @@ function convertMark(mark) {
 }
 
 function convertPMType(item) {
-  const pmConverter = TRANSFORMS[item.$type]
+  const pmConverter = TRANSFORMS[item._type]
   if (pmConverter) {
     return pmConverter(item)
   }
@@ -51,12 +51,12 @@ export default function toProseMirror(array, context) {
   return {
     type: 'doc',
     content: array.map(item => {
-      const isPMType = TRANSFORMS[item.$type]
+      const isPMType = TRANSFORMS[item._type]
       if (isPMType) {
         return convertPMType(item)
       }
 
-      const itemField = context.field.of.find(ofType => ofType.type === item.$type)
+      const itemField = context.field.of.find(ofType => ofType.type === item._type)
       const value = createFieldValue(item, {
         field: itemField,
         schema: context.schema,

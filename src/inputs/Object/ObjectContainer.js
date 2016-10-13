@@ -12,10 +12,10 @@ export default class ObjectContainer {
   static deserialize(serialized = {}, context) {
     const {field, schema, resolveInputComponent} = context
     const type = getFieldType(schema, field)
-    const deserialized = {$type: field.type}
+    const deserialized = {_type: field.type}
 
-    if (serialized && hasOwn(serialized, '$id')) {
-      deserialized.$id = serialized.$id
+    if (serialized && hasOwn(serialized, '_id')) {
+      deserialized._id = serialized._id
     }
     type.fields.forEach(fieldDef => {
       deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveInputComponent})
@@ -37,7 +37,7 @@ export default class ObjectContainer {
     const {field, schema, resolveInputComponent} = context
 
     const type = getFieldType(schema, field)
-    const newVal = value ? clone(value) : {$type: type.name}
+    const newVal = value ? clone(value) : {_type: type.name}
 
     if (patch.hasOwnProperty('$set')) {
       return ObjectContainer.deserialize(patch.$set, context)
@@ -100,12 +100,12 @@ export default class ObjectContainer {
       return acc
     }, {})
 
-    if (hasOwn(this.value, '$id')) {
-      serialized.$id = this.value.$id
+    if (hasOwn(this.value, '_id')) {
+      serialized._id = this.value._id
     }
 
     return Object.keys(serialized).length
-      ? Object.assign({$type: field.type}, serialized)
+      ? Object.assign({_type: field.type}, serialized)
       : undefined
   }
 

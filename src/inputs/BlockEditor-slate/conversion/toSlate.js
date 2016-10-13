@@ -33,23 +33,23 @@ const DESERIALIZE = {
   },
 
   node(node, context) {
-    if (node.$type === 'paragraph') {
+    if (node._type === 'paragraph') {
       return DESERIALIZE.paragraph(node)
     }
 
-    if (node.$type === 'text') {
+    if (node._type === 'text') {
       return DESERIALIZE.text(node)
     }
 
     // find type in field definition's `of` property
-    const fieldDef = context.field.of.find(ofType => ofType.type === node.$type)
+    const fieldDef = context.field.of.find(ofType => ofType.type === node._type)
 
     const value = createFieldValue(node, {field: fieldDef, schema: context.schema, resolveInputComponent: context.resolveInputComponent})
 
     return Block.create({
       data: {value: value},
       key: node.key,
-      type: node.$type,
+      type: node._type,
       isVoid: true
     })
   },

@@ -5,7 +5,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function materializeReferences(ids) {
   return delay(1000).then(() => (
-    ids.map(id => PETS.find(pet => pet.$id === id))
+    ids.map(id => PETS.find(pet => pet._id === id))
   ))
 }
 

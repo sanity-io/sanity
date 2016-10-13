@@ -31,12 +31,12 @@ const REFS_DB = []
 function createReference(type, props) {
   const id = Math.random().toString(32).substring(2)
   REFS_DB.push({
-    $id: id,
-    $type: type,
+    _id: id,
+    _type: type,
     ...props
   })
   return {
-    $ref: id
+    _ref: id
   }
 }
 
@@ -71,7 +71,7 @@ function mockUploadFile(file) {
 }
 
 function mockMaterializeReference(id) {
-  return Promise.resolve(REFS_DB.find(ref => ref.$id == id))
+  return Promise.resolve(REFS_DB.find(ref => ref._id == id))
 }
 
 export {

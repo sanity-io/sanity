@@ -15,7 +15,7 @@ function fetch(field) {
   }, {})
 
   const eqls = Object.keys(params).map(key => (
-    `.$type == %${key}`
+    `_type == %${key}`
   )).join(' || ')
 
   return client.data.fetch(`*[${eqls}]`, params)
@@ -40,7 +40,7 @@ function search(field) {
   }, {})
 
   const eqls = Object.keys(params).map(key => (
-    `.$type == %${key}`
+    `_type == %${key}`
   )).join(' || ')
 
   return client.data.fetch(`*[${eqls}]`, params)

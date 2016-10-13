@@ -44,7 +44,7 @@ export default class ReferenceSelect extends React.Component {
   }
 
   createValueFromItem = item => {
-    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item.$type))
+    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item._type))
   }
 
   fetch = () => {
@@ -62,7 +62,7 @@ export default class ReferenceSelect extends React.Component {
         this._isFetching = false
         const preparedItems = items.map(item => this.createValueFromItem(item))
         const updatedCache = preparedItems.reduce((cache, item) => {
-          cache[item.value.$id] = item
+          cache[item.value._id] = item
           return cache
         }, Object.assign({}, this.state.refCache))
 
@@ -86,8 +86,8 @@ export default class ReferenceSelect extends React.Component {
     console.log('handleChange', item)
     const patch = {
       $set: {
-        $type: 'reference',
-        $ref: item.key
+        _type: 'reference',
+        _ref: item.key
       }
     }
     this.props.onChange({patch: patch})
@@ -99,7 +99,7 @@ export default class ReferenceSelect extends React.Component {
 
     const selectItems = items.map((item, i) => {
       return {
-        key: item.value.$id,
+        key: item.value._id,
         title: item.value.name.value
       }
     })

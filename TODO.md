@@ -8,7 +8,7 @@
 Gradient currently stores references as:
 ```
 "author": {
-  "$ref": "bookstore:40303"
+  "_ref": "bookstore:40303"
 }
 ```
 where the type

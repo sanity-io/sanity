@@ -86,7 +86,7 @@ export default class ReferenceBrowser extends React.Component {
         const {refCache} = this.state
         this.setState({
           refCache: Object.assign({}, refCache, {
-            [materializedValue.value.$id]: materializedValue
+            [materializedValue.value._id]: materializedValue
           })
         })
       })
@@ -110,8 +110,8 @@ export default class ReferenceBrowser extends React.Component {
         if (dialogSelectedItem) {
           const patch = {
             $set: {
-              $type: 'reference',
-              $ref: dialogSelectedItem.value.$id
+              _type: 'reference',
+              _ref: dialogSelectedItem.value._id
             }
           }
           onChange({patch: patch})
@@ -136,7 +136,7 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   createValueFromItem(item) {
-    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item.$type))
+    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item._type))
   }
 
   fetch() {
@@ -155,7 +155,7 @@ export default class ReferenceBrowser extends React.Component {
         const preparedItems = items.map(item => this.createValueFromItem(item))
 
         const updatedCache = preparedItems.reduce((cache, item) => {
-          cache[item.value.$id] = item
+          cache[item.value._id] = item
           return cache
         }, Object.assign({}, this.state.refCache))
 
@@ -177,7 +177,7 @@ export default class ReferenceBrowser extends React.Component {
     ].filter(Boolean)
 
     items.map((item, i) => {
-      item.key = item.value.$id
+      item.key = item.value._id
       item.title = item.value.name.value
       return true
     })

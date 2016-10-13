@@ -10,7 +10,7 @@ export default class ReferenceContainer {
   }
 
   get refId() {
-    return this.value && this.value.$ref
+    return this.value && this.value._ref
   }
 
   patch(patch) {
