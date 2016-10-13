@@ -1,5 +1,5 @@
-import isEmpty from 'is-empty'
 import assert from 'assert'
+import isEmpty from 'is-empty'
 
 function collapse(value) {
   return isEmpty(value) ? undefined : value
@@ -75,6 +75,12 @@ const SERIALIZE = {
         .getRanges()
         .toArray()
         .map(range => SERIALIZE.range(range, context))
+    }
+  },
+
+  mark(mark, context = {}) {
+    return {
+      type: mark.type
     }
   }
 }

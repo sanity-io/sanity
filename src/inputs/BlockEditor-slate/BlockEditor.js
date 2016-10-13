@@ -1,9 +1,18 @@
 import React, {PropTypes} from 'react'
-import SlateValueContainer from './SlateValueContainer'
 import {Editor} from 'slate'
-import mapToObject from './util/mapToObject'
+import InsertBlockOnEnter from 'slate-insert-block-on-enter'
+
 import createPreviewNode from './createFormBuilderPreviewNode'
+import mapToObject from './util/mapToObject'
 import styles from './styles/BlockEditor.css'
+
+import Mark from './Mark'
+import SlateValueContainer from './SlateValueContainer'
+
+import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
+import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
+import TextFormattingOnKeyDown from './plugins/TextFormattingOnKeyDown'
+
 
 export default class BlockEditor extends React.Component {
   static valueContainer = SlateValueContainer
@@ -29,9 +38,25 @@ export default class BlockEditor extends React.Component {
   constructor(props, context) {
     super(props, context)
 
-    this.slateNodes = mapToObject(this.props.field.of.filter(ofType => ofType.type !== 'paragraph'), ofField => {
-      return [ofField.type, createPreviewNode(ofField)]
-    })
+
+    const {field} = this.props
+    const paragraphField = field.of.find(ofField => ofField.type === 'paragraph')
+    const allowedMarks = paragraphField.marks || []
+    this.slateSchema = {
+      nodes: mapToObject(field.of.filter(ofField => ofField !== paragraphField), ofField => {
+        return [ofField.type, createPreviewNode(ofField)]
+      }),
+      marks: mapToObject(allowedMarks, mark => {
+        return [mark, Mark]
+      })
+    }
+
+    this.slatePlugins = [
+      InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
+      FormBuilderNodeOnDrop(),
+      FormBuilderNodeOnPaste(this.context.formBuilder, this.props.field.of),
+      TextFormattingOnKeyDown()
+    ]
   }
 
   handleInsertBlock = event => {
@@ -57,13 +82,6 @@ export default class BlockEditor extends React.Component {
 
   handleEditorChange = nextState => {
     this.props.onChange({patch: {localState: nextState}})
-  }
-
-  handleDrop = (event, data, state, editor) => {
-    switch (data.type) {
-      case 'node': console.log('DROP', data)
-      default: return undefined
-    }
   }
 
   renderInsertMenu() {
@@ -99,7 +117,8 @@ export default class BlockEditor extends React.Component {
           onChange={this.handleEditorChange}
           placeholder=""
           state={value.state}
-          schema={{nodes: this.slateNodes}}
+          plugins={this.slatePlugins}
+          schema={this.slateSchema}
         />
       </div>
     )

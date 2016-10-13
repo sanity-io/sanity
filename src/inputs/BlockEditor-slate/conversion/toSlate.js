@@ -1,12 +1,6 @@
 // Converts a persisted array to a slate compatible json document
+import {Plain, Block, Document, State, Character, Mark, Text} from 'slate'
 import {createFieldValue} from '../../../state/FormBuilderState'
-import {Plain} from 'slate'
-import Block from 'slate/lib/models/block'
-import Document from 'slate/lib/models/document'
-import State from 'slate/lib/models/state'
-import Character from 'slate/lib/models/character'
-import Mark from 'slate/lib/models/mark'
-import Text from 'slate/lib/models/text'
 
 const DESERIALIZE = {
   paragraph(para, context) {
@@ -58,6 +52,10 @@ const DESERIALIZE = {
       type: node.$type,
       isVoid: true
     })
+  },
+
+  mark(mark, context = {}) {
+    return mark
   }
 }
 

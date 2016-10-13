@@ -29,7 +29,11 @@ export default {
           of: [
             {
               title: 'Paragraph',
-              type: 'paragraph'
+              type: 'paragraph',
+              marks: [
+                'bold',
+                'italic'
+              ]
             },
             {
               title: 'String',
