@@ -316,8 +316,12 @@ export default class ImageInput extends React.PureComponent {
                 </div>
               </div>
             }
-            {status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>}
-            {status === 'complete' && <div>Uploaded</div>}
+            {
+              //status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>
+            }
+            {
+              //status === 'complete' && <div>Uploaded</div>
+            }
           </div>
           <div className={styles.fields}>
             {this.renderFields(fieldGroups.highlighted || [])}
