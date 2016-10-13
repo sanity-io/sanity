@@ -29,26 +29,24 @@ function getIndexForType(type) {
 }
 
 export default {
-  data: {
-    fetch(query) {
-      const [, type] = query.split(' ')[0].split('.')
-      return Promise.resolve(getIndexForType(type))
-    },
-    getDocument(id) {
-      const index = getIndexForType(id.split(':')[0])
-      return Promise.resolve(index.find(doc => doc.id === id))
-    },
-    create(doc) {
-      const index = getIndexForType(doc.$type)
-      const newLen = index.push(doc)
-      doc.id = doc.$id = `${doc.$type}:${newLen}`
-      return Promise.resolve({documentId: doc.id})
-    },
-    patch(id) {
-      return new Patch(id, {}, this)
-    },
-    mutate(spec) {
-      return Promise.resolve()
-    }
+  fetch(query) {
+    const [, type] = query.split(' ')[0].split('.')
+    return Promise.resolve(getIndexForType(type))
+  },
+  getDocument(id) {
+    const index = getIndexForType(id.split(':')[0])
+    return Promise.resolve(index.find(doc => doc.id === id))
+  },
+  create(doc) {
+    const index = getIndexForType(doc.$type)
+    const newLen = index.push(doc)
+    doc.id = doc.$id = `${doc.$type}:${newLen}`
+    return Promise.resolve({documentId: doc.id})
+  },
+  patch(id) {
+    return new Patch(id, {}, this)
+  },
+  mutate(spec) {
+    return Promise.resolve()
   }
 }
