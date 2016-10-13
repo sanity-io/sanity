@@ -32,7 +32,9 @@ export default {
               type: 'paragraph',
               marks: [
                 'bold',
-                'italic'
+                'italic',
+                'underlined',
+                'code'
               ]
             },
             {

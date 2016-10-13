@@ -7,3 +7,12 @@
 .italic {
   font-style: italic;
 }
+
+.underlined {
+  font-style: underline;
+}
+
+.code {
+  font-family: monospace;
+  background-color: #eee;
+}
