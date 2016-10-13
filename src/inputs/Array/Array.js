@@ -10,11 +10,21 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
+import {SortableContainer, SortableElement} from 'react-sortable-hoc'
 import {bindAll} from 'lodash'
+
+const SortableDefaultList = SortableContainer(DefaultList)
+
+const SortableItem = SortableElement(props => {
+  return (
+    <div disabled={props.disabled} key={props.index} index={props.index}>
+      {props.children}
+    </div>
+  )
+})
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
-
   static valueContainer = ArrayContainer;
 
   static propTypes = {
@@ -44,6 +54,7 @@ export default class Arr extends React.Component {
       'handleRemoveItem',
       'handleItemEnter',
       'handleClose',
+      'handleMove',
       'handleDropDownAction',
       'addItemAtEnd',
       'renderItem',
@@ -138,6 +149,17 @@ export default class Arr extends React.Component {
     this.setState({editIndex: index})
   }
 
+  handleMove(event) {
+    this.props.onChange({
+      patch: {
+        $move: {
+          from: event.oldIndex,
+          to: event.newIndex
+        }
+      }
+    })
+  }
+
   handleItemEnter() {
     this.setState({editIndex: -1})
   }
@@ -166,7 +188,7 @@ export default class Arr extends React.Component {
     return type.of.find(ofType => ofType.type === item.context.field.type)
   }
 
-  renderItem(item, i) {
+  renderItem(item, index) {
     const {type} = this.props
     const {editIndex} = this.state
     const itemField = this.getItemField(item)
@@ -181,16 +203,16 @@ export default class Arr extends React.Component {
     }
 
     return (
-      <div key={i}>
+      <SortableItem key={index} disabled={editIndex > 0} index={index}>
         <ItemPreview
-          index={i}
+          index={index}
           field={itemField}
           value={item}
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
         />
-        {editIndex === i && this.renderEditItemForm(editIndex)}
-      </div>
+        {editIndex === index && this.renderEditItemForm(editIndex)}
+      </SortableItem>
     )
   }
 
@@ -199,7 +221,16 @@ export default class Arr extends React.Component {
     if (type.options && type.options.view == 'grid') {
       return <GridList renderItem={this.renderItem} items={value.value} />
     }
-    return <DefaultList renderItem={this.renderItem} items={value.value} />
+
+    return (
+      <SortableDefaultList
+        lockAxis="y"
+        distance={5}
+        onSortEnd={this.handleMove}
+        renderItem={this.renderItem}
+        items={value.value}
+      />
+    )
   }
 
   render() {

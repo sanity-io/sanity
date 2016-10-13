@@ -2,6 +2,14 @@ import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
 import {resolveJSType} from '../../schema/types/utils'
 
+function move(arr, from, to) {
+  const nextValue = arr.slice(0)
+  const val = nextValue[from]
+  nextValue.splice(from, 1)
+  nextValue.splice(to, 0, val)
+  return nextValue
+}
+
 export default class ArrayContainer {
 
   static deserialize(serializedArray, context) {
@@ -77,6 +85,11 @@ export default class ArrayContainer {
     if (patch.hasOwnProperty('$unshift')) {
       patch.$unshift.forEach(item => nextVal.unshift(item))
       return new ArrayContainer(nextVal, context)
+    }
+
+    if (patch.hasOwnProperty('$move')) {
+      const {from, to} = patch.$move
+      return new ArrayContainer(move(nextVal, from, to), context)
     }
 
     if (patch.hasOwnProperty('$splice')) {
