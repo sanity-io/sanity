@@ -19,30 +19,25 @@ export default class DefaultListItem extends React.Component {
     onSelect() {}
   }
 
-  constructor(...args) {
-    super(...args)
-    this.handleClick = this.handleClick.bind(this)
-    this.handleMouseDown = this.handleMouseDown.bind(this)
-    this.handleMouseUp = this.handleMouseUp.bind(this)
-    this.ensureVisible = this.ensureVisible.bind(this)
-    this.state = {
-      mouseIsDown: false
-    }
+  state = {
+    mouseIsDown: false
   }
 
-  handleClick(event) {
+  handleClick = event => {
     this.props.onSelect(event)
   }
 
-  handleMouseDown(event) {
+  handleMouseDown = event => {
     this.setState({
       mouseIsDown: true
     })
+    window.addEventListener('mouseup', this.handleMouseUp)
   }
-  handleMouseUp(event) {
+  handleMouseUp = event => {
     this.setState({
       mouseIsDown: false
     })
+    window.removeEventListener('mouseup', this.handleMouseUp)
   }
 
   componentDidMount() {
@@ -75,7 +70,6 @@ export default class DefaultListItem extends React.Component {
         onClick={this.handleClick}
         data-item-key={item.key}
         onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
       >
         <div className={styles.icon}>{item.icon}</div>
         <div className={styles.title}>{item.title}</div>
