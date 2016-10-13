@@ -21,7 +21,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "0.0.2",
+    "@sanity/data-aspects": "0.0.3",
     "@sanity/form-builder": "0.0.7",
     "shallow-equals": "0.0.0"
   },
