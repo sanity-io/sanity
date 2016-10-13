@@ -88,7 +88,7 @@ class DataAspectsResolver {
     const {typeName, keyForId, keyForDisplayFieldName} = options
     const fieldName = this.getItemDisplayField(typeName)
     const constraints = this.getListConstraints(typeName)
-    const selection = `"${keyForId}": .$id, "${keyForDisplayFieldName}": .${fieldName}`
+    const selection = `"${keyForId}": _id, "${keyForDisplayFieldName}": ${fieldName}`
     return `${this.schema.name}.${typeName} [${constraints}] {${selection}}`
   }
 
