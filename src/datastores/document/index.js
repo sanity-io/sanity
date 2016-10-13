@@ -16,7 +16,7 @@ function flattenPatch(patch) {
 const serverConnection = {
   byId(id) {
     return Observable.timer(0, 5000)
-      .flatMap(() => client.data.getDocument(id))
+      .flatMap(() => client.getDocument(id))
       // .do(response => console.log('response', response))
       .map(doc => ({
         type: 'snapshot',
@@ -26,7 +26,7 @@ const serverConnection = {
 
   query(query, params) {
     return Observable.timer(0, 50000)
-      .flatMap(() => client.data.fetch(query, params))
+      .flatMap(() => client.fetch(query, params))
       .map(documents => ({
         type: 'snapshot',
         documents: documents
@@ -34,14 +34,14 @@ const serverConnection = {
   },
 
   update(id, patch) {
-    return Observable.from(client.data
+    return Observable.from(client
       .patch(id)
       .set(flattenPatch(patch))
       .commit())
   },
 
   create(doc) {
-    return Observable.from(client.data.create(doc))
+    return Observable.from(client.create(doc))
   }
 }
 
