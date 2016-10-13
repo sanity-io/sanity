@@ -24,6 +24,31 @@
   flex-grow: 1;
 }
 
+.progressContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 2;
+}
+
+.image {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.imageUploading {
+  composes: image;
+  opacity: 0.5;
+}
+
+.imageUploaded {
+  composes: image;
+  opacity: 1;
+}
+
 .upload {
   display: flex;
   display: flex;

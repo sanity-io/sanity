@@ -283,7 +283,16 @@ export default class ImageInput extends React.PureComponent {
               //<img src={imageUrl} width="150" className={styles.imageUploading} />
             }
 
-            <HotspotImage hotspot={this.state.imageToolValue.hotspot} crop={this.state.imageToolValue.crop} src={imageUrl} />
+            {
+              imageUrl
+              && <div className={uploadingImage ? styles.imageUploading : styles.imageUploaded}>
+                <HotspotImage
+                  hotspot={this.state.imageToolValue.hotspot}
+                  crop={this.state.imageToolValue.crop}
+                  src={imageUrl}
+                />
+              </div>
+            }
 
             {
               !imageUrl
@@ -299,7 +308,12 @@ export default class ImageInput extends React.PureComponent {
                 </div>
               </ImageSelect>
             }
-            {progress && <ProgressCircle completion={progress.percent} showPercent />}
+            {
+              uploadingImage
+              && <div className={styles.progressContainer}>
+                {progress && <ProgressCircle completion={progress.percent} showPercent />}
+              </div>
+            }
             {status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>}
             {status === 'complete' && <div>Uploaded</div>}
           </div>
