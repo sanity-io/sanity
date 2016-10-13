@@ -5,7 +5,7 @@ export default {
     '@sanity/components': '^0.0.8',
     '@sanity/default-layout': '^0.0.3',
     '@sanity/default-login': '^0.0.1',
-    '@sanity/desk-tool': '^0.0.8',
+    '@sanity/desk-tool': '^0.0.10',
     'react': '^15.3.0',
     'react-dom': '^15.3.0'
   },

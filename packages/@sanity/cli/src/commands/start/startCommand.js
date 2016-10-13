@@ -56,7 +56,7 @@ export default {
       const hasWarnings = stats.hasWarnings()
 
       if (!hasErrors && !hasWarnings) {
-        output.print(chalk.green('Compiled successfully!'))
+        output.print(chalk.green(`Compiled successfully! Server listening on http://${hostname}:${httpPort}`))
         return
       }
 
