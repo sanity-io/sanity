@@ -19,8 +19,6 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@sanity/base": "0.0.9",
-    "@sanity/components": "0.0.9",
     "@sanity/imagetool": "^0.1.0",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.2.0",
@@ -37,12 +35,12 @@
     "slate-insert-block-on-enter": "0.0.2"
   },
   "devDependencies": {
-    "@sanity/base": "0.0.5",
+    "@sanity/base": "0.0.13",
     "@sanity/check": "^0.0.1",
-    "@sanity/cli": "0.0.6",
-    "@sanity/components": "0.0.8",
+    "@sanity/cli": "0.0.13",
+    "@sanity/components": "0.0.9",
     "@sanity/plugin-loader": "0.0.2",
-    "@sanity/server": "0.0.2",
+    "@sanity/server": "0.0.4",
     "babel-cli": "^6.16.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-css-modules-transform": "^1.1.0",
