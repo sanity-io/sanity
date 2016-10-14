@@ -8,10 +8,7 @@ export default class LoginWrapper extends React.Component {
     children: PropTypes.node.isRequired
   }
 
-  constructor() {
-    super()
-    this.state = {}
-  }
+  state = {user: null}
 
   componentWillMount() {
     this.userSubscription = userStore.currentUser
@@ -26,11 +23,6 @@ export default class LoginWrapper extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        {this.state.user && this.props.children}
-        {this.state.user === null && <LoginDialog/>}
-      </div>
-    )
+    return this.state.user ? this.props.children : <LoginDialog />
   }
 }
