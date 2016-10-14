@@ -1,25 +1,23 @@
 import React, {PropTypes} from 'react'
 import Preview from './Preview'
-import Link from './Link'
+import ImageSelector from './ImageSelector'
 import ImageTool from '../../src'
 
-const IMAGES = [
-  '/hubble.jpg',
-  '/koala.jpg',
-  '/pigs-nose.png',
-  'http://www.jpl.nasa.gov/spaceimages/images/largesize/PIA17970_hires.jpg',
-  'http://placekitten.com/g/500/800',
-  'http://placekitten.com/g/800/500',
-  'http://placekitten.com/g/50/70',
-  'http://placekitten.com/g/70/50',
-  '/dog_smaller.jpg',
-  '/storesmeden.jpg'
-]
+import IMAGES from './data/testImages'
 
-export default class ImageHotspotDemo extends React.Component {
+const PREVIEW_ASPECT_RATIOS = [
+  ['None (default)', undefined],
+  ['Auto', 'auto'],
+  ['Landscape', 16 / 9],
+  ['Square', 1],
+  ['Wide', 4],
+  ['Portrait', 9 / 16]
+].map(([title, aspect]) => ({title, aspect}))
+
+export default class ImageToolDemo extends React.PureComponent {
 
   static propTypes = {
-    imageIndex: PropTypes.string
+    src: PropTypes.string.isRequired
   }
 
   state = {
@@ -37,10 +35,6 @@ export default class ImageHotspotDemo extends React.Component {
         right: 0.0
       }
     }
-  }
-
-  getImageUrl() {
-    return IMAGES[this.props.imageIndex]
   }
 
   handleHotspotChange = event => {
@@ -67,35 +61,37 @@ export default class ImageHotspotDemo extends React.Component {
     this.setState({value: newValue})
   }
 
+  renderPreview = aspectRatio => {
+    const {value} = this.state
+    const {src} = this.props
+    const previewStyle = aspectRatio.aspect === 'auto' ? {height: 150, width: 200, display: 'inline-block'} : {}
+    return (
+      <div>
+        <h3>{aspectRatio.title}</h3>
+        <div style={{...previewStyle, outline: '1px solid #eee'}}>
+          <Preview src={src} aspectRatio={aspectRatio.aspect} hotspot={value.hotspot} crop={value.crop} />
+        </div>
+      </div>
+    )
+  }
+
   render() {
     const value = this.state.value
-    const imageUrl = this.getImageUrl()
+    const {src} = this.props
     const HOTSPOT_WIDTH = 400
     const thumbWidth = (HOTSPOT_WIDTH - (IMAGES.length * 4)) / IMAGES.length
     return (
       <div style={{width: '100%', margin: 15, clear: 'both'}}>
         <div style={{float: 'left'}}>
-          <div style={{width: HOTSPOT_WIDTH}}>
+          <div style={{height: 200, width: HOTSPOT_WIDTH}}>
             <ImageTool
               value={value}
-              imageUrl={imageUrl}
+              src={src}
               onChange={this.handleChange}
             />
           </div>
           <div style={{width: HOTSPOT_WIDTH, outline: '1px dotted #aaa'}}>
-            <ul style={{margin: 0, padding: 0, listStyle: 'none', clear: 'both'}}>
-              {
-                IMAGES.map((image, i) => {
-                  return (
-                    <li key={image} style={{display: 'inline-block', padding: 2}}>
-                      <Link href={`/${i}`}>
-                        <img src={image} style={{verticalAlign: 'middle', width: thumbWidth}} />
-                      </Link>
-                    </li>
-                  )
-                })
-              }
-            </ul>
+            <ImageSelector thumbWidth={thumbWidth} images={IMAGES} />
           </div>
           <h2>Hotspot</h2>
           <label>
@@ -138,26 +134,9 @@ export default class ImageHotspotDemo extends React.Component {
         </div>
         <div style={{padding: 5, margin: 5, float: 'left'}}>
           <ul className="previews">
-            <li>
-              <h3>Landscape</h3>
-              <Preview aspectRatio={16 / 9} hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl} />
-            </li>
-            <li>
-              <h3>Square</h3>
-              <Preview aspectRatio={1} hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl} />
-            </li>
-            <li>
-              <h3>Panorama</h3>
-              <Preview aspectRatio={4} hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl} />
-            </li>
-            <li>
-              <h3>Stående</h3>
-              <Preview aspectRatio={9 / 16} hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl} />
-            </li>
-            <li>
-              <h3>Uoppgitt format</h3>
-              <Preview hotspot={value.hotspot} crop={value.crop} imageUrl={imageUrl} />
-            </li>
+            {PREVIEW_ASPECT_RATIOS.map((aspectRatio, i) => {
+              return <li key={i}>{this.renderPreview(aspectRatio)}</li>
+            })}
           </ul>
         </div>
       </div>

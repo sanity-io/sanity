@@ -1,24 +1,9 @@
 # Changelog
 
-## v2.0
+## v.0.2.0
 
-## Breaking (in some circumstances)
+### [Breaking] `imageUrl` prop in `<ImageTool />` renamed to `src`
 
-### No default aspect ratio anymore
-The `container` option to calculateStyles is now optional. If not given, the image will be shown with the
-aspect ratio from the cropped image. Also, the HotspotImage React component would prior to v2.0 use a default container aspect ration of 4/3 when
-no `aspectRatio` props were passed to it.
-
-So if you did this pre 2.0:
-```js
-<HotspotImage
-  src={imageUrl}
-  srcAspectRatio={imageAspectRatio}
-  crop={crop}
-  hotspot={hotspot}
-  {/* look ma, no aspectRatio */}
-/>
-```
-The image would be displayed with an aspect ratio of 4/3
-
-In v2.0 and above, the image will be displayed with the aspect of the image (after the any cropping has been applied)
+### New aspect ratios for `<HotspotImage />`: `auto` and `none`
+  - If set to `auto`, the aspect ratio of the container element will be used
+  - If set to `none`, it will be displayed with using the aspect ratio of the source image with cropping applied.

@@ -38,7 +38,7 @@ class MyComponent extends React.Component {
   render() {
     return (
       <ImageTool
-        image="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg"
+        src="https://c4.staticflickr.com/8/7514/16189387096_420dbca030_h.jpg"
         value={this.state.value}
         onChange={handleImageToolchange}
       />
