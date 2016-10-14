@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import 'normalize.css'
 
 function assetUrl(staticPath, item) {
   const isAbsolute = item.path.match(/^https?:\/\//)
