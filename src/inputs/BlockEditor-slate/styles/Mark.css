@@ -8,8 +8,16 @@
   font-style: italic;
 }
 
-.underlined {
-  font-style: underline;
+.underline {
+  text-decoration: underline;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 
 .code {

@@ -33,7 +33,9 @@ export default {
               marks: [
                 'bold',
                 'italic',
-                'underlined',
+                'underline',
+                'overline',
+                'line-through',
                 'code'
               ]
             },

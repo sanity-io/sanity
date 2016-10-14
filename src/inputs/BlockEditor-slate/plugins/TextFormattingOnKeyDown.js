@@ -13,10 +13,7 @@ function onKeyDown(event, data, state, editor) {
       mark = 'italic'
       break
     case 'u':
-      mark = 'underlined'
-      break
-    case '`':
-      mark = 'code'
+      mark = 'underline'
       break
     default:
       return null
