@@ -17,6 +17,7 @@
     "@kadira/storybook": "^2.6.1",
     "express": "^4.14.0",
     "in-publish": "^2.0.0",
+    "normalize.css": "^5.0.0",
     "react": "^15.3.1"
   },
   "peerDependencies": {

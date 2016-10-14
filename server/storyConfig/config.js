@@ -1,6 +1,8 @@
 const storyBook = require('part:@sanity/storybook')
 const infoAddon = require('@kadira/react-storybook-addon-info')
 
+require('normalize.css')
+require('./styles.css')
 require('part:@sanity/base/theme/body-style')
 require('./styles.css')
 
