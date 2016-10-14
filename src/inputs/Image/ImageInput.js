@@ -44,11 +44,7 @@ export default class ImageInput extends React.PureComponent {
     progress: null,
     uploadingImage: null,
     materializedImage: null,
-    isAdvancedEditOpen: false,
-    imageToolValue: {
-      crop: {top: 0, left: 0, right: 0, bottom: 0},
-      hotspot: {height: 1, width: 1, x: 0.5, y: 0.5},
-    } // todo: put somewhere else
+    isAdvancedEditOpen: false
   }
 
   subscription = null
@@ -128,12 +124,6 @@ export default class ImageInput extends React.PureComponent {
     this.upload(images[0])
   }
 
-  handleImageToolChange = nextValue => {
-    this.setState({
-      imageToolValue: nextValue
-    })
-  }
-
   handleCancel = () => {
     this.cancel()
     this.setState({
@@ -175,7 +165,7 @@ export default class ImageInput extends React.PureComponent {
     })
   }
 
-  renderImageTool(fieldGroups) {
+  renderImageTool() {
     const {value} = this.props
     const hotspot = value.getFieldValue('hotspot').toJSON() || DEFAULT_HOTSPOT
     const crop = value.getFieldValue('crop').toJSON() || DEFAULT_CROP
@@ -187,7 +177,7 @@ export default class ImageInput extends React.PureComponent {
       <div>
         <div style={{display: 'flex'}}>
           <div style={{width: '40%'}}>
-            <ImageTool value={{hotspot, crop}} imageUrl={imageUrl} onChange={this.handleImageToolChange} />
+            <ImageTool value={{hotspot, crop}} src={imageUrl} onChange={this.handleImageToolChange} />
           </div>
           <div>
             {ASPECT_RATIOS.map(([title, ratio]) => {
@@ -275,6 +265,9 @@ export default class ImageInput extends React.PureComponent {
 
     const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
 
+    const hotspot = value.getFieldValue('hotspot').toJSON() || DEFAULT_HOTSPOT
+    const crop = value.getFieldValue('crop').toJSON() || DEFAULT_CROP
+
     return (
       <Fieldset legend={field.title} level={level}>
         <div className={styles.grid}>
@@ -287,8 +280,9 @@ export default class ImageInput extends React.PureComponent {
               imageUrl
               && <div className={uploadingImage ? styles.imageUploading : styles.imageUploaded}>
                 <HotspotImage
-                  hotspot={this.state.imageToolValue.hotspot}
-                  crop={this.state.imageToolValue.crop}
+                  aspectRatio="auto"
+                  hotspot={hotspot}
+                  crop={crop}
                   src={imageUrl}
                 />
               </div>
