@@ -1,5 +1,6 @@
 import postcssImport from 'postcss-import'
 import postcssCssnext from 'postcss-cssnext'
+import postcssNormalize from 'postcss-normalize'
 import resolveStyleImport from '../util/resolveStyleImport'
 
 export default wp => {
@@ -9,6 +10,7 @@ export default wp => {
   })
 
   return [
+    postcssNormalize,
     importer,
     postcssCssnext
   ]

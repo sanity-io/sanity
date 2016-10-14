@@ -55,6 +55,7 @@
     "postcss-cssnext": "^2.8.0",
     "postcss-import": "^8.1.0",
     "postcss-loader": "^0.13.0",
+    "postcss-normalize": "^0.3.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "require-uncached": "^1.0.2",
