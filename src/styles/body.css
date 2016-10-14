@@ -1,13 +1,11 @@
 @import "part:@sanity/base/theme/variables-style";
-@import "./reset.css";
 @use postcss-cssnext;
 
-body {
-  font-size: 100%;
-  font-family: var(--font-family-base);
+:global(body) {
+  font-family: var(--font-family-sans-serif);
   line-height: var(--line-height-base);
   color: var(--text-color);
-
-  font-family: var(--font-family-sans-serif);
   background-color: var(--body-bg);
+  margin: 0;
+  padding: 0;
 }
