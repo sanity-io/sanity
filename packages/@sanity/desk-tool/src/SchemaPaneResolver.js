@@ -24,6 +24,10 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(type => ({
   title: dataAspects.getDisplayName(type.name)
 }))
 
+function getTitleKey(type) {
+  return dataAspects.getItemDisplayField(type)
+}
+
 export default class SchemaPaneResolver extends React.Component {
   static contextTypes = {
     router: PropTypes.object
@@ -72,20 +76,21 @@ export default class SchemaPaneResolver extends React.Component {
     const {selectedType, selectedDocumentId} = this.context.router.state
     const className = document._id === selectedDocumentId ? paneItemStyles.activeLink : paneItemStyles.link
 
-    const titleProp = dataAspects.getItemDisplayField(document._type.split('.')[1])
     return (
       <StateLink
         className={className}
         state={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(document._id)}}
       >
-        {document[titleProp]}
+        {document[getTitleKey(selectedType)]}
       </StateLink>
     )
   }
 
   getDocumentsPane(type) {
     const selectedTypeQuery = dataAspects.getListQuery({
-      typeName: type
+      typeName: type,
+      keyForId: '_id',
+      keyForDisplayFieldName: getTitleKey(type)
     })
 
     return (
