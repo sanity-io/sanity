@@ -695,7 +695,7 @@ test('uploads images', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
 
   nock(projectHost())
-    .post('/v1/assets/image/foo', body =>
+    .post('/v1/assets/images/foo', body =>
       new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
     )
     .reply(201, {
@@ -715,7 +715,7 @@ test('uploads files', t => {
   const fixturePath = fixture('vildanden.pdf')
 
   nock(projectHost())
-    .post('/v1/assets/file/foo', body =>
+    .post('/v1/assets/files/foo', body =>
       new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
     )
     .reply(201, {

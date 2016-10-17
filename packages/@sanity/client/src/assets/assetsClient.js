@@ -5,6 +5,11 @@ function AssetsClient(client) {
   this.client = client
 }
 
+const ASSET_TYPES_TO_ENDPOINT = {
+  image: 'images',
+  file: 'files'
+}
+
 assign(AssetsClient.prototype, {
   upload(assetType, file, options = {}) {
     validators.validateAssetType(assetType)
@@ -15,12 +20,14 @@ assign(AssetsClient.prototype, {
       ? {'Content-Type': options.contentType}
       : {}
 
+    const assetEndpointSegment = ASSET_TYPES_TO_ENDPOINT[assetType]
+
     return this.client.requestObservable({
       method: 'POST',
       headers: assign({
         Accept: 'application/json',
       }, customHeaders),
-      uri: `/assets/${assetType}/${dataset}`,
+      uri: `/assets/${assetEndpointSegment}/${dataset}`,
       body: file,
       json: false,
       timeout: 0
