@@ -1,12 +1,7 @@
 import React, {PropTypes} from 'react'
-import equals from 'shallow-equals'
 import styles from './styles/PaneItem.css'
 
-class PaneItem extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
-  }
-
+class PaneItem extends React.PureComponent {
   render() {
     const {renderItem, item, index, view} = this.props
 

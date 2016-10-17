@@ -1,24 +1,19 @@
 import React, {PropTypes} from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
-import schema from 'part:@sanity/base/schema'
 import PaneContainer from 'part:@sanity/desk-tool/pane-container'
 import {StateLink} from 'part:@sanity/base/router'
 import EditorPane from './pane/EditorPane'
-import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
 import QueryContainer from 'part:@sanity/base/query-container'
 
 import paneItemStyles from './pane/styles/PaneItem.css'
 import styles from '../styles/DeskTool.css'
-
-const dataAspects = new DataAspectsResolver(schema)
+import UrlDocId from './utils/UrlDocId'
+import dataAspects from './utils/dataAspects'
 
 function mapQueryResultToProps(props) {
   const {result, ...rest} = props
   return {
-    items: (result ? result.documents : []).map(item => {
-      item.key = item.id // mutating like a boss
-      return item
-    }),
+    items: (result ? result.documents : []),
     ...rest
   }
 }
@@ -55,7 +50,7 @@ export default class SchemaPaneResolver extends React.Component {
 
     router.navigate({
       selectedType: router.state.selectedType,
-      selectedDocumentId: document.id,
+      selectedDocumentId: UrlDocId.encode(document._id),
       action: 'edit'
     }, {replace: true})
   }
@@ -75,26 +70,23 @@ export default class SchemaPaneResolver extends React.Component {
 
   renderDocumentPaneItem(document) {
     const {selectedType, selectedDocumentId} = this.context.router.state
-    const className = document.id === selectedDocumentId ? paneItemStyles.activeLink : paneItemStyles.link
+    const className = document._id === selectedDocumentId ? paneItemStyles.activeLink : paneItemStyles.link
 
+    const titleProp = dataAspects.getItemDisplayField(document._type.split('.')[1])
     return (
       <StateLink
         className={className}
-        state={{selectedType, action: 'edit', selectedDocumentId: document.id}}
+        state={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(document._id)}}
       >
-        {document.title}
+        {document[titleProp]}
       </StateLink>
     )
   }
 
   getDocumentsPane(type) {
-    const queryOpts = {
-      typeName: type,
-      keyForId: 'id',
-      keyForDisplayFieldName: 'title'
-    }
-
-    const selectedTypeQuery = dataAspects.getListQuery(queryOpts)
+    const selectedTypeQuery = dataAspects.getListQuery({
+      typeName: type
+    })
 
     return (
       <QueryContainer query={selectedTypeQuery} mapFn={mapQueryResultToProps}>
@@ -123,7 +115,7 @@ export default class SchemaPaneResolver extends React.Component {
 
     const editor = ['edit', 'create'].includes(action) && (
       <EditorPane
-        documentId={selectedDocumentId}
+        documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
         typeName={selectedType}
         onCreated={this.handleDocumentCreated}
       />

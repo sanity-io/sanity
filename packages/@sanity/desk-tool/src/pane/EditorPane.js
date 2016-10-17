@@ -3,9 +3,9 @@ import React, {PropTypes} from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import FormBuilder from 'part:@sanity/form-builder'
-import equals from 'shallow-equals'
 import {unprefixType} from '../utils/unprefixType'
 import schema from 'part:@sanity/base/schema'
+import dataAspects from '../utils/dataAspects'
 
 import styles from './styles/EditorPane.css'
 
@@ -16,7 +16,7 @@ function createFormBuilderStateFrom(serialized, typeName) {
 }
 const noop = () => {}
 
-export default class EditorPane extends React.Component {
+export default class EditorPane extends React.PureComponent {
   static propTypes = {
     documentId: PropTypes.string,
     onCreated: PropTypes.func,
@@ -80,10 +80,6 @@ export default class EditorPane extends React.Component {
     this.tearDownSubscriptions()
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return !equals(this.props, nextProps) || !equals(this.state, nextState)
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.documentId !== this.props.documentId) {
       this.setupSubscriptions(nextProps)
@@ -121,11 +117,11 @@ export default class EditorPane extends React.Component {
     this.setState({progress: 'Creating…'})
 
     return documentStore
-      .create(Object.assign(nextValue.serialize(), {$type: prefixedType}))
+      .create(Object.assign(nextValue.serialize(), {_type: prefixedType}))
       .delay(1100) // Need to wait for document to actual exist in ES index
       .subscribe(result => {
         this.setState({progress: null})
-        onCreated({id: result.documentId})
+        onCreated({_id: result.documentId})
       })
   }
 
@@ -137,11 +133,13 @@ export default class EditorPane extends React.Component {
   render() {
     const {value, progress, validation} = this.state
 
+    const titleProp = dataAspects.getItemDisplayField(value.getFieldValue('_type'))
+
     return (
       <div className={styles.root}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {value.value.name.value || 'Untitled'}
+            {value.getFieldValue(titleProp).serialize()}
           </h1>
 
           <div className={progress ? styles.spinner : styles.spinnerInactive}>
