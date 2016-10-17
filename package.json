@@ -49,7 +49,7 @@
     "rimraf": "^2.5.2"
   },
   "dependencies": {
-    "@sanity/client": "^0.2.3",
+    "@sanity/client": "^0.2.4",
     "@sanity/document-store": "^0.0.1",
     "@sanity/state-router": "^0.0.1",
     "history": "^2.1.0",
