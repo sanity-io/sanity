@@ -3,7 +3,7 @@ import {ReferenceInput} from '../../index'
 import {unprefixType} from '../utils/unprefixType'
 
 function fetchSingle(id) {
-  return client.data.getDocument(id).then(doc => unprefixType(doc))
+  return client.getDocument(id).then(doc => unprefixType(doc))
 }
 
 function fetch(field) {
@@ -18,7 +18,7 @@ function fetch(field) {
     `_type == %${key}`
   )).join(' || ')
 
-  return client.data.fetch(`*[${eqls}]`, params)
+  return client.fetch(`*[${eqls}]`, params)
     .then(response => response.map(unprefixType))
 }
 
@@ -43,7 +43,7 @@ function search(field) {
     `_type == %${key}`
   )).join(' || ')
 
-  return client.data.fetch(`*[${eqls}]`, params)
+  return client.fetch(`*[${eqls}]`, params)
     .then(response => response.map(unprefixType))
 }
 
