@@ -66,7 +66,8 @@ module.exports = {
       .then(dataset => this.request({
         method: useGet ? 'GET' : 'POST',
         uri: `/data/${endpoint}/${dataset}${stringQuery}`,
-        json: useGet ? true : body,
+        json: true,
+        body: useGet ? undefined : body,
         query: isMutation && mutationDefaults
       }))
   },
