@@ -223,7 +223,7 @@ test('can create documents', t => {
 
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {create: doc}).reply(200, {
     transactionId: 'abc123',
-    docIds: ['foo/123']
+    createdIds: ['foo/123']
   })
 
   getClient().create(doc)
@@ -241,7 +241,7 @@ test('can create documents without specifying ID', t => {
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', expectedBody)
     .reply(200, {
       transactionId: '123abc',
-      docIds: ['foo/456']
+      createdIds: ['foo/456']
     })
 
   getClient().create(doc)
@@ -257,7 +257,7 @@ test('createIfNotExists() sends correct mutation', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
 
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {createIfNotExists: doc})
-    .reply(200, {transactionId: '123abc', docIds: ['foo/123']})
+    .reply(200, {transactionId: '123abc', createdIds: ['foo/123']})
 
   getClient().createIfNotExists(doc).then(() => t.end()).catch(t.ifError)
 })
@@ -266,7 +266,7 @@ test('createOrReplace() sends correct mutation', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
 
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {createOrReplace: doc})
-    .reply(200, {transactionId: '123abc', docIds: ['foo/123']})
+    .reply(200, {transactionId: '123abc', createdIds: ['foo/123']})
 
   getClient().createOrReplace(doc).then(() => t.end()).catch(t.ifError)
 })
