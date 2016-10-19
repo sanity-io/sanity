@@ -271,6 +271,18 @@ test('createOrReplace() sends correct mutation', t => {
   getClient().createOrReplace(doc).then(() => t.end()).catch(t.ifError)
 })
 
+test('createOrReplace() returns document ID if document was replaced', t => {
+  const doc = {_id: 'foo/123', name: 'Raptor'}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {createOrReplace: doc})
+    .reply(200, {transactionId: '123abc', updatedIds: ['foo/123']})
+
+  getClient().createOrReplace(doc).then(res => {
+    t.ok(res.transactionId, 'transaction id returned')
+    t.equal(res.documentId, 'foo/123', 'document id returned')
+    t.end()
+  }).catch(t.ifError)
+})
+
 test('delete() sends correct mutation', t => {
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true', {delete: {id: 'foo/123'}})

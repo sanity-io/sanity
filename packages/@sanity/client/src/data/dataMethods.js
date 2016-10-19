@@ -77,7 +77,7 @@ module.exports = {
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
     return this.dataRequest('mutate', mutation).then(res => ({
       transactionId: res.transactionId,
-      documentId: res.createdIds[0]
+      documentId: res.createdIds ? res.createdIds[0] : res.updatedIds[0]
     }))
   }
 }
