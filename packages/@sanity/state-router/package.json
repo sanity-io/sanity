@@ -1,7 +1,7 @@
 {
   "name": "@sanity/state-router",
   "version": "0.0.2",
-  "description": "A ",
+  "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
     "start": "remon --require ./.babel-init.js demo-server/app.js",
@@ -49,5 +49,13 @@
     "rimraf": "^2.5.4",
     "staticr": "^4.0.2",
     "tap": "^7.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/state-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/state-router/issues"
+  },
+  "homepage": "https://github.com/sanity-io/state-router#readme"
 }
