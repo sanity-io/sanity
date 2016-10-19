@@ -14,6 +14,10 @@ assign(DatasetsClient.prototype, {
     return this._modify('DELETE', name)
   },
 
+  list() {
+    return this.request({uri: '/datasets'})
+  },
+
   _modify(method, name) {
     validate.dataset(name)
     return this.request({method, uri: `/datasets/${name}`})

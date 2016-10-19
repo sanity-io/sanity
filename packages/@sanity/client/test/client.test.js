@@ -114,6 +114,14 @@ test('can delete dataset', t => {
   getClient().datasets.delete('bar').then(t.end).catch(t.ifError)
 })
 
+test('can list datasets', t => {
+  nock(projectHost()).get('/v1/datasets').reply(200, ['foo', 'bar'])
+  getClient().datasets.list().then(sets => {
+    t.deepEqual(sets, ['foo', 'bar'])
+    t.end()
+  }).catch(t.ifError)
+})
+
 /*****************
  * DATA          *
  *****************/
