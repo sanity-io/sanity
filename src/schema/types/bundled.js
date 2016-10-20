@@ -106,5 +106,34 @@ export default {
     options: {
       title: PropTypes.string
     }
+  },
+  paragraph: {
+    primitive: 'object',
+    options: {
+      marks: PropTypes.array,
+      title: PropTypes.string
+    }
+  },
+  header: {
+    primitive: 'object',
+    options: {
+      marks: PropTypes.array,
+      level: PropTypes.number,
+      title: PropTypes.string
+    }
+  },
+  list: {
+    primitive: 'object',
+    options: {
+      listStyle: PropTypes.string,
+      title: PropTypes.string
+    }
+  },
+  listItem: {
+    primitive: 'object',
+    options: {
+      marks: PropTypes.array,
+      title: PropTypes.string
+    }
   }
 }

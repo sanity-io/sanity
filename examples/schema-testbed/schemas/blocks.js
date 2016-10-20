@@ -40,6 +40,75 @@ export default {
               ]
             },
             {
+              title: 'Header 1',
+              type: 'header',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ],
+              level: 1
+            },
+            {
+              title: 'Header 2',
+              type: 'header',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ],
+              level: 2
+            },
+            {
+              title: 'Header 3',
+              type: 'header',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ],
+              level: 3
+            },
+            {
+              title: 'Header 4',
+              type: 'header',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ],
+              level: 4
+            },
+            {
+              title: 'Numbered list',
+              type: 'list',
+              listStyle: 'number'
+            },
+            {
+              title: 'Bullet list',
+              type: 'list',
+              listStyle: 'bullet'
+            },
+            {
+              title: 'Roman list',
+              type: 'list',
+              listStyle: 'roman'
+            },
+            {
+              title: 'List item',
+              type: 'listItem',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ]
+            },
+            {
               title: 'String',
               type: 'string'
             },
@@ -128,28 +197,6 @@ export default {
               title: 'Longitude',
               type: 'number',
               required: true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'paragraph',
-      title: 'Paragraph object',
-      type: 'object',
-      fields: [
-        {
-          name: 'content',
-          type: 'array',
-          of: [
-            {
-              type: 'object',
-              fields: [
-                {
-                  name: 'type',
-                  type: 'string'
-                }
-              ]
             }
           ]
         }

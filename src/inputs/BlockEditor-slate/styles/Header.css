@@ -1,0 +1,32 @@
+@use postcss-cssnext;
+
+.root {
+  font-weight: bold;
+}
+.root:last-child {
+  margin-bottom: 0em;
+}
+
+.header-1 {
+  composes: root;
+  font-size: 160%;
+  margin-bottom: 1em;
+}
+
+.header-2 {
+  composes: root;
+  font-size: 140%;
+  margin-bottom: 0.8em;
+}
+
+.header-3 {
+  composes: root;
+  font-size: 120%;
+  margin-bottom: 0.6em;
+}
+
+.header-4 {
+  composes: root;
+  font-size: 110%;
+  margin-bottom: 0.5em;
+}

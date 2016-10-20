@@ -1,5 +1,7 @@
 import assert from 'assert'
 import isEmpty from 'is-empty'
+import {SLATE_TEXT_BLOCKS, SLATE_LIST_BLOCKS, SLATE_BLOCK_FORMATTING_OPTION_KEYS} from '../constants'
+import {pick} from 'lodash'
 
 function collapse(value) {
   return isEmpty(value) ? undefined : value
@@ -7,13 +9,24 @@ function collapse(value) {
 
 const SERIALIZE = {
   block(block, context = {}) {
-    if (block.type === 'paragraph' || block.type === 'line') {
-      assert(block.nodes.size === 1, `Expected line/paragraph blocks to have a single node, instead it had ${block.nodes.size} nodes`)
-      // Skip the paragraph def
-      return SERIALIZE.paragraph(block.nodes.get(0), context)
+    if (SLATE_TEXT_BLOCKS.includes(block.type)) {
+      assert(
+        block.nodes.size === 1,
+        `Expected ${block.type} blocks to have a single node, instead it had ${block.nodes.size} nodes`
+      )
+      // Skip the field def
+      return SERIALIZE.textBlock(block, block.nodes.get(0), context)
     }
+
+    if (SLATE_LIST_BLOCKS.includes(block.type)) {
+      return SERIALIZE.listBlock(block, block.nodes, context)
+    }
+
     const validTypeNames = context.field.of.map(ofType => ofType.type)
-    assert(validTypeNames.includes(block.type), `Expected block type (${block.type}) to be one of ${validTypeNames.join(', ')}`)
+    assert(
+      validTypeNames.includes(block.type),
+      `Expected block type (${block.type}) to be one of ${validTypeNames.join(', ')}`
+    )
 
     // We now have a block that is a form builder field
     const value = block.data.get('value')
@@ -67,15 +80,32 @@ const SERIALIZE = {
     }
   },
 
-  paragraph(text, context = {}) {
-    return {
-      key: text.key,
-      _type: 'paragraph',
-      ranges: text
-        .getRanges()
-        .toArray()
-        .map(range => SERIALIZE.range(range, context))
-    }
+  textBlock(block, text, context = {}) {
+    return Object.assign(
+      {
+        key: text.key,
+        _type: block.type,
+        ranges: text
+          .getRanges()
+          .toArray()
+          .map(range => SERIALIZE.range(range, context))
+      },
+      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    )
+  },
+
+  listBlock(block, items, context = {}) {
+    return Object.assign(
+      {
+        key: block.key,
+        _type: block.type,
+        items: items
+          .toArray()
+          .map(item => SERIALIZE.textBlock(item, item.nodes.get(0), context))
+
+      },
+      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    )
   },
 
   mark(mark, context = {}) {

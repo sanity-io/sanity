@@ -25,6 +25,6 @@
   composes: root;
 }
 
-.formattingToolbar {
+.textFormattingToolbar {
   margin-top: 10px;
 }
