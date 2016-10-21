@@ -21,16 +21,16 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "0.0.3",
-    "@sanity/form-builder": "0.0.11",
+    "@sanity/data-aspects": "0.0.4",
+    "@sanity/form-builder": "0.0.13",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.0.13",
-    "@sanity/check": "^0.0.1",
-    "@sanity/cli": "0.0.13",
-    "@sanity/client": "0.2.1",
-    "@sanity/components": "0.0.9",
+    "@sanity/base": "0.0.17",
+    "@sanity/check": "^0.0.2",
+    "@sanity/cli": "0.0.15",
+    "@sanity/client": "0.2.6",
+    "@sanity/components": "0.0.11",
     "babel-cli": "^6.16.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
