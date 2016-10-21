@@ -19,7 +19,7 @@
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.0.1",
+    "@sanity/check": "^0.0.2",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.8.0",
