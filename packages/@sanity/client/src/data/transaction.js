@@ -2,6 +2,8 @@ const assign = require('xtend/mutable')
 const validators = require('../validators')
 const Patch = require('./patch')
 
+const defaultMutateOptions = {returnDocuments: false}
+
 function Transaction(operations = [], client) {
   this.operations = operations
   this.client = client
@@ -62,15 +64,15 @@ assign(Transaction.prototype, {
     return this.serialize()
   },
 
-  commit() {
-    if (this.client) {
-      return this.client.mutate(this.serialize())
+  commit(options) {
+    if (!this.client) {
+      throw new Error(
+        'No `client` passed to transaction, either provide one or pass the '
+        + 'transaction to a clients `mutate()` method'
+      )
     }
 
-    throw new Error(
-      'No `client` passed to transaction, either provide one or pass the '
-      + 'transaction to a clients `mutate()` method'
-    )
+    return this.client.mutate(this.serialize(), options || defaultMutateOptions)
   },
 
   reset() {

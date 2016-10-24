@@ -339,7 +339,7 @@ test('createOrReplace() returns document ID if document was replaced', t => {
 test('delete() sends correct mutation', t => {
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {delete: {id: 'foo/123'}})
-    .reply(200)
+    .reply(200, {transactionId: 'abc123'})
 
   getClient().delete('foo/123').then(() => t.end()).catch(t.ifError)
 })
@@ -359,7 +359,7 @@ test('mutate() accepts multiple mutations', t => {
 
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', mutations)
-    .reply(200)
+    .reply(200, {transactionId: 'foo'})
 
   getClient().mutate(mutations).then(() => t.end()).catch(t.ifError)
 })
@@ -402,6 +402,18 @@ test('can build and serialize a patch of operations', t => {
     .serialize()
 
   t.deepEqual(patch, {id: 'foo/123', inc: {count: 1}, set: {brownEyes: true}})
+  t.end()
+})
+
+test('patch() can take an array of IDs', t => {
+  const patch = getClient().patch(['foo/123', 'foo/456']).inc({count: 1}).serialize()
+  t.deepEqual(patch, {id: ['foo/123', 'foo/456'], inc: {count: 1}})
+  t.end()
+})
+
+test('patch() can take a query', t => {
+  const patch = getClient().patch({query: 'beerfiesta.beer'}).inc({count: 1}).serialize()
+  t.deepEqual(patch, {query: 'beerfiesta.beer', inc: {count: 1}})
   t.end()
 })
 
@@ -459,15 +471,37 @@ test('all patch methods throw on non-objects being passed as argument', t => {
 test('executes patch when commit() is called', t => {
   const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedPatch)
+    .post('/v1/data/mutate/foo?returnIds=true', expectedPatch)
     .reply(200, {transactionId: 'blatti'})
+
+  getClient().patch('foo/123')
+    .inc({count: 1})
+    .set({visited: true})
+    .commit({returnDocuments: false})
+    .then(res => {
+      t.equal(res.transactionId, 'blatti', 'applies given patch')
+      t.end()
+    })
+    .catch(t.ifError)
+})
+
+test('returns patched document by default', t => {
+  const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedPatch)
+    .reply(200, {transactionId: 'blatti', documents: [{
+      _id: 'foo/123',
+      _createdAt: '2016-10-24T08:09:32.997Z',
+      count: 2,
+      visited: true
+    }]})
 
   getClient().patch('foo/123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
     .then(res => {
-      t.equal(res.transactionId, 'blatti', 'applies given patch')
+      t.equal(res._id, 'foo/123', 'returns patched document')
       t.end()
     })
     .catch(t.ifError)
@@ -668,7 +702,7 @@ test('patch can take an existing patch', t => {
 test('executes transaction when commit() is called', t => {
   const expectedTransaction = [{create: {_id: 'foo/', bar: true}}, {delete: {id: 'foo/bar'}}]
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedTransaction)
+    .post('/v1/data/mutate/foo?returnIds=true', expectedTransaction)
     .reply(200, {transactionId: 'blatti'})
 
   getClient().transaction()

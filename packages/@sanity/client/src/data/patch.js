@@ -2,8 +2,8 @@ const deepAssign = require('deep-assign')
 const assign = require('xtend/mutable')
 const validateObject = require('../validators').validateObject
 
-function Patch(documentId, operations = {}, client = null) {
-  this.documentId = documentId
+function Patch(selection, operations = {}, client = null) {
+  this.selection = selection
   this.operations = assign({}, operations)
   this.client = client
 }
@@ -11,7 +11,7 @@ function Patch(documentId, operations = {}, client = null) {
 assign(Patch.prototype, {
   clone(addOps = {}) {
     return new Patch(
-      this.documentId,
+      this.selection,
       assign({}, this.operations, addOps),
       this.client
     )
@@ -64,26 +64,26 @@ assign(Patch.prototype, {
   },
 
   serialize() {
-    return assign({id: this.documentId}, this.operations)
+    return assign(getSelection(this.selection), this.operations)
   },
 
   toJSON() {
     return this.serialize()
   },
 
-  commit() {
-    if (this.client) {
-      return this.client.mutate({patch: this.serialize()})
+  commit(options = {}) {
+    if (!this.client) {
+      throw new Error(
+        'No `client` passed to patch, either provide one or pass the '
+        + 'patch to a clients `mutate()` method'
+      )
     }
 
-    throw new Error(
-      'No `client` passed to patch, either provide one or pass the '
-      + 'patch to a clients `mutate()` method'
-    )
+    return this.client.mutate({patch: this.serialize()}, options)
   },
 
   reset() {
-    return new Patch(this.documentId, {}, this.client)
+    return new Patch(this.selection, {}, this.client)
   },
 
   _assign(op, props) {
@@ -99,6 +99,24 @@ function throwPromiseError(op) {
   return () => {
     throw new Error(`${op}() called on an uncommited patch, did you forget to call commit()?`)
   }
+}
+
+function getSelection(sel) {
+  if (typeof sel === 'string' || Array.isArray(sel)) {
+    return {id: sel}
+  }
+
+  if (sel && sel.query) {
+    return {query: sel.query}
+  }
+
+  const selectionOpts = [
+    '* Dataset-prefixed document ID (<dataset/docId>)',
+    '* Array of dataset-prefixed document IDs',
+    '* Object containing `query`'
+  ].join('\n')
+
+  throw new Error(`Unknown selection for patch - must be one of:\n\n${selectionOpts}`)
 }
 
 module.exports = Patch

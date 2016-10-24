@@ -38,9 +38,8 @@ module.exports = {
     return this._create(doc, 'createOrReplace', options)
   },
 
-  patch(documentId, operations) {
-    validators.validateDocumentId('patch', documentId)
-    return new Patch(documentId, operations, this)
+  patch(selector, operations) {
+    return new Patch(selector, operations, this)
   },
 
   delete(documentId) {
@@ -48,12 +47,12 @@ module.exports = {
     return this.dataRequest('mutate', {delete: {id: documentId}})
   },
 
-  mutate(mutations) {
-    return this.dataRequest('mutate',
-      mutations instanceof Patch
-        ? mutations.serialize()
-        : mutations
-    )
+  mutate(mutations, options) {
+    const body = mutations instanceof Patch
+      ? mutations.serialize()
+      : mutations
+
+    return this.dataRequest('mutate', body, options)
   },
 
   transaction(operations) {
@@ -77,16 +76,21 @@ module.exports = {
         body: useGet ? undefined : body,
         query: isMutation && getMutationQuery(options)
       }))
+      .then(res => {
+        if (!isMutation) {
+          return res
+        }
+
+        return options.returnDocuments === false
+          ? {transactionId: res.transactionId, documentId: getMutatedId(res)}
+          : res.documents && res.documents[0]
+      })
   },
 
   _create(doc, op, options = {}) {
     const dataset = validators.hasDataset(this.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
-    return this.dataRequest('mutate', mutation, options).then(res => {
-      return options.returnDocuments === false
-        ? {transactionId: res.transactionId, documentId: getMutatedId(res)}
-        : res.documents && res.documents[0]
-    })
+    return this.dataRequest('mutate', mutation, options)
   }
 }
 
