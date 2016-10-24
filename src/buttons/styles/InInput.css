@@ -8,14 +8,14 @@
   text-transform: uppercase;
   outline: none;
   cursor: pointer;
-  background-color: var(--input-bg);
-  border: none;
-  line-height: var(--input-line-height);
+  border: 0;
+  line-height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2 - var(--input-border-size) * 2);
   user-select: none;
   float: right;
+  font-size: 1em;
   margin-top: calc(var(--input-padding-horizontal) * -1);
   padding: 0 1em;
-  border: 1px solid red;
+  background-color: var(--gray-lighter);
 
   &:first-child {
     margin-right: calc(var(--input-padding-vertical) * -1);
@@ -26,6 +26,11 @@
     border-color: var(--input-border-color-focus);
     color: var(--input-bg);
   }
+}
+
+.content {
+  font-size: 0.8em;
+  line-height: 1em;
 }
 
 .colored {

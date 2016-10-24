@@ -47,7 +47,7 @@ export default class InInputButton extends React.Component {
 
     const style = `
       ${className}
-      ${styles[kind] || (inverted && styles.inverted) || styles.root} 
+      ${styles[kind] || (inverted && styles.inverted) || styles.root}
       ${colored && styles.colored} ${Icon && styles.hasIcon}
     `
 
@@ -58,14 +58,16 @@ export default class InInputButton extends React.Component {
         type="button"
         onClick={this.handleClick}
       >
-        {
-          loading && <Spinner />
-        }
-        {
-          Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
-        }
         <span className={styles.content}>
-          {this.props.children}
+          {
+            loading && <Spinner />
+          }
+          {
+            Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
+          }
+          <span className={styles.text}>
+            {this.props.children}
+          </span>
         </span>
 
         {
