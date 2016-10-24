@@ -9,6 +9,10 @@ function flattenPatch(patch) {
     if (hasOwn.call(val, '$set')) {
       return Object.assign(flattened, {[key]: val.$set})
     }
+    const unsupportedOps = Object.keys(val)
+    if (unsupportedOps.length > 0) {
+      console.error(new Error(`Operation(s) not supported (yet): ${unsupportedOps.join(', ')}`))
+    }
     return flattened
   }, {})
 }
