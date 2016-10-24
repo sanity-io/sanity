@@ -63,16 +63,13 @@ async function initSanity({output, prompt, options, apiClient}) {
   // We're authenticated, now lets create a project
   debug('Prompting user to select or create a project')
   const {projectId, displayName} = await getOrCreateProject()
+  const sluggedName = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9]/g, '')
   debug(`Project with name ${displayName} selected`)
 
-  // Now let's create a dataset
-  const sluggedName = displayName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9]/g, '')
-  const datasetName = await datasetNamePrompt(prompt, {
-    message: 'Name of your first data set:',
-    default: sluggedName
-  })
-
-  await apiClient({api: {projectId}}).datasets.create(datasetName)
+  // Now let's pick or create a dataset
+  debug('Prompting user to select or create a dataset')
+  const {datasetName} = await getOrCreateDataset({projectId, displayName})
+  debug(`Dataset with name ${datasetName} selected`)
 
   // Gather project defaults based on environment
   const defaults = await getProjectDefaults(options.rootDir, options)
@@ -193,6 +190,48 @@ async function initSanity({output, prompt, options, apiClient}) {
       projectId: selected,
       displayName: projects.find(proj => proj.projectId === selected).displayName
     }
+  }
+
+  async function getOrCreateDataset(opts) {
+    const client = apiClient({api: {projectId: opts.projectId}})
+    const datasets = await client.datasets.list()
+
+    if (datasets.length === 0) {
+      debug('No datasets found for project, prompting for name')
+      const name = await datasetNamePrompt(prompt, {
+        message: 'Name of your first data set:',
+        default: 'production'
+      })
+
+      await client.datasets.create(name)
+      return {datasetName: name}
+    }
+
+    debug(`User has ${datasets.length} dataset(s) already, showing list of choices`)
+    const datasetChoices = datasets.map(dataset => ({value: dataset.name}))
+
+    const selected = await prompt.single({
+      message: 'Select dataset to use',
+      type: 'list',
+      choices: [
+        {value: 'new', name: 'Create new dataset'},
+        new prompt.Separator(),
+        ...datasetChoices
+      ]
+    })
+
+    if (selected === 'new') {
+      debug('User wants to create a new dataset, prompting for name')
+      const newDatasetName = await datasetNamePrompt(prompt, {
+        message: 'Name of your first data set:',
+        default: 'production'
+      })
+      await client.datasets.create(newDatasetName)
+      return {datasetName: newDatasetName}
+    }
+
+    debug(`Returning selected dataset (${selected})`)
+    return {datasetName: selected}
   }
 }
 
