@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import Main from './components/Main'
-import {createRoute, createScope} from '../src'
+import {createRoute, resolveStateFromPath, createScope} from '../src'
 import RouterProvider from '../src/components/RouterProvider'
 import {createHistory} from 'history'
 
@@ -28,8 +28,8 @@ function handleNavigate(nextUrl, {replace} = {}) {
 
 function render(location) {
   ReactDOM.render((
-    <RouterProvider router={rootRoute} onNavigate={handleNavigate} location={location}>
-      <Main/>
+    <RouterProvider router={rootRoute} onNavigate={handleNavigate} state={resolveStateFromPath(rootRoute, location.pathname)} location={location}>
+      <Main />
     </RouterProvider>
   ), document.getElementById('main'))
 }
