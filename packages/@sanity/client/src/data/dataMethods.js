@@ -4,7 +4,14 @@ const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
 
-const mutationDefaults = {returnIds: true}
+const getMutationQuery = options => assign(
+  // Always return IDs
+  {returnIds: true},
+
+  // Allow user to disable returning documents
+  options.returnDocuments === false ? {} : {returnDocuments: true}
+)
+
 const getQuerySizeLimit = 1948
 
 module.exports = {
@@ -19,16 +26,16 @@ module.exports = {
     }).then(res => res.documents && res.documents[0])
   },
 
-  create(doc) {
-    return this._create(doc, 'create')
+  create(doc, options) {
+    return this._create(doc, 'create', options)
   },
 
-  createIfNotExists(doc) {
-    return this._create(doc, 'createIfNotExists')
+  createIfNotExists(doc, options) {
+    return this._create(doc, 'createIfNotExists', options)
   },
 
-  createOrReplace(doc) {
-    return this._create(doc, 'createOrReplace')
+  createOrReplace(doc, options) {
+    return this._create(doc, 'createOrReplace', options)
   },
 
   patch(documentId, operations) {
@@ -53,7 +60,7 @@ module.exports = {
     return new Transaction(operations, this)
   },
 
-  dataRequest(endpoint, body) {
+  dataRequest(endpoint, body, options = {}) {
     const isMutation = endpoint === 'mutate'
 
     // Check if the query string is within a configured threshold,
@@ -68,16 +75,24 @@ module.exports = {
         uri: `/data/${endpoint}/${dataset}${stringQuery}`,
         json: true,
         body: useGet ? undefined : body,
-        query: isMutation && mutationDefaults
+        query: isMutation && getMutationQuery(options)
       }))
   },
 
-  _create(doc, op) {
+  _create(doc, op, options = {}) {
     const dataset = validators.hasDataset(this.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
-    return this.dataRequest('mutate', mutation).then(res => ({
-      transactionId: res.transactionId,
-      documentId: res.createdIds ? res.createdIds[0] : res.updatedIds[0]
-    }))
+    return this.dataRequest('mutate', mutation, options).then(res => {
+      return options.returnDocuments === false
+        ? {transactionId: res.transactionId, documentId: getMutatedId(res)}
+        : res.documents && res.documents[0]
+    })
   }
+}
+
+function getMutatedId(res) {
+  return (
+    (res.createdIds && res.createdIds[0])
+    || (res.updatedIds && res.updatedIds[0])
+  )
 }
