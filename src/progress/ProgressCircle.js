@@ -8,7 +8,7 @@ const heightFactor = 1.2
 export default class ProgressCircle extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    completion: PropTypes.number,
+    percent: PropTypes.number,
     animation: PropTypes.bool,
     text: PropTypes.string,
     style: PropTypes.object,
@@ -16,6 +16,7 @@ export default class ProgressCircle extends React.Component {
     radius: React.PropTypes.number,
     strokeWidth: React.PropTypes.number,
     status: React.PropTypes.string,
+    completed: React.PropTypes.bool
   }
 
   static defaultProps = {
@@ -25,10 +26,10 @@ export default class ProgressCircle extends React.Component {
   }
 
   render() {
-    const {completion, text, style, showPercent, radius, strokeWidth} = this.props
-    const completed = completion >= 100
+    const {percent, completed, text, style, showPercent, radius, strokeWidth} = this.props
     const rootClasses = `
       ${completed ? styles.completed : styles.uncompleted}
+      ${percent >= 100 && styles.hundredPercent}
     `
 
     const width = radius * 2
@@ -36,7 +37,7 @@ export default class ProgressCircle extends React.Component {
     const viewBox = `-10 -10 ${width * widthFactor} ${height * heightFactor}`
 
     const dashArray = this.props.radius * Math.PI * 2
-    const dashOffset = dashArray - dashArray * completion / 100 //eslint-disable-line no-mixed-operators
+    const dashOffset = dashArray - dashArray * percent / 100 //eslint-disable-line no-mixed-operators
 
     return (
       <div className={rootClasses} style={style}>
@@ -74,7 +75,7 @@ export default class ProgressCircle extends React.Component {
                 dy=".4em"
                 textAnchor="middle"
               >
-                {`${Math.round(completion, 1)}%`}
+                {`${Math.round(percent, 1)}%`}
               </text>
             }
             {

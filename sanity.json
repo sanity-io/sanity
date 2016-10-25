@@ -46,6 +46,18 @@
       "description": "Styling for button inside an input"
     },
     {
+      "name": "part:@sanity/components/imageinput/fieldset",
+      "description": "Image input fieldset"
+    },
+    {
+      "name": "part:@sanity/components/imageinput/image-select",
+      "description": "Abstract Image selector. Replaces <Input type=file />"
+    },
+    {
+      "name": "part:@sanity/components/imageinput/default-style",
+      "description": "Image input fieldset styling"
+    },
+    {
       "name": "part:@sanity/components/loading/spinner",
       "description": "Spinner to show activity"
     },
@@ -405,6 +417,18 @@
       "path": "buttons/styles/InInput.css"
     },
     {
+      "implements": "part:@sanity/components/imageinput/fieldset",
+      "path": "imageinput/ImageInputFieldset.js"
+    },
+    {
+      "implements": "part:@sanity/components/imageinput/image-select",
+      "path": "imageinput/common/ImageSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/imageinput/fieldset-style",
+      "path": "imageinput/styles/ImageInputFieldset.css"
+    },
+    {
       "implements": "part:@sanity/components/loading/spinner-style",
       "path": "loading/styles/Spinner.css"
     },
@@ -623,6 +647,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "previews/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "imageinput/story.js"
     }
 
   ]

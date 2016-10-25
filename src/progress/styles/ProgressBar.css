@@ -9,6 +9,7 @@
 .root {
   border: 1px solid #000;
   height: var(--progress-bar-height);
+  width: 100%;
 }
 
 .inner {
@@ -28,7 +29,7 @@
   position: relative;
   width: 100%;
   height: var(--progress-bar-height);
-  padding: 0.1em;
+  padding: 0.1em 0.12em;
   box-sizing: border-box;
 }
 
@@ -38,6 +39,7 @@
   transition-property: width;
   transition-duration: 0.1s;
   transition-timing-function: linear;
+  max-width: 100%;
 }
 
 .percent {

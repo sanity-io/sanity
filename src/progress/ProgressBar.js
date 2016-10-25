@@ -4,10 +4,10 @@ import styles from 'part:@sanity/components/progress/bar-style'
 export default class ProgressBar extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    completion: PropTypes.number,
+    percent: PropTypes.number,
     animation: PropTypes.bool,
+    completed: PropTypes.bool,
     text: PropTypes.string,
-    style: PropTypes.object,
     showPercent: PropTypes.bool
   }
 
@@ -16,22 +16,22 @@ export default class ProgressBar extends React.Component {
   }
 
   render() {
-    const {completion, text, style, showPercent} = this.props
-    const completed = completion >= 100
+    const {percent, completed, text, showPercent} = this.props
     const rootClasses = `
       ${completed ? styles.completed : styles.uncompleted}
+      ${percent >= 100 && styles.hundredPercent}
     `
     const barStyle = {
-      width: `${completion}%`
+      width: `${percent}%`
     }
     return (
-      <div className={rootClasses} style={style}>
+      <div className={rootClasses}>
         <div className={styles.inner}>
           <div className={styles.barContainer}>
             <div className={styles.bar} style={barStyle} />
           </div>
           {
-            showPercent && <div className={styles.percent}>{Math.round(completion, 1)}%</div>
+            showPercent && <div className={styles.percent}>{Math.round(percent, 1)}%</div>
           }
           {
             text && <div className={styles.text}>{text}</div>

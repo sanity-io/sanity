@@ -1,8 +1,19 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 
 import {storiesOf} from 'part:@sanity/storybook'
+
+const style = {
+  width: '80vw',
+  margin: '50vw auto'
+}
+
+const centered = function (storyFn) {
+  return <div style={style}>{storyFn()}</div>
+}
+
 
 class ProgressBarImplementation extends React.Component {
 
@@ -14,17 +25,23 @@ class ProgressBarImplementation extends React.Component {
     }
   }
 
+  reset = () => {
+    this.setState({
+      completion: 0
+    })
+  }
+
   componentDidMount() {
     this.interval = setInterval(() => {
-      this.setState({
-        completion: this.state.completion + 0.8
-      })
-      if (this.state.completion >= 100) {
+      if (this.state.completion < 100) {
         this.setState({
-          completion: 0
+          completion: this.state.completion + 0.8
         })
       }
-    }, 100)
+      if (this.state.completion >= 100) {
+        setTimeout(this.reset, 1000)
+      }
+    }, 50)
   }
 
   componentWillUnmount() {
@@ -33,12 +50,21 @@ class ProgressBarImplementation extends React.Component {
 
   render() {
     return (
-      <ProgressBar style={{width: '20em'}} completion={this.state.completion} showPercent />
+      <div>
+        <ProgressBar percent={this.state.completion} showPercent />
+        <ProgressCircle
+          style={{width: '20em'}}
+          percent={this.state.completion}
+          completed={this.state.completion >= 100}
+          showPercent
+        />
+      </div>
     )
   }
 }
 
 storiesOf('Progress')
+.addDecorator(centered)
 .addWithInfo(
   'Progress bar',
   `
@@ -58,7 +84,7 @@ storiesOf('Progress')
     Default progress bar.
   `,
   () => (
-    <ProgressBar style={{width: '20em'}} completion={20} />
+    <ProgressBar style={{width: '20em'}} percent={20} />
   ),
   {
     propTables: [ProgressBar],
@@ -71,7 +97,7 @@ storiesOf('Progress')
     Default progress bar.
   `,
   () => (
-    <ProgressBar style={{width: '20em'}} completion={100} />
+    <ProgressBar style={{width: '20em'}} percent={100} />
   ),
   {
     propTables: [ProgressBar],
@@ -84,7 +110,7 @@ storiesOf('Progress')
     Default progress bar showing percent.
   `,
   () => (
-    <ProgressBar style={{width: '20em'}} completion={22} showPercent />
+    <ProgressBar style={{width: '20em'}} percent={22} showPercent />
   ),
   {
     propTables: [ProgressBar],
@@ -98,7 +124,7 @@ storiesOf('Progress')
     Default progress bar showing percent.
   `,
   () => (
-    <ProgressBar style={{width: '20em'}} completion={22} showPercent text="Downloaded 5.1 of 8.2Mb" />
+    <ProgressBar style={{width: '20em'}} percent={22} showPercent text="Downloaded 5.1 of 8.2Mb" />
   ),
   {
     propTables: [ProgressBar],
@@ -137,7 +163,7 @@ storiesOf('Progress')
     Progress circle.
   `,
   () => (
-    <ProgressCircle style={{width: '20em'}} completion="20" />
+    <ProgressCircle style={{width: '20em'}} percent="20" />
   ),
   {
     propTables: [ProgressBar],
@@ -151,7 +177,7 @@ storiesOf('Progress')
     Progress circle.
   `,
   () => (
-    <ProgressCircle style={{width: '20em'}} completion="100" />
+    <ProgressCircle style={{width: '20em'}} percent="100" />
   ),
   {
     propTables: [ProgressBar],
@@ -160,12 +186,27 @@ storiesOf('Progress')
 )
 
 .addWithInfo(
+  'Progress circle 100% & complete',
+  `
+    Progress circle.
+  `,
+  () => (
+    <ProgressCircle style={{width: '20em'}} percent="100" completed />
+  ),
+  {
+    propTables: [ProgressBar],
+    role: 'part:@sanity/components/progress/circle'
+  }
+)
+
+
+.addWithInfo(
   'Progress circle (show percent)',
   `
     Progress circle.
   `,
   () => (
-    <ProgressCircle style={{width: '20em'}} completion="50" showPercent />
+    <ProgressCircle style={{width: '20em'}} percent="50" showPercent />
   ),
   {
     propTables: [ProgressBar],
@@ -178,7 +219,7 @@ storiesOf('Progress')
     Progress circle.
   `,
   () => (
-    <ProgressCircle style={{width: '20em'}} completion="50" showPercent text="This is text…" />
+    <ProgressCircle style={{width: '20em'}} percent="50" showPercent text="This is text…" />
   ),
   {
     propTables: [ProgressBar],
