@@ -1,11 +1,8 @@
 {
-  "env": {
-    "node": true
-  },
+  "env": {"node": true},
   "parser": "babel-eslint",
-  "extends": "bengler",
+  "extends": "sanity",
   "rules": {
-    "max-depth": [2, 4],
-    "no-undefined": 0
+    "max-depth": [2, 4]
   }
 }

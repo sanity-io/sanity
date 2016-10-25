@@ -1,4 +1,4 @@
-import {execute} from './execute'
+import execa from 'execa'
 import {parseJson} from '../util/safeJson'
 
 const npmEnv = {
@@ -9,11 +9,19 @@ const npmEnv = {
   })
 }
 
+function execute(args, opts) {
+  const options = opts || npmEnv
+  return execa('npm', args, {
+    cwd: opts.rootDir || process.cwd(),
+    ...options
+  })
+}
+
 function getLocalVersion(pkg, opts = {}) {
   const options = Object.assign({}, npmEnv, opts)
 
   return execute(['ls'], npmEnv, options)
-    .then(res => parseJson(res, {}))
+    .then(res => parseJson(res.stdout, {}))
     .then(mani => (
       mani
       && mani.dependencies

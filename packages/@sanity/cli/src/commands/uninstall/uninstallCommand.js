@@ -1,7 +1,7 @@
 import fsp from 'fs-promise'
 import path from 'path'
 import without from 'lodash/without'
-import {uninstall as npmUninstall} from '../../npm-bridge/install'
+import yarnWithProgress from '../../actions/yarn/yarnWithProgress'
 import readLocalManifest from '../../util/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {hasSameChecksum, localConfigExists} from '../../util/pluginChecksumManifest'
@@ -28,7 +28,7 @@ function uninstallPlugin(plugin, {prompt, options}) {
 
   return removeConfiguration(options.rootDir, fullName, shortName, prompt)
     .then(() => removeFromSanityManifest(options.rootDir, shortName))
-    .then(() => npmUninstall(['--save', fullName], options))
+    .then(() => yarnWithProgress(['remove', fullName], options))
 }
 
 function removeConfiguration(rootDir, fullName, shortName, prompt) {

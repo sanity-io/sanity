@@ -2,7 +2,7 @@ import debug from '../../debug'
 import gatherInput from './gatherInput'
 import {bootstrapSanity, bootstrapPlugin} from './bootstrap'
 import getUserConfig from '../../util/getUserConfig'
-import {install as npmInstall} from '../../npm-bridge/install'
+import yarnWithProgress from '../../actions/yarn/yarnWithProgress'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import addPluginToManifest from '../../util/addPluginToManifest'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
@@ -87,13 +87,9 @@ async function initSanity({output, prompt, options, apiClient}) {
   }, output.print)
 
   // Now for the slow part... installing dependencies
-  const spin = output.spinner('Installing dependencies...')
   try {
-    spin.start()
-    await npmInstall()
-    spin.stop()
+    await yarnWithProgress(['install'], options)
   } catch (err) {
-    spin.stop()
     throw err
   }
 

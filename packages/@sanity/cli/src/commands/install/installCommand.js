@@ -1,6 +1,6 @@
 import fsp from 'fs-promise'
 import path from 'path'
-import {install as npmInstall} from '../../npm-bridge/install'
+import yarnWithProgress from '../../actions/yarn/yarnWithProgress'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import addPluginToManifest from '../../util/addPluginToManifest'
 import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
@@ -31,23 +31,17 @@ function installPlugin(plugin, {output, options}) {
     fullName = isFullName ? plugin : `sanity-plugin-${plugin}`
   }
 
-  const spin = output.spinner('Installing plugin...')
-  spin.start()
-
-  return npmInstall(['--save', fullName], options)
+  return yarnWithProgress(['add', fullName], options)
     .then(() => addPluginToManifest(options.rootDir, shortName))
     .then(() => copyConfiguration(options.rootDir, fullName, shortName, output))
-    .then(() => spin.stop())
     .then(() => output.print(`Plugin '${fullName}' installed`))
-    .catch(err => {
-      spin.stop()
-      handleNpmError(err, output.error, fullName)
-    })
+    .catch(err => handleNpmError(err, output.error, fullName))
 }
 
 function handleNpmError(err, printError, pluginName) {
   if (err.message.includes(`'${pluginName}' is not in the npm registry`)) {
-    return printError(new Error(`'${pluginName}' is not in the npm registry`))
+    printError(new Error(`'${pluginName}' is not in the npm registry`))
+    return
   }
 
   printError(err)
