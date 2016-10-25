@@ -2,14 +2,20 @@ import postcssImport from 'postcss-import'
 import postcssCssnext from 'postcss-cssnext'
 import resolveStyleImport from '../util/resolveStyleImport'
 
-export default wp => {
-  const importer = postcssImport({
-    addDependencyTo: wp,
-    resolve: resolveStyleImport
+export default options => {
+  const styleResolver = resolveStyleImport({
+    from: options.basePath
   })
 
-  return [
-    importer,
-    postcssCssnext
-  ]
+  return wp => {
+    const importer = postcssImport({
+      addDependencyTo: wp,
+      resolve: styleResolver
+    })
+
+    return [
+      importer,
+      postcssCssnext
+    ]
+  }
 }

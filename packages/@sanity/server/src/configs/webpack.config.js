@@ -87,7 +87,7 @@ export default (config = {}) => {
       new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
       commonChunkPlugin
     ].filter(Boolean),
-    postcss: postcssPlugins
+    postcss: postcssPlugins({basePath})
   }
 }
 
