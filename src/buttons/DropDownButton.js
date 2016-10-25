@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
+import Menu from 'part:@sanity/components/menus/default'
 
 class DropDownButton extends React.Component {
   static propTypes = {
@@ -45,26 +46,27 @@ class DropDownButton extends React.Component {
   }
 
   render() {
+    const {items, children} = this.props
     return (
       <Button
         className={styles.root}
         onClick={this.handleOnClick}
       >
         <span className={styles.title}>
-          {this.props.children}
+          {children}
         </span>
 
         <span className={styles.arrow}>
           <ArrowIcon color="inherit" />
         </span>
         {
-          // <Menu
-          //   items={items}
-          //   opened={this.state.menuOpened}
-          //   fullWidth
-          //   className={styles.menu}
-          //   onAction={this.handleAction}
-          // />
+          <Menu
+            items={items}
+            opened={this.state.menuOpened}
+            fullWidth
+            className={styles.menu}
+            onAction={this.handleAction}
+          />
         }
       </Button>
     )
