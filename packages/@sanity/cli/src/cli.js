@@ -15,7 +15,8 @@ const argp = args => args
 const program = yargs
   .version(pkg.version)
   .demand(1)
-  .help('h').alias('h', 'help')
+  .help('h')
+  .alias('h', 'help')
 
 commands.forEach(cmd => program.command(
   cmd.command,
@@ -36,7 +37,7 @@ export function run(args) {
     .then(dir => Object.assign({rootDir: dir || process.cwd()}, argv))
     .then(options => cmdRunner.runCommand(cmdName, options))
     .catch(err => {
-      const error = debug && err.details || err
+      const error = (debug && err.details) || err
       console.error(chalk.red(debug ? error.stack : error.message)) // eslint-disable-line no-console
       process.exit(error.code || 1) // eslint-disable-line no-process-exit
     })

@@ -25,7 +25,7 @@ export default class CommandRunner {
     const baseCommand = this.commands.find(cmdHasName(cmdName))
 
     if (!baseCommand) {
-      return Promise.reject(new Error(`Command not found, run "sanity help"`))
+      return Promise.reject(new Error('Command not found, run "sanity help"'))
     }
 
     const subCommand = subCommandName && (baseCommand.subCommands || []).find(cmdHasName(subCommandName))

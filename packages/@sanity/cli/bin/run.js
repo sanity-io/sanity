@@ -109,7 +109,7 @@ function readManifestIfExists(manifestPath, opts) {
         return resolve('{}')
       }
 
-      reject(err)
+      return reject(err)
     })
   })
 }

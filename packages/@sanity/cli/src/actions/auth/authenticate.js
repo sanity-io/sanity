@@ -91,7 +91,7 @@ function authFlow({output, provider}, resolve, reject) {
     spin.stop()
     output.print(chalk.green('Authentication successful'))
     server.close(() => debug('Server closed'))
-    resolve()
+    return resolve()
   }
 
   function onTokenExchangeError(err, res) {
