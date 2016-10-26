@@ -5,7 +5,11 @@ import {uniqueId, pick} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithClickOutside from 'react-click-outside'
-import {SLATE_BLOCK_FORMATTING_OPTION_KEYS, SLATE_LIST_BLOCKS} from './constants'
+
+import {
+  SLATE_BLOCK_FORMATTING_OPTION_KEYS,
+  SLATE_LIST_BLOCKS
+} from '../constants'
 
 class SearchableSelect extends React.Component {
   static propTypes = {
