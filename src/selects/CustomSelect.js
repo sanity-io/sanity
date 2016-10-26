@@ -20,6 +20,7 @@ class CustomSelect extends React.Component {
     placeholder: PropTypes.string,
     loading: PropTypes.bool,
     renderItem: PropTypes.func,
+    className: PropTypes.string,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -152,13 +153,13 @@ class CustomSelect extends React.Component {
   }
 
   render() {
-    const {label, error, value, description, items} = this.props
+    const {label, error, value, description, items, className} = this.props
     const {hasFocus, showList, arrowNavigationPosition} = this.state
 
 
     return (
       <DefaultFormField
-        className={`${styles.root} ${hasFocus && styles.focused} ${error && styles.error}`}
+        className={`${styles.root} ${hasFocus && styles.focused} ${error && styles.error} ${className}`}
         description={description}
         labelHtmlFor={this._inputId}
         label={label}
