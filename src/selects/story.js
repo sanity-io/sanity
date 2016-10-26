@@ -202,6 +202,41 @@ storiesOf('Selects')
   }
 )
 
+.addWithInfo(
+  'Custom select (transparent)',
+  `
+    Custom preview
+  `,
+  () => {
+
+    const renderItem = function (item) {
+      return (
+        <div>Custom rendering of {item.title}</div>
+      )
+    }
+
+    return (
+      <div style={{padding: '2em', backgroundColor: '#eee'}}>
+        <CustomSelect
+          label="This is the label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onOpen={action('onOpen')}
+          renderItem={renderItem}
+          transparent
+          value={items[2]}
+          items={items}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [SearchableSelect],
+    role: 'part:@sanity/components/selects/searchable'
+  }
+)
+
 
 .addWithInfo(
   'Searchable example',

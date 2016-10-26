@@ -9,6 +9,17 @@
 .inner {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   cursor: pointer;
+
+  @nest .transparent & {
+    transition: all 0.05s linear;
+    background-color: transparent;
+    border-color: transparent;
+
+    @nest &:hover {
+      background-color: #fff;
+      border-color: #ccc;
+    }
+  }
 }
 
 .selectContainer {
