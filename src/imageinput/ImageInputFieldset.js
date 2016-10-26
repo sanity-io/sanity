@@ -17,11 +17,11 @@ const HotspotImage = createImageLoader(_HotspotImage, image => {
 
 export default class ImageInputFieldset extends React.Component {
   static propTypes = {
-    status: PropTypes.oneOf(['ready', 'completed', 'pending', 'error']),
+    status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
     legend: PropTypes.string,
     level: PropTypes.number,
-    uploadingImage: PropTypes.func,
-    progress: PropTypes.number,
+    isUploading: PropTypes.bool,
+    percent: PropTypes.number,
     fieldName: PropTypes.string,
     onSelect: PropTypes.func,
     onCancel: PropTypes.func,
@@ -34,6 +34,10 @@ export default class ImageInputFieldset extends React.Component {
   }
 
   static defaultProps = {
+    hotspotImage: {
+      imageUrl: null
+    },
+    status: 'ready'
   }
 
   componentWillMount() {
@@ -42,24 +46,20 @@ export default class ImageInputFieldset extends React.Component {
 
   render() {
 
-    const {legend, level, hotspotImage, uploadingImage, fieldName, progress, status} = this.props
+    const {legend, level, hotspotImage, isUploading, fieldName, percent, status} = this.props
 
     return (
       <Fieldset legend={legend} level={level}>
         <div className={styles.grid}>
           <div
             className={`
-              ${hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
+              ${hotspotImage && hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
               ${status == 'error' && styles.error}
             `}
           >
             {
-              //<img src={imageUrl} width="150" className={styles.imageUploading} />
-            }
-
-            {
               hotspotImage.imageUrl
-              && <div className={uploadingImage ? styles.imageUploading : styles.imageUploaded}>
+              && <div className={isUploading && styles.isUploading}>
                 <HotspotImage
                   aspectRatio="auto"
                   hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
@@ -83,10 +83,10 @@ export default class ImageInputFieldset extends React.Component {
               </ImageSelect>
             }
             {
-              status !== 'complete' && status !== 'ready' && status !== null
+              status !== 'complete' && status !== 'ready'
               && <div className={styles.progressContainer}>
                 <div className={styles.progressInner}>
-                  {progress && <ProgressCircle percent={progress.percent} showPercent className={styles.progress} />}
+                  {percent && <ProgressCircle percent={percent} showPercent className={styles.progress} />}
                 </div>
               </div>
             }

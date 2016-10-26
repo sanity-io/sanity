@@ -15,9 +15,6 @@ storiesOf('Image input')
       <ImageInput
         legend="Image input fieldset"
         onSelect={action('Select image')}
-        hotspotImage={{
-          imageUrl: null
-        }}
       >
         <h2>Content goes here</h2>
       </ImageInput>
@@ -40,7 +37,7 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="error"
-        progress={{percent: 43}}
+        percent="43"
         hotspotImage={{
           imageUrl: 'http://lorempixel.com/700/700'
         }}
@@ -68,7 +65,7 @@ storiesOf('Image input')
         onSelect={action('Select image')}
         onCancel={action('Cancel upload')}
         status="pending"
-        progress={{percent: 43}}
+        percent="43"
         uploadingImage
         hotspotImage={{
           imageUrl: 'http://lorempixel.com/700/700'
@@ -95,7 +92,7 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="complete"
-        progress={100}
+        percent="100"
         hotspotImage={{
           imageUrl: imageUrl
         }}
