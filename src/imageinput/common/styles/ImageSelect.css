@@ -1,0 +1,9 @@
+.root {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  appearance: none;
+  display: inline-block;
+  cursor: inherit;
+}

@@ -3,6 +3,7 @@ import FileSelect from '../../fileinput/common/FileSelect'
 import readExif from '../utils/readExif'
 import rotateImage from '../utils/rotateImage'
 import continueWhen from '../utils/continueWhen'
+import styles from './styles/ImageSelect.css'
 
 // todo: investigate if we can use web workers to do the heavy work on the images here
 
@@ -42,6 +43,7 @@ export default class ImageInput extends React.PureComponent {
     return (
       <FileSelect
         {...this.props}
+        className={styles.root}
         onSelect={this.handleSelect}
       />
     )

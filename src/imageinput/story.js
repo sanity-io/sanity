@@ -1,10 +1,81 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import ImageInput from 'part:@sanity/components/imageinput/fieldset'
+import ImageSelect from 'part:@sanity/components/imageinput/image-select'
+import buttonStyles from 'part:@sanity/components/buttons/default-style'
+import Button from 'part:@sanity/components/buttons/default'
+import UploadIcon from 'part:@sanity/base/upload-icon'
 
 const imageUrl = `https://unsplash.it/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
 
 storiesOf('Image input')
+.addWithInfo(
+  'Image select',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageSelect
+        onSelect={action('onSelect')}
+      >
+        Upload image…
+      </ImageSelect>
+    )
+  },
+  {
+    propTables: [ImageSelect],
+    role: 'part:@sanity/components/imageinput/image-select'
+  }
+)
+.addWithInfo(
+  'Image select as button',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <div className={buttonStyles.default}>
+        <ImageSelect
+          onSelect={action('onSelect')}
+          className={buttonStyles.content}
+        >
+          Upload image…
+        </ImageSelect>
+      </div>
+    )
+  },
+  {
+    propTables: [ImageSelect],
+    role: 'part:@sanity/components/imageinput/image-select'
+  }
+)
+
+.addWithInfo(
+  'Image select inside button',
+  `
+    Remember to set ripple to false
+  `,
+  () => {
+    return (
+      <Button
+        icon={UploadIcon}
+        ripple={false}
+      >
+        <ImageSelect
+          onSelect={action('onSelect')}
+        >
+          Upload image…
+        </ImageSelect>
+      </Button>
+    )
+  },
+  {
+    propTables: [ImageSelect],
+    role: 'part:@sanity/components/imageinput/image-select'
+  }
+)
+
 .addWithInfo(
   'Fieldset',
   `
