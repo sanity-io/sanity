@@ -413,6 +413,46 @@
       "description": "Upload icon"
     },
     {
+      "name": "part:@sanity/base/format-bold-icon",
+      "description": "Format bold icon"
+    },
+    {
+      "name": "part:@sanity/base/format-italic-icon",
+      "description": "Format italic icon"
+    },
+    {
+      "name": "part:@sanity/base/format-list-bulleted-icon",
+      "description": "Format bullet list icon"
+    },
+    {
+      "name": "part:@sanity/base/format-list-numbered-icon",
+      "description": "Format numbered list icon"
+    },
+    {
+      "name": "part:@sanity/base/format-quote-icon",
+      "description": "Format quote icon"
+    },
+    {
+      "name": "part:@sanity/base/format-strikethrough-icon",
+      "description": "Format strikethrough icon"
+    },
+    {
+      "name": "part:@sanity/base/format-underlined-icon",
+      "description": "Format underlined text icon"
+    },
+    {
+      "name": "part:@sanity/base/fullscreen-icon",
+      "description": "Fullscreen icon"
+    },
+    {
+      "name": "part:@sanity/base/fullscreen-exit-icon",
+      "description": "Exit fullscreen icon"
+    },
+    {
+      "name": "part:@sanity/base/plus-icon",
+      "description": "Plus icon"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
@@ -447,6 +487,46 @@
     {
       "implements": "part:@sanity/base/upload-icon",
       "path": "components/icons/Upload.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-bold-icon",
+      "path": "components/icons/FormatBold.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-italic-icon",
+      "path": "components/icons/FormatItalic.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-list-bulleted-icon",
+      "path": "components/icons/FormatListBulleted.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-list-numbered-icon",
+      "path": "components/icons/FormatListNumbered.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-quote-icon",
+      "path": "components/icons/FormatQuote.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-strikethrough-icon",
+      "path": "components/icons/FormatStrikethrough.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-underlined-icon",
+      "path": "components/icons/FormatUnderlined.js"
+    },
+    {
+      "implements": "part:@sanity/base/fullscreen-icon",
+      "path": "components/icons/Fullscreen.js"
+    },
+    {
+      "implements": "part:@sanity/base/fullscreen-exit-icon",
+      "path": "components/icons/FullscreenExit.js"
+    },
+    {
+      "implements": "part:@sanity/base/plus-icon",
+      "path": "components/icons/Plus.js"
     }
   ]
 }
