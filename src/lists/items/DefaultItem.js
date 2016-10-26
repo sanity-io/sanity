@@ -24,7 +24,7 @@ export default class DefaultListItem extends React.Component {
   }
 
   handleClick = event => {
-    this.props.onSelect(event)
+    this.props.onSelect(this.props.item)
   }
 
   handleMouseDown = event => {

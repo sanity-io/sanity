@@ -171,6 +171,10 @@
       "description": "Searchable select field styling"
     },
     {
+      "name": "part:@sanity/components/selects/custom-style",
+      "description": "Custom select field styling"
+    },
+    {
       "name": "part:@sanity/components/textfields/search",
       "description": "Search text field"
     },
@@ -376,6 +380,14 @@
     {
       "implements": "part:@sanity/components/selects/searchable-style",
       "path": "selects/styles/SearchableSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/custom",
+      "path": "selects/CustomSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/selects/custom-style",
+      "path": "selects/styles/CustomSelect.css"
     },
     {
       "implements":  "part:@sanity/components/dialogs/default",

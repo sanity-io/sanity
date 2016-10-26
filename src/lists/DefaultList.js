@@ -35,12 +35,8 @@ export default class DefaultList extends React.Component {
     this.scrollElementIntoViewIfNeeded = this.scrollElementIntoViewIfNeeded.bind(this)
   }
 
-  handleSelect(event) {
-    const key = event.currentTarget.getAttribute('data-item-key')
-    const selectedItem = this.props.items.find(item => {
-      return item.key === key
-    })
-    this.props.onSelect(selectedItem)
+  handleSelect(item) {
+    this.props.onSelect(item)
   }
 
   setListContainer(element) {
@@ -72,7 +68,7 @@ export default class DefaultList extends React.Component {
             {
               renderItem && items && items.map((item, i) => {
                 return (
-                  <BlankListItem className={styles.item} key={i}>
+                  <BlankListItem className={styles.item} key={i} item={item} onSelect={this.handleSelect}>
                     {renderItem(item, i)}
                   </BlankListItem>
                 )

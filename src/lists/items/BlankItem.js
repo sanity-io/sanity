@@ -6,6 +6,7 @@ export default class BlankListItem extends React.Component {
     selected: PropTypes.bool,
     onSelect: PropTypes.func,
     index: PropTypes.string,
+    item: PropTypes.object,
     children: PropTypes.node
   }
 
@@ -18,7 +19,7 @@ export default class BlankListItem extends React.Component {
   }
 
   handleClick = event => {
-    this.props.onSelect(event)
+    this.props.onSelect(this.props.item)
   }
 
   handleMouseDown = event => {

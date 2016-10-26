@@ -34,7 +34,10 @@ storiesOf('Lists')
   () => {
     return (
       <div style={containerStyle}>
-        <DefaultList items={defaultItems} onSelect={action('Select')} />
+        <DefaultList
+          items={defaultItems}
+          onSelect={action('Select')}
+        />
       </div>
     )
   },
@@ -50,16 +53,14 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    let selectedItem = defaultItems[3]
-    const setSelectedItem = function (item) {
-      selectedItem = item
-    }
+    const selectedItem = defaultItems[3]
     return (
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
           selectedItem={selectedItem}
-          onSelect={setSelectedItem} scrollable
+          onSelect={action('Select')}
+          scrollable
         />
       </div>
     )
@@ -76,18 +77,16 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    let selectedItem = defaultItems[3]
+    const selectedItem = defaultItems[3]
     const highlightedItem = defaultItems[5]
-    const setSelectedItem = function (item) {
-      selectedItem = item
-    }
     return (
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
           selectedItem={selectedItem}
           highlightedItem={highlightedItem}
-          onSelect={setSelectedItem} scrollable
+          onSelect={action('Select')}
+          scrollable
         />
       </div>
     )
@@ -105,13 +104,15 @@ storiesOf('Lists')
     The default fieldset is used to gather a collection of fields.
   `,
   () => {
-    let selectedItem = defaultItems[50]
-    const setSelectedItem = function (item) {
-      selectedItem = item
-    }
+    const selectedItem = defaultItems[50]
     return (
       <div style={containerStyle}>
-        <DefaultList items={defaultItems} selectedItem={selectedItem} onSelect={setSelectedItem} scrollable />
+        <DefaultList
+          items={defaultItems}
+          selectedItem={selectedItem}
+          onSelect={action('Select')}
+          scrollable
+        />
       </div>
     )
   },

@@ -1,9 +1,10 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
-
+import CustomSelect from 'part:@sanity/components/selects/custom'
 import {range} from 'lodash'
 import faker from 'faker'
 import Fuse from 'fuse.js'
@@ -160,6 +161,38 @@ storiesOf('Selects')
         onOpen={action('onOpen')}
         loading
         items={[]}
+      />
+    )
+  },
+  {
+    propTables: [SearchableSelect],
+    role: 'part:@sanity/components/selects/searchable'
+  }
+)
+
+.addWithInfo(
+  'Custom select',
+  `
+    Custom preview
+  `,
+  () => {
+
+    const renderItem = function (item) {
+      return (
+        <div>Custom rendering of {item.title}</div>
+      )
+    }
+
+    return (
+      <CustomSelect
+        label="This is the label"
+        placeholder="This is the placeholder"
+        onChange={action('onChange')}
+        onFocus={action('onFocus')}
+        onOpen={action('onOpen')}
+        renderItem={renderItem}
+        value={items[2]}
+        items={items}
       />
     )
   },
