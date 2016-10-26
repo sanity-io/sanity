@@ -84,7 +84,7 @@ async function initSanity({output, prompt, options, apiClient}) {
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
     ...answers
-  }, output.print)
+  }, output)
 
   // Now for the slow part... installing dependencies
   try {
