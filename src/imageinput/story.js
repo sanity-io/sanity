@@ -40,6 +40,7 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="error"
+        progress={{percent: 43}}
         hotspotImage={{
           imageUrl: 'http://lorempixel.com/700/700'
         }}

@@ -51,6 +51,10 @@
   height: 100%;
   z-index: 1;
   background-color: color(var(--gray-lightest) a(0.7));
+
+  @nest .error & {
+    background-color: color(var(--state-danger-color) a(0.7));
+  }
 }
 
 .progressInner {
@@ -80,7 +84,6 @@
 
 .upload {
   display: flex;
-  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -89,6 +92,7 @@
   left: 0;
   height: 100%;
   width: 100%;
+  color: var(--gray-darkest);
 
   &:hover {
     background-color: var(--gray);
@@ -105,6 +109,17 @@
   text-align: center;
   width: 100%;
   font-size: 0.8em;
+}
+
+.errorMessage {
+  composes: cancel;
+  color: #fff;
+  cursor: default;
+
+  @nest & span {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
 .uploadIcon {

@@ -47,7 +47,12 @@ export default class ImageInputFieldset extends React.Component {
     return (
       <Fieldset legend={legend} level={level}>
         <div className={styles.grid}>
-          <div className={hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}>
+          <div
+            className={`
+              ${hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
+              ${status == 'error' && styles.error}
+            `}
+          >
             {
               //<img src={imageUrl} width="150" className={styles.imageUploading} />
             }
@@ -78,10 +83,10 @@ export default class ImageInputFieldset extends React.Component {
               </ImageSelect>
             }
             {
-              uploadingImage && status !== 'complete'
+              status !== 'complete' && status !== 'ready' && status !== null
               && <div className={styles.progressContainer}>
                 <div className={styles.progressInner}>
-                  {progress && <ProgressCircle completion={progress.percent} showPercent className={styles.progress} />}
+                  {progress && <ProgressCircle percent={progress.percent} showPercent className={styles.progress} />}
                 </div>
               </div>
             }
@@ -90,10 +95,20 @@ export default class ImageInputFieldset extends React.Component {
               && <a className={styles.cancel} onClick={this.props.onCancel}>Cancel</a>
             }
             {
+              status == 'error'
+              && <div className={styles.errorMessage}>
+                <div>Error!</div>
+                <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
+                  <span>Try again…</span>
+                </ImageSelect>
+              </div>
+            }
+
+            {
               status === 'complete'
               && <div className={styles.progressContainer}>
                 <div className={styles.progressInner}>
-                  <ProgressCircle completion={100} complete className={styles.progressComplete} />
+                  <ProgressCircle percent={100} completed className={styles.progressComplete} />
                 </div>
               </div>
             }
