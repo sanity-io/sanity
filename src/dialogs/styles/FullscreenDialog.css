@@ -7,8 +7,6 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--brand-primary);
-  color: #fff;
   z-index: var(--zindex-modal-background);
 }
 
@@ -18,15 +16,35 @@
   margin-bottom: 0.5em;
 }
 
+.default {
+  composes: root;
+  background-color: var(--body-bg);
+  color: var(--text-color);
+}
+
+.info {
+  composes: root;
+  color: #fff;
+  background-color: var(--state-info-color);
+}
+
+.danger {
+  composes: root;
+  color: #fff;
+  background-color: var(--state-danger-color);
+}
+
 .inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  max-width: 40em;
-  font-size: 1em;
-  margin: 0 auto;
-  line-height: 1.5em;
+  @nest .centered & {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    max-width: 40em;
+    font-size: 1em;
+    margin: 0 auto;
+    line-height: 1.5em;
+  }
 }
 
 .isOpened {
@@ -48,4 +66,8 @@
   background-color: transparent;
   border: none;
   color: #fff;
+
+  @nest .default & {
+    color: var(--text-color);
+  }
 }

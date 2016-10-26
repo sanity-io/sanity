@@ -5,19 +5,29 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 
 export default class FullScreenDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger']),
     className: PropTypes.string,
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool
+    isOpen: PropTypes.bool,
+    centered: PropTypes.bool
+  }
+
+  static defaultProps = {
+    kind: 'default'
   }
 
   render() {
 
-    const {kind, title, className, onClose} = this.props
+    const {kind, title, className, onClose, centered} = this.props
 
-    const style = `${styles[kind] || styles.root} ${className} ${this.props.isOpen ? styles.isOpen : styles.isClosed}`
+    const style = `
+      ${styles[kind]}
+      ${this.props.isOpen ? styles.isOpen : styles.isClosed}
+      ${className}
+      ${centered && styles.centered}
+    `
 
     return (
       <div className={style}>

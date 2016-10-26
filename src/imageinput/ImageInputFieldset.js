@@ -8,7 +8,14 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import createImageLoader from './common/createImageLoader'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
+import {DEFAULT_CROP} from '@sanity/imagetool/constants'
+
+const DEFAULT_HOTSPOT = {
+  height: 0,
+  width: 0,
+  x: 0.5,
+  y: 0.5
+}
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}

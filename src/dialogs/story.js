@@ -77,7 +77,7 @@ storiesOf('Dialogs')
     )
   },
   {
-    propTables: [DefaultDialog],
+    propTables: [FullscreenDialog],
     role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
@@ -87,14 +87,69 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
     )
   },
   {
-    propTables: [DefaultDialog],
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.addWithInfo(
+  'Fullscreen (info)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="info" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+
+.addWithInfo(
+  'Fullscreen (danger & centered)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="danger" centered title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.addWithInfo(
+  'Fullscreen (danger)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="danger" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
     role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
