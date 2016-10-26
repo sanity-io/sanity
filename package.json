@@ -37,10 +37,10 @@
   "devDependencies": {
     "@sanity/base": "0.0.20",
     "@sanity/check": "^0.0.1",
-    "@sanity/cli": "0.0.13",
-    "@sanity/components": "0.0.14",
+    "@sanity/cli": "0.0.21",
+    "@sanity/components": "0.0.20",
     "@sanity/plugin-loader": "0.0.2",
-    "@sanity/server": "0.0.4",
+    "@sanity/server": "0.0.7",
     "babel-cli": "^6.16.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-css-modules-transform": "^1.1.0",

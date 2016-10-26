@@ -4,6 +4,7 @@ import {isEqual, pick} from 'lodash'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import DefaultButton from 'part:@sanity/components/buttons/default'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import BlockFormatSelect from './BlockFormatSelect'
 
 import prepareSlateSchema from './util/prepareSlateSchema'
@@ -63,10 +64,10 @@ export default class BlockEditor extends React.Component {
     ]
   }
 
-  handleInsertBlock = event => {
+  handleInsertBlock = item => {
     const {value, onChange, field} = this.props
-    const type = event.currentTarget.dataset.type
 
+    const type = item.type
     const ofField = field.of.find(it => it.type === type)
     const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofField)
 
@@ -351,22 +352,19 @@ export default class BlockEditor extends React.Component {
   }
 
   renderInsertMenu() {
+    const items = this.groupedFields.formBuilder.map(ofField => {
+      return {
+        type: ofField.type,
+        title: ofField.title,
+        disabled: this.isWithinList()
+      }
+    })
+
     return (
-      <div>
-        {this.groupedFields.formBuilder
-          .map(ofField => {
-            return (
-              <DefaultButton
-                disabled={this.isWithinList()}
-                key={ofField.type}
-                data-type={ofField.type}
-                onClick={this.handleInsertBlock}
-              >
-                Insert {ofField.title}
-              </DefaultButton>
-            )
-          })}
-      </div>
+      <DropDownButton items={items} onAction={this.handleInsertBlock}>
+        Insert
+      </DropDownButton>
+
     )
   }
 

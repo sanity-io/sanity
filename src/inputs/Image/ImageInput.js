@@ -4,13 +4,22 @@ import {omit, groupBy} from 'lodash'
 import RenderField from '../Object/RenderField'
 import ObjectValueContainer from '../Object/ObjectContainer'
 import Button from 'part:@sanity/components/buttons/default'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import buttonStyles from 'part:@sanity/components/buttons/default-style'
 import ImageTool from '@sanity/imagetool'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import createImageLoader from './common/createImageLoader'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
+import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+
+const DEFAULT_HOTSPOT = {
+  height: 0,
+  width: 0,
+  x: 0.5,
+  y: 0.5
+}
+
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -198,7 +207,7 @@ export default class ImageInput extends React.PureComponent {
       return 'other'
     })
     return (
-      <Dialog title="Edit details" onClose={this.handleEditDialogClose}>
+      <Dialog title="Edit details" onClose={this.handleEditDialogClose} isOpen>
         {grouped.imagetool && this.renderImageTool()}
         {grouped.other && this.renderFields(grouped.other)}
         <Button onClick={this.handleEditDialogClose}>Close</Button>
@@ -269,9 +278,9 @@ export default class ImageInput extends React.PureComponent {
           status={status}
           legend={field.title}
           level={level}
-          progress={progress}
-          uploadingImage={uploadingImage}
+          percent={progress && progress.percent}
           onSelect={this.handleSelect}
+          onCancel={this.handleCancel}
           hotspotImage={{
             hotspot: hotspot,
             crop: crop,
@@ -279,15 +288,25 @@ export default class ImageInput extends React.PureComponent {
           }}
         >
           {this.renderFields(fieldGroups.highlighted || [])}
-          <ImageSelect
-            className={buttonStyles.root}
-            name={fieldName}
-            onSelect={this.handleSelect}
-            {...rest}
-          >
-            Upload new
-          </ImageSelect>
-          {fieldGroups.other && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
+
+          {
+            imageUrl
+            && <div>
+              <Button
+                icon={UploadIcon}
+                ripple={false}
+              >
+                <ImageSelect
+                  name={fieldName}
+                  onSelect={this.handleSelect}
+                  {...rest}
+                >
+                  Upload new
+                </ImageSelect>
+              </Button>
+              {fieldGroups.other && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
+            </div>
+          }
         </ImageInputFieldset>
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
       </div>
