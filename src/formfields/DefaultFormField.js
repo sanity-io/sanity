@@ -49,9 +49,12 @@ export default class DefaultFormField extends React.Component {
               {label}
             </DefaultLabel>
 
-            <div className={styles.description}>
-              {description}
-            </div>
+            {
+              description
+              && <div className={styles.description}>
+                {description}
+              </div>
+            }
           </div>
 
           <div className={styles.content}>
