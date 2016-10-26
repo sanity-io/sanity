@@ -2,11 +2,14 @@
 
 .root {
   position: relative;
-  padding-right: 3em;
+  padding-right: 2.5em;
 }
 
 .arrow {
-  color: red;
+  position: absolute;
+  right: 0.4em;
+  top: 0.4em;
+  font-size: 1.5em;
 }
 
 .menu {

@@ -69,9 +69,14 @@ storiesOf('Buttons')
       {index: '3', title: 'Test 3'}
     ]
     return (
-      <DropDownButton items={items} onAction={action('Clicked item')}>
-        This is a dropdown
-      </DropDownButton>
+      <div>
+        <DropDownButton items={items} onAction={action('Clicked item')}>
+          This is a dropdown
+        </DropDownButton>
+        <div>
+          This text should be under the menu
+        </div>
+      </div>
     )
   },
   {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
@@ -107,4 +112,36 @@ storiesOf('Buttons')
     )
   },
   {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+)
+
+.addWithInfo(
+  'Button group',
+  'Buttons that are inside an input field',
+  () => {
+    return (
+      <div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            This is the input
+            <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+          </div>
+        </div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            This is the with danger button
+            <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+          </div>
+        </div>
+        <div className={styles.inputContainer}>
+          <div className={styles.input}>
+            More buttons
+            <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
+            <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+          </div>
+        </div>
+      </div>
+
+    )
+  },
+  {propTables: [InInputButton], role: 'part:@sanity/components/buttons/in-input'}
 )
