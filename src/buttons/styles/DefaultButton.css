@@ -5,7 +5,6 @@
 .root {
   display: inline-block;
   position: relative;
-  text-transform: uppercase;
   padding: 0.8em 1em;
   font-size: var(--font-size-xsmall);
   outline: none;

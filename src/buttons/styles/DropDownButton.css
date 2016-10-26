@@ -2,7 +2,10 @@
 
 .root {
   position: relative;
-  padding-right: 2.5em;
+}
+
+.title {
+  padding-right: 1.5em;
 }
 
 .arrow {
