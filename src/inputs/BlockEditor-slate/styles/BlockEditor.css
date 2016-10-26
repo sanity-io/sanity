@@ -1,5 +1,9 @@
 @use postcss-cssnext;
 
+:root {
+  --blockEditorFullscreenBackground: #eee;
+}
+
 .root {
   position: relative;
   composes: root from 'part:@sanity/base/theme/forms/control-style';
@@ -11,6 +15,33 @@
 
 .input {
   composes: root from 'part:@sanity/base/theme/forms/textarea-style';
+
+  @nest .fullscreen & {
+    min-height: 80vh;
+    border: 0;
+
+  }
+}
+
+.inputContainer {
+  @nest .fullscreen & {
+    max-width: 50em;
+    margin: 3em auto;
+    box-shadow: 0px 0px 15px -5px rgba(0,0,0,1);
+  }
+}
+
+.toolbar {
+  @nest .fullscreen & {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 5001;
+    background-color: color(var(--blockEditorFullscreenBackground) a(80%));
+    backdrop-filter: blur(3px);
+    padding: 0.5em;
+  }
 }
 
 .inputError {
@@ -23,6 +54,17 @@
 
 .error {
   composes: root;
+}
+
+.fullscreen {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  overflow: scroll;
+  z-index: 5000;
+  background-color: var(--blockEditorFullscreenBackground);
 }
 
 .textFormattingToolbar {

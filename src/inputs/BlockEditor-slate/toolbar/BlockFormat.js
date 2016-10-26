@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/Toolbar.css'
+import styles from './styles/Blockformat.css'
 import {isEqual, pick} from 'lodash'
 import CustomSelect from 'part:@sanity/components/selects/custom'
 
 import {
   SLATE_LIST_ITEM_TYPE,
   SLATE_TEXT_BLOCKS,
-  SLATE_BLOCK_FORMATTING_OPTION_KEYS
+  SLATE_BLOCK_FORMATTING_OPTION_KEYS,
+  SLATE_LIST_BLOCKS
 } from '../constants'
 
 export default class Toolbar extends React.Component {
@@ -15,7 +16,8 @@ export default class Toolbar extends React.Component {
     groupedFields: PropTypes.object,
     value: PropTypes.object,
     slateSchema: PropTypes.object,
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    onChange: PropTypes.func
   }
 
   hasBlock = field => {
@@ -32,6 +34,70 @@ export default class Toolbar extends React.Component {
     const {value} = this.props
     const {state} = value
     return state.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
+  }
+
+  handleSelectBlockFormatting = selectedValue => {
+    const {field} = selectedValue
+    const {value, onChange} = this.props
+    const {state} = value
+    const {selection, startBlock, endBlock} = state
+    const block = {
+      type: field.type,
+      data: pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    }
+    let transform = state.transform()
+
+    if (this.isWithinList()) {
+      SLATE_LIST_BLOCKS.forEach(type => {
+        transform = transform.unwrapBlock(type)
+      })
+      transform = transform
+        .setBlock(block)
+      const nextState = transform.apply()
+      onChange({patch: {localState: nextState}})
+      return
+    }
+
+    // If a single block is selected partially, split block conditionally (selection in start, middle or end of text)
+    if (startBlock === endBlock
+      && selection.isExpanded
+      && !(
+        selection.hasStartAtStartOf(startBlock)
+        && selection.hasEndAtEndOf(startBlock
+      )
+    )) {
+      const hasTextBefore = !selection.hasStartAtStartOf(startBlock)
+      const hasTextAfter = !selection.hasEndAtEndOf(startBlock)
+      if (hasTextAfter) {
+        const extendForward = selection.isForward
+          ? (selection.focusOffset - selection.anchorOffset)
+          : (selection.anchorOffset - selection.focusOffset)
+        transform
+          .collapseToStart()
+          .splitBlock()
+          .moveForward()
+          .extendForward(extendForward)
+          .collapseToEnd()
+          .splitBlock()
+          .collapseToStartOfPreviousText()
+      } else {
+        transform = hasTextBefore ? (
+          transform
+            .collapseToStart()
+            .splitBlock()
+            .moveForward()
+        ) : (
+          transform
+            .collapseToEnd()
+            .splitBlock()
+            .moveTo(selection)
+        )
+      }
+    }
+    transform
+      .setBlock(block)
+    const nextState = transform.apply()
+    onChange({patch: {localState: nextState}})
   }
 
   renderItem = item => {
@@ -100,20 +166,15 @@ export default class Toolbar extends React.Component {
         isActive: true
       }
     }
-    // return (
-    //   <BlockFormatSelect
-    //     items={items}
-    //     label="Text"
-    //     value={value || items.find(item => item.isActive)}
-    //     onChange={this.handleSelectBlockFormatting}
-    //   />
-    // )
+
     return (
       <CustomSelect
+        className={styles.root}
         label="Text"
         items={items}
-        value={value || items.find(item => item.isActive)}
-        onChange={this.props.onSelect}
+        // value={value || items.find(item => item.isActive)}
+        value={items.find(item => item.isActive)}
+        onChange={this.handleSelectBlockFormatting}
         renderItem={this.renderItem}
       />
     )

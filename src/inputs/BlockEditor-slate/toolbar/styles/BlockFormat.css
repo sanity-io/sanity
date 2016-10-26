@@ -1,3 +1,11 @@
 .root {
-  
+  @nest & label {
+    display: none;
+  }
+
+  @nest & > div > div{
+    margin-bottom: 0;
+  }
+
+  margin-bottom: 0;
 }
