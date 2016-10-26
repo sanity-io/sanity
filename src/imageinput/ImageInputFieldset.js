@@ -78,7 +78,7 @@ export default class ImageInputFieldset extends React.Component {
             {
               !hotspotImage.imageUrl
               && <ImageSelect
-                className={styles.upload}
+                className={styles.imageSelect}
                 name={fieldName}
                 onSelect={this.props.onSelect}
               >

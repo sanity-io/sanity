@@ -31,10 +31,14 @@
   margin-right: calc(var(--medium-padding) * -1);
   margin-left: calc(var(--medium-padding) * -1);
   margin-bottom: var(--medium-padding);
-  background-color: green;
   position: relative;
   background-color: var(--gray-dark);
   color: #fff;
+  transition: background-color 0.1s linear;
+
+  &:hover {
+    background-color: var(--gray);
+  }
 
   @media (--screen-medium) {
     min-height: 12rem;
@@ -105,7 +109,7 @@
   overflow: hidden;
 }
 
-.upload {
+.imageSelect {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,10 +119,12 @@
   left: 0;
   height: 100%;
   width: 100%;
-  color: var(--gray-darkest);
+  color: var(--gray-lighter);
+  cursor: pointer;
+  transition: transform 0.1s linear;
 
   &:hover {
-    background-color: var(--gray);
+    transform: scale(1.05);
   }
 }
 

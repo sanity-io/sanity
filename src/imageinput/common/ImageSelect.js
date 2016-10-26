@@ -9,7 +9,8 @@ import styles from './styles/ImageSelect.css'
 
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
-    onSelect: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    className: PropTypes.string
   }
   handleSelect = files => {
     this.processingFiles = files
@@ -43,7 +44,7 @@ export default class ImageInput extends React.PureComponent {
     return (
       <FileSelect
         {...this.props}
-        className={styles.root}
+        className={`${styles.root} ${this.props.className}`}
         onSelect={this.handleSelect}
       />
     )
