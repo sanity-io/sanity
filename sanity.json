@@ -106,6 +106,15 @@
       "description": "Toggle buttons style"
     },
     {
+      "name": "part:@sanity/components/toggles/button",
+      "description": "Toggle button"
+    },
+    {
+      "name": "part:@sanity/components/toggles/button-style",
+      "description": "Toggle button style"
+    },
+
+    {
       "name": "part:@sanity/components/formfields/default",
       "description": "Default form field"
     },
@@ -321,6 +330,10 @@
       "path": "toggles/Buttons.js"
     },
     {
+      "implements":  "part:@sanity/components/toggles/button",
+      "path": "toggles/ToggleButton.js"
+    },
+    {
       "implements":  "part:@sanity/components/formfields/default",
       "path": "formfields/DefaultFormField.js"
     },
@@ -451,6 +464,10 @@
     {
       "implements": "part:@sanity/components/toggles/buttons-style",
       "path": "toggles/styles/Buttons.css"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/button-style",
+      "path": "toggles/styles/ToggleButton.css"
     },
     {
       "implements": "part:@sanity/components/formfields/default-style",

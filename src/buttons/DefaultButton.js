@@ -5,9 +5,9 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 
 export default class DefaultButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['add', 'danger', 'colored', 'secondary']),
+    kind: PropTypes.oneOf(['add', 'danger', 'colored', 'secondary', 'simple']),
     onClick: PropTypes.func,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
@@ -19,9 +19,7 @@ export default class DefaultButton extends React.Component {
 
   static defaultProps = {
     ripple: true,
-    icon() {
-      return null
-    },
+    icon: null,
     onClick() {}
   }
 
@@ -37,7 +35,7 @@ export default class DefaultButton extends React.Component {
 
   render() {
 
-    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = this.props
+    const {kind, ripple, inverted, colored, icon, loading, className, children, ...rest} = this.props
 
     const Icon = icon
 
@@ -45,7 +43,12 @@ export default class DefaultButton extends React.Component {
       console.error(`There is no ${kind} button`) // eslint-disable-line no-console
     }
 
-    const style = `${className} ${styles[kind] || (inverted && styles.inverted) || styles.root} ${colored && styles.colored} ${Icon && styles.hasIcon}` // eslint-disable-line max-len
+    const style = `
+      ${className}
+      ${styles[kind] || (inverted && styles.inverted) || styles.default}
+      ${colored && styles.colored}
+      ${Icon && styles.hasIcon}
+    `
 
     return (
       <button
@@ -60,10 +63,9 @@ export default class DefaultButton extends React.Component {
         {
           Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
         }
-        <span className={styles.content}>
-          {this.props.children}
-        </span>
-
+        {
+          children && <span className={styles.content}>{children}</span>
+        }
         {
           ripple && <Ink duration={200} opacity={0.10} radius={200} />
         }

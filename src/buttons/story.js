@@ -24,6 +24,7 @@ storiesOf('Buttons')
 () => (
   <div>
     <Button onClick={action('clicked')}>Default</Button>
+    <Button onClick={action('clicked')} kind="simple">Simple</Button>
     <Button onClick={action('clicked')} colored>colored</Button>
     <Button onClick={action('clicked')} inverted>Inverted</Button>
     <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>

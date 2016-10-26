@@ -17,7 +17,7 @@ const HotspotImage = createImageLoader(_HotspotImage, image => {
 
 export default class ImageInputFieldset extends React.Component {
   static propTypes = {
-    status: PropTypes.oneOf(['completed', 'pending', 'error']),
+    status: PropTypes.oneOf(['ready', 'completed', 'pending', 'error']),
     legend: PropTypes.string,
     level: PropTypes.number,
     uploadingImage: PropTypes.func,

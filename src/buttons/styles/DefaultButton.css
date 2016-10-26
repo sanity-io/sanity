@@ -9,16 +9,24 @@
   font-size: var(--font-size-xsmall);
   outline: none;
   cursor: pointer;
-  background-color: var(--default-button-color);
   border: none;
   margin-right: var(--extra-small-padding);
-  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
   line-height: 1em;
   user-select: none;
 }
 
-.colored {
+.shadow {
+  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+}
+
+.default {
   composes: root;
+  composes: shadow;
+  background-color: var(--default-button-color);
+}
+
+.colored {
+  composes: default;
   background-color: var(--brand-primary);
   color: #fff;
 }
@@ -29,7 +37,7 @@
 }
 
 .secondary {
-  composes: root;
+  composes: default;
   border: none;
   box-shadow: none;
   background-color: transparent;
@@ -37,7 +45,7 @@
 }
 
 .inverted {
-  composes: root;
+  composes: default;
   border: 1px solid var(--gray-base);
   background-color: transparent;
   border-color: var(--gray-base);
@@ -57,7 +65,7 @@
 }
 
 .danger {
-  composes: root;
+  composes: default;
   border-color: var(--brand-danger);
   color: #fff;
   background-color: var(--brand-danger);
@@ -81,6 +89,11 @@
   border: 0;
 }
 
+.simple {
+  composes: root;
+  composes: noBorder;
+}
+
 .hasIcon {
   /* empty */
 }
@@ -89,8 +102,13 @@
   /* empty */
 }
 
+.content {
+  @nest .hasIcon & {
+    margin-left: 0.5em;
+  }
+}
+
 .icon {
-  margin-right: 0.5em;
   transform: scale(1.2);
 
   @nest .colored & {
