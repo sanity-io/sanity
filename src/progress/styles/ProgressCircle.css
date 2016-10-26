@@ -81,6 +81,8 @@
     animation-name: finish;
     animation-delay: 0.2s;
     animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
   }
 }
 
@@ -99,5 +101,7 @@
     animation-name: finish;
     animation-delay: 0.2s;
     animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
   }
 }

@@ -20,7 +20,6 @@ export default class ImageInputFieldset extends React.Component {
     status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
     legend: PropTypes.string,
     level: PropTypes.number,
-    isUploading: PropTypes.bool,
     percent: PropTypes.number,
     fieldName: PropTypes.string,
     onSelect: PropTypes.func,
@@ -46,7 +45,7 @@ export default class ImageInputFieldset extends React.Component {
 
   render() {
 
-    const {legend, level, hotspotImage, isUploading, fieldName, percent, status} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status} = this.props
 
     return (
       <Fieldset legend={legend} level={level}>
@@ -59,7 +58,7 @@ export default class ImageInputFieldset extends React.Component {
           >
             {
               hotspotImage.imageUrl
-              && <div className={isUploading && styles.isUploading}>
+              && <div className={status === 'complete' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
                 <HotspotImage
                   aspectRatio="auto"
                   hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
@@ -106,7 +105,7 @@ export default class ImageInputFieldset extends React.Component {
 
             {
               status === 'complete'
-              && <div className={styles.progressContainer}>
+              && <div className={styles.progressContainerComplete}>
                 <div className={styles.progressInner}>
                   <ProgressCircle percent={100} completed className={styles.progressComplete} />
                 </div>
