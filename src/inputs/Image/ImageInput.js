@@ -1,10 +1,8 @@
 import React, {PropTypes} from 'react'
-import ImageSelect from './common/ImageSelect'
-import {omit, uniqueId, groupBy} from 'lodash'
+import ImageSelect from 'part:@sanity/components/imageinput/image-select'
+import {omit, groupBy} from 'lodash'
 import RenderField from '../Object/RenderField'
 import ObjectValueContainer from '../Object/ObjectContainer'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import buttonStyles from 'part:@sanity/components/buttons/default-style'
@@ -12,8 +10,7 @@ import ImageTool from '@sanity/imagetool'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import createImageLoader from './common/createImageLoader'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
-import styles from './styles/ImageInput.css'
-import UploadIcon from 'part:@sanity/base/upload-icon'
+import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -239,8 +236,6 @@ export default class ImageInput extends React.PureComponent {
       'validation',
       'focus'
     )
-    const inputId = uniqueId('FormBuilderImage')
-
     const fieldGroups = groupBy(field.fields, fieldDef => {
       if (fieldDef.name === 'asset') {
         return 'asset'
@@ -269,69 +264,33 @@ export default class ImageInput extends React.PureComponent {
     const crop = value.getFieldValue('crop').toJSON() || DEFAULT_CROP
 
     return (
-      <Fieldset legend={field.title} level={level}>
-        <div className={styles.grid}>
-          <div className={imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}>
-            {
-              //<img src={imageUrl} width="150" className={styles.imageUploading} />
-            }
-
-            {
-              imageUrl
-              && <div className={uploadingImage ? styles.imageUploading : styles.imageUploaded}>
-                <HotspotImage
-                  aspectRatio="auto"
-                  hotspot={hotspot}
-                  crop={crop}
-                  src={imageUrl}
-                />
-              </div>
-            }
-
-            {
-              !imageUrl
-              && <ImageSelect
-                className={styles.upload}
-                name={fieldName}
-                onSelect={this.handleSelect}
-                {...rest}
-              >
-                <div className={styles.uploadInner}>
-                  <UploadIcon className={styles.uploadIcon} />
-                  Upload image
-                </div>
-              </ImageSelect>
-            }
-            {
-              uploadingImage && status !== 'complete'
-              && <div className={styles.progressContainer}>
-                <div className={styles.progressInner}>
-                  {progress && <ProgressCircle completion={progress.percent} showPercent className={styles.progress} />}
-                </div>
-              </div>
-            }
-            {
-              //status === 'pending' && <Button onClick={this.handleCancel}>Cancel upload</Button>
-            }
-            {
-              //status === 'complete' && <div>Uploaded</div>
-            }
-          </div>
-          <div className={styles.fields}>
-            {this.renderFields(fieldGroups.highlighted || [])}
-            <ImageSelect
-              className={buttonStyles.root}
-              name={fieldName}
-              onSelect={this.handleSelect}
-              {...rest}
-            >
-              Upload new
-            </ImageSelect>
-            {fieldGroups.other && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
-          </div>
-        </div>
+      <div>
+        <ImageInputFieldset
+          status={status}
+          legend={field.title}
+          level={level}
+          progress={progress}
+          uploadingImage={uploadingImage}
+          onSelect={this.handleSelect}
+          hotspotImage={{
+            hotspot: hotspot,
+            crop: crop,
+            imageUrl: imageUrl
+          }}
+        >
+          {this.renderFields(fieldGroups.highlighted || [])}
+          <ImageSelect
+            className={buttonStyles.root}
+            name={fieldName}
+            onSelect={this.handleSelect}
+            {...rest}
+          >
+            Upload new
+          </ImageSelect>
+          {fieldGroups.other && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
+        </ImageInputFieldset>
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </Fieldset>
+      </div>
     )
   }
 }
