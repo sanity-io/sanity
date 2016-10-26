@@ -16,6 +16,17 @@ import AngleDownIcon from 'part:@sanity/base/angle-down-icon'
 import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'
+import FormatItalicIcon from 'part:@sanity/base/format-italic-icon'
+import FormatListBulletedIcon from 'part:@sanity/base/format-list-bulleted-icon'
+import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
+import FormatQuoteIcon from 'part:@sanity/base/format-quote-icon'
+import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon'
+import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
+import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
+import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
+import PlusIcon from 'part:@sanity/base/plus-icon'
 
 function createIconPreview(title, Icon, role) {
   return (
@@ -42,6 +53,19 @@ storiesOf('Icons')
         {createIconPreview('Angle Down', AngleDownIcon, 'part:@sanity/base/angle-down-icon')}
         {createIconPreview('Spinner', SpinnerIcon, 'part:@sanity/base/spinner-icon')}
         {createIconPreview('Hamburger', HamburgerIcon, 'part:@sanity/base/hamburger-icon')}
+
+        {createIconPreview('Upload', UploadIcon, 'part:@sanity/base/upload-icon')}
+        {createIconPreview('Format bold', FormatBoldIcon, 'part:@sanity/base/format-bold-icon')}
+        {createIconPreview('Format italic', FormatItalicIcon, 'part:@sanity/base/format-italic-icon')}
+        {createIconPreview('Format List (bulleted)', FormatListBulletedIcon, 'part:@sanity/base/format-list-bulleted-icon')}
+        {createIconPreview('Format List (numbered)', FormatListNumberedIcon, 'part:@sanity/base/format-list-numbered-icon')}
+        {createIconPreview('Format quote', FormatQuoteIcon, 'part:@sanity/base/format-quote-icon')}
+        {createIconPreview('Format strikethrough', FormatStrikethroughIcon, 'part:@sanity/base/format-strikethrough-icon')}
+        {createIconPreview('Format underlined', FormatUnderlinedIcon, 'part:@sanity/base/format-underlined-icon')}
+        {createIconPreview('Fullscreen', FullscreenIcon, 'part:@sanity/base/fullscreen-icon')}
+        {createIconPreview('Fullscreen exit', FullscreenExitIcon, 'part:@sanity/base/fullscreen-exit-icon')}
+        {createIconPreview('Plus', PlusIcon, 'part:@sanity/base/plus-icon')}
+
       </ul>
     )
   },
