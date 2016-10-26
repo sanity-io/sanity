@@ -6,7 +6,7 @@ import Menu from 'part:@sanity/components/menus/default'
 
 class DropDownButton extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['secondary', 'add', 'delete', 'warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['secondary', 'add', 'delete', 'warning', 'success', 'danger', 'simple']),
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -46,11 +46,12 @@ class DropDownButton extends React.Component {
   }
 
   render() {
-    const {items, children} = this.props
+    const {items, children, kind} = this.props
     return (
       <Button
         className={styles.root}
         onClick={this.handleOnClick}
+        kind={kind}
       >
         <span className={styles.title}>
           {children}

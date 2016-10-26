@@ -84,6 +84,30 @@ storiesOf('Buttons')
 )
 
 .addWithInfo(
+  'DropDownButton (simple)',
+  'Buttons that opens a menu.',
+  () => {
+    const items = [
+      {index: '1', title: 'Test'},
+      {index: '2', title: 'Test 2'},
+      {index: '3', title: 'Test 3'}
+    ]
+    return (
+      <div>
+        <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
+          This is a dropdown
+        </DropDownButton>
+        <div>
+          This text should be under the menu
+        </div>
+      </div>
+    )
+  },
+  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+)
+
+
+.addWithInfo(
   'InInput',
   'Buttons that are inside an input field',
   () => {

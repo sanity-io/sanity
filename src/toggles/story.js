@@ -148,3 +148,20 @@ storiesOf('Toggles')
   },
   {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
 )
+
+.addWithInfo(
+  'Toggle button collection',
+  '',
+  () => {
+    return (
+      <div>
+        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
+        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
+        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
+        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
+      </div>
+
+    )
+  },
+  {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
+)

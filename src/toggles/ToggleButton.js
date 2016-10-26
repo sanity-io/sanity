@@ -16,16 +16,14 @@ export default class ToggleButton extends React.Component {
       ${selected ? styles.selected : styles.unSelected}
     `
     return (
-      <div className={styles.root}>
-        <Button
-          className={buttonClasses}
-          icon={icon}
-          onClick={this.props.onClick}
-          kind="simple"
-        >
-          {this.props.children}
-        </Button>
-      </div>
+      <Button
+        className={buttonClasses}
+        icon={icon}
+        onClick={this.props.onClick}
+        kind="simple"
+      >
+        {this.props.children}
+      </Button>
     )
   }
 }
