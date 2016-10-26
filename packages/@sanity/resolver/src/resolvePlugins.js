@@ -1,4 +1,3 @@
-import fsp from 'fs-promise'
 import path from 'path'
 import pathExists from 'path-exists'
 import uniq from 'lodash.uniq'
@@ -81,7 +80,7 @@ function resolvePluginPath(plugin, sync) {
     return location
   }
 
-  return Promise.all(locations.map(forgiveNonExistence))
+  return Promise.all(locations.map(pathExists))
     .then(matches => matches.findIndex(Boolean))
     .then(index => {
       if (index === -1) {
@@ -103,10 +102,6 @@ function getPluginNotFoundError(pluginName, locations) {
   err.locations = locations
 
   return err
-}
-
-function forgiveNonExistence(location) {
-  return fsp.stat(location).catch(() => false)
 }
 
 export default resolvePlugins

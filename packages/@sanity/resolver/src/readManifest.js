@@ -1,13 +1,12 @@
 /* eslint-disable no-sync */
-import fs from 'fs'
-import fsp from 'fs-promise'
+import fsp from 'mz/fs'
 import path from 'path'
 import validateManifest from './validateManifest'
 import generateHelpUrl from '@sanity/generate-help-url'
 
 function readManifestSync(manifestPath, options) {
   try {
-    const manifest = fs.readFileSync(manifestPath)
+    const manifest = fsp.readFileSync(manifestPath)
     const parsedManifest = JSON.parse(manifest)
     return validateManifest(parsedManifest)
   } catch (err) {
@@ -37,7 +36,8 @@ function readManifest(options = {}) {
     return readManifestSync(manifestPath, options)
   }
 
-  return fsp.readJson(manifestPath)
+  return fsp.readFile(manifestPath, {encoding: 'utf8'})
+    .then(data => JSON.parse(data))
     .then(manifest => validateManifest(manifest, options.plugin))
     .catch(err => handleManifestReadError(err, options))
 }

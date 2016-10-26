@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^0.0.2",
-    "fs-promise": "^0.5.0",
     "in-publish": "^2.0.0",
     "lodash.uniq": "^4.5.0",
+    "mz": "^2.4.0",
     "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"
   }
