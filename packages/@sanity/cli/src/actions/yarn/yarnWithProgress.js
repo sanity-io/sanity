@@ -1,3 +1,5 @@
+/* eslint-disable no-process-env */
+import path from 'path'
 import ora from 'ora'
 import execa from 'execa'
 import split2 from 'split2'
@@ -6,6 +8,9 @@ import progrescii from 'progrescii'
 import noop from 'lodash/noop'
 import padEnd from 'lodash/padEnd'
 import throttle from 'lodash/throttle'
+
+const yarnDir = path.dirname(require.resolve('yarn/package.json'))
+const binDir = path.resolve(path.join(yarnDir, '..', '.bin'))
 
 export default function yarnWithProgress(args, options = {}) {
   /* eslint-disable no-console */
@@ -17,10 +22,10 @@ export default function yarnWithProgress(args, options = {}) {
   const getProgressTemplate = (symbol, msg) =>
     `${symbol} ${padEnd(msg, padLength)} :b :p% (:ts)`
 
-  const execOpts = Object.assign(
-    {cwd: options.rootDir || process.cwd()},
-    options.execOpts || {}
-  )
+  const execOpts = Object.assign({
+    cwd: options.rootDir || process.cwd(),
+    env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
+  }, options.execOpts || {})
 
   const proc = execa('yarn', args.concat(['--json']), execOpts)
   proc.catch(onError);
