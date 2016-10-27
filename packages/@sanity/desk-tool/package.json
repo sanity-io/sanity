@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.0.4",
-    "@sanity/form-builder": "0.0.13",
+    "@sanity/form-builder": "0.0.16",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
