@@ -172,9 +172,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.7.tgz#c4667231a540271a5978d0e954538dfebfe7bfea"
+"@sanity/server@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.8.tgz#7854da477f6df795642fb1e4b8fc5b64f220c057"
   dependencies:
     "@sanity/resolver" "^0.0.1"
     "@sanity/webpack-loader" "^0.0.1"
@@ -194,6 +194,7 @@
     in-publish "^2.0.0"
     json-loader "^0.5.4"
     lodash "^4.5.0"
+    lost "^7.1.0"
     parents "^1.0.1"
     postcss-cssnext "^2.8.0"
     postcss-import "^7.1.3"
@@ -3503,6 +3504,13 @@ loose-envify@^1.0.0, loose-envify@^1.1.0:
   dependencies:
     js-tokens "^1.0.1"
 
+lost@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/lost/-/lost-7.1.0.tgz#f85d176a443dbdf1c7ea1d260772d3ea460f5efc"
+  dependencies:
+    object-assign "^4.1.0"
+    postcss "^5.1.2"
+
 loud-rejection@^1.2.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/loud-rejection/-/loud-rejection-1.6.0.tgz#5b46f80147edee578870f086d04821cf998e551f"
@@ -4568,7 +4576,7 @@ postcss-zindex@^2.0.1:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.19, postcss@^5.0.2, postcss@^5.0.21, postcss@^5.0.3, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.1.1, postcss@^5.2.0, postcss@^5.2.4:
+postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.19, postcss@^5.0.2, postcss@^5.0.21, postcss@^5.0.3, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.1.1, postcss@^5.1.2, postcss@^5.2.0, postcss@^5.2.4:
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.5.tgz#ec428c27dffc7fac65961340a9b022fa4af5f056"
   dependencies:
