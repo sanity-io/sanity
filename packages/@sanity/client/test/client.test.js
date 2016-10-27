@@ -882,32 +882,12 @@ test('handles HTTP errors gracefully', t => {
     })
 })
 
-test('handles response timeouts gracefully', t => {
-  const doc = {_id: 'foo/bar', visits: 5}
-  const expectedBody = {mutations: [{create: doc}]}
-  nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
-    .delay(500)
-    .reply(200, {transactionId: 'abc123', documents: []})
-
-  getClient({timeout: 150}).create(doc)
-    .then(() => {
-      t.fail('Should not call success handler on timeouts')
-      t.end()
-    })
-    .catch(err => {
-      t.ok(err instanceof Error, 'should error')
-      t.equal(err.code, 'ETIMEDOUT', `should have timeout error code, got err\n${err.toString()}`)
-      t.end()
-    })
-})
-
 test('handles connection timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
-    .delayConnection(500)
+    .delayConnection(750)
     .reply(200, {transactionId: 'abc123', documents: []})
 
   getClient({timeout: 150}).create(doc)
