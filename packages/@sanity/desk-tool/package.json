@@ -29,7 +29,7 @@
     "@sanity/base": "0.0.22",
     "@sanity/check": "^0.0.2",
     "@sanity/cli": "0.0.24",
-    "@sanity/client": "0.2.8",
+    "@sanity/client": "0.2.10",
     "@sanity/components": "0.0.26",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.0",
