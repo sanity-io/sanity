@@ -16,6 +16,7 @@ const projectHost = projectId => `https://${projectId || defaultProjectId}.${api
 const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
 const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
 const fixture = name => path.join(__dirname, 'fixtures', name)
+const skipTestOnCI = process.env.CI ? test.skip : test
 
 /*****************
  * BASE CLIENT   *
@@ -882,7 +883,7 @@ test('handles HTTP errors gracefully', t => {
     })
 })
 
-test('handles connection timeouts gracefully', t => {
+skipTestOnCI('handles connection timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
