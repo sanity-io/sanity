@@ -193,7 +193,7 @@ function getDefinitionDeclaration(plugin, part, options = {}) {
 
 function getImplementationDeclaration(plugin, part, options) {
   const paths = plugin.manifest.paths || {}
-  const isLib = options.useCompiledPaths || plugin.path.split(path.sep).includes('node_modules')
+  const isLib = options.useCompiledPaths || plugin.path.split(path.sep).indexOf('node_modules') !== -1
   const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
 
   const basePath = isDotPath
