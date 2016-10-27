@@ -172,10 +172,10 @@ export default class Toolbar extends React.Component {
         className={styles.root}
         label="Text"
         items={items}
-        // value={value || items.find(item => item.isActive)}
-        value={items.find(item => item.isActive)}
+        value={value || items.find(item => item.isActive)}
         onChange={this.handleSelectBlockFormatting}
         renderItem={this.renderItem}
+        transparent
       />
     )
   }

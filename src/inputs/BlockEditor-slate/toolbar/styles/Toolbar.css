@@ -1,6 +1,6 @@
 .root {
   font-size: 0.8em;
-
+  margin-bottom: 0.5em;
   @nest &:after {
     content: "";
     display: table;
