@@ -19,11 +19,6 @@ function createAuthor(n) {
   })
 }
 
-const PATCH_TYPES = {
-  set(doc, patch) {
-    return Object.assign({}, doc, patch)
-  }
-}
 
 function createDB() {
   const docs = []
@@ -35,27 +30,14 @@ function createDB() {
       return docs.slice()
     },
     patch(patch) {
-      if (!patch.id) {
-        throw new Error(`Missing document id for patch ${JSON.stringify(patch)}`)
-      }
-      const {id, ...rest} = patch
-      const idx = indexOf(id)
-      const currentDoc = docs[idx]
-      const nextDoc = Object.keys(rest).reduce((doc, patchType) => {
-        if (!PATCH_TYPES.hasOwnProperty(patchType)) {
-          throw new Error(
-            `Invalid patchType: ${patchType} (Only [${Object.keys(PATCH_TYPES).join(', ')}] is supported by mock sanity client for now)`
-          )
-        }
-        return PATCH_TYPES[patchType](doc, patch[patchType])
-      }, currentDoc)
-      update(nextDoc._id, nextDoc)
+      // Todo: apply patch locally, then call update(patch.id, newDocument)
     }
   }
   function indexOf(id) {
     return index[id]
   }
-  function update(_id, document) {
+  // keep for later
+  function update(_id, document) { // eslint-disable-line no-unused-vars
     const idx = indexOf(_id)
     docs[idx] = document
   }
@@ -95,8 +77,8 @@ export default {
   create(doc) {
     return Promise.resolve({documentId: DB.create(doc)._id})
   },
-  patch(id) {
-    return new Patch(id, {}, this)
+  patch(id, operations) {
+    return new Patch(id, operations, this)
   },
   mutate(spec) {
     return Promise.resolve(DB.patch(spec.patch))

@@ -8,6 +8,7 @@ import schema from 'part:@sanity/base/schema'
 import dataAspects from '../utils/dataAspects'
 
 import styles from './styles/EditorPane.css'
+import * as convertPatch from '../utils/convertPatch'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -45,12 +46,16 @@ export default class EditorPane extends React.PureComponent {
     this.tearDownSubscriptions()
     const {documentId, typeName} = props
 
-    const byId = documentStore.byId(documentId)
-
+    const exists = documentId && documentId.split('/')[1]
     this.setState({
       value: FormBuilder.createEmpty(typeName)
     })
 
+    if (!exists) {
+      return
+    }
+
+    const byId = documentStore.byId(documentId)
     const initialSubscription = byId
       .first(event => event.type === 'snapshot')
       .subscribe(event => {
@@ -100,7 +105,7 @@ export default class EditorPane extends React.PureComponent {
   update(id, patch) {
     this.setState({progress: 'Saving…'})
     return documentStore
-      .update(id, patch)
+      .update(id, convertPatch.toGradient(patch))
       .subscribe(result => {
         this.setState({progress: null})
       })
@@ -118,7 +123,6 @@ export default class EditorPane extends React.PureComponent {
 
     return documentStore
       .create(Object.assign(nextValue.serialize(), {_type: prefixedType}))
-      .delay(1100) // Need to wait for document to actual exist in ES index
       .subscribe(result => {
         this.setState({progress: null})
         onCreated({_id: result.documentId})
@@ -126,7 +130,11 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleDocPatch(patch) {
-    const nextValue = this.state.value.patch(patch)
+    const formBuilderPatches = convertPatch.toFormBuilder(patch)
+    let nextValue = this.state.value
+    formBuilderPatches.forEach(fbPatch => {
+      nextValue = nextValue.patch(fbPatch)
+    })
     this.setState({value: nextValue})
   }
 
