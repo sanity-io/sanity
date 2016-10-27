@@ -24,8 +24,7 @@ const serverConnection = {
 
   update(id, patch) {
     return Observable.from(client
-      .patch(id)
-      .set(patch)
+      .patch(id, patch)
       .commit())
   },
 
