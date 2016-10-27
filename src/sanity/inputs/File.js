@@ -6,6 +6,7 @@ function upload(image) {
 }
 
 function materializeReference(id) {
+  // eslint-disable-next-line no-console
   return console.log('get reference not yet supported')
 }
 

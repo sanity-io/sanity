@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
-import styles from './styles/ReferenceSelect.css'
 
 export default class ReferenceSelect extends React.Component {
 

@@ -165,13 +165,6 @@ test('custom container', t => {
     return new NumberContainer(String(val))
   }
 
-  function resolveContainer(field, schemaType) {
-    if (field.type === 'number' || schemaType.type === 'number') {
-      return NumberContainer
-    }
-    return defaultResolveContainer(field, schemaType)
-  }
-
   const state = createFormBuilderState(rawValue, {
     type: compiledSchema.getType('simple'),
     schema: compiledSchema,

@@ -19,7 +19,7 @@ function simulateProgress() {
 
     return () => {
       if (percent < 100) {
-        console.log('Upload cancelled')
+        // upload cancelled
       }
       clearTimeout(progressTimer)
     }
