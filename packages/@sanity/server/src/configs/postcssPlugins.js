@@ -1,3 +1,4 @@
+import lost from 'lost'
 import postcssImport from 'postcss-import'
 import postcssCssnext from 'postcss-cssnext'
 import resolveStyleImport from '../util/resolveStyleImport'
@@ -15,6 +16,7 @@ export default options => {
 
     return [
       importer,
+      lost,
       postcssCssnext
     ]
   }
