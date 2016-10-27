@@ -23,7 +23,8 @@ export default class ArrayOfStrings extends React.Component {
     nextVal.splice(index, 1)
     this.props.onChange({
       patch: {
-        $set: nextVal
+        type: 'set',
+        value: nextVal
       }
     })
   }
@@ -35,7 +36,9 @@ export default class ArrayOfStrings extends React.Component {
     const nextValue = current.concat(string)
 
     onChange({
-      patch: {$set: nextValue}
+      patch: {
+        type: 'set', value: nextValue
+      }
     })
   }
 

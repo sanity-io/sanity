@@ -21,7 +21,12 @@ export default class Email extends React.Component {
   };
 
   handleChange(event) {
-    this.props.onChange({patch: {$set: event.target.value}})
+    this.props.onChange({
+      patch: {
+        type: 'set',
+        value: event.target.value
+      }
+    })
   }
 
   render() {

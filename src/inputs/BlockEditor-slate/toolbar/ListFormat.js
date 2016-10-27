@@ -7,6 +7,7 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 import FormatListBulletedIcon from 'part:@sanity/base/format-list-bulleted-icon'
 import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
+import createLocalStatePatch from '../util/createLocalStatePatch'
 
 import {
   SLATE_DEFAULT_NODE,
@@ -115,7 +116,7 @@ export default class ListFormat extends React.Component {
         .wrapBlock(setBlock)
     }
     const nextState = transform.apply()
-    onChange({patch: {localState: nextState}})
+    onChange({patch: createLocalStatePatch(nextState)})
   }
 
   render() {

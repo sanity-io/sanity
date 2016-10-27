@@ -85,7 +85,8 @@ export default class Reference extends React.Component {
 
   handleChange = item => {
     const patch = {
-      $set: {
+      type: 'set',
+      value: {
         _type: 'reference',
         _ref: item.key
       }

@@ -109,7 +109,8 @@ export default class ReferenceBrowser extends React.Component {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
           const patch = {
-            $set: {
+            type: 'set',
+            value: {
               _type: 'reference',
               _ref: dialogSelectedItem.value._id
             }
@@ -132,7 +133,7 @@ export default class ReferenceBrowser extends React.Component {
   handleClearValue(event) {
     event.preventDefault()
     const {onChange} = this.props
-    onChange({patch: {$set: undefined}})
+    onChange({patch: {type: 'set', value: undefined}})
   }
 
   createValueFromItem(item) {

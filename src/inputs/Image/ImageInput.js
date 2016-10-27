@@ -122,7 +122,11 @@ export default class ImageInput extends React.PureComponent {
       status: 'complete',
     })
     const {onChange} = this.props
-    const patch = {asset: {$set: reference}}
+    const patch = {
+      type: 'set',
+      path: ['asset'],
+      value: reference
+    }
     onChange({patch})
   }
 
@@ -142,7 +146,10 @@ export default class ImageInput extends React.PureComponent {
 
   handleFieldChange = (event, fieldName) => {
     const {onChange} = this.props
-    const patch = {[fieldName]: event.patch}
+    const patch = {
+      ...event.patch,
+      path: [fieldName, ...(event.patch.path || [])]
+    }
     onChange({patch})
   }
 
@@ -165,8 +172,11 @@ export default class ImageInput extends React.PureComponent {
   handleImageToolChange = newValue => {
     this.props.onChange({
       patch: {
-        crop: {$set: newValue.crop},
-        hotspot: {$set: newValue.hotspot}
+        type: 'merge',
+        value: {
+          crop: newValue.crop,
+          hotspot: newValue.hotspot
+        }
       }
     })
   }

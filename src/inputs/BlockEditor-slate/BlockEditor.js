@@ -1,11 +1,9 @@
 import React, {PropTypes} from 'react'
 import {Editor} from 'slate'
-import {isEqual, pick} from 'lodash'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
-import DefaultButton from 'part:@sanity/components/buttons/default'
-
 import prepareSlateSchema from './util/prepareSlateSchema'
+import createLocalStatePatch from './util/createLocalStatePatch';
 import styles from './styles/BlockEditor.css'
 
 import SlateValueContainer from './SlateValueContainer'
@@ -17,14 +15,6 @@ import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
 import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
 
 import Toolbar from './toolbar/Toolbar'
-
-import {
-  SLATE_DEFAULT_NODE,
-  SLATE_BLOCK_FORMATTING_OPTION_KEYS,
-  SLATE_LIST_BLOCKS,
-  SLATE_LIST_ITEM_TYPE
-} from './constants'
-
 
 export default class BlockEditor extends React.Component {
   static valueContainer = SlateValueContainer
@@ -85,7 +75,12 @@ export default class BlockEditor extends React.Component {
       })
       .apply()
 
-    onChange({patch: {localState: nextState}})
+    onChange({
+      patch: {
+        type: 'localState',
+        value: nextState
+      }
+    })
   }
 
   handleToggleFullscreen = () => {
@@ -95,7 +90,7 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorChange = nextState => {
-    this.props.onChange({patch: {localState: nextState}})
+    this.props.onChange(createLocalStatePatch(nextState))
   }
 
   render() {

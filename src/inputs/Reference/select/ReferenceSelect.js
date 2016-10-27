@@ -84,7 +84,8 @@ export default class ReferenceSelect extends React.Component {
   handleChange = item => {
     console.log('handleChange', item)
     const patch = {
-      $set: {
+      type: 'set',
+      value: {
         _type: 'reference',
         _ref: item.key
       }

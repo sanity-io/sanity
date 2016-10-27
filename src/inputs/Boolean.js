@@ -22,7 +22,12 @@ export default class Bool extends React.Component {
   }
 
   handleChange(event) {
-    this.props.onChange({patch: {$set: event.target.checked}})
+    this.props.onChange({
+      patch: {
+        type: 'set',
+        value: event.target.checked
+      }
+    })
   }
 
   render() {

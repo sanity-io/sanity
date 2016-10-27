@@ -36,7 +36,7 @@ export default class MyCustomLatLonInput extends React.Component {
     const nextValue = Object.assign({_type: 'latlon'}, value, {
       [fieldName]: fieldValue.trim() ? Number(fieldValue) : undefined
     })
-    onChange({patch: {$set: nextValue}})
+    onChange({patch: {type: 'set', value: nextValue}})
   }
 
   render() {

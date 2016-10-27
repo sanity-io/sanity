@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from './styles/BlockFormat.css'
 import {isEqual, pick} from 'lodash'
 import CustomSelect from 'part:@sanity/components/selects/custom'
+import createLocalStatePatch from '../util/createLocalStatePatch'
 
 import {
   SLATE_LIST_ITEM_TYPE,
@@ -54,7 +55,7 @@ export default class Toolbar extends React.Component {
       transform = transform
         .setBlock(block)
       const nextState = transform.apply()
-      onChange({patch: {localState: nextState}})
+      onChange({patch: createLocalStatePatch(nextState)})
       return
     }
 
@@ -97,7 +98,7 @@ export default class Toolbar extends React.Component {
     transform
       .setBlock(block)
     const nextState = transform.apply()
-    onChange({patch: {localState: nextState}})
+    onChange({patch: createLocalStatePatch(nextState)})
   }
 
   renderItem = item => {

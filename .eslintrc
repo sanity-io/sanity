@@ -2,15 +2,15 @@
   "env": {
     "node": true
   },
-  "parser": "babel-eslint",
   "extends": [
     "sanity",
     "sanity/react",
     "sanity/import"
   ],
   "settings": {
-    "import/ignore": ["\\.css$", "node_modules", ".*:.*"],
+    "import/ignore": ["\\.css$", "node_modules", ".*:.*"]
   },
+  "parser": "babel-eslint",
   "rules": {
     "import/no-unresolved": ["error", {
       "ignore": [".*:.*"]

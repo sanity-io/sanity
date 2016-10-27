@@ -11,7 +11,6 @@ import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc'
-import {bindAll} from 'lodash'
 
 const SortableDefaultList = SortableContainer(DefaultList)
 
@@ -44,70 +43,59 @@ export default class Arr extends React.Component {
     formBuilder: PropTypes.object
   };
 
-  constructor(props, context) {
-    super(props, context)
+  state = {
+    addItemField: null,
+    editIndex: -1
+  };
 
-    bindAll(this, [
-      'handleAddBtnClick',
-      'handleItemChange',
-      'handleItemEdit',
-      'handleRemoveItem',
-      'handleItemEnter',
-      'handleClose',
-      'handleMove',
-      'handleDropDownAction',
-      'addItemAtEnd',
-      'renderItem',
-      'renderList'
-    ])
-
-    this.state = {
-      addItemField: null,
-      editIndex: -1
-    }
-  }
-
-  handleAddBtnClick() {
+  handleAddBtnClick = () => {
     if (this.props.type.of.length > 1) {
       this.setState({selectType: true})
       return
     }
-    this.addItemAtEnd(this.props.type.of[0])
-  }
 
-  addItemAtStart(field) {
-    this.addItemAt(field, 0)
-  }
-
-  addItemAtEnd(field) {
-    this.addItemAt(field, this.props.value.length)
-  }
-
-  addItemAt(field, index) {
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, field)
-
-    this.props.onChange({
-      patch: {$splice: [[index, 0, addItemValue]]}
-    })
+    this.append(this.createValueForField(this.props.type.of[0]))
 
     this.setState({
       selectType: false,
-      editIndex: index
+      editIndex: this.props.value.length
     })
   }
 
-  handleRemoveItem(index) {
-    if (index === this.state.editIndex) {
-      this.setState({editIndex: -1})
-    }
+  append(value) {
     this.props.onChange({
       patch: {
-        $splice: [[index, 1]]
+        type: 'append',
+        value: value
       }
     })
   }
 
-  handleClose() {
+  prepend(value) {
+    this.props.onChange({
+      patch: {
+        type: 'prepend',
+        value: value
+      }
+    })
+  }
+
+  createValueForField(field) {
+    return this.context.formBuilder.createFieldValue(undefined, field)
+  }
+
+  handleRemoveItem = index => {
+    if (index === this.state.editIndex) {
+      this.setState({editIndex: -1})
+    }
+    const patch = {
+      type: 'unset',
+      path: [index]
+    }
+    this.props.onChange({patch})
+  }
+
+  handleClose = () => {
     const {editIndex} = this.state
     const itemValue = this.props.value.at(editIndex)
     if (itemValue.isEmpty()) {
@@ -116,10 +104,9 @@ export default class Arr extends React.Component {
     this.setState({editIndex: -1})
   }
 
-  handleDropDownAction(menuItem) {
-    this.addItemAtEnd(menuItem.field)
+  handleDropDownAction = menuItem => {
+    this.append(this.createValueForField(menuItem.field))
   }
-
 
   renderSelectType() {
     const {type} = this.props
@@ -139,28 +126,29 @@ export default class Arr extends React.Component {
     )
   }
 
-  handleItemChange(event, index) {
-    const patch = {[index]: event.patch}
+  handleItemChange = (event, index) => {
+    // Rewrite patch by prepending the item index to its path
+    const patch = {
+      ...event.patch,
+      path: [index, ...(event.patch.path || [])]
+    }
     this.props.onChange({patch})
-
   }
 
-  handleItemEdit(index) {
+  handleItemEdit = index => {
     this.setState({editIndex: index})
   }
 
-  handleMove(event) {
+  handleMove = event => {
     this.props.onChange({
       patch: {
-        $move: {
-          from: event.oldIndex,
-          to: event.newIndex
-        }
+        type: 'move',
+        value: {from: event.oldIndex, to: event.newIndex}
       }
     })
   }
 
-  handleItemEnter() {
+  handleItemEnter = () => {
     this.setState({editIndex: -1})
   }
 
@@ -188,7 +176,7 @@ export default class Arr extends React.Component {
     return type.of.find(ofType => ofType.type === item.context.field.type)
   }
 
-  renderItem(item, index) {
+  renderItem = (item, index) => {
     const {type} = this.props
     const {editIndex} = this.state
     const itemField = this.getItemField(item)

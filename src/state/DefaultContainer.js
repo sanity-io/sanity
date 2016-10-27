@@ -1,3 +1,27 @@
+// @flow
+const PATCH_OPERATIONS = {
+  replace(currentValue, nextValue) {
+    return nextValue
+  },
+  set(currentValue, nextValue) {
+    return nextValue
+  },
+  setIfMissing(currentValue, nextValue) {
+    return (currentValue === undefined) ? nextValue : currentValue
+  },
+  unset(currentValue, nextValue) {
+    return undefined
+  },
+  inc(currentValue, nextValue) {
+    return currentValue + nextValue
+  },
+  dec(currentValue, nextValue) {
+    return currentValue - nextValue
+  }
+}
+
+const SUPPORTED_PATCH_TYPES = Object.keys(PATCH_OPERATIONS)
+
 export default class DefaultContainer {
   static passSerialized = true;
 
@@ -11,13 +35,18 @@ export default class DefaultContainer {
   }
 
   patch(patch) {
-    if (patch.hasOwnProperty('$set')) {
-      return new DefaultContainer(patch.$set, this.context)
+    if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
+      throw new Error(
+        `Default value container received patch of unsupported type: "${JSON.stringify(patch.type)}". This is most likely a bug.`
+      )
     }
-    if (patch.hasOwnProperty('$delete')) {
-      return new DefaultContainer(undefined, this.context)
+
+    if (patch.path.length > 0) {
+      throw new Error(`Default container cannot apply deep operations. Received patch with type "${patch.type}" and path "${patch.path.join('.')}"`)
     }
-    throw new Error(`Only $set and $delete is supported by default value container, got: ${JSON.stringify(patch)}`)
+
+    const nextVal = PATCH_OPERATIONS[patch.type](this.value, patch.value)
+    return new DefaultContainer(nextVal, this.context)
   }
 
   validate() {

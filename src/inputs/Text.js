@@ -30,7 +30,7 @@ export default class Text extends React.Component {
 
   handleChange(e) {
     const val = e.target.value || undefined
-    this.props.onChange({patch: {$set: val}})
+    this.props.onChange({patch: {type: 'set', path: [], value: val}})
   }
 
 

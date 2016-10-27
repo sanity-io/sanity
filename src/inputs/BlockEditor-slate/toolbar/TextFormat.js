@@ -7,6 +7,7 @@ import FormatItalicIcon from 'part:@sanity/base/format-italic-icon'
 import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon'
+import createLocalStatePatch from '../util/createLocalStatePatch'
 
 import {
   SLATE_TEXT_BLOCKS,
@@ -29,7 +30,7 @@ export default class TextFormatToolbar extends React.Component {
       .transform()
       .toggleMark(type)
       .apply()
-    onChange({patch: {localState: nextState}})
+    onChange({patch: createLocalStatePatch(nextState)})
   }
 
   getIcon(type) {

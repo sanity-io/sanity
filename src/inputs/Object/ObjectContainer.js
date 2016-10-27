@@ -1,11 +1,7 @@
-import {clone, keyBy} from 'lodash'
+import {clone, isObject} from 'lodash'
 import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
-
-const hasOwn = (() => {
-  const hO = {}.hasOwnProperty
-  return (obj, ...args) => hO.call(obj, ...args)
-})()
+import hasOwn from '../../utils/hasOwn'
 
 export default class ObjectContainer {
 
@@ -18,7 +14,11 @@ export default class ObjectContainer {
       deserialized._id = serialized._id
     }
     type.fields.forEach(fieldDef => {
-      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {field: fieldDef, schema, resolveInputComponent})
+      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {
+        field: fieldDef,
+        schema,
+        resolveInputComponent
+      })
     })
     return new ObjectContainer(deserialized, context)
   }
@@ -32,43 +32,68 @@ export default class ObjectContainer {
     return this.value[fieldName]
   }
 
-  patch(patch) {
-    const {value, context} = this
-    const {field, schema, resolveInputComponent} = context
+  getFieldDefForFieldName(fieldName) {
+    const {field, schema} = this.context
 
     const type = getFieldType(schema, field)
-    const newVal = value ? clone(value) : {_type: type.name}
+    return type.fields.find(fieldDef => fieldDef.name === fieldName)
+  }
 
-    if (patch.hasOwnProperty('$set')) {
-      return ObjectContainer.deserialize(patch.$set, context)
+  patch(patch) {
+    const {context} = this
+
+    const type = getFieldType(context.schema, context.field)
+    const nextValue = this.value ? clone(this.value) : {_type: type.name}
+    if (patch.path.length === 0) {
+      // its directed to me
+      if (patch.type === 'set') {
+        if (!isObject(patch.value)) { // eslint-disable-line max-depth
+          throw new Error('Cannot set value of an object to a non-object')
+        }
+        return ObjectContainer.deserialize(patch.value, this.context)
+      } else if (patch.type === 'unset') {
+        return ObjectContainer.deserialize(undefined, this.context)
+      } else if (patch.type === 'merge') {
+        // Turn into a 'set' with paths
+        if (!isObject(patch.value)) { // eslint-disable-line max-depth
+          throw new Error('Non-object argument used with the "merge" patch type.')
+        }
+        const toMerge = Object.keys(patch.value).reduce((acc, fieldName) => {
+          const fieldDef = this.getFieldDefForFieldName(fieldName)
+          acc[fieldName] = createFieldValue(patch.value[fieldName], {
+            ...context,
+            field: fieldDef
+          })
+          return acc
+        }, {})
+        return new ObjectContainer(Object.assign(nextValue, toMerge), context)
+      }
+      throw new Error(`Invalid object operation: ${patch.type}`)
     }
 
-    const keyedFields = keyBy(type.fields, 'name')
-
-    Object.keys(patch).forEach(keyName => {
-      if (!keyedFields.hasOwnProperty(keyName)) {
-        throw new Error(`Type ${type.name} has no field named ${keyName}`)
-      }
-
-      const fieldDef = keyedFields[keyName]
-
-      if (!newVal.hasOwnProperty(keyName)) {
-        newVal[keyName] = createFieldValue(undefined, {field: fieldDef, schema: context.schema, resolveInputComponent})
-      }
-      newVal[keyName] = newVal[keyName].patch(patch[keyName])
+    // The patch is not directed to me
+    const [fieldName, ...rest] = patch.path
+    if (typeof fieldName !== 'string') {
+      throw new Error(`Expected field name to be a string, instad got: ${fieldName}`)
+    }
+    nextValue[fieldName] = nextValue[fieldName].patch({
+      ...patch,
+      path: rest
     })
-    return new ObjectContainer(newVal, context)
+    return new ObjectContainer(nextValue, this.context)
   }
 
   validate() {
     const {field, schema} = this.context
 
     if (field.required && this.value === undefined) {
-      return {messages: [{
-        id: 'errors.fieldIsRequired',
-        type: 'error',
-        message: 'Field is required'
-      }]}
+      return {
+        messages: [{
+          id: 'errors.fieldIsRequired',
+          type: 'error',
+          message: 'Field is required'
+        }]
+      }
     }
 
     const type = getFieldType(schema, field)

@@ -37,7 +37,7 @@ export default class StringSelect extends React.Component {
   }
 
   handleChange(item) {
-    this.props.onChange({patch: {$set: item.title}})
+    this.props.onChange({patch: {type: 'set', value: item.title}})
   }
 
   handleFocus(event) {

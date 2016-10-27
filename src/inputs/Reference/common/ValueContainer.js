@@ -14,10 +14,10 @@ export default class ReferenceContainer {
   }
 
   patch(patch) {
-    if (patch.hasOwnProperty('$set')) {
-      return new ReferenceContainer(patch.$set, this.context)
+    if (patch.type === 'set') {
+      return new ReferenceContainer(patch.value, this.context)
     }
-    throw new Error(`Only $set is supported by reference value container, got: ${JSON.stringify(patch)}`)
+    throw new Error(`Only the 'set' patch type is supported by reference value container, got: ${JSON.stringify(patch.type)}`)
   }
 
   validate() {

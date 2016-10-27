@@ -34,19 +34,17 @@ export default class Obj extends React.Component {
     schema: PropTypes.object
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleFieldChange = this.handleFieldChange.bind(this)
-    this.handleFieldEnter = this.handleFieldEnter.bind(this)
-  }
-
-  handleFieldChange(event, fieldName) {
+  handleFieldChange = (event, fieldName) => {
     const {onChange} = this.props
-    const patch = {[fieldName]: event.patch}
+    // Rewrite patch by prepending the field name to its path
+    const patch = {
+      ...event.patch,
+      path: [fieldName, ...(event.patch.path || [])]
+    }
     onChange({patch})
   }
 
-  handleFieldEnter(event, fieldName) {
+  handleFieldEnter = (event, fieldName) => {
     this.props.onEnter(fieldName)
   }
 

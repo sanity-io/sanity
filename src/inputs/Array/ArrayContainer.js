@@ -1,14 +1,17 @@
 import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
 import {resolveJSType} from '../../schema/types/utils'
+import hasOwn from '../../utils/hasOwn'
 
 function move(arr, from, to) {
-  const nextValue = arr.slice(0)
+  const nextValue = arr.slice()
   const val = nextValue[from]
   nextValue.splice(from, 1)
   nextValue.splice(to, 0, val)
   return nextValue
 }
+
+const SUPPORTED_PATCH_TYPES = ['append', 'prepend', 'unset', 'set']
 
 export default class ArrayContainer {
 
@@ -74,46 +77,49 @@ export default class ArrayContainer {
   }
 
   patch(patch) {
-    const {value, context} = this
+    const nextValue = this.value ? this.value.slice() : [] // make a copy for internal mutation
 
-    if (patch.hasOwnProperty('$set')) {
-      return ArrayContainer.deserialize(patch.$set, context)
-    }
-
-    const nextVal = (value || []).concat()
-
-    if (patch.hasOwnProperty('$unshift')) {
-      patch.$unshift.forEach(item => nextVal.unshift(item))
-      return new ArrayContainer(nextVal, context)
-    }
-
-    if (patch.hasOwnProperty('$move')) {
-      const {from, to} = patch.$move
-      return new ArrayContainer(move(nextVal, from, to), context)
-    }
-
-    if (patch.hasOwnProperty('$splice')) {
-      patch.$splice.forEach(args => nextVal.splice(...args))
-      return new ArrayContainer(nextVal, context)
-    }
-
-    Object.keys(patch).forEach(index => {
-      if (isNaN(index)) {
-        if (String(index).startsWith('$')) {
-          throw new Error(`Method "${index}" not (yet) supported for arrays`)
+    if (patch.path.length === 0) {
+      // its directed to me
+      if (patch.type === 'set') {
+        if (!Array.isArray(patch.value)) { // eslint-disable-line max-depth
+          throw new Error('Cannot set value of an array to a non-array')
         }
-
-        throw new Error(`When patching array elements, the indices must be numbers, got ${index}`)
+        return ArrayContainer.deserialize(patch.value, this.context)
+      } else if (patch.type === 'prepend') {
+        return new ArrayContainer([patch.value, ...nextValue], this.context)
+      } else if (patch.type === 'append') {
+        return new ArrayContainer([...nextValue, patch.value], this.context)
+      } else if (patch.type === 'unset') {
+        return ArrayContainer.deserialize(undefined, this.context)
+      } else if (patch.type === 'move') {
+        if (!patch.value || !hasOwn(patch.value, 'from') || !hasOwn(patch.value, 'to')) { // eslint-disable-line max-depth
+          throw new Error(`Invalid value of 'move' patch. Expected a value with "from" and "to" indexes, instead got: ${JSON.stringify(patch.value)}`)
+        }
+        return new ArrayContainer(move(nextValue), this.context)
       }
+      throw new Error(`Invalid array operation: ${patch.type}`)
+    }
 
-      if (!nextVal.hasOwnProperty(index)) {
-        throw new Error(`No such index ${index} on array`)
+    if (patch.path.length === 1 && patch.type === 'unset') {
+      const index = patch.path[0]
+      if (typeof index !== 'number') {
+        throw new Error(`Expected array index to be a number, instead got "${index}"`)
       }
+      nextValue.splice(index, 1)
+      return new ArrayContainer(nextValue, this.context)
+    }
 
-      nextVal[index] = nextVal[index].patch(patch[index])
+    // The patch is not directed to me
+    const [index, ...rest] = patch.path
+    if (typeof index !== 'number') {
+      throw new Error(`Expected array index to be a number, instead got "${index}"`)
+    }
+    nextValue[index] = nextValue[index].patch({
+      ...patch,
+      path: rest
     })
-
-    return new ArrayContainer(nextVal, context)
+    return new ArrayContainer(nextValue, this.context)
   }
 
   serialize() {

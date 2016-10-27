@@ -15,7 +15,7 @@ function fromInput(Component) {
     }
 
     handleChange(ev) {
-      this.props.onChange({patch: {$set: ev.currentTarget.value.trim() || undefined}})
+      this.props.onChange({patch: {type: 'set', value: ev.currentTarget.value.trim() || undefined}})
     }
 
     render() {

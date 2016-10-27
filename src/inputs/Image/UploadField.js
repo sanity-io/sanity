@@ -18,7 +18,7 @@ export default class FileInput extends React.PureComponent {
 
   handleChange = event => {
     const val = event.target.value || undefined
-    this.props.onChange({patch: {$set: val}})
+    this.props.onChange({patch: {type: 'set', value: val}})
   }
 
   render() {

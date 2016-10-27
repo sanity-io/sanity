@@ -21,13 +21,10 @@ export default class SlateValueContainer {
 
   patch(patch) {
     let nextState
-    if (patch.localState) {
-      nextState = patch.localState
+    if (patch.type === 'localState') {
+      nextState = patch.value
     } else {
-      nextState = Object.keys(patch).reduce((state, key) => {
-        const result = patchHandlers[key] ? patchHandlers[key](state, patch) : state
-        return result === undefined ? state : result
-      }, this.state)
+      throw new Error(`Unknown patch type for block editor ${patch.type}`)
     }
     return (nextState === this.state) ? this : new SlateValueContainer(nextState, this.context)
   }

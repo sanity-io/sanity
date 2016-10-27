@@ -24,7 +24,12 @@ export default class Num extends React.Component {
 
   handleChange(e) {
     const val = e.target.value.trim()
-    this.props.onChange({patch: {$set: val === '' ? undefined : Number(e.target.value)}})
+    this.props.onChange({
+      patch: {
+        type: 'set',
+        value: val === '' ? undefined : Number(e.target.value)
+      }
+    })
   }
 
   render() {
