@@ -16,8 +16,8 @@ export default options => {
 
     return [
       importer,
-      lost,
-      postcssCssnext
+      postcssCssnext,
+      lost
     ]
   }
 }
