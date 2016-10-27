@@ -1,11 +1,11 @@
 export default {
   // Dependencies for a default Sanity installation
   core: {
-    '@sanity/base': '^0.0.17',
-    '@sanity/components': '^0.0.11',
+    '@sanity/base': '^0.0.23',
+    '@sanity/components': '^0.0.27',
     '@sanity/default-layout': '^0.0.4',
     '@sanity/default-login': '^0.0.2',
-    '@sanity/desk-tool': '^0.1.3',
+    '@sanity/desk-tool': '^0.1.9',
     'react': '^15.3.0',
     'react-dom': '^15.3.0'
   },
