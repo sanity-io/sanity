@@ -62,6 +62,24 @@ test('can use getUrl() to get API-relative paths', t => {
   t.end()
 })
 
+test('can be cloned', t => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'yackshave'})
+  const clonedClient = client.clone({dataset: 'burmashave'})
+  t.equal(clonedClient.config().projectId, 'abc123', 'should recycle projectId')
+  t.equal(clonedClient.config().dataset, 'burmashave', 'should have new dataset')
+  t.notEqual(clonedClient, client, 'new client should not be the same object as the predecessor')
+  t.end()
+})
+
+test('can be cloned without new config', t => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'yackshave'})
+  const clonedClient = client.clone()
+  t.equal(clonedClient.config().projectId, 'abc123', 'should recycle projectId')
+  t.equal(clonedClient.config().dataset, 'yackshave', 'should recycle dataset')
+  t.notEqual(clonedClient, client, 'new client should not be the same object as the predecessor')
+  t.end()
+})
+
 /*****************
  * PROJECTS      *
  *****************/
@@ -849,14 +867,14 @@ test('handles response timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
-    .delay(300)
-    .reply(200)
+    .delay(500)
+    .reply(200, {transactionId: 'abc123', documents: []})
 
   getClient({timeout: 150}).create(doc)
     .then(() => t.fail('Should not call success handler on timeouts'))
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
-      t.equal(err.code, 'ETIMEDOUT', 'should have timeout error code')
+      t.equal(err.code, 'ETIMEDOUT', `should have timeout error code, got err\n${err.toString()}`)
       t.end()
     })
 })
@@ -865,14 +883,14 @@ test('handles connection timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
-    .delayConnection(300)
-    .reply(200)
+    .delayConnection(500)
+    .reply(200, {transactionId: 'abc123', documents: []})
 
   getClient({timeout: 150}).create(doc)
     .then(() => t.fail('Should not call success handler on timeouts'))
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
-      t.equal(err.code, 'ETIMEDOUT', 'should have timeout error code')
+      t.equal(err.code, 'ETIMEDOUT', `should have timeout error code, got err\n${err.toString()}`)
       t.end()
     })
 })

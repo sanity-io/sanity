@@ -40,6 +40,11 @@ assign(SanityClient.prototype, {
     return this.requestObservable(options).toPromise()
   },
 
+  clone(newConfig) {
+    const mergedConfig = assign(this.config(), newConfig || {})
+    return new SanityClient(mergedConfig)
+  },
+
   requestObservable(options) {
     return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
