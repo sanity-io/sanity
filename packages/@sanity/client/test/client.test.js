@@ -179,7 +179,10 @@ test('handles errors gracefully', t => {
   nock(projectHost()).get('/v1/data/query/foo?query=area51').reply(403, response)
 
   getClient().fetch('area51')
-    .then(res => t.fail('Resolve handler should not be called on failure'))
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
       t.ok(err.message.includes(response.error), 'should contain error code')
@@ -208,7 +211,10 @@ test('joins multi-error into one message', t => {
   })
 
   getClient().getDocument('foo/127')
-    .then(res => t.fail('Resolve handler should not be called on failure'))
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
       t.ok(err.message.includes('2 slow'), 'should contain first error')
@@ -221,7 +227,10 @@ test('gives http statuscode as error if no body is present on >= 400', t => {
   nock(projectHost()).get('/v1/data/doc/foo/123').reply(500)
 
   getClient().getDocument('foo/123')
-    .then(res => t.fail('Resolve handler should not be called on failure'))
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
       t.ok(err.message.includes('HTTP 500'), 'should contain status code')
@@ -233,7 +242,10 @@ test('populates response body on errors', t => {
   nock(projectHost()).get('/v1/data/doc/foo/123').reply(500, 'Internal Server Error')
 
   getClient().getDocument('foo/123')
-    .then(res => t.fail('Resolve handler should not be called on failure'))
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
       t.ok(err.message.includes('HTTP 500'), 'should contain status code')
@@ -244,7 +256,10 @@ test('populates response body on errors', t => {
 
 test('rejects if trying to perform data request without dataset', t => {
   sanityClient({projectId: 'foo'}).fetch('blah')
-    .then(res => t.fail('Resolve handler should not be called on failure'))
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should be error')
       t.ok(/dataset.*?must be provided/.test(err.message))
@@ -856,7 +871,10 @@ test('handles HTTP errors gracefully', t => {
     .replyWithError(new Error('Something went wrong'))
 
   getClient().create(doc)
-    .then(() => t.fail('Should not call success handler on error'))
+    .then(() => {
+      t.fail('Should not call success handler on error')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
       t.equal(err.message, 'Something went wrong', 'has message')
@@ -873,7 +891,10 @@ test('handles response timeouts gracefully', t => {
     .reply(200, {transactionId: 'abc123', documents: []})
 
   getClient({timeout: 150}).create(doc)
-    .then(() => t.fail('Should not call success handler on timeouts'))
+    .then(() => {
+      t.fail('Should not call success handler on timeouts')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
       t.equal(err.code, 'ETIMEDOUT', `should have timeout error code, got err\n${err.toString()}`)
@@ -890,7 +911,10 @@ test('handles connection timeouts gracefully', t => {
     .reply(200, {transactionId: 'abc123', documents: []})
 
   getClient({timeout: 150}).create(doc)
-    .then(() => t.fail('Should not call success handler on timeouts'))
+    .then(() => {
+      t.fail('Should not call success handler on timeouts')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
       t.equal(err.code, 'ETIMEDOUT', `should have timeout error code, got err\n${err.toString()}`)
@@ -907,7 +931,10 @@ test('handles socket timeouts gracefully', t => {
     .reply(200)
 
   getClient({timeout: 150}).create(doc)
-    .then(() => t.fail('Should not call success handler on timeouts'))
+    .then(() => {
+      t.fail('Should not call success handler on timeouts')
+      t.end()
+    })
     .catch(err => {
       t.ok(err instanceof Error, 'should error')
       t.equal(err.code, 'ESOCKETTIMEDOUT', 'should have timeout error code')
