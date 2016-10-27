@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
+    "compile:watch": "npm run compile -- --watch",
     "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
