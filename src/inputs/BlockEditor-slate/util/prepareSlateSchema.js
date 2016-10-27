@@ -39,10 +39,10 @@ export default function prepareSlateShema(field) {
 
   const schema = {
     nodes: Object.assign(
-        mapToObject(groupedFields.formBuilder, ofField => {
+        mapToObject(groupedFields.formBuilder || [], ofField => {
           return [ofField.type, createPreviewNode(ofField)]
         }),
-        mapToObject(groupedFields.slate, slateField => {
+        mapToObject(groupedFields.slate || [], slateField => {
           const klass = slateFieldComponentMapping[slateField.type]
           if (klass) {
             return [slateField.type, klass]
