@@ -4,10 +4,12 @@ import styles from 'part:@sanity/components/fieldsets/default-style'
 import React, {PropTypes} from 'react'
 
 export default function Fieldset(props) {
-  const {fieldset, legend, description, columns} = props
+  const {fieldset, legend, description, columns, level} = props
+  const levelString = `level${level}`
   const rootClass = `
     ${styles.root}
     ${columns ? styles[`columns${columns}`] : styles.columns1}
+    ${styles[levelString]}
   `
   return (
     <fieldset className={rootClass} data-nesting-level={props.level}>
@@ -31,6 +33,7 @@ export default function Fieldset(props) {
 export function FieldWrapper(props) {
   return (
     <div className={styles.fieldWrapper}>
+      wrapper
       {props.children}
     </div>
   )

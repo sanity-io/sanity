@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
-import styles from 'part:@sanity/components/previews/detail-style'
+import styles from 'part:@sanity/components/previews/media-style'
 
-export default class DetailPreview extends React.Component {
+export default class MediaPreview extends React.Component {
   static propTypes = {
     item: PropTypes.shape({
       title: PropTypes.string,
@@ -21,18 +21,23 @@ export default class DetailPreview extends React.Component {
     const {item, emptyText, children} = this.props
     return (
       <div className={`${styles.root}`}>
+
         <div className={`${styles.media}`}>
           {item.mediaRender && item.mediaRender()}
         </div>
-        <div className={styles.heading}>
-          <h2 className={styles.title}>
-            {item.title || emptyText}
-          </h2>
-          <h3 className={styles.subtitle}>
-            {item.subtitle}
-          </h3>
+        <div className={`${styles.meta}`}>
+          <div className={`${styles.metaInner}`}>
+            <h2 className={styles.title}>
+              {item.title || emptyText}
+            </h2>
+            {
+              item.subtitle && <h3 className={styles.subtitle}>
+                {item.subtitle}
+              </h3>
+            }
+            <p className={styles.description}>{item.description}</p>
+          </div>
         </div>
-        <p className={styles.description}>{item.description}</p>
         {children}
       </div>
     )

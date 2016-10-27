@@ -1,0 +1,64 @@
+.root {
+  background-color: #fff;
+  composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
+  position: relative;
+  overflow: hidden;
+}
+
+.media {
+  @nest & img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.title {
+  font-size: 1.5em;
+  font-weight: 100;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1em;
+  font-weight: 100;
+  margin: 0;
+}
+
+.description {
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  max-width: 80%;
+  color: #fff;
+  font-weight: 100;
+  margin: 1em auto;
+  opacity: 0.5;
+}
+
+.meta {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color(#000 a(80%));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+  transition: opacity 0.3s ease-out;
+
+  @nest .root:hover & {
+    transition-duration: 0.1s;
+    opacity: 100;
+  }
+}
+
+.metaInner {
+  padding: 0.5em;
+}

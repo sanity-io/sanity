@@ -1,0 +1,20 @@
+.root {
+  display: inline;
+}
+
+.media {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  position: relative;
+  vertical-align: baseline;
+
+  @nest & img {
+    object-fit: cover;
+  }
+
+  @nest & div {
+    display: inline-block;
+  }
+}

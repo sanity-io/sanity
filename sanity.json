@@ -291,6 +291,42 @@
       "description": "Default preview item"
     },
     {
+      "name": "part:@sanity/components/previews/detail",
+      "description": "Shows Title, subtitle, description, media and date"
+    },
+    {
+      "name": "part:@sanity/components/previews/card",
+      "description": "Card preview, shows title, subtitle, description, media and date"
+    },
+    {
+      "name": "part:@sanity/components/previews/media",
+      "description": "Shows only media, and shows details on hover"
+    },
+    {
+      "name": "part:@sanity/components/previews/inline",
+      "description": "Shows title and media inline"
+    },
+    {
+      "name": "part:@sanity/components/previews/default-style",
+      "description": "Default preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/card-style",
+      "description": "Card preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/detail-style",
+      "description": "Detail preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/inline-style",
+      "description": "Inline preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/media-style",
+      "description": "Media preview styling"
+    },
+    {
       "implements": "part:@sanity/components/autocomplete/default",
       "path": "autocomplete/DefaultAutocomplete.js"
     },
@@ -416,6 +452,22 @@
     {
       "implements": "part:@sanity/components/previews/default",
       "path": "previews/DefaultPreview.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/detail",
+      "path": "previews/DetailPreview.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/card",
+      "path": "previews/CardPreview.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/media",
+      "path": "previews/MediaPreview.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/inline",
+      "path": "previews/InlinePreview.js"
     },
     {
       "implements": "part:@sanity/components/autocomplete/default-style",
@@ -588,6 +640,22 @@
     {
       "implements": "part:@sanity/components/previews/default-style",
       "path": "previews/styles/DefaultPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/card-style",
+      "path": "previews/styles/CardPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/detail-style",
+      "path": "previews/styles/DetailPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/inline-style",
+      "path": "previews/styles/InlinePreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/media-style",
+      "path": "previews/styles/MediaPreview.css"
     },
     {
       "implements": "part:@sanity/base/component",

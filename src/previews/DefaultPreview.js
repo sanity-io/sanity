@@ -3,28 +3,38 @@ import styles from 'part:@sanity/components/previews/default-style'
 
 export default class DefaultPreview extends React.Component {
   static propTypes = {
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-    description: PropTypes.string,
-    sanityImage: PropTypes.object,
+    item: PropTypes.shape({
+      title: PropTypes.string,
+      subtitle: PropTypes.string,
+      description: PropTypes.string,
+      mediaRender: PropTypes.func
+    }),
     emptyText: PropTypes.string,
-    children: PropTypes.node,
+    children: PropTypes.node
+  }
+
+  static defaultProps = {
+    emptyText: 'Nothing here…'
   }
 
   render() {
-    const {title, subtitle, description, emptyText, children} = this.props
+    const {item, emptyText, children} = this.props
     return (
       <div className={`${styles.root}`}>
+        <div className={`${styles.media}`}>
+          {item.mediaRender && item.mediaRender()}
+        </div>
         <div className={styles.heading}>
           <h2 className={styles.title}>
-            {title || emptyText}
+            {item.title || emptyText}
           </h2>
           <h3 className={styles.subtitle}>
-            {subtitle}
+            {item.subtitle}
           </h3>
         </div>
-        <p className={styles.description}>{description}</p>
-        {children}
+        {
+          children && <div className={styles.children}>{children}</div>
+        }
       </div>
     )
   }

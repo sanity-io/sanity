@@ -33,16 +33,16 @@
 
 .media {
   float: left;
-  height: 2em;
-  width: 2em;
+  height: 4em;
+  width: 4em;
   margin-right: 0.5em;
   overflow: hidden;
   position: relative;
 
   @nest & div {
     position: relative;
-    height: 2em;
-    width: 2em;
+    height: 4em;
+    width: 4em;
     overflow: hidden;
   }
 

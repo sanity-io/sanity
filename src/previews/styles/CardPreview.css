@@ -1,0 +1,40 @@
+.root {
+  background-color: #fff;
+  composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
+}
+
+.title {
+  composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
+  display: inline;
+}
+
+.subtitle {
+  composes: heading6 from 'part:@sanity/base/theme/typography/headings-style';
+  text-transform: none;
+  font-weight: 100;
+  margin: 0;
+  padding: 0;
+}
+
+.date {
+  font-weight: 100;
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  float: right;
+}
+
+.media {
+  @nest & img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.description {
+  margin-top: 0.5em;
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+}
+
+.meta {
+  padding: 1em;
+}
