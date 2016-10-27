@@ -124,9 +124,9 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.2.6":
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.2.8.tgz#ccc47cffc84efdfafba1eee51bb90b65bcaa1f89"
+"@sanity/client@^0.2.10":
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.2.10.tgz#e768ed2e342d59e22ddaf1374e7d91aa5b2748a8"
   dependencies:
     "@sanity/request" "0.0.3"
     debug "^2.2.0"
