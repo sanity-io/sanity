@@ -887,6 +887,7 @@ test('handles connection timeouts gracefully', t => {
   const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
+    .socketDelay(75)
     .delay({head: 500, body: 750})
     .reply(200, {transactionId: 'abc123', documents: []})
 
