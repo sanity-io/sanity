@@ -172,9 +172,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.8.tgz#7854da477f6df795642fb1e4b8fc5b64f220c057"
+"@sanity/server@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.9.tgz#820c231b1db203ad811f4c1dd18507c8671ca552"
   dependencies:
     "@sanity/resolver" "^0.0.1"
     "@sanity/webpack-loader" "^0.0.1"
