@@ -7,6 +7,7 @@ const assign = require('xtend')
 const path = require('path')
 const fs = require('fs')
 const sanityClient = require('../src/sanityClient')
+const validators = require('../src/validators')
 const noop = () => {} // eslint-disable-line no-empty-function
 
 const apiHost = 'api.sanity.url'
@@ -80,6 +81,13 @@ test('can be cloned without new config', t => {
   t.end()
 })
 
+test('validation', t => {
+  t.doesNotThrow(() => validators.validateDocumentId('op', 'foo/bar'), /document ID in format/, 'does not throw on valid ID')
+  t.doesNotThrow(() => validators.validateDocumentId('op', 'foo/bar/baz'), /document ID in format/, 'does not throw on valid ID')
+  t.throws(() => validators.validateDocumentId('op', 'blahblah'), /document ID in format/, 'throws on invalid ID')
+  t.end()
+})
+
 /*****************
  * PROJECTS      *
  *****************/
@@ -144,9 +152,9 @@ test('can list datasets', t => {
  * DATA          *
  *****************/
 test('can query for documents', t => {
-  const query = 'beerfiesta.beer[.title == %beerName]'
+  const query = 'beerfiesta.beer[.title == $beerName]'
   const params = {beerName: 'Headroom Double IPA'}
-  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%25beerName%5D&beerName=%22Headroom%20Double%20IPA%22'
+  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
 
   nock(projectHost()).get(`/v1/data/query/foo?query=${qs}`).reply(200, {
     ms: 123,
@@ -247,10 +255,13 @@ test('rejects if trying to perform data request without dataset', t => {
 test('can create documents', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
 
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc}).reply(200, {
-    transactionId: 'abc123',
-    createdIds: ['foo/123'],
-    documents: [{_id: 'foo/123', _createdAt: '2016-10-24T08:09:32.997Z', name: 'Raptor'}]
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', {mutations: [{create: doc}]})
+  .reply(200, {
+    transactionID: 'abc123',
+    results: [{
+      document: {_id: 'foo/123', _createdAt: '2016-10-24T08:09:32.997Z', name: 'Raptor'},
+      operation: 'create'
+    }]
   })
 
   getClient().create(doc)
@@ -264,12 +275,14 @@ test('can create documents', t => {
 
 test('can create documents without specifying ID', t => {
   const doc = {name: 'Raptor'}
-  const expectedBody = {create: Object.assign({}, doc, {_id: 'foo/'})}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedBody)
+  const expectedBody = {mutations: [{create: Object.assign({}, doc, {_id: 'foo/'})}]}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .reply(200, {
-      transactionId: '123abc',
-      createdIds: ['foo/456'],
-      documents: [{_id: 'foo/456', name: 'Raptor'}]
+      transactionID: '123abc',
+      results: [{
+        id: 'foo/456',
+        document: {_id: 'foo/456', name: 'Raptor'}
+      }]
     })
 
   getClient().create(doc)
@@ -282,8 +295,8 @@ test('can create documents without specifying ID', t => {
 
 test('can tell create() not to return documents', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {create: doc})
-    .reply(200, {transactionId: 'abc123', createdIds: ['foo/123']})
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true', {mutations: [{create: doc}]})
+    .reply(200, {transactionID: 'abc123', results: [{id: 'foo/123', operation: 'create'}]})
 
   getClient().create(doc, {returnDocuments: false})
     .then(res => {
@@ -296,17 +309,18 @@ test('can tell create() not to return documents', t => {
 
 test('createIfNotExists() sends correct mutation', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
-
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {createIfNotExists: doc})
-    .reply(200, {transactionId: '123abc', createdIds: ['foo/123']})
+  const expectedBody = {mutations: [{createIfNotExists: doc}]}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
+    .reply(200, {transactionID: '123abc', results: [{id: 'foo/123', document: doc, operation: 'create'}]})
 
   getClient().createIfNotExists(doc).then(() => t.end()).catch(t.ifError)
 })
 
 test('can tell createIfNotExists() not to return documents', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {createIfNotExists: doc})
-    .reply(200, {transactionId: 'abc123', createdIds: ['foo/123']})
+  const expectedBody = {mutations: [{createIfNotExists: doc}]}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true', expectedBody)
+    .reply(200, {transactionID: 'abc123', results: [{id: 'foo/123', operation: 'create'}]})
 
   getClient().createIfNotExists(doc, {returnDocuments: false})
     .then(res => {
@@ -319,17 +333,18 @@ test('can tell createIfNotExists() not to return documents', t => {
 
 test('createOrReplace() sends correct mutation', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
-
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {createOrReplace: doc})
-    .reply(200, {transactionId: '123abc', createdIds: ['foo/123']})
+  const expectedBody = {mutations: [{createOrReplace: doc}]}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
+    .reply(200, {transactionID: '123abc', results: [{id: 'foo/123', operation: 'create'}]})
 
   getClient().createOrReplace(doc).then(() => t.end()).catch(t.ifError)
 })
 
 test('can tell createOrReplace() not to return documents', t => {
   const doc = {_id: 'foo/123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true', {createOrReplace: doc})
-    .reply(200, {transactionId: 'abc123', createdIds: ['foo/123']})
+  const expectedBody = {mutations: [{createOrReplace: doc}]}
+  nock(projectHost()).post('/v1/data/mutate/foo?returnIDs=true', expectedBody)
+    .reply(200, {transactionID: 'abc123', results: [{id: 'foo/123', operation: 'create'}]})
 
   getClient().createOrReplace(doc, {returnDocuments: false})
     .then(res => {
@@ -340,44 +355,37 @@ test('can tell createOrReplace() not to return documents', t => {
     .catch(t.ifError)
 })
 
-test('createOrReplace() returns document ID if document was replaced', t => {
-  const doc = {_id: 'foo/123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {createOrReplace: doc})
-    .reply(200, {transactionId: '123abc', updatedIds: ['foo/123'], documents: [{
-      _id: 'foo/123',
-      name: 'Raptor'
-    }]})
-
-  getClient().createOrReplace(doc).then(res => {
-    t.equal(res._id, 'foo/123', 'document id returned')
-    t.end()
-  }).catch(t.ifError)
-})
-
 test('delete() sends correct mutation', t => {
+  const expectedBody = {mutations: [{delete: {id: 'foo/123'}}]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {delete: {id: 'foo/123'}})
-    .reply(200, {transactionId: 'abc123'})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
+    .reply(200, {transactionID: 'abc123', results: [{id: 'foo/123', operation: 'delete'}]})
 
   getClient().delete('foo/123').then(() => t.end()).catch(t.ifError)
 })
 
 test('mutate() accepts multiple mutations', t => {
-  const mutations = [{
-    create: {
-      _id: 'movie:raiders-of-the-lost-ark',
-      title: 'Raiders of the Lost Ark',
-      year: 1981
-    }
+  const docs = [{
+    _id: 'movie/raiders-of-the-lost-ark',
+    title: 'Raiders of the Lost Ark',
+    year: 1981
   }, {
-    delete: {
-      id: 'movie:the-phantom-menace'
-    }
+    _id: 'movie/the-phantom-menace',
+    title: 'Star Wars: Episode I - The Phantom Menace',
+    year: 1999
   }]
 
+  const mutations = [
+    {create: docs[0]},
+    {delete: {id: 'movie/the-phantom-menace'}}
+  ]
+
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', mutations)
-    .reply(200, {transactionId: 'foo'})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', {mutations})
+    .reply(200, {transactionID: 'foo', results: [
+      {id: 'movie/raiders-of-the-lost-ark', operation: 'create', document: docs[0]},
+      {id: 'movie/the-phantom-menace', operation: 'delete', document: docs[1]}
+    ]})
 
   getClient().mutate(mutations).then(() => t.end()).catch(t.ifError)
 })
@@ -387,7 +395,7 @@ test('uses POST for long queries', t => {
   const clause = []
   const params = {}
   for (let i = 1866; i <= 2016; i++) {
-    clause.push(`.title == %beerName${i}`)
+    clause.push(`.title == $beerName${i}`)
     params[`beerName${i}`] = `some beer ${i}`
   }
 
@@ -489,8 +497,8 @@ test('all patch methods throw on non-objects being passed as argument', t => {
 test('executes patch when commit() is called', t => {
   const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true', expectedPatch)
-    .reply(200, {transactionId: 'blatti'})
+    .post('/v1/data/mutate/foo?returnIDs=true', {mutations: [expectedPatch]})
+    .reply(200, {transactionID: 'blatti'})
 
   getClient().patch('foo/123')
     .inc({count: 1})
@@ -505,13 +513,18 @@ test('executes patch when commit() is called', t => {
 
 test('returns patched document by default', t => {
   const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
+  const expectedBody = {mutations: [expectedPatch]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedPatch)
-    .reply(200, {transactionId: 'blatti', documents: [{
-      _id: 'foo/123',
-      _createdAt: '2016-10-24T08:09:32.997Z',
-      count: 2,
-      visited: true
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
+    .reply(200, {transactionID: 'blatti', results: [{
+      id: 'foo/123',
+      operation: 'update',
+      document: {
+        _id: 'foo/123',
+        _createdAt: '2016-10-24T08:09:32.997Z',
+        count: 2,
+        visited: true
+      }
     }]})
 
   getClient().patch('foo/123')
@@ -527,8 +540,9 @@ test('returns patched document by default', t => {
 
 test('commit() returns promise', t => {
   const expectedPatch = {patch: {id: 'foo/123', inc: {count: 1}, set: {visited: true}}}
+  const expectedBody = {mutations: [expectedPatch]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', expectedPatch)
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .reply(400)
 
   getClient().patch('foo/123')
@@ -570,13 +584,6 @@ test('can reset patches to no operations, keeping document ID', t => {
   t.deepEqual(patch.serialize(), {id: 'foo/123', inc: {count: 1}, dec: {visits: 1}}, 'correct patch')
   t.deepEqual(reset.serialize(), {id: 'foo/123'}, 'reset patch should be empty')
   t.notEqual(patch, reset, 'reset clones, does not mutate')
-  t.end()
-})
-
-test('throws when trying to use patch as a promise without calling commit()', t => {
-  const patch = getClient().patch('foo/123').inc({count: 1})
-  t.throws(() => patch.then(noop), /uncommited patch/, 'throws on then()')
-  t.throws(() => patch.catch(noop), /uncommited patch/, 'throws on catch()')
   t.end()
 })
 
@@ -718,10 +725,10 @@ test('patch can take an existing patch', t => {
 })
 
 test('executes transaction when commit() is called', t => {
-  const expectedTransaction = [{create: {_id: 'foo/', bar: true}}, {delete: {id: 'foo/bar'}}]
+  const mutations = [{create: {_id: 'foo/', bar: true}}, {delete: {id: 'foo/bar'}}]
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true', expectedTransaction)
-    .reply(200, {transactionId: 'blatti'})
+    .post('/v1/data/mutate/foo?returnIDs=true', {mutations})
+    .reply(200, {transactionID: 'blatti'})
 
   getClient().transaction()
     .create({bar: true})
@@ -732,13 +739,6 @@ test('executes transaction when commit() is called', t => {
       t.end()
     })
     .catch(t.ifError)
-})
-
-test('throws when trying to use transaction as a promise without calling commit()', t => {
-  const trans = getClient().transaction().delete('foo/bar')
-  t.throws(() => trans.then(noop), /uncommited transaction/, 'throws on then()')
-  t.throws(() => trans.catch(noop), /uncommited transaction/, 'throws on catch()')
-  t.end()
 })
 
 test('throws when passing incorrect input to transaction operations', t => {
@@ -850,8 +850,9 @@ test('uploads files', t => {
 
 test('handles HTTP errors gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
+  const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .replyWithError(new Error('Something went wrong'))
 
   getClient().create(doc)
@@ -865,8 +866,9 @@ test('handles HTTP errors gracefully', t => {
 
 test('handles response timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
+  const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .delay(500)
     .reply(200, {transactionId: 'abc123', documents: []})
 
@@ -881,8 +883,9 @@ test('handles response timeouts gracefully', t => {
 
 test('handles connection timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
+  const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .delayConnection(500)
     .reply(200, {transactionId: 'abc123', documents: []})
 
@@ -897,8 +900,9 @@ test('handles connection timeouts gracefully', t => {
 
 test('handles socket timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
+  const expectedBody = {mutations: [{create: doc}]}
   nock(projectHost())
-    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true', {create: doc})
+    .post('/v1/data/mutate/foo?returnIDs=true&returnDocuments=true', expectedBody)
     .socketDelay(300)
     .reply(200)
 

@@ -6,7 +6,7 @@ const Patch = require('./patch')
 
 const getMutationQuery = options => assign(
   // Always return IDs
-  {returnIds: true},
+  {returnIDs: true},
 
   // Allow user to disable returning documents
   options.returnDocuments === false ? {} : {returnDocuments: true}
@@ -44,15 +44,16 @@ module.exports = {
 
   delete(documentId) {
     validators.validateDocumentId('delete', documentId)
-    return this.dataRequest('mutate', {delete: {id: documentId}})
+    return this.dataRequest('mutate', {mutations: [{delete: {id: documentId}}]})
   },
 
   mutate(mutations, options) {
-    const body = mutations instanceof Patch
+    const mut = mutations instanceof Patch
       ? mutations.serialize()
       : mutations
+    const muts = Array.isArray(mut) ? mut : [mut]
 
-    return this.dataRequest('mutate', body, options)
+    return this.dataRequest('mutate', {mutations: muts}, options)
   },
 
   transaction(operations) {
@@ -67,6 +68,7 @@ module.exports = {
     const strQuery = !isMutation && encodeQueryString(body)
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
+    const returnFirst = options.returnFirst
 
     return validators.promise.hasDataset(this.clientConfig)
       .then(dataset => this.request({
@@ -81,22 +83,24 @@ module.exports = {
           return res
         }
 
-        return options.returnDocuments === false
-          ? {transactionId: res.transactionId, documentId: getMutatedId(res)}
-          : res.documents && res.documents[0]
+        const results = res.results || []
+        if (options.returnDocuments) {
+          return returnFirst
+            ? results[0] && results[0].document
+            : results.map(mut => mut.document)
+        }
+
+        // Only return IDs
+        const key = returnFirst ? 'documentId' : 'documentIds'
+        const ids = returnFirst ? results[0] && results[0].id : results.map(mut => mut.id)
+        return {transactionId: res.transactionID, [key]: ids}
       })
   },
 
   _create(doc, op, options = {}) {
     const dataset = validators.hasDataset(this.clientConfig)
     const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
-    return this.dataRequest('mutate', mutation, options)
+    const opts = assign({returnFirst: true, returnDocuments: true}, options)
+    return this.dataRequest('mutate', {mutations: [mutation]}, opts)
   }
-}
-
-function getMutatedId(res) {
-  return (
-    (res.createdIds && res.createdIds[0])
-    || (res.updatedIds && res.updatedIds[0])
-  )
 }

@@ -79,7 +79,9 @@ assign(Patch.prototype, {
       )
     }
 
-    return this.client.mutate({patch: this.serialize()}, options)
+    const returnFirst = typeof this.selection === 'string'
+    const opts = assign({returnFirst, returnDocuments: true}, options)
+    return this.client.mutate({patch: this.serialize()}, opts)
   },
 
   reset() {
@@ -89,17 +91,8 @@ assign(Patch.prototype, {
   _assign(op, props) {
     validateObject(op, props)
     return this.clone({[op]: assign({}, this.operations[op] || {}, props)})
-  },
-
-  then: throwPromiseError('then'),
-  catch: throwPromiseError('catch')
-})
-
-function throwPromiseError(op) {
-  return () => {
-    throw new Error(`${op}() called on an uncommited patch, did you forget to call commit()?`)
   }
-}
+})
 
 function getSelection(sel) {
   if (typeof sel === 'string' || Array.isArray(sel)) {

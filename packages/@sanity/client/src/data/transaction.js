@@ -96,16 +96,7 @@ assign(Transaction.prototype, {
 
   _add(mut) {
     return this.clone(mut)
-  },
-
-  then: throwPromiseError('then'),
-  catch: throwPromiseError('catch')
-})
-
-function throwPromiseError(op) {
-  return () => {
-    throw new Error(`${op}() called on an uncommited transaction, did you forget to call commit()?`)
   }
-}
+})
 
 module.exports = Transaction
