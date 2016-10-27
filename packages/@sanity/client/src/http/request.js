@@ -17,8 +17,8 @@ module.exports = function httpRequest(options) {
 
   if (debug) {
     log('HTTP %s %s', options.method || 'GET', options.uri)
-    if (options.method === 'POST' && options.json) {
-      log('Request body: %s', JSON.stringify(options.json, null, 2))
+    if (options.method === 'POST' && options.body) {
+      log('Request body: %s', JSON.stringify(options.body, null, 2))
     }
   }
 
