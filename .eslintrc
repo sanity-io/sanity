@@ -15,6 +15,7 @@
     "import/no-unresolved": ["error", {
       "ignore": [".*:.*"]
     }],
+    "import/no-extraneous-dependencies": "off",
     "sort-imports": [1, {
       "ignoreCase": true,
       "ignoreMemberSort": true,
