@@ -2,21 +2,6 @@ import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 import {Observable} from 'rxjs'
 
-const hasOwn = {}.hasOwnProperty
-function flattenPatch(patch) {
-  return Object.keys(patch).reduce((flattened, key) => {
-    const val = patch[key]
-    if (hasOwn.call(val, '$set')) {
-      return Object.assign(flattened, {[key]: val.$set})
-    }
-    const unsupportedOps = Object.keys(val)
-    if (unsupportedOps.length > 0) {
-      console.error(new Error(`Operation(s) not supported (yet): ${unsupportedOps.join(', ')}`))
-    }
-    return flattened
-  }, {})
-}
-
 const serverConnection = {
   byId(id) {
     return Observable.timer(0, 5000)
@@ -40,7 +25,7 @@ const serverConnection = {
   update(id, patch) {
     return Observable.from(client
       .patch(id)
-      .set(flattenPatch(patch))
+      .set(patch)
       .commit())
   },
 
