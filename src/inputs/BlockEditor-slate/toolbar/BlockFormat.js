@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/Blockformat.css'
+import styles from './styles/BlockFormat.css'
 import {isEqual, pick} from 'lodash'
 import CustomSelect from 'part:@sanity/components/selects/custom'
 
