@@ -17,7 +17,7 @@ export default class CardPreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…'
+    emptyText: 'Nothing here…',
   }
 
   constructor(props, context) {
@@ -54,6 +54,15 @@ export default class CardPreview extends React.Component {
   render() {
     const {item, emptyText, children} = this.props
     const {emWidth} = this.state
+
+    if (!item) {
+      return (
+        <div className={`${styles.empty}`}>
+          {emptyText}
+        </div>
+      )
+    }
+
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>

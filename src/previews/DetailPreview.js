@@ -14,11 +14,23 @@ export default class DetailPreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…'
+    emptyText: 'Nothing here…',
+    mediaRender() {
+      return false
+    }
   }
 
   render() {
     const {item, emptyText, children} = this.props
+
+    if (!item) {
+      return (
+        <div className={`${styles.empty}`}>
+          {emptyText}
+        </div>
+      )
+    }
+
     return (
       <div className={`${styles.root}`}>
         <div className={`${styles.media}`}>

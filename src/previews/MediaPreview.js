@@ -14,11 +14,20 @@ export default class MediaPreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…'
+    emptyText: 'Nothing here…',
   }
 
   render() {
     const {item, emptyText, children} = this.props
+
+    if (!item) {
+      return (
+        <div className={`${styles.empty}`}>
+          {emptyText}
+        </div>
+      )
+    }
+
     return (
       <div className={`${styles.root}`}>
 
