@@ -64,24 +64,6 @@ test('can use getUrl() to get API-relative paths', t => {
   t.end()
 })
 
-test('can be cloned', t => {
-  const client = sanityClient({projectId: 'abc123', dataset: 'yackshave'})
-  const clonedClient = client.clone({dataset: 'burmashave'})
-  t.equal(clonedClient.config().projectId, 'abc123', 'should recycle projectId')
-  t.equal(clonedClient.config().dataset, 'burmashave', 'should have new dataset')
-  t.notEqual(clonedClient, client, 'new client should not be the same object as the predecessor')
-  t.end()
-})
-
-test('can be cloned without new config', t => {
-  const client = sanityClient({projectId: 'abc123', dataset: 'yackshave'})
-  const clonedClient = client.clone()
-  t.equal(clonedClient.config().projectId, 'abc123', 'should recycle projectId')
-  t.equal(clonedClient.config().dataset, 'yackshave', 'should recycle dataset')
-  t.notEqual(clonedClient, client, 'new client should not be the same object as the predecessor')
-  t.end()
-})
-
 test('validation', t => {
   t.doesNotThrow(() => validators.validateDocumentId('op', 'foo/bar'), /document ID in format/, 'does not throw on valid ID')
   t.doesNotThrow(() => validators.validateDocumentId('op', 'foo/bar/baz'), /document ID in format/, 'does not throw on valid ID')
