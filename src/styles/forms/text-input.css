@@ -46,3 +46,8 @@
     border-color: var(--brand-danger);
   }
 }
+
+.disabled {
+  composes: textInput;
+  background-color: var(--input-bg-disabled);
+}

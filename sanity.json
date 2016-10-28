@@ -453,6 +453,10 @@
       "description": "Plus icon"
     },
     {
+      "name": "part:@sanity/base/arrow-drop-down",
+      "description": "Arrow drop down"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
@@ -527,6 +531,10 @@
     {
       "implements": "part:@sanity/base/plus-icon",
       "path": "components/icons/Plus.js"
+    },
+    {
+      "path": "part:@sanity/base/arrow-drop-down",
+      "path": "components/icons/ArrowDropDown.js"
     }
   ]
 }

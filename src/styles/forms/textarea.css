@@ -27,3 +27,8 @@
     border-color: var(--input-border-color-active);
   }
 }
+
+.disabled {
+  composes: root;
+  background-color: var(--input-bg-disabled);
+}

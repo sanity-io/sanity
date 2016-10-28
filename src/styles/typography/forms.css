@@ -26,3 +26,9 @@
   font-size: var(--font-size-base);
   color: var(--black);
 }
+
+.label {
+  font-size: var(--font-size-base);
+  color: var(--black);
+  font-weight: 500;
+}
