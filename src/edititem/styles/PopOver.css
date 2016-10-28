@@ -80,6 +80,7 @@
 }
 
 .inner {
+  min-width: 10em;
   background-color: #fff;
   z-index: 11;
   padding: 1em;
@@ -106,14 +107,25 @@
 
 .close {
   position: absolute;
-  top: 0;
-  right: 0.5em;
+  top: 0.15em;
+  right: 0;
   border: 0;
   background: none;
   font-size: 1.5em;
   cursor: pointer;
-  color: transparent;
   color: #fff;
+  outline: none;
+  z-index: 2;
+
+  @media (--screen-medium) {
+    color: #666;
+    top: 0;
+    right: 0;
+
+    @nest &:hover {
+      color: #000;
+    }
+  }
 }
 
 .content {
@@ -143,7 +155,8 @@
 }
 
 .title {
-  /* padding-left: 1em; */
+  margin: 0;
+  padding: 0;
 }
 
 .primaryFunctions {

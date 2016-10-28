@@ -10,11 +10,13 @@ export default class EditItemPopOver extends React.Component {
     children: PropTypes.node.isRequired,
     className: PropTypes.string,
     onClose: PropTypes.func,
-    isCreatingNewItem: PropTypes.bool
+    isCreatingNewItem: PropTypes.bool,
+    actions: PropTypes.array
   }
 
   static defaultProps = {
-    onClose() {}
+    onClose() {},
+    actions: []
   }
 
   constructor() {
@@ -105,12 +107,15 @@ export default class EditItemPopOver extends React.Component {
   }
 
   render() {
-    const {title, children, className, isCreatingNewItem} = this.props
+    const {title, children, className, isCreatingNewItem, actions} = this.props
     return (
       <div className={`${styles.root} ${className}`} onClick={this.handleClick} onMouseDown={this.handleMouseDown} ref={this.setRootElement}>
         <div className={styles.overlay} />
         <div className={styles.inner} ref={this.setInnerElement}>
           <div className={styles.arrow} ref={this.setArrowElement} />
+          <button className={styles.close} type="button" onClick={this.handleClose}>
+            <CloseIcon />
+          </button>
           <div className={styles.head}>
             <h3 className={styles.title}>
               {
@@ -118,18 +123,32 @@ export default class EditItemPopOver extends React.Component {
               }
               {title}
             </h3>
-            <button className={styles.close} type="button" onClick={this.handleClose}>
-              <CloseIcon style={{color: 'inherit'}} />
-            </button>
           </div>
 
           <div className={styles.content}>
             {children}
           </div>
 
-          <div className={styles.primaryFunctions}>
-            <Button type="button" onClick={this.handleClose} ripple colored>Close</Button>
-          </div>
+          {
+            actions.length > 0 && <div className={styles.functions}>
+              {
+                actions.map((action, i) => {
+                  return (
+                    <Button
+                      key={i}
+                      onClick={this.handleActionClick}
+                      data-action-index={i}
+                      kind={action.kind}
+                      className={styles[`button_${action.kind}`] || styles.button}
+                    >
+                      {action.title}
+                    </Button>
+                  )
+                })
+              }
+            </div>
+          }
+
         </div>
       </div>
     )
