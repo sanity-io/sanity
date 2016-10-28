@@ -27,6 +27,10 @@ export default class DefaultList extends React.Component {
     renderItem: PropTypes.func
   }
 
+  static defaultProps = {
+    onSelect() {}
+  }
+
   constructor(context, props) {
     super(context, props)
 
