@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
