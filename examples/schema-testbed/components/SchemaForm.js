@@ -74,8 +74,10 @@ export default class Main extends React.Component {
   }
 
   handleChange(event) {
+    const {patch} = event
+    console.log('%c%s%c %s:', 'color:red', patch.type, 'color:inherit', patch.path.join('.'), patch.value)
     this.setState({
-      value: this.state.value.patch(event.patch),
+      value: this.state.value.patch(patch),
       saved: false
     })
   }

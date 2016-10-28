@@ -63,6 +63,7 @@ export default class Arr extends React.Component {
   }
 
   append(value) {
+    this.setIfMissing()
     this.props.onChange({
       patch: {
         type: 'append',
@@ -71,7 +72,19 @@ export default class Arr extends React.Component {
     })
   }
 
+  setIfMissing() {
+    const {value, onChange} = this.props
+    if (value.isEmpty()) {
+      onChange({
+        patch: {
+          type: 'setIfMissing',
+          value: []
+        }
+      })
+    }
+  }
   prepend(value) {
+    this.setIfMissing()
     this.props.onChange({
       patch: {
         type: 'prepend',
@@ -81,7 +94,7 @@ export default class Arr extends React.Component {
   }
 
   createValueForField(field) {
-    return this.context.formBuilder.createFieldValue(undefined, field)
+    return {_type: field.type}
   }
 
   handleRemoveItem = index => {
@@ -127,12 +140,14 @@ export default class Arr extends React.Component {
   }
 
   handleItemChange = (event, index) => {
+    const {value, onChange} = this.props
     // Rewrite patch by prepending the item index to its path
-    const patch = {
-      ...event.patch,
-      path: [index, ...(event.patch.path || [])]
-    }
-    this.props.onChange({patch})
+    onChange({
+      patch: {
+        ...event.patch,
+        path: [index, ...(event.patch.path || [])]
+      }
+    })
   }
 
   handleItemEdit = index => {

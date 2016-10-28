@@ -1,7 +1,7 @@
-import {clone, isObject} from 'lodash'
 import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
 import hasOwn from '../../utils/hasOwn'
+import applyObjectPatch from '../../utils/patching/object'
 
 export default class ObjectContainer {
 
@@ -41,46 +41,17 @@ export default class ObjectContainer {
 
   patch(patch) {
     const {context} = this
-
-    const type = getFieldType(context.schema, context.field)
-    const nextValue = this.value ? clone(this.value) : {_type: type.name}
-    if (patch.path.length === 0) {
-      // its directed to me
-      if (patch.type === 'set') {
-        if (!isObject(patch.value)) { // eslint-disable-line max-depth
-          throw new Error('Cannot set value of an object to a non-object')
-        }
-        return ObjectContainer.deserialize(patch.value, this.context)
-      } else if (patch.type === 'unset') {
-        return ObjectContainer.deserialize(undefined, this.context)
-      } else if (patch.type === 'merge') {
-        // Turn into a 'set' with paths
-        if (!isObject(patch.value)) { // eslint-disable-line max-depth
-          throw new Error('Non-object argument used with the "merge" patch type.')
-        }
-        const toMerge = Object.keys(patch.value).reduce((acc, fieldName) => {
-          const fieldDef = this.getFieldDefForFieldName(fieldName)
-          acc[fieldName] = createFieldValue(patch.value[fieldName], {
-            ...context,
-            field: fieldDef
-          })
-          return acc
-        }, {})
-        return new ObjectContainer(Object.assign(nextValue, toMerge), context)
-      }
-      throw new Error(`Invalid object operation: ${patch.type}`)
-    }
-
-    // The patch is not directed to me
-    const [fieldName, ...rest] = patch.path
-    if (typeof fieldName !== 'string') {
-      throw new Error(`Expected field name to be a string, instad got: ${fieldName}`)
-    }
-    nextValue[fieldName] = nextValue[fieldName].patch({
-      ...patch,
-      path: rest
+    const nexValue = applyObjectPatch(this.value, patch, {
+      createItem: (item, fieldName) => {
+        const fieldDef = this.getFieldDefForFieldName(fieldName)
+        return createFieldValue(item, {
+          ...context,
+          field: fieldDef
+        })
+      },
+      applyItemPatch: (item, itemPatch) => item.patch(itemPatch),
     })
-    return new ObjectContainer(nextValue, this.context)
+    return new ObjectContainer(nexValue, this.context)
   }
 
   validate() {

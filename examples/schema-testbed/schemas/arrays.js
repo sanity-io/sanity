@@ -38,7 +38,7 @@ export default {
           type: 'tags'
         },
         {
-          name: 'door',
+          name: 'relatedCars',
           type: 'array',
           title: 'Array of objects',
           description: 'This array are defined in the field.',
