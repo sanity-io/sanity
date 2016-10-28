@@ -76,3 +76,95 @@ storiesOf('Form fields')
     role: 'part:@sanity/components/formfields/default'
   }
 )
+.addWithInfo(
+  'Level 0',
+  `
+    Default with text
+  `,
+  () => {
+    const id = 'storyFormField_Default1'
+    return (
+      <DefaultFormField
+        level="0"
+        label="This is the label"
+        description={faker.lorem.paragraphs(1)}
+        labelHtmlFor={id}
+      >
+        <DefaultTextInput id={id} value="This is the children in form field" />
+      </DefaultFormField>
+    )
+  },
+  {
+    propTables: [DefaultFormField],
+    role: 'part:@sanity/components/formfields/default'
+  }
+)
+.addWithInfo(
+  'Level 1',
+  `
+    Default with text
+  `,
+  () => {
+    const id = 'storyFormField_Default1'
+    return (
+      <DefaultFormField
+        level="1"
+        label="This is the label"
+        description={faker.lorem.paragraphs(1)}
+        labelHtmlFor={id}
+      >
+        <DefaultTextInput id={id} value="This is the children in form field" />
+      </DefaultFormField>
+    )
+  },
+  {
+    propTables: [DefaultFormField],
+    role: 'part:@sanity/components/formfields/default'
+  }
+)
+.addWithInfo(
+  'Level 2',
+  `
+    Default with text
+  `,
+  () => {
+    const id = 'storyFormField_Default1'
+    return (
+      <DefaultFormField
+        level="2"
+        label="This is the label"
+        description={faker.lorem.paragraphs(1)}
+        labelHtmlFor={id}
+      >
+        <DefaultTextInput id={id} value="This is the children in form field" />
+      </DefaultFormField>
+    )
+  },
+  {
+    propTables: [DefaultFormField],
+    role: 'part:@sanity/components/formfields/default'
+  }
+)
+.addWithInfo(
+  'Level 3',
+  `
+    Default with text
+  `,
+  () => {
+    const id = 'storyFormField_Default1'
+    return (
+      <DefaultFormField
+        level="3"
+        label="This is the label"
+        description={faker.lorem.paragraphs(1)}
+        labelHtmlFor={id}
+      >
+        <DefaultTextInput id={id} value="This is the children in form field" />
+      </DefaultFormField>
+    )
+  },
+  {
+    propTables: [DefaultFormField],
+    role: 'part:@sanity/components/formfields/default'
+  }
+)

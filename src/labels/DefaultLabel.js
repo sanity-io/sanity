@@ -12,11 +12,9 @@ export default class DefaultLabel extends React.Component {
     const {htmlFor, className, level} = this.props
     const levelClass = `level_${level}`
     return (
-      <div className={`${styles.root} ${className} ${styles[levelClass]}`}>
-        <label htmlFor={htmlFor}>
-          {this.props.children}
-        </label>
-      </div>
+      <label htmlFor={htmlFor} className={`${styles.root} ${className} ${styles[levelClass]}`}>
+        {this.props.children}
+      </label>
     )
   }
 }

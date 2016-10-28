@@ -69,6 +69,7 @@ export default class DefaultTextField extends React.Component {
       <FormField className={rootClass} level={level} labelHtmlFor={this._inputId} label={label}>
         <DefaultTextInput
           className={`${error ? styles.inputError : styles.input}`}
+          level={level}
           id={this._inputId}
           type={type}
           onChange={this.handleChange}

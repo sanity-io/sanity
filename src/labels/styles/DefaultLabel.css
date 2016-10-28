@@ -6,10 +6,8 @@
   composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
 }
 
-.level_1 {
-  composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
-}
-
-.level_2 {
-  composes: headingLevel_2 from 'part:@sanity/base/theme/typography/forms-style';
+.level_1,
+.level_2,
+.level_3 {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
 }

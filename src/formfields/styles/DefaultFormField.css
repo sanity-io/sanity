@@ -7,12 +7,9 @@
   margin-bottom: 2rem;
 }
 
-.block {
-  composes: root;
-}
-
 .inline {
   composes: root;
+  display: inline;
 }
 
 .label {
@@ -61,4 +58,20 @@
     display: flex;
     flex-direction: row;
   }
+}
+
+.level_0 {
+  composes: root;
+}
+
+.level_1 {
+  composes: root;
+}
+
+.level_2 {
+  composes: root;
+}
+
+.level_3 {
+  composes: root;
 }
