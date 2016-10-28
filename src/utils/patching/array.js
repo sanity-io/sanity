@@ -38,7 +38,7 @@ export default function apply(value = [], patch, {applyItemPatch = defaultApplyP
       if (!patch.value || !hasOwn(patch.value, 'from') || !hasOwn(patch.value, 'to')) { // eslint-disable-line max-depth
         throw new Error(`Invalid value of 'move' patch. Expected a value with "from" and "to" indexes, instead got: ${JSON.stringify(patch.value)}`)
       }
-      return move(nextValue)
+      return move(nextValue, patch.value.from, patch.value.to)
     }
     throw new Error(`Invalid array operation: ${patch.type}`)
   }
