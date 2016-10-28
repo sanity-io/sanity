@@ -533,7 +533,7 @@
       "path": "components/icons/Plus.js"
     },
     {
-      "name": "part:@sanity/base/arrow-drop-down",
+      "implements": "part:@sanity/base/arrow-drop-down",
       "path": "components/icons/ArrowDropDown.js"
     }
   ]
