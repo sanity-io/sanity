@@ -1,0 +1,33 @@
+{
+  "name": "@sanity/eventsource",
+  "version": "1.0.0",
+  "description": "EventSource polyfill for browser and node.js",
+  "main": "./node.js",
+  "browser": "./browser.js",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sanity-io/eventsource.git"
+  },
+  "keywords": [
+    "eventsource",
+    "polyfill"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/eventsource/issues"
+  },
+  "homepage": "https://github.com/sanity-io/eventsource#readme",
+  "dependencies": {
+    "eventsource": "^0.2.1",
+    "eventsource-polyfill": "^0.9.6"
+  },
+  "devDependencies": {
+    "eslint": "^3.8.1",
+    "eslint-config-sanity": "^1.1.3",
+    "pre-commit": "^1.1.3"
+  }
+}
