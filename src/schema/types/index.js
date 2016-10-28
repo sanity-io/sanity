@@ -11,7 +11,7 @@ const IMPLICIT_OPTIONS = {
   primitive: PropTypes.string,
   description: PropTypes.string,
   required: PropTypes.bool,
-  component: PropTypes.func,
+  editor: PropTypes.func,
   options: PropTypes.object
 }
 

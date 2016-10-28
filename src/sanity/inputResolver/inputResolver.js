@@ -36,7 +36,7 @@ export default function inputResolver(field, fieldType) {
     return field.component || fieldType.component
   }
   const inputRole = coreTypes[field.type] || coreTypes[fieldType.name]
-  if (field.input === 'slate') {
+  if (field.editor === 'slate') {
     return SlateBlockEditor
   }
   if (field.type === 'reference') {
@@ -45,5 +45,5 @@ export default function inputResolver(field, fieldType) {
   if (field.type === 'image') {
     return Image
   }
-  return field.input || inputRole
+  return field.editor || inputRole
 }
