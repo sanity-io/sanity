@@ -3,6 +3,7 @@ const validators = require('../validators')
 const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
+const listen = require('./listen')
 
 const getMutationQuery = options => assign(
   // Always return IDs
@@ -15,6 +16,8 @@ const getMutationQuery = options => assign(
 const getQuerySizeLimit = 1948
 
 module.exports = {
+  listen: listen,
+
   fetch(query, params) {
     return this.dataRequest('query', {query, params}).then(res => res.result || [])
   },

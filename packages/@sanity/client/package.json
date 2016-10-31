@@ -19,6 +19,7 @@
     "test": "tape -r babel-register test/*.test.js"
   },
   "dependencies": {
+    "@sanity/eventsource": "^1.0.0",
     "@sanity/request": "0.0.3",
     "debug": "^2.2.0",
     "deep-assign": "^2.0.0",
