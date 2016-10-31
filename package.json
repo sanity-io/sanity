@@ -36,12 +36,12 @@
     "slate-insert-block-on-enter": "0.0.2"
   },
   "devDependencies": {
-    "@sanity/base": "0.0.23",
+    "@sanity/base": "0.0.26",
     "@sanity/check": "^0.0.1",
-    "@sanity/cli": "0.0.21",
+    "@sanity/cli": "0.0.27",
     "@sanity/components": "0.0.31",
     "@sanity/plugin-loader": "0.0.2",
-    "@sanity/server": "0.0.7",
+    "@sanity/server": "0.0.9",
     "babel-cli": "^6.16.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-css-modules-transform": "^1.1.0",
