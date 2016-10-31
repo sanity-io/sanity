@@ -16,7 +16,7 @@ const projectHost = projectId => `https://${projectId || defaultProjectId}.${api
 const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
 const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
 const fixture = name => path.join(__dirname, 'fixtures', name)
-const skipTestOnCI = process.env.CI ? test.skip : test
+const skipTestOnCI = process.env.CI ? test.skip : test // eslint-disable-line no-process-env
 
 /*****************
  * BASE CLIENT   *
