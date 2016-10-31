@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/default-style'
 import ListItem from 'part:@sanity/components/lists/items/default'
-import BlankListItem from 'part:@sanity/components/lists/items/blank'
 import ReactDOM from 'react-dom'
+import DefaultPreview from 'part:@sanity/components/previews/default'
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -23,12 +23,17 @@ export default class DefaultList extends React.Component {
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
-    layout: PropTypes.oneOf(['media', 'block', 'string']),
-    renderItem: PropTypes.func
+    renderItem: PropTypes.func,
+    ListItemContainer: PropTypes.func
   }
 
   static defaultProps = {
-    onSelect() {}
+    onSelect() {},
+    renderItem(item, i) {
+      return (
+        <DefaultPreview item={item} />
+      )
+    }
   }
 
   constructor(context, props) {
@@ -62,38 +67,29 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, layout, className, selectedItem, highlightedItem, renderItem, scrollable} = this.props
+    const {items, className, selectedItem, highlightedItem, renderItem, scrollable} = this.props
+
+    const ListItemContainer = this.props.ListItemContainer || ListItem
 
     return (
       <div className={`${scrollable ? styles.scrollable : styles.root} ${className} `}>
         <div className={styles.inner}>
           <ul className={styles.list} ref={this.setListContainer}>
-
             {
               renderItem && items && items.map((item, i) => {
                 return (
-                  <BlankListItem className={styles.item} key={i} item={item} onSelect={this.handleSelect}>
-                    {renderItem(item, i)}
-                  </BlankListItem>
-                )
-              })
-            }
-
-            {
-              !renderItem && items && items.map((item, i) => {
-                return (
-                  <ListItem
-                    layout={layout}
-                    item={item}
-                    key={item.key}
-                    selected={selectedItem == item}
-                    highlighted={highlightedItem == item}
-                    onSelect={this.handleSelect}
+                  <ListItemContainer
                     className={styles.item}
+                    index={item.index}
+                    key={`item-${i}`}
+                    item={item}
+                    onSelect={this.handleSelect}
+                    selected={item == selectedItem}
+                    highlighted={item == highlightedItem}
                     scrollIntoView={this.scrollElementIntoViewIfNeeded}
                   >
-                    {item.content}
-                  </ListItem>
+                    {renderItem(item, i)}
+                  </ListItemContainer>
                 )
               })
             }

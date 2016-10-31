@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/previews/card-style'
 import Moment from 'moment'
-import {debounce} from 'lodash'
+import {debounce, truncate} from 'lodash'
 
 export default class CardPreview extends React.Component {
   static propTypes = {
@@ -71,17 +71,20 @@ export default class CardPreview extends React.Component {
           </div>
           <div className={styles.meta} ref="meta">
             <div className={styles.heading}>
-              <p className={styles.date}>
-                {
-                  emWidth <= 20 && Moment(item.date).format('L')
-                }
-                {
-                  emWidth <= 30 && emWidth > 20 && Moment(item.date).format('LLL')
-                }
-                {
-                  emWidth > 30 && Moment(item.date).format('LLLL')
-                }
-              </p>
+              {
+                item.date
+                && <p className={styles.date}>
+                  {
+                    emWidth <= 20 && Moment(item.date).format('L')
+                  }
+                  {
+                    emWidth <= 30 && emWidth > 20 && Moment(item.date).format('LLL')
+                  }
+                  {
+                    emWidth > 30 && Moment(item.date).format('LLLL')
+                  }
+                </p>
+              }
               <h2 className={styles.title}>
                 {item.title || emptyText}
               </h2>
@@ -89,7 +92,14 @@ export default class CardPreview extends React.Component {
                 {item.subtitle}
               </h3>
             </div>
-            <p className={styles.description}>{item.description}</p>
+            <p className={styles.description}>
+              {
+                truncate(item.description, {
+                  length: 100,
+                  separator: /,? +/
+                })
+              }
+            </p>
             {children}
           </div>
         </div>

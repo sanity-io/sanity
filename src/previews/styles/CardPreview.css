@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   background-color: #fff;
   composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
@@ -5,11 +7,12 @@
 
 .title {
   composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
-  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 .subtitle {
-  composes: heading6 from 'part:@sanity/base/theme/typography/headings-style';
+  font-size: 0.75em;
   text-transform: none;
   font-weight: 100;
   margin: 0;
@@ -31,8 +34,11 @@
 }
 
 .description {
-  margin-top: 0.5em;
-  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  font-size: var(--font-size-xsmall);
+  color: var(--text-color);
+  font-weight: 400;
+  padding: 0;
+  margin: 0;
 }
 
 .meta {

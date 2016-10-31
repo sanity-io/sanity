@@ -4,6 +4,14 @@
   display: block;
 }
 
+.default {
+  composes: root;
+}
+
+.masonry {
+  composes: root;
+}
+
 .inner {
   overflow: hidden;
   width: 100%;
@@ -11,20 +19,38 @@
 }
 
 .list {
-  display: flex;
-  flex-wrap: wrap;
+  user-select: none;
   margin: 0;
   padding: 0;
-  align-content: flex-start;
-  justify-content: flex-start;
-  user-select: none;
+
+  @nest .default & {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    align-content: flex-start;
+    justify-content: space-between;
+  }
+
+  @nest .masonry & {
+    display: block;
+    columns: 4;
+    column-gap: 0.5em;
+  }
 }
 
 .item {
-  display: flex;
-  list-style: none;
-  flex-grow: 1;
-  flex-basis: 10em;
-  margin: 0.25em;
-  max-width: 10em;
+  @nest .default & {
+    display: flex;
+    list-style: none;
+    flex-grow: 1;
+    flex-basis: 7em;
+    margin: 0.25em;
+  }
+
+  @nest .masonry & {
+    display: block;
+    margin-bottom: 0.5em;
+    break-inside: avoid;
+  }
 }

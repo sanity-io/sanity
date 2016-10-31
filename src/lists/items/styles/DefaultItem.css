@@ -83,7 +83,6 @@
 
 .default {
   composes: zebra-stripes;
-  padding: 1em;
 }
 
 .root {

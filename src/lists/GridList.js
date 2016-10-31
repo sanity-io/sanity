@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/grid-style'
-import GridItem from 'part:@sanity/components/lists/items/grid'
+import ListItem from 'part:@sanity/components/lists/items/default'
+import MediaPreview from 'part:@sanity/components/previews/media'
 
 export default class GridList extends React.Component {
   static propTypes = {
@@ -16,13 +17,21 @@ export default class GridList extends React.Component {
     onSelect: PropTypes.func,
     selectable: PropTypes.bool,
     loading: PropTypes.bool,
-    children: PropTypes.node,
     className: PropTypes.string,
     square: PropTypes.bool,
-    layout: PropTypes.oneOf(['media', 'block', 'string']),
+    layout: PropTypes.oneOf(['masonry']),
     scrollable: PropTypes.bool,
     showInfo: PropTypes.bool,
     renderItem: PropTypes.func
+  }
+
+  static defaultProps = {
+    onSelect() {},
+    renderItem(item, i) {
+      return (
+        <MediaPreview item={item} />
+      )
+    }
   }
 
   handleSelect(index) {
@@ -32,11 +41,11 @@ export default class GridList extends React.Component {
 
   render() {
 
-    const {items, children, layout, className, scrollable, loading, showInfo, renderItem} = this.props
+    const {items, layout, className, scrollable, loading, renderItem} = this.props
 
     const rootStyle = `
       ${className}
-      ${styles.root}
+      ${layout == 'masonry' ? styles.masonry : styles.default}
       ${scrollable && styles.isScrollable}
       ${loading && styles.isLoading}
     `
@@ -48,30 +57,9 @@ export default class GridList extends React.Component {
             {
               renderItem && items && items.map((item, i) => {
                 return (
-                  <GridItem className={styles.item} key={i}>
+                  <ListItem className={styles.item} key={i} item={item}>
                     {renderItem(item, i)}
-                  </GridItem>
-                )
-              })
-            }
-            {
-              !renderItem && !children && items && items.map((item, i) => {
-                return (
-                  <li className={styles.item} key={i}>
-                    <GridItem
-                      layout={layout}
-                      key={i}
-                      index={item.index}
-                      title={item.title}
-                      description={item.description}
-                      image={item.image}
-                      square={item.square}
-                      onClick={this.handleSelect}
-                      showInfo={showInfo}
-                    >
-                      {item.extraContent}
-                    </GridItem>
-                  </li>
+                  </ListItem>
                 )
               })
             }

@@ -1,12 +1,14 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
-import DefaultListItem from 'part:@sanity/components/lists/items/default'
+import SortableList from 'part:@sanity/components/lists/sortable'
 import GridList from 'part:@sanity/components/lists/grid'
-import GridItem from 'part:@sanity/components/lists/items/grid'
+import CardPreview from 'part:@sanity/components/previews/card'
+import {arrayMove} from 'react-sortable-hoc'
 
-import {range} from 'lodash'
+import {range, random} from 'lodash'
 import faker from 'faker'
 
 const containerStyle = {
@@ -24,6 +26,33 @@ const defaultItems = range(100).map((item, i) => {
   }
 })
 
+class SortableComponent extends React.Component {
+  constructor(props, args) {
+    super(props, args)
+    this.state = {
+      items: defaultItems
+    }
+  }
+
+  handleOnSort = () => {
+    // console.log('on sort')
+  }
+
+  handleOnSortEnd = ({oldIndex, newIndex}) => {
+    const {items} = this.state
+    this.setState({
+      items: arrayMove(items, oldIndex, newIndex)
+    })
+  }
+
+  render() {
+    const {items} = this.state
+    return (
+      <SortableList items={items} onSort={this.handleOnSort} onSortEnd={this.handleOnSortEnd} useDragHandle="true" />
+    )
+  }
+}
+
 
 storiesOf('Lists')
 .addWithInfo(
@@ -38,6 +67,24 @@ storiesOf('Lists')
           items={defaultItems}
           onSelect={action('Select')}
         />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+.addWithInfo(
+  'SortableList',
+  `
+    Sortable list
+  `,
+  () => {
+    return (
+      <div style={containerStyle}>
+        <SortableComponent />
       </div>
     )
   },
@@ -133,13 +180,15 @@ storiesOf('Lists')
       return {
         key: `${i}`,
         title: faker.name.findName(),
-        image: `${faker.image.imageUrl()}?${i}`
+        mediaRender() {
+          return (
+            <img src={`${faker.image.imageUrl(150, 100)}?${i}`} />
+          )
+        }
       }
     })
     return (
-      <div style={containerStyle}>
-        <GridList items={items} scrollable onSelect={action('Select')} />
-      </div>
+      <GridList items={items} onSelect={action('Select')} />
     )
   },
   {
@@ -149,160 +198,35 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'GridList with text',
+  'GridList (cards masonry)',
   `
     Showing landscape thumbs in a grid
   `,
   () => {
+
     const items = range(100).map((item, i) => {
+      const fakerImage = faker.image.imageUrl(random(10, 50) * 10, random(10, 30) * 10)
       return {
         key: `${i}`,
         title: faker.name.findName(),
-        subTitle: faker.name.findName()
+        subtitle: faker.name.findName(),
+        description: faker.lorem.paragraphs(2),
+        mediaRender() {
+          return (
+            <img src={`${fakerImage}?${i}`} />
+          )
+        }
       }
     })
+    const renderItem = function (item, i) {
+      return <CardPreview item={item} />
+    }
     return (
-      <div style={containerStyle}>
-        <GridList items={items} scrollable onSelect={action('Select')} />
-      </div>
+      <GridList items={items} layout="masonry" onSelect={action('Select')} renderItem={renderItem} />
     )
   },
   {
     propTables: [GridList],
     role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-
-.addWithInfo(
-  'GridList (portrait)',
-  `
-    Showing portrait thumbs in a grid
-  `,
-  () => {
-    const items = range(100).map((item, i) => {
-      return {
-        key: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl(300, 500)}?${i}`
-      }
-    })
-    return (
-      <div style={containerStyle}>
-        <GridList items={items} scrollable onSelect={action('Select')} />
-      </div>
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-.addWithInfo(
-  'GridList (mixed)',
-  `
-    Showing portrait thumbs in a grid
-  `,
-  () => {
-    const items = range(100).map((item, i) => {
-      const width = Math.round(Math.random() * 100)
-      const height = Math.round(Math.random() * 100)
-      return {
-        key: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl(width, height)}?${i}`,
-      }
-    })
-    return (
-      <div style={containerStyle}>
-        <GridList items={items} scrollable />
-      </div>
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-.addWithInfo(
-  'GridList (with info)',
-  `
-    Showing portrait thumbs in a grid
-  `,
-  () => {
-    const items = range(100).map((item, i) => {
-      return {
-        title: faker.name.findName(),
-        index: `${i}`,
-        image: `${faker.image.imageUrl()}?${i}`
-      }
-    })
-    return (
-      <div style={containerStyle}>
-        <GridList items={items} scrollable showInfo onSelect={action('Select')} />
-      </div>
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-
-storiesOf('Lists items')
-  .addWithInfo(
-  'Default',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
-  () => {
-    return (
-      <DefaultListItem title={faker.name.findName()} index="2" onClick={action('Click')} />
-    )
-  },
-  {
-    propTables: [DefaultListItem],
-    role: 'part:@sanity/components/lists/items/default'
-  }
-)
-.addWithInfo(
-  'GridItem',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
-  () => {
-    return (
-      <GridItem title={faker.name.findName()} index="1" image={`${faker.image.avatar()}?1`} onClick={action('Click')} />
-    )
-  },
-  {
-    propTables: [GridItem],
-    role: 'part:@sanity/components/lists/items/grid'
-  }
-)
-.addWithInfo(
-  'Grid with info',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
-  () => {
-    return (
-      <div style={{width: '300px'}}>
-        <GridItem
-          showInfo
-          title={faker.name.findName()}
-          index="1"
-          image={`${faker.image.avatar()}?1`}
-          onClick={action('Click')}
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [GridItem],
-    role: 'part:@sanity/components/lists/items/grid'
   }
 )
