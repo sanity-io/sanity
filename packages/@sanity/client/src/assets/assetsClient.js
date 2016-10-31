@@ -31,15 +31,14 @@ assign(AssetsClient.prototype, {
       body: file,
       json: false,
       timeout: 0
-    })
-      .map(event => {
-        if (event.type !== 'response') {
-          return event
-        }
-        return assign({}, event, {
-          body: JSON.parse(event.body)
-        })
+    }).map(event => {
+      if (event.type !== 'response') {
+        return event
+      }
+      return assign({}, event, {
+        body: JSON.parse(event.body)
       })
+    })
   }
 })
 
