@@ -98,7 +98,7 @@ export default class Pane extends React.Component {
           {loading && <Spinner />}
           {items.map((item, i) => {
             return (
-              <PaneItem key={item.key} view={this.state.view} item={item} renderItem={renderItem} index={i} />
+              item && <PaneItem key={i} view={this.state.view} item={item} renderItem={renderItem} index={i} />
             )
           })
           }
