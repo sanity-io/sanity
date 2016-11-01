@@ -11,7 +11,7 @@ const IMPLICIT_OPTIONS = {
   primitive: PropTypes.string,
   description: PropTypes.string,
   required: PropTypes.bool,
-  editor: PropTypes.func,
+  editor: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
   options: PropTypes.object
 }
 
