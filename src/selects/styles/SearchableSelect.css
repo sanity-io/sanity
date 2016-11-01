@@ -45,3 +45,8 @@
   top: 0.5em;
   right: 0.75em;
 }
+
+.clearButton {
+  composes: clearButton from 'part:@sanity/components/textinputs/default-style';
+  right: 1.5em;
+}

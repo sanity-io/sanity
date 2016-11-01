@@ -7,6 +7,7 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import DefaultList from 'part:@sanity/components/lists/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceWithClickOutside from 'react-click-outside'
+import CloseIcon from 'part:@sanity/base/close-icon'
 
 class SearchableSelect extends React.Component {
   static propTypes = {
@@ -18,6 +19,7 @@ class SearchableSelect extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onClose: PropTypes.func,
+    onClear: PropTypes.func,
     value: PropTypes.object,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
@@ -36,7 +38,8 @@ class SearchableSelect extends React.Component {
     onBlur() {},
     onSearch() {},
     onOpen() {},
-    onClose() {}
+    onClose() {},
+    onClear: false
   }
 
   constructor(props, context) {
@@ -168,7 +171,7 @@ class SearchableSelect extends React.Component {
   }
 
   render() {
-    const {label, error, placeholder, loading, value, description, items} = this.props
+    const {label, error, onClear, placeholder, loading, value, description, items} = this.props
     const {hasFocus, showList, arrowNavigationPosition} = this.state
 
 
@@ -193,6 +196,9 @@ class SearchableSelect extends React.Component {
             selected={this.state.inputSelected}
             hasFocus={this.state.hasFocus}
           />
+          {
+            onClear && <button className={styles.clearButton} onClick={this.props.onClear}><CloseIcon color="inherit" /></button>
+          }
           {loading && <div className={styles.spinner}><Spinner /></div>}
           {!loading && <div className={styles.icon} onClick={this.handleArrowClick}>
             <FaAngleDown color="inherit" />
