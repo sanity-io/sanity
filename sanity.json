@@ -426,6 +426,18 @@
       "path": "selects/styles/CustomSelect.css"
     },
     {
+      "implements": "part:@sanity/components/selects/style-style",
+      "path": "selects/styles/StyleSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/style",
+      "path": "selects/StyleSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/selects/style-style",
+      "path": "selects/styles/StyleSelect.css"
+    },
+    {
       "implements":  "part:@sanity/components/dialogs/default",
       "path": "dialogs/DefaultDialog.js"
     },

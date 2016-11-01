@@ -6,6 +6,7 @@ import DefaultSelect from 'part:@sanity/components/selects/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import CustomSelect from 'part:@sanity/components/selects/custom'
 import {range} from 'lodash'
+import StyleSelect from 'part:@sanity/components/selects/style'
 
 import Fuse from 'fuse.js'
 
@@ -19,6 +20,59 @@ const items = range(100).map((item, i) => {
     key: `${i}`
   }
 })
+
+const styleItems = [
+  {
+    title: 'Paragraph',
+    key: 'style-paragraph'
+  },
+  {
+    title: 'Heading 1',
+    key: 'style-heading1'
+  },
+  {
+    title: 'Heading 2',
+    key: 'style-heading2'
+  },
+  {
+    title: 'Heading 3',
+    key: 'style-heading3'
+  },
+  {
+    title: 'Heading 4',
+    key: 'style-heading4'
+  },
+  {
+    title: 'Heading 5',
+    key: 'style-heading5'
+  }
+]
+
+const renderStyleItem = function (item) {
+  switch (item.key) {
+    case 'style-paragraph':
+      return (
+        <div style={{fontSize: '1em', fontWeight: 'normal'}}>{item.title}</div>
+      )
+    case 'style-heading1':
+      return (
+        <div style={{fontSize: '2em', fontWeight: 'bold'}}>{item.title}</div>
+      )
+    case 'style-heading2':
+      return (
+        <div style={{fontSize: '1.5em', fontWeight: 'bold'}}>{item.title}</div>
+      )
+    case 'style-heading3':
+      return (
+        <div style={{fontSize: '1.2em', fontWeight: 'bold'}}>{item.title}</div>
+      )
+    default:
+      return (
+        <div>Style: {item.title}</div>
+      )
+  }
+
+}
 
 
 class SearchableTest extends React.Component {
@@ -264,6 +318,93 @@ storiesOf('Selects')
   {
     propTables: [SearchableSelect],
     role: 'part:@sanity/components/selects/searchable'
+  }
+)
+
+
+.addWithInfo(
+  'Style select',
+  `
+    Style select
+  `,
+  () => {
+
+    return (
+      <div style={{padding: '2em', backgroundColor: '#eee'}}>
+        <StyleSelect
+          label="This is the label"
+          placeholder="Select style…"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onOpen={action('onOpen')}
+          renderItem={renderStyleItem}
+          transparent
+          items={styleItems}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [StyleSelect],
+    role: 'part:@sanity/components/selects/style'
+  }
+)
+
+
+.addWithInfo(
+  'Style select (one style)',
+  `
+    Custom preview
+  `,
+  () => {
+
+    return (
+      <div style={{padding: '2em', backgroundColor: '#eee'}}>
+        <StyleSelect
+          label="This is the label"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onOpen={action('onOpen')}
+          renderItem={renderStyleItem}
+          value={[styleItems[0]]}
+          transparent
+          items={styleItems}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [StyleSelect],
+    role: 'part:@sanity/components/selects/style'
+  }
+)
+
+.addWithInfo(
+  'Style select (multiple)',
+  `
+    Custom preview
+  `,
+  () => {
+
+    return (
+      <div style={{padding: '2em', backgroundColor: '#eee'}}>
+        <StyleSelect
+          label="This is the label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onOpen={action('onOpen')}
+          renderItem={renderStyleItem}
+          transparent
+          value={[styleItems[0], styleItems[2]]}
+          items={styleItems}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [StyleSelect],
+    role: 'part:@sanity/components/selects/style'
   }
 )
 
