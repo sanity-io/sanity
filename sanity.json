@@ -255,10 +255,6 @@
       "description": "Default list item"
     },
     {
-      "name": "part:@sanity/components/lists/items/blank",
-      "description": "Blank list item"
-    },
-    {
       "name": "part:@sanity/components/lists/items/default-style",
       "description": "Default list item styling"
     },
@@ -608,10 +604,6 @@
     {
       "implements": "part:@sanity/components/lists/items/default",
       "path": "lists/items/DefaultItem.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/blank",
-      "path": "lists/items/BlankItem.js"
     },
     {
       "implements": "part:@sanity/components/lists/items/default-style",
