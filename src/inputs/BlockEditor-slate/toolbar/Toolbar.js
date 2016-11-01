@@ -11,36 +11,85 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 export default class Toolbar extends React.Component {
 
   static propTypes = {
-    children: PropTypes.node,
-    groupedFields: PropTypes.object,
     onInsertBlock: PropTypes.func,
-    value: PropTypes.object,
-    onChange: PropTypes.func,
-    slateSchema: PropTypes.object,
     onFullscreenEnable: PropTypes.func,
-    className: PropTypes.string
+    className: PropTypes.string,
+    fullscreen: PropTypes.bool,
+    onMarkButtonClick: PropTypes.func,
+    onListButtonClick: PropTypes.func,
+    onFormatSelectChange: PropTypes.func,
+    insertBlocks: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string,
+        title: PropTypes.title
+      })
+    ),
+    marks: PropTypes.arrayOf(
+      PropTypes.shape({
+        active: PropTypes.bool,
+        type: PropTypes.string
+      })),
+    listFormats: PropTypes.arrayOf(
+      PropTypes.shape({
+        active: PropTypes.bool,
+        type: PropTypes.string,
+        title: PropTypes.string,
+      })
+    ),
+    textFormats: PropTypes.shape({
+      value: PropTypes.shape({
+        key: PropTypes.string,
+        multiple: PropTypes.bool,
+        active: PropTypes.bool,
+        title: PropTypes.string,
+        preview: PropTypes.node,
+        field: PropTypes.object
+      }),
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          key: PropTypes.string,
+          multiple: PropTypes.bool,
+          active: PropTypes.bool,
+          title: PropTypes.string,
+          preview: PropTypes.node,
+          field: PropTypes.object
+        })
+      )
+    })
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.marks !== nextProps.marks
+      || this.props.fullscreen !== nextProps.fullscreen
+    ) {
+      return true
+    }
+    return false
   }
 
   render() {
     const {
-      groupedFields,
-      value,
-      onChange,
-      slateSchema,
       className,
-      fullscreen
+      fullscreen,
+      marks,
+      onMarkButtonClick,
+      onListButtonClick,
+      onFormatSelectChange,
+      listFormats,
+      textFormats,
+      insertBlocks
     } = this.props
 
     return (
       <div className={`${styles.root} ${className}`}>
         <div className={styles.blockFormatContainer}>
-          <BlockFormat groupedFields={groupedFields} value={value} slateSchema={slateSchema} onChange={onChange} />
+          <BlockFormat value={textFormats.value} items={textFormats.items} onSelect={onFormatSelectChange} />
         </div>
         <div className={styles.textFormatContainer}>
-          <TextFormatToolbar value={value} groupedFields={groupedFields} onChange={onChange} />
+          <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
         </div>
         <div className={styles.listFormatContainer}>
-          <ListFormat groupedFields={groupedFields} slateSchema={slateSchema} value={value} onChange={onChange} />
+          <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
         </div>
         <div className={styles.fullscreenButtonContainer}>
           <Button
@@ -50,7 +99,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertDropdown groupedFields={groupedFields} onInsertBlock={this.props.onInsertBlock} />
+          <InsertDropdown blocks={insertBlocks} onInsertBlock={this.props.onInsertBlock} />
         </div>
       </div>
     )

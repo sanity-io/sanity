@@ -4,21 +4,22 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 export default class InsertDropdown extends React.Component {
 
   static propTypes = {
-    groupedFields: PropTypes.object,
-    onInsertBlock: PropTypes.func
+    onInsertBlock: PropTypes.func,
+    blocks: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string,
+        title: PropTypes.string
+      })
+    )
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props.blocks !== nextProps.blocks
   }
 
   render() {
-    const {groupedFields} = this.props
-    const items = groupedFields.formBuilder.map(ofField => {
-      return {
-        type: ofField.type,
-        title: ofField.title,
-        //disabled: this.isWithinList()
-      }
-    })
     return (
-      <DropDownButton items={items} onAction={this.props.onInsertBlock} kind="simple">
+      <DropDownButton items={this.props.blocks} onAction={this.props.onInsertBlock} kind="simple">
         Insert
       </DropDownButton>
     )
