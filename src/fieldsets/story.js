@@ -1,7 +1,9 @@
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
-import faker from 'faker'
+import Chance from 'chance'
+const chance = new Chance()
+
 
 storiesOf('Fieldsets')
   .addWithInfo(
@@ -11,7 +13,7 @@ storiesOf('Fieldsets')
   `,
   () => {
     return (
-      <Fieldset legend="This is the legend" description={faker.lorem.paragraphs(1)} level={0}>
+      <Fieldset legend="This is the legend" description={chance.paragraph()} level={0}>
         Put content here
       </Fieldset>
     )
@@ -29,7 +31,7 @@ storiesOf('Fieldsets')
   () => {
     return (
       <Fieldset legend="This is the legend" description="Fieldsets supports beeing inside itselfs, and get new styling!" level={0}>
-        <Fieldset legend="This is the legend in a nested fieldset" description={faker.lorem.paragraphs(1)} level={1}>
+        <Fieldset legend="This is the legend in a nested fieldset" description={chance.paragraph()} level={1}>
           A nested fieldset
         </Fieldset>
       </Fieldset>
@@ -48,11 +50,11 @@ storiesOf('Fieldsets')
   `,
   () => {
     return (
-      <Fieldset legend="Dude, I heard you like fieldsets…" description={faker.lorem.paragraphs(1)} level={0}>
-        <Fieldset legend="So I put a fieldset in a fieldset…" description={faker.lorem.paragraphs(1)} level={1}>
-          <Fieldset legend="In a fieldset…" description={faker.lorem.paragraphs(1)} level={2}>
-            <Fieldset legend="In a fieldset!" description={faker.lorem.paragraphs(1)} level={3}>
-              <Fieldset legend="In a fieldset!" description={faker.lorem.paragraphs(1)} level={4} />
+      <Fieldset legend="Dude, I heard you like fieldsets…" description={chance.paragraph()} level={0}>
+        <Fieldset legend="So I put a fieldset in a fieldset…" description={chance.paragraph()} level={1}>
+          <Fieldset legend="In a fieldset…" description={chance.paragraph()} level={2}>
+            <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={3}>
+              <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={4} />
             </Fieldset>
           </Fieldset>
         </Fieldset>
@@ -72,15 +74,15 @@ storiesOf('Fieldsets')
   `,
   () => {
     return (
-      <Fieldset legend="3 columns" columns="3" description={faker.lorem.paragraphs(1)} level={0}>
+      <Fieldset legend="3 columns" columns="3" description={chance.paragraph()} level={0}>
         <FieldWrapper>
-          <Fieldset legend="Test" description={faker.lorem.paragraphs(1)} level={1} />
+          <Fieldset legend="Test" description={chance.paragraph()} level={1} />
         </FieldWrapper>
         <FieldWrapper>
-          <Fieldset legend="Test 2" description={faker.lorem.paragraphs(1)} level={1} />
+          <Fieldset legend="Test 2" description={chance.paragraph()} level={1} />
         </FieldWrapper>
         <FieldWrapper>
-          <Fieldset legend="Test 3" description={faker.lorem.paragraphs(1)} level={1} />
+          <Fieldset legend="Test 3" description={chance.paragraph()} level={1} />
         </FieldWrapper>
       </Fieldset>
     )

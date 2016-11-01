@@ -6,12 +6,16 @@ import DefaultSelect from 'part:@sanity/components/selects/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import CustomSelect from 'part:@sanity/components/selects/custom'
 import {range} from 'lodash'
-import faker from 'faker'
+
 import Fuse from 'fuse.js'
+
+import Chance from 'chance'
+const chance = new Chance()
+
 
 const items = range(100).map((item, i) => {
   return {
-    title: faker.name.findName(),
+    title: chance.name(),
     key: `${i}`
   }
 })
@@ -28,7 +32,7 @@ class SearchableTest extends React.Component {
 
     this.searchAbleItems = range(100).map((item, i) => {
       return {
-        title: faker.name.findName(),
+        title: chance.name(),
         key: `${i}`
       }
     })

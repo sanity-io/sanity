@@ -3,7 +3,9 @@ import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import faker from 'faker'
+import Chance from 'chance'
+const chance = new Chance()
+
 
 storiesOf('Dialogs')
 .addWithInfo(
@@ -31,9 +33,9 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button>Open default dialog</Button>
-        <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
           This is the content
-          {faker.lorem.paragraphs(2)}
+          {chance.paragraph()}
         </DefaultDialog>
       </div>
     )
@@ -50,9 +52,9 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button>Open default dialog</Button>
-        <DefaultDialog title={faker.lorem.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
           This is the content
-          {faker.lorem.paragraphs(2)}
+          {chance.paragraph()}
         </DefaultDialog>
       </div>
     )
@@ -182,7 +184,7 @@ storiesOf('Dialogs')
           onAction={action('onAction')}
         >
           This is the content
-          {faker.lorem.paragraphs(50)}
+          {chance.paragraph({sentences: 50})}
         </DefaultDialog>
       </div>
     )
@@ -221,7 +223,7 @@ storiesOf('Dialogs')
           onAction={action('onAction')}
         >
           This is the content
-          {faker.lorem.paragraphs(50)}
+          {chance.paragraph({sentences: 50})}
         </DefaultDialog>
       </div>
     )

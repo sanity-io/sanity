@@ -2,7 +2,9 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import Autocomplete from 'part:@sanity/components/autocomplete/default'
 import {range} from 'lodash'
-import faker from 'faker'
+
+import Chance from 'chance'
+const chance = new Chance()
 
 const formStyle = {width: '30em', margin: '0 auto', paddingBottom: '20em'}
 
@@ -33,7 +35,7 @@ storiesOf('Autocomplete')
     const suggestions = range(10).map((item, i) => {
       return {
         id: `${i}`,
-        title: faker.name.findName()
+        title: chance.name()
       }
     })
     return (

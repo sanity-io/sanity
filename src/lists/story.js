@@ -9,7 +9,9 @@ import CardPreview from 'part:@sanity/components/previews/card'
 import {arrayMove} from 'react-sortable-hoc'
 
 import {range, random} from 'lodash'
-import faker from 'faker'
+import Chance from 'chance'
+const chance = new Chance()
+
 
 const containerStyle = {
   maxWidth: '40em',
@@ -22,7 +24,7 @@ const containerStyle = {
 const defaultItems = range(100).map((item, i) => {
   return {
     key: `${i}`,
-    title: faker.name.findName()
+    title: chance.name()
   }
 })
 
@@ -177,12 +179,13 @@ storiesOf('Lists')
   `,
   () => {
     const items = range(100).map((item, i) => {
+      const randomImage = `http://lorempixel.com/${300}/${200}?${i}`
       return {
         key: `${i}`,
-        title: faker.name.findName(),
+        title: chance.name(),
         mediaRender() {
           return (
-            <img src={`${faker.image.imageUrl(150, 100)}?${i}`} />
+            <img src={randomImage} />
           )
         }
       }
@@ -205,15 +208,17 @@ storiesOf('Lists')
   () => {
 
     const items = range(100).map((item, i) => {
-      const fakerImage = faker.image.imageUrl(random(10, 50) * 10, random(10, 30) * 10)
+      const width = random(10, 100) * 10
+      const height = random(10, 50) * 10
+      const randomImage = `http://placekitten.com/${width}/${height}`
       return {
         key: `${i}`,
-        title: faker.name.findName(),
-        subtitle: faker.name.findName(),
-        description: faker.lorem.paragraphs(2),
+        title: chance.name(),
+        subtitle: chance.sentence(),
+        description: chance.paragraph(),
         mediaRender() {
           return (
-            <img src={`${fakerImage}?${i}`} />
+            <img src={randomImage} />
           )
         }
       }

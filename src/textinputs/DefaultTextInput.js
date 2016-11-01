@@ -72,9 +72,10 @@ export default class DefaultTextInput extends React.Component {
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, type, hasFocus, ...rest} = omit(this.props, 'onClear')
+    const {value, placeholder, error, showClearButton, id, type, hasFocus, level, ...rest} = omit(this.props, 'onClear')
 
     const rootClass = error ? styles.error : styles.root
+    const levelClass = `styles[level_${level}]`
 
     return (
       <div className={rootClass}>
@@ -84,6 +85,7 @@ export default class DefaultTextInput extends React.Component {
             ${error ? styles.inputError : styles.input}
             ${showClearButton && styles.hasClearButton}
             ${hasFocus && styles.hasFocus}
+            ${level && levelClass}
           `}
           id={id}
           type={type}
@@ -95,7 +97,12 @@ export default class DefaultTextInput extends React.Component {
           ref={this.setInputElement}
         />
         {
-          showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
+          showClearButton && <button
+            className={styles.clearButton}
+            onClick={this.handleClear}
+          >
+            <IoAndroidClose color="inherit" />
+          </button>
         }
       </div>
     )

@@ -5,7 +5,9 @@ import ReferencePickerDefault from 'part:@sanity/components/referencepickers/def
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 
 import {range} from 'lodash'
-import faker from 'faker'
+import Chance from 'chance'
+const chance = new Chance()
+
 
 storiesOf('Reference picker')
 .addWithInfo(
@@ -17,8 +19,8 @@ storiesOf('Reference picker')
     const items = range(50).map((item, i) => {
       return {
         id: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl()}?${i}`
+        title: chance.name(),
+        image: chance.avatar()
       }
     })
     return (
@@ -41,8 +43,8 @@ storiesOf('Reference picker')
     const items = range(50).map((item, i) => {
       return {
         id: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl()}?${i}`
+        title: chance.name(),
+        image: chance.avatar()
       }
     })
     return (
@@ -66,8 +68,8 @@ storiesOf('Reference picker')
     const items = range(100).map((item, i) => {
       return {
         id: `${i}`,
-        title: faker.name.findName(),
-        image: `${faker.image.imageUrl()}?${i}`
+        title: chance.name(),
+        image: chance.avatar()
       }
     })
     const actions = [

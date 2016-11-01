@@ -4,7 +4,9 @@ import {storiesOf} from 'part:@sanity/storybook'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
-import faker from 'faker'
+import Chance from 'chance'
+const chance = new Chance()
+
 
 storiesOf('Form fields')
 .addWithInfo(
@@ -17,7 +19,7 @@ storiesOf('Form fields')
     return (
       <DefaultFormField
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
       >
         <DefaultTextInput id={id} value="This is the children in form field" />
@@ -39,7 +41,7 @@ storiesOf('Form fields')
     return (
       <DefaultFormField
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
         inline
       >
@@ -63,7 +65,7 @@ storiesOf('Form fields')
     return (
       <DefaultFormField
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
         wrapped
       >
@@ -87,7 +89,7 @@ storiesOf('Form fields')
       <DefaultFormField
         level="0"
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
       >
         <DefaultTextInput id={id} value="This is the children in form field" />
@@ -110,7 +112,7 @@ storiesOf('Form fields')
       <DefaultFormField
         level="1"
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
       >
         <DefaultTextInput id={id} value="This is the children in form field" />
@@ -133,7 +135,7 @@ storiesOf('Form fields')
       <DefaultFormField
         level="2"
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
       >
         <DefaultTextInput id={id} value="This is the children in form field" />
@@ -156,7 +158,7 @@ storiesOf('Form fields')
       <DefaultFormField
         level="3"
         label="This is the label"
-        description={faker.lorem.paragraphs(1)}
+        description={chance.paragraph()}
         labelHtmlFor={id}
       >
         <DefaultTextInput id={id} value="This is the children in form field" />
