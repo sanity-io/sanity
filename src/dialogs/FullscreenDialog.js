@@ -5,9 +5,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 
 export default class FullScreenDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['default', 'warning', 'info', 'success', 'danger']),
     className: PropTypes.string,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
     isOpen: PropTypes.bool,
@@ -35,7 +35,9 @@ export default class FullScreenDialog extends React.Component {
           <CloseIcon color="inherit" />
         </button>
         <div className={styles.inner}>
-          <h1 className={styles.heading}>{title}</h1>
+          {
+            title && <h1 className={styles.heading}>{title}</h1>
+          }
           <div className={styles.content}>
             {this.props.children}
           </div>

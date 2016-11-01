@@ -30,13 +30,25 @@
 .info {
   composes: root;
   color: #fff;
-  background-color: var(--state-info-color);
+  background-color: color(var(--state-info-color) a(95%));
 }
 
 .danger {
   composes: root;
   color: #fff;
-  background-color: var(--state-danger-color);
+  background-color: color(var(--state-danger-color) a(95%));
+}
+
+.success {
+  composes: root;
+  color: #fff;
+  background-color: color(var(--state-success-color) a(95%));
+}
+
+.warning {
+  composes: root;
+  color: #fff;
+  background-color: color(var(--state-warning-color) a(95%));
 }
 
 .inner {

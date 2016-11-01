@@ -6,8 +6,23 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Chance from 'chance'
 const chance = new Chance()
 
+const style = {
+  position: 'absolute',
+  fontSize: '2em',
+  zIndex: '-1'
+}
+
+const backgroundStuff = function (storyFn) {
+  return (
+    <div>
+      <div style={style}>{chance.sentence(50)}</div>
+      {storyFn()}
+    </div>
+  )
+}
 
 storiesOf('Dialogs')
+.addDecorator(backgroundStuff)
 .addWithInfo(
   'Default',
   '',
@@ -145,6 +160,42 @@ storiesOf('Dialogs')
     return (
       <div>
         <FullscreenDialog kind="danger" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.addWithInfo(
+  'Fullscreen (success)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="success" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.addWithInfo(
+  'Fullscreen (warning)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="warning" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
           This is the content
         </FullscreenDialog>
       </div>
