@@ -11,7 +11,7 @@ import {
   SLATE_LIST_BLOCKS
 } from '../constants'
 
-export default class Toolbar extends React.Component {
+export default class BlockFormat extends React.Component {
 
   static propTypes = {
     groupedFields: PropTypes.object,

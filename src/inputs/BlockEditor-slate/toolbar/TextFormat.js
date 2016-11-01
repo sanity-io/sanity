@@ -81,11 +81,14 @@ export default class TextFormatToolbar extends React.Component {
     if (!anchorBlock) {
       return null
     }
+
     const marksField = groupedFields.slate.find(field => field.type === anchorBlock)
     if (!marksField) {
       return null
     }
-    const allowedMarks = marksField.marks
+
+    const allowedMarks = marksField.marks || []
+
     return allowedMarks.length ? (
       <div className={styles.root}>
         {allowedMarks.map(this.renderMarkButton)}

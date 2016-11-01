@@ -125,6 +125,18 @@ export default {
               type: 'geopoint'
             }
           ]
+        },
+        {
+          name: 'minimal',
+          type: 'array',
+          title: 'Blocks',
+          editor: 'slate',
+          of: [
+            {
+              title: 'Paragraph',
+              type: 'paragraph',
+            }
+          ]
         }
       ]
     },

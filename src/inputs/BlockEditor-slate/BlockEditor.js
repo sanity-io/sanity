@@ -75,12 +75,7 @@ export default class BlockEditor extends React.Component {
       })
       .apply()
 
-    onChange({
-      patch: {
-        type: 'localState',
-        value: nextState
-      }
-    })
+    onChange({patch: createLocalStatePatch(nextState)})
   }
 
   handleToggleFullscreen = () => {
@@ -90,7 +85,7 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorChange = nextState => {
-    this.props.onChange(createLocalStatePatch(nextState))
+    this.props.onChange({patch: createLocalStatePatch(nextState)})
   }
 
   render() {

@@ -30,6 +30,7 @@ export default class Toolbar extends React.Component {
       className,
       fullscreen
     } = this.props
+
     return (
       <div className={`${styles.root} ${className}`}>
         <div className={styles.blockFormatContainer}>
