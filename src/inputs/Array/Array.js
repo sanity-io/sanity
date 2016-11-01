@@ -62,14 +62,25 @@ export default class Arr extends React.Component {
     })
   }
 
-  append(value) {
+  insert(value, position, atIndex) {
+    const {onChange} = this.props
     this.setIfMissing()
-    this.props.onChange({
+    onChange({
       patch: {
-        type: 'append',
-        value: value
+        path: [atIndex],
+        type: 'insert',
+        position: position,
+        items: [value]
       }
     })
+  }
+
+  prepend(value) {
+    this.insert(value, 'before', 0)
+  }
+
+  append(value) {
+    this.insert(value, 'after', -1)
   }
 
   setIfMissing() {
@@ -82,15 +93,6 @@ export default class Arr extends React.Component {
         }
       })
     }
-  }
-  prepend(value) {
-    this.setIfMissing()
-    this.props.onChange({
-      patch: {
-        type: 'prepend',
-        value: value
-      }
-    })
   }
 
   createValueForField(field) {

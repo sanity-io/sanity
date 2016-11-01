@@ -1,5 +1,6 @@
 import hasOwn from '../../utils/hasOwn'
 import defaultApplyPatch from './defaultApplyPatch'
+import insert from '../arrayInsert'
 
 function move(arr, from, to) {
   const nextValue = arr.slice()
@@ -28,10 +29,6 @@ export default function apply(value = [], patch, {applyItemPatch = defaultApplyP
         throw new Error('Cannot set value of an array to a non-array')
       }
       return patch.value.map(createItem)
-    } else if (patch.type === 'prepend') {
-      return [createItem(patch.value), ...nextValue]
-    } else if (patch.type === 'append') {
-      return [...nextValue, createItem(patch.value, nextValue.length)]
     } else if (patch.type === 'unset') {
       return undefined
     } else if (patch.type === 'move') {
@@ -43,7 +40,10 @@ export default function apply(value = [], patch, {applyItemPatch = defaultApplyP
     throw new Error(`Invalid array operation: ${patch.type}`)
   }
 
-  if (patch.path.length === 1 && patch.type === 'unset') {
+  if (patch.path.length === 1 && patch.type === 'insert') {
+    const {position, items, path} = patch
+    return insert(value, position, path[0], items.map(createItem))
+  } else if (patch.path.length === 1 && patch.type === 'unset') {
     const index = patch.path[0]
     if (typeof index !== 'number') {
       throw new Error(`Expected array index to be a number, instead got "${index}"`)

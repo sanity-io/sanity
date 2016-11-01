@@ -1,0 +1,36 @@
+
+export const BEFORE = 'before'
+export const AFTER = 'after'
+
+export default function insert(array, position, index, ...args) {
+  if (position !== BEFORE && position !== AFTER) {
+    throw new Error(`Invalid position "${position}", must be either ${BEFORE} or ${AFTER}`)
+  }
+
+  const items = flatten(...args)
+
+  if (array.length === 0) {
+    return items
+  }
+
+  const len = array.length
+  const idx = Math.abs(len + index % len) % len
+
+  const normalizedIdx = position === 'after' ? idx + 1 : idx
+
+  const copy = array.slice()
+  copy.splice(normalizedIdx, 0, ...flatten(items))
+  return copy
+}
+
+insert.before = function insertBefore(array, index, values) {
+  return insert(array, BEFORE, index, values)
+}
+
+insert.after = function insertAfter(array, index, values) {
+  return insert(array, AFTER, index, values)
+}
+
+function flatten(...values) {
+  return values.reduce(((prev, item) => prev.concat(item)), [])
+}
