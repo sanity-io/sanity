@@ -1,5 +1,4 @@
-@import 'part:@sanity/base/theme/variables/typography-style';
-@import 'part:@sanity/base/theme/variables/layers-style';
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   position: fixed;
@@ -8,17 +7,23 @@
   left: 0;
   right: 0;
   z-index: var(--zindex-modal-background);
+  backdrop-filter: blur(3px);
 }
 
 .heading {
   font-size: var(--font-size-h1);
   font-weight: 100;
   margin-bottom: 0.5em;
+  margin-left: var(--medium-padding);
+}
+
+.content {
+  margin: var(--medium-padding);
 }
 
 .default {
   composes: root;
-  background-color: var(--body-bg);
+  background-color: color(var(--body-bg) a(90%));
   color: var(--text-color);
 }
 
@@ -58,8 +63,8 @@
 .closeButton {
   display: block;
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--medium-padding);
+  right: var(--medium-padding);
   font-size: 3em;
   height: 1em;
   width: 1em;
