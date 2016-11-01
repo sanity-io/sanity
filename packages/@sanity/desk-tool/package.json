@@ -21,12 +21,8 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/base": "^0.0.26",
-    "@sanity/cli": "^0.0.27",
-    "@sanity/client": "^0.3.2",
-    "@sanity/components": "^0.0.31",
     "@sanity/data-aspects": "0.0.4",
-    "@sanity/form-builder": "^0.0.22",
+    "@sanity/form-builder": "0.0.23",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
