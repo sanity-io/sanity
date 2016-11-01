@@ -74,7 +74,12 @@ Likewise, you can also have the client return the document *before* the mutation
 ## Creating documents
 
 ```js
-const doc = {name: 'Bengler Tandem Extraordinaire', seats: 2}
+const doc = {
+  _type: 'bikeshop.bike',
+  name: 'Bengler Tandem Extraordinaire',
+  seats: 2
+}
+
 client.create(doc).then(res => {
   console.log(`Bike was created, document ID is ${res.documentId}`)
 })

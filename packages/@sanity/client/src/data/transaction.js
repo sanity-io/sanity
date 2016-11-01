@@ -10,9 +10,9 @@ function Transaction(operations = [], client) {
 }
 
 assign(Transaction.prototype, {
-  clone(addMutations = []) {
+  clone() {
     return new Transaction(
-      this.operations.concat(addMutations),
+      this.operations.slice(0),
       this.client
     )
   },
@@ -95,7 +95,8 @@ assign(Transaction.prototype, {
   },
 
   _add(mut) {
-    return this.clone(mut)
+    this.operations.push(mut)
+    return this
   }
 })
 

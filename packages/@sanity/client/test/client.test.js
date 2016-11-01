@@ -553,19 +553,16 @@ test('commit() returns promise', t => {
     })
 })
 
-test('each patch operation clones patch', t => {
+test('each patch operation returns same patch', t => {
   const patch = getClient().patch('foo/123')
   const inc = patch.inc({count: 1})
   const dec = patch.dec({count: 1})
   const combined = inc.dec({count: 1})
 
-  t.notEqual(patch, inc, 'should be cloned')
-  t.notEqual(inc, dec, 'should be cloned')
-  t.notEqual(inc, combined, 'should be cloned')
+  t.equal(patch, inc, 'should return same patch')
+  t.equal(inc, dec, 'should return same patch')
+  t.equal(inc, combined, 'should return same patch')
 
-  t.deepEqual(patch.serialize(), {id: 'foo/123'}, 'base patch should have only id')
-  t.deepEqual(inc.serialize(), {id: 'foo/123', inc: {count: 1}}, 'inc patch should have inc op')
-  t.deepEqual(dec.serialize(), {id: 'foo/123', dec: {count: 1}}, 'dec patch should have dec op')
   t.deepEqual(
     combined.serialize(),
     {id: 'foo/123', inc: {count: 1}, dec: {count: 1}},
@@ -579,9 +576,9 @@ test('can reset patches to no operations, keeping document ID', t => {
   const patch = getClient().patch('foo/123').inc({count: 1}).dec({visits: 1})
   const reset = patch.reset()
 
-  t.deepEqual(patch.serialize(), {id: 'foo/123', inc: {count: 1}, dec: {visits: 1}}, 'correct patch')
+  t.deepEqual(patch.serialize(), {id: 'foo/123'}, 'correct patch')
   t.deepEqual(reset.serialize(), {id: 'foo/123'}, 'reset patch should be empty')
-  t.notEqual(patch, reset, 'reset clones, does not mutate')
+  t.equal(patch, reset, 'reset mutates, does not clone')
   t.end()
 })
 
@@ -610,6 +607,15 @@ test('patch commit() throws if called without a client', t => {
   t.end()
 })
 
+test('can manually call clone on patch', t => {
+  const patch1 = getClient().patch('foo/123').inc({count: 1})
+  const patch2 = patch1.clone()
+
+  t.notEqual(patch1, patch2, 'actually cloned')
+  t.deepEqual(patch1.serialize(), patch2.serialize(), 'serialized to the same')
+  t.end()
+})
+
 /*****************
  * TRANSACTIONS  *
  *****************/
@@ -626,19 +632,14 @@ test('can build and serialize a transaction of operations', t => {
   t.end()
 })
 
-test('each transaction operation clones transaction', t => {
+test('each transaction operation mutates transaction', t => {
   const trans = getClient().transaction()
   const create = trans.create({count: 1})
-  const del = trans.delete('foo/bar')
   const combined = create.delete('foo/bar')
 
-  t.notEqual(trans, create, 'should be cloned')
-  t.notEqual(create, del, 'should be cloned')
-  t.notEqual(create, combined, 'should be cloned')
+  t.equal(trans, create, 'should be mutated')
+  t.equal(create, combined, 'should be mutated')
 
-  t.deepEqual(trans.serialize(), [], 'base transaction should be empty')
-  t.deepEqual(create.serialize(), [{create: {_id: 'foo/', count: 1}}], 'create mutation should have create op')
-  t.deepEqual(del.serialize(), [{delete: {id: 'foo/bar'}}], 'delete mutation should have delete op')
   t.deepEqual(
     combined.serialize(),
     [{create: {_id: 'foo/', count: 1}}, {delete: {id: 'foo/bar'}}],

@@ -9,17 +9,17 @@ function Patch(selection, operations = {}, client = null) {
 }
 
 assign(Patch.prototype, {
-  clone(addOps = {}) {
+  clone() {
     return new Patch(
       this.selection,
-      assign({}, this.operations, addOps),
+      assign({}, this.operations),
       this.client
     )
   },
 
   merge(props) {
     validateObject('merge', props)
-    return this.clone({merge: deepAssign(this.operations.merge || {}, props)})
+    return this._assign('merge', deepAssign(this.operations.merge || {}, props))
   },
 
   set(props) {
@@ -32,7 +32,7 @@ assign(Patch.prototype, {
 
   replace(props) {
     validateObject('replace', props)
-    return this.clone({replace: props})
+    return this._set('replace', props)
   },
 
   inc(props) {
@@ -85,12 +85,20 @@ assign(Patch.prototype, {
   },
 
   reset() {
-    return new Patch(this.selection, {}, this.client)
+    this.operations = {}
+    return this
   },
 
-  _assign(op, props) {
+  _set(op, props) {
+    return this._assign(op, props, false)
+  },
+
+  _assign(op, props, merge = true) {
     validateObject(op, props)
-    return this.clone({[op]: assign({}, this.operations[op] || {}, props)})
+    this.operations = assign({}, this.operations, {
+      [op]: assign({}, (merge && this.operations[op]) || {}, props)
+    })
+    return this
   }
 })
 
