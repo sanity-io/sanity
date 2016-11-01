@@ -195,7 +195,7 @@ class StyleSelect extends React.Component {
                 ${isSemiSelected && styles.itemSemiSelected}
               `
               return (
-                <a className={classNames} key={item.key} title={item.title} onClick={this.handleSelect}>
+                <a className={classNames} key={item.key} title={item.title} onClick={() => this.handleSelect(item)}>
                   <div className={styles.itemIcon}>
                     {
                       isSelected && <CircleCheckIcon />
