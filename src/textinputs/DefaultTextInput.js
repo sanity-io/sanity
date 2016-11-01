@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/textinputs/default-style'
-import IoAndroidClose from 'part:@sanity/base/close-icon'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import {omit} from 'lodash'
 
 export default class DefaultTextInput extends React.Component {
@@ -101,7 +101,7 @@ export default class DefaultTextInput extends React.Component {
             className={styles.clearButton}
             onClick={this.handleClear}
           >
-            <IoAndroidClose color="inherit" />
+            <CloseIcon color="inherit" />
           </button>
         }
       </div>
