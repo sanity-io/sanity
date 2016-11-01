@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import AppLoadingScreen from './AppLoadingScreen'
 
 function assetUrl(staticPath, item) {
   const isAbsolute = item.path.match(/^https?:\/\//)
@@ -52,9 +53,8 @@ function Document(props) {
       </head>
       <body>
         <div id="sanity">
-          {props.loading}
+          <AppLoadingScreen text={props.loading} />
         </div>
-
         {scripts}
       </body>
     </html>
