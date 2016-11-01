@@ -2,6 +2,7 @@ import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 
 import Spinner from 'part:@sanity/components/loading/spinner'
+import AppLoadingScreen from 'part:@sanity/components/loading/app-loading-screen'
 
 storiesOf('Loading')
 .addWithInfo(
@@ -78,5 +79,21 @@ storiesOf('Loading')
   {
     propTables: [Spinner],
     role: 'part:@sanity/components/loading/spinner'
+  }
+)
+
+.addWithInfo(
+  'App loading screen',
+  `
+    Used when app is loading. No use of CSSModules.
+  `,
+  () => {
+    return (
+      <AppLoadingScreen />
+    )
+  },
+  {
+    propTables: [AppLoadingScreen],
+    role: 'part:@sanity/components/loading/app-loading-screen'
   }
 )
