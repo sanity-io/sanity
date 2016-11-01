@@ -10,7 +10,7 @@ function toJSONPath(pathArray) {
     return index > 0 ? `${acc}.${segment}` : segment
   }, '')
 }
-const IS_NUMBER = /^\d+$/
+const IS_NUMBER = /^-?\d+$/
 const flatten = arr => arr.reduce((acc, v) => acc.concat(v), [])
 function toArrayPath(jsonPath) {
   return flatten(jsonPath.split('.').map(segment => {
@@ -24,28 +24,50 @@ function toArrayPath(jsonPath) {
 }
 
 export function toGradient(formBuilderPatch) {
+  const jsonPath = toJSONPath(formBuilderPatch.path)
+
+  if (formBuilderPatch.type === 'insert') {
+    const {position, items} = formBuilderPatch
+    return {
+      insert: {
+        [position]: jsonPath,
+        items
+      }
+    }
+  }
   return {
     [formBuilderPatch.type]: {
-      [toJSONPath(formBuilderPatch.path)]: formBuilderPatch.value
+      [jsonPath]: formBuilderPatch.value
     }
   }
 }
 
-const PATCH_ORDER = ['set', 'setIfMissing', 'merge', 'unset', 'inc', 'dec', 'append', 'prepend']
+const PATCH_ORDER = ['set', 'setIfMissing', 'merge', 'unset', 'inc', 'dec', 'insert']
 function byGradientSpecifiedPatchOrder(patchType, otherPatchType) {
   return PATCH_ORDER.indexOf(patchType) - PATCH_ORDER.indexOf(otherPatchType)
 }
 export function toFormBuilder(gradientPatch) {
-  return flatten(Object.keys(gradientPatch).map(patchType => {
-    const operation = gradientPatch[patchType]
-    return Object.keys(operation)
-      .sort(byGradientSpecifiedPatchOrder)
-      .map(jsonPath => {
+  return flatten(Object.keys(gradientPatch)
+    .sort(byGradientSpecifiedPatchOrder)
+    .map(patchType => {
+      const operation = gradientPatch[patchType]
+      if (patchType === 'insert') {
+        const position = Object.keys(gradientPatch.insert)[0]
+        const path = toArrayPath(gradientPatch.insert[position])
         return {
-          type: patchType,
-          path: toArrayPath(jsonPath),
-          value: operation[jsonPath]
+          type: 'insert',
+          path: path,
+          position: position,
+          items: gradientPatch.insert.items
         }
-      })
-  }))
+      }
+      return Object.keys(operation)
+        .map(jsonPath => {
+          return {
+            type: patchType,
+            path: toArrayPath(jsonPath),
+            value: operation[jsonPath]
+          }
+        })
+    }))
 }
