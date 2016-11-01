@@ -199,7 +199,7 @@ client.mutate(transaction)
 A few notes on this approach:
 
 * You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.mutate()`
-* Documents passed to `create`, `createIfMissing` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>/`
+* Documents passed to `create`, `createIfNotExists` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>/`
 
 ## Get client configuration
 
