@@ -457,6 +457,14 @@
       "description": "Arrow drop down"
     },
     {
+      "name": "part:@sanity/base/circle-check-icon",
+      "description": "Check in a filled circle"
+    },
+    {
+      "name": "part:@sanity/base/circle-thin-icon",
+      "description": "Thin circle icon"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
@@ -531,6 +539,14 @@
     {
       "implements": "part:@sanity/base/plus-icon",
       "path": "components/icons/Plus.js"
+    },
+    {
+      "implements": "part:@sanity/base/circle-check-icon",
+      "path": "components/icons/CircleCheck.js"
+    },
+    {
+      "implements": "part:@sanity/base/circle-thin-icon",
+      "path": "components/icons/CircleThin.js"
     },
     {
       "implements": "part:@sanity/base/arrow-drop-down",
