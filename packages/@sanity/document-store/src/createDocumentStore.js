@@ -34,7 +34,7 @@ module.exports = function createDocumentStore({serverConnection}) {
       const record = RECORDS_CACHE.get(documentId)
       record.update(patch)
     }
-    return server.update(documentId, patch)
+    return patch.local ? Observable.of({ok: true}) : server.update(documentId, patch)
   }
 
   function byId(documentId) {
