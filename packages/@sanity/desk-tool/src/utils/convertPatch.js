@@ -15,7 +15,7 @@ const flatten = arr => arr.reduce((acc, v) => acc.concat(v), [])
 function toArrayPath(jsonPath) {
   return flatten(jsonPath.split('.').map(segment => {
     return segment
-      .split(/[\[\]]/)
+      .split(/[[\]]/)
       .filter(Boolean)
       .map(val => {
         return IS_NUMBER.test(val) ? Number(val) : val
