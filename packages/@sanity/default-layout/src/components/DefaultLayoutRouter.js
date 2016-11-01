@@ -40,7 +40,7 @@ class DefaultLayoutRouter extends React.Component {
       <SanityIntlProvider supportedLanguages={supportedLanguages}>
         <LoginWrapper>
           <RouterProvider router={rootRouter} location={location} onNavigate={this.handleNavigate}>
-            <DefaultLayout/>
+            <DefaultLayout />
           </RouterProvider>
         </LoginWrapper>
       </SanityIntlProvider>

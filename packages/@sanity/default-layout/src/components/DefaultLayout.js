@@ -15,7 +15,6 @@ class DefaultLayout extends React.Component {
   }
   componentWillMount() {
     const {router} = this.context
-    console.log(router.state)
     if (!router.state.tool) {
       router.navigate({tool: tools[0].name})
     }

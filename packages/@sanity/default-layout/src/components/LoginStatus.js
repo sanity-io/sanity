@@ -11,9 +11,11 @@ export default class LoginStatus extends React.Component {
   static propTypes = {
     className: PropTypes.string
   }
-
-  state = {
-    userMenuOpened: false
+  constructor(props, args) {
+    super(props, args)
+    this.state = {
+      userMenuOpened: false
+    }
   }
 
   componentWillMount() {
