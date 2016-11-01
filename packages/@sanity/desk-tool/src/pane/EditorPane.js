@@ -95,6 +95,11 @@ export default class EditorPane extends React.PureComponent {
 
     const id = this.state.value.getFieldValue('_id')
 
+    if (event.patch.local) {
+      this.setState({value: this.state.value.patch(event.patch)})
+      return
+    }
+
     if (id) {
       this.update(id, event.patch)
     } else {
