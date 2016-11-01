@@ -133,7 +133,7 @@ export default class ReferenceBrowser extends React.Component {
   handleClearValue(event) {
     event.preventDefault()
     const {onChange} = this.props
-    onChange({patch: {type: 'set', value: undefined}})
+    onChange({patch: {type: 'unset'}})
   }
 
   createValueFromItem(item) {
