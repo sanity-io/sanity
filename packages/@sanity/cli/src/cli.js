@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'babel-polyfill'
-import yargs from 'yargs'
+import minimist from 'minimist'
 import chalk from 'chalk'
 import updateNotifier from 'update-notifier'
 import {resolveProjectRoot} from '@sanity/resolver'
