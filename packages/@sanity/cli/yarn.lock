@@ -39,14 +39,14 @@
     "@bjoerge/xhr" "^3.0.0"
     request "^2.72.0"
 
-"@sanity/resolver@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.2.tgz#e77e40a01d041788ad5bb049337054ce6aee53b3"
+"@sanity/resolver@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.4.tgz#d3cc3b6d46193020ed8a47a7f087f9b086479e70"
   dependencies:
     "@sanity/generate-help-url" "^0.0.2"
-    fs-promise "^0.5.0"
     in-publish "^2.0.0"
     lodash.uniq "^4.5.0"
+    mz "^2.4.0"
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
@@ -568,7 +568,7 @@ babel-preset-stage-3@^6.17.0:
     babel-plugin-transform-exponentiation-operator "^6.3.13"
     babel-plugin-transform-object-rest-spread "^6.16.0"
 
-babel-register@^6.18.0, babel-register@^6.9.0:
+babel-register@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-register/-/babel-register-6.18.0.tgz#892e2e03865078dd90ad2c715111ec4449b32a68"
   dependencies:
@@ -2156,7 +2156,7 @@ mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
 
-mz@^2.3.1:
+mz@^2.3.1, mz@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/mz/-/mz-2.4.0.tgz#987ba9624d89395388c37cb4741e2caf4dd13b1a"
   dependencies:
