@@ -2,7 +2,7 @@ import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 
 import Spinner from 'part:@sanity/components/loading/spinner'
-import AppLoadingScreen from 'part:@sanity/components/loading/app-loading-screen'
+import AppLoadingScreen from './AppLoadingScreen'
 
 storiesOf('Loading')
 .addWithInfo(
@@ -44,7 +44,7 @@ storiesOf('Loading')
   `,
   () => {
     return (
-      <Spinner message="Loading" />
+      <Spinner message="This is the message…" />
     )
   },
   {
