@@ -11,7 +11,7 @@ function toJSONPath(pathArray) {
   }, '')
 }
 const IS_NUMBER = /^-?\d+$/
-const flatten = arr => arr.reduce((acc, v) => acc.concat(v), [])
+const flatten = arr => arr.reduce((acc, value) => acc.concat(value), [])
 function toArrayPath(jsonPath) {
   return flatten(jsonPath.split('.').map(segment => {
     return segment

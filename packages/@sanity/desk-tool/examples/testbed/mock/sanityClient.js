@@ -8,14 +8,14 @@ function generateId(n) {
 function createDoc(_type, fields) {
   return Object.assign({_type}, fields)
 }
-function createBlogPost(n) {
+function createBlogPost(number) {
   return createDoc('exampleBlog.blogpost', {
-    title: `Blogpost ${n}`
+    title: `Blogpost ${number}`
   })
 }
-function createAuthor(n) {
+function createAuthor(number) {
   return createDoc('exampleBlog.author', {
-    name: `Author ${n}`
+    name: `Author ${number}`
   })
 }
 
