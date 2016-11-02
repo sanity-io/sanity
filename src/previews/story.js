@@ -31,12 +31,22 @@ const style = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '#ccc',
+  backgroundColor: '#eee',
   padding: '1em'
 }
 
+const innerStyle = {
+  border: '1px dotted #ccc'
+}
+
 const centered = function (storyFn) {
-  return <div style={style}>{storyFn()}</div>
+  return (
+    <div style={style}>
+      <div style={innerStyle}>
+        {storyFn()}
+      </div>
+    </div>
+  )
 }
 
 storiesOf('Previews')
@@ -56,6 +66,40 @@ storiesOf('Previews')
     role: 'part:@sanity/components/previews/default'
   }
 )
+
+.addWithInfo(
+  'Default (no media)',
+  `
+    Default preview with title and subtitle
+  `,
+  () => {
+    return (
+      <DefaultPreview item={{title: 'This is the title', subtitle: 'This is the subtitle'}} />
+    )
+  },
+  {
+    propTables: [DefaultPreview],
+    role: 'part:@sanity/components/previews/default'
+  }
+)
+
+.addWithInfo(
+  'Default (only title)',
+  `
+    Default preview with title and subtitle
+  `,
+  () => {
+    return (
+      <DefaultPreview item={{title: 'This is the title'}} />
+    )
+  },
+  {
+    propTables: [DefaultPreview],
+    role: 'part:@sanity/components/previews/default'
+  }
+)
+
+
 .addWithInfo(
   'Card',
   `

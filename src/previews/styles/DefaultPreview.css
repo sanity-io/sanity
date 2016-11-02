@@ -12,17 +12,26 @@
 
 .title {
   composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
+  color: inherit;
+  font-weight: 500;
   text-transform: none;
   margin: 0;
   padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .subtitle {
+  color: inherit;
   margin: 0;
   padding: 0;
-  margin-top: -0.5em;
-  font-size: 0.5em;
+  margin-top: -0.2em;
+  font-size: 0.8em;
   font-weight: 100;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .description {
@@ -33,16 +42,16 @@
 
 .media {
   float: left;
-  height: 2em;
-  width: 2em;
+  height: 2.5em;
+  width: 2.5em;
   margin-right: 0.5em;
   overflow: hidden;
   position: relative;
 
   @nest & div {
     position: relative;
-    height: 2em;
-    width: 2em;
+    height: 2.5em;
+    width: 2.5em;
     overflow: hidden;
   }
 

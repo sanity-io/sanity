@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
+import {truncate} from 'lodash'
 
 export default class DetailPreview extends React.Component {
   static propTypes = {
@@ -44,7 +45,14 @@ export default class DetailPreview extends React.Component {
             {item.subtitle}
           </h3>
         </div>
-        <p className={styles.description}>{item.description}</p>
+        <p className={styles.description}>
+          {
+            truncate(item.description, {
+              length: 70,
+              separator: /,? +/
+            })
+          }
+        </p>
         {children}
       </div>
     )
