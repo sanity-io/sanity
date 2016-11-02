@@ -277,7 +277,6 @@ export default class BlockEditor extends React.Component {
       .map((field, index) => {
         return {
           key: `blockFormat-${index}`,
-          multiple: false,
           preview: this.slateSchema.nodes[field.type](
             Object.assign(
               {isPreview: true},
@@ -286,7 +285,6 @@ export default class BlockEditor extends React.Component {
             )
           ),
           field: field,
-          disabled: field.type === SLATE_LIST_ITEM_TYPE,
           title: ` ${field.title}`,
           active: this.hasBlock(field)
         }

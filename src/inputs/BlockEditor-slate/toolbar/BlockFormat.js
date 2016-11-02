@@ -4,7 +4,6 @@ import styles from './styles/BlockFormat.css'
 
 export const blockFormatShape = PropTypes.shape({
   key: PropTypes.string,
-  multiple: PropTypes.bool,
   active: PropTypes.bool,
   title: PropTypes.string,
   preview: PropTypes.node,
