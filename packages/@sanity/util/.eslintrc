@@ -1,0 +1,8 @@
+{
+  "env": {"node": true},
+  "parser": "babel-eslint",
+  "extends": "sanity",
+  "rules": {
+    "max-depth": [2, 4]
+  }
+}
