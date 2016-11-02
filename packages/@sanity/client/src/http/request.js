@@ -2,6 +2,7 @@
 const request = require('@sanity/request') // `request` in node, `xhr` in browsers
 const queryString = require('./queryString')
 const Observable = require('zen-observable')
+const assign = require('xtend/mutable')
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
 
@@ -23,7 +24,30 @@ module.exports = function httpRequest(options) {
   }
 
   const observable = new Observable(observer => {
-    const req = request(options, (err, res, body) => {
+
+    const opts = assign({}, options, {
+      beforeSend(req) {
+        if (options.beforeSend) {
+          options.beforeSend(req)
+        }
+
+        // Todo: shim over node/browser differences
+        if ('upload' in req && 'onprogress' in req.upload) {
+          req.upload.onprogress = handleProgress('upload')
+        }
+
+        if ('onprogress' in req) {
+          req.onprogress = handleProgress('download')
+        }
+
+        req.onabort = function () {
+          observer.next({type: 'abort'})
+          observer.complete()
+        }
+      }
+    })
+
+    const req = request(opts, (err, res, body) => {
       if (err) {
         observer.error(err)
         return
@@ -55,20 +79,6 @@ module.exports = function httpRequest(options) {
       observer.next({type: 'response', body})
       observer.complete()
     })
-
-    // Todo: shim over node/browser differences
-    if ('upload' in req && 'onprogress' in req.upload) {
-      req.upload.onprogress = handleProgress('upload')
-    }
-
-    if ('onprogress' in req) {
-      req.onprogress = handleProgress('download')
-    }
-
-    req.onabort = () => {
-      observer.next({type: 'abort'})
-      observer.complete()
-    }
 
     return () => req.abort()
 
