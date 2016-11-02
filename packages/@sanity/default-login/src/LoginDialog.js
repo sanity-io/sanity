@@ -2,21 +2,26 @@ import React from 'react'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 import client from 'part:@sanity/base/client'
+import cancelWrap from './cancelWrap'
 
 export default class LoginDialog extends React.Component {
-  constructor() {
-    super()
-    this.state = {providers: [], error: null}
-  }
+  state = {
+    providers: [],
+    error: null
+  };
 
-  componentWillMount() {
-    authenticationFetcher.getProviders().then(providers => {
+  componentDidMount() {
+    this.getProviders = cancelWrap(authenticationFetcher.getProviders())
+    this.getProviders.promise.then(providers => {
       this.setState({providers: providers})
-    }).catch(err => {
+    })
+    .catch(err => {
       this.setState({error: err})
     })
   }
-
+  componentWillUnmount() {
+    this.getProviders.cancel()
+  }
   handleLoginButtonClicked(providerName, evnt) {
     evnt.preventDefault()
     const currentUrl = encodeURIComponent(window.location.toString())
