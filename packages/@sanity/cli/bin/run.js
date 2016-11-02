@@ -61,7 +61,7 @@ function getCoreModulePath() {
     return pkgPath
   }
 
-  if (hasManifest) {
+  if (hasManifest && process.argv.indexOf('install') === -1) {
     console.warn(chalk.yellow([
       '@sanity/core not installed in current project',
       'Project-specific commands not available until you run `sanity install`'

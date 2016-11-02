@@ -8,6 +8,7 @@ import progrescii from 'progrescii'
 import noop from 'lodash/noop'
 import padEnd from 'lodash/padEnd'
 import throttle from 'lodash/throttle'
+import lang from 'yarn/lib/reporters/lang/en'
 
 const yarnDir = path.dirname(require.resolve('yarn/package.json'))
 const binDir = path.resolve(path.join(yarnDir, '..', '.bin'))
@@ -143,6 +144,12 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   function onError(event) {
+    // Skip installation errors for optional dependencies
+    const optDepMsg = lang.optionalModuleScriptFail.replace(/:\s+\$\d+/, '').trim()
+    if (event.data && event.data.indexOf(optDepMsg) !== -1) {
+      return
+    }
+
     const err = event instanceof Error ? event : new Error(event.data)
 
     if (state.spinner) {

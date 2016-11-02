@@ -1,14 +1,13 @@
 import fsp from 'fs-promise'
-import {readFileSync} from 'fs'
 import path from 'path'
 import gitConfigLocal from 'gitconfiglocal'
 import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
 import thenify from 'thenify'
 
-export default (rootDir, {isPlugin}) => {
+export default async (workDir, {isPlugin}) => {
   const cwd = process.cwd()
-  const isSanityRoot = rootDir === cwd
+  const isSanityRoot = workDir === cwd
 
   return promiseProps({
     author: getUserInfo(),
@@ -20,7 +19,7 @@ export default (rootDir, {isPlugin}) => {
     projectName: isPlugin && isSanityRoot ? '' : path.basename(cwd),
 
     // If we're initing a plugin, don't use description from Sanity readme
-    description: (isSanityRoot && !isPlugin && getProjectDescription(cwd)) || ''
+    description: getProjectDescription({isSanityRoot, isPlugin, outputDir: cwd})
   })
 }
 
@@ -45,12 +44,18 @@ function getUserInfo() {
   return user.name
 }
 
-function getProjectDescription(outputDir) {
+async function getProjectDescription({isSanityRoot, isPlugin, outputDir}) {
+  const tryResolve = isSanityRoot && !isPlugin
+  if (!tryResolve) {
+    return Promise.resolve('')
+  }
+
   // Try to grab a project description from a standard Github-generated readme
   try {
-    const readme = readFileSync(path.join(outputDir, 'README.md'), {encoding: 'utf8'})
+    const readmePath = path.join(outputDir, 'README.md')
+    const readme = await fsp.readFile(readmePath, {encoding: 'utf8'})
     const match = readme.match(/^# .*?\n+(\w.*?)(?:$|\n)/)
-    return ((match && match[1]) || '').replace(/\.$/, '')
+    return ((match && match[1]) || '').replace(/\.$/, '') || ''
   } catch (err) {
     return ''
   }

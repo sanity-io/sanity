@@ -104,7 +104,6 @@ export function bootstrapPlugin(data, opts = {}) {
         )
       )
     })
-    .then(() => data)
 }
 
 function readTemplate(file) {
