@@ -6,29 +6,50 @@
 
 
 /* views */
-.list {
+.view--list {
+  display: block;
+}
+
+.view--cards {
+  composes: item from 'part:@sanity/components/lists/grid-style';
+}
+
+.view--thumbnails {
+  composes: item from 'part:@sanity/components/lists/grid-style';
+}
+
+.view--details {
   composes: root;
-  @nest .selected & {
-    border-bottom: 0.2em solid blue;
+}
+
+.selected {
+
+}
+
+.unSelected {
+
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  &:visited {
+    text-decoration: none;
+  }
+  &:hover {
+    color: #000;
   }
 }
 
-.thumbnails {
-  composes: root;
-}
-
-.cards {
-  composes: root;
-}
-
-
-.details {
-  composes: root;
-  @nest .selected & {
-    background-color: blue;
+.selectedLink {
+  composes: link;
+  color: var(--selected-item-color);
+  &:hover {
+    color: var(--selected-item-color-hover);
   }
 }
 
+/*
 .link {
   display: block;
   position: relative;
@@ -37,15 +58,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-
-  /*
-  &::after {
-    position: absolute;
-    right: 0;
-    content: "\232A";
-    opacity: 0.2;
-    color: var(--selectable-item-color);
-  }*/
 
   &:hover {
     color: var(--selectable-item-color-hover);
@@ -67,4 +79,4 @@
       margin-right: -0.35em;
     }
   }
-}
+}*/

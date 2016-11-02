@@ -10,19 +10,28 @@ class PaneItem extends React.Component {
   render() {
     const {selected, item, view, linkState} = this.props
     const className = `
-      ${selected ? styles.selected : styles.unselected}
-      ${styles[view]}
+      ${selected ? styles.selected : styles.unSelected}
+      ${styles[`view--${view}`]}
     `
-
+    // const width = random(10, 100) * 10
+    // const height = random(10, 50) * 10
+    // const randomImage = `http://placekitten.com/${width}/${height}`
     const previewItem = {
       title: item.name
+      // subtitle: 'This is a test subtitle',
+      // description: 'This is the description of something. I can write some stuff here, and that is good.',
+      // mediaRender() {
+      //   return (
+      //     <img src={randomImage} width={width} height={height} />
+      //   )
+      // }
     }
 
     return (
       <li className={className} key={item._id}>
         <StateLink
           state={linkState}
-          className={selected ? styles.activeLink : styles.link}
+          className={selected ? styles.selectedLink : styles.link}
         >
           {
             view == 'list' && <DefaultPreview item={previewItem} />

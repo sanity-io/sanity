@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react'
 import styles from './styles/PaneContainer.css'
 
 const PaneContainer = ({children}) =>
-  <nav className={styles.root}>
+  <div className={styles.root}>
     {children}
-  </nav>
+  </div>
 
 PaneContainer.propTypes = {
   children: PropTypes.node

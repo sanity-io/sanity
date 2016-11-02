@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes slideOut {
+/*@keyframes slideOut {
   from {
     transform: translateX(-100%);
   }
@@ -20,18 +20,24 @@
   to {
     transform: translateX(0);
   }
-}
+}*/
 
 .root {
   display: block;
   position: relative;
+
   @media (--screen-medium) {
     display: flex;
     flex-grow: 1;
+    flex-basis: 20em;
     box-sizing: border-box;
     position: relative;
     flex-direction: row;
-    overflow: hidden;
     align-self: stretch;
+    flex-wrap: nowrap;
+    max-height: 100%;
+    /* hack to make safari scroll (set relative height for children)*/
+    height: calc(100vh - 4rem);
   }
+
 }

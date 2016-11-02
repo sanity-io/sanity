@@ -5,78 +5,136 @@
   align-self: stretch;
   position: relative;
   width: 100%;
+  height: 100%;
   z-index: 1;
   padding-top: 1em;
   animation-name: slideOut;
   animation-timing-function: linear;
   animation-iteration-count: 1;
   animation-duration: 0.2s;
-
-  @media (--screen-medium) {
-    animation-name: none;
-    padding-top: 0;
-    top: auto;
-    left: auto;
-    display: block;
-    width: auto;
-    min-height: auto;
-    flex-grow: 1;
-    flex-basis: 10em;
-    max-height: 100%;
-    width: auto;
-    overflow: hidden;
-  }
-}
-
-.contentType--types {
-  @media (--screen-medium) {
-    max-width: 15em;
-  }
-}
-.contentType--documents {
-  @media (--screen-medium) {
-    max-width: 15em;
-  }
-}
-
-
-.isActive {
-  background-color: green;
-}
-
-.list {
-  composes: root;
-}
-
-.thumbnails {
-  composes: root;
-
-  @media (--screen-medium) {
-    flex-grow: 5;
-  }
-}
-
-.details {
-  composes: root;
-  @media (--screen-medium) {
-    flex-grow: 3;
-  }
-}
-
-.items {
-  display: block;
-  list-style: none;
   margin: 0;
   padding: 0;
 
 
   @media (--screen-medium) {
+    display: block;
+    animation-name: none;
+    padding-top: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 100%;
+    min-height: 0px;
     box-sizing: border-box;
-    margin-top: 3rem;
+    width: auto;
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      background-color: color(var(--body-bg) a(95%));
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      width: 100%;
+      height: 2.5rem;
+
+      @supports (backdrop-filter: blur(2px)) {
+        background-color: color(var(--body-bg) a(50%));
+        backdrop-filter: blur(5px)
+      }
+    }
+  }
+}
+
+.contentType--types {
+  @media (--screen-medium) {
+    /* automatic */
+    min-width: 10em;
+  }
+}
+.contentType--documents {
+  @media (--screen-medium) {
+    flex-grow: 2;
+  }
+}
+
+.isActive {
+
+}
+
+.isInactive {
+
+}
+
+.listContainer {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+
+  @media (--screen-medium) {
+    box-sizing: border-box;
     overflow-x: hidden;
     overflow-y: auto;
-    height: calc(100% - 3rem);
+    max-height: 100%;
+    padding-top: 3em;
   }
+}
+
+
+.view--list {
+  composes: root;
+
+}
+.view--details {
+  composes: root;
+
+}
+
+.view--thumbnails {
+  composes: root;
+  composes: default from 'part:@sanity/components/lists/grid-style';
+  flex-grow: 4;
+}
+.view--cards {
+  composes: root;
+  composes: masonry from 'part:@sanity/components/lists/grid-style';
+  flex-grow: 5;
+}
+
+.list {
+  overflow: hidden;
+  min-height: 100%;
+}
+
+.list--list {
+  composes: list;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.list--details {
+  composes: list;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.list--cards {
+  composes: list;
+  composes: list from 'part:@sanity/components/lists/grid-style';
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.list--thumbnails {
+  composes: list;
+  composes: list from 'part:@sanity/components/lists/grid-style';
+}
+
+
+.menuContainer {
+
 }
 
 .menuButton {

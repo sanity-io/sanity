@@ -14,6 +14,10 @@ export default class Pane extends React.Component {
     contentType: PropTypes.oneOf(['types', 'documents'])
   }
 
+  static defaultProps = {
+    isActive: false
+  }
+
   constructor(...args) {
     super(...args)
 
@@ -66,22 +70,19 @@ export default class Pane extends React.Component {
 
   render() {
     const {loading, items, renderItem, isActive, contentType} = this.props
-    const {menuOpened} = this.state
+    const {menuOpened, view} = this.state
 
     return (
       <div
         className={`
-          ${isActive ? styles.isActive : styles.isDisabled}
+          ${isActive ? styles.isActive : styles.isInactive}
           ${styles[`contentType--${this.props.contentType}`]}
-          ${this.state.view == 'list' && styles.list}
-          ${this.state.view == 'thumbnails' && styles.thumbnails}
-          ${this.state.view == 'details' && styles.details}
-          ${this.state.view == 'cards' && styles.details}
+          ${styles[`view--${view}`]}
         `}
       >
         {
           contentType == 'documents'
-          && <div>
+          && <div className={styles.menuContainer}>
             <div className={styles.menuButton} onClick={this.handleMenuButtonClick}>
               {
                 <IconHamburger />
@@ -97,15 +98,16 @@ export default class Pane extends React.Component {
           </div>
         }
         {loading && <Spinner />}
-        View: {this.state.view}
-        <ul className={styles.items}>
-          {items.map((item, i) => {
-            return (
-              renderItem(item, i, this.state.view)
-            )
-          })
-          }
-        </ul>
+        <div className={styles.listContainer}>
+          <ul className={styles[`list--${view}`]}>
+            {items.map((item, i) => {
+              return (
+                renderItem(item, i, this.state.view)
+              )
+            })
+            }
+          </ul>
+        </div>
       </div>
     )
   }
