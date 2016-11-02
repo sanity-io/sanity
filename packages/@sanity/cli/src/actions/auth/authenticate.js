@@ -12,15 +12,18 @@ const baseUrl = 'https://api.sanity.io/v1'
 const providersUrl = `${baseUrl}/auth/providers`
 const exchangeUrl = `${baseUrl}/auth/tokens/fetch`
 
-export default async function auth(helpers) {
-  const {prompt, output} = helpers
+export default async function auth(args, context) {
+  const {prompt, output} = context
   const spin = output.spinner('Fetching providers...').start()
   const {body} = await got(providersUrl, {json: true})
   const providers = body.providers
-  const provider = await promptProviders(prompt, providers)
   spin.stop()
 
-  return new Promise((...args) => authFlow({provider, ...helpers}, ...args))
+  const provider = await promptProviders(prompt, providers)
+
+  return new Promise((resolve, reject) =>
+    authFlow({provider, ...context}, resolve, reject)
+  )
 }
 
 function authFlow({output, provider}, resolve, reject) {

@@ -9,7 +9,7 @@ export default {
   name: 'logout',
   command: 'logout',
   description: 'Logs out of the Sanity.io session',
-  async action({output, prompt}) {
+  async action(args, {output, prompt}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')
