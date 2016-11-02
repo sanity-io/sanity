@@ -3,7 +3,7 @@ import styles from './styles/Toolbar.css'
 import InsertDropdown from './InsertDropdown'
 import TextFormatToolbar from './TextFormat'
 import ListFormat from './ListFormat'
-import BlockFormat from './BlockFormat'
+import BlockFormat, {itemShape} from './BlockFormat'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -37,24 +37,8 @@ export default class Toolbar extends React.Component {
       })
     ),
     textFormats: PropTypes.shape({
-      value: PropTypes.shape({
-        key: PropTypes.string,
-        multiple: PropTypes.bool,
-        active: PropTypes.bool,
-        title: PropTypes.string,
-        preview: PropTypes.node,
-        field: PropTypes.object
-      }),
-      items: PropTypes.arrayOf(
-        PropTypes.shape({
-          key: PropTypes.string,
-          multiple: PropTypes.bool,
-          active: PropTypes.bool,
-          title: PropTypes.string,
-          preview: PropTypes.node,
-          field: PropTypes.object
-        })
-      )
+      value: PropTypes.arrayOf(itemShape),
+      items: PropTypes.arrayOf(itemShape)
     })
   }
 

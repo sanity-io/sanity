@@ -273,7 +273,7 @@ export default class BlockEditor extends React.Component {
       return null
     }
     let value = null
-    let items = this.groupedFields.slate
+    const items = this.groupedFields.slate
       .filter(field => {
         return this.isWithinList()
           ? SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE).includes(field.type)
@@ -297,22 +297,6 @@ export default class BlockEditor extends React.Component {
         }
       })
     const activeItems = items.filter(item => item.active)
-    const hasMultipleFormatting = activeItems.length > 1
-    if (hasMultipleFormatting) {
-      items = items.map(item => {
-        if (item.active) {
-          return Object.assign(item, {active: false, multiple: true})
-        }
-        return item
-      })
-      value = {
-        key: 'blockFormat-multiple',
-        preview: () => <div>Multiple</div>,
-        field: null,
-        title: 'Multiple',
-        active: true
-      }
-    }
     if (activeItems.length === 0) {
       value = {
         key: 'blockFormat-none',
@@ -324,7 +308,7 @@ export default class BlockEditor extends React.Component {
     }
     return {
       items: items,
-      value: value || items.find(item => item.active)
+      value: items.filter(item => item.active)
     }
   }
 
