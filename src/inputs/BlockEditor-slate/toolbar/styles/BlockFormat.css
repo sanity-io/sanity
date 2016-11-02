@@ -4,9 +4,12 @@
   }
 
   @nest & > div > div{
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
   }
   background-color: transparent;
   margin-bottom: 0;
   z-index: 1;
+  @nest p {
+    margin: 0;
+  }
 }

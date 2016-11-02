@@ -59,12 +59,19 @@ export default class Toolbar extends React.Component {
         <div className={styles.blockFormatContainer}>
           <BlockFormat value={textFormats.value} items={textFormats.items} onSelect={onFormatSelectChange} />
         </div>
-        <div className={styles.textFormatContainer}>
-          <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
-        </div>
-        <div className={styles.listFormatContainer}>
-          <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
-        </div>
+
+        {marks && marks.length > 0 && (
+          <div className={styles.textFormatContainer}>
+            <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
+          </div>
+        )}
+
+        {listFormats && listFormats.length > 0 && (
+          <div className={styles.listFormatContainer}>
+            <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
+          </div>
+        )}
+
         <div className={styles.fullscreenButtonContainer}>
           <Button
             kind="simple"

@@ -15,6 +15,7 @@
 
 .input {
   composes: root from 'part:@sanity/base/theme/forms/textarea-style';
+  min-height: 10rem;
 
   @nest .fullscreen & {
     min-height: 80vh;

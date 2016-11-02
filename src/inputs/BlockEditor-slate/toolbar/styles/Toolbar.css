@@ -8,28 +8,27 @@
   }
 }
 
-.dividerRight {
-  border-right: 1px solid #ccc;
+.dividerLeft {
+  border-left: 1px solid #ccc;
 }
 
 .insertContainer {
   float: right;
-  composes: dividerRight;
+
 }
 
 .textFormatContainer {
-  composes: dividerRight;
   float: left;
   padding-left: 0.5em;
 }
 
 .listFormatContainer {
+  composes: dividerLeft;
   float: left;
   padding-left: 0.5em;
 }
 
 .blockFormatContainer {
-  composes: dividerRight;
   float: left;
   min-width: 10em;
   padding-right: 0.5em;
@@ -37,6 +36,7 @@
 
 .fullscreenButtonContainer {
   float: right;
+  composes: dividerLeft;
   @nest & svg {
     transform: scale(1.5);
   }
