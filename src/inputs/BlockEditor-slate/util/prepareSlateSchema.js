@@ -27,7 +27,7 @@ const slateFieldComponentMapping = {
 }
 
 export default function prepareSlateShema(field) {
-  const groupedFields =  Object.assign({slate: [], formBuilder: []}, groupBy(field.of, ofField => {
+  const groupedFields = Object.assign({slate: [], formBuilder: []}, groupBy(field.of, ofField => {
     if (SLATE_MANAGED_NODE_TYPES.includes(ofField.type)) {
       return 'slate'
     }
@@ -35,7 +35,7 @@ export default function prepareSlateShema(field) {
   }))
 
   const paragraphField = (groupedFields.slate || []).find(ofField => ofField.type === 'paragraph')
-  const allowedMarks = paragraphField && paragraphField.marks || []
+  const allowedMarks = paragraphField && (paragraphField.marks || [])
 
   const schema = {
     nodes: Object.assign(

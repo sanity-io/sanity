@@ -14,7 +14,7 @@ export default function insert(array, position, index, ...args) {
   }
 
   const len = array.length
-  const idx = Math.abs(len + index % len) % len
+  const idx = Math.abs(len + (index % len)) % len
 
   const normalizedIdx = position === 'after' ? idx + 1 : idx
 
@@ -32,5 +32,5 @@ insert.after = function insertAfter(array, index, values) {
 }
 
 function flatten(...values) {
-  return values.reduce(((prev, item) => prev.concat(item)), [])
+  return values.reduce((prev, item) => prev.concat(item), [])
 }

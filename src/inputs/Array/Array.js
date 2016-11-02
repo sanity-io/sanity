@@ -138,7 +138,7 @@ export default class Arr extends React.Component {
   }
 
   handleItemChange = (event, index) => {
-    const {value, onChange} = this.props
+    const {onChange} = this.props
     // Rewrite patch by prepending the item index to its path
     onChange({
       patch: {

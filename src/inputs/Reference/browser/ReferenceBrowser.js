@@ -222,8 +222,7 @@ export default class ReferenceBrowser extends React.Component {
       if (!materializedValue) {
         return (
           <div className={styles.preview}>
-            <Spinner />
-            Loading…
+            <Spinner inline /> Loading…
           </div>
         )
       }
@@ -242,9 +241,11 @@ export default class ReferenceBrowser extends React.Component {
 
     const renderButtons = () => {
       if (value.isEmpty()) {
-        return <div className={styles.buttons}>
-          <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
-        </div>
+        return (
+          <div className={styles.buttons}>
+            <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
+          </div>
+        )
       }
       return (
         <div className={styles.buttons}>

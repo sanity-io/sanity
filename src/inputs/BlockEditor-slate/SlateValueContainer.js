@@ -1,8 +1,6 @@
 import toSlate from './conversion/toSlate'
 import fromSlate from './conversion/fromSlate'
 
-import patchHandlers from './patchTypes'
-
 export default class SlateValueContainer {
   static deserialize(value, context) {
     const state = toSlate(value || [], context)

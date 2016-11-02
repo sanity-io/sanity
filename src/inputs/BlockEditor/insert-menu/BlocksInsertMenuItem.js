@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 
 export default React.createClass({
+  displayName: 'BlocksInsertItem',
   propTypes: {
     children: PropTypes.string,
     handleClick: PropTypes.func

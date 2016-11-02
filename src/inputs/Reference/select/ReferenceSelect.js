@@ -74,7 +74,6 @@ export default class ReferenceSelect extends React.Component {
   }
 
   handleFocus = () => {
-    console.log('focus')
   }
 
   componentDidMount() {
@@ -82,7 +81,6 @@ export default class ReferenceSelect extends React.Component {
   }
 
   handleChange = item => {
-    console.log('handleChange', item)
     const patch = {
       type: 'set',
       value: {

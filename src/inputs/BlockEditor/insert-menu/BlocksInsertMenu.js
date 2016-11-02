@@ -3,12 +3,12 @@ import BlocksInsertMenuItem from './BlocksInsertMenuItem'
 import {map} from 'lodash'
 
 export default React.createClass({
+  displayName: 'BlocksInsertMenu',
   propTypes: {
     items: PropTypes.array,
     open: PropTypes.bool,
     handleToggle: PropTypes.func
   },
-
   render() {
     const buttonStyle = {
       border: 0,
@@ -36,7 +36,6 @@ export default React.createClass({
     return (
       <div>
         <button style={buttonStyle} onClick={this.props.handleToggle}>+</button>
-
         <div style={itemsStyle}>
           {items}
         </div>

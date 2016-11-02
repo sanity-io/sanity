@@ -8,7 +8,7 @@ const CODE_SNIPPET = `
       //... code that searches for references
     }
     materializeReferences(referenceIds) {
-      //... code that finds documents matching referenceIds 
+      //... code that finds documents matching referenceIds
     }
   })
   const FormBuilder = createFormBuilder({
@@ -29,7 +29,7 @@ export default function PlaceholderReferenceInput() {
       Please create a Reference input and make sure it is resolved as the input for reference types.
       <pre>
         <code>
-        {CODE_SNIPPET}
+          {CODE_SNIPPET}
         </code>
       </pre>
     </div>

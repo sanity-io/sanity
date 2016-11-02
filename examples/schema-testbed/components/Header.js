@@ -29,7 +29,7 @@ export default function Header(props) {
         </span>
       )}
     </header>
- )
+  )
 }
 
 Header.propTypes = {
