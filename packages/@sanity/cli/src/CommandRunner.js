@@ -6,7 +6,7 @@ import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
 import {loadJson} from './util/safeJson'
-import generateCommandsDocumentation from './util/generateCommandsDocumentation'
+import {generateCommandsDocumentation} from './util/generateCommandsDocumentation'
 import noSuchCommandText from './util/noSuchCommandText'
 import debug from './debug'
 

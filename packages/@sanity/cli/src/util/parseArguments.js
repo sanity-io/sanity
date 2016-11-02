@@ -9,7 +9,10 @@ export default function parseArguments(argv = process.argv) {
     v, version,
     '--': extraArguments,
     ...extOptions,
-  } = minimist(argv.slice(2), {'--': true})
+  } = minimist(argv.slice(2), {
+    '--': true,
+    'boolean': ['h', 'help', 'd', 'debug', 'v', 'version']
+  })
 
   const [groupOrCommand, ...argsWithoutOptions] = _
 

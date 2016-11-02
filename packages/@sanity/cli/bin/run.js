@@ -20,6 +20,7 @@ try {
 
 var fs = require('fs')
 var path = require('path')
+var chalk = require('chalk')
 var resolver = require('@sanity/resolver')
 var resolveFrom = require('resolve-from')
 var updateNotifier = require('update-notifier')
@@ -61,10 +62,10 @@ function getCoreModulePath() {
   }
 
   if (hasManifest) {
-    console.warn([
+    console.warn(chalk.yellow([
       '@sanity/core not installed in current project',
       'Project-specific commands not available until you run `sanity install`'
-    ].join('\n'))
+    ].join('\n')))
   }
 
   return undefined

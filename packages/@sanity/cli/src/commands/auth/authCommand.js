@@ -2,7 +2,7 @@ import lazyRequire from '../../util/lazyRequire'
 
 export default {
   name: 'auth',
-  signature: 'auth',
+  signature: '',
   description: 'Authenticates against the Sanity.io API',
-  action: lazyRequire('../../actions/auth/authenticate')
+  action: lazyRequire(require.resolve('../../actions/auth/authenticate'))
 }

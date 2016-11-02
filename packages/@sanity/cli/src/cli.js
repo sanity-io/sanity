@@ -13,9 +13,8 @@ module.exports = function runCli(options) {
 
   // Translate `sanity -h <command>` to `sanity help <command>`
   if (core.h || core.help) {
-    const helpFor = core.h || core.help
-    if (args.groupOrCommand || typeof helpFor === 'string') {
-      args.argsWithoutOptions.unshift(helpFor, args.groupOrCommand)
+    if (args.groupOrCommand) {
+      args.argsWithoutOptions.unshift(args.groupOrCommand)
     }
 
     args.groupOrCommand = 'help'
