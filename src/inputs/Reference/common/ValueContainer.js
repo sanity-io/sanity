@@ -17,7 +17,10 @@ export default class ReferenceContainer {
     if (patch.type === 'set') {
       return new ReferenceContainer(patch.value, this.context)
     }
-    throw new Error(`Only the 'set' patch type is supported by reference value container, got: ${JSON.stringify(patch.type)}`)
+    if (patch.type === 'unset') {
+      return new ReferenceContainer(undefined, this.context)
+    }
+    throw new Error(`Only the 'set' and 'unset' patch types are supported by reference value container, got: ${JSON.stringify(patch.type)}`)
   }
 
   validate() {
@@ -35,7 +38,7 @@ export default class ReferenceContainer {
   }
 
   isEmpty() {
-    return this.value === undefined
+    return this.value === null || this.value === undefined
   }
 
   toJSON() {
