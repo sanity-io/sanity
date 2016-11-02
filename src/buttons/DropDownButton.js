@@ -20,7 +20,8 @@ class DropDownButton extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
-    color: PropTypes.string
+    color: PropTypes.string,
+    className: PropTypes.string
   }
 
   constructor(props, context) {
@@ -46,10 +47,11 @@ class DropDownButton extends React.Component {
   }
 
   render() {
-    const {items, children, kind} = this.props
+    const {items, children, kind, className, ...rest} = this.props
     return (
       <Button
-        className={styles.root}
+        {...rest}
+        className={`${styles.root} ${className}`}
         onClick={this.handleOnClick}
         kind={kind}
       >
@@ -64,7 +66,6 @@ class DropDownButton extends React.Component {
           <Menu
             items={items}
             opened={this.state.menuOpened}
-            fullWidth
             className={styles.menu}
             onAction={this.handleAction}
           />

@@ -2,6 +2,7 @@
 
 .root {
   position: relative;
+  font-size: inherit;
 }
 
 .title {
@@ -17,4 +18,5 @@
 
 .menu {
   margin-top: 2em;
+  width: auto;
 }

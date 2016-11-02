@@ -84,6 +84,29 @@ storiesOf('Buttons')
 )
 
 .addWithInfo(
+  'DropDownButton (wider menu)',
+  'Buttons that opens a menu.',
+  () => {
+    const items = [
+      {index: '1', title: 'Test asdfasdfsafdsadf'},
+      {index: '2', title: 'Test 2 asfsa s sad sadf saf sa'},
+      {index: '3', title: 'Test 3 asdfas fas fasdf asf asdf asdf sad'}
+    ]
+    return (
+      <div>
+        <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
+          This is a dropdown
+        </DropDownButton>
+        <div>
+          This text should be under the menu
+        </div>
+      </div>
+    )
+  },
+  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+)
+
+.addWithInfo(
   'DropDownButton (simple)',
   'Buttons that opens a menu.',
   () => {
