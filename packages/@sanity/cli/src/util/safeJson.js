@@ -1,11 +1,11 @@
-import {readFileSync} from 'fs'
+import fsp from 'fs-promise'
 
-export function loadJson(file, defaultVal) {
-  try {
-    return parseJson(readFileSync(file, {encoding: 'utf8'}), defaultVal)
-  } catch (err) {
-    return defaultVal
-  }
+export function loadJsonSync(file, defaultVal) {
+  return fsp.readJsonSync(file, {throws: false}) || defaultVal
+}
+
+export async function loadJson(file, defaultVal) {
+  return fsp.readJson(file).catch(() => defaultVal)
 }
 
 export function parseJson(json, defaultVal) {

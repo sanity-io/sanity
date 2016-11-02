@@ -7,14 +7,14 @@ import getProjectDefaults from '../../util/getProjectDefaults'
 import addPluginToManifest from '../../util/addPluginToManifest'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
-import datasetNamePrompt from '../../actions/dataset/datasetNamePrompt'
+//import datasetNamePrompt from '../../actions/dataset/datasetNamePrompt'
 import authenticate from '../../actions/auth/authenticate'
 
 export default {
   name: 'init',
   command: 'init [plugin]',
-  describe: 'Initialize a new Sanity project',
-  handler: args => {
+  description: 'Initialize a new Sanity project',
+  action: args => {
     const type = args.options.plugin
 
     if (!type) {

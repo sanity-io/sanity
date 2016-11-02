@@ -1,8 +1,8 @@
-import authenticate from '../../actions/auth/authenticate'
+import lazyRequire from '../../util/lazyRequire'
 
 export default {
   name: 'auth',
-  command: 'auth',
-  describe: 'Authenticates against the Sanity.io API',
-  handler: authenticate
+  signature: 'auth',
+  description: 'Authenticates against the Sanity.io API',
+  action: lazyRequire('../../actions/auth/authenticate')
 }

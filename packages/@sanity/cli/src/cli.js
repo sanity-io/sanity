@@ -1,42 +1,30 @@
 #!/usr/bin/env node
 import 'babel-polyfill'
-import minimist from 'minimist'
 import chalk from 'chalk'
-import updateNotifier from 'update-notifier'
-import {resolveProjectRoot} from '@sanity/resolver'
+import parseArguments from './util/parseArguments'
+import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
-import commands from './commands'
-import pkg from '../package.json'
+import baseCommands from './commands'
 
-updateNotifier({pkg}).notify()
+module.exports = function runCli(options) {
+  const args = parseArguments()
+  const core = args.coreOptions
+  const commands = mergeCommands(baseCommands, options.corePath)
 
-const debug = process.env.DEBUG // eslint-disable-line no-process-env
-const argp = args => args
-const program = yargs
-  .version(pkg.version)
-  .demand(1)
-  .help('h')
-  .alias('h', 'help')
+  // Translate `sanity -h <command>` to `sanity help <command>`
+  if (core.h || core.help) {
+    const helpFor = core.h || core.help
+    if (args.groupOrCommand || typeof helpFor === 'string') {
+      args.argsWithoutOptions.unshift(helpFor, args.groupOrCommand)
+    }
 
-commands.forEach(cmd => program.command(
-  cmd.command,
-  cmd.describe,
-  cmd.builder || argp
-))
-
-export function run(args) {
-  const argv = program.parse(args)
-  const cmdName = argv._[0]
-  const cmdRunner = getCliRunner()
-
-  if (cmdName === 'help') {
-    return program.showHelp()
+    args.groupOrCommand = 'help'
   }
 
-  return resolveProjectRoot({basePath: process.cwd()})
-    .then(dir => Object.assign({rootDir: dir || process.cwd()}, argv))
-    .then(options => cmdRunner.runCommand(cmdName, options))
+  Promise.resolve(getCliRunner(commands))
+    .then(cliRunner => cliRunner.runCommand(args.groupOrCommand, args, options))
     .catch(err => {
+      const debug = core.d || core.debug
       const error = (debug && err.details) || err
       console.error(chalk.red(debug ? error.stack : error.message)) // eslint-disable-line no-console
       process.exit(error.code || 1) // eslint-disable-line no-process-exit

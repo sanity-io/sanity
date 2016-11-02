@@ -1,58 +1,72 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import groupBy from 'lodash/groupBy'
+import sortBy from 'lodash/sortBy'
 import defaultCommands from './commands'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
+import {loadJson} from './util/safeJson'
+import generateCommandsDocumentation from './util/generateCommandsDocumentation'
+import noSuchCommandText from './util/noSuchCommandText'
 import debug from './debug'
 
 const cmdHasName = cmdName => {
   return cmd => cmd.name === cmdName
 }
 
+const cmdByGroup = cmd => cmd.group || 'default'
+
 export default class CommandRunner {
   constructor(handlers = {}, commands = defaultCommands) {
     this.handlers = handlers
-    this.commands = commands
+    this.commands = sortBy(commands, 'name')
+    this.commandGroups = groupBy(this.commands, cmdByGroup)
 
     if (!handlers.outputter || !handlers.prompter) {
       throw new Error('`prompter` and `outputter` handlers must be defined')
     }
   }
 
-  runCommand(cmdName, options) {
-    const subCommandName = options._[1]
-    const baseCommand = this.commands.find(cmdHasName(cmdName))
-
-    if (!baseCommand) {
-      return Promise.reject(new Error('Command not found, run "sanity help"'))
+  async runCommand(commandOrGroup, args, options) {
+    if (!commandOrGroup) {
+      this.handlers.outputter.print(generateCommandsDocumentation(this.commandGroups))
+      return Promise.resolve()
     }
 
-    const subCommand = subCommandName && (baseCommand.subCommands || []).find(cmdHasName(subCommandName))
-    if (subCommandName && !subCommand) {
-      return Promise.reject(new Error(`Subcommand "${subCommandName}" not found, run "sanity help"`))
+    const command = (
+      this.commandGroups[commandOrGroup]
+      || this.commandGroups.default.find(cmdHasName(commandOrGroup))
+    )
+
+    if (!command) {
+      throw new Error(noSuchCommandText(commandOrGroup))
     }
 
-    const action = subCommand ? subCommand.action : baseCommand.handler
     const output = this.handlers.outputter
     const {prompt} = this.handlers.prompter
 
-    const manifestPath = path.join(options.rootDir, 'sanity.json')
+    const manifestPath = path.join(options.workDir, 'sanity.json')
     debug(`Reading "${manifestPath}"`)
-    return fsp.readJson(manifestPath)
-      .catch(() => null)
-      .then(manifest => {
-        const apiClient = clientWrapper(manifest, manifestPath)
 
-        debug(`Running command "${(subCommand || baseCommand).name}"`)
-        return action({output, prompt, apiClient, options})
-      })
+    const manifest = await loadJson(manifestPath)
+    const apiClient = clientWrapper(manifest, manifestPath)
+
+    const context = {
+      output,
+      prompt,
+      apiClient,
+      ...options,
+      commandRunner: this
+    }
+
+    debug(`Running command "${command.name}"`)
+    return command.action(args, context)
   }
 }
 
-export function getCliRunner(cmds) {
+export function getCliRunner(...args) {
   return new CommandRunner({
     outputter: cliOutputter,
     prompter: cliPrompter
-  }, cmds)
+  }, ...args)
 }

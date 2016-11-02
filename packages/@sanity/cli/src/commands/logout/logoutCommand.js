@@ -8,8 +8,8 @@ const logoutUrl = `${baseUrl}/auth/logout`
 export default {
   name: 'logout',
   command: 'logout',
-  describe: 'Logs out of the Sanity.io session',
-  async handler({output, prompt}) {
+  description: 'Logs out of the Sanity.io session',
+  async action({output, prompt}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')

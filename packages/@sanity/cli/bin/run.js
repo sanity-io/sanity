@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+// @todo compile along with src?
 /* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync, no-var */
-
 /**
  * NOTE: KEEP THIS FILE NODE 4 COMPATIBLE, ERGO; DONT USE LET/CONST, ARROW FUNCTIONS ETC
  */
+
+// Weird edge case where the folder the terminal is currently in has been removed
 var cwd = null
 try {
   cwd = process.cwd()
@@ -18,107 +20,61 @@ try {
 
 var fs = require('fs')
 var path = require('path')
-var thenify = require('thenify')
+var resolver = require('@sanity/resolver')
+var resolveFrom = require('resolve-from')
+var updateNotifier = require('update-notifier')
 var pkg = require('../package.json')
-var stat = thenify(fs.stat)
+var runCli = require('../lib/cli')
+
+updateNotifier({pkg}).notify({defer: false})
 
 var devMode = hasDevMode()
-var preferGlobal = process.argv[2] === '-g'
-var argv = process.argv.slice(2)
-var debug = require('../lib/debug')
+var workDir = resolver.resolveProjectRoot({
+  basePath: cwd,
+  sync: true
+}) || cwd
 
 if (devMode) {
+  require('source-map-support').install()
+
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection:', reason.stack)
   })
 }
 
-// Remove the "global flag" in case any subcommands use the same option
-if (preferGlobal) {
-  argv.splice(0, 1)
-  debug('Global flag set, using global Sanity CLI regardless of any local version')
+if (workDir !== cwd) {
+  console.log(`Not in project directory, assuming context of project at ${workDir}`)
 }
 
-/**
- * Check if there is a `package.json` file in the current directory, and it if contains
- * a @sanity/cli-dependency. If so, use that over the globally installed version, in order
- * to do things in line with the Sanity version currently being used by this project
- */
-if (preferGlobal) {
-  loadCli()
-} else {
-  checkLocalCli().then(loadCli).catch(function (err) {
-    console.error(err.stack)
-    process.exit(1)
-  })
-}
+const hasManifest = hasSanityManifest(workDir)
+const corePath = getCoreModulePath()
 
-function loadCli(localCliPath) {
-  if (localCliPath) {
-    // The local CLI exists, use that
-    require(localCliPath).run(argv)
-  } else {
-    // No local CLI found, use global version
-    console.log(`[Sanity] Using global "${pkg.name}"`)
-    require('../lib/cli.js').run(argv)
-  }
-}
+runCli({
+  workDir,
+  corePath
+})
 
-function checkLocalCli() {
-  return readManifestIfExists(path.join(cwd, 'package.json'), {encoding: 'utf8'})
-    .then(parseManifest)
-    .then(hasLocalCliDeclared)
-    .then(hasLocalCliInstalled)
-}
-
-function hasLocalCliDeclared(manifest) {
-  return manifest && manifest.dependencies && manifest.dependencies[pkg.name]
-}
-
-function hasLocalCliInstalled(isDeclared) {
-  if (!isDeclared) {
-    return false
+function getCoreModulePath() {
+  var pkgPath = resolveFrom(workDir, '@sanity/core')
+  if (pkgPath) {
+    return pkgPath
   }
 
-  var fullPath = path.resolve(path.join(cwd, 'node_modules', pkg.name))
-  return stat(fullPath).then(() => fullPath).catch(err => {
-    if (err.code === 'ENOENT') {
-      throw new Error(
-        `Local ${pkg.name} dependency declared, but not installed, run \`npm install\``
-      )
-    }
-
-    throw err
-  })
-}
-
-function parseManifest(content) {
-  try {
-    return JSON.parse(content)
-  } catch (err) {
-    throw new Error(`Error while attempting to read projects "package.json":\n${err.message}`)
+  if (hasManifest) {
+    console.warn([
+      '@sanity/core not installed in current project',
+      'Project-specific commands not available until you run `sanity install`'
+    ].join('\n'))
   }
-}
 
-function readManifestIfExists(manifestPath, opts) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(manifestPath, opts, (err, manifest) => {
-      if (manifest) {
-        return resolve(manifest)
-      } else if (err && err.code === 'ENOENT') {
-        return resolve('{}')
-      }
-
-      return reject(err)
-    })
-  })
+  return undefined
 }
 
 function hasDevMode() {
-  try {
-    fs.statSync(path.join(__dirname, '..', 'src'))
-    return true
-  } catch (err) {
-    return false
-  }
+  return fs.existsSync(path.join(__dirname, '..', 'src'))
 }
+
+function hasSanityManifest(dir) {
+  return fs.existsSync(path.join(dir, 'sanity.json'))
+}
+

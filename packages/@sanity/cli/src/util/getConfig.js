@@ -1,6 +1,6 @@
 import path from 'path'
 import merge from 'lodash/merge'
-import {loadJson} from './safeJson'
+import {loadJsonSync} from './safeJson'
 import get from 'lodash/get'
 
 const defaults = {
@@ -17,7 +17,7 @@ const configContainer = values => ({
 })
 
 const getConfig = rootDir => {
-  const localConfig = rootDir && loadJson(path.join(rootDir, 'sanity.json'))
+  const localConfig = rootDir && loadJsonSync(path.join(rootDir, 'sanity.json'))
   const config = localConfig ? merge({}, defaults, localConfig) : defaults
 
   return configContainer(config)
