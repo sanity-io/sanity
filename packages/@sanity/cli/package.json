@@ -7,12 +7,13 @@
     "sanity": "./bin/run.js"
   },
   "scripts": {
+    "build": "npm run clean && npm test && npm run compile && npm run package-yarn",
     "compile": "babel --source-maps inline --copy-files -d lib/ src/",
     "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
+    "package-yarn": "node lib/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
-    "postpublish": "npm run clean",
+    "clean": "rimraf lib vendor/yarn",
+    "prepublish": "in-publish && npm run build || not-in-publish",
     "posttest": "eslint ."
   },
   "repository": {
@@ -43,7 +44,7 @@
     "git-user-info": "^1.0.0",
     "gitconfiglocal": "^2.0.1",
     "github-url-to-object": "^2.1.0",
-    "got": "^6.3.0",
+    "got": "^6.6.1",
     "in-publish": "^2.0.0",
     "inquirer": "^1.2.2",
     "is-git-url": "^0.2.3",
@@ -58,9 +59,7 @@
     "split2": "^2.1.0",
     "thenify": "^3.2.0",
     "update-notifier": "^1.0.2",
-    "validate-npm-package-name": "^2.2.2",
-    "which": "^1.2.11",
-    "yarn": "^0.16.1"
+    "validate-npm-package-name": "^2.2.2"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",

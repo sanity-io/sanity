@@ -4,12 +4,13 @@ import yarnWithProgress from '../../actions/yarn/yarnWithProgress'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
-import authenticate from '../../actions/auth/authenticate'
+import login from '../../actions/login/login'
 import promptForDatasetName from './promptForDatasetName'
 import gatherInput from './gatherInput'
 import {bootstrapSanity} from './bootstrap'
 
-export default async function initSanity(args, {output, prompt, workDir, apiClient}) {
+export default async function initSanity(args, context) {
+  const {output, prompt, workDir, apiClient} = context
   output.print('This utility walks you through creating a Sanity installation.')
   output.print('Press ^C at any time to quit.\n')
 
@@ -112,8 +113,8 @@ export default async function initSanity(args, {output, prompt, workDir, apiClie
       return Promise.resolve({isProvisional: true})
     }
 
-    // Provide login options (`sanity auth`)
-    await authenticate({output, prompt})
+    // Provide login options (`sanity login`)
+    await login(args, context)
 
     output.print("Good stuff, you're now authenticated. You'll need a project to keep your")
     output.print('data sets and collaborators safe and snug.')
