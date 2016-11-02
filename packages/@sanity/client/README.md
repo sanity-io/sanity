@@ -52,7 +52,7 @@ Perform a query using the given parameters (if any).
 ## Listening to queries
 
 ```js
-const query = 'bikeshop.comment in "comments/**"[authorId != $ownerId]'
+const query = 'bikeshop.comment[authorId != $ownerId]'
 const params = {ownerId: 'bikeOwnerUserId'}
 
 const subscription = client.listen(query, params)
