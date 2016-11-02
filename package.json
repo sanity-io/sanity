@@ -26,6 +26,19 @@
     "url": "https://github.com/sanity-io/base/issues"
   },
   "homepage": "https://github.com/sanity-io/base#readme",
+  "dependencies": {
+    "@sanity/client": "^0.3.4",
+    "@sanity/document-store": "0.0.3",
+    "@sanity/state-router": "0.0.3",
+    "history": "^2.1.0",
+    "http-hash": "^2.0.0",
+    "in-publish": "^2.0.0",
+    "lodash": "^4.16.6",
+    "postcss-cssnext": "^2.8.0",
+    "react-icons": "^2.2.1",
+    "react-intl": "^2.1.5",
+    "rxjs": "^5.0.0-rc.1"
+  },
   "devDependencies": {
     "@sanity/check": "^0.0.2",
     "babel-cli": "^6.18.0",
@@ -47,19 +60,6 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "rimraf": "^2.5.4"
-  },
-  "dependencies": {
-    "@sanity/client": "^0.3.4",
-    "@sanity/document-store": "0.0.3",
-    "@sanity/state-router": "0.0.3",
-    "history": "^2.1.0",
-    "http-hash": "^2.0.0",
-    "in-publish": "^2.0.0",
-    "lodash": "^4.16.6",
-    "postcss-cssnext": "^2.8.0",
-    "react-icons": "^2.2.1",
-    "react-intl": "^2.1.5",
-    "rxjs": "^5.0.0-rc.1"
   },
   "peerDependencies": {
     "react": ">=15.1.0",
