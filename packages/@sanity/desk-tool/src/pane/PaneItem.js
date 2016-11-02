@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/PaneItem.css'
 
-class PaneItem extends React.PureComponent {
+class PaneItem extends React.Component {
   render() {
     const {renderItem, item, index, view} = this.props
 
