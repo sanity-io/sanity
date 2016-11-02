@@ -74,8 +74,7 @@ export default class ImageInput extends React.PureComponent {
 
     this.subscription = this.props.uploadFn(image).subscribe({
       next: this.handleUploadProgress,
-      error: this.handleUploadError,
-      complete: this.handleUploadComplete,
+      error: this.handleUploadError
     })
   }
 
@@ -100,11 +99,32 @@ export default class ImageInput extends React.PureComponent {
     }
   }
 
+  createIfMissing() {
+    this.props.onChange({patch: {
+      type: 'setIfMissing',
+      value: {_type: this.props.value.context.field.type}
+    }})
+  }
+
   handleUploadProgress = event => {
-    if (event.type === 'progress') {
+    if (event.type === 'progress' && event.stage === 'upload') {
       this.setState({
         status: 'pending',
         progress: {percent: event.percent}
+      })
+    }
+    if (event.type === 'complete') {
+      this.createIfMissing()
+      const {onChange} = this.props
+      const patch = {
+        type: 'set',
+        path: ['asset'],
+        value: {_ref: event.id}
+      }
+      onChange({patch})
+      this.setState({
+        uploadingImage: null,
+        status: 'complete'
       })
     }
   }
@@ -114,19 +134,6 @@ export default class ImageInput extends React.PureComponent {
       status: 'error',
       error: error
     })
-  }
-
-  handleUploadComplete = reference => {
-    this.setState({
-      status: 'complete',
-    })
-    const {onChange} = this.props
-    const patch = {
-      type: 'set',
-      path: ['asset'],
-      value: reference
-    }
-    onChange({patch})
   }
 
   handleSelect = images => {
@@ -145,6 +152,7 @@ export default class ImageInput extends React.PureComponent {
 
   handleFieldChange = (event, fieldName) => {
     const {onChange} = this.props
+    this.createIfMissing()
     const patch = {
       ...event.patch,
       path: [fieldName, ...(event.patch.path || [])]
@@ -169,6 +177,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   handleImageToolChange = newValue => {
+    this.createIfMissing()
     this.props.onChange({
       patch: {
         type: 'merge',
@@ -178,6 +187,17 @@ export default class ImageInput extends React.PureComponent {
         }
       }
     })
+  }
+
+  getImageUrl() {
+    const {uploadingImage, materializedImage} = this.state
+    if (uploadingImage) {
+      return uploadingImage.previewUrl
+    }
+    if (materializedImage && materializedImage.url) {
+      return `${materializedImage.url}?w=500`
+    }
+    return null
   }
 
   renderImageTool() {
@@ -245,7 +265,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   render() {
-    const {status, progress, uploadingImage, materializedImage, isAdvancedEditOpen} = this.state
+    const {status, progress, isAdvancedEditOpen} = this.state
     const {field, level, value, fieldName, ...rest} = omit(this.props,
       'uploadFn',
       'materializeReferenceFn',
@@ -264,19 +284,7 @@ export default class ImageInput extends React.PureComponent {
       return 'other'
     })
 
-    // if (!uploadingImage && value.isEmpty()) {
-    //   return (
-    //     <ImageSelect
-    //       name={fieldName}
-    //       onSelect={this.handleSelect}
-    //       {...rest}
-    //     >
-    //       Upload image…
-    //     </ImageSelect>
-    //   )
-    // }
-
-    const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
+    const imageUrl = this.getImageUrl()
 
     const hotspot = value.getFieldValue('hotspot').toJSON() || DEFAULT_HOTSPOT
     const crop = value.getFieldValue('crop').toJSON() || DEFAULT_CROP
@@ -298,9 +306,8 @@ export default class ImageInput extends React.PureComponent {
         >
           {this.renderFields(fieldGroups.highlighted || [])}
 
-          {
-            imageUrl
-            && <div>
+          {imageUrl && (
+            <div>
               <Button
                 icon={UploadIcon}
                 ripple={false}
@@ -315,7 +322,7 @@ export default class ImageInput extends React.PureComponent {
               </Button>
               {fieldGroups.other && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
             </div>
-          }
+          )}
         </ImageInputFieldset>
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
       </div>
