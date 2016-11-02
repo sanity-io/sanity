@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import styles from './styles/BlockFormat.css'
 
-export const itemShape = PropTypes.shape({
+export const blockFormatShape = PropTypes.shape({
   key: PropTypes.string,
   multiple: PropTypes.bool,
   active: PropTypes.bool,
@@ -14,8 +14,8 @@ export const itemShape = PropTypes.shape({
 export default class BlockFormat extends React.Component {
 
   static propTypes = {
-    value: PropTypes.arrayOf(itemShape),
-    items: PropTypes.arrayOf(itemShape),
+    value: PropTypes.arrayOf(blockFormatShape),
+    items: PropTypes.arrayOf(blockFormatShape),
     onSelect: PropTypes.func
   }
 

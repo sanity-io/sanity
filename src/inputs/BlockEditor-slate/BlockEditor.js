@@ -270,15 +270,10 @@ export default class BlockEditor extends React.Component {
 
   getTextFormats() {
     if (!this.groupedFields.slate.length) {
-      return null
+      return []
     }
-    let value = null
     const items = this.groupedFields.slate
-      .filter(field => {
-        return this.isWithinList()
-          ? SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE).includes(field.type)
-          : SLATE_TEXT_BLOCKS.includes(field.type)
-      })
+      .filter(field => SLATE_TEXT_BLOCKS.includes(field.type))
       .map((field, index) => {
         return {
           key: `blockFormat-${index}`,
@@ -296,19 +291,19 @@ export default class BlockEditor extends React.Component {
           active: this.hasBlock(field)
         }
       })
-    const activeItems = items.filter(item => item.active)
-    if (activeItems.length === 0) {
-      value = {
+    let value = items.filter(item => item.active)
+    if (value.length === 0) {
+      value = [{
         key: 'blockFormat-none',
-        preview: () => <div>None</div>,
+        preview: null,
         field: null,
-        title: 'None',
+        title: 'No style',
         active: true
-      }
+      }]
     }
     return {
       items: items,
-      value: items.filter(item => item.active)
+      value: value
     }
   }
 

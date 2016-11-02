@@ -1,16 +1,16 @@
 import React, {PropTypes} from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
+export const insertBlockShape = PropTypes.shape({
+  type: PropTypes.string,
+  title: PropTypes.string
+})
+
 export default class InsertDropdown extends React.Component {
 
   static propTypes = {
     onInsertBlock: PropTypes.func,
-    blocks: PropTypes.arrayOf(
-      PropTypes.shape({
-        type: PropTypes.string,
-        title: PropTypes.string
-      })
-    )
+    blocks: PropTypes.arrayOf(insertBlockShape)
   }
 
   shouldComponentUpdate(nextProps, nextState) {

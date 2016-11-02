@@ -9,14 +9,16 @@ import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
 import styles from './styles/TextFormat.css'
 
+export const textFormatShape = PropTypes.shape({
+  active: PropTypes.bool,
+  type: PropTypes.string
+})
+
 export default class TextFormatToolbar extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
-    marks: PropTypes.arrayOf(PropTypes.shape({
-      active: PropTypes.bool,
-      type: PropTypes.string
-    }))
+    marks: PropTypes.arrayOf(textFormatShape)
   }
 
   getIcon(type) {

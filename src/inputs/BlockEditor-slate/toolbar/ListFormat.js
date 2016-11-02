@@ -7,15 +7,17 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 
 import styles from './styles/ListFormat.css'
 
+export const listFormatShape = PropTypes.shape({
+  active: PropTypes.bool,
+  type: PropTypes.string,
+  title: PropTypes.string
+})
+
 export default class ListFormat extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
-    listFormats: PropTypes.arrayOf(PropTypes.shape({
-      active: PropTypes.bool,
-      type: PropTypes.string,
-      title: PropTypes.string
-    }))
+    listFormats: PropTypes.arrayOf(listFormatShape)
   }
 
   getIcon(type) {

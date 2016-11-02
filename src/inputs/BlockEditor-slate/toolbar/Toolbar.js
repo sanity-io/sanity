@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/Toolbar.css'
-import InsertDropdown from './InsertDropdown'
-import TextFormatToolbar from './TextFormat'
-import ListFormat from './ListFormat'
-import BlockFormat, {itemShape} from './BlockFormat'
+import InsertDropdown, {insertBlockShape} from './InsertDropdown'
+import TextFormatToolbar, {textFormatShape} from './TextFormat'
+import ListFormat, {listFormatShape} from './ListFormat'
+import BlockFormat, {blockFormatShape} from './BlockFormat'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -18,27 +18,17 @@ export default class Toolbar extends React.Component {
     onMarkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
     onFormatSelectChange: PropTypes.func,
-    insertBlocks: PropTypes.arrayOf(
-      PropTypes.shape({
-        type: PropTypes.string,
-        title: PropTypes.title
-      })
-    ),
+    insertBlocks: PropTypes.arrayOf(insertBlockShape),
     marks: PropTypes.arrayOf(
-      PropTypes.shape({
-        active: PropTypes.bool,
-        type: PropTypes.string
-      })),
+      textFormatShape
+    ),
     listFormats: PropTypes.arrayOf(
-      PropTypes.shape({
-        active: PropTypes.bool,
-        type: PropTypes.string,
-        title: PropTypes.string,
-      })
+      listFormatShape
     ),
     textFormats: PropTypes.shape({
-      value: PropTypes.arrayOf(itemShape),
-      items: PropTypes.arrayOf(itemShape)
+      value: PropTypes.arrayOf(blockFormatShape),
+      items: PropTypes.arrayOf(blockFormatShape),
+      onSelect: PropTypes.func
     })
   }
 
