@@ -12,7 +12,7 @@ const baseUrl = 'https://api.sanity.io/v1'
 const providersUrl = `${baseUrl}/auth/providers`
 const exchangeUrl = `${baseUrl}/auth/tokens/fetch`
 
-export default async function auth(args, context) {
+export default async function login(args, context) {
   const {prompt, output} = context
   const spin = output.spinner('Fetching providers...').start()
   const {body} = await got(providersUrl, {json: true})
@@ -22,11 +22,11 @@ export default async function auth(args, context) {
   const provider = await promptProviders(prompt, providers)
 
   return new Promise((resolve, reject) =>
-    authFlow({provider, ...context}, resolve, reject)
+    loginFlow({provider, ...context}, resolve, reject)
   )
 }
 
-function authFlow({output, provider}, resolve, reject) {
+function loginFlow({output, provider}, resolve, reject) {
   debug('Starting OAuth receiver webserver')
   const spin = output.spinner('Waiting for login flow to complete...')
   const server = http
@@ -82,24 +82,24 @@ function authFlow({output, provider}, resolve, reject) {
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
     res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
-    fs.createReadStream(path.join(__dirname, 'authResponse.html')).pipe(res)
+    fs.createReadStream(path.join(__dirname, 'loginResponse.html')).pipe(res)
 
     // Store the token
-    debug('Storing the auth token')
+    debug('Storing the login token')
     getUserConfig().set({
       authToken: token,
       authType: 'normal'
     })
 
     spin.stop()
-    output.print(chalk.green('Authentication successful'))
+    output.print(chalk.green('Login successful'))
     server.close(() => debug('Server closed'))
     return resolve()
   }
 
   function onTokenExchangeError(err, res) {
     res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
-    fs.createReadStream(path.join(__dirname, 'authError.html'))
+    fs.createReadStream(path.join(__dirname, 'loginError.html'))
       .pipe(res)
       .on('finish', () => server.close(() => debug('Server closed')))
 
