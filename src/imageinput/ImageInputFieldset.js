@@ -65,7 +65,7 @@ export default class ImageInputFieldset extends React.Component {
           >
             {
               hotspotImage.imageUrl
-              && <div className={status === 'complete' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
+              && <div className={status === 'complete' || status === 'ready' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
                 <HotspotImage
                   aspectRatio="auto"
                   hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
