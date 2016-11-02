@@ -2,29 +2,31 @@
 
 .root {
   display: block;
-  line-height: 2em;
+}
+
+
+/* views */
+.list {
+  composes: root;
+  @nest .selected & {
+    border-bottom: 0.2em solid blue;
+  }
 }
 
 .thumbnails {
   composes: root;
-  height: 5rem;
-  width: 5rem;
-  overflow: hidden;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  background-color: #ccc;
-  float: left;
 }
 
-.list {
+.cards {
   composes: root;
 }
+
 
 .details {
   composes: root;
-  height: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  @nest .selected & {
+    background-color: blue;
+  }
 }
 
 .link {
@@ -35,8 +37,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding-right: 1em;
-  margin-left: 1em;
 
   /*
   &::after {
@@ -65,13 +65,6 @@
       font-weight: 700;
       font-size: 2em;
       margin-right: -0.35em;
-    }
-  }
-
-  &:hover {
-    color: var(--selected-item-color-hover);
-    &::after {
-      color: var(--selected-item-color-hover);
     }
   }
 }

@@ -1,11 +1,9 @@
 import React, {PropTypes} from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
 import PaneContainer from 'part:@sanity/desk-tool/pane-container'
-import {StateLink} from 'part:@sanity/base/router'
 import EditorPane from './pane/EditorPane'
+import PaneItem from './pane/PaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
-
-import paneItemStyles from './pane/styles/PaneItem.css'
 import styles from '../styles/DeskTool.css'
 import UrlDocId from './utils/UrlDocId'
 import dataAspects from './utils/dataAspects'
@@ -50,30 +48,34 @@ export default class SchemaPaneResolver extends React.Component {
     }, {replace: true})
   }
 
-  renderTypePaneItem(type) {
+  renderTypePaneItem(item) {
     const {selectedType} = this.context.router.state
-    const className = type.name === selectedType ? paneItemStyles.activeLink : paneItemStyles.link
+    const selected = item.name === selectedType
+
     return (
-      <StateLink
-        className={className}
-        state={{selectedType: type.name}}
-      >
-        {type.title}
-      </StateLink>
+      <PaneItem
+        key={item.key}
+        linkState={{selectedType: item.name}}
+        item={{name: item.title}}
+        selected={selected}
+        view="list"
+      />
     )
   }
 
-  renderDocumentPaneItem(document) {
+  renderDocumentPaneItem(item, i, view) {
     const {selectedType, selectedDocumentId} = this.context.router.state
-    const className = document._id === selectedDocumentId ? paneItemStyles.activeLink : paneItemStyles.link
+    const selected = UrlDocId.encode(item._id) === selectedDocumentId
 
     return (
-      <StateLink
-        className={className}
-        state={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(document._id)}}
-      >
-        {document[getTitleKey(selectedType)]}
-      </StateLink>
+      <PaneItem
+        key={item._id}
+        linkState={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}}
+        item={item}
+        view={view}
+        index={i}
+        selected={selected}
+      />
     )
   }
 

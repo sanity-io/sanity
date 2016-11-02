@@ -51,6 +51,12 @@ class PaneMenu extends React.Component {
 
       },
       {
+        title: 'Cards',
+        icon: IconThumbnails,
+        index: 'showCards'
+
+      },
+      {
         title: 'Settings',
         icon: IconSettings,
         index: 'goToSettings',

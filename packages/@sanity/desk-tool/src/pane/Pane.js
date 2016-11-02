@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import styles from './styles/Pane.css'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PaneMenu from './PaneMenu.js'
-import PaneItem from './PaneItem.js'
 import IconHamburger from 'part:@sanity/base/hamburger-icon'
 
 export default class Pane extends React.Component {
@@ -49,6 +48,9 @@ export default class Pane extends React.Component {
       case 'showThumbnails':
         this.setState({view: 'thumbnails'})
         break
+      case 'showCards':
+        this.setState({view: 'cards'})
+        break
       case 'showList':
         this.setState({view: 'list'})
         break
@@ -71,9 +73,10 @@ export default class Pane extends React.Component {
         className={`
           ${isActive ? styles.isActive : styles.isDisabled}
           ${styles[`contentType--${this.props.contentType}`]}
-          ${this.state.view == 'list' ? styles.list : ''}
-          ${this.state.view == 'thumbnails' ? styles.thumbnails : ''}
-          ${this.state.view == 'details' ? styles.details : ''}
+          ${this.state.view == 'list' && styles.list}
+          ${this.state.view == 'thumbnails' && styles.thumbnails}
+          ${this.state.view == 'details' && styles.details}
+          ${this.state.view == 'cards' && styles.details}
         `}
       >
         {
@@ -93,12 +96,12 @@ export default class Pane extends React.Component {
             </div>
           </div>
         }
-
+        {loading && <Spinner />}
+        View: {this.state.view}
         <ul className={styles.items}>
-          {loading && <Spinner />}
           {items.map((item, i) => {
             return (
-              item && <PaneItem key={i} view={this.state.view} item={item} renderItem={renderItem} index={i} />
+              renderItem(item, i, this.state.view)
             )
           })
           }
