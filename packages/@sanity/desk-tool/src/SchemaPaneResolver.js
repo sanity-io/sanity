@@ -40,15 +40,6 @@ export default class SchemaPaneResolver extends React.Component {
     this.handleDocumentCreated = this.handleDocumentCreated.bind(this)
   }
 
-  componentWillMount() {
-    const {router} = this.context
-    if (!router.state.selectedType) {
-      router.navigate({
-        selectedType: TYPE_ITEMS[0].name
-      })
-    }
-  }
-
   handleDocumentCreated(document) {
     const {router} = this.context
 
@@ -104,10 +95,6 @@ export default class SchemaPaneResolver extends React.Component {
     const {router} = this.context
     const {selectedType, selectedDocumentId, action} = router.state
 
-    if (!selectedType) {
-      return <div>Selecting default type…</div>
-    }
-
     const typesPane = (
       <Pane
         items={TYPE_ITEMS}
@@ -116,7 +103,10 @@ export default class SchemaPaneResolver extends React.Component {
       />
     )
 
-    const documentsPane = selectedType && this.getDocumentsPane(selectedType)
+    const documentsPane = selectedType ? this.getDocumentsPane(selectedType) : (
+      <div>Select a type to begin…</div>
+    )
+
 
     const editor = ['edit', 'create'].includes(action) && (
       <EditorPane
