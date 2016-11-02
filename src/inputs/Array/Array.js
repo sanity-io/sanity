@@ -62,15 +62,23 @@ export default class Arr extends React.Component {
     })
   }
 
-  insert(value, position, atIndex) {
-    const {onChange} = this.props
-    this.setIfMissing()
+  insert(itemValue, position, atIndex) {
+    const {onChange, value} = this.props
+    if (value.isEmpty()) {
+      onChange({
+        patch: {
+          type: 'set',
+          value: [itemValue]
+        }
+      })
+      return
+    }
     onChange({
       patch: {
         path: [atIndex],
         type: 'insert',
         position: position,
-        items: [value]
+        items: [itemValue]
       }
     })
   }
@@ -81,18 +89,6 @@ export default class Arr extends React.Component {
 
   append(value) {
     this.insert(value, 'after', -1)
-  }
-
-  setIfMissing() {
-    const {value, onChange} = this.props
-    if (value.isEmpty()) {
-      onChange({
-        patch: {
-          type: 'setIfMissing',
-          value: []
-        }
-      })
-    }
   }
 
   createValueForField(field) {
