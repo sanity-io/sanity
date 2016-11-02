@@ -189,9 +189,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/client@0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.2.tgz#2107c77ad2e20dfa999510b23bb07abd59b64203"
+"@sanity/client@0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.3.tgz#9f995267487f78239645de8687b1c02c5a91cf67"
   dependencies:
     "@sanity/eventsource" "^1.0.0"
     "@sanity/request" "0.0.3"
@@ -201,9 +201,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/components@0.0.35":
-  version "0.0.35"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.35.tgz#8bc081b1737ef3f89382dad30f30d6ddc67e736b"
+"@sanity/components@0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.38.tgz#c612a441b73063c3aa2e1bec7ab6eadd36ed5225"
   dependencies:
     chance "^1.0.4"
     dialog-polyfill "^0.4.3"
@@ -242,23 +242,23 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/form-builder@0.0.25":
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.25.tgz#a8ad41044403e0a061d7ed94df9d7f0c5fb2e6c3"
+"@sanity/form-builder@0.0.26":
+  version "0.0.26"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.26.tgz#9dfc80cfee2cc4ce8acdb072ccca738ab6ea2ef8"
   dependencies:
-    "@sanity/imagetool" "^0.2.0"
+    "@sanity/imagetool" "^0.2.1"
     canvas-to-blob "0.0.0"
     debug "^2.2.0"
     exif-component "^1.0.1"
     get-window "^1.1.1"
     is-empty "^1.0.0"
-    lodash "^4.16.4"
+    lodash "^4.16.6"
     object-inspect "^1.2.1"
     proptypes "^0.14.3"
     prosemirror "^0.10.1"
-    react-sortable-hoc "0.0.9"
+    react-sortable-hoc "0.1.1"
     shallow-equals "0.0.0"
-    slate "^0.14.15"
+    slate "^0.14.16"
     slate-insert-block-on-enter "0.0.2"
 
 "@sanity/generate-help-url@^0.0.1":
@@ -269,7 +269,7 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/imagetool@^0.2.0":
+"@sanity/imagetool@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.1.tgz#dfa97895979b827a8b2e32b9650a5aecefd5ea77"
   dependencies:
@@ -3944,7 +3944,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@^4.0.0, lodash@^4.1.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
+lodash@^4.0.0, lodash@^4.1.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.6, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
   version "4.16.6"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.6.tgz#d22c9ac660288f3843e16ba7d2b5d06cca27d777"
 
@@ -5409,18 +5409,11 @@ react-simple-di@^1.2.0:
     babel-runtime "6.x.x"
     hoist-non-react-statics "1.x.x"
 
-react-sortable-hoc@^0.1.0:
+react-sortable-hoc@^0.1.0, react-sortable-hoc@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.1.1.tgz#afbb1b6e8d1ac55af5400de0d4c9dad7822ff852"
   dependencies:
     babel-runtime "^6.11.6"
-    invariant "^2.2.1"
-    lodash "^4.12.0"
-
-react-sortable-hoc@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.0.9.tgz#1e60a3608e956f5f3d975d74494833003b424b23"
-  dependencies:
     invariant "^2.2.1"
     lodash "^4.12.0"
 
@@ -5890,7 +5883,7 @@ slate-insert-block-on-enter@0.0.2:
   dependencies:
     debug "^2.2.0"
 
-slate@^0.14.15:
+slate@^0.14.16:
   version "0.14.16"
   resolved "https://registry.yarnpkg.com/slate/-/slate-0.14.16.tgz#b15b1f59f2aabd7b79da23265a260f536308ae4b"
   dependencies:

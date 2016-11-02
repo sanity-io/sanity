@@ -22,15 +22,15 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.0.4",
-    "@sanity/form-builder": "0.0.25",
+    "@sanity/form-builder": "0.0.26",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
     "@sanity/base": "0.0.29",
     "@sanity/check": "^0.0.2",
     "@sanity/cli": "0.0.27",
-    "@sanity/client": "0.3.2",
-    "@sanity/components": "0.0.35",
+    "@sanity/client": "0.3.3",
+    "@sanity/components": "0.0.38",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
