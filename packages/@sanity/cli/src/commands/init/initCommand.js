@@ -12,7 +12,7 @@ import authenticate from '../../actions/auth/authenticate'
 
 export default {
   name: 'init',
-  command: 'init [plugin]',
+  signature: 'init [plugin]',
   description: 'Initialize a new Sanity project',
   action: args => {
     const type = args.options.plugin

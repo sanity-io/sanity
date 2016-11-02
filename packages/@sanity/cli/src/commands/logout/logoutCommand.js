@@ -7,7 +7,7 @@ const logoutUrl = `${baseUrl}/auth/logout`
 
 export default {
   name: 'logout',
-  command: 'logout',
+  signature: 'logout',
   description: 'Logs out of the Sanity.io session',
   async action(args, {output, prompt}) {
     const cfg = getUserConfig()
