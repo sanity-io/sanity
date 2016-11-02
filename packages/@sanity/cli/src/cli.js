@@ -5,11 +5,17 @@ import parseArguments from './util/parseArguments'
 import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import baseCommands from './commands'
+import pkg from '../package.json'
 
 module.exports = function runCli(options) {
   const args = parseArguments()
   const core = args.coreOptions
   const commands = mergeCommands(baseCommands, options.corePath)
+
+  if (core.v || core.version) {
+    console.log(`${pkg.name} version ${pkg.version}`) // eslint-disable-line no-console
+    process.exit() // eslint-disable-line no-process-exit
+  }
 
   // Translate `sanity -h <command>` to `sanity help <command>`
   if (core.h || core.help) {
