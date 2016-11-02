@@ -36,10 +36,10 @@
     "slate-insert-block-on-enter": "0.0.2"
   },
   "devDependencies": {
-    "@sanity/base": "0.0.26",
+    "@sanity/base": "0.0.29",
     "@sanity/check": "^0.0.1",
     "@sanity/cli": "0.0.27",
-    "@sanity/components": "0.0.31",
+    "@sanity/components": "0.0.36",
     "@sanity/plugin-loader": "0.0.2",
     "@sanity/server": "0.0.9",
     "babel-cli": "^6.16.0",
