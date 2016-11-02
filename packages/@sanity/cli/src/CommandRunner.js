@@ -1,14 +1,17 @@
 import path from 'path'
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
+import {loadJson} from '@sanity/util/lib/safeJson'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 import defaultCommands from './commands'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
-import {loadJson} from './util/safeJson'
 import {generateCommandsDocumentation} from './util/generateCommandsDocumentation'
 import noSuchCommandText from './util/noSuchCommandText'
 import debug from './debug'
+
+const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
 
 const cmdHasName = cmdName => {
   return cmd => cmd.name === cmdName
@@ -33,10 +36,26 @@ export default class CommandRunner {
       return Promise.resolve()
     }
 
-    const command = (
-      this.commandGroups[commandOrGroup]
-      || this.commandGroups.default.find(cmdHasName(commandOrGroup))
-    )
+    const subCommand = args.argsWithoutOptions[0]
+    const group = this.commandGroups[commandOrGroup] || this.commandGroups.default
+    const command = group.find(cmdHasName(commandOrGroup))
+    const isDefaultGroup = group === this.commandGroups.default
+
+    // The group exists and is not "default", but the subcommand doesn't exist
+    if (!command && subCommand && !isDefaultGroup) {
+      throw new Error(noSuchCommandText(subCommand, commandOrGroup))
+    }
+
+    // Group of commands
+    if (!isDefaultGroup && !subCommand) {
+      this.handlers.outputter.print(
+        generateCommandsDocumentation(
+          this.commandGroups,
+          commandOrGroup
+        )
+      )
+      return Promise.resolve()
+    }
 
     if (!command) {
       throw new Error(noSuchCommandText(commandOrGroup))
@@ -55,6 +74,7 @@ export default class CommandRunner {
       output,
       prompt,
       apiClient,
+      yarn,
       ...options,
       commandRunner: this
     }

@@ -5,6 +5,7 @@ import url from 'url'
 import got from 'got'
 import open from 'opn'
 import chalk from 'chalk'
+import {parseJson} from '@sanity/util/lib/safeJson'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 
@@ -68,7 +69,7 @@ function loginFlow({output, provider}, resolve, reject) {
     const token = httpRes.body.token
     if (!token) {
       const query = url.parse(req.url, true).query || {}
-      const error = query.error ? safeJson(query.error, {}) : {}
+      const error = query.error ? parseJson(query.error, {}) : {}
 
       debug('Token exchange failed, body: %s', JSON.stringify(httpRes.body))
       if (error) {
@@ -109,14 +110,6 @@ function loginFlow({output, provider}, resolve, reject) {
 
   function generateUrl(urlPath) {
     return `http://localhost:${server.address().port}${urlPath}`
-  }
-}
-
-function safeJson(str, defaultVal) {
-  try {
-    return JSON.parse(str)
-  } catch (err) {
-    return defaultVal
   }
 }
 

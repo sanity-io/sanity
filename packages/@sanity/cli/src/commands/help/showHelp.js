@@ -8,15 +8,20 @@ export default (args, context) => {
   const [command, subCommand] = args.argsWithoutOptions
   const commandGroups = context.commandRunner.commandGroups
 
-  // Attempt to find a subcommand, if one is provided
-  const targetGroup = subCommand ? commandGroups[command] : commandGroups.default
-  const actualCommand = (command || subCommand)
-    && find(targetGroup || [], {name: subCommand || command})
+  // Do we have a top-level command with this name?
+  const defaultCommand = commandGroups.default[command]
 
-  context.output.print(command
-    // Single command/subcommand
-    ? generateCommandDocumentation(actualCommand, command, subCommand)
+  // How about a subcommand within a group?
+  const group = command && commandGroups[command]
+  const groupCommand = subCommand && group && find(group, {name: subCommand})
+
+  // Or just the top level of a group?
+  const isGroup = group && !groupCommand
+
+  context.output.print(!command || isGroup
     // Whole group of commands
-    : generateCommandsDocumentation(commandGroups, command)
+    ? generateCommandsDocumentation(commandGroups, command)
+    // Single command/subcommand
+    : generateCommandDocumentation(defaultCommand || groupCommand, command, subCommand)
   )
 }

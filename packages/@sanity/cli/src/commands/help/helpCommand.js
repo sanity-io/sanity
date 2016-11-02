@@ -1,4 +1,4 @@
-import lazyRequire from '../../util/lazyRequire'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 const help = `
 With no options and no COMMAND given, the synopsis of the sanity command and a

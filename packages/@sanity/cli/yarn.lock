@@ -50,6 +50,13 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
+"@sanity/util@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/util/-/util-0.0.2.tgz#a2a91dfc6c5fc847490afe70c664444405288a72"
+  dependencies:
+    fs-promise "^0.5.0"
+    in-publish "^2.0.0"
+
 abbrev@1:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"

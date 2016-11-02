@@ -1,4 +1,4 @@
-import lazyRequire from '../../util/lazyRequire'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 const help = `
 Looks for a "package.json" and/or a "yarn.lock"-file in the current directory,

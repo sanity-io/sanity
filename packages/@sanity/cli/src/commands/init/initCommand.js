@@ -1,4 +1,4 @@
-import lazyRequire from '../../util/lazyRequire'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 export default {
   name: 'init',

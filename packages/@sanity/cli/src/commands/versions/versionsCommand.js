@@ -1,4 +1,4 @@
-import lazyRequire from '../../util/lazyRequire'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 const help = `
 Shows a list of installed Sanity modules and their respective versions, and

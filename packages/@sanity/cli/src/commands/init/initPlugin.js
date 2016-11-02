@@ -1,4 +1,4 @@
-import addPluginToManifest from '../../util/addPluginToManifest'
+import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import {bootstrapPlugin} from './bootstrap'
 import gatherInput from './gatherInput'

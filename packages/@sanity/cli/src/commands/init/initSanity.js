@@ -1,6 +1,5 @@
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
-import yarnWithProgress from '../../actions/yarn/yarnWithProgress'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
@@ -10,7 +9,7 @@ import gatherInput from './gatherInput'
 import {bootstrapSanity} from './bootstrap'
 
 export default async function initSanity(args, context) {
-  const {output, prompt, workDir, apiClient} = context
+  const {output, prompt, workDir, apiClient, yarn} = context
   output.print('This utility walks you through creating a Sanity installation.')
   output.print('Press ^C at any time to quit.\n')
 
@@ -61,7 +60,7 @@ export default async function initSanity(args, context) {
 
   // Now for the slow part... installing dependencies
   try {
-    await yarnWithProgress(['install'], {...output, rootDir: workDir})
+    await yarn(['install'], {...output, rootDir: workDir})
   } catch (err) {
     throw err
   }
