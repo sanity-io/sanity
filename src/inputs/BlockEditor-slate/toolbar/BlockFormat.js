@@ -19,11 +19,7 @@ export default class BlockFormat extends React.Component {
   }
 
   renderItem = item => {
-    return (
-      <div>
-        {item.preview}
-      </div>
-    )
+    return item.preview
   }
 
   render() {
