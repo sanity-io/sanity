@@ -27,7 +27,9 @@ storiesOf('Loading')
   `,
   () => {
     return (
-      <Spinner inline />
+      <div>
+        This is an inline <Spinner inline /> spinner.
+      </div>
     )
   },
   {
