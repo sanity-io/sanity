@@ -84,7 +84,7 @@ module.exports = function httpRequest(options) {
 
     function handleProgress(stage) {
       return event => {
-        const percent = event.lengthComputable ? event.loaded / event.total : -1
+        const percent = event.lengthComputable ? ((event.loaded / event.total) * 100) : -1
         observer.next({
           type: 'progress',
           stage,
