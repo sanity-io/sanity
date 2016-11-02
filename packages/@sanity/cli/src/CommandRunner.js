@@ -38,7 +38,7 @@ export default class CommandRunner {
 
     const subCommand = args.argsWithoutOptions[0]
     const group = this.commandGroups[commandOrGroup] || this.commandGroups.default
-    const command = group.find(cmdHasName(commandOrGroup))
+    const command = group.find(cmdHasName(subCommand)) || group.find(cmdHasName(commandOrGroup))
     const isDefaultGroup = group === this.commandGroups.default
 
     // The group exists and is not "default", but the subcommand doesn't exist
