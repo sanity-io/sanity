@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import {Editor} from 'slate'
-import {pick, isEqual} from 'lodash'
+import {pick, isEqual, uniqueId} from 'lodash'
+import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import prepareSlateSchema from './util/prepareSlateSchema'
@@ -31,6 +32,7 @@ export default class BlockEditor extends React.Component {
   static propTypes = {
     type: PropTypes.any,
     field: PropTypes.any,
+    level: PropTypes.number,
     value: PropTypes.instanceOf(SlateValueContainer),
     validation: PropTypes.shape({
       errors: PropTypes.array
@@ -316,39 +318,42 @@ export default class BlockEditor extends React.Component {
   }
 
   render() {
-    const {validation, value} = this.props
+    const {validation, value, field, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
+    const inputId = uniqueId('FormBuilderText')
     return (
-      <div
-        className={`
-          ${hasError ? styles.error : styles.root}
-          ${this.state.fullscreen && styles.fullscreen}
-        `}
-      >
-        <Toolbar
-          className={styles.toolbar}
-          onInsertBlock={this.handleInsertBlock}
-          insertBlocks={this.groupedFields.formBuilder || []}
-          onFullscreenEnable={this.handleToggleFullscreen}
-          fullscreen={this.state.fullscreen}
-          onMarkButtonClick={this.handleOnClickMarkButton}
-          onListButtonClick={this.handleOnClickListFormattingButton}
-          onFormatSelectChange={this.handleSelectBlockFormatting}
-          listFormats={this.getListFormats()}
-          textFormats={this.getTextFormats()}
-          marks={this.getActiveMarks()}
-        />
-        <div className={styles.inputContainer}>
-          <Editor
-            className={styles.input}
-            onChange={this.handleEditorChange}
-            placeholder=""
-            state={value.state}
-            plugins={this.slatePlugins}
-            schema={this.slateSchema}
+      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
+        <div
+          className={`
+            ${hasError ? styles.error : styles.root}
+            ${this.state.fullscreen && styles.fullscreen}
+          `}
+        >
+          <Toolbar
+            className={styles.toolbar}
+            onInsertBlock={this.handleInsertBlock}
+            insertBlocks={this.groupedFields.formBuilder || []}
+            onFullscreenEnable={this.handleToggleFullscreen}
+            fullscreen={this.state.fullscreen}
+            onMarkButtonClick={this.handleOnClickMarkButton}
+            onListButtonClick={this.handleOnClickListFormattingButton}
+            onFormatSelectChange={this.handleSelectBlockFormatting}
+            listFormats={this.getListFormats()}
+            textFormats={this.getTextFormats()}
+            marks={this.getActiveMarks()}
           />
+          <div className={styles.inputContainer}>
+            <Editor
+              className={styles.input}
+              onChange={this.handleEditorChange}
+              placeholder=""
+              state={value.state}
+              plugins={this.slatePlugins}
+              schema={this.slateSchema}
+            />
+          </div>
         </div>
-      </div>
+      </FormField>
     )
   }
 }
