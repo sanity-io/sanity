@@ -33,7 +33,7 @@
 .listContainer {
   composes: listContainer from './SearchableSelect.css';
   height: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .text {
