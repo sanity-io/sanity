@@ -45,6 +45,15 @@
   }
 }
 
+.isActive {
+  composes: root;
+}
+
+.isInactive {
+  composes: root;
+}
+
+
 .contentType--types {
   @media (--screen-medium) {
     /* automatic */
@@ -57,84 +66,24 @@
   }
 }
 
-.isActive {
-
-}
-
-.isInactive {
-
-}
-
 .listContainer {
   display: block;
   margin: 0;
   padding: 0;
   width: 100%;
 
+  @nest .listView--cards &{
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
   @media (--screen-medium) {
     box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: auto;
     max-height: 100%;
     padding-top: 3em;
+    composes: lightScrollbars from 'part:@sanity/base/theme/layout/scrolling-style';
+    composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   }
-}
-
-
-.view--list {
-  composes: root;
-
-}
-.view--details {
-  composes: root;
-
-}
-
-.view--thumbnails {
-  composes: root;
-  composes: default from 'part:@sanity/components/lists/grid-style';
-  flex-grow: 4;
-}
-.view--cards {
-  composes: root;
-  composes: masonry from 'part:@sanity/components/lists/grid-style';
-  flex-grow: 5;
-}
-
-.list {
-  overflow: hidden;
-  min-height: 100%;
-}
-
-.list--list {
-  composes: list;
-  display: block;
-  margin: 0;
-  padding: 0;
-}
-
-.list--details {
-  composes: list;
-  display: block;
-  margin: 0;
-  padding: 0;
-}
-
-.list--cards {
-  composes: list;
-  composes: list from 'part:@sanity/components/lists/grid-style';
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-}
-
-.list--thumbnails {
-  composes: list;
-  composes: list from 'part:@sanity/components/lists/grid-style';
-}
-
-
-.menuContainer {
-
 }
 
 .menuButton {

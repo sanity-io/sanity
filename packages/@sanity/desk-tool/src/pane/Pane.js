@@ -3,6 +3,8 @@ import styles from './styles/Pane.css'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PaneMenu from './PaneMenu.js'
 import IconHamburger from 'part:@sanity/base/hamburger-icon'
+import DefaultList from 'part:@sanity/components/lists/default'
+import GridList from 'part:@sanity/components/lists/grid'
 
 export default class Pane extends React.Component {
 
@@ -11,20 +13,21 @@ export default class Pane extends React.Component {
     loading: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
-    contentType: PropTypes.oneOf(['types', 'documents'])
+    contentType: PropTypes.oneOf(['types', 'documents']),
+    onSetListView: PropTypes.func,
+    onGetListView: PropTypes.func,
+    type: PropTypes.string
   }
 
   static defaultProps = {
-    isActive: false
+    isActive: false,
+    onGetListView() {
+      return 'default'
+    }
   }
 
   constructor(...args) {
     super(...args)
-
-    this.handleMenuOpen = this.handleMenuOpen.bind(this)
-    this.handleMenuClose = this.handleMenuClose.bind(this)
-    this.handleMenuButtonClick = this.handleMenuButtonClick.bind(this)
-    this.handleMenuAction = this.handleMenuAction.bind(this)
 
     this.state = {
       menuOpened: false,
@@ -32,52 +35,42 @@ export default class Pane extends React.Component {
     }
   }
 
-  handleMenuOpen() {
+  handleMenuOpen = () => {
     this.setState({
       menuOpened: true
     })
   }
 
-  handleMenuClose() {
+  handleMenuClose = () => {
     this.setState({
       menuOpened: false
     })
   }
 
-  handleMenuAction(item) {
-    switch (item.index) {
-      case 'showDetails':
-        this.setState({view: 'details'})
-        break
-      case 'showThumbnails':
-        this.setState({view: 'thumbnails'})
-        break
-      case 'showCards':
-        this.setState({view: 'cards'})
-        break
-      case 'showList':
-        this.setState({view: 'list'})
-        break
-      default:
-        this.setState({view: 'list'})
+  handleMenuAction = item => {
+    if (item.action == 'setListView') {
+      this.props.onSetListView(this.props.type, item.key)
     }
+
     this.handleMenuClose()
   }
 
-  handleMenuButtonClick() {
+  handleMenuButtonClick = () => {
     this.handleMenuOpen()
   }
 
   render() {
-    const {loading, items, renderItem, isActive, contentType} = this.props
-    const {menuOpened, view} = this.state
+    const {loading, items, renderItem, isActive, contentType, type} = this.props
+    const {menuOpened} = this.state
+
+    const listView = this.props.onGetListView(type)
 
     return (
       <div
         className={`
           ${isActive ? styles.isActive : styles.isInactive}
           ${styles[`contentType--${this.props.contentType}`]}
-          ${styles[`view--${view}`]}
+          ${styles[`view--${listView}`]}
         `}
       >
         {
@@ -99,14 +92,20 @@ export default class Pane extends React.Component {
         }
         {loading && <Spinner />}
         <div className={styles.listContainer}>
-          <ul className={styles[`list--${view}`]}>
-            {items.map((item, i) => {
-              return (
-                renderItem(item, i, this.state.view)
-              )
-            })
-            }
-          </ul>
+
+          {
+            (listView == 'default' || listView == 'details')
+            && <DefaultList items={items} renderItem={renderItem} />
+          }
+
+          {
+            listView == 'thumbnails' && <GridList items={items} renderItem={renderItem} />
+          }
+
+          {
+            listView == 'cards' && <GridList items={items} layout="masonry" renderItem={renderItem} />
+          }
+
         </div>
       </div>
     )

@@ -21,45 +21,53 @@ class PaneMenu extends React.Component {
       {
         title: 'Alphabetical',
         icon: IconSortAlphaDesc,
-        index: 'sortByAlphabetical'
+        action: 'setSorting',
+        key: 'byAlphabetical'
       },
       {
         title: 'Last edited',
         icon: undefined,
-        index: 'sortByLastEdited'
+        action: 'setSorting',
+        key: 'byLastEdited'
       },
       {
         title: 'Created',
         icon: undefined,
-        index: 'sortByCreated'
+        action: 'setSorting',
+        key: 'byCreated'
       },
       {
         title: 'List',
         icon: IconList,
-        index: 'showList',
+        action: 'setListView',
+        key: 'default',
         divider: true
       },
       {
         title: 'Details',
         icon: IconDetails,
-        index: 'showDetails'
+        action: 'setListView',
+        key: 'details'
       },
       {
         title: 'Thumbnails',
         icon: IconThumbnails,
-        index: 'showThumbnails'
+        action: 'setListView',
+        key: 'thumbnails'
 
       },
       {
         title: 'Cards',
         icon: IconThumbnails,
-        index: 'showCards'
+        action: 'setListView',
+        key: 'cards'
 
       },
       {
         title: 'Settings',
         icon: IconSettings,
-        index: 'goToSettings',
+        action: 'goTo',
+        key: 'settings',
         divider: true
       }
     ]

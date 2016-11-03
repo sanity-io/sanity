@@ -55,26 +55,26 @@ export default class SchemaPaneResolver extends React.Component {
     return (
       <PaneItem
         key={item.key}
-        linkState={{selectedType: item.name}}
         item={{name: item.title}}
+        linkState={{selectedType: item.name}}
         selected={selected}
-        view="list"
+        view="default"
       />
     )
   }
 
-  renderDocumentPaneItem(item, i, view) {
+  renderDocumentPaneItem(item, i) {
     const {selectedType, selectedDocumentId} = this.context.router.state
     const selected = UrlDocId.encode(item._id) === selectedDocumentId
 
     return (
       <PaneItem
         key={item._id}
-        linkState={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}}
         item={item}
-        view={view}
+        linkState={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}}
         index={i}
         selected={selected}
+        listView={this.handleGetListViewForType(selectedType)}
       />
     )
   }
@@ -88,9 +88,25 @@ export default class SchemaPaneResolver extends React.Component {
 
     return (
       <QueryContainer query={selectedTypeQuery} mapFn={mapQueryResultToProps}>
-        <Pane contentType="documents" renderItem={this.renderDocumentPaneItem} />
+        <Pane
+          contentType="documents"
+          type={type}
+          renderItem={this.renderDocumentPaneItem}
+          onSetListView={this.handleSetListView}
+          onGetListView={this.handleGetListViewForType}
+        />
       </QueryContainer>
     )
+  }
+
+
+  handleSetListView = (type, listView) => {
+    window.localStorage.setItem(`desk-tool.listview.${type}`, listView)
+  }
+
+  handleGetListViewForType(type) {
+    const listView = window.localStorage.getItem(`desk-tool.listview.${type}`)
+    return listView || 'default'
   }
 
   render() {
