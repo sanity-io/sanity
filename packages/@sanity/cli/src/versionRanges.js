@@ -3,6 +3,7 @@ export default {
   core: {
     '@sanity/base': '^0.0.23',
     '@sanity/components': '^0.0.27',
+    '@sanity/core': '^0.0.1',
     '@sanity/default-layout': '^0.0.4',
     '@sanity/default-login': '^0.0.2',
     '@sanity/desk-tool': '^0.1.9',
