@@ -1,0 +1,8 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* eslint-disable no-process-env */
+exports.default = process.env.NODE_ENV === 'production';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy91dGlsL2lzUHJvZHVjdGlvbi5qcyJdLCJuYW1lcyI6WyJwcm9jZXNzIiwiZW52IiwiTk9ERV9FTlYiXSwibWFwcGluZ3MiOiI7Ozs7O0FBQUE7a0JBQ2VBLFFBQVFDLEdBQVIsQ0FBWUMsUUFBWixLQUF5QixZIiwiZmlsZSI6ImlzUHJvZHVjdGlvbi5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8qIGVzbGludC1kaXNhYmxlIG5vLXByb2Nlc3MtZW52ICovXG5leHBvcnQgZGVmYXVsdCBwcm9jZXNzLmVudi5OT0RFX0VOViA9PT0gJ3Byb2R1Y3Rpb24nXG4iXX0=
