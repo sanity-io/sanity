@@ -107,6 +107,10 @@
       "description": "Basic positioning helpers"
     },
     {
+      "name": "part:@sanity/base/theme/layout/scrolling-style",
+      "description": "Overrides scrollbar styling and scrolling helpers"
+    },
+    {
       "name": "part:@sanity/base/theme/body-style",
       "description": "Resets, fontsize, font-family etc"
     },
@@ -341,6 +345,10 @@
       "path": "styles/layout/positioning.css"
     },
     {
+      "implements": "part:@sanity/base/theme/layout/scrolling-style",
+      "path": "styles/layout/scrolling.css"
+    },
+    {
       "implements": "part:@sanity/base/theme/buttons/default-style",
       "path": "styles/buttons/default.css"
     },
@@ -406,7 +414,19 @@
     },
     {
       "name": "part:@sanity/base/sanity-logo-icon",
-      "description": "Used selects and dropdowns"
+      "description": "The S in Sanity as a logo"
+    },
+    {
+      "name": "part:@sanity/base/sanity-logo",
+      "description": "Black sanity logo"
+    },
+    {
+      "name": "part:@sanity/base/sanity-studio-logo",
+      "description": "Black SanityStudio logo"
+    },
+    {
+      "name": "part:@sanity/base/company-logo",
+      "description": "Logo for the company"
     },
     {
       "name": "part:@sanity/base/upload-icon",
@@ -551,6 +571,18 @@
     {
       "implements": "part:@sanity/base/arrow-drop-down",
       "path": "components/icons/ArrowDropDown.js"
+    },
+    {
+      "implements": "part:@sanity/base/sanity-logo",
+      "path": "components/logos/SanityLogo.js"
+    },
+    {
+      "implements": "part:@sanity/base/sanity-studio-logo",
+      "path": "components/logos/SanityStudioLogo.js"
+    },
+    {
+      "implements": "part:@sanity/base/company-logo",
+      "path": "components/logos/SanityStudioLogo.js"
     }
   ]
 }

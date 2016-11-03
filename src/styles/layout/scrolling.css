@@ -1,0 +1,78 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.lightScrollbars {
+
+  @nest &:hover {
+    @nest &::-webkit-scrollbar{
+      width: 2px;
+      padding-right: 2px;
+      opacity: 0;
+    }
+  }
+
+  @nest &::-webkit-scrollbar{
+    position: absolute;
+    width: 2px;
+    padding-right: 2px;
+    opacity: 0;
+  }
+
+  @nest &::-webkit-scrollbar-button       {
+    /*background-color: green;*/
+  }
+
+  @nest &::-webkit-scrollbar-track        {
+    background-color: var(--gray-lightest);
+  }
+
+  @nest &::-webkit-scrollbar-track-piece  {
+    background-color: transparent;
+  }
+
+  @nest &::-webkit-scrollbar-thumb        {
+    background-color: var(--gray-dark);
+  }
+  @nest &:hover  {
+    @nest &::-webkit-scrollbar-thumb        {
+      background-color: var(--gray-base);
+    }
+  }
+
+  @nest &::-webkit-scrollbar-corner       {
+    background-color: black;
+    /*@nest &:window-inactive{
+      background-color: red;
+    }*/
+  }
+
+  @nest &::-webkit-resizer                {
+    /*background-color: orange;*/
+  }
+}
+
+.scrollAll {
+  overflow: scroll;
+}
+
+.scrollX {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.scrollY {
+  overflow-y: auto;
+  overflow-x: x;
+}
+
+/*
+:horizontal
+:vertical
+:decrement
+:increment
+:start
+:end
+:double-button
+:single-button
+:no-button
+:corner-present
+:window-inactive*/
