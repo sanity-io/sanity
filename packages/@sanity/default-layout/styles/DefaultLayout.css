@@ -74,7 +74,7 @@
   }
 }
 
-.logoContainer {
+.companyLogoContainer {
   z-index: 10;
   cursor: pointer;
   & svg {
@@ -82,5 +82,21 @@
     padding-top: 1rem;
     padding-left: 0.5rem;
     width: auto;
+  }
+}
+
+.sanityStudioLogoContainer {
+  position: fixed;
+  height: 1rem;
+  width: 10em;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 5000;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+  & svg {
+    height: 0.75rem;
   }
 }

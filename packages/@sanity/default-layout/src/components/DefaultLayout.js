@@ -6,7 +6,8 @@ import styles from '../../styles/DefaultLayout.css'
 import tools from 'all:part:@sanity/base/tool'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import LoginStatus from './LoginStatus'
-import Logo from './Logo'
+import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
+import CompanyLogo from 'part:@sanity/base/company-logo'
 import Hamburger from './Hamburger'
 
 class DefaultLayout extends React.Component {
@@ -24,9 +25,13 @@ class DefaultLayout extends React.Component {
     return (
       <div className={styles.defaultLayout}>
 
+        <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
+          <SanityStudioLogo />
+        </a>
+
         <div className={styles.top}>
-          <div className={styles.logoContainer}>
-            <Logo />
+          <div className={styles.companyLogoContainer}>
+            <CompanyLogo />
           </div>
           <div className={styles.menu}>
             <Hamburger>
