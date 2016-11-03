@@ -27,13 +27,13 @@ export default function yarnWithProgress(args, options = {}) {
   }, options.execOpts || {})
 
   const proc = execa('yarn', args.concat(['--json']), execOpts)
-  proc.catch(onError);
+  proc.catch(onNativeError);
 
   [proc.stdout, proc.stderr].forEach(stream => {
     stream
       .pipe(split2(JSON.parse))
       .on('data', onChunk)
-      .on('error', onError)
+      .on('error', onNativeError)
   })
 
   const state = {}
@@ -48,6 +48,8 @@ export default function yarnWithProgress(args, options = {}) {
     switch (event.type) {
       case 'error':
         return onError(event)
+      case 'warning':
+        return onWarning(event)
       case 'step':
         return onStep(event)
       case 'activityStart':
@@ -133,29 +135,78 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   function onSuccess(event) {
+    if (state.spinner) {
+      state.spinner.stop()
+    }
+
     print(`${chalk.green('✔')} Saved lockfile`)
   }
 
   function onFinished(event) {
+    if (state.spinner) {
+      state.spinner.stop()
+    }
+
     const time = `${(event.data / 1000).toFixed(2)}s`
     print(`${chalk.green('✔')} Done in ${time}`)
   }
 
+  function onWarning(event) {
+    holdSpinner(() => print(`${chalk.yellow('●')} ${event.data}`))
+  }
+
   function onError(event) {
-    // Skip installation errors for optional dependencies
-    const optDepMsg = 'install script for optional dependency'
-    if (event.data && event.data.indexOf(optDepMsg) !== -1) {
+    // Skip certain errors from being logged
+    if (shouldIgnoreError(event)) {
       return
     }
-
-    const err = event instanceof Error ? event : new Error(event.data)
 
     if (state.spinner) {
       state.spinner.fail()
     }
 
-    error(`${chalk.red('✖')} ${err.message}`)
+    error(`${chalk.red('✖')} ${event.data}`)
   }
 
-  return proc
+  function onNativeError(err) {
+    if (state.spinner) {
+      state.spinner.fail()
+    }
+
+    throw err
+  }
+
+  function holdSpinner(op) {
+    if (state.spinner) {
+      state.spinner.stop()
+    }
+
+    op()
+
+    if (state.spinner) {
+      state.spinner.start()
+    }
+  }
+
+  return proc.catch(err => {
+    const detailed = new Error('Command failed :(')
+    detailed.code = err.code
+    detailed.killed = err.killed
+    detailed.err = err.message
+    throw detailed
+  })
+}
+
+
+const ignoredMessages = [
+  'install script for optional dependency',
+  'Command failed: yarn'
+]
+
+function shouldIgnoreError(event) {
+  if (!event || !event.data) {
+    return false
+  }
+
+  return ignoredMessages.some(ignore => event.data.indexOf(ignore) !== -1)
 }

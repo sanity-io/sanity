@@ -1,4 +1,6 @@
 export default (args, context) => {
   const {output, workDir, yarn} = context
-  return yarn(['install'], {...output, rootDir: workDir})
+  const {extOptions} = args
+  const flags = extOptions.offline ? ['--offline'] : []
+  return yarn(['install'].concat(flags), {...output, rootDir: workDir})
 }
