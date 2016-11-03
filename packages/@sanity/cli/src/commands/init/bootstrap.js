@@ -8,16 +8,22 @@ import {
   createPluginManifest
 } from './createManifest'
 
-export function bootstrapSanity(targetPath, data, output) {
+export async function bootstrapSanity(targetPath, data, output) {
   const writeIfNotExists = partialRight(writeFileIfNotExists, output)
 
-  return Promise.all([
+  // Create folder structure
+  let spinner = output.spinner('Creating folder structure').start()
+  await Promise.all([
     fsp.ensureDir(path.join(targetPath, 'config')),
     fsp.ensureDir(path.join(targetPath, 'plugins')),
     fsp.ensureDir(path.join(targetPath, 'static')),
     fsp.ensureDir(path.join(targetPath, 'schemas'))
   ])
-  .then(() => promiseProps({
+  spinner.succeed()
+
+  // Initialize/populate templates
+  spinner = output.spinner('Bootstrapping project files').start()
+  const templates = await promiseProps({
     pluginGitKeep: readTemplate('pluginGitKeep'),
     staticGitKeep: readTemplate('staticGitKeep'),
     gitIgnore: readTemplate('gitignore'),
@@ -26,8 +32,10 @@ export function bootstrapSanity(targetPath, data, output) {
     manifest: createPackageManifest(data),
     sanity: createSanityManifest(data, {}),
     readme: `# ${data.name}\n\n${data.description}\n`
-  }))
-  .then(templates => Promise.all([
+  })
+
+  // Write files to target
+  await Promise.all([
     writeIfNotExists(path.join(targetPath, 'plugins', '.gitkeep'), templates.pluginGitKeep),
     writeIfNotExists(path.join(targetPath, 'static', '.gitkeep'), templates.staticGitKeep),
     writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
@@ -36,7 +44,8 @@ export function bootstrapSanity(targetPath, data, output) {
     writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
     writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
     writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
-  ]))
+  ])
+  spinner.succeed()
 }
 
 export function bootstrapPlugin(data, opts = {}) {

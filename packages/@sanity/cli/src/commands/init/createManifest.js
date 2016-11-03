@@ -1,7 +1,7 @@
 import ghUrl from 'github-url-to-object'
-import cliPackage from '../../../package.json'
-import versionRanges from '../../versionRanges'
 import sortObject from 'deep-sort-object'
+import versionRanges from '../../versionRanges'
+import resolveLatestVersions from '../../util/resolveLatestVersions'
 
 const manifestPropOrder = [
   'name', 'private', 'version', 'description', 'main', 'author', 'license', 'scripts',
@@ -40,21 +40,16 @@ function getCommonManifest(data) {
   return pkg
 }
 
-export function createPackageManifest(data) {
+export async function createPackageManifest(data) {
+  const deps = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
   const pkg = Object.assign(getCommonManifest(data), {
     main: 'package.json',
     keywords: ['sanity'],
     scripts: {
       start: 'sanity start',
       test: 'sanity test'
-    },
-    dependencies: sortObject(
-      Object.assign(
-        {[cliPackage.name]: `^${cliPackage.version}`},
-        versionRanges.core
-      )
-    )
-  })
+    }
+  }, deps)
 
   return serializeManifest(pkg)
 }

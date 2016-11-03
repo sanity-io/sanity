@@ -55,7 +55,8 @@ export default async function gatherInput(prompt, defaults, options = {}) {
       type: 'input',
       message: 'Output path:',
       default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-      validate: validateEmptyPath
+      validate: validateEmptyPath,
+      filter: absolutify
     })
   }
 
@@ -64,7 +65,8 @@ export default async function gatherInput(prompt, defaults, options = {}) {
       type: 'input',
       message: 'Output path:',
       default: workDirIsEmpty ? workDir : path.join(workDir, 'plugins', answers.name),
-      validate: validateEmptyPath
+      validate: validateEmptyPath,
+      filter: absolutify
     })
 
     answers.createConfig = await prompt.single({
@@ -86,7 +88,8 @@ export default async function gatherInput(prompt, defaults, options = {}) {
 }
 
 async function validateEmptyPath(dir) {
-  return (await pathIsEmpty(dir))
+  const checkPath = absolutify(dir)
+  return (await pathIsEmpty(checkPath))
     ? true
     : 'Given path is not empty'
 }
@@ -101,4 +104,10 @@ function pathIsEmpty(dir) {
 
       throw err
     })
+}
+
+function absolutify(dir) {
+  return path.isAbsolute(dir)
+    ? dir
+    : path.resolve(process.cwd(), dir)
 }

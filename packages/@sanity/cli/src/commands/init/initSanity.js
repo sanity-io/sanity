@@ -1,9 +1,11 @@
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
+import resolveLatestVersions from '../../util/resolveLatestVersions'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
 import login from '../../actions/login/login'
+import versionRanges from '../../versionRanges'
 import promptForDatasetName from './promptForDatasetName'
 import gatherInput from './gatherInput'
 import {bootstrapSanity} from './bootstrap'
@@ -49,18 +51,30 @@ export default async function initSanity(args, context) {
   // Prompt the user for required information
   const answers = await gatherInput(prompt, defaults, {workDir, sluggedName})
 
+  // Ensure we are using the output path provided by user
+  const outputPath = answers.outputPath || workDir
+
+  // Find latest versions of dependencies
+  const spinner = output.spinner('Resolving latest module versions').start()
+  const dependencies = await resolveLatestVersions(
+    Object.keys(versionRanges.core),
+    {asRange: true}
+  )
+  spinner.succeed()
+
   // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapSanity(workDir, {
+  await bootstrapSanity(outputPath, {
     name: sluggedName,
     dataset: datasetName,
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
+    dependencies,
     ...answers
   }, output)
 
   // Now for the slow part... installing dependencies
   try {
-    await yarn(['install'], {...output, rootDir: workDir})
+    await yarn(['install'], {...output, rootDir: outputPath})
   } catch (err) {
     throw err
   }
