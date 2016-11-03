@@ -12,10 +12,12 @@ export default class DefaultListItem extends React.Component {
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
     scrollIntoView: PropTypes.func,
+    decoration: PropTypes.oneOf(['default', 'zebra-stripes'])
   }
 
   static defaultProps = {
-    onSelect() {}
+    onSelect() {},
+    decoration: 'default'
   }
 
   state = {
@@ -54,13 +56,13 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {item, layout, selected, highlighted, className} = this.props
+    const {item, selected, highlighted, className, decoration} = this.props
     const {mouseIsDown} = this.state
 
     const rootClasses = `
-      ${styles[layout] || styles.default}
-      ${selected ? styles.selected : styles.unSelected}
-      ${highlighted ? styles.highlighted : styles.unHighlighted}
+      ${decoration && styles[decoration]}
+      ${highlighted && styles.highlighted}
+      ${selected && styles.selected}
       ${mouseIsDown && styles.active}
       ${className}
     `

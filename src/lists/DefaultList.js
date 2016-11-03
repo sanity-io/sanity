@@ -24,7 +24,8 @@ export default class DefaultList extends React.Component {
     children: PropTypes.node,
     className: PropTypes.string,
     renderItem: PropTypes.func,
-    ListItemContainer: PropTypes.func
+    ListItemContainer: PropTypes.func,
+    decoration: PropTypes.string
   }
 
   static defaultProps = {
@@ -67,7 +68,7 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, className, selectedItem, highlightedItem, renderItem, scrollable} = this.props
+    const {items, className, selectedItem, highlightedItem, renderItem, scrollable, decoration} = this.props
 
     const ListItemContainer = this.props.ListItemContainer || ListItem
 
@@ -87,6 +88,7 @@ export default class DefaultList extends React.Component {
                     selected={item == selectedItem}
                     highlighted={item == highlightedItem}
                     scrollIntoView={this.scrollElementIntoViewIfNeeded}
+                    decoration={decoration}
                   >
                     {renderItem(item, i)}
                   </ListItemContainer>

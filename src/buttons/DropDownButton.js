@@ -3,6 +3,7 @@ import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
+import {omit} from 'lodash'
 
 class DropDownButton extends React.Component {
   static propTypes = {
@@ -16,7 +17,7 @@ class DropDownButton extends React.Component {
     onAction: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
-    icon: PropTypes.node,
+    icon: PropTypes.func,
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
@@ -47,7 +48,7 @@ class DropDownButton extends React.Component {
   }
 
   render() {
-    const {items, children, kind, className, ...rest} = this.props
+    const {items, children, kind, className, ...rest} = omit(this.props, 'onAction')
     return (
       <Button
         {...rest}
