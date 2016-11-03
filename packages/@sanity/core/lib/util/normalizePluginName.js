@@ -1,8 +1,0 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = pluginName => pluginName.replace(/^sanity-plugin-/, '');
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy91dGlsL25vcm1hbGl6ZVBsdWdpbk5hbWUuanMiXSwibmFtZXMiOlsicGx1Z2luTmFtZSIsInJlcGxhY2UiXSwibWFwcGluZ3MiOiI7Ozs7OztrQkFBZUEsY0FBY0EsV0FBV0MsT0FBWCxDQUFtQixpQkFBbkIsRUFBc0MsRUFBdEMsQyIsImZpbGUiOiJub3JtYWxpemVQbHVnaW5OYW1lLmpzIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGRlZmF1bHQgcGx1Z2luTmFtZSA9PiBwbHVnaW5OYW1lLnJlcGxhY2UoL15zYW5pdHktcGx1Z2luLS8sICcnKVxuIl19
