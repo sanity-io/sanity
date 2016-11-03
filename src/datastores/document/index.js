@@ -1,16 +1,30 @@
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 import {Observable} from 'rxjs'
-
 const serverConnection = {
   byId(id) {
-    return Observable.timer(0, 5000)
-      .flatMap(() => client.getDocument(id))
-      // .do(response => console.log('response', response))
-      .map(doc => ({
-        type: 'snapshot',
-        document: doc
-      }))
+    return Observable
+      .from(
+        client.getDocument(id)
+          .then(document => {
+            return {
+              type: 'snapshot',
+              document: document
+            }
+          })
+      )
+      .merge(
+        client.listen('*[_id == $id]', {id: id})
+          .filter(event => ('mutation' in event))
+          .map(event => {
+            return {
+              type: 'patch',
+              patch: event.mutation.patch
+            }
+          })
+      )
+      .do(response => console.log('response', response))
+
   },
 
   query(query, params) {
