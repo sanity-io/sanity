@@ -1,16 +1,35 @@
-@use postcss-cssnext;
-
 :root {
-  --brand-primary: #2097ac;
-  --brand-success: #5cb85c;
-  --brand-info: #5bc0de;
-  --brand-warning: #ff9b00;
-  --brand-danger: #f43;
-  --body-bg: #ffffff;
+  --brand-black: #000;
+  --brand-white: #fff;
   --gray-base: #383838;
 
-  --state-success-color: var(--brand-success);
-  --state-info-color: var(--brand-info);
-  --state-warning-color: var(--brand-warning);
-  --state-danger-color: var(--brand-danger);
+  --brand-primary: #2097ac;
+  --brand-primary--text: #fff;
+  --brand-primary-light: #53cadf;
+  --brand-primary-light--text: #fff;
+  --brand-primary-lighter: #7ed7e7;
+  --brand-primary-light--text: #000;
+
+  --brand-secondary: #f43;
+  --brand-secondary-light: #ff7366;
+  --brand-secondary-light--text: var(--brand-white);
+  --brand-secondary-lighter: #ffa299;
+  --brand-secondary-lighter--text: var(--brand-black);
+
+
+  --brand-success: #19b366;
+  --brand-success--text: var(--brand-white);
+  --brand-success-light: #20df80;
+  --brand-success-light--text: var(--brand-white);
+  --brand-success-lighter: #4de699;
+  --brand-success-lighter--text: var(--brand-white);
+
+  --brand-info: #5bc0de;
+  --brand-info--text: var(--brand-black);
+  --brand-warning: #ff9b00;
+  --brand-warning--text: var(--brand-black);;
+  --brand-danger: #f43;
+  --brand-danger--text: var(--brand-white);
+
+  --body-bg: var(--brand-white);
 }

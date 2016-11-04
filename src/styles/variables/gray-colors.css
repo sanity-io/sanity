@@ -4,10 +4,18 @@
 :root {
   --black: #000;
   --gray-darkest: color(var(--gray-base) lightness(+5%));
+  --gray-darkest--transparent: color(var(--gray-base) lightness(+5%) a(95%));
   --gray-darker: color(var(--gray-base) lightness(+12%));
+  --gray-darker-transparent: color(var(--gray-base) lightness(+12%) a(88%));
   --gray-dark: color(var(--gray-base) lightness(+30%));
+  --gray-dark--transparent: color(var(--gray-base) lightness(+30%) a(70%));
   --gray: color(var(--gray-base) lightness(+40%));
+  --gray--transparent: color(var(--gray-base) a(60%));
   --gray-light: color(var(--gray-base) lightness(+50%));
+  --gray-light--transparent: color(var(--gray-base) lightness(+50%) a(50%));
   --gray-lighter: color(var(--gray-base) lightness(+75%));
+  --gray-lighter--transparent: color(var(--gray-base) lightness(+75%) a(25%));
   --gray-lightest: color(var(--gray-base) lightness(+77%));
+  --gray-lightest--transparent: color(var(--gray-base) lightness(+77%) a(50%));
+  --white: #fff;
 }

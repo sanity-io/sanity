@@ -3,7 +3,8 @@
 :root {
   --zindex-navbar: 1000;
   --zindex-dropdown: 1000;
-  --zindex-popover: 1060;
+  --zindex-popover--background: 1060;
+  --zindex-popover: 1061;
   --zindex-tooltip: 1070;
   --zindex-navbar-fixed: 1030;
   --zindex-modal-background: 1040;

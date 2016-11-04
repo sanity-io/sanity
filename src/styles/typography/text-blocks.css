@@ -41,5 +41,23 @@
 }
 
 .blockquote {
-  border-left: 2rem solid red;
+  position: relative;
+  color: var(--blockquote-color);
+  font-size: var(--blockquote-font-size);
+  font-family: var(--font-family-serif);
+  font-style: italic;
+  &:before {
+    content: "“";
+    font-size: 5em;
+    font-family: var(--font-family-serif);
+    position: absolute;
+    left: -3rem;
+    top: -2rem;
+    opacity: 0.5;
+  }
+}
+
+.blockquoteSmall {
+  composes: blockquote;
+  color: var(--blockquote-small-color);
 }

@@ -2,6 +2,14 @@
 @use postcss-cssnext;
 
 :root {
+  --state-success-color: var(--brand-success);
+  --state-success-color--text: var(--brand-success--text);
+  --state-info-color: var(--brand-info);
+  --state-info-color--text: var(--brand-info--text);
+  --state-warning-color: var(--brand-warning);
+  --state-warning-color--text: var(--brand-warning--text);
+  --state-danger-color: var(--brand-danger);
+  --state-danger-color--text: var(--brand-danger--text);
   --state-success-text: var(--state-success-color);
   --state-success-bg: #dff0d8;
   --state-success-border: var(--state-success-bg);

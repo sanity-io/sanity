@@ -4,6 +4,7 @@
 :root {
 
   --default-button-color: var(--gray-lighter);
+  --default-button-color--text: var(--brand-black);
   --default-button-color--hover: var(--gray-light);
   --default-button-color--active: var(--gray);
 
@@ -27,7 +28,7 @@
   --input-color-placeholder: var(--gray-lighter);
   --form-group-margin-bottom: 1em;
   --legend-color: var(--gray-dark);
-  
+
   --input-group-addon-bg: var(--gray-lighter);
   --input-group-addon-border-color: var(--input-border);
 

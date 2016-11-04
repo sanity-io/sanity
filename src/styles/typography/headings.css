@@ -51,7 +51,6 @@
 
 .heading6 {
   composes: root;
-  text-transform: uppercase;
   font-size: var(--font-size-h6);
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
