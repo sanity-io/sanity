@@ -9,9 +9,11 @@
       ignorePseudoClasses: ["global"]
       }
     ],
-    "unit-no-unknown": [true, {
-      ignoreUnits: ["composes"]
+    "property-no-unknown": [true, {
+      "ignoreProperties": [
+        "composes",
+        /lost-.+/
+      ]
     }]
-
   }
 }
