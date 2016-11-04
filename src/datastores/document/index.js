@@ -1,10 +1,12 @@
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
+import {omit} from 'lodash'
 import {Observable} from 'rxjs'
 const serverConnection = {
   byId(id) {
     return Observable
       .from(
+        // todo can be removed when gradient supports emitting current snapshot on subscribe
         client.getDocument(id)
           .then(document => {
             return {
@@ -14,17 +16,16 @@ const serverConnection = {
           })
       )
       .merge(
-        client.listen('*[_id == $id]', {id: id})
+        Observable.from(client.listen('*[_id == $id]', {id: id}))
           .filter(event => ('mutation' in event))
+          // .filter(event => event.type === 'mutation') // todo replace above with this when fixed in gradient
           .map(event => {
             return {
-              type: 'patch',
-              patch: event.mutation.patch
+              type: 'update',
+              patch: omit(event.mutation.patch, 'id')
             }
           })
       )
-      .do(response => console.log('response', response))
-
   },
 
   query(query, params) {
@@ -39,7 +40,7 @@ const serverConnection = {
   update(id, patch) {
     return Observable.from(client
       .patch(id, patch)
-      .commit())
+      .commit({returnDocuments: false}))
   },
 
   create(doc) {
