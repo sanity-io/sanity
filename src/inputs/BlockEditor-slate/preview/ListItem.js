@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from '../styles/ListItem.css'
+import styles from '../styles/contentStyles/ListItem.css'
 
 function ListItem(props) {
   if (props.isPreview) {

@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from '../styles/Mark.css'
+import styles from '../styles/contentStyles/Mark.css'
 
 function Mark(props) {
   return <span className={styles[props.mark.type]}>{props.children}</span>

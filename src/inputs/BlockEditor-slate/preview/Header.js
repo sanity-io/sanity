@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
-import styles from '../styles/Header.css'
+import styles from '../styles/contentStyles/Header.css'
 
 function Header(props) {
   return (
-    <div className={styles[`header-${props.level}`]}>
+    <div className={styles[`heading${props.level}`]}>
       {props.children}
     </div>
   )
