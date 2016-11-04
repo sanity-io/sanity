@@ -1,6 +1,5 @@
 const {Observable} = require('rxjs')
 const createCache = require('./utils/createCache')
-const createEvent = require('./utils/createEvent')
 const canonicalize = require('./utils/canonicalize')
 
 const Record = require('./Record')
@@ -21,10 +20,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     byIds,
     query,
     create,
-    // replace,
-    // createOrReplace,
-    update,
-    // delete,
+    update
   }
 
   function update(documentId, patch) {
@@ -32,13 +28,12 @@ module.exports = function createDocumentStore({serverConnection}) {
       // Update the local cache if we have it
       // If we don't have it, that means nothing is interested in its state
       const record = RECORDS_CACHE.get(documentId)
-      record.update(patch)
+      record.publish({type: 'mutation', origin: 'client', patch: patch})
     }
     return patch.local ? Observable.of({ok: true}) : server.update(documentId, patch)
   }
 
   function byId(documentId) {
-
     const record = RECORDS_CACHE.fetch(documentId, () => Record.create())
 
     return new Observable(observer => {
@@ -47,12 +42,7 @@ module.exports = function createDocumentStore({serverConnection}) {
       const serverSubscription = server
         .byId(documentId)
         .subscribe(event => {
-          if (event.type === 'snapshot') {
-            record.sync(event.document)
-          }
-          if (event.type === 'update') {
-            record.update(event.patch)
-          }
+          record.publish(Object.assign({}, event, {origin: 'server'}))
         })
 
       const eventsSubscription = record.events.subscribe(observer)
@@ -67,8 +57,8 @@ module.exports = function createDocumentStore({serverConnection}) {
     return Observable.merge(...documentIds.map(byId))
   }
 
-  function query(query, params) {
-    return Observable.from(serverConnection.query(query, params))
+  function query(_query, params) {
+    return Observable.from(serverConnection.query(_query, params))
   }
   function create(document) {
     return Observable.from(serverConnection.create(document))

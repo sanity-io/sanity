@@ -20,7 +20,7 @@ const updates = documents.byId(12)
 
 wait(500, () => {
   console.log('Update init')
-  documents.update(12, {body: {$set: 'UPDATED'}})
+  documents.update(12, {patch: {set: {body: 'UPDATED'}}})
     .subscribe({
       next() {
         console.log('Updating...')
@@ -31,17 +31,17 @@ wait(500, () => {
     })
 })
 
-const first = documents.byId("lol32").subscribe(event => {
-  console.log('event', event)
-})
-const second = documents.byId("lol32").subscribe(event => {
-  console.log('GOT EVENT', event)
-})
-
-wait(1000, () => {
-  documents.update("44", {body: {$set: "LOCAL APPLIED"}})
-})
-
-wait(2000, () => {
-  second.unsubscribe()
-})
+// const first = documents.byId(22).subscribe(event => {
+//   console.log('event', event)
+// })
+// const second = documents.byId(22).subscribe(event => {
+//   console.log('GOT EVENT', event)
+// })
+//
+// wait(1000, () => {
+//   documents.update('44', {patch: {set: {body: 'LOCAL APPLIED'}}})
+// })
+//
+// wait(2000, () => {
+//   second.unsubscribe()
+// })
