@@ -58,8 +58,14 @@ storiesOf('Typography').addWithInfo(
         <h5 className={headings.heading5}>Heading 5</h5>
         <p className={textBlocks.paragraph}>{chance.paragraph({sentences: 5})}</p>
 
-        <h5 className={headings.heading5}>Heading 5</h5>
+        <h5 className={headings.heading6}>Heading 6</h5>
         <p className={textBlocks.paragraph}>{chance.paragraph({sentences: 5})}</p>
+
+        <h5 className={headings.heading5}>Block Quote</h5>
+        <blockquote className={textBlocks.blockquote}>
+          <p>{chance.paragraph({sentences: 3})}</p>
+        </blockquote>
+
       </article>
     )
   },
