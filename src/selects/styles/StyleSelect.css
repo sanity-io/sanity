@@ -31,9 +31,21 @@
 }
 
 .listContainer {
-  composes: listContainer from './SearchableSelect.css';
+  display: block;
+  position: absolute;
+  overflow: hidden;
+  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
+  box-sizing: border-box;
+  transform: translateY(-1px);
+  background-color: color(var(--body-bg) a(90%));
   height: auto;
+  width: auto;
   overflow-y: auto;
+
+  @supports (backdrop-filter: blur(5px)) {
+    backdrop-filter: blur(5px);
+    background-color: color(var(--body-bg) a(70%));
+  }
 }
 
 .text {
@@ -58,23 +70,23 @@
 .item {
   display: block;
   position: relative;
-  background-color: #fff;
   border-bottom: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  min-height: 2em;
+  cursor: pointer;
+  padding-right: 1em;
 
   &:last-child {
     border: 0;
   }
 
-  overflow: hidden;
-  min-height: 2em;
-  cursor: pointer;
-
   &:hover {
-    background-color: var(--gray-lighter);
+    background-color: var(--gray-lighter--transparent);
   }
 
   &:active {
-    background-color: var(--gray-light);
+    background-color: var(--gray-light--transparent);
   }
 }
 
