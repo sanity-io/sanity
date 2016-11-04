@@ -5,7 +5,7 @@
 @keyframes reveal {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-50%) scale(0.1);
+    transform: translateX(-50%) translateY(-50%) scale(0.5);
   }
 
   5% {
@@ -35,14 +35,29 @@
 }
 
 .root {
+  position: fixed;
+  z-index: var(--zindex-modal-background);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--backdrop-background-color);
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
+  backdrop-filter: blur(10px);
+}
+
+.dialog {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   z-index: var(--zindex-modal);
-  position: fixed;
+  position: absolute;
   border: 0;
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
-  animation-timing-function: linear;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
   background-color: var(--body-bg);
   height: 100%;
@@ -52,7 +67,7 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    display: table-cell;
+    display: block;
     top: 50%;
     left: 50%;
     height: 100%;
@@ -66,7 +81,7 @@
 }
 
 .isClosed {
-  composes: root;
+  display: none;
 }
 
 .isOpen {
@@ -113,6 +128,13 @@
   font-size: var(--font-size-h4);
   font-weight: 300;
   margin: 0;
+
+  @media (--screen-medium) {
+    margin-right: 2rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 .closeButton {
@@ -134,15 +156,6 @@
   &:active {
     transform: scale(0.8);
   }
-}
-
-/* Native dialog backdrop */
-:global(::backdrop) {
-  background-color: var(--backdrop-background-color);
-  animation-name: fadeIn;
-  animation-duration: 0.2s;
-  animation-timing-function: linear;
-  animation-iteration-count: once;
 }
 
 .functions {

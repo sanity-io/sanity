@@ -1,9 +1,7 @@
 import React, {PropTypes} from 'react'
-import ReactDOM from 'react-dom'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import dialogPolyfill from 'dialog-polyfill'
 
 export default class DefaultDialog extends React.Component {
   static propTypes = {
@@ -48,29 +46,8 @@ export default class DefaultDialog extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.dialogElement = ReactDOM.findDOMNode(this)
-
-    if (!this.dialogElement.showModal) {
-      dialogPolyfill.registerDialog(this.dialogElement)
-    }
-
-    if (this.props.isOpen) {
-      this.openDialogElement()
-    } else {
-      this.closeDialogElement()
-    }
-  }
-
   openDialogElement() {
-    this.dialogElement.showModal()
     this.props.onOpen()
-  }
-
-  closeDialogElement() {
-    if (this.dialogElement.open) {
-      this.dialogElement.close()
-    }
   }
 
   handleCloseClick() {
@@ -84,52 +61,53 @@ export default class DefaultDialog extends React.Component {
 
   render() {
     const {title, actions, isOpen, showHeader} = this.props
-    const style = `
-      ${isOpen ? styles.isOpen : styles.root}
+    const classNames = `
+      ${isOpen ? styles.isOpen : styles.isClosed}
       ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
     `
 
     return (
-      <dialog className={style}>
-        <div className={styles.inner}>
-          {
-            showHeader && <div className={styles.header}>
-              <h1 className={styles.title}>{title}</h1>
-              <button className={styles.closeButton} onClick={this.handleCloseClick}>
-                <CloseIcon color="inherit" />
-              </button>
-            </div>
-          }
-
-
-          <div className={styles.content}>
-            {this.props.children}
-          </div>
-
-          <div className={styles.footer}>
+      <div className={classNames}>
+        <div className={styles.dialog}>
+          <div className={styles.inner}>
             {
-              actions.length > 0 && <div className={styles.functions}>
-                {
-                  actions.map((action, i) => {
-                    return (
-                      <Button
-                        key={i}
-                        onClick={this.handleActionClick}
-                        data-action-index={i}
-                        kind={action.kind}
-                        className={styles[`button_${action.kind}`] || styles.button}
-                      >
-                        {action.title}
-                      </Button>
-                    )
-                  })
-                }
+              showHeader && <div className={styles.header}>
+                <h1 className={styles.title}>{title}</h1>
+                <button className={styles.closeButton} onClick={this.handleCloseClick}>
+                  <CloseIcon color="inherit" />
+                </button>
               </div>
             }
+
+            <div className={styles.content}>
+              {this.props.children}
+            </div>
+
+            <div className={styles.footer}>
+              {
+                actions.length > 0 && <div className={styles.functions}>
+                  {
+                    actions.map((action, i) => {
+                      return (
+                        <Button
+                          key={i}
+                          onClick={this.handleActionClick}
+                          data-action-index={i}
+                          kind={action.kind}
+                          className={styles[`button_${action.kind}`] || styles.button}
+                        >
+                          {action.title}
+                        </Button>
+                      )
+                    })
+                  }
+                </div>
+              }
+            </div>
           </div>
         </div>
-      </dialog>
+      </div>
     )
   }
 }
