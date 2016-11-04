@@ -3,18 +3,18 @@
 @use postcss-cssnext;
 
 .root {
-  display: inline-block;
   position: relative;
-  padding: 0.8em 1em;
-  font-size: var(--font-size-xsmall);
-  outline: none;
-  cursor: pointer;
-  border: none;
+  display: inline-block;
   margin-right: var(--extra-small-padding);
-  line-height: 1em;
-  user-select: none;
-  font-family: inherit;
+  padding: 0.8em 1em;
+  outline: none;
+  border: none;
   color: inherit;
+  font-size: var(--font-size-xsmall);
+  font-family: inherit;
+  line-height: 1em;
+  cursor: pointer;
+  user-select: none;
 }
 
 .shadow {
@@ -22,55 +22,51 @@
 }
 
 .default {
+  background-color: var(--default-button-color);
+  color: var(--default-button-color--text);
   composes: root;
   composes: shadow;
-  background-color: var(--default-button-color);
 }
 
 .colored {
-  composes: default;
   background-color: var(--brand-primary);
-  color: #fff;
-}
-
-.small {
-  font-size: 0.8em;
-  padding: 0.2em 1em;
+  color: color(var(--brand-primary--text));
+  composes: default;
 }
 
 .secondary {
-  composes: default;
   border: none;
-  box-shadow: none;
   background-color: transparent;
+  box-shadow: none;
   color: var(--gray);
+  composes: default;
 }
 
 .inverted {
-  composes: default;
   border: 1px solid var(--gray-base);
-  background-color: transparent;
   border-color: var(--gray-base);
+  background-color: transparent;
   box-shadow: none;
+  composes: default;
 
   &.danger {
-    background-color: inherit;
     border-color: var(--brand-danger);
+    background-color: inherit;
     color: var(--brand-danger);
   }
 
   &.colored {
-    background-color: inherit;
     border-color: var(--brand-primary);
+    background-color: inherit;
     color: var(--brand-primary);
   }
 }
 
 .danger {
-  composes: default;
   border-color: var(--brand-danger);
-  color: #fff;
   background-color: var(--brand-danger);
+  color: var(--brand-danger--text);
+  composes: default;
 }
 
 .delete {
@@ -86,9 +82,9 @@
 }
 
 .noBorder {
+  border: 0;
   background-color: transparent;
   text-align: left;
-  border: 0;
 }
 
 .simple {
@@ -111,8 +107,6 @@
 }
 
 .icon {
-  transform: scale(1.2);
-
   @nest .colored & {
     fill: #fff;
   }
@@ -124,4 +118,11 @@
   @nest .danger.inverted & {
     fill: var(--brand-danger);
   }
+
+  transform: scale(1.2);
+}
+
+.disabled {
+  opacity: 0.3;
+  cursor: var(--cursor-disabled);
 }

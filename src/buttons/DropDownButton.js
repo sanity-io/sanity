@@ -34,6 +34,10 @@ class DropDownButton extends React.Component {
     this.handleAction = this.handleAction.bind(this)
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return true
+  }
+
   handleClickOutside() {
     this.setState({menuOpened: false})
   }

@@ -18,178 +18,189 @@ storiesOf('Buttons')
     ),
     {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )
-.addWithInfo(
-'Variations',
-'',
-() => (
-  <div>
-    <Button onClick={action('clicked')}>Default</Button>
-    <Button onClick={action('clicked')} kind="simple">Simple</Button>
-    <Button onClick={action('clicked')} colored>colored</Button>
-    <Button onClick={action('clicked')} inverted>Inverted</Button>
-    <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>
-    <Button onClick={action('clicked')} kind="danger" inverted>Kind=danger inverted</Button>
-    <Button onClick={action('clicked')} colored inverted>colored inverted</Button>
-    <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} inverted>
-      Secondary
-    </Button>
-    <Button onClick={action('clicked')} icon={SanityLogoIcon}>
-      With icon
-    </Button>
-    <Button onClick={action('clicked')} colored icon={SanityLogoIcon}>
-      Colored with icon
-    </Button>
-    <Button onClick={action('clicked')} kind="danger" icon={SanityLogoIcon} inverted>
-      Danger, inverted & icon
-    </Button>
-  </div>
-),
-{propTables: [Button], role: 'part:@sanity/components/buttons/default'}
-)
+  .addWithInfo(
+    'Default Button (disabled)',
+    'Standard button Role: part:@sanity/components/buttons/default',
+    () => (
+      <Button onClick={action('clicked')} disabled>I'm disabled!</Button>
+    ),
+    {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
+  )
+  .addWithInfo(
+  'Variations',
+  '',
+  () => (
+    <div>
+      <Button onClick={action('clicked')}>Default</Button>
+      <Button onClick={action('clicked')} kind="simple">Simple</Button>
+      <Button onClick={action('clicked')} colored>colored</Button>
+      <Button onClick={action('clicked')} inverted>Inverted</Button>
+      <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>
+      <Button onClick={action('clicked')} kind="danger" inverted>Kind=danger inverted</Button>
+      <Button onClick={action('clicked')} colored inverted>colored inverted</Button>
+      <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} inverted>
+        Secondary
+      </Button>
+      <Button onClick={action('clicked')} icon={SanityLogoIcon}>
+        With icon
+      </Button>
+      <Button onClick={action('clicked')} colored icon={SanityLogoIcon}>
+        Colored with icon
+      </Button>
+      <Button onClick={action('clicked')} kind="danger" icon={SanityLogoIcon} inverted>
+        Danger, inverted & icon
+      </Button>
+      <Button onClick={action('clicked')} kind="small" icon={SanityLogoIcon} inverted>
+        I'm small!
+      </Button>
+    </div>
+  ),
+  {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
+  )
 
-.addWithInfo(
-  'Fab (Floating Action Button)',
-  'Borrowed from Googles material design. Used to create new stuff. Is by default fixed to bottom right.',
-  () => {
-    return (
-      <div>
-        <Fab onClick={action('onClick')} fixed={false} colored />
-      </div>
-    )
-  },
-  {propTables: [Fab], role: 'part:@sanity/components/buttons/fab'}
-)
-
-.addWithInfo(
-  'DropDownButton',
-  'Buttons that opens a menu.',
-  () => {
-    const items = [
-      {index: '1', title: 'Test'},
-      {index: '2', title: 'Test 2'},
-      {index: '3', title: 'Test 3'}
-    ]
-    return (
-      <div>
-        <DropDownButton items={items} onAction={action('Clicked item')}>
-          This is a dropdown
-        </DropDownButton>
+  .addWithInfo(
+    'Fab (Floating Action Button)',
+    'Borrowed from Googles material design. Used to create new stuff. Is by default fixed to bottom right.',
+    () => {
+      return (
         <div>
-          This text should be under the menu
+          <Fab onClick={action('onClick')} fixed={false} colored />
         </div>
-      </div>
-    )
-  },
-  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
-)
+      )
+    },
+    {propTables: [Fab], role: 'part:@sanity/components/buttons/fab'}
+  )
 
-.addWithInfo(
-  'DropDownButton (wider menu)',
-  'Buttons that opens a menu.',
-  () => {
-    const items = [
-      {index: '1', title: 'Test asdfasdfsafdsadf'},
-      {index: '2', title: 'Test 2 asfsa s sad sadf saf sa'},
-      {index: '3', title: 'Test 3 asdfas fas fasdf asf asdf asdf sad'}
-    ]
-    return (
-      <div>
-        <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
-          This is a dropdown
-        </DropDownButton>
+  .addWithInfo(
+    'DropDownButton',
+    'Buttons that opens a menu.',
+    () => {
+      const items = [
+        {index: '1', title: 'Test'},
+        {index: '2', title: 'Test 2'},
+        {index: '3', title: 'Test 3'}
+      ]
+      return (
         <div>
-          This text should be under the menu
+          <DropDownButton items={items} onAction={action('Clicked item')}>
+            This is a dropdown
+          </DropDownButton>
+          <div>
+            This text should be under the menu
+          </div>
         </div>
-      </div>
-    )
-  },
-  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
-)
+      )
+    },
+    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+  )
 
-.addWithInfo(
-  'DropDownButton (simple)',
-  'Buttons that opens a menu.',
-  () => {
-    const items = [
-      {index: '1', title: 'Test'},
-      {index: '2', title: 'Test 2'},
-      {index: '3', title: 'Test 3'}
-    ]
-    return (
-      <div>
-        <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
-          This is a dropdown
-        </DropDownButton>
+  .addWithInfo(
+    'DropDownButton (wider menu)',
+    'Buttons that opens a menu.',
+    () => {
+      const items = [
+        {index: '1', title: 'Test asdfasdfsafdsadf'},
+        {index: '2', title: 'Test 2 asfsa s sad sadf saf sa'},
+        {index: '3', title: 'Test 3 asdfas fas fasdf asf asdf asdf sad'}
+      ]
+      return (
         <div>
-          This text should be under the menu
+          <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
+            This is a dropdown
+          </DropDownButton>
+          <div>
+            This text should be under the menu
+          </div>
         </div>
-      </div>
-    )
-  },
-  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
-)
+      )
+    },
+    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+  )
+
+  .addWithInfo(
+    'DropDownButton (simple)',
+    'Buttons that opens a menu.',
+    () => {
+      const items = [
+        {index: '1', title: 'Test'},
+        {index: '2', title: 'Test 2'},
+        {index: '3', title: 'Test 3'}
+      ]
+      return (
+        <div>
+          <DropDownButton items={items} onAction={action('Clicked item')} kind="simple">
+            This is a dropdown
+          </DropDownButton>
+          <div>
+            This text should be under the menu
+          </div>
+        </div>
+      )
+    },
+    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+  )
 
 
-.addWithInfo(
-  'InInput',
-  'Buttons that are inside an input field',
-  () => {
-    return (
-      <div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            This is the input
-            <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+  .addWithInfo(
+    'InInput',
+    'Buttons that are inside an input field',
+    () => {
+      return (
+        <div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              This is the input
+              <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+            </div>
+          </div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              This is the with danger button
+              <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+            </div>
+          </div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              More buttons
+              <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
+              <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+            </div>
           </div>
         </div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            This is the with danger button
-            <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
-          </div>
-        </div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            More buttons
-            <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
-            <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
-          </div>
-        </div>
-      </div>
 
-    )
-  },
-  {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
-)
+      )
+    },
+    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+  )
 
-.addWithInfo(
-  'Button group',
-  'Buttons that are inside an input field',
-  () => {
-    return (
-      <div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            This is the input
-            <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+  .addWithInfo(
+    'Button group',
+    'Buttons that are inside an input field',
+    () => {
+      return (
+        <div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              This is the input
+              <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+            </div>
+          </div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              This is the with danger button
+              <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+            </div>
+          </div>
+          <div className={styles.inputContainer}>
+            <div className={styles.input}>
+              More buttons
+              <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
+              <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+            </div>
           </div>
         </div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            This is the with danger button
-            <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
-          </div>
-        </div>
-        <div className={styles.inputContainer}>
-          <div className={styles.input}>
-            More buttons
-            <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
-            <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
-          </div>
-        </div>
-      </div>
 
-    )
-  },
-  {propTables: [InInputButton], role: 'part:@sanity/components/buttons/in-input'}
-)
+      )
+    },
+    {propTables: [InInputButton], role: 'part:@sanity/components/buttons/in-input'}
+  )

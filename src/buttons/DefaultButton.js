@@ -35,7 +35,7 @@ export default class DefaultButton extends React.Component {
 
   render() {
 
-    const {kind, ripple, inverted, colored, icon, loading, className, children, ...rest} = this.props
+    const {kind, ripple, disabled, inverted, colored, icon, loading, className, children, ...rest} = this.props
 
     const Icon = icon
 
@@ -44,10 +44,11 @@ export default class DefaultButton extends React.Component {
     }
 
     const style = `
-      ${className}
       ${styles[kind] || (inverted && styles.inverted) || styles.default}
       ${colored && styles.colored}
       ${Icon && styles.hasIcon}
+      ${className}
+      ${disabled && styles.disabled}
     `
 
     return (
@@ -56,6 +57,7 @@ export default class DefaultButton extends React.Component {
         className={style}
         type="button"
         onClick={this.handleClick}
+        disabled={disabled}
       >
         {
           loading && <Spinner />
@@ -67,7 +69,7 @@ export default class DefaultButton extends React.Component {
           children && <span className={styles.content}>{children}</span>
         }
         {
-          ripple && <Ink duration={200} opacity={0.10} radius={200} />
+          ripple && !disabled && <Ink duration={200} opacity={0.10} radius={200} />
         }
       </button>
     )

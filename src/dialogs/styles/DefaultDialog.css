@@ -36,7 +36,7 @@
 
 .root {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
-  z-index: 1000;
+  z-index: var(--zindex-modal);
   position: fixed;
   border: 0;
   padding: 0;
@@ -44,7 +44,7 @@
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: once;
-  background-color: var(--component-background-color);
+  background-color: var(--body-bg);
   height: 100%;
   width: 100%;
   top: 0;
@@ -137,7 +137,7 @@
 
 /* Native dialog backdrop */
 :global(::backdrop) {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--backdrop-background-color);
   animation-name: fadeIn;
   animation-duration: 0.2s;
   animation-timing-function: linear;
