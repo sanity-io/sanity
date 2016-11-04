@@ -17,7 +17,7 @@ export default class CardPreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…',
+    emptyText: 'Untitled',
   }
 
   constructor(props, context) {

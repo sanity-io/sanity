@@ -15,7 +15,7 @@ export default class DetailPreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…',
+    emptyText: 'Untitled',
     mediaRender() {
       return false
     }

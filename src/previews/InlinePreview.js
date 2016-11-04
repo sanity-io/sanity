@@ -14,7 +14,7 @@ export default class InlinePreview extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…',
+    emptyText: 'Untitled',
   }
 
   render() {
