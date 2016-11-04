@@ -9,14 +9,18 @@ import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
 export default async (args, context) => {
+  const {spinner} = context.output
+
   const sanityModules = filterSanityModules(
     getLocalManifest(context.workDir)
   )
 
+  const spin = spinner('Resolving latest versions').start()
   const packages = await promiseProps(buildPackageArray(
     sanityModules,
     context.workDir
   ))
+  spin.stop()
 
   const versions = values(packages)
 
