@@ -11,7 +11,7 @@ export default class EditItemPopOver extends React.Component {
     className: PropTypes.string,
     onClose: PropTypes.func,
     isCreatingNewItem: PropTypes.bool,
-    actions: PropTypes.array
+    actions: PropTypes.arrayOf(PropTypes.object)
   }
 
   static defaultProps = {
