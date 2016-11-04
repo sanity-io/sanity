@@ -37,7 +37,7 @@ export function toGradient(formBuilderPatch) {
   }
   if (formBuilderPatch.type === 'unset') {
     return {
-      unset: jsonPath
+      unset: [jsonPath]
     }
   }
   return {
@@ -66,6 +66,14 @@ export function toFormBuilder(gradientPatch) {
           items: gradientPatch.insert.items
         }
       }
+
+      if (patchType === 'unset') {
+        return {
+          type: 'unset',
+          path: toArrayPath(gradientPatch.unset[0])
+        }
+      }
+
       return Object.keys(operation)
         .map(jsonPath => {
           return {
