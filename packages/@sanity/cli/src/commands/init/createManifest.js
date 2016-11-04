@@ -1,7 +1,6 @@
 import ghUrl from 'github-url-to-object'
 import sortObject from 'deep-sort-object'
 import versionRanges from '../../versionRanges'
-import resolveLatestVersions from '../../util/resolveLatestVersions'
 
 const manifestPropOrder = [
   'name', 'private', 'version', 'description', 'main', 'author', 'license', 'scripts',
