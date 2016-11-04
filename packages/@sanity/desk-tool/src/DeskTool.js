@@ -10,7 +10,7 @@ const actions = (dataAspects.getInferredTypes()).map(type => ({
   title: `${dataAspects.getDisplayName(type.name)}`
 }))
 
-class DeskTool extends React.Component {
+export default class DeskTool extends React.Component {
   static propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired
@@ -44,5 +44,3 @@ class DeskTool extends React.Component {
     )
   }
 }
-
-export default DeskTool

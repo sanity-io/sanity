@@ -7,6 +7,8 @@ import QueryContainer from 'part:@sanity/base/query-container'
 import styles from '../styles/DeskTool.css'
 import UrlDocId from './utils/UrlDocId'
 import dataAspects from './utils/dataAspects'
+import schema from 'part:@sanity/base/schema'
+import documentStore from 'part:@sanity/base/datastore/document'
 
 function mapQueryResultToProps(props) {
   const {result, ...rest} = props
@@ -36,6 +38,29 @@ export default class SchemaPaneResolver extends React.Component {
     this.renderDocumentPaneItem = this.renderDocumentPaneItem.bind(this)
     this.renderTypePaneItem = this.renderTypePaneItem.bind(this)
     this.handleDocumentCreated = this.handleDocumentCreated.bind(this)
+  }
+
+  componentWillMount() {
+    this.checkRedirect()
+  }
+
+  componentDidUpdate() {
+    this.checkRedirect()
+  }
+
+  checkRedirect() {
+    const {router} = this.context
+
+    if (router.state.action === 'create' && !router.state.selectedDocumentId) {
+      const selectedType = router.state.selectedType
+      documentStore.create({_type: `${schema.name}.${selectedType}`}).subscribe(document => {
+        router.navigate({
+          action: 'create',
+          selectedType: selectedType,
+          selectedDocumentId: UrlDocId.encode(document._id)
+        }, {replace: true})
+      })
+    }
   }
 
   handleDocumentCreated(document) {
@@ -109,9 +134,28 @@ export default class SchemaPaneResolver extends React.Component {
     return listView || 'default'
   }
 
-  render() {
+  renderEditor() {
     const {router} = this.context
     const {selectedType, selectedDocumentId, action} = router.state
+
+    const isEditing = ['edit', 'create'].includes(action)
+    if (!isEditing) {
+      return null
+    }
+
+    if (action === 'create' && !selectedDocumentId) {
+      return <div>Creating {selectedType}...</div>
+    }
+    return (
+      <EditorPane
+        documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
+        typeName={selectedType}
+      />
+    )
+  }
+  render() {
+    const {router} = this.context
+    const {selectedType} = router.state
 
     const typesPane = (
       <Pane
@@ -125,22 +169,13 @@ export default class SchemaPaneResolver extends React.Component {
       <div>Select a type to begin…</div>
     )
 
-
-    const editor = ['edit', 'create'].includes(action) && (
-      <EditorPane
-        documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
-        typeName={selectedType}
-        onCreated={this.handleDocumentCreated}
-      />
-    )
-
     return (
       <div className={styles.container}>
         <PaneContainer className={styles.paneContainer}>
           {typesPane}
           {documentsPane}
         </PaneContainer>
-        {editor}
+        {this.renderEditor()}
       </div>
     )
   }

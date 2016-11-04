@@ -35,6 +35,11 @@ export function toGradient(formBuilderPatch) {
       }
     }
   }
+  if (formBuilderPatch.type === 'unset') {
+    return {
+      unset: jsonPath
+    }
+  }
   return {
     [formBuilderPatch.type]: {
       [jsonPath]: formBuilderPatch.value

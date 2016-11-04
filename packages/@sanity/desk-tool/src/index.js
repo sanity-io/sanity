@@ -4,9 +4,9 @@ import {createRoute} from 'part:@sanity/base/router'
 
 export default {
   router: createRoute('/:selectedType/*', [
-    createRoute('/:action/*', params => {
-      return params.action === 'edit' ? createRoute('/:selectedDocumentId') : null
-    }),
+    createRoute('/:action/*', [
+      createRoute('/:selectedDocumentId')
+    ]),
   ]),
   name: 'Desk',
   icon: Icon,

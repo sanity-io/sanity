@@ -4,7 +4,6 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import FormBuilder from 'part:@sanity/form-builder'
 import {unprefixType} from '../utils/unprefixType'
-import schema from 'part:@sanity/base/schema'
 import dataAspects from '../utils/dataAspects'
 
 import styles from './styles/EditorPane.css'
@@ -28,7 +27,6 @@ export default class EditorPane extends React.PureComponent {
     onCreated: noop,
     onUpdated: noop,
   };
-
   constructor(props, ...rest) {
     super(props, ...rest)
 
@@ -38,7 +36,7 @@ export default class EditorPane extends React.PureComponent {
     }
 
     this.handleChange = this.handleChange.bind(this)
-    this.handleDocPatch = this.handleDocPatch.bind(this)
+    this.handleIncomingPatch = this.handleIncomingPatch.bind(this)
     this.subscriptions = []
   }
 
@@ -46,16 +44,12 @@ export default class EditorPane extends React.PureComponent {
     this.tearDownSubscriptions()
     const {documentId, typeName} = props
 
-    const exists = documentId && documentId.split('/')[1]
     this.setState({
       value: FormBuilder.createEmpty(typeName)
     })
 
-    if (!exists) {
-      return
-    }
-
     const byId = documentStore.byId(documentId)
+
     const initialSubscription = byId
       .first(event => event.type === 'snapshot')
       .subscribe(event => {
@@ -65,9 +59,9 @@ export default class EditorPane extends React.PureComponent {
       })
 
     const updateSubscription = byId
-      .filter(event => event.type === 'update')
+      .filter(event => event.type === 'mutation')
       .subscribe(event => {
-        this.handleDocPatch(event.patch)
+        this.handleIncomingPatch(event.patch)
       })
 
     this.subscriptions = [initialSubscription, updateSubscription]
@@ -93,18 +87,13 @@ export default class EditorPane extends React.PureComponent {
 
   handleChange(event) {
 
-    const id = this.state.value.getFieldValue('_id')
+    const id = this.props.documentId
 
     if (event.patch.local) {
       this.setState({value: this.state.value.patch(event.patch)})
       return
     }
-
-    if (id) {
-      this.update(id, event.patch)
-    } else {
-      this.create(event.patch)
-    }
+    this.update(id, event.patch)
   }
 
   update(id, patch) {
@@ -116,25 +105,7 @@ export default class EditorPane extends React.PureComponent {
       })
   }
 
-  create(patch) {
-    if (this.creating) {
-      return null
-    }
-    const {typeName, onCreated} = this.props
-    const prefixedType = `${schema.name}.${typeName}`
-    const nextValue = this.state.value.patch(patch)
-    this.creating = true
-    this.setState({progress: 'Creating…'})
-
-    return documentStore
-      .create(Object.assign(nextValue.serialize(), {_type: prefixedType}))
-      .subscribe(result => {
-        this.setState({progress: null})
-        onCreated({_id: result.documentId})
-      })
-  }
-
-  handleDocPatch(patch) {
+  handleIncomingPatch(patch) {
     const formBuilderPatches = convertPatch.toFormBuilder(patch)
     let nextValue = this.state.value
     formBuilderPatches.forEach(fbPatch => {
