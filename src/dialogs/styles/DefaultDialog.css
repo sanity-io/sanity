@@ -30,8 +30,8 @@
 
 :root {
   --dialog-padding: var(--small-padding);
-  --dialog-header-height: 2.5em;
-  --dialog-functions-height: 3em;
+  --dialog-header-height: 3rem;
+  --dialog-functions-height: 3rem;
 }
 
 .root {
@@ -74,8 +74,10 @@
 }
 
 .header {
-  background-color: var(--brand-primary);
   height: var(--dialog-header-height);
+  line-height: var(--dialog-header-height);
+  color: var(--text-color);
+  border-bottom: 1px solid var(--gray-light);
 }
 
 .inner {
@@ -106,22 +108,21 @@
 }
 
 .title {
-  height: 2rem;
-  line-height: var(--dialog-header-height);
+  line-height: inherit;
   padding: 0 var(--dialog-padding);
-  font-size: var(--font-size-h5);
-  color: #fff;
+  font-size: var(--font-size-h4);
+  font-weight: 300;
   margin: 0;
 }
 
 .closeButton {
   position: absolute;
-  top: 0;
-  right: 0;
+  color: inherit;
+  top: 0.5rem;
+  right: 0.5rem;
   background-color: transparent;
   border: none;
-  color: #fff;
-  font-size: 1.5em;
+  font-size: 1.5rem;
   outline: none;
   cursor: pointer;
   transition: transform 0.1s linear;
