@@ -7,7 +7,7 @@ const listen = require('./listen')
 
 const getMutationQuery = options => assign(
   // Always return IDs
-  {returnIDs: true},
+  {returnIds: true},
 
   // Allow user to disable returning documents
   options.returnDocuments === false ? {} : {returnDocuments: true}
@@ -96,7 +96,7 @@ module.exports = {
         // Only return IDs
         const key = returnFirst ? 'documentId' : 'documentIds'
         const ids = returnFirst ? results[0] && results[0].id : results.map(mut => mut.id)
-        return {transactionId: res.transactionID, [key]: ids}
+        return {transactionId: res.transactionId, [key]: ids}
       })
   },
 
