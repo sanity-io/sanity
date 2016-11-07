@@ -11,7 +11,7 @@
 }
 
 .title {
-  composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
+  font-size: 1em;
   color: inherit;
   font-weight: 500;
   text-transform: none;

@@ -23,8 +23,10 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "babel-eslint": "^7.1.0",
     "chance": "^1.0.4",
     "dialog-polyfill": "^0.4.3",
+    "eslint-plugin-react": "^6.6.0",
     "fuse.js": "^2.4.1",
     "in-publish": "^2.0.0",
     "lodash": "^4.13.1",
@@ -38,7 +40,7 @@
     "react-ink": "^5.1.1",
     "react-sortable-hoc": "^0.1.0",
     "stylelint": "^7.1.0",
-    "stylelint-config-standard": "^12.0.0"
+    "stylelint-config-standard": "^14.0.0"
   },
   "devDependencies": {
     "@sanity/check": "^0.0.1",

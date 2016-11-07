@@ -243,10 +243,6 @@
       "description": "Default list"
     },
     {
-      "name": "part:@sanity/components/lists/sortable",
-      "description": "Sortable list"
-    },
-    {
       "name": "part:@sanity/components/lists/default-style",
       "description": "Styling for edfault list"
     },
@@ -604,10 +600,6 @@
     {
       "implements": "part:@sanity/components/lists/default",
       "path": "lists/DefaultList.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/sortable",
-      "path": "lists/SortableList.js"
     },
     {
       "implements": "part:@sanity/components/lists/default-style",

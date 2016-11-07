@@ -5,8 +5,8 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import CardPreview from 'part:@sanity/components/previews/card'
-import {arrayMove} from 'react-sortable-hoc'
 
+import {arrayMove} from 'react-sortable-hoc'
 import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()

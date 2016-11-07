@@ -310,15 +310,14 @@ babel-core@6.7.6:
     slash "^1.0.0"
     source-map "^0.5.0"
 
-babel-eslint@^6.0.4:
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-6.1.2.tgz#5293419fe3672d66598d327da9694567ba6a5f2f"
+babel-eslint:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.1.0.tgz#d506a5174ba224e25a2d17e128e2ba8987139ddc"
   dependencies:
-    babel-traverse "^6.0.20"
-    babel-types "^6.0.19"
-    babylon "^6.0.18"
-    lodash.assign "^4.0.0"
-    lodash.pickby "^4.0.0"
+    babel-traverse "^6.15.0"
+    babel-types "^6.15.0"
+    babylon "^6.11.2"
+    lodash.pickby "^4.6.0"
 
 babel-generator@^6.18.0, babel-generator@^6.7.5:
   version "6.18.0"
@@ -1021,7 +1020,7 @@ babel-template@^6.14.0, babel-template@^6.15.0, babel-template@^6.16.0, babel-te
     babylon "^6.11.0"
     lodash "^4.2.0"
 
-babel-traverse@^6.0.20, babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-traverse@^6.7.6:
+babel-traverse@^6.15.0, babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-traverse@^6.7.6:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.18.0.tgz#5aeaa980baed2a07c8c47329cd90c3b90c80f05e"
   dependencies:
@@ -1035,7 +1034,7 @@ babel-traverse@^6.0.20, babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-tr
     invariant "^2.2.0"
     lodash "^4.2.0"
 
-babel-types@^6.0.19, babel-types@^6.13.0, babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.7.2, babel-types@^6.8.0, babel-types@^6.9.0:
+babel-types@^6.13.0, babel-types@^6.15.0, babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.7.2, babel-types@^6.8.0, babel-types@^6.9.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.18.0.tgz#1f7d5a73474c59eb9151b2417bbff4e4fce7c3f8"
   dependencies:
@@ -1044,7 +1043,7 @@ babel-types@^6.0.19, babel-types@^6.13.0, babel-types@^6.16.0, babel-types@^6.18
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
 
-babylon@^6.0.18, babylon@^6.11.0, babylon@^6.7.0:
+babylon@^6.11.0, babylon@^6.11.2, babylon@^6.7.0:
   version "6.13.1"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.13.1.tgz#adca350e088f0467647157652bafead6ddb8dfdb"
 
@@ -2006,12 +2005,12 @@ eslint-config-sanity@^1.1.3:
   dependencies:
     eslint-config-bengler "^2.0.0"
 
-eslint-plugin-react@^6.3.0:
-  version "6.4.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-6.4.1.tgz#7d1aade747db15892f71eee1fea4addf97bcfa2b"
+eslint-plugin-react:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-6.6.0.tgz#91ceecefa8a22d8f5d23ef9a839516a7d9fa63a1"
   dependencies:
     doctrine "^1.2.2"
-    jsx-ast-utils "^1.3.1"
+    jsx-ast-utils "^1.3.3"
 
 eslint@^3.3.0:
   version "3.9.1"
@@ -2969,7 +2968,7 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.3.6"
 
-jsx-ast-utils@^1.3.1:
+jsx-ast-utils@^1.3.3:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-1.3.3.tgz#ccfdbe0320ba03f7a1fc4e67ceaf7e2cc0169721"
   dependencies:
@@ -3123,10 +3122,6 @@ lodash._root@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/lodash._root/-/lodash._root-3.0.1.tgz#fba1c4524c19ee9a5f8136b4609f017cf4ded692"
 
-lodash.assign@^4.0.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
-
 lodash.camelcase@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-3.0.1.tgz#932c8b87f8a4377897c67197533282f97aeac298"
@@ -3223,7 +3218,7 @@ lodash.pairs@^3.0.0:
   dependencies:
     lodash.keys "^3.0.0"
 
-lodash.pickby@^4.0.0:
+lodash.pickby@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.pickby/-/lodash.pickby-4.6.0.tgz#7dea21d8c18d7703a27c704c15d3b84a67e33aff"
 
@@ -5116,9 +5111,9 @@ stylehacks@^2.3.0:
     text-table "^0.2.0"
     write-file-stdout "0.0.2"
 
-stylelint-config-standard@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-standard/-/stylelint-config-standard-12.0.0.tgz#9b99ab342bc5301fe88447e208fcf59768c4cc53"
+stylelint-config-standard:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-standard/-/stylelint-config-standard-14.0.0.tgz#1164b79c3a1dd924ace1b756ad8ec00cbccb8132"
 
 stylelint@^7.1.0:
   version "7.5.0"

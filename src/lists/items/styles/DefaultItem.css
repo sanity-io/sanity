@@ -35,11 +35,14 @@
     background-color: color(var(--default-item-selected-color) a(80%));
     color: #fff;
   }
+
+  &.sortableHelper {
+    background-color: color(var(--default-item-selected-color) a(50%));
+  }
 }
 
 .default {
   composes: root;
-  border-bottom: 1px solid #eee;
 }
 
 .zebra-stripes {
@@ -56,4 +59,38 @@
 
 .divider {
   border-bottom: 1px solid #ccc;
+}
+
+.item {
+  display: block;
+  list-style-type: none;
+}
+
+.sortableHelper {
+  display: block;
+  opacity: 0.5;
+}
+
+.dragHandle {
+  float: left;
+  cursor: move;
+  font-size: 1em;
+  height: 100%;
+  line-height: 100%;
+  display: block;
+  opacity: 0.5;
+  width: 1.5em;
+  border: 1px solid transparent;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  & > * {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    padding: 0.5em;
+    transform: translateY(-50%);
+  }
 }

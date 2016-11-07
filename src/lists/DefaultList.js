@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/default-style'
 import ListItem from 'part:@sanity/components/lists/items/default'
+import itemStyles from 'part:@sanity/components/lists/items/default-style'
 import ReactDOM from 'react-dom'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 
-const DragHandle = SortableHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
+const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -131,7 +132,7 @@ export default class DefaultList extends React.Component {
               onSortEnd={onSortEnd}
               onSortStart={onSortStart}
               onSortMove={onSortMove}
-              helperClass={styles.sortableHelper}
+              helperClass={itemStyles.sortableHelper}
               transitionDuration={100}
               distance={0}
               axis="y"
