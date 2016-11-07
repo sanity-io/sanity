@@ -69,7 +69,7 @@ function getCoreModulePath() {
 }
 
 function hasDevMode() {
-  return fs.existsSync(path.join(__dirname, '..', 'src'))
+  return fs.existsSync(path.join(__dirname, '..', '..', 'src'))
 }
 
 
