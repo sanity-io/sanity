@@ -5,13 +5,18 @@ const Transaction = require('./transaction')
 const Patch = require('./patch')
 const listen = require('./listen')
 
-const getMutationQuery = options => assign(
-  // Always return IDs
-  {returnIds: true},
+const excludeFalsey = (param, defValue) => {
+  const value = typeof param === 'undefined' ? defValue : param
+  return param === false ? undefined : value
+}
 
-  // Allow user to disable returning documents
-  options.returnDocuments === false ? {} : {returnDocuments: true}
-)
+const getMutationQuery = (options = {}) => {
+  return {
+    returnIds: true,
+    returnDocuments: excludeFalsey(options.returnDocuments, true),
+    visibility: options.visibility || 'sync'
+  }
+}
 
 const getQuerySizeLimit = 1948
 
