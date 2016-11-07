@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync */
+/* eslint-disable no-console, no-process-exit, no-sync */
 import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
@@ -29,10 +29,21 @@ updateNotifier({pkg}).notify({defer: false})
 const devMode = hasDevMode()
 const args = parseArguments()
 const isInit = args.groupOrCommand === 'init'
-const workDir = resolveProjectRoot({
-  basePath: cwd,
-  sync: true
-}) || cwd
+
+// Resolve project root directory
+let workDir = cwd
+try {
+  workDir = resolveProjectRoot({
+    basePath: cwd,
+    sync: true
+  }) || cwd
+} catch (err) {
+  console.warn(chalk.red([
+    'Error occured trying to resolve project root:',
+    err.message
+  ].join('\n')))
+  process.exit(1)
+}
 
 if (devMode) {
   require('source-map-support').install()
