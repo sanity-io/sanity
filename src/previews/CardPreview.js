@@ -89,7 +89,12 @@ export default class CardPreview extends React.Component {
                 {item.title || emptyText}
               </h2>
               <h3 className={styles.subtitle}>
-                {item.subtitle}
+                {
+                  truncate(item.subtitle, {
+                    length: 30,
+                    separator: /,? +/
+                  })
+                }
               </h3>
             </div>
             <p className={styles.description}>
