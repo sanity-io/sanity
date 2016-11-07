@@ -3,7 +3,8 @@ import getProjectDefaults from '../../util/getProjectDefaults'
 import {bootstrapPlugin} from './bootstrap'
 import gatherInput from './gatherInput'
 
-export default async function initPlugin(args, {output, prompt, options}, initOpts = {}) {
+export default async function initPlugin(args, context, initOpts = {}) {
+  const {output, prompt, workDir} = context
   if (initOpts.sanityStyle) {
     output.print('[WARNING]: Bootstrapping with Sanity.io style guide')
   }
@@ -17,9 +18,9 @@ export default async function initPlugin(args, {output, prompt, options}, initOp
     + 'recommended that the plugin name is prefixed with `sanity-plugin-`'
   )
 
-  const workDir = options.workDir
-  const defaults = await getProjectDefaults(workDir, {isPlugin: true})
-  const answers = await gatherInput(prompt, defaults, {isPlugin: true})
+  const pluginOpts = {isPlugin: true, workDir}
+  const defaults = await getProjectDefaults(workDir, pluginOpts)
+  const answers = await gatherInput(prompt, defaults, pluginOpts)
   const finalAnswers = {outputPath: workDir, ...answers}
 
   await bootstrapPlugin(finalAnswers, {output, ...initOpts})

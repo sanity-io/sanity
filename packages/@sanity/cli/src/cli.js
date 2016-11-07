@@ -29,7 +29,8 @@ module.exports = function runCli(args, options) {
     .catch(err => {
       const debug = core.d || core.debug
       const error = (debug && err.details) || err
-      console.error(chalk.red(debug ? error.stack : error.message)) // eslint-disable-line no-console
+      const errMessage = debug ? (error.stack || error) : (error.message || error)
+      console.error(chalk.red(errMessage)) // eslint-disable-line no-console
       process.exit(error.code || 1) // eslint-disable-line no-process-exit
     })
 }
