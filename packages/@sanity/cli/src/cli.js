@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 import 'babel-polyfill'
 import chalk from 'chalk'
-import parseArguments from './util/parseArguments'
 import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import baseCommands from './commands'
 import pkg from '../package.json'
 
-module.exports = function runCli(options) {
-  const args = parseArguments()
+module.exports = function runCli(args, options) {
   const core = args.coreOptions
   const commands = mergeCommands(baseCommands, options.corePath)
 

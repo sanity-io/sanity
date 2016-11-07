@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-// @todo compile along with src?
-/* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync, no-var */
-/**
- * NOTE: KEEP THIS FILE NODE 4 COMPATIBLE, ERGO; DONT USE LET/CONST, ARROW FUNCTIONS ETC
- */
+
+/* eslint-disable no-console, prefer-arrow-callback, no-process-exit, no-sync */
+import fs from 'fs'
+import path from 'path'
+import chalk from 'chalk'
+import resolveFrom from 'resolve-from'
+import updateNotifier from 'update-notifier'
+import {resolveProjectRoot} from '@sanity/resolver'
+import pkg from '../../package.json'
+import parseArguments from '../util/parseArguments'
+import runCli from '../cli'
 
 // Weird edge case where the folder the terminal is currently in has been removed
-var cwd = null
+let cwd = null
 try {
   cwd = process.cwd()
 } catch (err) {
@@ -18,19 +24,12 @@ try {
   }
 }
 
-var fs = require('fs')
-var path = require('path')
-var chalk = require('chalk')
-var resolver = require('@sanity/resolver')
-var resolveFrom = require('resolve-from')
-var updateNotifier = require('update-notifier')
-var pkg = require('../package.json')
-var runCli = require('../lib/cli')
-
 updateNotifier({pkg}).notify({defer: false})
 
-var devMode = hasDevMode()
-var workDir = resolver.resolveProjectRoot({
+const devMode = hasDevMode()
+const args = parseArguments()
+const isInit = args.groupOrCommand === 'init'
+const workDir = resolveProjectRoot({
   basePath: cwd,
   sync: true
 }) || cwd
@@ -43,24 +42,22 @@ if (devMode) {
   })
 }
 
-if (workDir !== cwd) {
+if (!isInit && workDir !== cwd) {
   console.log(`Not in project directory, assuming context of project at ${workDir}`)
 }
 
-const hasManifest = hasSanityManifest(workDir)
-const corePath = getCoreModulePath()
-
-runCli({
-  workDir,
-  corePath
+runCli(args, {
+  workDir: isInit ? process.cwd() : workDir,
+  corePath: getCoreModulePath(workDir)
 })
 
 function getCoreModulePath() {
-  var pkgPath = resolveFrom(workDir, '@sanity/core')
+  const pkgPath = resolveFrom(workDir, '@sanity/core')
   if (pkgPath) {
     return pkgPath
   }
 
+  const hasManifest = fs.existsSync(path.join(workDir, 'sanity.json'))
   if (hasManifest && process.argv.indexOf('install') === -1) {
     console.warn(chalk.yellow([
       '@sanity/core not installed in current project',
@@ -75,7 +72,4 @@ function hasDevMode() {
   return fs.existsSync(path.join(__dirname, '..', 'src'))
 }
 
-function hasSanityManifest(dir) {
-  return fs.existsSync(path.join(dir, 'sanity.json'))
-}
 

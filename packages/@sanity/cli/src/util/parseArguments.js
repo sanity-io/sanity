@@ -1,6 +1,6 @@
 import minimist from 'minimist'
 
-export default function parseArguments(argv = process.argv) {
+module.exports = function parseArguments(argv = process.argv) {
   /* eslint-disable id-length */
   const {
     _,
