@@ -17,19 +17,23 @@ function resolveProjectRootAsync(options) {
 
 function resolveProjectRootSync(options) {
   let manifestDir = options.basePath
-  let isProjectRoot = isRoot(manifestDir)
+  let isProjectRoot = isRoot(manifestDir, options)
 
   while (!isProjectRoot && path.dirname(manifestDir) !== manifestDir) {
     manifestDir = path.dirname(manifestDir)
-    isProjectRoot = isRoot(manifestDir)
+    isProjectRoot = isRoot(manifestDir, options)
   }
 
   return isProjectRoot ? manifestDir : false
 }
 
-function isRoot(manifestDir) {
+function isRoot(manifestDir, options) {
   try {
-    const manifest = readManifest({manifestDir, sync: true})
+    const manifest = readManifest(Object.assign({}, options, {
+      manifestDir,
+      sync: true,
+    }))
+
     return manifest.root || false
   } catch (err) {
     if (err.code === 'ENOENT') {

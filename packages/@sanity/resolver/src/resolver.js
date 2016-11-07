@@ -8,7 +8,9 @@ import removeDuplicatePlugins from './removeDuplicatePlugins'
 
 export const resolveProjectRoot = resolveSanityRoot
 
-export function resolveParts(options = {}) {
+export function resolveParts(opts = {}) {
+  const options = Object.assign({basePath: process.cwd()}, opts)
+
   if (options.sync) {
     return mergeResult(resolveTree(options), options)
   }
