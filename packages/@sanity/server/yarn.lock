@@ -4,6 +4,10 @@
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.1.tgz#3341c20dd03deb15dfc228278c243e30e0db9ef6"
 
+"@sanity/generate-help-url@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
+
 "@sanity/resolver@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.1.tgz#4c70d5f7e72b5e405832b1c2f29f39ae551d8112"
@@ -12,6 +16,17 @@
     fs-promise "^0.5.0"
     in-publish "^2.0.0"
     lodash.uniq "^4.5.0"
+    path-exists "^3.0.0"
+    promise-props-recursive "^1.0.0"
+
+"@sanity/resolver@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.5.tgz#32052079f279f564a7459487c45cdb54a01cf333"
+  dependencies:
+    "@sanity/generate-help-url" "^0.0.2"
+    in-publish "^2.0.0"
+    lodash.uniq "^4.5.0"
+    mz "^2.4.0"
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
@@ -2875,6 +2890,14 @@ mute-stream@0.0.5:
 mz@^2.3.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/mz/-/mz-2.4.0.tgz#987ba9624d89395388c37cb4741e2caf4dd13b1a"
+  dependencies:
+    any-promise "^1.0.0"
+    object-assign "^4.0.1"
+    thenify-all "^1.0.0"
+
+mz@^2.4.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/mz/-/mz-2.5.0.tgz#2859025df03d46b57bb317174b196477ce64cec1"
   dependencies:
     any-promise "^1.0.0"
     object-assign "^4.0.1"
