@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "@sanity/check": "^0.0.2",
-    "@sanity/server": "^0.0.9",
+    "@sanity/server": "^0.0.10",
     "@sanity/storybook": "^0.0.9",
     "@sanity/util": "0.0.2",
     "deep-sort-object": "^1.0.1",
