@@ -38,8 +38,7 @@ class SearchableSelect extends React.Component {
     onBlur() {},
     onSearch() {},
     onOpen() {},
-    onClose() {},
-    onClear: false
+    onClose() {}
   }
 
   constructor(props, context) {

@@ -28,7 +28,7 @@
 .root {
   padding: 0;
   position: absolute;
-  z-index: var(--zindex-popover--background);
+  z-index: var(--zindex-popover);
 
   &::before {
     content: "shouldReposition";
@@ -38,7 +38,7 @@
   @media (--max-screen-medium) {
     position: fixed;
     box-sizing: border-box;
-    z-index: 500;
+    z-index: var(--zindex-popover);
     top: 0;
     left: 0;
     right: 0;
@@ -53,13 +53,18 @@
 }
 
 .overlay {
+  z-index: var(--zindex-popover-background);
   background-color: rgba(0, 0, 0, 0.3);
   position: fixed;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  z-index: var(--zindex-popover);
+  display: block;
+
+  @media (--max-screen-medium) {
+    display: none;
+  }
 }
 
 .arrow {
@@ -82,7 +87,7 @@
 .inner {
   min-width: 10em;
   background-color: #fff;
-  z-index: 11;
+  z-index: var(--zindex-popover);
   padding: 1em;
   margin-top: 0.25em;
   margin-bottom: 2em;
