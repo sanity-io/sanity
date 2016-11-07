@@ -63,7 +63,7 @@ class SortableComponent extends React.Component {
 
   render() {
     const {items} = this.state
-    const {useDragHandle, onSelect, onSortMove} = this.props
+    const {useDragHandle, onSelect, onSortMove, decoration} = this.props
     // TODO onSortStart={onSortStart} crashes chrome. Investigate this?
     return (
       <DefaultList
@@ -73,6 +73,7 @@ class SortableComponent extends React.Component {
         onSortMove={onSortMove}
         onSortEnd={this.handleOnSortEnd}
         useDragHandle={useDragHandle}
+        decoration={decoration}
       />
     )
   }
@@ -82,18 +83,31 @@ class SortableComponent extends React.Component {
 storiesOf('Lists')
 .addWithInfo(
   'Default',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  'The default fieldset is used to gather a collection of fields.',
   () => {
-    return (
-
-      <DefaultList
-        items={defaultItems}
-        onSelect={action('onSelect')}
-      />
-
-    )
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} />
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+.addWithInfo(
+  'Default (zebra-stripes)',
+  'The default fieldset is used to gather a collection of fields.',
+  () => {
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="zebra-stripes" />
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+.addWithInfo(
+  'Default (divider)',
+  'The default fieldset is used to gather a collection of fields.',
+  () => {
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="divider" />
   },
   {
     propTables: [DefaultList],
@@ -101,8 +115,9 @@ storiesOf('Lists')
   }
 )
 
+
 .addWithInfo(
-  'Sortable DefaultList',
+  'Default Sortable (divider)',
   `
     Sortable DefaultList
   `,
@@ -115,6 +130,7 @@ storiesOf('Lists')
         onSortMove={action('onSortMove')}
         onSortEnd={action('onSortEnd')}
         useDragHandle
+        decoration="divider"
       />
     )
   },
@@ -125,7 +141,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Sortable DefaultList (detailed)',
+  'Default Sortable (detailed, divider)',
   `
     Sortable DefaultList
   `,
@@ -138,6 +154,7 @@ storiesOf('Lists')
         onSortStart={action('onSortStart')}
         onSortMove={action('onSortMove')}
         onSortEnd={action('onSortEnd')}
+        decoration="divider"
       />
     )
   },
@@ -148,7 +165,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Sortable DefaultList (detailed, no draghandle)',
+  'Default Sortable (detailed, no draghandle, zebra-stripes)',
   `
     Sortable DefaultList
   `,
@@ -160,6 +177,7 @@ storiesOf('Lists')
         onSortStart={action('onSortStart')}
         onSortMove={action('onSortMove')}
         onSortEnd={action('onSortEnd')}
+        decoration="zebra-stripes"
       />
     )
   },
@@ -171,7 +189,7 @@ storiesOf('Lists')
 
 
 .addWithInfo(
-  'Default, scrollable with selected item',
+  'Default (scrollable with selected item)',
   `
     The default fieldset is used to gather a collection of fields.
   `,
@@ -195,7 +213,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Default, scrollable with selected item and highlighted item',
+  'Default (scrollable with selected item and highlighted item)',
   `
     The default fieldset is used to gather a collection of fields.
   `,
@@ -222,7 +240,7 @@ storiesOf('Lists')
 
 
 .addWithInfo(
-  'Default scrollable, with selected item outside view',
+  'Default (scrollable, with selected item outside view)',
   `
     The default fieldset is used to gather a collection of fields.
   `,
