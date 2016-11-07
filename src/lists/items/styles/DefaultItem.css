@@ -14,6 +14,7 @@
 .root {
   background-color: transparent;
   display: block;
+  position: relative;
   width: 100%;
   box-sizing: border-box;
   text-overflow: ellipsis;
@@ -38,6 +39,7 @@
 
 .default {
   composes: root;
+  border-bottom: 1px solid #eee;
 }
 
 .zebra-stripes {

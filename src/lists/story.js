@@ -3,7 +3,6 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
-import SortableList from 'part:@sanity/components/lists/sortable'
 import GridList from 'part:@sanity/components/lists/grid'
 import CardPreview from 'part:@sanity/components/previews/card'
 import {arrayMove} from 'react-sortable-hoc'
@@ -28,16 +27,30 @@ const defaultItems = range(100).map((item, i) => {
   }
 })
 
+const detailedItems = range(100).map((item, i) => {
+  const width = random(10, 100) * 10
+  const height = random(10, 50) * 10
+  const randomImage = `http://placekitten.com/${width}/${height}`
+  return {
+    key: `${i}`,
+    title: chance.name(),
+    subtitle: chance.sentence(),
+    description: chance.paragraph(),
+    mediaRender() {
+      return (
+        <img src={randomImage} />
+      )
+    }
+  }
+})
+
 class SortableComponent extends React.Component {
+  static propTypes = DefaultList.propTypes
   constructor(props, args) {
     super(props, args)
     this.state = {
-      items: defaultItems
+      items: this.props.items
     }
-  }
-
-  handleOnSort = () => {
-    // console.log('on sort')
   }
 
   handleOnSortEnd = ({oldIndex, newIndex}) => {
@@ -45,12 +58,22 @@ class SortableComponent extends React.Component {
     this.setState({
       items: arrayMove(items, oldIndex, newIndex)
     })
+    this.props.onSortEnd()
   }
 
   render() {
     const {items} = this.state
+    const {useDragHandle, onSelect, onSortMove} = this.props
+    // TODO onSortStart={onSortStart} crashes chrome. Investigate this?
     return (
-      <SortableList items={items} onSort={this.handleOnSort} onSortEnd={this.handleOnSortEnd} useDragHandle="true" />
+      <DefaultList
+        items={items}
+        sortable
+        onSelect={onSelect}
+        onSortMove={onSortMove}
+        onSortEnd={this.handleOnSortEnd}
+        useDragHandle={useDragHandle}
+      />
     )
   }
 }
@@ -64,12 +87,12 @@ storiesOf('Lists')
   `,
   () => {
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          onSelect={action('Select')}
-        />
-      </div>
+
+      <DefaultList
+        items={defaultItems}
+        onSelect={action('onSelect')}
+      />
+
     )
   },
   {
@@ -79,15 +102,20 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'SortableList',
+  'Sortable DefaultList',
   `
-    Sortable list
+    Sortable DefaultList
   `,
   () => {
     return (
-      <div style={containerStyle}>
-        <SortableComponent />
-      </div>
+      <SortableComponent
+        items={defaultItems}
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+        useDragHandle
+      />
     )
   },
   {
@@ -95,6 +123,52 @@ storiesOf('Lists')
     role: 'part:@sanity/components/lists/default'
   }
 )
+
+.addWithInfo(
+  'Sortable DefaultList (detailed)',
+  `
+    Sortable DefaultList
+  `,
+  () => {
+    return (
+      <SortableComponent
+        items={detailedItems}
+        useDragHandle
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+      />
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+.addWithInfo(
+  'Sortable DefaultList (detailed, no draghandle)',
+  `
+    Sortable DefaultList
+  `,
+  () => {
+    return (
+      <SortableComponent
+        items={detailedItems}
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+      />
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
 
 .addWithInfo(
   'Default, scrollable with selected item',
@@ -108,7 +182,7 @@ storiesOf('Lists')
         <DefaultList
           items={defaultItems}
           selectedItem={selectedItem}
-          onSelect={action('Select')}
+          onSelect={action('onSelect')}
           scrollable
         />
       </div>

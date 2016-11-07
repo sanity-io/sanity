@@ -20,7 +20,41 @@
   padding: 0;
 }
 
+.sortableList {
+  composes: list;
+}
+
 .item {
   display: block;
   list-style-type: none;
+}
+
+.sortableHelper {
+  display: block;
+  opacity: 0.5;
+  background-color: blue;
+}
+
+.dragHandle {
+  float: left;
+  cursor: move;
+  font-size: 1em;
+  height: 100%;
+  line-height: 100%;
+  display: block;
+  opacity: 0.5;
+  width: 1.5em;
+  border: 1px solid transparent;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  & > * {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    padding: 0.5em;
+    transform: translateY(-50%);
+  }
 }
