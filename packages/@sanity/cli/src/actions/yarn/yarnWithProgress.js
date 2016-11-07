@@ -101,6 +101,10 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   function onProgressStart(event) {
+    if (state.spinner) {
+      state.spinner.stop()
+    }
+
     state.progress = progrescii.create({
       template: getProgressTemplate(chalk.yellow('●'), state.step.message),
       total: event.data.total
