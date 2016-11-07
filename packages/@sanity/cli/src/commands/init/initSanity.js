@@ -79,7 +79,13 @@ export default async function initSanity(args, context) {
     throw err
   }
 
-  output.print('Success! You can now run `sanity start`')
+  // Check if we're currently in the output path, so we can give a better start message
+  if (outputPath === process.cwd()) {
+    output.print('Success! You can now run `sanity start`')
+  } else {
+    output.print(`Success! You can now change to directory ${outputPath} and run \`sanity start\``)
+  }
+
 
   // Create a provisional user and store the token
   async function getOrCreateUser() {
