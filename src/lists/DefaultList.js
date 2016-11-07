@@ -127,19 +127,21 @@ export default class DefaultList extends React.Component {
             </ul>
           }
           {
-            sortable && SortableList && <SortableList
-              sortableItems={items}
-              onSortEnd={onSortEnd}
-              onSortStart={onSortStart}
-              onSortMove={onSortMove}
-              helperClass={itemStyles.sortableHelper}
-              transitionDuration={100}
-              distance={0}
-              axis="y"
-              lockAxis="y"
-              useDragHandle={useDragHandle}
-              hideSortableGhost
-            />
+            sortable && SortableList && (
+              <SortableList
+                sortableItems={items}
+                onSortEnd={onSortEnd}
+                onSortStart={onSortStart}
+                onSortMove={onSortMove}
+                helperClass={itemStyles.sortableHelper}
+                transitionDuration={100}
+                distance={0}
+                axis="y"
+                lockAxis="y"
+                useDragHandle={useDragHandle}
+                hideSortableGhost
+              />
+            )
           }
         </div>
       </div>
