@@ -8,7 +8,7 @@ import isProduction from '../../util/isProduction'
 import reinitializePluginConfigs from '../../actions/config/reinitializePluginConfigs'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
 
-export default (args, context) => {
+export default async (args, context) => {
   const flags = args.extOptions
   const {output, workDir} = context
   const sanityConfig = getConfig(workDir)
@@ -24,22 +24,23 @@ export default (args, context) => {
   const httpPort = flags.port || port
   const compiler = server.locals.compiler
   const listeners = [thenify(server.listen.bind(server))(httpPort, hostname)]
+  const configSpinner = output.spinner('Checking configuration files...')
 
   // "invalid" doesn't mean the bundle is invalid, but that it is *invalidated*,
   // in other words, it's recompiling
   let compileSpinner
   compiler.plugin('invalid', () => {
     output.clear()
-    compileSpinner = output.spinner('Compiling...').start()
+    resetSpinner()
   })
 
   // Once the server(s) are listening, show a compiling spinner
-  const listenPromise = Promise.all(listeners).then(res => {
-    if (!compileSpinner) {
-      compileSpinner = output.spinner('Compiling...').start()
-    }
-    return res
-  })
+  let httpServers = []
+  try {
+    httpServers = await Promise.all(listeners)
+  } catch (err) {
+    gracefulDeath(config, err)
+  }
 
   // "done" event fires when Webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
@@ -59,45 +60,20 @@ export default (args, context) => {
     }
 
     const {errors, warnings} = stats.toJson({}, true)
-    const formattedWarnings = warnings.map(message => `Warning in ${formatMessage(message)}`)
-    let formattedErrors = errors.map(message => `Error in ${formatMessage(message)}`)
 
     if (hasErrors) {
-      output.print(chalk.red('Failed to compile.'))
-      output.print('')
-
-      if (formattedErrors.some(isLikelyASyntaxError)) {
-        // If there are any syntax errors, show just them.
-        // This prevents a confusing ESLint parsing error
-        // preceding a much more useful Babel syntax error.
-        formattedErrors = formattedErrors.filter(isLikelyASyntaxError)
-      }
-
-      formattedErrors.forEach(message => {
-        output.print(message)
-        output.print('')
-      })
-
-      // If errors exist, ignore warnings.
-      return
+      printErrors(output, errors)
+      return // If errors exist, ignore warnings.
     }
 
     if (hasWarnings) {
-      output.print(chalk.yellow('Compiled with warnings.'))
-      output.print()
-
-      formattedWarnings.forEach(message => {
-        output.print(message)
-        output.print()
-      })
+      printWarnings(output, warnings)
     }
 
-    listenPromise.then(res => {
-      output.print(chalk.green(`Server listening on http://${hostname}:${httpPort}`))
-      if (res.length > 1) {
-        output.print(chalk.green(`Storybook listening on ${res[1]}`))
-      }
-    })
+    output.print(chalk.green(`Server listening on http://${hostname}:${httpPort}`))
+    if (httpServers.length > 1) {
+      output.print(chalk.green(`Storybook listening on ${httpServers[1]}`))
+    }
   })
 
   const storyConfig = sanityConfig.get('storybook')
@@ -114,9 +90,18 @@ export default (args, context) => {
     listeners.push(storyBook(storyConfig))
   }
 
-  return reinitializePluginConfigs({workDir, output})
-    .then(listenPromise)
-    .catch(getGracefulDeathHandler(config))
+  await reinitializePluginConfigs({workDir, output})
+
+  configSpinner.succeed()
+  resetSpinner()
+
+  function resetSpinner() {
+    if (compileSpinner) {
+      compileSpinner.stop()
+    }
+
+    compileSpinner = output.spinner('Compiling...').start()
+  }
 }
 
 
@@ -127,20 +112,46 @@ function resolveStaticPath(rootDir, config) {
     : path.resolve(path.join(rootDir, staticPath))
 }
 
-function getGracefulDeathHandler(config) {
-  return function gracefulDeath(err) {
-    if (err.code === 'EADDRINUSE') {
-      throw new Error('Port number for Sanity server is already in use, configure `server.port` in `sanity.json`')
-    }
-
-    if (err.code === 'EACCES') {
-      const help = config.port < 1024
-        ? 'port numbers below 1024 requires root privileges'
-        : `do you have access to listen to the given hostname (${config.hostname})?`
-
-      throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
-    }
-
-    throw err
+function gracefulDeath(config, err) {
+  if (err.code === 'EADDRINUSE') {
+    throw new Error('Port number for Sanity server is already in use, configure `server.port` in `sanity.json`')
   }
+
+  if (err.code === 'EACCES') {
+    const help = config.port < 1024
+      ? 'port numbers below 1024 requires root privileges'
+      : `do you have access to listen to the given hostname (${config.hostname})?`
+
+    throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
+  }
+
+  throw err
+}
+
+
+function printErrors(output, errors) {
+  output.print(chalk.red('Failed to compile.'))
+  output.print('')
+
+  const formattedErrors = (errors.some(isLikelyASyntaxError)
+    ? errors.filter(isLikelyASyntaxError)
+    : errors
+  ).map(message => `Error in ${formatMessage(message)}`)
+
+  formattedErrors.forEach(message => {
+    output.print(message)
+    output.print('')
+  })
+}
+
+function printWarnings(output, warnings) {
+  output.print(chalk.yellow('Compiled with warnings.'))
+  output.print()
+
+  warnings
+    .map(message => `Warning in ${formatMessage(message)}`)
+    .forEach(message => {
+      output.print(message)
+      output.print()
+    })
 }

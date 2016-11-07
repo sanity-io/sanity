@@ -6,20 +6,18 @@ import normalizePluginName from '../../util/normalizePluginName'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
-export default function reinitializePluginConfigs(options) {
+export default async function reinitializePluginConfigs(options) {
   const {workDir, output} = options
-  const localChecksums = {}
 
-  return getChecksums(workDir)
-    .then(checksums => Object.assign(localChecksums, checksums))
-    .then(() => resolveTree({basePath: workDir}))
-    .then(plugins => Promise.all(plugins.map(pluginHasDistConfig)))
-    .then(plugins => plugins.filter(Boolean))
-    .then(plugins => Promise.all(plugins.map(getPluginConfigChecksum)))
-    .then(plugins => Promise.all(plugins.map(hasLocalConfig)))
-    .then(plugins => Promise.all(plugins.map(createMissingConfig)))
-    .then(plugins => plugins.map(warnOnDifferingChecksum))
-    .then(saveNewChecksums)
+  const localChecksums = await getChecksums(workDir)
+  const allPlugins = await resolveTree({basePath: workDir})
+  const pluginsWithDistConfig = (await Promise.all(allPlugins.map(pluginHasDistConfig))).filter(Boolean)
+  const distChecksums = await Promise.all(pluginsWithDistConfig.map(getPluginConfigChecksum))
+  const withLocalConfigs = await Promise.all(distChecksums.map(hasLocalConfig))
+  const missingConfigs = await Promise.all(withLocalConfigs.map(createMissingConfig))
+  const configPlugins = missingConfigs.map(warnOnDifferingChecksum)
+
+  return await saveNewChecksums(configPlugins)
 
   function hasLocalConfig(plugin) {
     return localConfigExists(workDir, plugin.name)
