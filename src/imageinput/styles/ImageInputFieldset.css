@@ -27,10 +27,7 @@
 
 .imageWrapper {
   min-height: 10rem;
-  margin-top: calc(var(--medium-padding) * -1);
-  margin-right: calc(var(--medium-padding) * -1);
-  margin-left: calc(var(--medium-padding) * -1);
-  margin-bottom: var(--medium-padding);
+  margin-top: calc(var(--medium-padding) * -1) calc(var(--medium-padding) * -1) var(--medium-padding) calc(var(--medium-padding) * -1);
   position: relative;
   background-color: var(--gray-dark);
   color: #fff;

@@ -39,7 +39,6 @@
 .icon {
   display: block;
   position: absolute;
-  right: 0;
   top: 50%;
   right: 0.2em;
   transform: translateY(-50%);
