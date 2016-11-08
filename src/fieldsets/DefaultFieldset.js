@@ -33,7 +33,6 @@ export default function Fieldset(props) {
 export function FieldWrapper(props) {
   return (
     <div className={styles.fieldWrapper}>
-      wrapper
       {props.children}
     </div>
   )

@@ -19,25 +19,23 @@
 
 .fieldWrapper {
   box-sizing: border-box;
-
-  /* lost-column: none; */
+  lost-column: none;
 
   @media (--screen-medium) {
     @nest .columns4 & {
-      /* lost-column: 1/4; */
+      lost-column: 1/4;
     }
 
     @nest .columns3 & {
-      /* lost-column: 1/3; */
-      border: 1px solid red;
+      lost-column: 1/3;
     }
 
     @nest .columns2 & {
-      /* lost-column: 1/2; */
+      lost-column: 1/2;
     }
 
     @nest .columns1 & {
-      /* lost-column: 1/1; */
+      lost-column: 1/1;
     }
   }
 }
