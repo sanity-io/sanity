@@ -34,11 +34,17 @@ export default class DateInput extends React.Component {
   constructor(props, context) {
     super(props, context)
 
-    this.handleFieldChange = this.handleFieldChange.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
-  handleFieldChange(date) {
-    this.props.onChange({patch: {$set: date.format('YYYY-MM-DD')}})
+  handleChange(date) {
+    this.props.onChange({
+      patch: {
+        type: date ? 'set' : 'unset',
+        path: [],
+        value: date.format('YYYY-MM-DD')
+      }
+    })
   }
 
   render() {
@@ -51,7 +57,7 @@ export default class DateInput extends React.Component {
             id={inputId}
             locale={getLocale(this.context)}
             selected={value && moment(value)}
-            onChange={this.handleFieldChange}
+            onChange={this.handleChange}
             showYearDropdown
             className={styles.datepicker}
           />
