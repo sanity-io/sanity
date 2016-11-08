@@ -35,35 +35,41 @@ export default {
         {
           name: 'foo',
           title: 'Foo',
+          description: 'Foo foo foo fooooooooooo',
           type: 'string',
           fieldset: 'headings'
         },
         {
           name: 'title',
           title: 'Title',
+          description: 'Title title title…',
           type: 'string',
           fieldset: 'headings'
         },
         {
           name: 'author',
           title: 'Author',
+          description: 'Author author author…',
           type: 'person',
           fieldset: 'author'
         },
         {
           name: 'test',
           title: 'Author details extra string',
+          description: 'Details extra string',
           type: 'string',
           fieldset: 'author'
         },
         {
           name: 'murgh',
           type: 'string',
-          title: 'Murgh'
+          title: 'Murgh',
+          description: 'Murgh is nice, and this is a description of it.'
         },
         {
           name: 'lead',
           title: 'Lead',
+          description: 'Lead is a metal and a chemical element',
           type: 'text',
           format: 'html'
         },
@@ -76,18 +82,21 @@ export default {
         {
           name: 'check-two',
           title: 'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
+          description: 'Description',
           type: 'boolean',
           fieldset: 'checkboxes'
         },
         {
           name: 'check-three',
           title: 'Check three?',
+          description: 'Description',
           type: 'boolean',
           fieldset: 'checkboxes'
         },
         {
           name: 'content',
           title: 'Content',
+          description: 'Description',
           type: 'array',
           of: [
             {
@@ -99,22 +108,26 @@ export default {
         {
           name: 'standalone-check',
           title: 'Standalone checkbox',
+          description: 'Description',
           type: 'boolean'
         },
         {
           name: 'gnargh',
           title: 'Inline/anonymous object',
+          description: 'Description',
           type: 'object',
           fields: [
             {
               name: 'petpeeve',
               type: 'string',
-              title: 'Pet peeve'
+              title: 'Pet peeve',
+              description: 'Description',
             },
             {
               name: 'color',
               type: 'string',
-              title: 'Color'
+              title: 'Color',
+              description: 'Description',
             }
           ]
         }
@@ -141,18 +154,21 @@ export default {
           name: 'street',
           type: 'string',
           title: 'Street',
+          description: 'Description',
           fieldset: 'street'
         },
         {
           name: 'zip',
           type: 'string',
           title: 'Zip',
+          description: 'Description',
           fieldset: 'basics'
         },
         {
           name: 'place',
           type: 'string',
           title: 'Place',
+          description: 'Description',
           fieldset: 'basics'
         }
       ]
@@ -161,10 +177,11 @@ export default {
       name: 'person',
       type: 'object',
       title: 'Object with plain fields',
+      description: 'Description',
       fields: [
-        {name: 'firstname', type: 'string', title: 'First name'},
-        {name: 'lastname', type: 'string', title: 'Last name'},
-        {name: 'address', type: 'address', title: 'Address'}
+        {name: 'firstname', type: 'string', title: 'First name', description: 'Description'},
+        {name: 'lastname', type: 'string', title: 'Last name', description: 'Description'},
+        {name: 'address', type: 'address', title: 'Address', description: 'Description'}
       ]
     },
   ]
