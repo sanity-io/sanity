@@ -18,6 +18,20 @@ export default class FullScreenDialog extends React.Component {
     kind: 'default'
   }
 
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.props.onClose()
+    }
+  }
+
   render() {
 
     const {kind, title, className, onClose, centered} = this.props

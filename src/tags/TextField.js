@@ -138,6 +138,7 @@ export default class TagsTextField extends React.Component {
               onKeyUp={this.handleKeyUp}
               ref={setInput}
               id={this._inputId}
+              autoComplete="off"
             />
           </div>
         </div>

@@ -94,15 +94,15 @@ export default class DefaultTextInput extends React.Component {
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
+          autoComplete="off"
           ref={this.setInputElement}
         />
         {
-          showClearButton && <button
-            className={styles.clearButton}
-            onClick={this.handleClear}
-          >
-            <CloseIcon color="inherit" />
-          </button>
+          showClearButton && (
+            <button className={styles.clearButton} onClick={this.handleClear}>
+              <CloseIcon color="inherit" />
+            </button>
+          )
         }
       </div>
     )

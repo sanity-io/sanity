@@ -38,7 +38,7 @@ class DropDownButton extends React.Component {
     return true
   }
 
-  handleClickOutside() {
+  handleClickOutside = () => {
     this.setState({menuOpened: false})
   }
 
@@ -73,6 +73,7 @@ class DropDownButton extends React.Component {
             opened={this.state.menuOpened}
             className={styles.menu}
             onAction={this.handleAction}
+            onClickOutside={this.handleClickOutside}
           />
         }
       </Button>

@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import Ink from 'react-ink'
 import styles from 'part:@sanity/components/buttons/in-input-style'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import {omit} from 'lodash'
 
 export default class InInputButton extends React.Component {
   static propTypes = {
@@ -37,7 +38,7 @@ export default class InInputButton extends React.Component {
 
   render() {
 
-    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = this.props
+    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = omit(this.props, 'onAction')
 
     const Icon = icon
 

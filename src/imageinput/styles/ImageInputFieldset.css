@@ -27,11 +27,12 @@
 
 .imageWrapper {
   min-height: 10rem;
-  margin: calc(var(--medium-padding) * -1) calc(var(--medium-padding) * -1) var(--medium-padding) calc(var(--medium-padding) * -1);
+  margin: calc(var(--medium-padding) * -1);
   position: relative;
   background-color: var(--gray-dark);
   color: #fff;
   transition: background-color 0.1s linear;
+  user-select: none;
 
   &:hover {
     background-color: var(--gray);
@@ -123,6 +124,10 @@
   &:hover {
     transform: scale(1.05);
   }
+
+  &:active {
+    color: #fff;
+  }
 }
 
 .cancel {
@@ -148,9 +153,22 @@
   }
 }
 
+.uploadInner {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
 .uploadIcon {
   display: block;
   font-size: 2em;
   width: 100%;
   margin-bottom: var(--small-padding);
+
+  @nest & svg {
+    font-size: 2em;
+    width: 100%;
+  }
 }

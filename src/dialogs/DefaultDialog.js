@@ -46,6 +46,20 @@ export default class DefaultDialog extends React.Component {
     }
   }
 
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.props.onClose()
+    }
+  }
+
   openDialogElement() {
     this.props.onOpen()
   }
@@ -54,9 +68,17 @@ export default class DefaultDialog extends React.Component {
     this.props.onClose()
   }
 
+  handleDialogClick = event => {
+    event.stopPropagation()
+  }
+
   handleActionClick(event) {
     const actionIndex = event.currentTarget.getAttribute('data-action-index')
     this.props.onAction(this.props.actions[actionIndex])
+  }
+
+  setDialogElement = element => {
+    this.dialog = element
   }
 
   render() {
@@ -68,8 +90,13 @@ export default class DefaultDialog extends React.Component {
     `
 
     return (
-      <div className={classNames}>
-        <div className={styles.dialog}>
+      <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
+        <div className={styles.dialog} onClick={this.handleDialogClick}>
+          {
+            !showHeader && <button className={styles.closeButtonOutside} onClick={this.handleCloseClick}>
+              <CloseIcon color="inherit" />
+            </button>
+          }
           <div className={styles.inner}>
             {
               showHeader && <div className={styles.header}>

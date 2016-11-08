@@ -158,6 +158,14 @@
   }
 }
 
+.closeButtonOutside {
+  composes: closeButton;
+  color: #fff;
+  font-size: 3rem;
+  top: -3.5rem;
+  right: -3.5rem;
+}
+
 .functions {
   box-sizing: border-box;
   padding: var(--dialog-padding);
