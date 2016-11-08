@@ -38,7 +38,7 @@ export default class Text extends React.Component {
     const {value, field, level} = this.props
     const inputId = uniqueId('FormBuilderText')
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={field.title} labelHtmlFor={inputId} level={level} description={field.description}>
         <TextArea
           id={inputId}
           placeholder={field.placeholder}

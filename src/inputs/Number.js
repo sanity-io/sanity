@@ -37,6 +37,7 @@ export default class Num extends React.Component {
     return (
       <DefaultTextField
         label={field.title}
+        description={field.description}
         type="number"
         level={level}
         placeholder={field.placeholder || 'Must be a number. Ex 1234'}

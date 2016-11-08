@@ -34,6 +34,7 @@ export default class Email extends React.Component {
     return (
       <DefaultTextField
         label={field.title}
+        description={field.description}
         type="email"
         level={level}
         placeholder={field.placeholder}

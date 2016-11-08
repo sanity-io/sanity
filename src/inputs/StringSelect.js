@@ -68,6 +68,7 @@ export default class StringSelect extends React.Component {
         type="text"
         value={currentItem || items[0]}
         placeholder={field.placeholder}
+        description={field.description}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}

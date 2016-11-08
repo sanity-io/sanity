@@ -33,7 +33,7 @@ export default class Bool extends React.Component {
   render() {
     const {value, field} = this.props
     return (
-      <Switch onChange={this.handleChange} checked={!!value} label={field.title} />
+      <Switch onChange={this.handleChange} checked={!!value} label={field.title} description={field.description} />
     )
   }
 }

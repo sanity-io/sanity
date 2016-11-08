@@ -60,8 +60,8 @@ export default class SearchableStringSelect extends React.Component {
       <SearchableSelect
         label={field.title}
         level={level}
-        placeholder={field.options.placeholder}
-        description={field.options.description}
+        placeholder={field.placeholder}
+        description={field.description}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}

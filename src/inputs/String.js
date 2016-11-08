@@ -67,6 +67,7 @@ export default class Str extends React.Component {
     return (
       <DefaultTextField
         label={field.title}
+        description={field.description}
         level={level}
         validation={validation}
         placeholder={field.placeholder}

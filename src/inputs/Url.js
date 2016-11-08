@@ -29,6 +29,7 @@ export default class Url extends React.Component {
     return (
       <DefaultTextField
         label={field.title}
+        description={field.description}
         type="url"
         placeholder={field.placeholder}
         onChange={this.handleChange}
