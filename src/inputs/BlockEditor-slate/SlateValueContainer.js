@@ -27,6 +27,10 @@ export default class SlateValueContainer {
     return (nextState === this.state) ? this : new SlateValueContainer(nextState, this.context)
   }
 
+  isEmpty() {
+    return this.state.document.length === 0
+  }
+
   serialize() {
     return fromSlate(this.state, this.context)
   }
