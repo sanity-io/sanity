@@ -274,7 +274,7 @@ export default class ImageInput extends React.PureComponent {
       'validation',
       'focus'
     )
-    const fieldGroups = groupBy(field.fields, fieldDef => {
+    const fieldGroups = Object.assign({asset: [], highlighted: [], other}, groupBy(field.fields, fieldDef => {
       if (fieldDef.name === 'asset') {
         return 'asset'
       }
@@ -282,7 +282,7 @@ export default class ImageInput extends React.PureComponent {
         return 'highlighted'
       }
       return 'other'
-    })
+    }))
 
     const imageUrl = this.getImageUrl()
 
