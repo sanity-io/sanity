@@ -41,14 +41,15 @@ class GeopointSelect extends React.Component {
   }
 
   componentDidMount() {
-    const {Map, Circle, places, event} = this.props.api
+    const {Circle, places, event} = this.props.api
+    const GMap = this.props.api.Map
     const geoPoint = this.getValueLatLng()
     const options = {
       zoom: this.props.defaultZoom,
       center: geoPoint
     }
 
-    this.mapInstance = new Map(this.elementRefs.map, options)
+    this.mapInstance = new GMap(this.elementRefs.map, options)
     this.declareMarker()
 
     const searchBounds = (new Circle({center: geoPoint, radius: 100})).getBounds()
@@ -109,7 +110,9 @@ class GeopointSelect extends React.Component {
   setValue(geoPoint) {
     this.props.onChange({
       patch: {
-        $set: {
+        type: 'set',
+        path: [],
+        value: {
           lat: geoPoint.lat(),
           lng: geoPoint.lng()
         }
