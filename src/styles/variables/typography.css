@@ -19,6 +19,12 @@
   --font-size-xsmall: 0.75rem;
   --font-size-tiny: 0.625rem;
 
+  --font-size-base--relative: 1em;
+  --font-size-large--relative: 1.25em;
+  --font-size-small--relative: 0.875em;
+  --font-size-xsmall--relative: 0.75em;
+  --font-size-tiny--relative: 0.625em;
+
   --font-size-h1: 2.625rem;
   --font-size-h2: 2rem;
   --font-size-h3: 1.75rem;

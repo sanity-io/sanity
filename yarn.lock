@@ -32,10 +32,11 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/document-store@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.3.tgz#fd6421b40b2e71c2c50f7839134c92083f7d2c84"
+"@sanity/document-store@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.4.tgz#64c1c2374590dbe330ea43b67d701442e10688be"
   dependencies:
+    nano-pubsub "^1.0.1"
     rxjs "^5.0.0-beta.11"
 
 "@sanity/eventsource@^1.0.0":
@@ -2422,6 +2423,10 @@ mz@^2.3.1:
 nan@^2.3.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
+
+nano-pubsub@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/nano-pubsub/-/nano-pubsub-1.0.1.tgz#11e202b8bc1fc0fb3206637f6760e503cb70ca2e"
 
 natural-compare@^1.4.0:
   version "1.4.0"
