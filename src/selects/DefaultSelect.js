@@ -81,6 +81,7 @@ export default class DefaultSelect extends React.Component {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             value={items.indexOf(value)}
+            autoComplete="off"
           >
             {
               items.map((item, i) => {

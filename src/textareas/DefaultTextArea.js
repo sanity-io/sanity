@@ -78,6 +78,7 @@ export default class DefaultTextArea extends React.Component {
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
+          autoComplete="off"
         />
         {
           showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>

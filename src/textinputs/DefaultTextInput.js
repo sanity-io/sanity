@@ -94,6 +94,7 @@ export default class DefaultTextInput extends React.Component {
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
+          autoComplete="off"
           ref={this.setInputElement}
         />
         {
