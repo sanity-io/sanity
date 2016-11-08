@@ -249,7 +249,7 @@ export default class ReferenceBrowser extends React.Component {
       }
       return (
         <div className={styles.buttons}>
-          <InInputButton onClick={this.handleClearValue} kind="danger">Delete</InInputButton>
+          <InInputButton onClick={this.handleClearValue} kind="danger">Clear</InInputButton>
           <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
         </div>
       )
