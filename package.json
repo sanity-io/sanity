@@ -35,6 +35,7 @@
     "react-addons-css-transition-group": "^15.3.0",
     "react-addons-shallow-compare": "^15.3.0",
     "react-click-outside": "^2.1.0",
+    "react-draggable": "^2.2.2",
     "react-ink": "^5.1.1",
     "react-sortable-hoc": "^0.1.0",
     "stylelint": "^7.1.0",

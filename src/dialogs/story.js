@@ -29,7 +29,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <Button onClick={linkTo('Dialogs', 'Default (open)')}>Open default dialog</Button>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
         <DefaultDialog title="This is the title" onClose={linkTo('Default (open)')}>
           Put content here
         </DefaultDialog>
@@ -47,7 +47,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <Button>Open default dialog</Button>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
         <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
           This is the content
           {chance.paragraph()}
@@ -66,7 +66,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <Button>Open default dialog</Button>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
         <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
           This is the content
           {chance.paragraph()}
