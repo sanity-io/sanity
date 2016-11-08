@@ -30,7 +30,7 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title="This is the title" onClose={linkTo('Default (open)')}>
+        <DefaultDialog title="This is the title" onClose={action('onClose')}>
           Put content here
         </DefaultDialog>
       </div>
@@ -48,7 +48,7 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')}>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')}>
           This is the content
           {chance.paragraph()}
         </DefaultDialog>
@@ -67,7 +67,7 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={linkTo('Dialogs', 'Default')} showHeader>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} showHeader>
           This is the content
           {chance.paragraph()}
         </DefaultDialog>
@@ -87,7 +87,7 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
-        <FullscreenDialog title="This is the title" onClose={linkTo('dialogClose')}>
+        <FullscreenDialog title="This is the title" onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
@@ -122,7 +122,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog kind="info" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog kind="info" title="This is the title" isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
@@ -141,7 +141,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog kind="danger" centered title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog kind="danger" centered title="This is the title" isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
@@ -159,7 +159,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog kind="danger" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog kind="danger" title="This is the title" isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
@@ -177,7 +177,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog kind="success" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog kind="success" title="This is the title" isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
@@ -195,7 +195,7 @@ storiesOf('Dialogs')
   () => {
     return (
       <div>
-        <FullscreenDialog kind="warning" title="This is the title" isOpen onClose={linkTo('Dialogs', 'Fullscreen')}>
+        <FullscreenDialog kind="warning" title="This is the title" isOpen onClose={action('onClose')}>
           This is the content
         </FullscreenDialog>
       </div>
