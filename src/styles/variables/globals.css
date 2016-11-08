@@ -1,4 +1,3 @@
-@import 'part:@sanity/base/theme/variables/brand-colors-style';
 @use postcss-cssnext;
 
 :root {
@@ -13,7 +12,5 @@
   --medium-padding: 1rem;
   --large-padding: 1.5rem;
   --extra-large-padding: 3rem;
-
-  --backdrop-background-color: rgba(0, 0, 0, 0.3);
 
 }
