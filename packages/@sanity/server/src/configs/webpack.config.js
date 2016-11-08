@@ -33,7 +33,10 @@ export default (config = {}) => {
 
   return {
     entry: {
-      app: path.join(__dirname, '..', 'browser', 'entry'),
+      app: [
+        require.resolve('normalize.css'),
+        path.join(__dirname, '..', 'browser', 'entry')
+      ],
       vendor: ['react', 'react-dom']
     },
     output: {

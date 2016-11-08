@@ -52,6 +52,7 @@
     "json-loader": "^0.5.4",
     "lodash": "^4.5.0",
     "lost": "^7.1.0",
+    "normalize.css": "^5.0.0",
     "parents": "^1.0.1",
     "postcss-cssnext": "^2.8.0",
     "postcss-import": "^7.1.3",
