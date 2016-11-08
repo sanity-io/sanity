@@ -19,7 +19,8 @@ export default class DefaultTextField extends React.Component {
     level: PropTypes.number,
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
-    className: PropTypes.string
+    className: PropTypes.string,
+    description: PropTypes.string
   }
 
   static defaultProps = {
@@ -62,11 +63,11 @@ export default class DefaultTextField extends React.Component {
   }
 
   render() {
-    const {label, placeholder, error, showClearButton, type, className, level} = this.props
+    const {label, placeholder, error, showClearButton, type, className, level, description} = this.props
 
     const rootClass = `${error ? styles.error : styles.root} ${className}`
     return (
-      <FormField className={rootClass} level={level} labelHtmlFor={this._inputId} label={label}>
+      <FormField className={rootClass} level={level} labelHtmlFor={this._inputId} label={label} description={description}>
         <DefaultTextInput
           className={`${error ? styles.inputError : styles.input}`}
           level={level}
