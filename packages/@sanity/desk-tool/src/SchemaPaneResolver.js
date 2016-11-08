@@ -166,7 +166,7 @@ export default class SchemaPaneResolver extends React.Component {
     )
 
     const documentsPane = selectedType ? this.getDocumentsPane(selectedType) : (
-      <div>Select a type to begin…</div>
+    <div>Select a type to begin…</div>
     )
 
     return (
