@@ -33,7 +33,6 @@ class GeopointInput extends React.Component {
 
     this.handleToggleModal = this.handleToggleModal.bind(this)
     this.handleCloseModal = this.handleCloseModal.bind(this)
-    this.handleDialogAction = this.handleDialogAction.bind(this)
 
     this.state = {
       dragMarkerInitialPosition: null,
@@ -66,21 +65,8 @@ class GeopointInput extends React.Component {
     return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
   }
 
-  handleDialogAction(action) {
-    if (action.key === 'close') {
-      this.handleCloseModal()
-    }
-  }
-
   render() {
     const {value, field} = this.props
-
-    const actions = [
-      {
-        title: 'Close',
-        key: 'close'
-      }
-    ]
 
     if (!config || !config.apiKey) {
       return (
@@ -128,8 +114,6 @@ class GeopointInput extends React.Component {
             onOpen={this.handleOpenModal}
             message={formatMessage('google-maps.mapHelpText')}
             isOpen={this.state.modalOpen}
-            actions={actions}
-            onAction={this.handleDialogAction}
           >
             <GoogleMapsLoadProxy
               value={value}
