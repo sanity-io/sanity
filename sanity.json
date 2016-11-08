@@ -760,6 +760,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "imageinput/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "datepicker/story.js"
     }
 
   ]

@@ -1,17 +1,26 @@
 import React from 'react'
-import {storiesOf} from 'part:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 import DatePicker from 'part:@sanity/form-builder/input/date'
 
-storiesOf('Date pickers').addWithInfo(
-  'react-datepicker',
+storiesOf('Date pickers')
+.addWithInfo(
+  'Form builder date picker',
   `
-    react-datepicker with customized styling
+    Default tags
   `,
   () => {
-
+    const field = {
+      name: 'fieldName',
+      precision: 'minute',
+      title: 'Field title',
+      type: 'date'
+    }
     return (
-      <DatePicker />
+      <DatePicker field={field} onChange={action('onChange')} />
     )
   },
-  {inline: true}
+  {
+    propTables: [DatePicker],
+    role: 'part:@sanity/form-builder/input/date'
+  }
 )
