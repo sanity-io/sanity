@@ -1,11 +1,12 @@
-@import "part:@sanity/base/theme/variables/typography-style";
+@import "part:@sanity/base/theme/variables-style";
 
 @use postcss-cssnext;
 
 .root {
   position: absolute;
   width: auto;
-  background-color: #fff;
+  background-color: var(--body-bg);
+  color: var(--text-color);
   composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-small);
   user-select: none;

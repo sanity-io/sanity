@@ -85,6 +85,9 @@ storiesOf('Buttons')
           <DropDownButton items={items} onAction={action('Clicked item')}>
             This is a dropdown
           </DropDownButton>
+          <DropDownButton kind="danger" items={items} onAction={action('Clicked item')}>
+            This is a dangergrous dropdown
+          </DropDownButton>
           <div>
             This text should be under the menu
           </div>
