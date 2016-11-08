@@ -46,7 +46,6 @@ function Document(props) {
       <head>
         <meta charSet="utf-8" />
         <title>{props.title}</title>
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" />
         {stylesheets}
         {favicons}
         <meta name="viewport" content={props.viewport} />
