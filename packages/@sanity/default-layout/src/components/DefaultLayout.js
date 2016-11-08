@@ -35,12 +35,15 @@ class DefaultLayout extends React.Component {
         </a>
 
         <div className={styles.top}>
-          <div className={styles.companyLogoContainer}>
-            {CompanyLogo
-              ? <CompanyLogo projectName={projectName} />
-              : projectName
+
+
+          <a href="/" className={styles.companyBranding}>
+            <h1 className={CompanyLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
+            {
+              CompanyLogo && <div className={styles.companyLogoContainer}><CompanyLogo projectName={projectName} /></div>
             }
-          </div>
+          </a>
+
           <div className={styles.menu}>
             <Hamburger>
               <ToolSwitcher tools={tools} activeToolName={router.state.tool} className={styles.toolSwitcher} />
