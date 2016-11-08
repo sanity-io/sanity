@@ -3,11 +3,10 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
-import SortableList from 'part:@sanity/components/lists/sortable'
 import GridList from 'part:@sanity/components/lists/grid'
 import CardPreview from 'part:@sanity/components/previews/card'
-import {arrayMove} from 'react-sortable-hoc'
 
+import {arrayMove} from 'react-sortable-hoc'
 import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()
@@ -28,16 +27,30 @@ const defaultItems = range(100).map((item, i) => {
   }
 })
 
+const detailedItems = range(100).map((item, i) => {
+  const width = random(10, 100) * 10
+  const height = random(10, 50) * 10
+  const randomImage = `http://placekitten.com/${width}/${height}`
+  return {
+    key: `${i}`,
+    title: chance.name(),
+    subtitle: chance.sentence(),
+    description: chance.paragraph(),
+    mediaRender() {
+      return (
+        <img src={randomImage} />
+      )
+    }
+  }
+})
+
 class SortableComponent extends React.Component {
+  static propTypes = DefaultList.propTypes
   constructor(props, args) {
     super(props, args)
     this.state = {
-      items: defaultItems
+      items: this.props.items
     }
-  }
-
-  handleOnSort = () => {
-    // console.log('on sort')
   }
 
   handleOnSortEnd = ({oldIndex, newIndex}) => {
@@ -45,12 +58,23 @@ class SortableComponent extends React.Component {
     this.setState({
       items: arrayMove(items, oldIndex, newIndex)
     })
+    this.props.onSortEnd()
   }
 
   render() {
     const {items} = this.state
+    const {useDragHandle, onSelect, onSortMove, decoration} = this.props
+    // TODO onSortStart={onSortStart} crashes chrome. Investigate this?
     return (
-      <SortableList items={items} onSort={this.handleOnSort} onSortEnd={this.handleOnSortEnd} useDragHandle="true" />
+      <DefaultList
+        items={items}
+        sortable
+        onSelect={onSelect}
+        onSortMove={onSortMove}
+        onSortEnd={this.handleOnSortEnd}
+        useDragHandle={useDragHandle}
+        decoration={decoration}
+      />
     )
   }
 }
@@ -59,17 +83,55 @@ class SortableComponent extends React.Component {
 storiesOf('Lists')
 .addWithInfo(
   'Default',
+  'The default fieldset is used to gather a collection of fields.',
+  () => {
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} />
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+.addWithInfo(
+  'Default (zebra-stripes)',
+  'The default fieldset is used to gather a collection of fields.',
+  () => {
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="zebra-stripes" />
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+.addWithInfo(
+  'Default (divider)',
+  'The default fieldset is used to gather a collection of fields.',
+  () => {
+    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="divider" />
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+
+.addWithInfo(
+  'Default Sortable (divider)',
   `
-    The default fieldset is used to gather a collection of fields.
+    Sortable DefaultList
   `,
   () => {
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          onSelect={action('Select')}
-        />
-      </div>
+      <SortableComponent
+        items={defaultItems}
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+        useDragHandle
+        decoration="divider"
+      />
     )
   },
   {
@@ -79,15 +141,21 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'SortableList',
+  'Default Sortable (detailed, divider)',
   `
-    Sortable list
+    Sortable DefaultList
   `,
   () => {
     return (
-      <div style={containerStyle}>
-        <SortableComponent />
-      </div>
+      <SortableComponent
+        items={detailedItems}
+        useDragHandle
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+        decoration="divider"
+      />
     )
   },
   {
@@ -97,7 +165,31 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Default, scrollable with selected item',
+  'Default Sortable (detailed, no draghandle, zebra-stripes)',
+  `
+    Sortable DefaultList
+  `,
+  () => {
+    return (
+      <SortableComponent
+        items={detailedItems}
+        onSelect={action('onSelect')}
+        onSortStart={action('onSortStart')}
+        onSortMove={action('onSortMove')}
+        onSortEnd={action('onSortEnd')}
+        decoration="zebra-stripes"
+      />
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+
+.addWithInfo(
+  'Default (scrollable with selected item)',
   `
     The default fieldset is used to gather a collection of fields.
   `,
@@ -108,7 +200,7 @@ storiesOf('Lists')
         <DefaultList
           items={defaultItems}
           selectedItem={selectedItem}
-          onSelect={action('Select')}
+          onSelect={action('onSelect')}
           scrollable
         />
       </div>
@@ -121,7 +213,7 @@ storiesOf('Lists')
 )
 
 .addWithInfo(
-  'Default, scrollable with selected item and highlighted item',
+  'Default (scrollable with selected item and highlighted item)',
   `
     The default fieldset is used to gather a collection of fields.
   `,
@@ -148,7 +240,7 @@ storiesOf('Lists')
 
 
 .addWithInfo(
-  'Default scrollable, with selected item outside view',
+  'Default (scrollable, with selected item outside view)',
   `
     The default fieldset is used to gather a collection of fields.
   `,

@@ -12,7 +12,7 @@ export default class DefaultListItem extends React.Component {
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
     scrollIntoView: PropTypes.func,
-    decoration: PropTypes.oneOf(['default', 'zebra-stripes'])
+    decoration: PropTypes.oneOf(['default', 'zebra-stripes', 'divider'])
   }
 
   static defaultProps = {

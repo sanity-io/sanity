@@ -20,7 +20,6 @@
   padding: 0;
 }
 
-.item {
-  display: block;
-  list-style-type: none;
+.sortableList {
+  composes: list;
 }

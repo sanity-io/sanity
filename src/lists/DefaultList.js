@@ -1,8 +1,13 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/default-style'
 import ListItem from 'part:@sanity/components/lists/items/default'
+import itemStyles from 'part:@sanity/components/lists/items/default-style'
 import ReactDOM from 'react-dom'
 import DefaultPreview from 'part:@sanity/components/previews/default'
+import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
+import DragBarsIcon from 'part:@sanity/base/bars-icon'
+
+const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
 export default class DefaultList extends React.Component {
   static propTypes = {
@@ -16,6 +21,10 @@ export default class DefaultList extends React.Component {
       })
     ),
     onSelect: PropTypes.func,
+    onSortStart: PropTypes.func,
+    onSortMove: PropTypes.func,
+    onSortEnd: PropTypes.func,
+    useDragHandle: PropTypes.bool,
     scrollable: PropTypes.bool,
     selectable: PropTypes.bool,
     selectedItem: PropTypes.object,
@@ -25,11 +34,13 @@ export default class DefaultList extends React.Component {
     className: PropTypes.string,
     renderItem: PropTypes.func,
     ListItemContainer: PropTypes.func,
-    decoration: PropTypes.string
+    decoration: PropTypes.string,
+    sortable: PropTypes.bool
   }
 
   static defaultProps = {
     onSelect() {},
+    sortable: false,
     renderItem(item, i) {
       return (
         <DefaultPreview item={item} />
@@ -37,23 +48,15 @@ export default class DefaultList extends React.Component {
     }
   }
 
-  constructor(context, props) {
-    super(context, props)
-
-    this.handleSelect = this.handleSelect.bind(this)
-    this.setListContainer = this.setListContainer.bind(this)
-    this.scrollElementIntoViewIfNeeded = this.scrollElementIntoViewIfNeeded.bind(this)
-  }
-
-  handleSelect(item) {
+  handleSelect = item => {
     this.props.onSelect(item)
   }
 
-  setListContainer(element) {
+  setListContainer = element => {
     this._listContainer = element
   }
 
-  scrollElementIntoViewIfNeeded(domNode) {
+  scrollElementIntoViewIfNeeded = domNode => {
     const containerDomNode = ReactDOM.findDOMNode(this)
     const offset = domNode.offsetTop
     if ((containerDomNode.scrollTop + containerDomNode.offsetHeight) < offset) {
@@ -66,36 +69,80 @@ export default class DefaultList extends React.Component {
     // }
   }
 
+  renderListitem = (item, props, index) => {
+    const ListItemContainer = props.ListItemContainer || ListItem
+    const {renderItem, decoration, selectedItem, highlightedItem, sortable, useDragHandle} = this.props
+    return (
+      <ListItemContainer
+        className={styles.item}
+        index={item.index}
+        key={`item-${index}`}
+        item={item}
+        onSelect={this.handleSelect}
+        selected={item == selectedItem}
+        highlighted={item == highlightedItem}
+        scrollIntoView={this.scrollElementIntoViewIfNeeded}
+        decoration={decoration}
+      >
+        {
+          sortable && useDragHandle && <DragHandle />
+        }
+        {renderItem(item, index)}
+      </ListItemContainer>
+    )
+  }
+
   render() {
 
-    const {items, className, selectedItem, highlightedItem, renderItem, scrollable, decoration} = this.props
+    const {items, className, scrollable, sortable, useDragHandle, onSortStart, onSortEnd, onSortMove} = this.props
 
-    const ListItemContainer = this.props.ListItemContainer || ListItem
+    const SortableItem = sortable && SortableElement(({value, index}) => {
+      return this.renderListitem(value, this.props, index)
+    })
+
+    const SortableList = sortable && SortableContainer(({sortableItems}) => {
+      return (
+        <ul className={styles.sortableList} ref={this.setListContainer}>
+          {
+            sortableItems.map((value, index) => {
+              return (
+                <SortableItem key={`sortableItem-${index}`} index={index} value={value} />
+              )
+            })
+          }
+        </ul>
+      )
+    })
 
     return (
       <div className={`${scrollable ? styles.scrollable : styles.root} ${className} `}>
         <div className={styles.inner}>
-          <ul className={styles.list} ref={this.setListContainer}>
-            {
-              renderItem && items && items.map((item, i) => {
-                return (
-                  <ListItemContainer
-                    className={styles.item}
-                    index={item.index}
-                    key={`item-${i}`}
-                    item={item}
-                    onSelect={this.handleSelect}
-                    selected={item == selectedItem}
-                    highlighted={item == highlightedItem}
-                    scrollIntoView={this.scrollElementIntoViewIfNeeded}
-                    decoration={decoration}
-                  >
-                    {renderItem(item, i)}
-                  </ListItemContainer>
-                )
-              })
-            }
-          </ul>
+          {
+            !sortable && <ul className={styles.list} ref={this.setListContainer}>
+              {
+                items && items.map((item, index) => {
+                  return this.renderListitem(item, this.props, index)
+                })
+              }
+            </ul>
+          }
+          {
+            sortable && SortableList && (
+              <SortableList
+                sortableItems={items}
+                onSortEnd={onSortEnd}
+                onSortStart={onSortStart}
+                onSortMove={onSortMove}
+                helperClass={itemStyles.sortableHelper}
+                transitionDuration={100}
+                distance={0}
+                axis="y"
+                lockAxis="y"
+                useDragHandle={useDragHandle}
+                hideSortableGhost
+              />
+            )
+          }
         </div>
       </div>
     )
