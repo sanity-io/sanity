@@ -1,0 +1,107 @@
+@import "part:@sanity/base/theme/responsive-style";
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: block;
+}
+
+.headline {
+  composes: heading2 from "part:@sanity/base/theme/typography/text-blocks-style";
+  text-align: center;
+  font-weight: 100;
+  text-transform: uppercase;
+}
+
+.sanityStudioLogo {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translatex(-50%);
+  width: 10em;
+  height: 1em;
+  @media (--screen-medium) {
+    top: 10vh;
+  }
+}
+
+.branding {
+  position: absolute;
+  top: 5rem;
+  left: 50%;
+  transform: translatex(-50%);
+  text-align: center;
+  @media (--screen-medium) {
+    top: 20vh;
+  }
+}
+
+.projectName {
+  composes: heading1 from "part:@sanity/base/theme/typography/text-blocks-style";
+  font-weight: 100;
+}
+
+.projectNameHidden {
+  composes: projectName;
+  display: none;
+}
+
+.companyLogoContainer {
+  height: 3em;
+  max-width: 70vw;
+  @nest & svg {
+    height: 4em;
+    width: auto;
+    max-width: 70vw;
+  }
+}
+
+.providers {
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.provider {
+  display: inline-block;
+  margin: 1em;
+  padding: 0;
+
+}
+
+.providerButton {
+  appearance: none;
+  display: block;
+  border: none;
+  background-color: transparent;
+  padding: 1em;
+  outline: none !important;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #eee;
+  }
+
+  &:active {
+    background-color: var(--selected-item-color-hover);
+  }
+
+}
+
+.providerName {
+  display: block;
+}
+
+.providerLogo {
+  @nest & svg {
+    height: 7em;
+    width: auto;
+  }
+}

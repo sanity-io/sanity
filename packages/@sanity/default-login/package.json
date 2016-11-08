@@ -16,6 +16,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "babel-eslint": "^7.1.0",
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
