@@ -62,7 +62,7 @@ function buildPackageArray(packages, workDir) {
   return packages.reduce((result, pkgName) => {
     result.push({
       name: pkgName,
-      version: getLocalVersion(pkgName, workDir),
+      version: getLocalVersion(pkgName, workDir) || '???',
       latest: tryFindLatestVersion(pkgName)
     })
     return result
