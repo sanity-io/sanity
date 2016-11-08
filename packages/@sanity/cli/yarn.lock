@@ -9,9 +9,9 @@
     parse-headers "^2.0.0"
     xtend "^4.0.0"
 
-"@sanity/client@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.2.tgz#2107c77ad2e20dfa999510b23bb07abd59b64203"
+"@sanity/client@^0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.6.tgz#4fa43e7111fbaf35ab0feb5026e6d0a053c1487c"
   dependencies:
     "@sanity/eventsource" "^1.0.0"
     "@sanity/request" "0.0.3"
@@ -39,9 +39,9 @@
     "@bjoerge/xhr" "^3.0.0"
     request "^2.72.0"
 
-"@sanity/resolver@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.4.tgz#d3cc3b6d46193020ed8a47a7f087f9b086479e70"
+"@sanity/resolver@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.5.tgz#32052079f279f564a7459487c45cdb54a01cf333"
   dependencies:
     "@sanity/generate-help-url" "^0.0.2"
     in-publish "^2.0.0"
@@ -1873,7 +1873,7 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
-latest-version, latest-version@^2.0.0:
+latest-version@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/latest-version/-/latest-version-2.0.0.tgz#56f8d6139620847b8017f8f1f4d78e211324168b"
   dependencies:
@@ -2220,7 +2220,7 @@ output-file-sync@^1.1.0:
     mkdirp "^0.5.1"
     object-assign "^4.1.0"
 
-package-json@^2.0.0:
+package-json, package-json@^2.0.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/package-json/-/package-json-2.4.0.tgz#0d15bd67d1cbbddbb2ca222ff2edb86bcb31a8bb"
   dependencies:
@@ -2557,6 +2557,10 @@ rx-lite@^3.1.2:
 rx@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
+
+semver-compare:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
 
 semver-diff@^2.0.0:
   version "2.1.0"

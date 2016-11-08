@@ -9,5 +9,5 @@ export default {
   signature: '',
   description: 'Shows the installed versions of Sanity CLI and core components',
   helpText: help,
-  action: lazyRequire(require.resolve('../../actions/versions/findSanityModuleVersions'))
+  action: lazyRequire(require.resolve('./printVersionResult'))
 }
