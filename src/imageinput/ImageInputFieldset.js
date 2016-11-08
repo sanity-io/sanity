@@ -83,8 +83,10 @@ export default class ImageInputFieldset extends React.Component {
                 onSelect={this.props.onSelect}
               >
                 <div className={styles.uploadInner}>
-                  <UploadIcon className={styles.uploadIcon} />
-                  Upload image
+                  <div className={styles.uploadIconContainer}>
+                    <UploadIcon className={styles.uploadIcon} />
+                  </div>
+                  <span className={styles.uploadIconText}>Upload image</span>
                 </div>
               </ImageSelect>
             }

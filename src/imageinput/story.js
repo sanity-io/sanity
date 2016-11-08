@@ -6,7 +6,7 @@ import buttonStyles from 'part:@sanity/components/buttons/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 
-const imageUrl = `https://unsplash.it/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
+const imageUrl = `http://placekitten.com/g/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
 
 storiesOf('Image input')
 .addWithInfo(
@@ -163,6 +163,32 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="complete"
+        percent="100"
+        hotspotImage={{
+          imageUrl: imageUrl
+        }}
+      >
+        <h2>Content goes here</h2>
+      </ImageInput>
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+.addWithInfo(
+  'Fieldset (ready with value)',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        status="ready"
         percent="100"
         hotspotImage={{
           imageUrl: imageUrl
