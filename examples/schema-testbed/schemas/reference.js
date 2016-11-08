@@ -6,6 +6,21 @@ export default {
       type: 'object',
       fields: [
         {
+          name: 'petReferenceArray',
+          type: 'array',
+          title: 'Array of reference to pets in a list',
+          description: 'This array are defined in the field.',
+          of: [
+            {
+              title: 'Pet',
+              type: 'reference',
+              to: {
+                type: 'pet'
+              }
+            }
+          ]
+        },
+        {
           name: 'title',
           title: 'Title',
           type: 'string',

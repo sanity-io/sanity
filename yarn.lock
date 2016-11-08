@@ -111,9 +111,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.10.0"
 
-"@sanity/base@0.0.36":
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.36.tgz#5afc0a93ba8d63906fd44ebfa4dcfed9f76b0c5a"
+"@sanity/base@^0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.37.tgz#ab2beabf926338138c94ad5cfd898d9a168525bc"
   dependencies:
     "@sanity/client" "^0.3.5"
     "@sanity/document-store" "0.0.4"
@@ -184,9 +184,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/components@0.0.43":
-  version "0.0.43"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.43.tgz#6dc6c3bb445868293abbb33820be2fd19de7a57d"
+"@sanity/components@^0.0.45":
+  version "0.0.45"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.45.tgz#5577550476211063404d0d76e4dea2768d826dd6"
   dependencies:
     chance "^1.0.4"
     dialog-polyfill "^0.4.3"
@@ -205,12 +205,12 @@
     stylelint "^7.1.0"
     stylelint-config-standard "^12.0.0"
 
-"@sanity/core":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.1.tgz#a0eb6ea93016ba0a251d25142a666843b6853b3c"
+"@sanity/core@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.2.tgz#0ab0d1eb0fccbaa4be7c46eed2ac477700f42e5a"
   dependencies:
     "@sanity/check" "^0.0.2"
-    "@sanity/server" "^0.0.9"
+    "@sanity/server" "^0.0.10"
     "@sanity/storybook" "^0.0.9"
     "@sanity/util" "0.0.2"
     deep-sort-object "^1.0.1"
@@ -296,11 +296,22 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.9", "@sanity/server@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.9.tgz#820c231b1db203ad811f4c1dd18507c8671ca552"
+"@sanity/resolver@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.5.tgz#32052079f279f564a7459487c45cdb54a01cf333"
   dependencies:
-    "@sanity/resolver" "^0.0.1"
+    "@sanity/generate-help-url" "^0.0.2"
+    in-publish "^2.0.0"
+    lodash.uniq "^4.5.0"
+    mz "^2.4.0"
+    path-exists "^3.0.0"
+    promise-props-recursive "^1.0.0"
+
+"@sanity/server@^0.0.10", "@sanity/server@0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.10.tgz#ef37a647988f9b1d53dba3afbc22a09b3f1f5457"
+  dependencies:
+    "@sanity/resolver" "^0.0.5"
     "@sanity/webpack-loader" "^0.0.1"
     babel-core "^6.5.2"
     babel-loader "^6.2.2"
