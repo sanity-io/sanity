@@ -42,6 +42,10 @@ class DropDownButton extends React.Component {
     this.setState({menuOpened: false})
   }
 
+  handleClose = () => {
+    this.setState({menuOpened: false})
+  }
+
   handleOnClick() {
     this.setState({
       menuOpened: !this.state.menuOpened
@@ -74,6 +78,7 @@ class DropDownButton extends React.Component {
             className={styles.menu}
             onAction={this.handleAction}
             onClickOutside={this.handleClickOutside}
+            onClose={this.handleClose}
           />
         }
       </Button>

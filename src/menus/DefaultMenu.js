@@ -12,6 +12,7 @@ class DefaultMenu extends React.Component {
     fullWidth: PropTypes.bool,
     className: PropTypes.string,
     onClickOutside: PropTypes.func,
+    onClose: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -25,11 +26,26 @@ class DefaultMenu extends React.Component {
     origin: 'top-left',
     icon: false,
     ripple: true,
-    onClickOutside() {}
+    onClickOutside() {},
+    onClose() {}
   }
 
   handleClickOutside = () => {
     this.props.onClickOutside()
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.props.onClose()
+    }
   }
 
   handleItemClick = event => {
