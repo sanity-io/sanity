@@ -46,7 +46,7 @@ export async function createPackageManifest(data) {
     keywords: ['sanity'],
     scripts: {
       start: 'sanity start',
-      test: 'sanity test'
+      test: 'sanity check'
     }
   }, deps)
 
@@ -111,10 +111,14 @@ export function createSanityManifest(data, opts) {
   const manifest = opts.isPlugin ? getSanityPluginManifest(data, opts) : {
     root: true,
 
+    project: {
+      name: data.displayName
+    },
+
     api: {
       projectId: data.projectId,
       dataset: data.dataset,
-      token: data.provisionalToken
+      token: data.provisionalToken || undefined
     },
 
     plugins: [

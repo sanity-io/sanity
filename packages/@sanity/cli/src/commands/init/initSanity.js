@@ -65,6 +65,7 @@ export default async function initSanity(args, context) {
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapSanity(outputPath, {
     name: sluggedName,
+    displayName: displayName,
     dataset: datasetName,
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
