@@ -1,27 +1,32 @@
 import React, {PropTypes} from 'react'
-import ToolSwitcher from './ToolSwitcher'
-import RenderTool from './RenderTool'
 import {RouteScope} from '@sanity/state-router'
-import styles from '../../styles/DefaultLayout.css'
+import config from 'config:sanity'
 import tools from 'all:part:@sanity/base/tool'
 import absolutes from 'all:part:@sanity/base/absolutes'
-import LoginStatus from './LoginStatus'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
-import CompanyLogo from 'part:@sanity/base/company-logo'
+import CompanyLogo from 'part:@sanity/base/company-logo?'
+import styles from '../../styles/DefaultLayout.css'
+import LoginStatus from './LoginStatus'
+import ToolSwitcher from './ToolSwitcher'
+import RenderTool from './RenderTool'
 import Hamburger from './Hamburger'
 
 class DefaultLayout extends React.Component {
   static contextTypes = {
     router: PropTypes.object,
   }
+
   componentWillMount() {
     const {router} = this.context
     if (!router.state.tool) {
       router.navigate({tool: tools[0].name})
     }
   }
+
   render() {
     const {router} = this.context
+    const projectName = (config.project && config.project.name) || ''
+
     return (
       <div className={styles.defaultLayout}>
 
@@ -31,7 +36,10 @@ class DefaultLayout extends React.Component {
 
         <div className={styles.top}>
           <div className={styles.companyLogoContainer}>
-            <CompanyLogo />
+            {CompanyLogo
+              ? <CompanyLogo projectName={projectName} />
+              : projectName
+            }
           </div>
           <div className={styles.menu}>
             <Hamburger>

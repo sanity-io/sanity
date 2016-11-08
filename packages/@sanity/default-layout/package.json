@@ -5,6 +5,7 @@
   "main": "lib/default-layout.js",
   "scripts": {
     "compile": "babel --copy-files -d lib/ src/",
+    "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
