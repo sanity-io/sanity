@@ -579,10 +579,6 @@
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
       "path": "components/logos/SanityStudioLogo.js"
-    },
-    {
-      "implements": "part:@sanity/base/company-logo",
-      "path": "components/logos/SanityStudioLogo.js"
     }
   ]
 }
