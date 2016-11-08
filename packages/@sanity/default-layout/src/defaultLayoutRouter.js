@@ -1,4 +1,4 @@
-import {createRoute, createScope} from '@sanity/state-router'
+import {createRoute, createScope} from 'part:@sanity/base/router'
 import tools from 'all:part:@sanity/base/tool'
 
 export default createRoute('/some-site/:tool/*', params => {

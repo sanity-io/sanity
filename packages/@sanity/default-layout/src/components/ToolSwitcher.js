@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
-import {Link} from 'part:@sanity/base/router'
-
+import {StateLink} from 'part:@sanity/base/router'
 import styles from '../../styles/ToolSwitcher.css'
 
 class ToolSwitcher extends React.Component {
@@ -29,14 +28,14 @@ class ToolSwitcher extends React.Component {
 
             return (
               <li key={tool.name} className={itemClass}>
-                <Link href={`/${tool.name}`} className={styles.toolLink}>
+                <StateLink className={styles.toolLink} state={{tool: tool.name}}>
                   <div className={styles.iconContainer}>
                     <ToolIcon />
                   </div>
                   <div className={styles.toolName}>
                     {tool.name}
                   </div>
-                </Link>
+                </StateLink>
               </li>
             )
           })}

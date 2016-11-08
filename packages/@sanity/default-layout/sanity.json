@@ -13,7 +13,7 @@
     {
       "implements": "part:@sanity/base/root",
       "name": "part:@sanity/default-layout/root",
-      "path": "components/DefaultLayoutRouter"
+      "path": "components/DefaultLayoutContainer"
     },
     {
       "implements": "part:@sanity/base/action-button",

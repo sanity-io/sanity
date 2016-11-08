@@ -2,6 +2,6 @@
   "presets": ["es2015", "react"],
   "plugins": [
     "syntax-class-properties",
-    "transform-class-properties",
+    "transform-class-properties"
   ]
 }

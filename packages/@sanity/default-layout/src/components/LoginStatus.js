@@ -4,13 +4,12 @@ import userStore from 'part:@sanity/base/user'
 import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 import Menu from 'part:@sanity/components/menus/default'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
-// import config from 'config:sanity'
 
 export default class LoginStatus extends React.Component {
-
   static propTypes = {
     className: PropTypes.string
   }
+
   constructor(props, args) {
     super(props, args)
     this.state = {
@@ -21,9 +20,7 @@ export default class LoginStatus extends React.Component {
   componentWillMount() {
     this.userSubscription = userStore.currentUser
       .map(ev => ev.user)
-      .subscribe(user => {
-        this.setState({user: user})
-      })
+      .subscribe(user => this.setState({user}))
   }
 
   componentWillUnmount() {
@@ -54,6 +51,7 @@ export default class LoginStatus extends React.Component {
     if (!user) {
       return null
     }
+
     return (
       <div className={`${styles.root} ${className}`}>
 
@@ -61,18 +59,15 @@ export default class LoginStatus extends React.Component {
           <img src={user.profileImage} className={styles.userImage} />
         </div>
 
-        {
-          userMenuOpened
-          && <div className={styles.userMenu}>
+        {userMenuOpened &&
+          <div className={styles.userMenu}>
             <Menu
               onAction={this.handleUserMenuItemClick}
-              items={[
-                {
-                  title: `Log out ${user.name}`,
-                  icon: IconSignOut,
-                  index: 'signOut'
-                }
-              ]}
+              items={[{
+                title: `Log out ${user.name}`,
+                icon: IconSignOut,
+                index: 'signOut'
+              }]}
               opened
               origin="top-right"
               onClickOutside={this.handleUserMenuClose}

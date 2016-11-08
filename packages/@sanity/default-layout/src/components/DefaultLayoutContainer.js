@@ -7,7 +7,7 @@ import config from 'config:sanity'
 import {RouterProvider} from '@sanity/state-router'
 import rootRouter from '../defaultLayoutRouter'
 
-class DefaultLayoutRouter extends React.Component {
+class DefaultLayoutContainer extends React.Component {
   constructor() {
     super()
     this.state = {}
@@ -48,4 +48,4 @@ class DefaultLayoutRouter extends React.Component {
   }
 }
 
-export default DefaultLayoutRouter
+export default DefaultLayoutContainer
