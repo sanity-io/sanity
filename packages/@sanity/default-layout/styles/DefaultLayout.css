@@ -82,14 +82,15 @@
   font-weight: 300;
 }
 
-.companyProjectName {
+.projectName {
   font-size: 1em;
   padding-left: var(--small-padding);
+  white-space: nowrap;
   float: left;
 }
 
 .projectNameHidden {
-  composes: companyProjectName;
+  composes: projectName;
   display: none;
 
 }
