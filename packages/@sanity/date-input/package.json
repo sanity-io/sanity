@@ -1,6 +1,6 @@
 {
   "name": "@sanity/date-input",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Date/time input components for Sanity form builder",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
