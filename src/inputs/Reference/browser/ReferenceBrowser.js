@@ -167,6 +167,29 @@ export default class ReferenceBrowser extends React.Component {
         })
       })
   }
+  renderItem = (item, index) => {
+    const {refCache} = this.state
+
+    const materializedValue = refCache[item.value._id]
+    if (!materializedValue) {
+      return (
+        <div className={styles.preview}>
+          <Spinner inline /> Loading…
+        </div>
+      )
+    }
+
+    // Todo: make context.field an official / formalized thing
+    const itemField = item.context.field
+    return (
+      <div className={styles.preview}>
+        <ItemPreview
+          field={itemField}
+          value={materializedValue}
+        />
+      </div>
+    )
+  }
 
   renderDialog() {
     const {fetching, items, dialogSelectedItem} = this.state
@@ -176,16 +199,6 @@ export default class ReferenceBrowser extends React.Component {
       dialogSelectedItem && {index: 'set', title: 'Change'},
       {index: 'cancel', title: 'Cancel'}
     ].filter(Boolean)
-
-    items.map((item, i) => {
-      item.key = item.value._id
-      item.title = item.value.name.value
-      return true
-    })
-
-    const currentItem = items.find(item => {
-      return value.refId == item.key
-    })
 
     return (
       <Dialog
@@ -200,10 +213,11 @@ export default class ReferenceBrowser extends React.Component {
         <DefaultList
           className={styles.list}
           loading={fetching}
+          renderItem={this.renderItem}
           items={items}
           scrollable
           onSelect={this.handleDialogSelectItem}
-          selectedItem={dialogSelectedItem || currentItem}
+          selectedItem={dialogSelectedItem || value}
         />
       </Dialog>
     )
