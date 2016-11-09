@@ -488,6 +488,107 @@ test('can apply inc() and dec()', t => {
   t.end()
 })
 
+test('can apply unset()', t => {
+  const patch = getClient().patch('foo/123')
+    .inc({count: 1})
+    .unset(['bitter', 'enchilada'])
+    .serialize()
+
+  t.deepEqual(patch, {id: 'foo/123', inc: {count: 1}, unset: ['bitter', 'enchilada']})
+  t.end()
+})
+
+test('throws if non-array is passed to unset()', t => {
+  t.throws(() =>
+    getClient().patch('foo/123').unset('bitter').serialize(),
+    /non-array given/
+  )
+  t.end()
+})
+
+test('can apply insert()', t => {
+  const patch = getClient().patch('foo/123')
+    .inc({count: 1})
+    .insert('after', 'tags[-1]', ['hotsauce'])
+    .serialize()
+
+  t.deepEqual(patch, {
+    id: 'foo/123',
+    inc: {count: 1},
+    insert: {after: 'tags[-1]', items: ['hotsauce']}
+  })
+  t.end()
+})
+
+test('throws on invalid insert()', t => {
+  t.throws(() =>
+    getClient().patch('foo/123').insert('bitter', 'sel', ['raf']),
+    /one of: "before", "after", "replace"/
+  )
+
+  t.throws(() =>
+    getClient().patch('foo/123').insert('before', 123, ['raf']),
+    /must be a string/
+  )
+
+  t.throws(() =>
+    getClient().patch('foo/123').insert('before', 'prop', 'blah'),
+    /must be an array/
+  )
+  t.end()
+})
+
+test('can apply append()', t => {
+  const patch = getClient().patch('foo/123')
+    .inc({count: 1})
+    .append('tags', ['sriracha'])
+    .serialize()
+
+  t.deepEqual(patch, {
+    id: 'foo/123',
+    inc: {count: 1},
+    insert: {after: 'tags[-1]', items: ['sriracha']}
+  })
+  t.end()
+})
+
+test('can apply prepend()', t => {
+  const patch = getClient().patch('foo/123')
+    .inc({count: 1})
+    .prepend('tags', ['sriracha', 'hotsauce'])
+    .serialize()
+
+  t.deepEqual(patch, {
+    id: 'foo/123',
+    inc: {count: 1},
+    insert: {before: 'tags[0]', items: ['sriracha', 'hotsauce']}
+  })
+  t.end()
+})
+
+test('can apply splice()', t => {
+  const patch = () => getClient().patch('foo/123')
+  const replaceFirst = patch().splice('tags', 0, 1, ['foo']).serialize()
+  const insertInMiddle = patch().splice('tags', 5, 0, ['foo']).serialize()
+  const deleteLast = patch().splice('tags', -1, 1).serialize()
+  const deleteAllFromIndex = patch().splice('tags', 3, -1).serialize()
+  const allFromIndexDefault = patch().splice('tags', 3).serialize()
+  const negativeDelete = patch().splice('tags', -2, -2, ['foo']).serialize()
+
+  t.deepEqual(replaceFirst.insert, {replace: 'tags[0:1]', items: ['foo']})
+  t.deepEqual(insertInMiddle.insert, {replace: 'tags[5:5]', items: ['foo']})
+  t.deepEqual(deleteLast.insert, {replace: 'tags[-2:]', items: []})
+  t.deepEqual(deleteAllFromIndex.insert, {replace: 'tags[3:-1]', items: []})
+  t.deepEqual(allFromIndexDefault.insert, {replace: 'tags[3:-1]', items: []})
+  t.deepEqual(negativeDelete, patch().splice('tags', -2, 0, ['foo']).serialize())
+  t.end()
+})
+
+test('serializing invalid selectors throws', t => {
+  t.throws(() => getClient().patch(123).serialize(), /unknown selection for patch/i)
+  t.end()
+})
+
 test('all patch methods throw on non-objects being passed as argument', t => {
   const patch = getClient().patch('foo/123')
   t.throws(() => patch.merge([]), /merge\(\) takes an object of properties/, 'merge throws')

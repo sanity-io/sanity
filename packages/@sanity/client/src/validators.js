@@ -1,4 +1,5 @@
 const VALID_ASSET_TYPES = ['image', 'file']
+const VALID_INSERT_LOCATIONS = ['before', 'after', 'replace']
 
 exports.dataset = name => {
   if (!/^[-\w]{1,128}$/.test(name)) {
@@ -27,6 +28,28 @@ exports.validateObject = (op, val) => {
 exports.validateDocumentId = (op, id) => {
   if (typeof id !== 'string' || !/^[-_a-z0-9]{1,128}\/[-_a-z0-9/]+$/i.test(id)) {
     throw new Error(`${op}() takes a document ID in format dataset/docId`)
+  }
+}
+
+exports.validateInsert = (at, selector, items) => {
+  const signature = 'insert(at, selector, items)'
+  if (VALID_INSERT_LOCATIONS.indexOf(at) === -1) {
+    const valid = VALID_INSERT_LOCATIONS.map(loc => `"${loc}"`).join(', ')
+    throw new Error(
+      `${signature} takes an "at"-argument which is one of: ${valid}`
+    )
+  }
+
+  if (typeof selector !== 'string') {
+    throw new Error(
+      `${signature} takes a "selector"-argument which must be a string`
+    )
+  }
+
+  if (!Array.isArray(items)) {
+    throw new Error(
+      `${signature} takes an "items"-argument which must be an array`
+    )
   }
 }
 

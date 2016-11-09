@@ -1,6 +1,8 @@
 const deepAssign = require('deep-assign')
 const assign = require('xtend/mutable')
-const validateObject = require('../validators').validateObject
+const validate = require('../validators')
+const validateObject = validate.validateObject
+const validateInsert = validate.validateInsert
 
 function Patch(selection, operations = {}, client = null) {
   this.selection = selection
@@ -26,6 +28,17 @@ assign(Patch.prototype, {
     return this._assign('set', props)
   },
 
+  unset(attrs) {
+    if (!Array.isArray(attrs)) {
+      throw new Error(
+        'unset(attrs) takes an array of attributes to unset, non-array given'
+      )
+    }
+
+    this.operations = assign({}, this.operations, {unset: attrs})
+    return this
+  },
+
   setIfMissing(props) {
     return this._assign('setIfMissing', props)
   },
@@ -43,24 +56,31 @@ assign(Patch.prototype, {
     return this._assign('dec', props)
   },
 
-  // @todo implement when in gradient
-  unset(props) {
-    throw new Error('Not implemented yet')
+  insert(at, selector, items) {
+    validateInsert(at, selector, items)
+    return this._assign('insert', {[at]: selector, items})
   },
 
-  // @todo implement when in gradient
-  append(props) {
-    throw new Error('Not implemented yet')
+  append(selector, items) {
+    return this.insert('after', `${selector}[-1]`, items)
   },
 
-  // @todo implement when in gradient
-  prepend(props) {
-    throw new Error('Not implemented yet')
+  prepend(selector, items) {
+    return this.insert('before', `${selector}[0]`, items)
   },
 
-  // @todo implement when in gradient
-  splice(props) {
-    throw new Error('Not implemented yet')
+  splice(selector, start, deleteCount, items) {
+    // Negative indexes doesn't mean the same in Sanity as they do in JS;
+    // -1 means "actually at the end of the array", which allows inserting
+    // at the end of the array without knowing its length. We therefore have
+    // to substract negative indexes by one to match JS. If you want Sanity-
+    // behaviour, just use `insert('replace', selector, items)` directly
+    const delAll = typeof deleteCount === 'undefined' || deleteCount === -1
+    const startIndex = start < 0 ? start - 1 : start
+    const delCount = delAll ? -1 : Math.max(0, start + deleteCount)
+    const delRange = startIndex < 0 && delCount >= 0 ? '' : delCount
+    const rangeSelector = `${selector}[${startIndex}:${delRange}]`
+    return this.insert('replace', rangeSelector, items || [])
   },
 
   serialize() {
