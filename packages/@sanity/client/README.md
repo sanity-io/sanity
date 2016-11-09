@@ -1,8 +1,8 @@
-[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)
-
 # Sanity client
 
-Javascript client for Sanity. Works in browsers (IE8+) and node.js.
+[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)[![Coverage Status](https://img.shields.io/coveralls/sanity-io/client/master.svg?style=flat-square)](https://coveralls.io/github/sanity-io/client)[![Dependency status](https://img.shields.io/david/sanity-io/client.svg?style=flat-square)](https://david-dm.org/sanity-io/client)
+
+Javascript cliio for Sanity. Works in browsers (IE9+) and node.js.
 
 ## Requirements
 Sanity Client requires the JavaScript runtime to have a global ES6-compliant `Promise` available. If your runtime environment doesn't provide a spec compliant `Promise` implementation, we recommend using [native-promise-only](https://www.npmjs.com/package/native-promise-only), [es6-promise](https://www.npmjs.com/package/es6-promise) or another [spec-compliant](https://promisesaplus.com/implementations) implementation.
