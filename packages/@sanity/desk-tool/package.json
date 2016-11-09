@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.0.4",
-    "@sanity/form-builder": "0.0.34",
+    "@sanity/form-builder": "0.0.35",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "@sanity/check": "^0.0.2",
     "@sanity/client": "^0.3.6",
     "@sanity/components": "^0.0.51",
-    "@sanity/core": "0.0.4",
+    "@sanity/core": "0.0.5",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
