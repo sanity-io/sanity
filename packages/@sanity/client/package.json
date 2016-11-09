@@ -11,7 +11,7 @@
     "watch": "npm run compile -- --watch",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
-    "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=text npm test",
+    "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
