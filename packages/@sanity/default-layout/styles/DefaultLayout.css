@@ -40,14 +40,16 @@
 
 .toolContainer {
   @media (--screen-medium) {
-    display: flex;
-    flex-direction: row;
     order: 2;
+    flex-grow: 2;
+    align-self: stretch;
+
     box-sizing: border-box;
     overflow: hidden;
+    height: 100%;
+    width: 100%;
+    display: block;
     position: relative;
-    align-self: stretch;
-    flex-grow: 2;
   }
 }
 
