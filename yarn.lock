@@ -15,6 +15,14 @@
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.1.tgz#3341c20dd03deb15dfc228278c243e30e0db9ef6"
 
+"@sanity/imagetool":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.1.tgz#dfa97895979b827a8b2e32b9650a5aecefd5ea77"
+  dependencies:
+    debug "^2.2.0"
+    dom-event "1.0.0"
+    lodash.omit "^4.5.0"
+
 "@sanity/resolver@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.1.tgz#4c70d5f7e72b5e405832b1c2f29f39ae551d8112"
@@ -1828,6 +1836,10 @@ dom-converter@~0.1:
   dependencies:
     utila "~0.3"
 
+dom-event@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/dom-event/-/dom-event-1.0.0.tgz#690dcc4992d82281c068e2e166e377eeb1e56837"
+
 dom-serializer@0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-0.1.0.tgz#073c697546ce0780ce23be4a28e293e40bc30c82"
@@ -3215,6 +3227,10 @@ lodash.merge@^3.3.2:
     lodash.keys "^3.0.0"
     lodash.keysin "^3.0.0"
     lodash.toplainobject "^3.0.0"
+
+lodash.omit@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.omit/-/lodash.omit-4.5.0.tgz#6eb19ae5a1ee1dd9df0b969e66ce0b7fa30b5e60"
 
 lodash.pairs@^3.0.0:
   version "3.0.1"
