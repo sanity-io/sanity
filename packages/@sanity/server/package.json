@@ -61,6 +61,7 @@
     "react-dom": "^15.3.2",
     "require-uncached": "^1.0.2",
     "resolve": "^1.1.7",
+    "resolve-from": "^2.0.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.7.0",

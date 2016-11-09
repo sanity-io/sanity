@@ -1,3 +1,4 @@
+import path from 'path'
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
@@ -14,6 +15,11 @@ export default config => {
         require.resolve('webpack-hot-middleware/client')
       ].concat(baseConfig.entry.vendor)
     }),
+    resolve: {
+      alias: Object.assign({}, baseConfig.resolve.alias, {
+        'webpack-hot-middleware/client': require.resolve('webpack-hot-middleware/client')
+      })
+    },
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoErrorsPlugin()

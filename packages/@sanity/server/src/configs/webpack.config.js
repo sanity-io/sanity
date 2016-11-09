@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
 import parents from 'parents'
+import resolveFrom from 'resolve-from'
 import RoleResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import postcssPlugins from './postcssPlugins'
@@ -13,6 +14,19 @@ const partLoaderPath = require.resolve('@sanity/webpack-loader/src/partLoader')
 
 export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
+
+  const reactPath = resolveFrom(basePath, 'react')
+  const reactDomPath = resolveFrom(basePath, 'react-dom')
+  const missing = [!reactPath && '`react`', !reactDomPath && '`react-dom`'].filter(Boolean)
+  if (!reactPath || !reactDomPath) {
+    const missingErr = [
+      `Could not find ${missing.join(', ')} dependencies in project directory`,
+      'These need to be declared in `package.json` and be installed for Sanity to work'
+    ].join('\n')
+
+    throw new Error(missingErr)
+  }
+
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
   const isProd = env === 'production'
@@ -45,7 +59,11 @@ export default (config = {}) => {
       publicPath: '/static/'
     },
     resolve: {
-      fallback: resolvePaths
+      fallback: resolvePaths,
+      alias: {
+        'react': path.dirname(reactPath),
+        'react-dom': path.dirname(reactDomPath)
+      }
     },
     resolveLoader: {
       root: resolvePaths
