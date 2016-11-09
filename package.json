@@ -23,6 +23,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "@sanity/date-input": "^0.0.4",
     "@sanity/imagetool": "^0.2.1",
     "chance": "^1.0.4",
     "dialog-polyfill": "^0.4.3",
