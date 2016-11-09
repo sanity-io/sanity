@@ -28,6 +28,11 @@ assign(Patch.prototype, {
     return this._assign('set', props)
   },
 
+  diffMatchPatch(props) {
+    validateObject('diffMatchPatch', props)
+    return this._assign('diffMatchPatch', props)
+  },
+
   unset(attrs) {
     if (!Array.isArray(attrs)) {
       throw new Error(
