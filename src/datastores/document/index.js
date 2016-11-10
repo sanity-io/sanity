@@ -2,6 +2,7 @@ import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 import {omit} from 'lodash'
 import {Observable} from 'rxjs'
+
 const serverConnection = {
   byId(id) {
     return Observable
@@ -41,6 +42,10 @@ const serverConnection = {
     return Observable.from(client
       .patch(id, patch)
       .commit({returnDocuments: false}))
+  },
+
+  delete(id) {
+    return Observable.from(client.delete(id))
   },
 
   create(doc) {
