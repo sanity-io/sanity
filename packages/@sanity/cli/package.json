@@ -4,7 +4,7 @@
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
-    "sanity": "./lib/bin/sanity.js"
+    "sanity": "./bin/sanity.js"
   },
   "scripts": {
     "build": "npm run clean && npm test && npm run compile && npm run package-yarn",
@@ -15,6 +15,9 @@
     "clean": "rimraf lib vendor/yarn",
     "prepublish": "in-publish && npm run build || not-in-publish",
     "posttest": "eslint ."
+  },
+  "engines": {
+    "node": ">=4.0.0"
   },
   "repository": {
     "type": "git",
