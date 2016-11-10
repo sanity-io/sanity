@@ -16,7 +16,7 @@ const SortableDefaultList = SortableContainer(DefaultList)
 
 const SortableItem = SortableElement(props => {
   return (
-    <div disabled={props.disabled} key={props.index} index={props.index}>
+    <div disabled={props.disabled} key={props.index}>
       {props.children}
     </div>
   )
