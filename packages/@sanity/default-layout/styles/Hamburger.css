@@ -52,9 +52,6 @@
 }
 
 .content {
-  @nest .isOpen {
-    display: block;
-  }
   @nest .isClosed & {
     display: none;
     @media (--screen-medium) {
