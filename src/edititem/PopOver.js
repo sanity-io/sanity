@@ -117,14 +117,16 @@ export default class EditItemPopOver extends React.Component {
   }
 
   componentDidMount() {
-
     // Sets a scrollContainer with ID
     if (!this.props.scrollContainer && this.props.scrollContainerId) {
       this.scrollContainer = document.getElementById(this.props.scrollContainerId)
-    } else {
+    } else if (this.props.scrollContainer) {
       this.scrollContainer = this.props.scrollContainer
+    } else {
+      this.scrollContainer = document.getElementById('Sanity_Default_DeskTool_Editor_ScrollContainer')
     }
     if (this.scrollContainer) {
+      this.initialScrollTop = this.scrollContainer.scrollTop
       this.handleResize()
       window.addEventListener('resize', this.handleResize)
       window.addEventListener('keydown', this.handleKeyDown, false)
@@ -132,6 +134,9 @@ export default class EditItemPopOver extends React.Component {
   }
 
   componentWillUnmount() {
+    if (this.scrollContainer && this.initialScrollTop) {
+      this.scrollContainer.scrollTop = this.initialScrollTop
+    }
     window.removeEventListener('keydown', this.handleKeyDown, false)
     window.removeEventListener('resize', this.handleResize)
   }
