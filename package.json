@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel --copy-files -d lib/ src/",
+    "compile:watch": "npm run compile -- --watch",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
