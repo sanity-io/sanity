@@ -50,7 +50,7 @@ assign(Patch.prototype, {
 
   replace(props) {
     validateObject('replace', props)
-    return this._set('replace', props)
+    return this._set('set', {$: props}) // eslint-disable-line id-length
   },
 
   inc(props) {

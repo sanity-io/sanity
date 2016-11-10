@@ -473,7 +473,7 @@ test('only last replace() patch call gets applied', t => {
     .replace({count: 2, bar: 'foo'})
     .serialize()
 
-  t.deepEqual(patch, {id: 'foo/123', replace: {count: 2, bar: 'foo'}})
+  t.deepEqual(patch, {id: 'foo/123', set: {$: {count: 2, bar: 'foo'}}})
   t.end()
 })
 
