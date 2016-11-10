@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 .root {
   position: relative;
 }
@@ -24,7 +22,7 @@
   top: 0.35em;
   right: 0.1em;
 
-  svg {
+  @nest & svg {
     color: inherit;
   }
 }

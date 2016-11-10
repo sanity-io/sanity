@@ -47,7 +47,7 @@
   color: inherit;
   cursor: pointer;
 
-  svg {
+  @nest & svg {
     color: inherit;
   }
 }

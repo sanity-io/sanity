@@ -11,7 +11,11 @@ export default class EditItemPopOver extends React.Component {
     className: PropTypes.string,
     onClose: PropTypes.func,
     isCreatingNewItem: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.object)
+    actions: PropTypes.arrayOf(PropTypes.object),
+    fullWidth: PropTypes.bool,
+    onNeedScroll: PropTypes.func,
+    scrollContainer: PropTypes.node,
+    scrollContainerId: PropTypes.string
   }
 
   static defaultProps = {
@@ -32,6 +36,12 @@ export default class EditItemPopOver extends React.Component {
     this.resetPosition = this.resetPosition.bind(this)
   }
 
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.handleClose()
+    }
+  }
+
   handleClose() {
     this.props.onClose()
   }
@@ -49,14 +59,35 @@ export default class EditItemPopOver extends React.Component {
     const innerElement = this._innerElement
 
     if (rootElement && innerElement) {
-      const width = rootElement.offsetWidth
-      const left = rootElement.offsetLeft
 
+      const rootRects = rootElement.getClientRects()
+      const width = rootRects[0].width
+      const height = rootRects[0].height
+      const left = rootRects[0].left
+      const top = rootRects[0].top
+
+      // we can use window since we don't support horizontal scrolling
+      // and the backdrop is fixed
       const windowWidth = window.innerWidth
+      const containerOffsetHeight = this.scrollContainer.offsetHeight
+
       const padding = 30
 
       const margin = parseInt(innerElement.style.marginLeft, 10) || 0
+      const scrollTop = this.scrollContainer.scrollTop
 
+      // Scroll container when there is no space
+      if ((containerOffsetHeight + scrollTop) < (top + height)) {
+        this.scrollContainer.scrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+      }
+
+      // Need more bottom space
+      if (this.scrollContainer.scrollHeight < (scrollTop + top + height)) {
+        this.scrollContainer.style.paddingBottom = this.scrollContainer.scrollHeight - scrollTop - height - top
+        this.scrollContainer.scrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+      }
+
+      // Reposition horizon
       if ((width + left - margin + padding) > windowWidth) {
         const diff = windowWidth - width - padding - left + margin
         innerElement.style.marginLeft = `${diff}px`
@@ -85,13 +116,23 @@ export default class EditItemPopOver extends React.Component {
     }
   }
 
-
   componentDidMount() {
-    this.handleResize()
-    window.addEventListener('resize', this.handleResize)
+
+    // Sets a scrollContainer with ID
+    if (!this.props.scrollContainer && this.props.scrollContainerId) {
+      this.scrollContainer = document.getElementById(this.props.scrollContainerId)
+    } else {
+      this.scrollContainer = this.props.scrollContainer
+    }
+    if (this.scrollContainer) {
+      this.handleResize()
+      window.addEventListener('resize', this.handleResize)
+      window.addEventListener('keydown', this.handleKeyDown, false)
+    }
   }
 
   componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown, false)
     window.removeEventListener('resize', this.handleResize)
   }
 
@@ -106,16 +147,31 @@ export default class EditItemPopOver extends React.Component {
     this._arrowElement = element
   }
 
+  handleBackdropClick = () => {
+    this.handleClose()
+  }
+
+  handleInnerClick = event => {
+    event.stopPropagation()
+  }
+
   render() {
-    const {title, children, className, isCreatingNewItem, actions} = this.props
+    const {title, children, className, isCreatingNewItem, actions, fullWidth} = this.props
     return (
-      <div className={`${styles.root} ${className}`} onClick={this.handleClick} onMouseDown={this.handleMouseDown} ref={this.setRootElement}>
-        <div className={styles.overlay} />
-        <div className={styles.inner} ref={this.setInnerElement}>
+      <div
+        className={`${fullWidth ? styles.fullWidth : styles.autoWidth} ${className}`}
+        onClick={this.handleClick}
+        ref={this.setRootElement}
+      >
+        <div className={styles.overlay} onClick={this.handleBackdropClick} />
+        <div className={styles.inner} ref={this.setInnerElement} onClick={this.handleInnerClick}>
+
           <div className={styles.arrow} ref={this.setArrowElement} />
+
           <button className={styles.close} type="button" onClick={this.handleClose}>
             <CloseIcon />
           </button>
+
           <div className={styles.head}>
             <h3 className={styles.title}>
               {
@@ -148,7 +204,6 @@ export default class EditItemPopOver extends React.Component {
               }
             </div>
           }
-
         </div>
       </div>
     )

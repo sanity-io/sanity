@@ -1,6 +1,7 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
-import DatePicker from 'part:@sanity/form-builder/input/date'
+import DatePicker from 'part:@sanity/form-builder/input/date?'
+
 
 storiesOf('Date pickers')
 .addWithInfo(
@@ -16,7 +17,11 @@ storiesOf('Date pickers')
       type: 'date'
     }
     return (
-      <DatePicker field={field} onChange={action('onChange')} />
+      <div>
+        {
+          DatePicker && <DatePicker field={field} onChange={action('onChange')} />
+        }
+      </div>
     )
   },
   {

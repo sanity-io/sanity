@@ -28,9 +28,8 @@
 .root {
   padding: 0;
   position: absolute;
-  z-index: var(--zindex-popover);
 
-  &::before {
+  @nest &::before {
     content: "shouldReposition";
     display: none;
   }
@@ -38,7 +37,6 @@
   @media (--max-screen-medium) {
     position: fixed;
     box-sizing: border-box;
-    z-index: var(--zindex-popover);
     top: 0;
     left: 0;
     right: 0;
@@ -46,21 +44,30 @@
     width: 100vw;
     overflow: scroll;
 
-    &::before {
+    @nest &::before {
       content: "shouldNotReposition";
     }
   }
 }
 
+.autoWidth {
+  composes: root;
+}
+
+.fullWidth {
+  composes: root;
+}
+
 .overlay {
   z-index: var(--zindex-popover-background);
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--backdrop-background-color);
   position: fixed;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
   display: block;
+  pointer-events: none;
 
   @media (--max-screen-medium) {
     display: none;
@@ -73,9 +80,9 @@
   left: 2em;
   z-index: 0;
 
-  &::before {
-    z-index: 1;
+  @nest &:before {
     content: "";
+    z-index: 1;
     position: absolute;
     height: 1em;
     width: 1em;
@@ -85,7 +92,7 @@
 }
 
 .inner {
-  min-width: 10em;
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   background-color: #fff;
   z-index: var(--zindex-popover);
   padding: 1em;
@@ -93,7 +100,15 @@
   margin-bottom: 2em;
   box-sizing: border-box;
   position: relative;
-  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
+  min-width: 30em;
+  max-width: 80vw;
+
+  @nest .fullWidth & {
+    min-width: 100%;
+    max-width: calc(100vw - 4rem);
+    width: calc(100vw - 4rem);
+    border: 1px solid red;
+  }
 
   @media (--max-screen-medium) {
     position: fixed;

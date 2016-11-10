@@ -51,7 +51,7 @@
   cursor: pointer;
 
   @nest .checked & {
-    background: $switch-track-color;
+    background: var(--switch-track-color);
   }
 
   @nest .disabled & {
@@ -120,7 +120,7 @@
 }
 
 .input {
-  line-height: $switch-label-height;
+  line-height: var(--switch-label-height);
 
   /* Hide input element, while still making it respond to focus. */
   position: absolute;
@@ -141,7 +141,7 @@
   margin: 0;
   left: calc(var(--switch-track-length) + 0.5rem);
 
-  .disabled & {
+  @nest .disabled & {
     color: var(--switch-disabled-thumb-color);
     cursor: auto;
   }
