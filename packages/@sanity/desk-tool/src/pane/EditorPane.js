@@ -131,7 +131,7 @@ export default class EditorPane extends React.PureComponent {
           </div>
 
         </div>
-        <form className={styles.editor} onSubmit={preventDefault}>
+        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_FormBuilder_ScrollContainer">
           <FormBuilder
             value={value}
             validation={validation}

@@ -1,29 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .deskTool {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
   @media (--screen-medium) {
-    overflow: hidden;
-    box-sizing: border-box;
-    flex-flow: nowrap;
-    flex-grow: 1;
-    display: flex;
-    align-self: stretch;
-  }
-}
 
-.container {
-  @media (--screen-medium) {
-    align-self: stretch;
-    flex-grow: 1;
-    display: flex;
-  }
-}
-
-.paneContainer {
-  @media (--screen-medium) {
-    align-self: stretch;
-    flex-grow: 0;
-    position: relative;
   }
 }
 

@@ -16,14 +16,16 @@ export default class Pane extends React.Component {
     contentType: PropTypes.oneOf(['types', 'documents']),
     onSetListView: PropTypes.func,
     onGetListView: PropTypes.func,
-    type: PropTypes.string
+    type: PropTypes.string,
+    onUpdate: PropTypes.func
   }
 
   static defaultProps = {
     isActive: false,
     onGetListView() {
       return 'default'
-    }
+    },
+    onUpdate() {}
   }
 
   constructor(...args) {
@@ -33,6 +35,10 @@ export default class Pane extends React.Component {
       menuOpened: false,
       view: 'list'
     }
+  }
+
+  componentDidUpdate() {
+    this.props.onUpdate()
   }
 
   handleMenuOpen = () => {

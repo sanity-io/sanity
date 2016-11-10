@@ -1,20 +1,33 @@
 import React, {PropTypes} from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
-import PaneContainer from 'part:@sanity/desk-tool/pane-container'
 import EditorPane from './pane/EditorPane'
 import PaneItem from './pane/PaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
-import styles from '../styles/DeskTool.css'
 import UrlDocId from './utils/UrlDocId'
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
+import styles from './styles/SchemaPaneResolver.css'
 
 function mapQueryResultToProps(props) {
   const {result, ...rest} = props
   return {
     items: (result ? result.documents : []),
     ...rest
+  }
+}
+
+// Debounce function on requestAnimationFrame
+function debounceRAF(fn) {
+  let scheduled
+  return function debounced(...args) {
+    if (!scheduled) {
+      requestAnimationFrame(() => {
+        fn.call(this, ...scheduled)
+        scheduled = null
+      })
+    }
+    scheduled = args
   }
 }
 
@@ -40,11 +53,21 @@ export default class SchemaPaneResolver extends React.Component {
     this.handleDocumentCreated = this.handleDocumentCreated.bind(this)
   }
 
+  componentDidMount() {
+    this.handleResize()
+    window.addEventListener('resize', this.handleResize, false)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize, false)
+  }
+
   componentWillMount() {
     this.checkRedirect()
   }
 
   componentDidUpdate() {
+    this.handleResize()
     this.checkRedirect()
   }
 
@@ -119,6 +142,7 @@ export default class SchemaPaneResolver extends React.Component {
           renderItem={this.renderDocumentPaneItem}
           onSetListView={this.handleSetListView}
           onGetListView={this.handleGetListViewForType}
+          onUpdate={this.handleUpdate}
         />
       </QueryContainer>
     )
@@ -134,48 +158,79 @@ export default class SchemaPaneResolver extends React.Component {
     return listView || 'default'
   }
 
-  renderEditor() {
-    const {router} = this.context
-    const {selectedType, selectedDocumentId, action} = router.state
 
-    const isEditing = ['edit', 'create'].includes(action)
-    if (!isEditing) {
-      return null
-    }
-
-    if (action === 'create' && !selectedDocumentId) {
-      return <div>Creating {selectedType}...</div>
-    }
-    return (
-      <EditorPane
-        documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
-        typeName={selectedType}
-      />
-    )
+  setContainerElement = element => {
+    this.containerElement = element
   }
+
+  setNavigationElement = element => {
+    this.navigationElement = element
+  }
+
+  setEditorPaneElement = element => {
+    this.editorPaneElement = element
+  }
+
+  handleResize = debounceRAF(() => {
+    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement) {
+      return
+    }
+
+    const navWidth = this.navigationElement.offsetWidth
+    const editorPaneWidth = this.editorPaneElement.offsetWidth
+    const containerWidth = this.containerElement.offsetWidth
+
+    // Needs to be on resize because minWidth changes when resizing font
+    const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth.split('px')[0], 10)
+
+    if (containerWidth > (navWidth + editorPaneMinWidth)) {
+      // Editor is free
+      this.navigationElement.style.transform = 'translateX(0px)'
+      this.editorPaneElement.style.width = `${containerWidth - navWidth}px`
+
+    } else if (containerWidth < (editorPaneWidth + navWidth)) {
+      // reset the editor
+      this.editorPaneElement.style.width = 'auto'
+      // Move navigation out of the screen to make room for the editor
+      const translateX = containerWidth - editorPaneMinWidth - navWidth
+      this.navigationElement.style.transform = `translateX(${translateX}px)`
+    }
+  })
+
+  handleUpdate = () => {
+    this.handleResize()
+  }
+
   render() {
     const {router} = this.context
-    const {selectedType} = router.state
+    const {selectedType, selectedDocumentId} = router.state
 
     const typesPane = (
       <Pane
         items={TYPE_ITEMS}
         contentType="types"
         renderItem={this.renderTypePaneItem}
+        onUpdate={this.handleUpdate}
       />
     )
 
     const documentsPane = selectedType ? this.getDocumentsPane(selectedType) : (
-    <div>Select a type to begin…</div>
+    <h2>Select a type to begin…</h2>
     )
 
     return (
-      <div className={styles.container}>
-        <PaneContainer className={styles.paneContainer}>
+      <div className={styles.container} ref={this.setContainerElement}>
+        <div className={styles.navigationPanesContainer} ref={this.setNavigationElement}>
           {typesPane}
           {documentsPane}
-        </PaneContainer>
-        {this.renderEditor()}
+        </div>
+        <div className={styles.editorContainer} ref={this.setEditorPaneElement}>
+          {selectedType && (
+            <EditorPane
+              documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
+              typeName={selectedType}
+          />)}
+        </div>
       </div>
     )
   }

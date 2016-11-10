@@ -1,37 +1,19 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: var(--gray-lightest);
-  box-shadow: 2px 2px 5px var(--gray-light) inset;
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 1;
-  /*composes: slide-in-from-right from '../../../styles/animations.css';*/
-
-  @media (--screen-medium) {
-    width: auto;
-    height: auto;
-    position: relative;
-    flex-grow: 10;
-    z-index: inherit;
-    min-width: 20em;
-  }
-
+  /* The container is in SchemaPaneResolver */
 }
 
 .editor {
-  padding: 1em;
-  @media (--screen-medium) {
-    min-width: 20em;
-    padding: 1em;
-    margin: 0 auto;
-  }
+  display: block;
+  max-width: 40em;
+  clear: both;
+  margin-top: 1em;
 }
 
 .header {
-  padding-top: 1em;
-  padding-bottom: 1em;
-  margin: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
   position: relative;
   border-bottom: 1px solid #ccc;
 }

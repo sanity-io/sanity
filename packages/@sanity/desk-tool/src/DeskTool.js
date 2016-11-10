@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from '../styles/DeskTool.css'
+import styles from './styles/DeskTool.css'
 import PaneResolver from 'part:@sanity/desk-tool/pane-resolver'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import dataAspects from './utils/dataAspects'

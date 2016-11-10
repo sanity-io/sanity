@@ -25,16 +25,12 @@
 .root {
   display: block;
   position: relative;
+  float: left;
 
   @media (--screen-medium) {
     display: flex;
-    flex-grow: 1;
-    flex-basis: 20em;
     box-sizing: border-box;
     position: relative;
-    flex-direction: row;
-    align-self: stretch;
-    flex-wrap: nowrap;
     max-height: 100%;
     /* hack to make safari scroll (set relative height for children)*/
     height: calc(100vh - 4rem);

@@ -14,33 +14,14 @@
       "name": "part:@sanity/desk-tool/pane-resolver",
       "description": "Function that resolves the different panes in the desk tool"
     },
-
-    {
-      "name": "part:@sanity/desk-tool/styles",
-      "description": "Styling for the desk tool"
-    },
-
     {
       "implements": "part:@sanity/desk-tool/pane-resolver",
       "path": "SchemaPaneResolver.js"
     },
-
-    {
-      "implements": "part:@sanity/desk-tool/styles",
-      "name": "part:@sanity/desk-tool/style-default",
-      "path": "./styles/DeskTool.css"
-    },
-
     {
       "implements": "part:@sanity/base/tool",
       "path": "index.js"
     },
-
-    {
-      "name": "part:@sanity/desk-tool/pane-container",
-      "path": "pane/PaneContainer.js"
-    },
-
     {
       "name": "part:@sanity/desk-tool/pane",
       "path": "pane/Pane.js"

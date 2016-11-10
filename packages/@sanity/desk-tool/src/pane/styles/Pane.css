@@ -1,33 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  max-width: 100%;
-  align-self: stretch;
-  position: relative;
-  width: 100%;
+  display: block;
+  float: left;
   height: 100%;
-  z-index: 1;
-  padding-top: 1em;
-  animation-name: slideOut;
-  animation-timing-function: linear;
-  animation-iteration-count: 1;
-  animation-duration: 0.2s;
-  margin: 0;
-  padding: 0;
-
+  position: relative;
 
   @media (--screen-medium) {
-    display: block;
-    animation-name: none;
-    padding-top: 0;
-    bottom: 0;
-    width: auto;
-    max-height: 100%;
-    min-height: 0px;
-    box-sizing: border-box;
-    width: auto;
-    overflow: hidden;
-
     &:before {
       content: '';
       background-color: color(var(--body-bg) a(95%));
@@ -56,13 +35,14 @@
 
 .contentType--types {
   @media (--screen-medium) {
-    /* automatic */
     min-width: 10em;
+    /* automatic */
+
   }
 }
 .contentType--documents {
   @media (--screen-medium) {
-    flex-grow: 2;
+
   }
 }
 
