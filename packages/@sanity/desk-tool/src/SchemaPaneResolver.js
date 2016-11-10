@@ -224,7 +224,7 @@ export default class SchemaPaneResolver extends React.Component {
           {typesPane}
           {documentsPane}
         </div>
-        <div className={styles.editorContainer} ref={this.setEditorPaneElement}>
+        <div className={styles.editorContainer} ref={this.setEditorPaneElement} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           {selectedType && (
             <EditorPane
               documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
