@@ -45,7 +45,7 @@ const serverConnection = {
   },
 
   delete(id) {
-    return Observable.from(client.delete(id))
+    return Observable.from(client.delete(id, {returnDocuments: false}))
   },
 
   create(doc) {
