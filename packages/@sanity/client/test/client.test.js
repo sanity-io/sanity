@@ -369,6 +369,15 @@ test('delete() sends correct mutation', t => {
   getClient().delete('foo/123').catch(t.ifError).then(() => t.end())
 })
 
+test('delete() can be told not to return documents', t => {
+  const expectedBody = {mutations: [{delete: {id: 'foo/123'}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123', results: [{id: 'foo/123', operation: 'delete'}]})
+
+  getClient().delete('foo/123', {returnDocuments: false}).catch(t.ifError).then(() => t.end())
+})
+
 test('mutate() accepts multiple mutations', t => {
   const docs = [{
     _id: 'movie/raiders-of-the-lost-ark',

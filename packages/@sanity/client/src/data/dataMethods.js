@@ -50,9 +50,9 @@ module.exports = {
     return new Patch(selector, operations, this)
   },
 
-  delete(documentId) {
+  delete(documentId, options) {
     validators.validateDocumentId('delete', documentId)
-    return this.dataRequest('mutate', {mutations: [{delete: {id: documentId}}]})
+    return this.dataRequest('mutate', {mutations: [{delete: {id: documentId}}]}, options)
   },
 
   mutate(mutations, options) {
