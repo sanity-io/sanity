@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-var, no-console, no-process-exit, prefer-template */
 
 /**
  * ┌────────────────┐
