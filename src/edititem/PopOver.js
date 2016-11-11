@@ -84,12 +84,14 @@ export default class EditItemPopOver extends React.Component {
 
       // Scroll container when there is no space
       if ((containerOffsetHeight + scrollTop) < (top + height)) {
-        scroll.top(this.scrollContainer, (containerOffsetHeight - top - height - scrollTop) * -1, this.scrollOptions)
+        const newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+        scroll.top(this.scrollContainer, newScrollTop, this.scrollOptions)
       }
 
       // Need more bottom space
       if (this.scrollContainer.scrollHeight < (scrollTop + top + height)) {
-        this.scrollContainer.style.paddingBottom = this.scrollContainer.scrollHeight - scrollTop - height - top
+        const extraPaddingBottom = Math.abs(this.scrollContainer.scrollHeight - scrollTop - height - top)
+        this.scrollContainer.style.marginBottom = `${extraPaddingBottom}px`
         scroll.top(this.scrollContainer, (containerOffsetHeight - top - height - scrollTop) * -1, this.scrollOptions)
       }
 
@@ -110,10 +112,11 @@ export default class EditItemPopOver extends React.Component {
   }
 
   handleResize() {
+
     // Uses the css the determine if it should reposition with an Media Query
     const computedStyle = window.getComputedStyle(this._rootElement, '::before')
     const contentValue = computedStyle.getPropertyValue('content')
-    const shouldReposition = contentValue === '"shouldReposition"' // Is quoted
+    const shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
     if (shouldReposition) {
       this.repositionElement()

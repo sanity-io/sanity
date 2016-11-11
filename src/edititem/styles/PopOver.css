@@ -94,7 +94,7 @@
   background-color: #fff;
   z-index: var(--zindex-popover);
   padding: var(--medium-padding);
-  margin-bottom: var(--medium-padding);
+  margin-bottom: var(--large-padding);
   box-sizing: border-box;
   position: relative;
   min-width: 30em;

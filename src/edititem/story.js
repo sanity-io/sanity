@@ -87,10 +87,10 @@ storiesOf('Edit item')
   `,
   () => {
     return (
-      <div style={overflowHidden}>
+      <div style={overflowHidden} id="myScrollContainerId">
         Things is in the background here.
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <EditItemPopOver title="Edit this item" onClose={action('onClose')}>
+        <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
           Put your form here
         </EditItemPopOver>
       </div>
@@ -108,9 +108,9 @@ storiesOf('Edit item')
   `,
   () => {
     return (
-      <div style={overflowHidden}>
+      <div style={overflowHidden} id="myScrollContainerId">
         Things is in the background here.
-        <EditItemPopOver title="Edit this item" onClose={action('onClose')} fullWidth>
+        <EditItemPopOver title="Edit this item" onClose={action('onClose')} fullWidth scrollContainerId="myScrollContainerId">
           Put your form here
         </EditItemPopOver>
 
@@ -130,9 +130,9 @@ storiesOf('Edit item')
   `,
   () => {
     return (
-      <div style={overflowHidden}>
+      <div style={overflowHidden} id="myScrollContainerId">
         <Mover>
-          <EditItemPopOver title="Edit this item" onClose={action('onClose')}>
+          <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
             Put your form here
           </EditItemPopOver>
         </Mover>
@@ -177,9 +177,9 @@ storiesOf('Edit item')
   `,
   () => {
     return (
-      <div>
+      <div id="myScrollContainerId">
         <Mover>
-          <EditItemPopOver title="Edit this item" onClose={action('onClose')} fullWidth>
+          <EditItemPopOver title="Edit this item" onClose={action('onClose')} fullWidth scrollContainerId="myScrollContainerId">
             Put your form here
           </EditItemPopOver>
         </Mover>
