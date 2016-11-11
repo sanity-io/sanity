@@ -22,7 +22,7 @@ export default class TypePaneItem extends React.Component {
       >
         <StateLink
           state={{selectedType: type.name}}
-          className={styles.stateLink/*todo*/}>
+          className={styles.stateLink}>
           {type.title}
         </StateLink>
       </PaneItem>
