@@ -21,7 +21,6 @@ const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
 })
 
-
 export default class ImageInputFieldset extends React.Component {
   static propTypes = {
     status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
@@ -55,7 +54,7 @@ export default class ImageInputFieldset extends React.Component {
     const {legend, level, hotspotImage, fieldName, percent, status} = this.props
 
     return (
-      <Fieldset legend={legend} level={level}>
+      <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
         <div className={styles.grid}>
           <div
             className={`
@@ -76,19 +75,20 @@ export default class ImageInputFieldset extends React.Component {
             }
 
             {
-              !hotspotImage.imageUrl
-              && <ImageSelect
-                className={styles.imageSelect}
-                name={fieldName}
-                onSelect={this.props.onSelect}
-              >
-                <div className={styles.uploadInner}>
-                  <div className={styles.uploadIconContainer}>
-                    <UploadIcon className={styles.uploadIcon} />
+              !hotspotImage.imageUrl && (
+                <ImageSelect
+                  className={styles.imageSelect}
+                  name={fieldName}
+                  onSelect={this.props.onSelect}
+                >
+                  <div className={styles.uploadInner}>
+                    <div className={styles.uploadIconContainer}>
+                      <UploadIcon className={styles.uploadIcon} />
+                    </div>
+                    <span className={styles.uploadIconText}>Upload image</span>
                   </div>
-                  <span className={styles.uploadIconText}>Upload image</span>
-                </div>
-              </ImageSelect>
+                </ImageSelect>
+              )
             }
             {
               status !== 'complete' && status !== 'ready'

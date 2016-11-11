@@ -27,12 +27,15 @@
 
 .imageWrapper {
   min-height: 10rem;
-  margin: calc(var(--medium-padding) * -1);
   position: relative;
   background-color: var(--gray-dark);
   color: #fff;
   transition: background-color 0.1s linear;
   user-select: none;
+
+  @nest .level0 & {
+    margin: calc(var(--medium-padding) * -1);
+  }
 
   &:hover {
     background-color: var(--gray);
