@@ -31,7 +31,7 @@
 :root {
   --dialog-padding: var(--small-padding);
   --dialog-header-height: 3rem;
-  --dialog-functions-height: 3rem;
+  --dialog-functions-height: 3.5rem;
 }
 
 .root {
@@ -49,6 +49,30 @@
   backdrop-filter: blur(10px);
 }
 
+.default {
+  composes: root;
+}
+
+.danger {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.success {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.info {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.warning {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
 .dialog {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   z-index: var(--zindex-modal);
@@ -59,12 +83,32 @@
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
-  background-color: var(--body-bg);
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
   box-sizing: border-box;
+  background-color: var(--body-bg);
+
+  @nest .danger & {
+    background-color: var(--brand-danger);
+    color: var(--brand-danger--text);
+  }
+
+  @nest .success & {
+    background-color: var(--brand-success);
+    color: var(--brand-success--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--brand-warning);
+    color: var(--brand-warning--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--brand-warning);
+    color: var(--brand-warning--text);
+  }
 
   @media (--screen-medium) {
     display: block;
@@ -85,14 +129,18 @@
 }
 
 .isOpen {
-  composes: root;
+  display: block;
 }
 
 .header {
   height: var(--dialog-header-height);
   line-height: var(--dialog-header-height);
-  color: var(--text-color);
+  color: inherit;
   border-bottom: 1px solid var(--gray-light);
+
+  @nest .danger & {
+    border-bottom: 1px solid var(--brand-danger--text);
+  }
 }
 
 .inner {
@@ -160,18 +208,23 @@
 
 .closeButtonOutside {
   composes: closeButton;
-  color: #fff;
+  color: inherit;
   font-size: 3rem;
   top: -3.5rem;
   right: -3.5rem;
 }
 
 .functions {
+  font-size: var(--font-size-small);
   box-sizing: border-box;
   padding: var(--dialog-padding);
   background-color: var(--gray-lightest);
   border-top: 1px solid var(--gray-lighter);
   height: var(--dialog-functions-height);
+
+  @nest .danger & {
+    background-color: color(var(--white) a(60%));
+  }
 }
 
 .button {

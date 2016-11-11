@@ -30,25 +30,83 @@ storiesOf('Dialogs')
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title="This is the title" onClose={action('onClose')}>
-          Put content here
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')}>
+          This is the content
+          {chance.paragraph()}
         </DefaultDialog>
       </div>
     )
   },
   {
-    propTables: [DefaultDialog, DefaultDialog.propTypes.actions],
+    propTables: [DefaultDialog],
     role: 'part:@sanity/components/dialogs/default'
   }
 )
 .addWithInfo(
-  'Default (open)',
+  'Default (danger)',
   '',
   () => {
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')}>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="danger">
+          This is the content
+          {chance.paragraph()}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'part:@sanity/components/dialogs/default'
+  }
+)
+.addWithInfo(
+  'Default (success)',
+  '',
+  () => {
+    return (
+      <div>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="success">
+          This is the content
+          {chance.paragraph()}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'part:@sanity/components/dialogs/default'
+  }
+)
+.addWithInfo(
+  'Default (info)',
+  '',
+  () => {
+    return (
+      <div>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="info">
+          This is the content
+          {chance.paragraph()}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'part:@sanity/components/dialogs/default'
+  }
+)
+.addWithInfo(
+  'Default (warning)',
+  '',
+  () => {
+    return (
+      <div>
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
+        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="warning">
           This is the content
           {chance.paragraph()}
         </DefaultDialog>
@@ -272,6 +330,46 @@ storiesOf('Dialogs')
           showHeader
           actions={actions}
           onAction={action('onAction')}
+        >
+          This is the content
+          {chance.paragraph({sentences: 50})}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+.addWithInfo(
+  'Default (danger with actions nad header)',
+  '',
+  () => {
+    const actions = [
+      {
+        index: '1',
+        title: 'Finish'
+      },
+      {
+        index: '2',
+        title: 'Cancel',
+      },
+      {
+        index: '3',
+        title: 'Secondary',
+        kind: 'secondary'
+      }
+    ]
+    return (
+      <div>
+        <DefaultDialog
+          title="This is the title"
+          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
+          showHeader
+          actions={actions}
+          onAction={action('onAction')}
+          kind="danger"
         >
           This is the content
           {chance.paragraph({sentences: 50})}

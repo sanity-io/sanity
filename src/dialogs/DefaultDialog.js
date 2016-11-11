@@ -5,7 +5,7 @@ import Button from 'part:@sanity/components/buttons/default'
 
 export default class DefaultDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['warning', 'success', 'danger']),
+    kind: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
@@ -27,7 +27,8 @@ export default class DefaultDialog extends React.Component {
     showHeader: false,
     onAction() {},
     onOpen() {},
-    actions: []
+    actions: [],
+    kind: 'default'
   }
 
   constructor(...args) {
@@ -82,8 +83,9 @@ export default class DefaultDialog extends React.Component {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader} = this.props
+    const {title, actions, isOpen, showHeader, kind} = this.props
     const classNames = `
+      ${styles[kind]}
       ${isOpen ? styles.isOpen : styles.isClosed}
       ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
