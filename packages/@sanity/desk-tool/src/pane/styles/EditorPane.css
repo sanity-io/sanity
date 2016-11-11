@@ -9,6 +9,9 @@
   max-width: 40em;
   clear: both;
   margin-top: 1em;
+  box-sizing: border-box;
+  lost-utility: clearfix;
+  padding: var(--large-padding);
 }
 
 .header {

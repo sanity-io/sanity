@@ -3,10 +3,14 @@
 .container {
   height: 100%;
   width: 100%;
-  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
   box-sizing: border-box;
   background-color: var(--gray-lightest);
   box-shadow: 2px 2px 5px var(--gray-light) inset;
+  bottom: 0;
 }
 
 .navigationPanesContainer {
@@ -41,8 +45,11 @@
     width: auto;
     max-width: 100%;
     min-width: 40em;
-    float: right;
-    padding: var(--large-padding);
+    position: absolute;
+    top: 0;
+    right: 0;
     box-sizing: border-box;
+    bottom: 0;
+    padding: var(--large-padding);
   }
 }
