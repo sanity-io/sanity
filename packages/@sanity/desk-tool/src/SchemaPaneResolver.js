@@ -220,9 +220,7 @@ export default class SchemaPaneResolver extends React.Component {
       />
     )
 
-    const documentsPane = selectedType ? this.getDocumentsPane(selectedType) : (
-    <h2>Select a type to begin…</h2>
-    )
+    const documentsPane = selectedType && this.getDocumentsPane(selectedType)
 
     return (
       <div className={styles.container} ref={this.setContainerElement}>
@@ -232,11 +230,17 @@ export default class SchemaPaneResolver extends React.Component {
         </div>
         <div className={styles.editorContainer} ref={this.setEditorPaneElement} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           {
-            selectedType && (
-            <EditorPane
-              documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
-              typeName={selectedType}
-            />)
+            selectedType && selectedDocumentId && (
+              <EditorPane
+                documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
+                typeName={selectedType}
+              />
+            )
+          }
+          {
+            !selectedType && (
+              <h2>Select a type to begin…</h2>
+            )
           }
         </div>
       </div>
