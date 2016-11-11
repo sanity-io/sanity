@@ -3,6 +3,8 @@ import styles from 'part:@sanity/components/edititem/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import {debounce} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import scroll from 'scroll'
+import ease from 'ease-component'
 
 export default class EditItemPopOver extends React.Component {
   static propTypes = {
@@ -34,6 +36,10 @@ export default class EditItemPopOver extends React.Component {
     this.repositionElement = this.repositionElement.bind(this)
     this.handleResize = debounce(this.handleResize.bind(this), 17) // 60fps
     this.resetPosition = this.resetPosition.bind(this)
+    this.scrollOptions = {
+      duration: 250,
+      ease: ease.easeInOutQuart
+    }
   }
 
   handleKeyDown = event => {
@@ -78,13 +84,13 @@ export default class EditItemPopOver extends React.Component {
 
       // Scroll container when there is no space
       if ((containerOffsetHeight + scrollTop) < (top + height)) {
-        this.scrollContainer.scrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+        scroll.top(this.scrollContainer, (containerOffsetHeight - top - height - scrollTop) * -1, this.scrollOptions)
       }
 
       // Need more bottom space
       if (this.scrollContainer.scrollHeight < (scrollTop + top + height)) {
         this.scrollContainer.style.paddingBottom = this.scrollContainer.scrollHeight - scrollTop - height - top
-        this.scrollContainer.scrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+        scroll.top(this.scrollContainer, (containerOffsetHeight - top - height - scrollTop) * -1, this.scrollOptions)
       }
 
       // Reposition horizon
@@ -135,7 +141,7 @@ export default class EditItemPopOver extends React.Component {
 
   componentWillUnmount() {
     if (this.scrollContainer && this.initialScrollTop) {
-      this.scrollContainer.scrollTop = this.initialScrollTop
+      scroll.top(this.scrollContainer, this.initialScrollTop, this.scrollOptions)
     }
     window.removeEventListener('keydown', this.handleKeyDown, false)
     window.removeEventListener('resize', this.handleResize)

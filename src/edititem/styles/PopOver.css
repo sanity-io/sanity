@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 /*
   Never use transform on this component. It destroys the layering combined with overlay
 */
@@ -95,9 +93,8 @@
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   background-color: #fff;
   z-index: var(--zindex-popover);
-  padding: 1em;
-  margin-top: 0.25em;
-  margin-bottom: 2em;
+  padding: var(--medium-padding);
+  margin-bottom: var(--medium-padding);
   box-sizing: border-box;
   position: relative;
   min-width: 30em;
@@ -107,7 +104,6 @@
     min-width: 100%;
     max-width: calc(100vw - 4rem);
     width: calc(100vw - 4rem);
-    border: 1px solid red;
   }
 
   @media (--max-screen-medium) {
@@ -138,7 +134,7 @@
   z-index: 2;
 
   @media (--screen-medium) {
-    color: #666;
+    color: var(--text-color);
     top: 0;
     right: 0;
 
