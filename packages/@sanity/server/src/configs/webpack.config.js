@@ -33,7 +33,7 @@ export default (config = {}) => {
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
 
   const cssExtractor = isProd
-    && new ExtractTextPlugin('css/main.css', {allChunks: true})
+    && new ExtractTextPlugin('css/main.css')
 
   const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
   const cssLoader = isProd
