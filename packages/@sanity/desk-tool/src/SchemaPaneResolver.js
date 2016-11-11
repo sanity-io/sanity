@@ -93,16 +93,6 @@ export default class SchemaPaneResolver extends React.Component {
     }
   }
 
-  handleDocumentCreated = document => {
-    const {router} = this.context
-
-    router.navigate({
-      selectedType: router.state.selectedType,
-      selectedDocumentId: UrlDocId.encode(document._id),
-      action: 'edit'
-    }, {replace: true})
-  }
-
   renderTypePaneItem = item => {
     const {selectedType} = this.context.router.state
     const selected = item.name === selectedType
