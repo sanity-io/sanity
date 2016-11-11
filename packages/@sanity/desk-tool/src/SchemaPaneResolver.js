@@ -42,9 +42,10 @@ function getTitleKey(type) {
 }
 
 export default class SchemaPaneResolver extends React.Component {
+
   static contextTypes = {
     router: PropTypes.object
-  };
+  }
 
   constructor() {
     super()
@@ -180,8 +181,9 @@ export default class SchemaPaneResolver extends React.Component {
     const editorPaneWidth = this.editorPaneElement.offsetWidth
     const containerWidth = this.containerElement.offsetWidth
 
-    // Needs to be on resize because minWidth changes when resizing font
-    const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth.split('px')[0], 10)
+    // Needs to be on resize because minWidth and fontSize changes when resizing font
+    const padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 2
+    const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
     if (containerWidth > (navWidth + editorPaneMinWidth)) {
       // Editor is free
@@ -193,7 +195,12 @@ export default class SchemaPaneResolver extends React.Component {
       this.editorPaneElement.style.width = 'auto'
       // Move navigation out of the screen to make room for the editor
       const translateX = containerWidth - editorPaneMinWidth - navWidth
-      this.navigationElement.style.transform = `translateX(${translateX}px)`
+      if ((translateX * -1) <= navWidth - padding) {
+        this.navigationElement.style.transform = `translateX(${translateX}px)`
+      } else {
+        this.navigationElement.style.transform = `translateX(${(navWidth - padding) * -1}px)`
+      }
+
     }
   })
 
@@ -225,11 +232,13 @@ export default class SchemaPaneResolver extends React.Component {
           {documentsPane}
         </div>
         <div className={styles.editorContainer} ref={this.setEditorPaneElement} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
-          {selectedType && (
+          {
+            selectedType && (
             <EditorPane
               documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
               typeName={selectedType}
-          />)}
+            />)
+          }
         </div>
       </div>
     )
