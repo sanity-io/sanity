@@ -15,16 +15,13 @@ export default class Pane extends React.Component {
     renderItem: PropTypes.func,
     contentType: PropTypes.oneOf(['types', 'documents']),
     onSetListView: PropTypes.func,
-    onGetListView: PropTypes.func,
-    type: PropTypes.string,
+    listView: PropTypes.string,
     onUpdate: PropTypes.func
   }
 
   static defaultProps = {
     isActive: false,
-    onGetListView() {
-      return 'default'
-    },
+    listView: 'default',
     onUpdate() {}
   }
 
@@ -55,7 +52,7 @@ export default class Pane extends React.Component {
 
   handleMenuAction = item => {
     if (item.action == 'setListView') {
-      this.props.onSetListView(this.props.type, item.key)
+      this.props.onSetListView(item.key)
     }
 
     this.handleMenuClose()
@@ -65,11 +62,29 @@ export default class Pane extends React.Component {
     this.handleMenuOpen()
   }
 
-  render() {
-    const {loading, items, renderItem, isActive, contentType, type} = this.props
-    const {menuOpened} = this.state
+  renderListView() {
+    const {items, renderItem} = this.props
 
-    const listView = this.props.onGetListView(type)
+    const listView = this.props.listView
+
+    switch (listView) { // eslint-disable-line default-case
+      case 'thumbnail':
+        return <GridList items={items} renderItem={renderItem} />
+
+      case 'card':
+        return <GridList items={items} layout="masonry" renderItem={renderItem} />
+
+      case 'detail':
+      case 'default':
+        return <DefaultList items={items} renderItem={renderItem} />
+    }
+    console.error(new Error(`Invalid list view option: ${listView}`)) // eslint-disable-line no-console
+    return <DefaultList items={items} renderItem={renderItem} />
+  }
+
+  render() {
+    const {loading, isActive, contentType, listView} = this.props
+    const {menuOpened} = this.state
 
     return (
       <div
@@ -98,20 +113,7 @@ export default class Pane extends React.Component {
         }
         {loading && <Spinner />}
         <div className={styles.listContainer}>
-
-          {
-            (listView == 'default' || listView == 'details')
-            && <DefaultList items={items} renderItem={renderItem} />
-          }
-
-          {
-            listView == 'thumbnails' && <GridList items={items} renderItem={renderItem} />
-          }
-
-          {
-            listView == 'cards' && <GridList items={items} layout="masonry" renderItem={renderItem} />
-          }
-
+          {this.renderListView()}
         </div>
       </div>
     )

@@ -1,8 +1,10 @@
 import React, {PropTypes} from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
 import EditorPane from './pane/EditorPane'
-import PaneItem from './pane/PaneItem.js'
+import TypePaneItem from './pane/TypePaneItem.js'
+import DocumentPaneItem from './pane/DocumentPaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
+
 import UrlDocId from './utils/UrlDocId'
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
@@ -41,17 +43,21 @@ function getTitleKey(type) {
   return dataAspects.getItemDisplayField(type)
 }
 
+function readListViewSettings() {
+  return JSON.parse(window.localStorage.getItem('desk-tool.listview-settings') || '{}')
+}
+function writeListViewSettings(settings) {
+  window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
+}
+
 export default class SchemaPaneResolver extends React.Component {
 
   static contextTypes = {
     router: PropTypes.object
   }
 
-  constructor() {
-    super()
-    this.renderDocumentPaneItem = this.renderDocumentPaneItem.bind(this)
-    this.renderTypePaneItem = this.renderTypePaneItem.bind(this)
-    this.handleDocumentCreated = this.handleDocumentCreated.bind(this)
+  state = {
+    listViewSettings: readListViewSettings()
   }
 
   componentDidMount() {
@@ -87,7 +93,7 @@ export default class SchemaPaneResolver extends React.Component {
     }
   }
 
-  handleDocumentCreated(document) {
+  handleDocumentCreated = document => {
     const {router} = this.context
 
     router.navigate({
@@ -97,33 +103,33 @@ export default class SchemaPaneResolver extends React.Component {
     }, {replace: true})
   }
 
-  renderTypePaneItem(item) {
+  renderTypePaneItem = item => {
     const {selectedType} = this.context.router.state
     const selected = item.name === selectedType
-
     return (
-      <PaneItem
+      <TypePaneItem
         key={item.key}
-        item={{name: item.title}}
-        linkState={{selectedType: item.name}}
         selected={selected}
-        view="default"
+        type={item}
       />
     )
   }
 
-  renderDocumentPaneItem(item, i) {
+  renderDocumentPaneItem = (item, i) => {
     const {selectedType, selectedDocumentId} = this.context.router.state
     const selected = UrlDocId.encode(item._id) === selectedDocumentId
+    const listView = this.getListViewForType(selectedType)
 
+    const linkState = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
+
+    const schemaType = schema.types.find(type => type.name === selectedType)
     return (
-      <PaneItem
-        key={item._id}
-        item={item}
-        linkState={{selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}}
-        index={i}
+      <DocumentPaneItem
+        document={item}
         selected={selected}
-        listView={this.handleGetListViewForType(selectedType)}
+        linkState={linkState}
+        listView={listView}
+        schemaType={schemaType}
       />
     )
   }
@@ -142,7 +148,7 @@ export default class SchemaPaneResolver extends React.Component {
           type={type}
           renderItem={this.renderDocumentPaneItem}
           onSetListView={this.handleSetListView}
-          onGetListView={this.handleGetListViewForType}
+          listView={this.getListViewForType(type)}
           onUpdate={this.handleUpdate}
         />
       </QueryContainer>
@@ -150,13 +156,17 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
 
-  handleSetListView = (type, listView) => {
-    window.localStorage.setItem(`desk-tool.listview.${type}`, listView)
+  handleSetListView = listView => {
+    const {selectedType} = this.context.router.state
+    const nextSettings = Object.assign(readListViewSettings(), {
+      [selectedType]: listView
+    })
+    writeListViewSettings(nextSettings)
+    this.setState({listViewSettings: nextSettings})
   }
 
-  handleGetListViewForType(type) {
-    const listView = window.localStorage.getItem(`desk-tool.listview.${type}`)
-    return listView || 'default'
+  getListViewForType(type) {
+    return this.state.listViewSettings[type] || 'default'
   }
 
 
@@ -215,7 +225,6 @@ export default class SchemaPaneResolver extends React.Component {
     const typesPane = (
       <Pane
         items={TYPE_ITEMS}
-        contentType="types"
         renderItem={this.renderTypePaneItem}
         onUpdate={this.handleUpdate}
       />

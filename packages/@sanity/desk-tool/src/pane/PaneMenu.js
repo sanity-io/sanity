@@ -47,20 +47,20 @@ class PaneMenu extends React.Component {
         title: 'Details',
         icon: IconDetails,
         action: 'setListView',
-        key: 'details'
+        key: 'detail'
       },
       {
         title: 'Thumbnails',
         icon: IconThumbnails,
         action: 'setListView',
-        key: 'thumbnails'
+        key: 'thumbnail'
 
       },
       {
         title: 'Cards',
         icon: IconThumbnails,
         action: 'setListView',
-        key: 'cards'
+        key: 'card'
 
       },
       {
