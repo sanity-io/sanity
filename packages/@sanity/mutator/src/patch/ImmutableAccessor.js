@@ -9,7 +9,7 @@ export default class ImmutableAccessor {
     this.getter = getter
     this.setter = setter
   }
-  // Probe interface
+  // Probe interface (the interface used by Matcher to traverse the document)
   isIndexable() : bool {
     return Array.isArray(this.getter())
   }
@@ -29,7 +29,7 @@ export default class ImmutableAccessor {
     if (this.isIndexable()) {
       return false
     }
-    return !!this.getter()[key]
+    return Object.keys(this.getter()).indexOf(key) != -1
   }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
@@ -73,7 +73,7 @@ export default class ImmutableAccessor {
     return this.getter()
   }
 
-  // Accessor interface
+  // Accessor interface (the interface used by Patcher to mutate the document)
   getRaw(key : string) : any {
     return this.getter()[key]
   }

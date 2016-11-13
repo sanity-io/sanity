@@ -25,7 +25,7 @@ export default class PlainProbe {
     if (this.isIndexable()) {
       return false
     }
-    return !!this.value[key]
+    return Object.keys(this.value).indexOf(key) != -1
   }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
