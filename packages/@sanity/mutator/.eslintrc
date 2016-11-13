@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": ["bengler", "bengler/react"],
+  "plugins": [
+    "flowtype-errors"
+  ],
+  "parser": "babel-eslint",
+  "rules": {
+    "flowtype-errors/show-errors": 2
+  }
+}

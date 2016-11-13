@@ -1,0 +1,13 @@
+{
+  "presets": ["es2015"],
+  "plugins": [
+    "syntax-flow",
+    "transform-flow-strip-types",
+    "syntax-object-rest-spread",
+    "transform-object-rest-spread",
+    "syntax-class-properties",
+    "transform-class-properties",
+    "lodash",
+    "syntax-flow"
+  ]
+}
