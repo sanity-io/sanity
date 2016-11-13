@@ -1,8 +1,8 @@
 * [ ] Fix recursive
-* [ ] Fix negative indexes
+* [x] Fix negative indexes
 * [ ] Implement '*'
-* [ ] diffMatchPatch
-* [ ] insert
-* [ ] setIfMissing
-* [ ] inc/dec
+* [x] diffMatchPatch
+* [ ] replace
+* [x] setIfMissing
+* [x] inc/dec
 * [ ] insert semantics, proper respect for ranges
