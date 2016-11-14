@@ -1,5 +1,5 @@
 {
-  "name": "@sanity/document-toolbox",
+  "name": "@sanity/mutator",
   "version": "0.0.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "main": "lib/index.js",
@@ -48,10 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/document-toolbox.git"
+    "url": "git+https://github.com/sanity-io/mutator.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/document-toolbox/issues"
+    "url": "https://github.com/sanity-io/mutator/issues"
   },
-  "homepage": "https://github.com/sanity-io/document-toolbox#readme"
+  "homepage": "https://github.com/sanity-io/mutator#readme"
 }

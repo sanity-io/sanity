@@ -1,4 +1,4 @@
-## @sanity/document-toolbox
+## @sanity/mutator
 
 ## Features
 - Sanity flavored jsonpath matching engine with flexible interface that plays well with React
@@ -8,7 +8,7 @@
 ## Usage
 
 ```javascript
-import {Patcher} from '@sanity/document-toolbox'
+import {Patcher} from '@sanity/mutator'
 
 const document = {
   a: {}
