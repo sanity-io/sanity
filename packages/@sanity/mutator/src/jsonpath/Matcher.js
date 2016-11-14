@@ -1,7 +1,7 @@
 // @flow
 import parse from './parse'
 import Descender from './Descender'
-import Ast from './Ast'
+import Expression from './Expression'
 
 type Probe = Object
 
@@ -109,7 +109,7 @@ export default class Matcher {
   }
 
   static fromPath(jsonpath : string) {
-    const descender = new Descender(null, new Ast(parse(jsonpath)))
+    const descender = new Descender(null, new Expression(parse(jsonpath)))
     return new Matcher(descender.descend())
   }
 }

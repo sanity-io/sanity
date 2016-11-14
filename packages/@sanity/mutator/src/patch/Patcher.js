@@ -1,7 +1,7 @@
 // @flow
 import parse from './parse'
 import ImmutableAccessor from './ImmutableAccessor'
-import {Ast, Matcher} from '../jsonpath'
+import {Expression, Matcher} from '../jsonpath'
 
 export default class Patcher {
   patches : Array<Object>
@@ -43,7 +43,7 @@ export default class Patcher {
 function descend(matcher, accessor) {
   // Every time we execute the matcher a new set of leads is generated. Each lead
   // is a target (being an index, an attribute name or a range) in the form of an
-  // Ast instance. For each lead target there is also a matcher. Our job is to obtain
+  // Expression instance. For each lead target there is also a matcher. Our job is to obtain
   // accessor(s) for each target (there might be more than one, since the targets may
   // be ranges) and run the provided matcher on those accessors.
   const {leads, delivery} = matcher.match(accessor)
@@ -66,7 +66,7 @@ function descend(matcher, accessor) {
 // Given a target and an accessor, genereates accessors for all child values
 // in the provided accessor pointed to by the target. The target is either an
 // index, an attribute name or a range
-function accessorsFromTarget(target : Ast, accessor : ImmutableAccessor) {
+function accessorsFromTarget(target : Expression, accessor : ImmutableAccessor) {
   const result = []
   if (target.isIndexReference()) {
     target.toIndicies(accessor).forEach(i => {

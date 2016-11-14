@@ -1,5 +1,5 @@
 import Matcher from './Matcher'
-import Ast from './Ast'
+import Expression from './Expression'
 
 
-export {Matcher, Ast}
+export {Matcher, Expression}

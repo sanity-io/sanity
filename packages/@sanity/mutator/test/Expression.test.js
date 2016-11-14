@@ -1,23 +1,23 @@
 import {test} from 'tap'
 import parse from '../src/jsonpath/parse'
-import Ast from '../src/jsonpath/Ast'
+import Expression from '../src/jsonpath/Expression'
 import PlainProbe from '../src/jsonpath/PlainProbe'
 
-test('Ast union', tap => {
-  let ast = new Ast(parse("[1,2,3]"))
-  tap.equal(false, ast.isPath())
-  tap.equal(true, ast.isUnion())
-  tap.equal(true, ast.isCollection())
-  tap.equal(false, ast.isAttributeReference())
-  tap.equal(1, ast.pathNodes().length)
+test('Expression union', tap => {
+  let expression = new Expression(parse("[1,2,3]"))
+  tap.equal(false, expression.isPath())
+  tap.equal(true, expression.isUnion())
+  tap.equal(true, expression.isCollection())
+  tap.equal(false, expression.isAttributeReference())
+  tap.equal(1, expression.pathNodes().length)
   tap.end()
 })
 
-test('Ast path', tap => {
-  let path1 = new Ast(parse('a.b.c'))
-  let path2 = new Ast(parse('d.e.f'))
-  let union = new Ast(parse('[e,f]'))
-  let simple = new Ast(parse('a'))
+test('Expression path', tap => {
+  const path1 = new Expression(parse('a.b.c'))
+  const path2 = new Expression(parse('d.e.f'))
+  const union = new Expression(parse('[e,f]'))
+  const simple = new Expression(parse('a'))
   const concatCase = (a, b, expect) => {
     tap.equal(a.concat(b).toString(), expect,
       `concat ${a} ${b}`)
@@ -28,15 +28,15 @@ test('Ast path', tap => {
   tap.end()
 })
 
-test('Ast constraints', tap => {
-  const selfCompare = new Ast(parse('[@ < 8]').nodes[0])
+test('Expression constraints', tap => {
+  const selfCompare = new Expression(parse('[@ < 8]').nodes[0])
   tap.equal(true, selfCompare.constraintTargetIsSelf())
   tap.equal(false, selfCompare.constraintTargetIsAttribute())
   tap.equal(true, selfCompare.testConstraint(new PlainProbe(7)))
   tap.equal(false, selfCompare.testConstraint(new PlainProbe(8)))
   tap.equal(false, selfCompare.testConstraint(new PlainProbe({a: 7})))
 
-  const attrCompare = new Ast(parse('[banana == "rotten"]').nodes[0])
+  const attrCompare = new Expression(parse('[banana == "rotten"]').nodes[0])
   tap.equal(false, attrCompare.constraintTargetIsSelf())
   tap.equal(true, attrCompare.constraintTargetIsAttribute())
   tap.equal(false, attrCompare.testConstraint(new PlainProbe({banana: 'nice'})))
@@ -46,10 +46,10 @@ test('Ast constraints', tap => {
   tap.end()
 })
 
-test('Ast toIndicies', tap => {
-  const range = new Ast(parse('[2:5]').nodes[0])
+test('Expression toIndicies', tap => {
+  const range = new Expression(parse('[2:5]').nodes[0])
   tap.same([2, 3, 4], range.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))
-  const index = new Ast(parse('[2]').nodes[0])
+  const index = new Expression(parse('[2]').nodes[0])
   tap.same([2], index.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))
   tap.end()
 })

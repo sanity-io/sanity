@@ -8,7 +8,7 @@ import parse from './parse'
 
 type Probe = Object
 
-export default class Ast {
+export default class Expression {
   expr : Object
   constructor(expr : Object) {
     // This is a wrapped expr
@@ -18,7 +18,7 @@ export default class Ast {
       this.expr = expr
     }
     if (!this.expr.type) {
-      throw new Error('Attempt to create Ast for expression with no type')
+      throw new Error('Attempt to create Expression for expression with no type')
     }
   }
   isPath() : bool {
@@ -102,7 +102,7 @@ export default class Ast {
     if (!node) {
       return this
     }
-    return new Ast({
+    return new Expression({
       type: 'path',
       nodes: node.pathNodes().concat(this.pathNodes())
     })
@@ -117,8 +117,8 @@ export default class Ast {
     return descend(this.expr).map(headTail => {
       const [head, tail] = headTail
       return {
-        head: head ? new Ast(head) : null,
-        tail: tail ? new Ast(tail) : null
+        head: head ? new Expression(head) : null,
+        tail: tail ? new Expression(tail) : null
       }
     })
   }
@@ -126,7 +126,7 @@ export default class Ast {
     if (!this.isRecursive()) {
       throw new Error(`Attempt to unwrap recursive on type ${this.expr.type}`)
     }
-    return new Ast(this.expr.term)
+    return new Expression(this.expr.term)
   }
   toIndicies(probe : Probe) : Array<number> {
     if (!this.isIndexReference()) {
@@ -160,7 +160,7 @@ export default class Ast {
     return toPath(this.expr)
   }
   static fromPath(path : string) {
-    return (new Ast(parse(path)))
+    return (new Expression(parse(path)))
   }
 }
 

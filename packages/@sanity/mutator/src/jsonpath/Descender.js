@@ -3,15 +3,15 @@
 // Descender models the state of one partial jsonpath evaluation. Head is the
 // next thing to match, tail is the upcoming things once the head is matched.
 
-import Ast from './Ast'
+import Expression from './Expression'
 import {flatten} from 'lodash'
 
 type Probe = Object
 
 export default class Descender {
-  head : Ast
-  tail : Ast
-  constructor(head : Ast, tail : Ast) {
+  head : Expression
+  tail : Expression
+  constructor(head : Expression, tail : Expression) {
     this.head = head
     this.tail = tail
   }
@@ -75,7 +75,7 @@ export default class Descender {
           // where they match
           if (head.testConstraint(probe.getIndex(i))) {
              result.push(new Descender(
-              new Ast({type: 'index', value: i}),
+              new Expression({type: 'index', value: i}),
               this.tail
             ))
           }
@@ -87,7 +87,7 @@ export default class Descender {
         // Then make descenders for all indicies
         for (let i = 0; i < length; i++) {
           result.push(new Descender(
-            new Ast({type: 'index', value: i}),
+            new Expression({type: 'index', value: i}),
             newTail
           ))
         }

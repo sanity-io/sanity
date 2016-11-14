@@ -1,6 +1,6 @@
 import { test } from 'tap'
 import parse from '../src/jsonpath/parse'
-import Ast from '../src/jsonpath/Ast'
+import Expression from '../src/jsonpath/Expression'
 import Descender from '../src/jsonpath/Descender'
 import PlainProbe from '../src/jsonpath/PlainProbe'
 
@@ -17,7 +17,7 @@ function expectDescendants(tap, descendants, expect) {
 }
 
 test('Match attribute constraint on array', tap => {
-  const d = new Descender(new Ast(inner('[a == 7]')), Ast.fromPath('[b,c].d'))
+  const d = new Descender(new Expression(inner('[a == 7]')), Expression.fromPath('[b,c].d'))
   tap.equal(d.toString(), '<[a == 7]|[b,c].d>')
   const iterated = d.iterate(new PlainProbe([{
     a: 9
@@ -32,7 +32,7 @@ test('Match attribute constraint on array', tap => {
 })
 
 test('Match self constraint on array', tap => {
-  const d = new Descender(new Ast(inner('[@ == 7]')), Ast.fromPath('[b,c].d'))
+  const d = new Descender(new Expression(inner('[@ == 7]')), Expression.fromPath('[b,c].d'))
   tap.equal(d.toString(), '<[@ == 7]|[b,c].d>')
   const iterated = d.iterate(new PlainProbe([2, 3, 7, 8, 7]))
   expectDescendants(tap, iterated, [
@@ -43,7 +43,7 @@ test('Match self constraint on array', tap => {
 })
 
 test('Match constraint on object', tap => {
-  const d = new Descender(new Ast(inner('[a == 7]')), Ast.fromPath('[b,c].d'))
+  const d = new Descender(new Expression(inner('[a == 7]')), Expression.fromPath('[b,c].d'))
   const mismatch = d.iterate(new PlainProbe({a: 9}))
   expectDescendants(tap, mismatch, [])
   const match = d.iterate(new PlainProbe({a: 7}))
@@ -55,15 +55,15 @@ test('Match constraint on object', tap => {
 })
 
 test(tap => {
-  const notRecursive = new Descender(Ast.fromPath('key'), Ast.fromPath('banana'))
+  const notRecursive = new Descender(Expression.fromPath('key'), Expression.fromPath('banana'))
   tap.equal(false, notRecursive.isRecursive())
-  const recursive = new Descender(Ast.fromPath('..key'), Ast.fromPath('banana'))
+  const recursive = new Descender(Expression.fromPath('..key'), Expression.fromPath('banana'))
   tap.equal(true, recursive.isRecursive())
   tap.end()
 })
 
 test(tap => {
-  const recursive = new Descender(Ast.fromPath('..a'), Ast.fromPath('b.c'))
+  const recursive = new Descender(Expression.fromPath('..a'), Expression.fromPath('b.c'))
   const extracted = recursive.extractRecursives()
   expectDescendants(tap, extracted, [
     '<a|b.c>'
@@ -72,7 +72,7 @@ test(tap => {
 })
 
 test(tap => {
-  const d1 = new Descender(Ast.fromPath('a'), Ast.fromPath('b.c'))
+  const d1 = new Descender(Expression.fromPath('a'), Expression.fromPath('b.c'))
   const d2 = d1.descend()
   expectDescendants(tap, d2, [
     '<b|c>'
