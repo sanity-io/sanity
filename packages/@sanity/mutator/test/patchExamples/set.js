@@ -140,21 +140,37 @@ export default [
     }
   },
 
-  // TODO: Fix recursive
-  // {
-  //   name: 'Recursive',
-  //   before: {
-  //     a: [{deep: 'Hello', b: {deep: false}}],
-  //     deep: 12.3
-  //   },
-  //   patch: {
-  //     set: {
-  //       'a..deep': 'How deep?'
-  //     }
-  //   },
-  //   after: {
-  //     a: [{deep: 'How deep?', b: {deep: 'How deep?'}}],
-  //     deep: 12.3
-  //   }
-  // }
+  {
+    name: 'Recursive',
+    before: {
+      a: [{deep: 'Hello', b: {deep: false}}],
+      deep: 12.3
+    },
+    patch: {
+      set: {
+        'a..deep': 'How deep?'
+      }
+    },
+    after: {
+      a: [{deep: 'How deep?', b: {deep: 'How deep?'}}],
+      deep: 12.3
+    }
+  },
+
+  {
+    name: 'Recursive constraint',
+    before: {
+      a: [{deep: 'Hello', b: {deep: 'banana'}}],
+      deep: 12.3
+    },
+    patch: {
+      set: {
+        'a..[deep == "banana"].fnah': 'How deep?'
+      }
+    },
+    after: {
+      a: [{deep: 'Hello', b: {deep: 'banana', fnah: 'How deep?'}}],
+      deep: 12.3
+    }
+  }
 ]

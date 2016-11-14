@@ -162,6 +162,18 @@ export default class Expression {
   static fromPath(path : string) {
     return (new Expression(parse(path)))
   }
+  static attributeReference(name : string) {
+    return new Expression({
+      type: 'attribute',
+      name: name
+    })
+  }
+  static indexReference(i : number) {
+    return new Expression({
+      type: 'index',
+      value: i
+    })
+  }
 }
 
 // Tests an operator on two given primitive values

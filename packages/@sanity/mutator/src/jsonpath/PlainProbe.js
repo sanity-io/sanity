@@ -27,6 +27,12 @@ export default class PlainProbe {
     }
     return this.value.hasOwnProperty(key)
   }
+  attributes() : Array<string> {
+    if (!this.isPlainObject()) {
+      return []
+    }
+    return Object.keys(this.value)
+  }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
       return false

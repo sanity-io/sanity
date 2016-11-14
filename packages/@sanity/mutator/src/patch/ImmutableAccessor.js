@@ -31,6 +31,12 @@ export default class ImmutableAccessor {
     }
     return this.getter().hasOwnProperty(key)
   }
+  attributes() : Array<string> {
+    if (!this.isPlainObject()) {
+      return []
+    }
+    return Object.keys(this.getter())
+  }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
       return false

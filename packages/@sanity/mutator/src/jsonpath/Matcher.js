@@ -38,13 +38,35 @@ export default class Matcher {
     })
   }
 
+  // Find recursives that are relevant now and should be considered part of the active set
+  activeRecursives(probe : Probe) : Array<Descender> {
+    return this.recursives.filter(descender => {
+      const head = descender.head
+      // Constraints are always relevant
+      if (head.isConstraint()) {
+        return true
+      }
+      // Index references are only relevant for indexable values
+      if (probe.isIndexable() && head.isIndexReference()) {
+        return true
+      }
+      // Attribute references are relevant for plain objects
+      if (probe.isPlainObject()) {
+        if (head.isAttributeReference() && probe.has(head.name())) {
+          return true
+        }
+      }
+      return false
+    })
+  }
+
   match(probe : Probe) : Object {
     return this.iterate(probe).extractMatches(probe)
   }
 
   iterate(probe : Probe) : Matcher {
     const newActiveSet : Array<Descender> = []
-    this.active.concat(this.recursives).forEach(descender => {
+    this.active.concat(this.activeRecursives(probe)).forEach(descender => {
       newActiveSet.push(...descender.iterate(probe))
     })
     return new Matcher(newActiveSet, this)
@@ -53,7 +75,7 @@ export default class Matcher {
   // Returns true if any of the descenders in the active or recursive set
   // consider the current state a final destination
   isDestination() : bool {
-    const arrival = this.active.concat(this.recursives).find(descender => {
+    const arrival = this.active.find(descender => {
       if (descender.hasArrived()) {
         return true
       }
@@ -62,12 +84,16 @@ export default class Matcher {
     return !!arrival
   }
 
+  hasRecursives() : bool {
+    return this.recursives.length > 0
+  }
+
   // Returns any payload delivieries and leads that needs to be followed to complete
   // the process.
   extractMatches(probe : Probe) : Object {
     const leads = []
     const targets = []
-    this.active.concat(this.recursives).forEach(descender => {
+    this.active.forEach(descender => {
       if (descender.hasArrived()) {
         // This descender is done, no further processing
         return
@@ -96,6 +122,29 @@ export default class Matcher {
         targets.push(descender.head)
       }
     })
+
+    // If there are recursive terms, we need to add a lead for every descendant ...
+    if (this.hasRecursives()) {
+      // The recustives matcher will have no active set, only inherit recursives from this
+      const recursivesMatcher = new Matcher([], this)
+      if (probe.isIndexable()) {
+        const length = probe.getLength()
+        for (let i = 0; i < length; i++) {
+          leads.push({
+            target: Expression.indexReference(i),
+            matcher: recursivesMatcher
+          })
+        }
+      } else if (probe.isPlainObject()) {
+        probe.attributes().forEach(name => {
+          leads.push({
+            target: Expression.attributeReference(name),
+            matcher: recursivesMatcher
+          })
+        })
+      }
+    }
+
     const result : Object = {
       leads: leads
     }
