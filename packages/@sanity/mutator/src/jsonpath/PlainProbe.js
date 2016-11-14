@@ -9,7 +9,7 @@ export default class PlainProbe {
   isIndexable() : bool {
     return Array.isArray(this.value)
   }
-  getLength() : bool {
+  getLength() : number {
     if (!this.isIndexable()) {
       throw new Error("Won't return length of non-indexable value")
     }
@@ -22,10 +22,10 @@ export default class PlainProbe {
     return !this.isPlainObject() && !this.isIndexable()
   }
   has(key : string) : bool {
-    if (this.isIndexable()) {
+    if (!this.isPlainObject()) {
       return false
     }
-    return Object.keys(this.value).indexOf(key) != -1
+    return this.value.hasOwnProperty(key)
   }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {

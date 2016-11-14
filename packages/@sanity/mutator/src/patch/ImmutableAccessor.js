@@ -26,10 +26,10 @@ export default class ImmutableAccessor {
     return !this.isPlainObject() && !this.isIndexable()
   }
   has(key : string) : bool {
-    if (this.isIndexable()) {
+    if (!this.isPlainObject()) {
       return false
     }
-    return Object.keys(this.getter()).indexOf(key) != -1
+    return this.getter().hasOwnProperty(key)
   }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
