@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 :root {
   @custom-media --max-screen-medium (max-width: 32em);
   @custom-media --screen-medium (min-width: 32em);
