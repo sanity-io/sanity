@@ -25,9 +25,11 @@
   "dependencies": {
     "@sanity/date-input": "^0.0.4",
     "@sanity/imagetool": "^0.2.1",
+    "canvas-to-blob": "^0.0.0",
     "chance": "^1.0.4",
     "dialog-polyfill": "^0.4.3",
     "ease-component": "^1.0.0",
+    "exif-component": "^1.0.1",
     "fuse.js": "^2.4.1",
     "in-publish": "^2.0.0",
     "lodash": "^4.13.1",
