@@ -77,7 +77,7 @@ storiesOf('Image input')
 )
 
 .addWithInfo(
-  'Fieldset',
+  'Fieldset (level 0)',
   `
     Image input for uploading images.
   `,
@@ -86,6 +86,28 @@ storiesOf('Image input')
       <ImageInput
         legend="Image input fieldset"
         onSelect={action('Select image')}
+      >
+        <h2>Content goes here</h2>
+      </ImageInput>
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+.addWithInfo(
+  'Fieldset (level 1)',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        level={1}
       >
         <h2>Content goes here</h2>
       </ImageInput>
