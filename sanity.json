@@ -477,6 +477,14 @@
       "description": "Plus icon"
     },
     {
+      "name": "part:@sanity/base/plus-circle-icon",
+      "description": "Plus circle icon"
+    },
+    {
+      "name": "part:@sanity/base/plus-circle-outline-icon",
+      "description": "Plus circle outlined icon"
+    },
+    {
       "name": "part:@sanity/base/arrow-drop-down",
       "description": "Arrow drop down"
     },
@@ -567,6 +575,14 @@
     {
       "implements": "part:@sanity/base/plus-icon",
       "path": "components/icons/Plus.js"
+    },
+    {
+      "implements": "part:@sanity/base/plus-circle-icon",
+      "path": "components/icons/PlusCircle.js"
+    },
+    {
+      "implements": "part:@sanity/base/plus-circle-outline-icon",
+      "path": "components/icons/PlusCircleOutline.js"
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",
