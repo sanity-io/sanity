@@ -229,9 +229,9 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/form-builder@0.0.36":
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.36.tgz#94c64126f54f2b66cb37fcd1fee0a15021aa3ed1"
+"@sanity/form-builder@0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.37.tgz#5edc5b4aad1d1374995ba835109b3b40f56cba0a"
   dependencies:
     "@sanity/imagetool" "^0.2.1"
     canvas-to-blob "0.0.0"
