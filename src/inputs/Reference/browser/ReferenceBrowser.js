@@ -132,12 +132,10 @@ export default class ReferenceBrowser extends React.Component {
   renderItem = item => {
     const field = this.getItemFieldForType(item._type)
     return (
-      <div className={styles.preview}>
-        <Preview
-          field={field}
-          value={item}
-        />
-      </div>
+      <Preview
+        field={field}
+        value={item}
+      />
     )
   }
 
@@ -161,7 +159,6 @@ export default class ReferenceBrowser extends React.Component {
         isOpen
       >
         <DefaultList
-          className={styles.list}
           loading={fetching}
           renderItem={this.renderItem}
           items={items}
@@ -198,6 +195,7 @@ export default class ReferenceBrowser extends React.Component {
             <Preview
               field={field}
               value={value.serialize()}
+              style="inline"
             />
           )}
         </div>
