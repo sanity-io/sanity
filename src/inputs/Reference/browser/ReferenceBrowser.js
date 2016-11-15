@@ -148,6 +148,10 @@ export default class ReferenceBrowser extends React.Component {
       {index: 'cancel', title: 'Cancel'}
     ].filter(Boolean)
 
+    const selectedItemFromValue = items.find(item => {
+      return item._id == value.refId
+    })
+
     return (
       <Dialog
         className={styles.dialog}
@@ -164,7 +168,7 @@ export default class ReferenceBrowser extends React.Component {
           items={items}
           scrollable
           onSelect={this.handleDialogSelectItem}
-          selectedItem={dialogSelectedItem || value}
+          selectedItem={dialogSelectedItem || selectedItemFromValue}
         />
       </Dialog>
     )
