@@ -1,4 +1,4 @@
 import {materializeReference} from '../data/fetch'
-import {ReferencePreview} from '../../../src'
+import {ReferencePreview} from '../../..'
 
 export default ReferencePreview.create(materializeReference)
