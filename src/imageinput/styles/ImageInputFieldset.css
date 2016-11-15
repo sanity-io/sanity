@@ -45,8 +45,15 @@
     min-height: 12rem;
     flex-basis: 30%;
     height: auto;
-    margin-bottom: calc(var(--medium-padding) * -1);
     margin-right: 0;
+
+    @nest &.noContent {
+      flex-basis: 100%;
+    }
+
+    @nest .level0 & {
+      margin-bottom: calc(var(--medium-padding) * -1);
+    }
   }
 }
 

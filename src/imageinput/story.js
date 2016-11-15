@@ -97,6 +97,23 @@ storiesOf('Image input')
   }
 )
 
+
+.addWithInfo(
+  'Fieldset (only image)',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput legend="Image input fieldset" onSelect={action('Select image')} />
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
 .addWithInfo(
   'Fieldset (error)',
   `

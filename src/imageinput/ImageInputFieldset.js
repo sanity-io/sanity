@@ -51,7 +51,7 @@ export default class ImageInputFieldset extends React.Component {
 
   render() {
 
-    const {legend, level, hotspotImage, fieldName, percent, status} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status, children} = this.props
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
@@ -59,6 +59,7 @@ export default class ImageInputFieldset extends React.Component {
           <div
             className={`
               ${hotspotImage && hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
+              ${children ? styles.hasContent : styles.noContent}
               ${status == 'error' && styles.error}
             `}
           >
@@ -121,9 +122,13 @@ export default class ImageInputFieldset extends React.Component {
               </div>
             }
           </div>
-          <div className={styles.content}>
-            {this.props.children}
-          </div>
+          {
+            children && (
+              <div className={styles.content}>
+                {children}
+              </div>
+            )
+          }
         </div>
       </Fieldset>
     )
