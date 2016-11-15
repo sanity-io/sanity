@@ -30,9 +30,13 @@ export default class InlinePreview extends React.Component {
 
     return (
       <span className={`${styles.root}`}>
-        <span className={`${styles.media}`}>
-          {item.mediaRender && item.mediaRender()}
-        </span>
+        {
+          item.mediaRender && (
+            <span className={`${styles.media}`}>
+              {item.mediaRender()}
+            </span>
+          )
+        }
         <span className={styles.title}>
           {item.title || emptyText}
         </span>
