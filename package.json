@@ -34,7 +34,7 @@
     "history": "^2.1.0",
     "http-hash": "^2.0.0",
     "in-publish": "^2.0.0",
-    "lodash": "^4.16.6",
+    "lodash": "^4.17.1",
     "postcss-cssnext": "^2.8.0",
     "react-icons": "^2.2.1",
     "react-intl": "^2.1.5",
