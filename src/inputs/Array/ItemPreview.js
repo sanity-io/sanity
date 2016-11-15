@@ -2,8 +2,8 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
-import FallbackPreviewComponent from './FallbackPreviewComponent'
 import styles from './styles/ItemPreview.css'
+import Preview from '../../Preview'
 
 export default class ItemPreview extends React.Component {
   constructor(props, context) {
@@ -46,22 +46,14 @@ export default class ItemPreview extends React.Component {
     return getFieldType(this.context.formBuilder.schema, field)
   }
 
-
   render() {
     const {value, field} = this.props
-
-    const fieldType = this.getFieldType(field)
-
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType) || FallbackPreviewComponent
-
-    const passSerialized = value.constructor.passSerialized
-
     return (
       <div className={styles.root} onClick={this.handleEdit}>
-        <PreviewComponent
-          value={passSerialized ? value.serialize() : value}
+        <Preview
+          style="default"
+          value={value.serialize()}
           field={field}
-          type={fieldType}
         />
       </div>
     )

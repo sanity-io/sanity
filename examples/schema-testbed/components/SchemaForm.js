@@ -13,9 +13,9 @@ import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomImageInput from './custom/MyCustomImageInput'
 import MyCustomFileInput from './custom/MyCustomFileInput'
+import MyCustomReferencePreview from './custom/MyCustomReferencePreview'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
-import SimpleImagePreview from './custom/SimpleImagePreview'
-import resolveReferenceComponent from './custom/resolveReferenceComponent'
+import resolveReferenceInput from './custom/resolveReferenceInput'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -37,7 +37,7 @@ const FormBuilder = schema && createFormBuilder({
       return BlockEditorSlate
     }
     if (field.type === 'reference') {
-      return resolveReferenceComponent(field)
+      return resolveReferenceInput(field)
     }
     if (field.type === 'image') {
       return MyCustomImageInput
@@ -48,8 +48,8 @@ const FormBuilder = schema && createFormBuilder({
     return undefined // signal to use default
   },
   resolvePreviewComponent(field, fieldType) {
-    if (field.type === 'simpleImage') {
-      return SimpleImagePreview
+    if (field.type === 'reference') {
+      return MyCustomReferencePreview
     }
     return undefined // signal to use default
   },

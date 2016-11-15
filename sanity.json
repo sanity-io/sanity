@@ -72,7 +72,10 @@
       "implements": "part:@sanity/form-builder/input-resolver",
       "path": "sanity/inputResolver/inputResolver.js"
     },
-
+    {
+      "implements": "part:@sanity/base/preview-resolver",
+      "path": "sanity/preview/previewResolver.js"
+    },
     {
       "implements": "part:@sanity/form-builder/validation-list",
       "path": "sanity/validation/ValidationList.js"

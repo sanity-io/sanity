@@ -27,7 +27,8 @@ export default function createFormBuilder(config = {}) {
     return createFieldValue(value, {
       field: field,
       schema: schema,
-      resolveInputComponent: resolveInputComponent
+      resolveInputComponent: resolveInputComponent,
+      resolvePreviewComponent: resolvePreviewComponent
     })
   }
 
@@ -39,7 +40,8 @@ export default function createFormBuilder(config = {}) {
     return createFormBuilderState(value, {
       type: schema.getType(typeName), // todo: support primitives!
       schema: schema,
-      resolveInputComponent: resolveInputComponent
+      resolveInputComponent: resolveInputComponent,
+      resolvePreviewComponent: resolvePreviewComponent
     })
   }
 

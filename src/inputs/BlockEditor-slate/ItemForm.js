@@ -6,7 +6,6 @@ import {getFieldType} from '../../schema/getFieldType'
 export default class ItemForm extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    index: PropTypes.number.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
     focus: PropTypes.bool,
@@ -31,8 +30,8 @@ export default class ItemForm extends React.Component {
   }
 
   handleChange = event => {
-    const {index, onChange} = this.props
-    onChange(event, index)
+    const {onChange} = this.props
+    onChange(event)
   }
 
   render() {

@@ -29,18 +29,16 @@ export default class PreviewWrapper extends React.Component {
 
     const fieldType = this.getFieldType(field)
 
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType) || FallbackPreviewComponent
-
-    const passSerialized = value.constructor.passSerialized
+    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType)
 
     return (
       <div className={styles.root}>
         <PreviewComponent
-          value={passSerialized ? value.serialize() : value}
-          field={field}
-          type={fieldType}
+          style="default"
+          value={value.serialize()}
+          field={fieldType}
+          schema={this.context.formBuilder.schema}
         />
-        (click to edit)
       </div>
     )
   }

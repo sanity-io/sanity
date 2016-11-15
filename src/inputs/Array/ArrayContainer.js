@@ -76,7 +76,7 @@ export default class ArrayContainer {
       applyItemPatch: (item, itemPatch) => item.patch(itemPatch),
       createItem: item => {
         const fieldDef = this.getFieldDef(item._type)
-        return createFieldValue(patch.value, {
+        return createFieldValue(item, {
           ...context,
           field: fieldDef
         })

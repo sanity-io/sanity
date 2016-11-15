@@ -52,10 +52,7 @@ function resolveInputComponent(field, schemaType) {
   return typeNameToInputMap[field.type] || typeNameToInputMap[schemaType.type]
 }
 
-function resolvePreviewComponent(field, schemaType) {
-
-}
 export default {
-  resolveInputComponent,
-  resolvePreviewComponent
+  resolveInputComponent: resolveInputComponent,
+  resolvePreviewComponent: () => {}
 }

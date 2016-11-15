@@ -2,13 +2,11 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
-import FallbackPreviewComponent from '../Array/FallbackPreviewComponent'
 
 export default class ItemPreview extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    index: PropTypes.number.isRequired,
     value: PropTypes.any
   };
 
@@ -29,16 +27,14 @@ export default class ItemPreview extends React.Component {
 
     const fieldType = this.getFieldType(field)
 
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType) || FallbackPreviewComponent
-
-    const passSerialized = value.constructor.passSerialized
+    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType)
 
     return (
       <PreviewComponent
-        value={passSerialized ? value.serialize() : value}
+        style="default"
+        value={value.serialize()}
         field={field}
-        type={fieldType}
-        context="blockEditor"
+        schema={this.context.formBuilder.schema}
       />
     )
   }

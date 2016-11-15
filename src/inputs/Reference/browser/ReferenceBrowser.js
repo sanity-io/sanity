@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
-import ItemPreview from '../common/ItemPreview'
+import Preview from '../../../Preview'
 import Button from 'part:@sanity/components/buttons/default' //eslint-disable-line
 import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line
 import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
 import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable-line
-import Spinner from 'part:@sanity/components/loading/spinner' //eslint-disable-line
+// import Spinner from 'part:@sanity/components/loading/spinner' //eslint-disable-line
 
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
@@ -41,21 +41,10 @@ export default class ReferenceBrowser extends React.Component {
       items: [],
       refCache: {},
       showDialog: false,
-      materializedValue: null,
       fetching: false,
       dialogSelectedItem: null
     }
     this._isFetching = false
-  }
-
-  componentWillMount() {
-    this.loadValue(this.props.value)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.loadValue(nextProps.value)
-    }
   }
 
   getItemFieldForType(typeName) {
@@ -69,28 +58,6 @@ export default class ReferenceBrowser extends React.Component {
     this.setState({
       dialogSelectedItem: item
     })
-  }
-
-  loadValue(value) {
-    const {materializeReferences} = this.props
-
-    if (value.isEmpty()) {
-      return
-    }
-
-    materializeReferences([value.refId])
-      .then(materializedRefs => {
-        return this.createValueFromItem(materializedRefs[0])
-      })
-      .then(materializedValue => {
-        const {refCache} = this.state
-        this.setState({
-          refCache: Object.assign({}, refCache, {
-            [materializedValue.value._id]: materializedValue
-          })
-        })
-      })
-
   }
 
   handleCloseDialog(event) {
@@ -112,7 +79,7 @@ export default class ReferenceBrowser extends React.Component {
             type: 'set',
             value: {
               _type: 'reference',
-              _ref: dialogSelectedItem.value._id
+              _ref: dialogSelectedItem._id
             }
           }
           onChange({patch: patch})
@@ -136,10 +103,6 @@ export default class ReferenceBrowser extends React.Component {
     onChange({patch: {type: 'unset'}})
   }
 
-  createValueFromItem(item) {
-    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item._type))
-  }
-
   fetch() {
     const {fetchFn, field} = this.props
     if (this._isFetching === true) {
@@ -153,39 +116,26 @@ export default class ReferenceBrowser extends React.Component {
     fetchFn(field)
       .then(items => {
         this._isFetching = false
-        const preparedItems = items.map(item => this.createValueFromItem(item))
 
-        const updatedCache = preparedItems.reduce((cache, item) => {
-          cache[item.value._id] = item
+        const updatedCache = items.reduce((cache, item) => {
+          cache[item._id] = item
           return cache
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
-          items: preparedItems,
+          items: items,
           fetching: false,
           refCache: updatedCache
         })
       })
   }
-  renderItem = (item, index) => {
-    const {refCache} = this.state
-
-    const materializedValue = refCache[item.value._id]
-    if (!materializedValue) {
-      return (
-        <div className={styles.preview}>
-          <Spinner inline /> Loading…
-        </div>
-      )
-    }
-
-    // Todo: make context.field an official / formalized thing
-    const itemField = item.context.field
+  renderItem = item => {
+    const field = this.getItemFieldForType(item._type)
     return (
       <div className={styles.preview}>
-        <ItemPreview
-          field={itemField}
-          value={materializedValue}
+        <Preview
+          field={field}
+          value={item}
         />
       </div>
     )
@@ -224,34 +174,7 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   renderValue() {
-    const {value} = this.props
-    const {refCache} = this.state
-
-    const renderPreview = () => {
-      if (value.isEmpty()) {
-        return <span>No value</span>
-      }
-
-      const materializedValue = refCache[value.refId]
-      if (!materializedValue) {
-        return (
-          <div className={styles.preview}>
-            <Spinner inline /> Loading…
-          </div>
-        )
-      }
-
-      // Todo: make context.field an official / formalized thing
-      const itemField = materializedValue.context.field
-      return (
-        <div className={styles.preview}>
-          <ItemPreview
-            field={itemField}
-            value={materializedValue}
-          />
-        </div>
-      )
-    }
+    const {value, field} = this.props
 
     const renderButtons = () => {
       if (value.isEmpty()) {
@@ -270,7 +193,14 @@ export default class ReferenceBrowser extends React.Component {
     }
     return (
       <div>
-        {renderPreview()}
+        <div className={styles.preview}>
+          {!value.isEmpty() && (
+            <Preview
+              field={field}
+              value={value.serialize()}
+            />
+          )}
+        </div>
         {renderButtons()}
       </div>
     )
@@ -280,7 +210,6 @@ export default class ReferenceBrowser extends React.Component {
     const {showDialog} = this.state
     return (
       <div className={styles.root}>
-        {showDialog && <div>Loading dialog…</div>}
         {showDialog ? this.renderDialog() : this.renderValue()}
       </div>
     )

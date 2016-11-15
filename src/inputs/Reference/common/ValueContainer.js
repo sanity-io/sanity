@@ -38,7 +38,7 @@ export default class ReferenceContainer {
   }
 
   isEmpty() {
-    return this.value === null || this.value === undefined
+    return this.value === null || this.value === undefined || !this.value._ref
   }
 
   toJSON() {

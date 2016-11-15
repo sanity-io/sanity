@@ -1,3 +1,5 @@
+import React from 'react'
+
 export default {
   name: 'blocks',
   types: [
@@ -154,7 +156,18 @@ export default {
           name: 'caption',
           type: 'string'
         }
-      ]
+      ],
+
+      options: {
+        preview: value => {
+          return {
+            title: value ? value.caption : '',
+            mediaRender: () => {
+              return value && value.url ? <img src={value.url} /> : null
+            }
+          }
+        }
+      }
     },
     {
       name: 'geopoint',

@@ -14,12 +14,6 @@ export default {
       name: 'car',
       type: 'object',
       options: {
-        preview: {
-          title: 'brand',
-          subtitle: 'model',
-          description: 'features',
-          emptyText: 'New car…'
-        }
       },
       fields: [
         {

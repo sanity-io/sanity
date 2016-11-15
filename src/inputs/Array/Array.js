@@ -193,7 +193,6 @@ export default class Arr extends React.Component {
     const {type} = this.props
     const {editIndex} = this.state
     const itemField = this.getItemField(item)
-
     if (!itemField) {
       return (
         <div>
