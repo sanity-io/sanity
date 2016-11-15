@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePaneItem.css'
 import {StateLink} from 'part:@sanity/base/router'
+import PlusCircleIcon from 'part:@sanity/base/plus-circle-icon'
+import PlusCircleOutlineIcon from 'part:@sanity/base/plus-circle-outline-icon'
 
 export default class TypePaneItem extends React.Component {
   static propTypes = {
@@ -10,7 +12,7 @@ export default class TypePaneItem extends React.Component {
     }),
     selected: PropTypes.bool,
     linkState: PropTypes.object,
-  };
+  }
 
   render() {
     const {selected, type} = this.props
@@ -31,7 +33,12 @@ export default class TypePaneItem extends React.Component {
           title={`Create new ${type.name}`}
           state={{selectedType: type.name, action: 'create'}}
         >
-          +
+          <div className={styles.createNewIconOutline}>
+            <PlusCircleOutlineIcon />
+          </div>
+          <div className={styles.createNewIconFilled}>
+            <PlusCircleIcon />
+          </div>
         </StateLink>
       </div>
     )

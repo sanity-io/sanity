@@ -25,9 +25,17 @@ export default class Pane extends React.Component {
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
-        <div className={styles.listContainer}>
-          <DefaultList items={items} renderItem={renderItem} />
-        </div>
+        <ul className={styles.listContainer}>
+          {
+            items.map((item, i) => {
+              return (
+                <li key={i}>
+                  {renderItem(item)}
+                </li>
+              )
+            })
+          }
+        </ul>
       </div>
     )
   }

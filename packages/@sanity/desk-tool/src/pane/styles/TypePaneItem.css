@@ -30,15 +30,56 @@
   display: block;
   float: right;
   text-decoration: none;
-  line-height: inherit;
   vertical-align: middle;
-  font-size: 2em;
+  line-height: inherit;
+  font-size: 1em;
   font-weight: 100;
   cursor: pointer;
-  color: var(--brand-primary);
+  color: inherit;
+  opacity: 0.3;
 
   @nest &:hover {
     font-weight: 400;
+    opacity: 1;
     color: var(--selected-item-color);
+  }
+
+  @nest .selected & {
+    opacity: 1;
+  }
+}
+
+.createNewIcon {
+  display: block;
+  color: inherit;
+  line-height: inherit;
+  margin-top: -0.15em;
+}
+
+.createNewIconOutline {
+  composes: createNewIcon;
+
+  @nest .createNew:active & {
+    display: none;
+  }
+  @nest .selected & {
+    display: none;
+  }
+}
+
+.createNewIconFilled {
+  composes: createNewIcon;
+  display: none;
+
+  @nest .createNew:active & {
+    display: block;
+  }
+
+  @nest .selected & {
+    opacity: 0.5;
+    display: block;
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 }
