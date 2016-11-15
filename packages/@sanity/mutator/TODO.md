@@ -1,5 +1,6 @@
 * [ ] Implement '*'
 * [ ] replace
+* [ ] merge
 * [ ] insert semantics, proper respect for ranges
 * [x] Fix recursive
 * [x] Fix negative indexes
