@@ -1,0 +1,31 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  float: left;
+  height: 100%;
+  position: relative;
+
+  @media (--screen-medium) {
+    /*min-width: 7em;*/
+    padding-right: 1em;
+    height: 100%;
+  }
+}
+
+.isActive {
+  composes: root;
+}
+
+.isInactive {
+  composes: root;
+}
+
+.selected {
+  composes: selected from './Pane.css';
+}
+
+.listContainer {
+  composes: listContainer from './Pane.css';
+  height: 100%;
+}

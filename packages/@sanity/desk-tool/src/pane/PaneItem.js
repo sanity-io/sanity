@@ -11,7 +11,10 @@ export default class PaneItem extends React.Component {
     const {selected, children} = this.props
     return (
       <div
-        className={selected ? styles.selectedItem : styles.item}
+        className={`
+          ${styles.typeItem}
+          ${selected ? styles.selected : styles.item}
+        `}
       >
         {children}
       </div>

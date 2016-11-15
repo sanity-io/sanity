@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
+import TypePane from './pane/TypePane'
 import EditorPane from './pane/EditorPane'
 import TypePaneItem from './pane/TypePaneItem.js'
 import DocumentPaneItem from './pane/DocumentPaneItem.js'
@@ -213,7 +214,7 @@ export default class SchemaPaneResolver extends React.Component {
     const {selectedType, selectedDocumentId} = router.state
 
     const typesPane = (
-      <Pane
+      <TypePane
         items={TYPE_ITEMS}
         renderItem={this.renderTypePaneItem}
         onUpdate={this.handleUpdate}
@@ -242,6 +243,7 @@ export default class SchemaPaneResolver extends React.Component {
               <h2>Select a type to begin…</h2>
             )
           }
+          <div>&nbsp;</div>
         </div>
       </div>
     )

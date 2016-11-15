@@ -32,17 +32,9 @@
   composes: root;
 }
 
-
-.contentType--types {
-  @media (--screen-medium) {
-    min-width: 10em;
-    /* automatic */
-
-  }
-}
 .contentType--documents {
   @media (--screen-medium) {
-
+    min-width: 10em;
   }
 }
 

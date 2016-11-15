@@ -5,8 +5,12 @@
 }
 
 .item {
+  display: block;
+  clear: both;
   color: inherit;
   text-decoration: none;
+  cursor: pointer;
+
   &:visited {
     text-decoration: none;
   }
@@ -15,7 +19,7 @@
   }
 }
 
-.selectedItem {
+.selected {
   composes: item;
   color: var(--selected-item-color);
   &:hover {
@@ -26,4 +30,5 @@
 .stateLink {
   color: inherit;
   text-decoration: inherit;
+  cursor: inherit;
 }

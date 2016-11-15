@@ -1,0 +1,44 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.item {
+  composes: item from './PaneItem.css';
+  line-height: 2em;
+  height: 2em;
+  overflow: hidden;
+}
+
+.link {
+  color: inherit;
+  text-decoration: inherit;
+  padding-left: 0.5rem;
+  max-width: 20em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.selected {
+  composes: item;
+  color: var(--selected-item-color);
+  &:hover {
+    color: var(--selected-item-color-hover);
+  }
+}
+
+.createNew {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  display: block;
+  float: right;
+  text-decoration: none;
+  line-height: inherit;
+  vertical-align: middle;
+  font-size: 2em;
+  font-weight: 100;
+  cursor: pointer;
+  color: var(--brand-primary);
+
+  @nest &:hover {
+    font-weight: 400;
+    color: var(--selected-item-color);
+  }
+}

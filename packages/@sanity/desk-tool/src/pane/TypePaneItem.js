@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/PaneItem.css'
+import styles from './styles/TypePaneItem.css'
 import {StateLink} from 'part:@sanity/base/router'
-import PaneItem from './PaneItem.js'
 
 export default class TypePaneItem extends React.Component {
   static propTypes = {
@@ -16,16 +15,25 @@ export default class TypePaneItem extends React.Component {
   render() {
     const {selected, type} = this.props
     return (
-      <PaneItem
+      <div
+        className={selected ? styles.selected : styles.item}
         key={document._id}
-        selected={selected}
       >
         <StateLink
           state={{selectedType: type.name}}
-          className={styles.stateLink}>
+          className={styles.link}
+        >
           {type.title}
         </StateLink>
-      </PaneItem>
+
+        <StateLink
+          className={styles.createNew}
+          title={`Create new ${type.name}`}
+          state={{selectedType: type.name, action: 'create'}}
+        >
+          +
+        </StateLink>
+      </div>
     )
   }
 }
