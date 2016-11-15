@@ -26,6 +26,10 @@
       "description": "Function that creates a schema, merging the default Sanity types with user-specific types"
     },
     {
+      "name": "part:@sanity/base/preview-resolver",
+      "description": "A function that resolves a preview component for a given type"
+    },
+    {
       "name": "part:@sanity/base/bundled-types",
       "description": "Commonly used data types which are bundled with Sanity for the sake of convenience.",
       "path": "schema/baseSchema.js"
@@ -499,6 +503,10 @@
     {
       "implements": "part:@sanity/base/bars-icon",
       "path": "components/icons/Bars.js"
+    },
+    {
+      "implements": "part:@sanity/base/preview",
+      "path": "components/Preview.js"
     },
     {
       "implements": "part:@sanity/base/th-list-icon",
