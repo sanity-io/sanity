@@ -10,6 +10,16 @@ function isModifiedEvent(event) {
 }
 
 export default class Link extends React.Component {
+  static defaultProps = {
+    replace: false,
+  }
+  static propTypes = {
+    replace: PropTypes.bool
+  }
+  static contextTypes = {
+    __internalRouter: PropTypes.object
+  }
+
   constructor() {
     super()
     this.handleClick = this.handleClick.bind(this)
@@ -36,17 +46,6 @@ export default class Link extends React.Component {
     this.context.__internalRouter.navigateUrl(href, {replace})
   }
   render() {
-
     return <a {...omit(this.props, 'replace')} onClick={this.handleClick} />
   }
-}
-
-Link.defaultProps = {
-  replace: false,
-}
-Link.propTypes = {
-  replace: PropTypes.bool
-}
-Link.contextTypes = {
-  __internalRouter: PropTypes.object
 }

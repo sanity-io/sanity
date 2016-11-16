@@ -5,6 +5,21 @@ import Link from './Link'
 const EMPTY_STATE = {}
 
 export default class StateLink extends React.Component {
+  static propTypes = {
+    state: PropTypes.object,
+    replace: PropTypes.bool,
+    toIndex: PropTypes.bool
+  }
+
+  static defaultProps = {
+    replace: false,
+    toIndex: false,
+  }
+
+  static contextTypes = {
+    __internalRouter: PropTypes.object
+  }
+
   resolveUrl() {
     const {toIndex, state} = this.props
 
@@ -16,23 +31,10 @@ export default class StateLink extends React.Component {
       console.error(new Error('No state passed to StateLink. If you want to link to an empty state, its better to use the the `toIndex` property'))
     }
     const nextState = toIndex ? EMPTY_STATE : (state || EMPTY_STATE)
-
     return this.context.__internalRouter.resolvePathFromState(nextState)
   }
   render() {
     const rest = omit(this.props, 'state', 'toIndex')
     return <Link href={this.resolveUrl()} {...rest} />
   }
-}
-
-StateLink.defaultProps = {
-  replace: false,
-  toIndex: false,
-}
-StateLink.propTypes = {
-  state: PropTypes.object,
-  replace: PropTypes.bool
-}
-StateLink.contextTypes = {
-  __internalRouter: PropTypes.object
 }

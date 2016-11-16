@@ -23,9 +23,7 @@ app.get('/*', (req, res) => {
       <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1"/>
     </head>
     <body>
-    <div id="main">
-      Content goes here
-    </div>
+    <div id="main"/>
     <script src="/browser/bundle.js" async></script>
     </body>
     </html>

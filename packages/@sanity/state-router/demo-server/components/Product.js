@@ -1,7 +1,10 @@
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
 
-class Product extends React.Component {
+export default class Product extends React.Component {
+  static propTypes = {
+    id: PropTypes.string
+  }
   render() {
     const {id} = this.props
     const nextProductId = Math.random().toString(32).substring(2)
@@ -13,15 +16,9 @@ class Product extends React.Component {
           <StateLink state={{id: nextProductId}}>Go to product #{nextProductId}</StateLink>
         </p>
         <p>
-          <StateLink state={{}}>Up…</StateLink>
+          <StateLink toIndex>Up…</StateLink>
         </p>
       </div>
     )
   }
 }
-
-Product.propTypes = {
-  id: PropTypes.string
-}
-
-export default Product

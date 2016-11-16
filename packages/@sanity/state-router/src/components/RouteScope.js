@@ -1,39 +1,41 @@
 import React, {PropTypes} from 'react'
 
 export default class RouteScope extends React.Component {
+  static propTypes = {
+    scope: PropTypes.string,
+    children: PropTypes.node
+  }
+
+  static childContextTypes = RouteScope.contextTypes = {
+    __internalRouter: PropTypes.object,
+    router: PropTypes.object
+  }
+
   getChildContext() {
     const {scope} = this.props
     const {router, __internalRouter} = this.context
     return {
       __internalRouter: {
         resolvePathFromState: nextState => {
-          return __internalRouter.resolvePathFromState(getUnscopedState(nextState))
+          const empty = Object.keys(nextState).length === 0
+          return __internalRouter.resolvePathFromState(empty ? {} : addScope(nextState))
         },
         navigateUrl: __internalRouter.navigateUrl
       },
       router: {
-        navigate: (nextState, options)=> {
-          router.navigate(getUnscopedState(nextState), options)
+        navigate: (nextState, options) => {
+          router.navigate(addScope(nextState), options)
         },
-        state: router.state[scope] || {}
+        state: router.state[scope]
       }
     }
 
-    function getUnscopedState(nextState) {
-      return Object.assign({}, router.state, {[scope]: nextState})
+    function addScope(nextState) {
+      return nextState && Object.assign({}, router.state, {[scope]: nextState})
     }
 
   }
   render() {
     return this.props.children
   }
-}
-
-RouteScope.propTypes = {
-  scope: PropTypes.string
-}
-
-RouteScope.childContextTypes = RouteScope.contextTypes = {
-  __internalRouter: PropTypes.object,
-  router: PropTypes.object
 }

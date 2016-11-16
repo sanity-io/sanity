@@ -1,36 +1,53 @@
-import HttpHash from 'http-hash'
+// @flow
+import type {Node} from './types'
+import {debug} from './utils/debug'
+import arrayify from './utils/arrayify'
 
-export default function resolveStateFromPath(routeNode, path) {
-  const result = {}
-  const hash = HttpHash()
-  hash.set(routeNode.pattern, routeNode)
-  const match = hash.get(path)
-
-  if (!match.handler) {
-    return {}
+function matchPath(node : Node, path : string) : ?{[key: string]: string} {
+  const parts = path.split('/').filter(Boolean)
+  const segmentsLength = node.route.segments.length
+  if (parts.length < segmentsLength) {
+    return null
   }
 
-  Object.assign(result, match.params)
-
-  if (match.splat != null) {
-    // get matching child routes
-    const childRoutes = HttpHash()
-    const childRouteNodes = routeNode.children(match.params)
-    childRouteNodes.forEach(childRouteNode => {
-      const pattern  = (childRouteNode.isScope ? childRouteNode.node : childRouteNode).pattern
-      childRoutes.set(pattern, childRouteNode)
-    })
-    const childMatch = childRoutes.get(match.splat || '/')
-
-    if (childMatch.handler) {
-      const childNode = childMatch.handler
-
-      const childState = childNode.isScope
-        ? {[childNode.name]: resolveStateFromPath(childNode.node, match.splat)}
-        : resolveStateFromPath(childNode, match.splat)
-
-      Object.assign(result, childState)
+  const state = {}
+  const isMatching = node.route.segments.every((segment, i) => {
+    if (segment.type === 'dir') {
+      return segment.name === parts[i]
     }
+    const transform = node.transform && node.transform[segment.name]
+    state[segment.name] = transform ? transform.toState(parts[i]) : parts[i]
+    return true
+  })
+
+  if (!isMatching) {
+    return null
   }
-  return result
+
+  const rest = parts.slice(segmentsLength)
+  let childState = null
+  const children = typeof node.children === 'function' ? arrayify(node.children(state)) : node.children
+  children.some(childNode => {
+    // console.log('----childNode')
+    // console.log(childNode)
+    // console.log('----childNode')
+    childState = matchPath(childNode, rest.join('/'))
+    return childState
+  })
+
+  if (rest.length > 0 && !childState) {
+    return null
+  }
+
+  const mergedState = {...state, ...childState}
+  return node.scope ? {[node.scope]: mergedState} : mergedState
+}
+
+export default function resolveStateFromPath(node : Node, path : string) : ?Object {
+  debug('resolving state from path %s', path)
+
+  const pathMatch = matchPath(node, path.split('?')[0])
+
+  debug('resolved: %o', pathMatch || null)
+  return pathMatch || null
 }

@@ -1,17 +1,16 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import Main from './components/Main'
-import {createRoute, resolveStateFromPath, createScope} from '../src'
+import route from '../src/route'
 import RouterProvider from '../src/components/RouterProvider'
-import {createHistory} from 'history'
+import createHistory from 'history/createBrowserHistory'
+import NotFound from './components/NotFound'
 
-const rootRoute = createRoute('/some/basepath/*', [
-  createScope('product', createRoute('/products/:id/*', [
-    createRoute('/:detailView')
-  ])),
-  createRoute('/users/:userId', params => {
+const router = route('/omg/lol', [
+  route.scope('product', '/products/:id', route('/:detailView')),
+  route('/users/:userId', params => {
     if (params.userId === 'me') {
-      return createRoute('/:profileSection')
+      return route('/:profileSection')
     }
   })
 ])
@@ -28,11 +27,19 @@ function handleNavigate(nextUrl, {replace} = {}) {
 
 function render(location) {
   ReactDOM.render((
-    <RouterProvider router={rootRoute} onNavigate={handleNavigate} state={resolveStateFromPath(rootRoute, location.pathname)} location={location}>
-      <Main />
+    <RouterProvider router={router} onNavigate={handleNavigate} state={router.decode(location.pathname)}>
+      {router.isNotFound(location.pathname) ? <NotFound pathname={location.pathname} /> : <Main />}
     </RouterProvider>
   ), document.getElementById('main'))
 }
+
+if (router.isRoot(location.pathname)) {
+  const basePath = router.getBasePath()
+  if (basePath !== location.pathname) {
+    history.replace(basePath)
+  }
+}
+
 render(document.location)
 history.listen(() => render(document.location))
 

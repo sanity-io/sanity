@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {StateLink, RouteScope} from '../../src'
+import {StateLink, Link, RouteScope} from '../../src/components'
 import Product from './Product'
 import User from './User'
 
@@ -15,7 +15,7 @@ class Main extends React.Component {
             <Product id={router.state.product.id} />
           </RouteScope>
         )}
-          {router.state.userId && <User id={router.state.userId} />}
+        {router.state.userId && <User id={router.state.userId} />}
         <p>
           <StateLink state={{product: {id: 55}}}>Go to product #55</StateLink>
         </p>
@@ -24,6 +24,9 @@ class Main extends React.Component {
         </p>
         <p>
           <StateLink state={{userId: 'me', product: {id: 55}}}>Show both product and profile</StateLink>
+        </p>
+        <p>
+          <Link href={`/foo/bar/${Math.random().toString(32).substring(2)}`}>Invalid</Link>
         </p>
         <p>
           <StateLink toIndex>Back to index</StateLink>
