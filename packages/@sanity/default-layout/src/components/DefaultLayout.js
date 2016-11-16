@@ -18,8 +18,8 @@ class DefaultLayout extends React.Component {
 
   maybeRedirectToFirstTool() {
     const {router} = this.context
-    if (!router.state.tool) {
-      router.navigate({tool: tools[0].name})
+    if (!router.state.tool && tools.length > 0) {
+      router.navigate({tool: tools[0].name}, {replace: true})
     }
   }
 
