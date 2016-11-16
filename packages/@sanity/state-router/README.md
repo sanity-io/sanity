@@ -17,27 +17,27 @@ const router = route('/', [
   route('/:page'),
 ])
 
-router.encode(route, {})
+router.encode({})
 // => '/'
-router.decode(route, '/')
+router.decode('/')
 // => {}
 
-router.encode(route, {productId: 54})
+router.encode({productId: 54})
 // => '/products/54'
 
-router.decode(route, '/products/54')
+router.decode('/products/54')
 // => {productId: 54}
 
-router.encode(route, {userId: 22})
+router.encode({userId: 22})
 // => '/users/22'
 
-router.decode(route, '/users/54')
+router.decode('/users/54')
 // => {userId: 54}
 
-router.encode(route, {page: 'about'})
+router.encode({page: 'about'})
 // => '/about'
 
-router.decode(route, '/about')
+router.decode('/about')
 // => {page: about}
 
 ```
