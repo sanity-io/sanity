@@ -1,14 +1,26 @@
 import React, {PropTypes} from 'react'
 
+import {pick} from 'lodash'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
 import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
+import guessPreviewConfig from './guessPreviewProps'
 
-import fallbackPreviewProps from './fallbackPreviewProps'
+function prepareValue(value, previewConfig) {
+  debugger
+  // todo: validation
+  if (!previewConfig || !previewConfig.fields) {
+    return value
+  }
+  const properties = Array.isArray(previewConfig.fields) ? previewConfig.fields : Object.keys(previewConfig.fields)
 
-const previewMapping = {
+  const valueWithProps = pick(value, properties)
+  return typeof previewConfig.prepare === 'function' ? previewConfig.prepare(valueWithProps) : valueWithProps
+}
+
+const previewComponentMap = {
   default: PreviewComponentDefault,
   card: PreviewComponentCard,
   media: PreviewComponentMedia,
@@ -16,28 +28,25 @@ const previewMapping = {
   inline: PreviewComponentInline
 }
 
-function getOrCall(fnOrVal, ...rest) {
-  return typeof fnOrVal === 'function' ? fnOrVal(...rest) : fnOrVal
-}
-
 export default class DefaultPreview extends React.Component {
 
   static propTypes = {
-    style: PropTypes.oneOf(Object.keys(previewMapping)),
+    style: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
     field: PropTypes.object.isRequired
   };
 
   render() {
     const {style, value, field} = this.props
-    const PreviewComponent = previewMapping.hasOwnProperty(style)
-      ? previewMapping[style]
-      : previewMapping.default
 
-    const previewProps = (field.options && field.options.preview)
-      ? getOrCall(field.options.preview, value)
-      : fallbackPreviewProps(value)
+    const PreviewComponent = previewComponentMap.hasOwnProperty(style)
+      ? previewComponentMap[style]
+      : previewComponentMap.default
 
-    return <PreviewComponent item={previewProps} />
+    const previewConfig = (field.options && field.options.preview)
+      ? field.options.preview
+      : guessPreviewConfig(field, field)
+
+    return <PreviewComponent item={prepareValue(value, previewConfig)} />
   }
 }

@@ -6,6 +6,16 @@ export default {
     {
       name: 'blogpost',
       type: 'object',
+      options: {
+        preview: {
+          fields: ['title', 'image', 'imageUrl'],
+          prepare(document) {
+            return {
+              title: document.title || '',
+            }
+          }
+        }
+      },
       fields: [
         {
           name: 'title',
