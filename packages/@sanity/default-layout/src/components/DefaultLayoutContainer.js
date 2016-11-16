@@ -3,6 +3,7 @@ import DefaultLayout from './DefaultLayout'
 import locationStore from 'part:@sanity/base/location'
 import SanityIntlProvider from 'part:@sanity/base/sanity-intl-provider'
 import LoginWrapper from 'part:@sanity/base/login-wrapper'
+import NotFound from './NotFound'
 import config from 'config:sanity'
 import {RouterProvider} from 'part:@sanity/base/router'
 import rootRouter from '../defaultLayoutRouter'
@@ -36,7 +37,7 @@ class DefaultLayoutContainer extends React.Component {
       <SanityIntlProvider supportedLanguages={supportedLanguages}>
         <LoginWrapper>
           <RouterProvider router={rootRouter} state={rootRouter.decode(location.pathname)} onNavigate={this.handleNavigate}>
-            <DefaultLayout />
+            {rootRouter.isNotFound(location.pathname) ? <NotFound/> : <DefaultLayout />}
           </RouterProvider>
         </LoginWrapper>
       </SanityIntlProvider>
