@@ -34,7 +34,6 @@ class DefaultLayout extends React.Component {
   render() {
     const {router} = this.context
     const projectName = (config.project && config.project.name) || ''
-
     return (
       <div className={styles.defaultLayout}>
 
@@ -43,8 +42,6 @@ class DefaultLayout extends React.Component {
         </a>
 
         <div className={styles.top}>
-
-
           <StateLink toIndex className={styles.companyBranding}>
             <h1 className={CompanyLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
             {

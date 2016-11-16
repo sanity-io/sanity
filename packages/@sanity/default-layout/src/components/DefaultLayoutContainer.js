@@ -27,6 +27,7 @@ class DefaultLayoutContainer extends React.Component {
     const {location} = this.state
     const locale = config.locale || {}
     const supportedLanguages = locale.supportedLanguages || ['en-US']
+
     if (!location) {
       return null
     }
