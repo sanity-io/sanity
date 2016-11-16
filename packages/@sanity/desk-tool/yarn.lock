@@ -113,12 +113,12 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.47.tgz#d9982d455211c5af06e94756ba54e646692127fe"
+"@sanity/base@^0.0.49":
+  version "0.0.49"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.49.tgz#f014cf1a5e86d05d89a53cc70bff27b82fbb6b31"
   dependencies:
     "@sanity/client" "^0.3.5"
-    "@sanity/document-store" "0.0.4"
+    "@sanity/document-store" "0.0.5"
     "@sanity/state-router" "0.0.3"
     history "^2.1.0"
     http-hash "^2.0.0"
@@ -140,7 +140,7 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.3.5", "@sanity/client@^0.3.9":
+"@sanity/client@^0.3.10", "@sanity/client@^0.3.5":
   version "0.3.10"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.10.tgz#3fae6c1e2a4098daa63b469b8419a1d56051aa68"
   dependencies:
@@ -152,9 +152,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/components@^0.0.55":
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.55.tgz#a71489523791230d3ebc27fe28adaca92f940a24"
+"@sanity/components@^0.0.57":
+  version "0.0.57"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.57.tgz#ae51558fd8a3ec1689cd15f0b02b204c433d6338"
   dependencies:
     "@sanity/date-input" "^0.0.4"
     "@sanity/imagetool" "^0.2.1"
@@ -207,9 +207,9 @@
     postcss-simple-extend "^1.0.0"
     react-datepicker "^0.34.0"
 
-"@sanity/document-store@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.4.tgz#64c1c2374590dbe330ea43b67d701442e10688be"
+"@sanity/document-store@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.5.tgz#8d9c2e342427d549bc688822d9696f20ee87164b"
   dependencies:
     nano-pubsub "^1.0.1"
     rxjs "^5.0.0-beta.11"
@@ -221,9 +221,9 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/form-builder@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.40.tgz#7b6ff9b3cf2c0694cfc3aa44ab1ee69fcd77cfd5"
+"@sanity/form-builder@^0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.41.tgz#5bee54cd691696ccee30d212abd2950c650875ff"
   dependencies:
     "@sanity/imagetool" "^0.2.1"
     canvas-to-blob "0.0.0"
