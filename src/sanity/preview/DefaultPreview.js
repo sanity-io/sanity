@@ -9,7 +9,6 @@ import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import guessPreviewConfig from './guessPreviewProps'
 
 function prepareValue(value, previewConfig) {
-  debugger
   // todo: validation
   if (!previewConfig || !previewConfig.fields) {
     return value
