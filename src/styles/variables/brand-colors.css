@@ -37,5 +37,5 @@
 
   --body-bg: var(--brand-white);
 
-  --backdrop-background-color: color(var(--brand-dark2) a(85%));
+  --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
 }
