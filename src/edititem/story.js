@@ -102,6 +102,36 @@ storiesOf('Edit item')
   }
 )
 .addWithInfo(
+  'PopOver (nested)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div style={overflowHidden} id="myScrollContainerId">
+        Things is in the background here.
+        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
+        <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+          Put your form here
+          <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+            Put your form here
+            <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+              Put your form here
+              <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+                Put your form here
+              </EditItemPopOver>
+            </EditItemPopOver>
+          </EditItemPopOver>
+        </EditItemPopOver>
+      </div>
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+.addWithInfo(
   'PopOver (Full Width)',
   `
     The default fieldset is used to gather a collection of fields.
@@ -170,6 +200,43 @@ storiesOf('Edit item')
     role: 'part:@sanity/components/edititem/popover'
   }
 )
+.addWithInfo(
+  'PopOver (position test a lot content)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div style={overflowScroll} id="myScrollContainerId">
+        <Mover>
+          <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+            <h2>{chance.sentence()}</h2>
+            <p>{chance.paragraph({sentences: 5})}</p>
+          </EditItemPopOver>
+        </Mover>
+        <p>{chance.paragraph({sentences: 50})}</p>
+      </div>
+
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+
 .addWithInfo(
   'PopOver (position test Full Width)',
   `

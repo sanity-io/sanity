@@ -64,45 +64,57 @@ export default class EditItemPopOver extends React.Component {
     const rootElement = this._rootElement
     const innerElement = this._innerElement
 
-    if (rootElement && innerElement) {
+    if (!rootElement && !innerElement) {
+      return
+    }
 
-      const rootRects = rootElement.getClientRects()
-      const width = rootRects[0].width
-      const height = rootRects[0].height
-      const left = rootRects[0].left
-      const top = rootRects[0].top
+    const rootRects = rootElement.getClientRects()
+    const width = rootRects[0].width
+    const height = rootRects[0].height
+    const left = rootRects[0].left
+    const top = rootRects[0].top
 
-      // we can use window since we don't support horizontal scrolling
-      // and the backdrop is fixed
-      const windowWidth = window.innerWidth
-      const containerOffsetHeight = this.scrollContainer.offsetHeight
+    // we can use window since we don't support horizontal scrolling
+    // and the backdrop is fixed
+    const windowWidth = window.innerWidth
+    const containerOffsetHeight = this.scrollContainer.offsetHeight
 
-      const padding = 30
+    const padding = 30
 
-      const margin = parseInt(innerElement.style.marginLeft, 10) || 0
-      const scrollTop = this.scrollContainer.scrollTop
+    const margin = parseInt(innerElement.style.marginLeft, 10) || 0
+    const scrollTop = this.scrollContainer.scrollTop
 
-      // Scroll container when there is no space
-      if ((containerOffsetHeight + scrollTop) < (top + height)) {
-        const newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
-        scroll.top(this.scrollContainer, newScrollTop, this.scrollOptions)
+    // Scroll container when there is no space
+    // But we cant scroll more than the height of the element
+    if ((containerOffsetHeight + scrollTop) < (top + height)) {
+      let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+      // If element is to big for screen, scroll top only top of the element
+      if (height > containerOffsetHeight) {
+        newScrollTop = top + scrollTop - (padding * 3)
       }
+      scroll.top(this.scrollContainer, newScrollTop, this.scrollOptions)
+    }
 
-      // Need more bottom space
-      if (this.scrollContainer.scrollHeight < (scrollTop + top + height)) {
-        const extraPaddingBottom = Math.abs(this.scrollContainer.scrollHeight - scrollTop - height - top)
-        this.scrollContainer.style.marginBottom = `${extraPaddingBottom}px`
-        scroll.top(this.scrollContainer, (containerOffsetHeight - top - height - scrollTop) * -1, this.scrollOptions)
-      }
+    // Need more bottom space
+    if (this.scrollContainer.scrollHeight < (scrollTop + top + height)) {
+      const extraPaddingBottom = Math.abs(this.scrollContainer.scrollHeight - scrollTop - height - top)
+      this.scrollContainer.style.marginBottom = `${extraPaddingBottom}px`
+      let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
 
-      // Reposition horizon
-      if ((width + left - margin + padding) > windowWidth) {
-        const diff = windowWidth - width - padding - left + margin
-        innerElement.style.marginLeft = `${diff}px`
-        this._arrowElement.style.transform = `translateX(${diff * -1}px)`
-      } else {
-        this.resetPosition()
+      // If element is to big for screen, scroll top only top of the element
+      if (height > containerOffsetHeight) {
+        newScrollTop = top + scrollTop - (padding * 3)
       }
+      scroll.top(this.scrollContainer, newScrollTop, this.scrollOptions)
+    }
+
+    // Reposition horizon
+    if ((width + left - margin + padding) > windowWidth) {
+      const diff = windowWidth - width - padding - left + margin
+      innerElement.style.marginLeft = `${diff}px`
+      this._arrowElement.style.transform = `translateX(${diff * -1}px)`
+    } else {
+      this.resetPosition()
     }
   }
 
