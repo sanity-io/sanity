@@ -168,8 +168,9 @@ export default class Arr extends React.Component {
   renderEditItemForm(index) {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
+    const actions = [{kind: 'danger', title: 'Remove', handleClick: () => this.handleRemoveItem(index)}]
     return (
-      <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
+      <EditItemPopOver actions={actions} title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
           index={index}
