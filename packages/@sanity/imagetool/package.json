@@ -52,7 +52,7 @@
     "staticr": "^4.0.2"
   },
   "peerDependencies": {
-    "react": "15.3.x"
+    "react": "^15.3"
   },
   "repository": {
     "type": "git",
