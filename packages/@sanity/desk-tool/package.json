@@ -54,8 +54,8 @@
     "zen-observable": "^0.3.0"
   },
   "peerDependencies": {
-    "react": "^15.4.0",
-    "react-dom": "^15.4.0"
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0"
   },
   "repository": {
     "type": "git",
