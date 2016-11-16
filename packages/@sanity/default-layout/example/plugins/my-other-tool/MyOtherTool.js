@@ -1,6 +1,7 @@
 import {route, StateLink} from 'part:@sanity/base/router'
 import React, {PropTypes} from 'react'
-class WithRouter extends React.Component {
+
+class WithRouterState extends React.Component {
   static propTypes = {
     children: PropTypes.func
   }
@@ -13,18 +14,19 @@ class WithRouter extends React.Component {
     return this.props.children(state)
   }
 }
+
 function MyOtherTool(props) {
   return (
     <div>
       <h2>Other Tool, I can have router state</h2>
-      <WithRouter>
+      <WithRouterState>
         {state => (
           <div>
             This is my state:
             <pre>{JSON.stringify(state)}</pre>
           </div>
         )}
-      </WithRouter>
+      </WithRouterState>
       <p>
         <StateLink toIndex>Go to index</StateLink>
       </p>
