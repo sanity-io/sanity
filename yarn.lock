@@ -20,9 +20,9 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.3.5":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.5.tgz#144d943b4f0a8f9f40953df38380f27f1ece3b44"
+"@sanity/client@^0.3.10":
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.10.tgz#3fae6c1e2a4098daa63b469b8419a1d56051aa68"
   dependencies:
     "@sanity/eventsource" "^1.0.0"
     "@sanity/request" "0.0.3"
@@ -68,9 +68,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/state-router@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.0.tgz#2a142f517fb39652b9d9357dcb116d2232e28953"
+"@sanity/state-router@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.1.tgz#002f10b9695ac8cdf35f92f367958e88d01a93b8"
   dependencies:
     lodash "^4.17.2"
 
@@ -435,13 +435,14 @@ babel-plugin-syntax-jsx@^6.3.13, babel-plugin-syntax-jsx@^6.8.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-jsx/-/babel-plugin-syntax-jsx-6.18.0.tgz#0af32a9a6e13ca7a3fd5069e62d7b0f58d0d8946"
 
-babel-plugin-transform-class-properties@^6.18.0:
-  version "6.18.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-class-properties/-/babel-plugin-transform-class-properties-6.18.0.tgz#bc1266a39d4c8726e0bd7b15c56235177e6ede57"
+babel-plugin-transform-class-properties@^6.19.0:
+  version "6.19.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-class-properties/-/babel-plugin-transform-class-properties-6.19.0.tgz#1274b349abaadc835164e2004f4a2444a2788d5f"
   dependencies:
     babel-helper-function-name "^6.18.0"
     babel-plugin-syntax-class-properties "^6.8.0"
     babel-runtime "^6.9.1"
+    babel-template "^6.15.0"
 
 babel-plugin-transform-es2015-arrow-functions@^6.3.13:
   version "6.8.0"
@@ -1289,16 +1290,16 @@ eslint-config-sanity@^1.1.3:
   dependencies:
     eslint-config-bengler "^2.0.0"
 
-eslint-plugin-react@^6.5.0:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-6.5.0.tgz#93f894b6469974304609e59c8983a6a3dc81738c"
+eslint-plugin-react@^6.7.1:
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-6.7.1.tgz#1af96aea545856825157d97c1b50d5a8fb64a5a7"
   dependencies:
     doctrine "^1.2.2"
     jsx-ast-utils "^1.3.3"
 
-eslint@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.9.1.tgz#5a8597706fc6048bc6061ac754d4a211d28f4f5b"
+eslint@^3.10.2:
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.10.2.tgz#c9a10e8bf6e9d65651204778c503341f1eac3ce7"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -1312,7 +1313,7 @@ eslint@^3.9.1:
     file-entry-cache "^2.0.0"
     glob "^7.0.3"
     globals "^9.2.0"
-    ignore "^3.1.5"
+    ignore "^3.2.0"
     imurmurhash "^0.1.4"
     inquirer "^0.12.0"
     is-my-json-valid "^2.10.0"
@@ -1415,6 +1416,17 @@ extsprintf@1.0.2:
 fast-levenshtein@~2.0.4:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz#bd33145744519ab1c36c3ee9f31f08e9079b67f2"
+
+fbjs@^0.8.1:
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.6.tgz#7eb67d6986b2d5007a9b6e92e0e7cb6f75cad290"
+  dependencies:
+    core-js "^1.0.0"
+    isomorphic-fetch "^2.1.1"
+    loose-envify "^1.0.0"
+    object-assign "^4.1.0"
+    promise "^7.1.1"
+    ua-parser-js "^0.7.9"
 
 fbjs@^0.8.4:
   version "0.8.5"
@@ -1776,7 +1788,7 @@ iconv-lite@~0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
 
-ignore@^3.1.5:
+ignore@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.2.0.tgz#8d88f03c3002a0ac52114db25d2c673b0bf1e435"
 
@@ -2031,9 +2043,9 @@ istanbul-lib-hook@^1.0.0-alpha.4:
   dependencies:
     append-transform "^0.3.0"
 
-istanbul-lib-instrument@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/istanbul-lib-instrument/-/istanbul-lib-instrument-1.2.0.tgz#73d5d108ab7568c373fdcb7d01c1d42d565bc8c4"
+istanbul-lib-instrument@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-instrument/-/istanbul-lib-instrument-1.3.0.tgz#19f0a973397454989b98330333063a5b56df0e58"
   dependencies:
     babel-generator "^6.18.0"
     babel-template "^6.16.0"
@@ -2054,9 +2066,9 @@ istanbul-lib-report@^1.0.0-alpha.3:
     rimraf "^2.4.3"
     supports-color "^3.1.2"
 
-istanbul-lib-source-maps@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.0.2.tgz#9e91b0e5ae6ed203f67c69a34e6e98b10bb69a49"
+istanbul-lib-source-maps@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.1.0.tgz#9d429218f35b823560ea300a96ff0c3bbdab785f"
   dependencies:
     istanbul-lib-coverage "^1.0.0-alpha.0"
     mkdirp "^0.5.1"
@@ -2284,10 +2296,6 @@ lodash@^4.0.0, lodash@^4.15.0, lodash@^4.2.0, lodash@^4.3.0:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.4.tgz#01ce306b9bad1319f2a5528674f88297aeb70127"
 
-lodash@^4.17.1:
-  version "4.17.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.1.tgz#e75eaf17a34730c6491d9956f4d81f3a044f01bf"
-
 lodash@^4.17.2:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
@@ -2328,6 +2336,12 @@ md5-o-matic@^0.1.1:
 merge-descriptors@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
+
+merge-source-map@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/merge-source-map/-/merge-source-map-1.0.3.tgz#da1415f2722a5119db07b14c4f973410863a2abf"
+  dependencies:
+    source-map "^0.5.3"
 
 micromatch@^2.1.5, micromatch@^2.3.11:
   version "2.3.11"
@@ -2500,9 +2514,9 @@ number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
 
-nyc@^8.4.0:
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/nyc/-/nyc-8.4.0.tgz#660371c807caef0427fb9b0948f74180624ea6e4"
+nyc@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/nyc/-/nyc-9.0.1.tgz#82775ed5c7f2734595a2c5e7c64f5d7199904db0"
   dependencies:
     archy "^1.0.0"
     arrify "^1.0.1"
@@ -2515,19 +2529,20 @@ nyc@^8.4.0:
     glob "^7.0.6"
     istanbul-lib-coverage "^1.0.0"
     istanbul-lib-hook "^1.0.0-alpha.4"
-    istanbul-lib-instrument "^1.2.0"
+    istanbul-lib-instrument "^1.3.0"
     istanbul-lib-report "^1.0.0-alpha.3"
-    istanbul-lib-source-maps "^1.0.2"
+    istanbul-lib-source-maps "^1.1.0"
     istanbul-reports "^1.0.0"
     md5-hex "^1.2.0"
+    merge-source-map "^1.0.2"
     micromatch "^2.3.11"
     mkdirp "^0.5.0"
     resolve-from "^2.0.0"
     rimraf "^2.5.4"
     signal-exit "^3.0.1"
     spawn-wrap "^1.2.4"
-    test-exclude "^2.1.3"
-    yargs "^6.0.0"
+    test-exclude "^3.2.2"
+    yargs "^6.4.0"
     yargs-parser "^4.0.2"
 
 oauth-sign@~0.8.1:
@@ -3000,9 +3015,13 @@ rc@~1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~1.0.4"
 
-react-dom@^15.3.2:
-  version "15.3.2"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.3.2.tgz#c46b0aa5380d7b838e7a59c4a7beff2ed315531f"
+react-dom@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.0.tgz#6a97a69000966570db48c746bc4b7b0ca50d1534"
+  dependencies:
+    fbjs "^0.8.1"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
 
 react-icon-base@2.0.3:
   version "2.0.3"
@@ -3023,9 +3042,9 @@ react-intl@^2.1.5:
     intl-relativeformat "^1.3.0"
     invariant "^2.1.1"
 
-react@^15.3.2:
-  version "15.3.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.3.2.tgz#a7bccd2fee8af126b0317e222c28d1d54528d09e"
+react@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-15.4.0.tgz#736c1c7c542e8088127106e1f450b010f86d172b"
   dependencies:
     fbjs "^0.8.4"
     loose-envify "^1.1.0"
@@ -3246,9 +3265,15 @@ rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
 
-rxjs@^5.0.0-beta.11, rxjs@^5.0.0-rc.1:
+rxjs@^5.0.0-beta.11:
   version "5.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.1.tgz#9e02b7044da81a2d5e138908d22af77e22d96973"
+  dependencies:
+    symbol-observable "^1.0.1"
+
+rxjs@^5.0.0-rc.3:
+  version "5.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.3.tgz#d8bc390d83277846b2d2afa1acf3c5f4f114a8d5"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -3451,9 +3476,9 @@ tar@~2.2.1:
     fstream "^1.0.2"
     inherits "2"
 
-test-exclude@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-2.1.3.tgz#a8d8968e1da83266f9864f2852c55e220f06434a"
+test-exclude@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-3.2.2.tgz#bce1e739b668c00d71f6cd2c0ef292b8d23c22ae"
   dependencies:
     arrify "^1.0.1"
     micromatch "^2.3.11"
@@ -3678,9 +3703,15 @@ yargs-parser@^4.0.2:
   dependencies:
     camelcase "^3.0.0"
 
-yargs@^6.0.0:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.3.0.tgz#19c6dbb768744d571eb6ebae0c174cf2f71b188d"
+yargs-parser@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-4.1.0.tgz#313df030f20124124aeae8fbab2da53ec28c56d7"
+  dependencies:
+    camelcase "^3.0.0"
+
+yargs@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.4.0.tgz#816e1a866d5598ccf34e5596ddce22d92da490d4"
   dependencies:
     camelcase "^3.0.0"
     cliui "^3.2.0"
@@ -3695,7 +3726,7 @@ yargs@^6.0.0:
     which-module "^1.0.0"
     window-size "^0.2.0"
     y18n "^3.2.1"
-    yargs-parser "^4.0.2"
+    yargs-parser "^4.1.0"
 
 yargs@~3.10.0:
   version "3.10.0"
