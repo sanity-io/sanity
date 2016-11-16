@@ -87,7 +87,7 @@ client.create(doc).then(res => {
 
 `client.create(doc)`
 
-Create a document. Parameter is a plain JS object representing the document.
+Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute in `<schema>.<type>` format. It *may* contain an `_id`, in `<dataset>/<someId>` format.
 
 
 ## Patch/update a document
@@ -99,7 +99,8 @@ client
   .inc({numSold: 1}) // Increment field by count
   .commit() // Perform the patch and return a promise
   .then(updatedBike => {
-    console.log('Hurray, the bike is updated!', updatedBike)
+    console.log('Hurray, the bike is updated! New document:')
+    console.log(updatedBike)
   })
   .catch(err => {
     console.error('Oh no, the update failed: ', err.message)
