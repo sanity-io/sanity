@@ -220,3 +220,5 @@ if (redirectTo) {
 ```
 
 ## License
+
+MIT-licensed
