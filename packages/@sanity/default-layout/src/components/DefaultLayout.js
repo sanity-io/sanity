@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {RouteScope} from '@sanity/state-router'
+import {RouteScope, StateLink} from 'part:@sanity/base/router'
 import config from 'config:sanity'
 import tools from 'all:part:@sanity/base/tool'
 import absolutes from 'all:part:@sanity/base/absolutes'
@@ -16,11 +16,19 @@ class DefaultLayout extends React.Component {
     router: PropTypes.object,
   }
 
-  componentWillMount() {
+  maybeRedirectToFirstTool() {
     const {router} = this.context
     if (!router.state.tool) {
       router.navigate({tool: tools[0].name})
     }
+  }
+
+  componentWillMount() {
+    this.maybeRedirectToFirstTool()
+  }
+
+  componentDidUpdate() {
+    this.maybeRedirectToFirstTool()
   }
 
   render() {
@@ -37,12 +45,12 @@ class DefaultLayout extends React.Component {
         <div className={styles.top}>
 
 
-          <a href="/" className={styles.companyBranding}>
+          <StateLink toIndex className={styles.companyBranding}>
             <h1 className={CompanyLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
             {
               CompanyLogo && <div className={styles.companyLogoContainer}><CompanyLogo projectName={projectName} /></div>
             }
-          </a>
+          </StateLink>
 
           <div className={styles.menu}>
             <Hamburger>
@@ -51,7 +59,6 @@ class DefaultLayout extends React.Component {
             </Hamburger>
           </div>
         </div>
-
 
         <div className={styles.toolContainer}>
           <RouteScope scope={router.state.tool}>

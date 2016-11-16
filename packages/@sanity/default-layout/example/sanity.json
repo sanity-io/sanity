@@ -1,0 +1,38 @@
+{
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "api": {
+    "dataset": "production",
+    "projectId": "foobar"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "my-tool",
+    "my-other-tool"
+  ],
+  "parts": [
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "./Main"
+    },
+    {
+      "implements": "part:@sanity/base/sanity-studio-logo",
+      "path": "./Logo.js"
+    },
+
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "components/DefaultLayoutRouter"
+    },
+    {
+      "implements": "part:@sanity/base/authentication-fetcher",
+      "path": "./authFetcher"
+    },
+    {
+      "implements": "part:@sanity/base/login-dialog",
+      "path": "./LoginDialog"
+    }
+  ]
+}

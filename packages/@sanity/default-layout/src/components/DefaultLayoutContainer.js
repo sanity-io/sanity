@@ -4,15 +4,10 @@ import locationStore from 'part:@sanity/base/location'
 import SanityIntlProvider from 'part:@sanity/base/sanity-intl-provider'
 import LoginWrapper from 'part:@sanity/base/login-wrapper'
 import config from 'config:sanity'
-import {RouterProvider} from '@sanity/state-router'
+import {RouterProvider} from 'part:@sanity/base/router'
 import rootRouter from '../defaultLayoutRouter'
 
 class DefaultLayoutContainer extends React.Component {
-  constructor() {
-    super()
-    this.state = {}
-    this.handleNavigate = this.handleNavigate.bind(this)
-  }
 
   componentWillMount() {
     this.pathSubscription = locationStore
@@ -39,7 +34,7 @@ class DefaultLayoutContainer extends React.Component {
     return (
       <SanityIntlProvider supportedLanguages={supportedLanguages}>
         <LoginWrapper>
-          <RouterProvider router={rootRouter} location={location} onNavigate={this.handleNavigate}>
+          <RouterProvider router={rootRouter} state={rootRouter.decode(location.pathname)} onNavigate={this.handleNavigate}>
             <DefaultLayout />
           </RouterProvider>
         </LoginWrapper>
