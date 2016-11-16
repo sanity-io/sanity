@@ -11,6 +11,7 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
+import guessPreviewFields from './utils/guessPreviewFields'
 
 function mapQueryResultToProps(props) {
   const {result, ...rest} = props
@@ -40,15 +41,46 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(type => ({
   title: dataAspects.getDisplayName(type.name)
 }))
 
-function getTitleKey(type) {
-  return dataAspects.getItemDisplayField(type)
-}
-
 function readListViewSettings() {
   return JSON.parse(window.localStorage.getItem('desk-tool.listview-settings') || '{}')
 }
 function writeListViewSettings(settings) {
   window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
+}
+// Todo: refactor all of this out and keep in a separate package
+function toFieldMap(fields) {
+  if (Array.isArray(fields)) {
+    return fields.reduce((map, fieldName) => {
+      map[fieldName] = fieldName
+      return map
+    }, {})
+  }
+  return fields
+}
+function canonicalizePreviewConfig(type) {
+  if (!type.options || !type.options.preview) {
+    return {
+      fields: guessPreviewFields(type),
+      prepare(doc) {
+        return doc
+      }
+    }
+  }
+  return {
+    ...type.options.preview,
+    fields: toFieldMap(type.options.preview.fields)
+  }
+}
+
+function toSelection(obj) {
+  return Object.keys(obj).map(key => {
+    if (typeof obj[key] === 'undefined') {
+      return null
+    }
+    return `"${key}":${obj[key]}`
+  })
+    .filter(Boolean)
+    .join(',')
 }
 
 export default class SchemaPaneResolver extends React.Component {
@@ -125,15 +157,17 @@ export default class SchemaPaneResolver extends React.Component {
     )
   }
 
-  getDocumentsPane(type) {
-    const selectedTypeQuery = dataAspects.getListQuery({
-      typeName: type,
-      keyForId: '_id',
-      keyForDisplayFieldName: getTitleKey(type)
-    })
+  getDocumentsPane(typeName) {
+    const type = schema.types.find(t => t.name === typeName)
+    const previewConfig = canonicalizePreviewConfig(type)
+
+    const selection = `"_id": _id,${toSelection(previewConfig.fields)}
+    `
+
+    const query = `${schema.name}.${type.name} {${selection}}`
 
     return (
-      <QueryContainer query={selectedTypeQuery} mapFn={mapQueryResultToProps}>
+      <QueryContainer query={query} mapFn={mapQueryResultToProps}>
         <Pane
           contentType="documents"
           type={type}
