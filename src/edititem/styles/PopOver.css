@@ -65,7 +65,7 @@
   top: 0;
   left: 0;
   display: block;
-  pointer-events: none;
+  cursor: default;
 
   @media (--max-screen-medium) {
     display: none;

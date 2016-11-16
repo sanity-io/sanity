@@ -57,7 +57,7 @@ export default class EditItemPopOver extends React.Component {
   }
 
   handleClick(event) {
-    event.stopPropagation()
+    // event.stopPropagation()
   }
 
   handleMouseDown(event) {
@@ -154,15 +154,15 @@ export default class EditItemPopOver extends React.Component {
       this.initialScrollTop = this.scrollContainer.scrollTop
       this.handleResize()
       window.addEventListener('resize', this.handleResize)
-      window.addEventListener('keydown', this.handleKeyDown, false)
     }
+    window.addEventListener('keydown', this.handleKeyDown, true)
   }
 
   componentWillUnmount() {
     if (this.scrollContainer && this.initialScrollTop) {
       scroll.top(this.scrollContainer, this.initialScrollTop, this.scrollOptions)
     }
-    window.removeEventListener('keydown', this.handleKeyDown, false)
+    window.removeEventListener('keydown', this.handleKeyDown, true)
     window.removeEventListener('resize', this.handleResize)
   }
 
@@ -177,11 +177,21 @@ export default class EditItemPopOver extends React.Component {
     this._arrowElement = element
   }
 
-  handleBackdropClick = () => {
+  handleBackdropClick = event => {
+    event.stopPropagation()
+    event.preventDefault()
     this.handleClose()
   }
 
+  handleBackdropMouseDown = event => {
+    event.stopPropagation()
+    event.preventDefault()
+  }
+
   handleInnerClick = event => {
+    event.stopPropagation()
+  }
+  handleInnerMouseDown = event => {
     event.stopPropagation()
   }
 
@@ -193,8 +203,8 @@ export default class EditItemPopOver extends React.Component {
         onClick={this.handleClick}
         ref={this.setRootElement}
       >
-        <div className={styles.overlay} onClick={this.handleBackdropClick} />
-        <div className={styles.inner} ref={this.setInnerElement} onClick={this.handleInnerClick}>
+        <div className={styles.overlay} onClick={this.handleBackdropClick} onMouseDown={this.handleBackdropMouseDown} />
+        <div className={styles.inner} ref={this.setInnerElement} onClick={this.handleInnerClick} onMouseDown={this.handleInnerMouseDown}>
 
           <div className={styles.arrow} ref={this.setArrowElement} />
 
