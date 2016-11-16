@@ -4,6 +4,7 @@ import {IntlWrapper} from 'part:@sanity/base/locale/formatters'
 
 import {resolveLanguage} from 'part:@sanity/base/language-resolver'
 import messageFetcher from 'part:@sanity/base/locale-message-fetcher'
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 class SanityIntlProvider extends React.Component {
 
@@ -59,7 +60,7 @@ class SanityIntlProvider extends React.Component {
     }
 
     if (!messages) {
-      return <div>Loading locale messages...</div>
+      return <Spinner fullscreen message="Loading locale messages..." />
     }
 
     return (
