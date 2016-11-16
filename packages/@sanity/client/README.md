@@ -98,8 +98,8 @@ client
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
   .commit() // Perform the patch and return a promise
-  .then(() => {
-    console.log('Hurray, the bike is updated!')
+  .then(updatedBike => {
+    console.log('Hurray, the bike is updated!', updatedBike)
   })
   .catch(err => {
     console.error('Oh no, the update failed: ', err.message)
@@ -108,7 +108,7 @@ client
 
 `client.patch(docId).set(partialDoc).inc({key: value}).commit()`
 
-Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`.
+Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`. Returns the updated object.
 
 
 ## Delete a document
