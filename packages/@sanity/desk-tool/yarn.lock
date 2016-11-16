@@ -113,21 +113,21 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@0.1.0-beta.0":
-  version "0.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.0-beta.0.tgz#0c6979816f6e131804502f0b6e3d66c3d93cdecf"
+"@sanity/base@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.0.tgz#225680449fa0cb568887387085e3a186ee3c08e2"
   dependencies:
-    "@sanity/client" "^0.3.5"
+    "@sanity/client" "^0.3.10"
     "@sanity/document-store" "0.0.5"
-    "@sanity/state-router" "^0.2.0"
+    "@sanity/state-router" "^0.2.1"
     history "^2.1.0"
     http-hash "^2.0.0"
     in-publish "^2.0.0"
-    lodash "^4.17.1"
+    lodash "^4.17.2"
     postcss-cssnext "^2.8.0"
     react-icons "^2.2.1"
     react-intl "^2.1.5"
-    rxjs "^5.0.0-rc.1"
+    rxjs "^5.0.0-rc.3"
 
 "@sanity/check@^0.0.2":
   version "0.0.2"
@@ -140,7 +140,7 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.3.10", "@sanity/client@^0.3.5":
+"@sanity/client@^0.3.10":
   version "0.3.10"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.10.tgz#3fae6c1e2a4098daa63b469b8419a1d56051aa68"
   dependencies:
@@ -221,9 +221,9 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/form-builder@^0.0.41":
-  version "0.0.41"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.41.tgz#5bee54cd691696ccee30d212abd2950c650875ff"
+"@sanity/form-builder@^0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.42.tgz#ad6f2af9e18fa4534c6648bc0784ea9dc86516c0"
   dependencies:
     "@sanity/imagetool" "^0.2.1"
     canvas-to-blob "0.0.0"
@@ -323,9 +323,9 @@
     webpack-dev-middleware "^1.7.0"
     webpack-hot-middleware "^2.12.2"
 
-"@sanity/state-router@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.0.tgz#2a142f517fb39652b9d9357dcb116d2232e28953"
+"@sanity/state-router@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.1.tgz#002f10b9695ac8cdf35f92f367958e88d01a93b8"
   dependencies:
     lodash "^4.17.2"
 
@@ -3431,7 +3431,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.16.6, lodash@^4.17.1, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
+lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.16.6, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
@@ -5041,7 +5041,7 @@ rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
 
-rxjs@^5.0.0-beta.11, rxjs@^5.0.0-rc.1:
+rxjs@^5.0.0-beta.11, rxjs@^5.0.0-rc.3:
   version "5.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.3.tgz#d8bc390d83277846b2d2afa1acf3c5f4f114a8d5"
   dependencies:
