@@ -169,9 +169,9 @@ export default class Document {
     return false
   }
 
-  // Returns true if there are no unresolved mutations between HEAD and EDGE, meaning HEAD and EDGE are
-  // identical. There might still be unresolved incoming mutations meaning we don't necessarily believe
-  // HEAD is up to date with the server state.
+  // Returns true if there are unresolved mutations between HEAD and EDGE, meaning we have
+  // mutations that are still waiting to be either submitted, or to be confirmed by the
+  // server.
   anyUnresolvedMutations() {
     return this.submitted.length > 0 || this.pending.length > 0
   }
