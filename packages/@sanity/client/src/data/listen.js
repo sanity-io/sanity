@@ -30,7 +30,7 @@ module.exports = function listen(query, params, opts = {}) {
   const dataset = validators.hasDataset(this.clientConfig)
   const uri = this.getUrl(`/data/listen/${dataset}${qs}`)
   const token = this.clientConfig.token
-  const listenFor = options.events ? options.events : ['document']
+  const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
 
   const es = new EventSource(uri, assign(
@@ -40,17 +40,20 @@ module.exports = function listen(query, params, opts = {}) {
 
   return new Observable(observer => {
     es.addEventListener('error', onError, false)
+    es.addEventListener('channelError', onChannelError, false)
     es.addEventListener('disconnect', onDisconnect, false)
     listenFor.forEach(type => es.addEventListener(type, onMessage, false))
 
-    function onError(err) {
-      if (err.data) {
-        observer.error(cooerceError(err))
-      } else if (es.readyState === EventSource.CLOSED) {
+    function onError() {
+      if (es.readyState === EventSource.CLOSED) {
         observer.complete()
       } else if (es.readyState === EventSource.CONNECTING) {
         emitReconnect()
       }
+    }
+
+    function onChannelError(err) {
+      observer.error(cooerceError(err))
     }
 
     function onMessage(evt) {
@@ -68,6 +71,7 @@ module.exports = function listen(query, params, opts = {}) {
     function unsubscribe() {
       listenFor.forEach(type => removeListener(es, type, onMessage))
       removeListener(es, 'error', onError)
+      removeListener(es, 'channelError', onChannelError)
       removeListener(es, 'disconnect', onDisconnect)
       es.close()
     }
@@ -99,5 +103,5 @@ function cooerceError(err) {
   const evt = parseEvent(err)
   return evt instanceof Error
     ? evt
-    : new Error(evt.error || 'Unknown listener error')
+    : new Error(evt.error || evt.message || 'Unknown listener error')
 }
