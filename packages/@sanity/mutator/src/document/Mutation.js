@@ -1,38 +1,76 @@
 // @flow
 
-import Operation from './Operation'
+import {Patcher} from '../patch'
 
 // A mutation describing a number of operations on a single document
+// This should be considered an immutable structure. Mutations are compiled
+// on first application, and any changes in properties will not effectively
+// change its behavior
 export default class Mutation {
-  operations : Operation[]
-  fromRev : string
-  toRev : string
-  documentId : string
-
-  constructor(documentId : string) {
-    this.operations = []
-    this.documentId = documentId
+  params : {
+    transactionId : string,
+    transition : string,
+    identity : string,
+    previousRev : string,
+    resultRev : string,
+    mutations : Object
+  }
+  compiled : Function
+  constructor(options : Object) {
+    this.params = options
   }
 
-  setOperations(operations : Operation[]) {
-    if (operations.find(op => op.documentId != this.documentId)) {
-      throw new Error('All operations in a Mutation must be on the same document')
-    }
-    this.operations = operations
+  get transactionId() : string {
+    return this.params.transactionId
   }
-
-  static fromNotification(notification) {
-    const operations = notification.mutations.map(mut => {
-      return new Operation(mut)
+  get transition() : string {
+    return this.params.transition
+  }
+  get identity() : string {
+    return this.params.identity
+  }
+  get previousRev() : string {
+    return this.params.previousRev
+  }
+  get resultRev() : string {
+    return this.params.resultRev
+  }
+  get mutations() : Object {
+    return this.params.mutations
+  }
+  // Compiles all mutations into a handy function
+  compile() {
+    const operations = []
+    this.mutations.forEach(mutation => {
+      if (mutation.create) {
+        operations.push(() => mutation.create)
+      } else if (mutation.delete) {
+        operations.push(() => null)
+      } else if (mutation.patch) {
+        const patch = new Patcher(mutation.patch)
+        operations.push(doc => patch.apply(doc))
+      } else {
+        throw new Error(`Unsupported mutation ${JSON.stringify(mutation, null, 2)}`)
+      }
     })
-    if (operations.length == 0) {
-      return null
+    const prevRev = this.previousRev
+    const rev = this.resultRev || this.transactionId
+    this.compiled = doc => {
+      if (prevRev && prevRev != doc._rev) {
+        throw new Error(`Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`)
+      }
+      const result = operations.reduce((revision, operation) => operation(revision), doc)
+      result._rev = rev
+      return result
     }
-    const documentId = operations[0].documentId
-    const result = new Mutation(documentId)
-    result.setOperations(operations)
-    result.fromRev = notification.fromRev
-    result.toRev = notification.toRev
-    return result
+  }
+  apply(document : Object) : Object {
+    if (!this.compiled) {
+      this.compile()
+    }
+    return this.compiled(document)
+  }
+  static applyAll(document : Object, mutations : Array<Mutation>) : Object {
+    return mutations.reduce((doc, mutation) => mutation.apply(doc), document)
   }
 }
