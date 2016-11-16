@@ -12,6 +12,7 @@
     "test": "sanity-check",
     "lint": "eslint --quiet .",
     "compile": "babel --out-dir lib/ src/ --copy-files",
+    "compile:watch": "npm run compile -- --watch",
     "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish"

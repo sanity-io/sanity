@@ -2,6 +2,7 @@
 import React, {PropTypes} from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import DefaultButton from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
 import {unprefixType} from '../utils/unprefixType'
 import dataAspects from '../utils/dataAspects'
@@ -17,6 +18,9 @@ function createFormBuilderStateFrom(serialized, typeName) {
 const noop = () => {}
 
 export default class EditorPane extends React.PureComponent {
+  static contextTypes = {
+    router: PropTypes.object
+  };
   static propTypes = {
     documentId: PropTypes.string,
     onCreated: PropTypes.func,
@@ -37,6 +41,7 @@ export default class EditorPane extends React.PureComponent {
 
     this.handleChange = this.handleChange.bind(this)
     this.handleIncomingPatch = this.handleIncomingPatch.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
     this.subscriptions = []
   }
 
@@ -64,7 +69,17 @@ export default class EditorPane extends React.PureComponent {
         this.handleIncomingPatch(event.patch)
       })
 
-    this.subscriptions = [initialSubscription, updateSubscription]
+    const deleteSubscription = byId
+      .filter(event => event.type === 'delete')
+      .subscribe(event => {
+        this.handleIncomingDelete(event)
+      })
+
+    this.subscriptions = [
+      initialSubscription,
+      updateSubscription,
+      deleteSubscription
+    ]
   }
 
   tearDownSubscriptions() {
@@ -86,7 +101,6 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleChange(event) {
-
     const id = this.props.documentId
 
     if (event.patch.local) {
@@ -94,6 +108,17 @@ export default class EditorPane extends React.PureComponent {
       return
     }
     this.update(id, event.patch)
+  }
+
+  handleDelete() {
+    const id = this.props.documentId
+    this.setState({progress: 'Deleting…'})
+
+    this.subscriptions.push(
+      documentStore
+        .delete(id)
+        .subscribe(result => this.setState({progress: null}))
+    )
   }
 
   update(id, patch) {
@@ -112,6 +137,14 @@ export default class EditorPane extends React.PureComponent {
       nextValue = nextValue.patch(fbPatch)
     })
     this.setState({value: nextValue})
+  }
+
+  handleIncomingDelete(event) {
+    const {router} = this.context
+    router.navigate({
+      ...router.state,
+      selectedDocumentId: undefined
+    }, {replace: true})
   }
 
   render() {
@@ -137,6 +170,10 @@ export default class EditorPane extends React.PureComponent {
             validation={validation}
             onChange={this.handleChange}
           />
+
+          <DefaultButton onClick={this.handleDelete} kind="danger">
+            Delete
+          </DefaultButton>
         </form>
       </div>
     )
