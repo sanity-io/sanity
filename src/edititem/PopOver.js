@@ -13,7 +13,11 @@ export default class EditItemPopOver extends React.Component {
     className: PropTypes.string,
     onClose: PropTypes.func,
     isCreatingNewItem: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.object),
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      kind: PropTypes.string,
+      title: PropTypes.string,
+      handleClick: PropTypes.func
+    })),
     fullWidth: PropTypes.bool,
     onNeedScroll: PropTypes.func,
     scrollContainer: PropTypes.node,
@@ -218,7 +222,7 @@ export default class EditItemPopOver extends React.Component {
                   return (
                     <Button
                       key={i}
-                      onClick={this.handleActionClick}
+                      onClick={action.handleClick}
                       data-action-index={i}
                       kind={action.kind}
                       className={styles[`button_${action.kind}`] || styles.button}
