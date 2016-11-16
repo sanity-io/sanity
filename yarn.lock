@@ -32,9 +32,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/document-store@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.4.tgz#64c1c2374590dbe330ea43b67d701442e10688be"
+"@sanity/document-store@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.5.tgz#8d9c2e342427d549bc688822d9696f20ee87164b"
   dependencies:
     nano-pubsub "^1.0.1"
     rxjs "^5.0.0-beta.11"
@@ -68,12 +68,11 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/state-router@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.0.3.tgz#8565d1a28520d81f01f61f374b35829c75c564b7"
+"@sanity/state-router@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.0.tgz#2a142f517fb39652b9d9357dcb116d2232e28953"
   dependencies:
-    http-hash "^2.0.0"
-    lodash "^4.15.0"
+    lodash "^4.17.2"
 
 abbrev@1:
   version "1.0.9"
@@ -2288,6 +2287,10 @@ lodash@^4.0.0, lodash@^4.15.0, lodash@^4.2.0, lodash@^4.3.0:
 lodash@^4.17.1:
   version "4.17.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.1.tgz#e75eaf17a34730c6491d9956f4d81f3a044f01bf"
+
+lodash@^4.17.2:
+  version "4.17.2"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
 longest@^1.0.1:
   version "1.0.1"
