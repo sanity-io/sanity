@@ -28,7 +28,7 @@
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.0.49",
+    "@sanity/base": "0.1.0-beta.0",
     "@sanity/check": "^0.0.2",
     "@sanity/client": "^0.3.10",
     "@sanity/components": "^0.0.57",
@@ -37,24 +37,25 @@
     "babel-eslint": "^7.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-class-properties": "^6.18.0",
-    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-plugin-transform-object-rest-spread": "^6.19.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
-    "eslint": "^3.10.1",
+    "eslint": "^3.10.2",
     "eslint-config-sanity": "^1.1.3",
     "eslint-plugin-react": "^6.7.1",
     "faker": "^3.1.0",
     "history": "^4.4.0",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.8.0",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
-    "rimraf": "^2.5.4"
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0",
+    "rimraf": "^2.5.4",
+    "zen-observable": "^0.3.0"
   },
   "peerDependencies": {
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0"
   },
   "repository": {
     "type": "git",

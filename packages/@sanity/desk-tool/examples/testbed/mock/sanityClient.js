@@ -1,5 +1,6 @@
 import {range} from 'lodash'
 import {Patch} from '@sanity/client'
+import Observable from 'zen-observable'
 
 function generateId(n) {
   return ((n + 1) / 1.1111111111111).toString(32).substring(2)
@@ -79,6 +80,11 @@ export default {
   },
   patch(id, operations) {
     return new Patch(id, operations, this)
+  },
+  listen() {
+    return new Observable(observer => {
+
+    })
   },
   mutate(spec) {
     return Promise.resolve(DB.patch(spec.patch))

@@ -1,9 +1,9 @@
 import React from 'react'
 import deskTool from '../../src'
-import {RouterProvider} from 'part:@sanity/base/router'
+import {route, RouterProvider, RouteScope} from 'part:@sanity/base/router'
 import createHistory from 'history/createBrowserHistory'
 
-const router = deskTool.router
+const router = route('/example', route.scope('desktool', '/', deskTool.router))
 const DeskTool = deskTool.component
 const history = createHistory()
 
@@ -18,6 +18,14 @@ function handleNavigate(path, options = {}) {
 function readLocation() {
   return {pathname: document.location.pathname}
 }
+
+function checkRedirect(location) {
+  const redirect = router.getRedirectBase(location.pathname)
+  if (redirect) {
+    handleNavigate(redirect, {replace: true})
+  }
+}
+checkRedirect(readLocation())
 
 export default class DeskToolTestBed extends React.Component {
   state = {location: readLocation()}
@@ -38,9 +46,15 @@ export default class DeskToolTestBed extends React.Component {
   }
 
   render() {
+    const {location} = this.state
+    if (router.isNotFound(location.pathname)) {
+      return <div>Page not found</div>
+    }
     return (
-      <RouterProvider location={this.state.location} router={router} onNavigate={handleNavigate}>
-        <DeskTool />
+      <RouterProvider state={router.decode(location.pathname)} router={router} onNavigate={handleNavigate}>
+        <RouteScope scope="desktool">
+          <DeskTool />
+        </RouteScope>
       </RouterProvider>
     )
   }

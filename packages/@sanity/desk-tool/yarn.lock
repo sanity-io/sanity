@@ -113,13 +113,13 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.0.49":
-  version "0.0.49"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.49.tgz#f014cf1a5e86d05d89a53cc70bff27b82fbb6b31"
+"@sanity/base@0.1.0-beta.0":
+  version "0.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.0-beta.0.tgz#0c6979816f6e131804502f0b6e3d66c3d93cdecf"
   dependencies:
     "@sanity/client" "^0.3.5"
     "@sanity/document-store" "0.0.5"
-    "@sanity/state-router" "0.0.3"
+    "@sanity/state-router" "^0.2.0"
     history "^2.1.0"
     http-hash "^2.0.0"
     in-publish "^2.0.0"
@@ -323,12 +323,11 @@
     webpack-dev-middleware "^1.7.0"
     webpack-hot-middleware "^2.12.2"
 
-"@sanity/state-router@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.0.3.tgz#8565d1a28520d81f01f61f374b35829c75c564b7"
+"@sanity/state-router@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.0.tgz#2a142f517fb39652b9d9357dcb116d2232e28953"
   dependencies:
-    http-hash "^2.0.0"
-    lodash "^4.15.0"
+    lodash "^4.17.2"
 
 "@sanity/storybook@^0.0.9":
   version "0.0.9"
@@ -827,7 +826,16 @@ babel-plugin-transform-async-to-generator@^6.16.0, babel-plugin-transform-async-
     babel-plugin-syntax-async-functions "^6.8.0"
     babel-runtime "^6.0.0"
 
-babel-plugin-transform-class-properties@^6.18.0, babel-plugin-transform-class-properties@^6.9.1:
+babel-plugin-transform-class-properties@^6.19.0:
+  version "6.19.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-class-properties/-/babel-plugin-transform-class-properties-6.19.0.tgz#1274b349abaadc835164e2004f4a2444a2788d5f"
+  dependencies:
+    babel-helper-function-name "^6.18.0"
+    babel-plugin-syntax-class-properties "^6.8.0"
+    babel-runtime "^6.9.1"
+    babel-template "^6.15.0"
+
+babel-plugin-transform-class-properties@^6.9.1:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-class-properties/-/babel-plugin-transform-class-properties-6.18.0.tgz#bc1266a39d4c8726e0bd7b15c56235177e6ede57"
   dependencies:
@@ -1044,7 +1052,14 @@ babel-plugin-transform-flow-strip-types@^6.3.13:
     babel-plugin-syntax-flow "^6.18.0"
     babel-runtime "^6.0.0"
 
-babel-plugin-transform-object-rest-spread@^6.16.0, babel-plugin-transform-object-rest-spread@6.16.0:
+babel-plugin-transform-object-rest-spread@^6.19.0:
+  version "6.19.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-object-rest-spread/-/babel-plugin-transform-object-rest-spread-6.19.0.tgz#f6ac428ee3cb4c6aa00943ed1422ce813603b34c"
+  dependencies:
+    babel-plugin-syntax-object-rest-spread "^6.8.0"
+    babel-runtime "^6.0.0"
+
+babel-plugin-transform-object-rest-spread@6.16.0:
   version "6.16.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-object-rest-spread/-/babel-plugin-transform-object-rest-spread-6.16.0.tgz#db441d56fffc1999052fdebe2e2f25ebd28e36a9"
   dependencies:
@@ -2184,7 +2199,7 @@ eslint-plugin-react@^6.7.1:
     doctrine "^1.2.2"
     jsx-ast-utils "^1.3.3"
 
-eslint@^3.10.1:
+eslint@^3.10.2:
   version "3.10.2"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.10.2.tgz#c9a10e8bf6e9d65651204778c503341f1eac3ce7"
   dependencies:
@@ -2375,7 +2390,7 @@ fastparse@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.1.tgz#d1e2643b38a94d7583b479060e6c4affc94071f8"
 
-fbjs@^0.8.4:
+fbjs@^0.8.1, fbjs@^0.8.4:
   version "0.8.6"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.6.tgz#7eb67d6986b2d5007a9b6e92e0e7cb6f75cad290"
   dependencies:
@@ -3416,7 +3431,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.16.6, lodash@^4.17.1, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
+lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.16.6, lodash@^4.17.1, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1, lodash@4.x.x:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
@@ -4627,6 +4642,14 @@ react-dom@^15.3.2:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.3.2.tgz#c46b0aa5380d7b838e7a59c4a7beff2ed315531f"
 
+react-dom@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.0.tgz#6a97a69000966570db48c746bc4b7b0ca50d1534"
+  dependencies:
+    fbjs "^0.8.1"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
+
 react-draggable@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-2.2.2.tgz#80932da5ad81795bdfd141e846d7a9309680e270"
@@ -4747,6 +4770,14 @@ react-transform-hmr@^1.0.3:
 react@^15.3.1, react@^15.3.2:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.3.2.tgz#a7bccd2fee8af126b0317e222c28d1d54528d09e"
+  dependencies:
+    fbjs "^0.8.4"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
+
+react@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-15.4.0.tgz#736c1c7c542e8088127106e1f450b010f86d172b"
   dependencies:
     fbjs "^0.8.4"
     loose-envify "^1.1.0"
