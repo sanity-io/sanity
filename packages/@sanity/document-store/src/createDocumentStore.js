@@ -1,7 +1,6 @@
 const {Observable} = require('rxjs')
 const createCache = require('./utils/createCache')
 const canonicalize = require('./utils/canonicalize')
-
 const Record = require('./Record')
 
 const identity = val => val
@@ -13,6 +12,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     byId: canonicalize(identity, serverConnection.byId),
     query: canonicalize(identity, serverConnection.query),
     update: serverConnection.update,
+    delete: serverConnection.delete,
   }
 
   return {
@@ -20,7 +20,8 @@ module.exports = function createDocumentStore({serverConnection}) {
     byIds,
     query,
     create,
-    update
+    update,
+    delete: deleteDoc,
   }
 
   function update(documentId, patch) {
@@ -31,6 +32,16 @@ module.exports = function createDocumentStore({serverConnection}) {
       record.publish({type: 'mutation', origin: 'client', patch: patch})
     }
     return patch.local ? Observable.of({ok: true}) : server.update(documentId, patch)
+  }
+
+  function deleteDoc(documentId) {
+    const record = RECORDS_CACHE.get(documentId)
+    if (record) {
+      record.publish({type: 'delete', origin: 'client'})
+      RECORDS_CACHE.remove(documentId)
+    }
+
+    return server.delete(documentId)
   }
 
   function byId(documentId) {
@@ -60,6 +71,7 @@ module.exports = function createDocumentStore({serverConnection}) {
   function query(_query, params) {
     return Observable.from(serverConnection.query(_query, params))
   }
+
   function create(document) {
     return Observable.from(serverConnection.create(document))
   }
