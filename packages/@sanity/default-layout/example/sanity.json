@@ -21,7 +21,6 @@
       "implements": "part:@sanity/base/sanity-studio-logo",
       "path": "./Logo.js"
     },
-
     {
       "implements": "part:@sanity/base/root",
       "path": "components/DefaultLayoutRouter"

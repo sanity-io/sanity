@@ -4,12 +4,12 @@ import React from 'react'
 function MyTool(props) {
   return (
     <div>
-      <h2>ZMy ZTool</h2>
+      <h2>My Tool</h2>
     </div>
   )
 }
 export default {
-  name: 'ztool',
+  name: 'my-tool',
   icon: () => <div/>,
   router: route('/'),
   component: MyTool
