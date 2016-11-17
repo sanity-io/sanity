@@ -39,7 +39,7 @@
     "@sanity/base": "^0.1.0",
     "@sanity/check": "^0.0.2",
     "@sanity/cli": "^0.1.11",
-    "@sanity/components": "^0.0.50",
+    "@sanity/components": "^0.0.57",
     "@sanity/core": "^0.0.7",
     "@sanity/plugin-loader": "^0.0.3",
     "@sanity/server": "^0.0.14",
