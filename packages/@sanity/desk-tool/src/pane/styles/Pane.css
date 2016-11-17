@@ -5,6 +5,7 @@
   float: left;
   height: 100%;
   position: relative;
+  max-width: 25em;
 
   @media (--screen-medium) {
     &:before {
@@ -30,12 +31,6 @@
 
 .isInactive {
   composes: root;
-}
-
-.contentType--documents {
-  @media (--screen-medium) {
-    min-width: 10em;
-  }
 }
 
 .listContainer {
