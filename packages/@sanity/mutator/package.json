@@ -36,6 +36,7 @@
     "eslint-config-bengler": "^2.0.0",
     "eslint-plugin-flowtype-errors": "^1.4.1",
     "eslint-plugin-import": "^2.0.1",
+    "rimraf": "^2.5.4",
     "tap": "^7.0.0"
   },
   "repository": {
