@@ -83,11 +83,6 @@ export default class ImmutableAccessor {
   getRaw(key : string) : any {
     return this.getter()[key]
   }
-  // The key exists and the value is not null
-  isSet(key : string) : bool {
-    const value = this.getRaw(key)
-    return value !== null && typeof value != 'undefined'
-  }
   getIndexRaw(i : number) : any {
     return this.getter()[i]
   }
