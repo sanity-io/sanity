@@ -1,23 +1,11 @@
 import React, {PropTypes} from 'react'
 
-import {pick} from 'lodash'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
 import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
-import guessPreviewConfig from './guessPreviewProps'
-
-function prepareValue(value, previewConfig) {
-  // todo: validation
-  if (!previewConfig || !previewConfig.fields) {
-    return value
-  }
-  const properties = Array.isArray(previewConfig.fields) ? previewConfig.fields : Object.keys(previewConfig.fields)
-
-  const valueWithProps = pick(value, properties)
-  return typeof previewConfig.prepare === 'function' ? previewConfig.prepare(valueWithProps) : valueWithProps
-}
+import {canonicalizePreviewConfig, prepareValue} from './utils'
 
 const previewComponentMap = {
   default: PreviewComponentDefault,
@@ -42,9 +30,8 @@ export default class DefaultPreview extends React.Component {
       ? previewComponentMap[style]
       : previewComponentMap.default
 
-    const previewConfig = (field.options && field.options.preview)
-      ? field.options.preview
-      : guessPreviewConfig(field, field)
+    // todo: do this at schema parse time instead
+    const previewConfig = canonicalizePreviewConfig(field)
 
     return <PreviewComponent item={prepareValue(value, previewConfig)} />
   }
