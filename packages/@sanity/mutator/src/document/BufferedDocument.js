@@ -8,30 +8,28 @@ import Mutation from './Mutation'
 
 class Commit {
   mutations : mutations
+  tries : number
   constructor(mutations) {
-    this.mutation = mutation
+    this.mutations = mutations
+    this.tries = 0
   }
   apply(doc : Object) : Object {
     return Mutation.applyAll(doc, this.mutations)
   }
   squash(doc : Object) {
-    result = Mutation.squash(doc, this.mutations)
+    const result = Mutation.squash(doc, this.mutations)
     result.assignRandomTransactionId()
     return result
   }
 }
 
 export default class BufferedDocument {
+  // The Document we are wrapping
   document : Document
+  // The Document with local changes applied
   LOCAL : Object
-  // The single mutation that is currently trying to be committed. Not part of the rebase chain since this is
-  // also represented in the outgoing set until it is committed
-  pending : Mutation
-  // When we commit mutations, always push the transaction id to this array so we can recognize own mutations
-  // and ignore them
-  ownMutationTxnIds : Array<string>
-  // Groups of mutations that are to be committed. Each set represents one call to commit()
-  outgoing : Array<Commit>
+  // Commits that are waiting to be delivered to the server
+  commits : Array<Commit>
   // Local mutations that are not scheduled to be committed yet
   mutations : Array<Mutation>
   onMutation : Function
@@ -46,6 +44,7 @@ export default class BufferedDocument {
     this.commits = []
   }
 
+  // Add a change to the buffer
   add(mutation : Mutation) {
     this.mutations.push(mutation)
     this.LOCAL = mutation.apply(this.LOCAL)
@@ -58,12 +57,25 @@ export default class BufferedDocument {
     }
   }
 
-  commit() {
-    this.outgoing.push(new Commit(this.mutations))
-    this.mutations = []
+  // Call when a mutation arrives from Sanity
+  arrive(mutation : Mutation) {
+    return this.document.arrive(mutation)
   }
 
-  // Takes care of submitting the commits, will keep running as long as there are commits to be committed
+  // Submit all mutations in the buffer to be committed
+  commit() {
+    // Anything to commit?
+    if (this.mutations.length == 0) {
+      return
+    }
+    this.commits.push(new Commit(this.mutations))
+    this.mutations = []
+    this.performCommits()
+  }
+
+  // Starts the committer that will try to committ all staged commits to the database
+  // by calling the commitHandler. Will keep running until all commits are successfully
+  // committed.
   performCommits() {
     if (!this.commitHandler) {
       throw new Error('No commitHandler configured for this BufferedDocument')
@@ -75,6 +87,7 @@ export default class BufferedDocument {
     this._cycleCommitter()
   }
 
+  // TODO: Error handling, right now retries after every error,
   _cycleCommitter() {
     if (this.commits.length == 0) {
       this.committerRunning = false
@@ -93,9 +106,11 @@ export default class BufferedDocument {
       },
       failure: () => {
         // Re stage commit
+        commit.tries += 1
         this.commits.unshift(commit)
         docResponder.failure()
         // Retry
+        // TODO: Be able to _not_ retry if failure is permanent
         setTimeout(() => this.cycleCommitter(), 1000)
       }
     }

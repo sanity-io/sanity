@@ -5,12 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js",
-    "test:lib:compile": "babel . -q --ignore node_modules,demo-server,perf --out-dir test-compiled",
-    "test:lib": "npm run test:lib:compile && cd test-compiled && tap test/**.test.js && cd - && npm run test:lib:clean",
-    "test:lib:clean": "rimraf test-compiled",
     "compile": "npm run clean && babel --out-dir lib/ src/",
     "compile:watch": "babel --watch --out-dir lib/ src/",
-    "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
     "prepublish": "npm run compile",
     "postpublish": "npm run clean",
     "clean": "rimraf lib"
@@ -20,7 +16,6 @@
   "license": "MIT",
   "dependencies": {
     "diff-match-patch": "^1.0.0",
-    "immutable": "^3.8.1",
     "lodash": "^4.15.0"
   },
   "devDependencies": {
@@ -36,14 +31,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.14.0",
-    "babel-preset-react": "^6.11.1",
     "babel-register": "^6.14.0",
-    "babelify": "^7.3.0",
     "eslint": "^3.4.0",
     "eslint-config-bengler": "^2.0.0",
     "eslint-plugin-flowtype-errors": "^1.4.1",
     "eslint-plugin-import": "^2.0.1",
-    "eslint-plugin-react": "^6.2.0",
     "tap": "^7.0.0"
   },
   "repository": {

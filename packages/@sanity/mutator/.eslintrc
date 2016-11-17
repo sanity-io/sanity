@@ -2,7 +2,7 @@
   "env": {
     "node": true
   },
-  "extends": ["bengler", "bengler/react"],
+  "extends": ["bengler"],
   "plugins": [
     "flowtype-errors"
   ],
