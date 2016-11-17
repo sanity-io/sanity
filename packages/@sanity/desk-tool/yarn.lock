@@ -177,12 +177,12 @@
     react-sortable-hoc "^0.1.0"
     scroll "^2.0.0"
 
-"@sanity/core@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.6.tgz#95cb21ad993b07a5308a41d0d64ca1da143c8a5f"
+"@sanity/core@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.7.tgz#93965be239d10a484566acaefaecd6476daf1115"
   dependencies:
     "@sanity/check" "^0.0.2"
-    "@sanity/server" "^0.0.13"
+    "@sanity/server" "^0.0.14"
     "@sanity/storybook" "^0.0.9"
     "@sanity/util" "0.0.2"
     deep-sort-object "^1.0.1"
@@ -221,9 +221,17 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/form-builder@^0.0.42":
-  version "0.0.42"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.42.tgz#ad6f2af9e18fa4534c6648bc0784ea9dc86516c0"
+"@sanity/extract-text-webpack-plugin@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/extract-text-webpack-plugin/-/extract-text-webpack-plugin-1.0.1.tgz#73f1f890bfa96f1f2761bf4731d461481f3347cc"
+  dependencies:
+    async "^1.5.0"
+    loader-utils "^0.2.3"
+    webpack-sources "^0.1.0"
+
+"@sanity/form-builder@^0.0.43":
+  version "0.0.43"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.43.tgz#d53ca4898d30585b788cfef15d7a34f62c53b669"
   dependencies:
     "@sanity/imagetool" "^0.2.1"
     canvas-to-blob "0.0.0"
@@ -285,10 +293,11 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.13.tgz#abbde4dc7cf98edab3826638961fed5de9135727"
+"@sanity/server@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.14.tgz#68e9d1ccfe34761a706aaa99b22284a2d27a6db2"
   dependencies:
+    "@sanity/extract-text-webpack-plugin" "^1.0.1"
     "@sanity/resolver" "^0.0.5"
     "@sanity/webpack-loader" "^0.0.1"
     babel-core "^6.5.2"
@@ -302,7 +311,6 @@
     css-loader "^0.25.0"
     eventsource-polyfill "^0.9.6"
     express "^4.13.4"
-    extract-text-webpack-plugin "^1.0.1"
     file-loader "^0.9.0"
     in-publish "^2.0.0"
     json-loader "^0.5.4"
@@ -2365,14 +2373,6 @@ extglob@^0.3.1:
   resolved "https://registry.yarnpkg.com/extglob/-/extglob-0.3.2.tgz#2e18ff3d2f49ab2765cec9023f011daa8d8349a1"
   dependencies:
     is-extglob "^1.0.0"
-
-extract-text-webpack-plugin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/extract-text-webpack-plugin/-/extract-text-webpack-plugin-1.0.1.tgz#c95bf3cbaac49dc96f1dc6e072549fbb654ccd2c"
-  dependencies:
-    async "^1.5.0"
-    loader-utils "^0.2.3"
-    webpack-sources "^0.1.0"
 
 extsprintf@1.0.2:
   version "1.0.2"
