@@ -4,7 +4,7 @@ import webpack from 'webpack'
 import parents from 'parents'
 import resolveFrom from 'resolve-from'
 import RoleResolverPlugin from '@sanity/webpack-loader'
-import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import ExtractTextPlugin from '@sanity/extract-text-webpack-plugin'
 import postcssPlugins from './postcssPlugins'
 
 // Webpack 2 vs 1
@@ -33,7 +33,7 @@ export default (config = {}) => {
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
 
   const cssExtractor = isProd
-    && new ExtractTextPlugin('css/main.css')
+    && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
 
   const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
   const cssLoader = isProd
