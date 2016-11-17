@@ -9,10 +9,10 @@ export default class Set {
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          accessor.setIndexRaw(i, this.value)
+          accessor.getIndex(i).setValue(this.value)
         })
       } else if (target.isAttributeReference()) {
-        accessor.setRaw(target.name(), this.value)
+        accessor.get(target.name()).setValue(this.value)
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }

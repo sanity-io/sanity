@@ -47,29 +47,33 @@ export default class ImmutableAccessor {
     return true
   }
   get(key : string) : any {
-    if (this.isIndexable()) {
-      return null
-    }
-    if (!this.has(key)) {
-      return null
+    if (!this.isPlainObject()) {
+      throw new Error('get only works on plain Objects')
     }
     return new ImmutableAccessor(
-      () => this.getRaw(key),
+      () => this.getter()[key],
       value => {
-        this.setRaw(key, value)
+        const newValue = Object.assign({}, this.getter())
+        newValue[key] = value
+        this.setter(newValue)
       })
   }
   getIndex(i : number) : any {
     if (!this.isIndexable()) {
-      return false
+      throw new Error('get only works on indicies')
     }
     if (!this.hasIndex(i)) {
       return null
     }
     return new ImmutableAccessor(
-      () => this.getIndexRaw(i),
+      () => this.getter()[i],
       value => {
-        this.setIndexRaw(i, value)
+        if (i < 0 || i >= this.getLength()) {
+          throw new Error('Index out of range')
+        }
+        const newValue = this.getter().slice()
+        newValue[i] = value
+        this.setter(newValue)
       })
   }
   getValue() : any {
@@ -78,30 +82,10 @@ export default class ImmutableAccessor {
     }
     return this.getter()
   }
+  setValue(value) {
+    this.setter(value)
+  }
 
-  // Accessor interface (the interface used by Patcher to mutate the document)
-  getRaw(key : string) : any {
-    return this.getter()[key]
-  }
-  getIndexRaw(i : number) : any {
-    return this.getter()[i]
-  }
-  setRaw(key : string, value : any) {
-    if (!this.isPlainObject()) {
-      throw new Error("Can't set key of non-plain object")
-    }
-    const obj = Object.assign({}, this.getter())
-    obj[key] = value
-    this.setter(obj)
-  }
-  setIndexRaw(i : number, value : any) {
-    if (!this.isIndexable()) {
-      throw new Error("Can't set array member of non-plain object")
-    }
-    const array = this.getter().slice()
-    array[i] = value
-    this.setter(array)
-  }
   delete(key : string) {
     this._mutate(value => {
       delete value[key]
