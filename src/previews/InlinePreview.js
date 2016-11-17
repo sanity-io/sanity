@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/previews/inline-style'
+import MediaRender from './common/MediaRender.js'
 
 export default class InlinePreview extends React.Component {
   static propTypes = {
@@ -7,7 +8,9 @@ export default class InlinePreview extends React.Component {
       title: PropTypes.string,
       subtitle: PropTypes.string,
       description: PropTypes.string,
-      mediaRender: PropTypes.func
+      media: PropTypes.node,
+      imageUrl: PropTypes.string,
+      sanityImage: PropTypes.object
     }),
     emptyText: PropTypes.string,
     children: PropTypes.node
@@ -31,9 +34,9 @@ export default class InlinePreview extends React.Component {
     return (
       <span className={`${styles.root}`}>
         {
-          item.mediaRender && (
+          (item.media || item.sanityImage || item.imageUrl) && (
             <span className={`${styles.media}`}>
-              {item.mediaRender()}
+              <MediaRender item={item} />
             </span>
           )
         }

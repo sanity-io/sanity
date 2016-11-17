@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/previews/default-style'
+import MediaRender from './common/MediaRender.js'
 
 export default class DefaultPreview extends React.Component {
   static propTypes = {
@@ -7,7 +8,9 @@ export default class DefaultPreview extends React.Component {
       title: PropTypes.string,
       subtitle: PropTypes.string,
       description: PropTypes.string,
-      mediaRender: PropTypes.func
+      media: PropTypes.node,
+      imageUrl: PropTypes.string,
+      sanityImage: PropTypes.object
     }),
     emptyText: PropTypes.string,
     children: PropTypes.node
@@ -34,8 +37,8 @@ export default class DefaultPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         {
-          item.mediaRender && <div className={`${styles.media}`}>
-            {item.mediaRender()}
+          (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
+            <MediaRender item={item} />
           </div>
         }
         <div className={styles.heading}>

@@ -14,7 +14,7 @@
 .subtitle {
   font-size: 0.75em;
   text-transform: none;
-  font-weight: 100;
+  font-weight: 300;
   margin: 0;
   padding: 0;
 }
@@ -26,11 +26,9 @@
 }
 
 .media {
-  @nest & img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+  position: relative;
+  width: 100%;
+  min-height: 5rem;
 }
 
 .description {

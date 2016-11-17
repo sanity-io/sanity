@@ -1,0 +1,32 @@
+.root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.vanillaImage {
+  position: absolute;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+}
+
+.vanillaImageLandscape {
+  composes: vanillaImage;
+  height: 100%;
+  width: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.vanillaImagePortrait {
+  composes: vanillaImage;
+  height: auto;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}

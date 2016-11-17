@@ -9,8 +9,10 @@ export default class CardPreview extends React.Component {
       title: PropTypes.string,
       subtitle: PropTypes.string,
       description: PropTypes.string,
-      mediaRender: PropTypes.func,
-      date: PropTypes.object
+      date: PropTypes.object,
+      media: PropTypes.node,
+      imageUrl: PropTypes.string,
+      sanityImage: PropTypes.object
     }),
     emptyText: PropTypes.string,
     children: PropTypes.node
@@ -66,9 +68,9 @@ export default class CardPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>
-          <div className={`${styles.media}`}>
-            {item.mediaRender && item.mediaRender()}
-          </div>
+          {
+            item.imageUrl && <img src={item.imageUrl} className={styles.media} />
+          }
           <div className={styles.meta} ref="meta">
             <div className={styles.heading}>
               {

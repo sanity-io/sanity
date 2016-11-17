@@ -11,13 +11,7 @@ const item = {
   title: 'This is the title',
   subtitle: 'This is the subtitle',
   description: 'This is the long the descriptions that should no be to long, beacuse we will cap it',
-  mediaRender() {
-    return (
-      <div>
-        <img src="http://www.fillmurray.com/500/300" />
-      </div>
-    )
-  },
+  imageUrl: 'http://www.fillmurray.com/500/300',
   date: new Date()
 }
 
