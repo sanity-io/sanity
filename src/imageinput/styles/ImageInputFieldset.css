@@ -182,3 +182,37 @@
     width: 100%;
   }
 }
+
+.vanillaImageWrapper {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.vanillaImage {
+  display: block;
+}
+
+.landscapeImage {
+  composes: vanillaImage;
+  width: auto;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.portraitImage {
+  composes: vanillaImage;
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}

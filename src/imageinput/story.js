@@ -202,7 +202,7 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="complete"
-        percent="100"
+        percent={100}
         hotspotImage={{
           imageUrl: imageUrl
         }}
@@ -218,7 +218,7 @@ storiesOf('Image input')
 )
 
 .addWithInfo(
-  'Fieldset (ready with value)',
+  'Fieldset (just imageUrl)',
   `
     Image input for uploading images.
   `,
@@ -228,10 +228,7 @@ storiesOf('Image input')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="ready"
-        percent="100"
-        hotspotImage={{
-          imageUrl: imageUrl
-        }}
+        imageUrl={imageUrl}
       >
         <h2>Content goes here</h2>
       </ImageInput>

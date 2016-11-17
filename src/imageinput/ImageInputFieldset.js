@@ -30,6 +30,7 @@ export default class ImageInputFieldset extends React.Component {
     fieldName: PropTypes.string,
     onSelect: PropTypes.func,
     onCancel: PropTypes.func,
+    imageUrl: PropTypes.string,
     hotspotImage: PropTypes.shape({
       hotspot: PropTypes.object,
       crop: PropTypes.object,
@@ -39,19 +40,40 @@ export default class ImageInputFieldset extends React.Component {
   }
 
   static defaultProps = {
-    hotspotImage: {
-      imageUrl: null
-    },
     status: 'ready'
+  }
+
+  constructor(...args) {
+    super(...args)
+    this.state = {
+      aspect: null
+    }
   }
 
   componentWillMount() {
     // this._inputId = uniqueId('ImageInputFieldset')
   }
 
+  componentDidMount() {
+    const {imageUrl} = this.props
+    if (imageUrl) {
+      this.renderImage(imageUrl)
+    }
+  }
+
+  renderImage = url => {
+    const image = new Image()
+    image.src = url
+    image.onload = i => {
+      this.setState({
+        aspect: image.width / image.height
+      })
+    }
+  }
+
   render() {
 
-    const {legend, level, hotspotImage, fieldName, percent, status, children} = this.props
+    const {legend, level, hotspotImage, imageUrl, fieldName, percent, status, children} = this.props
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
@@ -64,19 +86,30 @@ export default class ImageInputFieldset extends React.Component {
             `}
           >
             {
-              hotspotImage.imageUrl
+              ((hotspotImage && hotspotImage.imageUrl) || imageUrl)
               && <div className={status === 'complete' || status === 'ready' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
-                <HotspotImage
-                  aspectRatio="auto"
-                  hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
-                  crop={hotspotImage.crop || DEFAULT_CROP}
-                  src={hotspotImage.imageUrl}
-                />
+                {
+                  hotspotImage && (
+                    <HotspotImage
+                      aspectRatio="auto"
+                      hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
+                      crop={hotspotImage.crop || DEFAULT_CROP}
+                      src={hotspotImage.imageUrl}
+                    />
+                  )
+                }
+                {
+                  imageUrl && !hotspotImage && this.state.aspect && (
+                    <div className={styles.vanillaImageWrapper}>
+                      <img src={imageUrl} className={this.state.aspect >= 1 ? styles.landscapeImage : styles.portraitImage} />
+                    </div>
+                  )
+                }
               </div>
             }
 
             {
-              !hotspotImage.imageUrl && (
+              (hotspotImage && !hotspotImage.imageUrl) && (
                 <ImageSelect
                   className={styles.imageSelect}
                   name={fieldName}
