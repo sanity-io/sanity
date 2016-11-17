@@ -11,7 +11,7 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
-import guessPreviewFields from './utils/guessPreviewFields'
+import {previewUtils} from 'part:@sanity/form-builder'
 
 function mapQueryResultToProps(props) {
   const {result, ...rest} = props
@@ -47,41 +47,21 @@ function readListViewSettings() {
 function writeListViewSettings(settings) {
   window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
 }
-// Todo: refactor all of this out and keep in a separate package
-function toFieldMap(fields) {
-  if (Array.isArray(fields)) {
-    return fields.reduce((map, fieldName) => {
-      map[fieldName] = fieldName
-      return map
-    }, {})
-  }
-  return fields
-}
-function canonicalizePreviewConfig(type) {
-  if (!type.options || !type.options.preview) {
-    return {
-      fields: guessPreviewFields(type),
-      prepare(doc) {
-        return doc
-      }
-    }
-  }
-  return {
-    ...type.options.preview,
-    fields: toFieldMap(type.options.preview.fields)
-  }
-}
 
-function toSelection(obj) {
-  return Object.keys(obj).map(key => {
-    if (typeof obj[key] === 'undefined') {
+function stringifySelection(fields) {
+  if (Array.isArray(fields)) {
+    return fields.join(',')
+  }
+  return Object.keys(fields).map(key => {
+    if (typeof fields[key] === 'undefined') {
       return null
     }
-    return `"${key}":${obj[key]}`
+    return `"${key}":${fields[key]}`
   })
     .filter(Boolean)
     .join(',')
 }
+
 
 export default class SchemaPaneResolver extends React.Component {
 
@@ -159,12 +139,9 @@ export default class SchemaPaneResolver extends React.Component {
 
   getDocumentsPane(typeName) {
     const type = schema.types.find(t => t.name === typeName)
-    const previewConfig = canonicalizePreviewConfig(type)
+    const previewConfig = previewUtils.canonicalizePreviewConfig(type)
 
-    const selection = `"_id": _id,${toSelection(previewConfig.fields)}
-    `
-
-    const query = `${schema.name}.${type.name} {${selection}}`
+    const query = `${schema.name}.${type.name} {${stringifySelection(previewConfig.fields)}}`
 
     return (
       <QueryContainer query={query} mapFn={mapQueryResultToProps}>
