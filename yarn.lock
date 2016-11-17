@@ -111,21 +111,21 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.0.39.tgz#b8aa78729a1d298afc3cd3e1288542143cfa1b68"
+"@sanity/base@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.0.tgz#225680449fa0cb568887387085e3a186ee3c08e2"
   dependencies:
-    "@sanity/client" "^0.3.5"
-    "@sanity/document-store" "0.0.4"
-    "@sanity/state-router" "0.0.3"
+    "@sanity/client" "^0.3.10"
+    "@sanity/document-store" "0.0.5"
+    "@sanity/state-router" "^0.2.1"
     history "^2.1.0"
     http-hash "^2.0.0"
     in-publish "^2.0.0"
-    lodash "^4.16.6"
+    lodash "^4.17.2"
     postcss-cssnext "^2.8.0"
     react-icons "^2.2.1"
     react-intl "^2.1.5"
-    rxjs "^5.0.0-rc.1"
+    rxjs "^5.0.0-rc.3"
 
 "@sanity/check@^0.0.2":
   version "0.0.2"
@@ -138,12 +138,12 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/cli@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@sanity/cli/-/cli-0.1.8.tgz#29760e9eab107e41c70abda2a562fdf95a070ac6"
+"@sanity/cli@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@sanity/cli/-/cli-0.1.11.tgz#433d7a653d3d603e0ca9556da468df1262bbe744"
   dependencies:
-    "@sanity/client" "^0.3.2"
-    "@sanity/resolver" "^0.0.4"
+    "@sanity/client" "^0.3.6"
+    "@sanity/resolver" "^0.0.5"
     "@sanity/util" "0.0.2"
     babel-polyfill "^6.13.0"
     chalk "^1.1.3"
@@ -159,22 +159,23 @@
     in-publish "^2.0.0"
     inquirer "^1.2.2"
     is-git-url "^0.2.3"
-    latest-version "^2.0.0"
     lodash "^4.5.0"
     minimist "^1.2.0"
     opn "^4.0.2"
     ora "^0.3.0"
+    package-json "^2.4.0"
     progrescii "^0.1.1"
     promise-props-recursive "^1.0.0"
     resolve-from "^2.0.0"
+    semver-compare "^1.0.0"
     split2 "^2.1.0"
     thenify "^3.2.0"
     update-notifier "^1.0.2"
     validate-npm-package-name "^2.2.2"
 
-"@sanity/client@^0.3.2", "@sanity/client@^0.3.5":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.6.tgz#4fa43e7111fbaf35ab0feb5026e6d0a053c1487c"
+"@sanity/client@^0.3.10", "@sanity/client@^0.3.6":
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.10.tgz#3fae6c1e2a4098daa63b469b8419a1d56051aa68"
   dependencies:
     "@sanity/eventsource" "^1.0.0"
     "@sanity/request" "0.0.3"
@@ -206,12 +207,12 @@
     stylelint "^7.1.0"
     stylelint-config-standard "^12.0.0"
 
-"@sanity/core@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.4.tgz#7aa23c2078217477f786f81f2b0e6bf40cacd871"
+"@sanity/core@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.7.tgz#93965be239d10a484566acaefaecd6476daf1115"
   dependencies:
     "@sanity/check" "^0.0.2"
-    "@sanity/server" "^0.0.11"
+    "@sanity/server" "^0.0.14"
     "@sanity/storybook" "^0.0.9"
     "@sanity/util" "0.0.2"
     deep-sort-object "^1.0.1"
@@ -219,9 +220,9 @@
     in-publish "^2.0.0"
     path-exists "^3.0.0"
 
-"@sanity/document-store@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.4.tgz#64c1c2374590dbe330ea43b67d701442e10688be"
+"@sanity/document-store@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.0.5.tgz#8d9c2e342427d549bc688822d9696f20ee87164b"
   dependencies:
     nano-pubsub "^1.0.1"
     rxjs "^5.0.0-beta.11"
@@ -233,6 +234,14 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
+"@sanity/extract-text-webpack-plugin@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/extract-text-webpack-plugin/-/extract-text-webpack-plugin-1.0.1.tgz#73f1f890bfa96f1f2761bf4731d461481f3347cc"
+  dependencies:
+    async "^1.5.0"
+    loader-utils "^0.2.3"
+    webpack-sources "^0.1.0"
+
 "@sanity/generate-help-url@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.1.tgz#3341c20dd03deb15dfc228278c243e30e0db9ef6"
@@ -241,9 +250,9 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/imagetool@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.1.tgz#dfa97895979b827a8b2e32b9650a5aecefd5ea77"
+"@sanity/imagetool@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.2.tgz#126d2f29353a66c493f08fa3e89edd71e8ff4fe9"
   dependencies:
     debug "^2.2.0"
     dom-event "1.0.0"
@@ -286,17 +295,6 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/resolver@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.4.tgz#d3cc3b6d46193020ed8a47a7f087f9b086479e70"
-  dependencies:
-    "@sanity/generate-help-url" "^0.0.2"
-    in-publish "^2.0.0"
-    lodash.uniq "^4.5.0"
-    mz "^2.4.0"
-    path-exists "^3.0.0"
-    promise-props-recursive "^1.0.0"
-
 "@sanity/resolver@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.5.tgz#32052079f279f564a7459487c45cdb54a01cf333"
@@ -308,10 +306,11 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.11.tgz#cac50471924e81a4f778bb292142a0642940f8a5"
+"@sanity/server@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.14.tgz#68e9d1ccfe34761a706aaa99b22284a2d27a6db2"
   dependencies:
+    "@sanity/extract-text-webpack-plugin" "^1.0.1"
     "@sanity/resolver" "^0.0.5"
     "@sanity/webpack-loader" "^0.0.1"
     babel-core "^6.5.2"
@@ -325,7 +324,6 @@
     css-loader "^0.25.0"
     eventsource-polyfill "^0.9.6"
     express "^4.13.4"
-    extract-text-webpack-plugin "^1.0.1"
     file-loader "^0.9.0"
     in-publish "^2.0.0"
     json-loader "^0.5.4"
@@ -340,17 +338,17 @@
     react-dom "^15.3.2"
     require-uncached "^1.0.2"
     resolve "^1.1.7"
+    resolve-from "^2.0.0"
     style-loader "^0.13.1"
     webpack "^1.13.2"
     webpack-dev-middleware "^1.7.0"
     webpack-hot-middleware "^2.12.2"
 
-"@sanity/state-router@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.0.3.tgz#8565d1a28520d81f01f61f374b35829c75c564b7"
+"@sanity/state-router@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.1.tgz#002f10b9695ac8cdf35f92f367958e88d01a93b8"
   dependencies:
-    http-hash "^2.0.0"
-    lodash "^4.15.0"
+    lodash "^4.17.2"
 
 "@sanity/storybook@^0.0.9":
   version "0.0.9"
@@ -2927,14 +2925,6 @@ extglob@^0.3.1:
   dependencies:
     is-extglob "^1.0.0"
 
-extract-text-webpack-plugin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/extract-text-webpack-plugin/-/extract-text-webpack-plugin-1.0.1.tgz#c95bf3cbaac49dc96f1dc6e072549fbb654ccd2c"
-  dependencies:
-    async "^1.5.0"
-    loader-utils "^0.2.3"
-    webpack-sources "^0.1.0"
-
 extsprintf@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.0.2.tgz#e1080e0658e300b06294990cc70e1502235fd550"
@@ -4432,6 +4422,10 @@ lodash@^4.0.0, lodash@^4.1.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lo
   version "4.16.6"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.6.tgz#d22c9ac660288f3843e16ba7d2b5d06cca27d777"
 
+lodash@^4.17.2:
+  version "4.17.2"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
+
 lodash@4.12.0:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.12.0.tgz#2bd6dc46a040f59e686c972ed21d93dc59053258"
@@ -5086,7 +5080,7 @@ output-file-sync@^1.1.0:
     mkdirp "^0.5.1"
     object-assign "^4.1.0"
 
-package-json@^2.0.0:
+package-json@^2.0.0, package-json@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/package-json/-/package-json-2.4.0.tgz#0d15bd67d1cbbddbb2ca222ff2edb86bcb31a8bb"
   dependencies:
@@ -6436,9 +6430,15 @@ rx@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
-rxjs@^5.0.0-beta.11, rxjs@^5.0.0-rc.1:
+rxjs@^5.0.0-beta.11:
   version "5.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.2.tgz#d38206f50eeb1e77b0832a74c1c2adeeed5ec2b7"
+  dependencies:
+    symbol-observable "^1.0.1"
+
+rxjs@^5.0.0-rc.3:
+  version "5.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.3.tgz#d8bc390d83277846b2d2afa1acf3c5f4f114a8d5"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -6449,6 +6449,10 @@ sax@^1.1.4, sax@~1.2.1:
 seekout@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/seekout/-/seekout-1.0.2.tgz#09ba9f1bd5b46fbb134718eb19a68382cbb1b9c9"
+
+semver-compare@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
 
 semver-diff@^2.0.0:
   version "2.1.0"

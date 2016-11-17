@@ -230,6 +230,8 @@ export default class Arr extends React.Component {
         onSortEnd={this.handleMove}
         renderItem={this.renderItem}
         items={value.value}
+        useDragHandle
+        decoration="divider"
       />
     )
   }
