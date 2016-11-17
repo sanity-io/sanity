@@ -15,6 +15,7 @@ export default class Pane extends React.Component {
     renderItem: PropTypes.func,
     contentType: PropTypes.oneOf(['types', 'documents']),
     onSetListView: PropTypes.func,
+    onSetSorting: PropTypes.func,
     listView: PropTypes.string,
     onUpdate: PropTypes.func
   }
@@ -53,6 +54,10 @@ export default class Pane extends React.Component {
   handleMenuAction = item => {
     if (item.action == 'setListView') {
       this.props.onSetListView(item.key)
+    }
+
+    if (item.action == 'setSorting') {
+      this.props.onSetSorting(item.sorting)
     }
 
     this.handleMenuClose()

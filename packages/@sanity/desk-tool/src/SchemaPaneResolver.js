@@ -70,7 +70,8 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   state = {
-    listViewSettings: readListViewSettings()
+    listViewSettings: readListViewSettings(),
+    sorting: '_updatedAt desc'
   }
 
   componentDidMount() {
@@ -141,7 +142,7 @@ export default class SchemaPaneResolver extends React.Component {
     const type = schema.types.find(t => t.name === typeName)
     const previewConfig = previewUtils.canonicalizePreviewConfig(type)
 
-    const query = `${schema.name}.${type.name} {${stringifySelection(previewConfig.fields)}}`
+    const query = `${schema.name}.${type.name}[limit: 200, order: ${this.state.sorting}] {${stringifySelection(previewConfig.fields)}}`
 
     return (
       <QueryContainer query={query} mapFn={mapQueryResultToProps}>
@@ -150,6 +151,7 @@ export default class SchemaPaneResolver extends React.Component {
           type={type}
           renderItem={this.renderDocumentPaneItem}
           onSetListView={this.handleSetListView}
+          onSetSorting={this.handleSetSort}
           listView={this.getListViewForType(type.name)}
           onUpdate={this.handleUpdate}
         />
@@ -169,6 +171,12 @@ export default class SchemaPaneResolver extends React.Component {
 
   getListViewForType(type) {
     return this.state.listViewSettings[type] || 'default'
+  }
+
+  handleSetSort = sorting => {
+    this.setState({
+      sorting: sorting
+    })
   }
 
 
@@ -197,7 +205,7 @@ export default class SchemaPaneResolver extends React.Component {
     const padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 2
     const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
-    if (containerWidth > (navWidth + editorPaneMinWidth)) {
+    if (containerWidth >= (navWidth + editorPaneMinWidth)) {
       // Editor is free
       this.navigationElement.style.transform = 'translateX(0px)'
       this.editorPaneElement.style.width = `${containerWidth - navWidth}px`

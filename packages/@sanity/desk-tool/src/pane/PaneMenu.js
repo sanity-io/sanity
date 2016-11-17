@@ -22,19 +22,22 @@ class PaneMenu extends React.Component {
         title: 'Alphabetical',
         icon: IconSortAlphaDesc,
         action: 'setSorting',
-        key: 'byAlphabetical'
+        key: 'byAlphabetical',
+        sorting: 'name'
       },
       {
         title: 'Last edited',
         icon: undefined,
         action: 'setSorting',
-        key: 'byLastEdited'
+        key: 'byLastEdited',
+        sorting: '_updatedAt desc'
       },
       {
         title: 'Created',
         icon: undefined,
         action: 'setSorting',
-        key: 'byCreated'
+        key: 'byCreated',
+        sort: '_createdAt desc'
       },
       {
         title: 'List',
