@@ -19,23 +19,13 @@ export default class Insert {
     switch (this.location) {
       case 'before': {
         const pos = minIndex(targets, accessor)
-        accessor.mutate(value => {
-          if (value.length == 0 && pos == 0) {
-            return this.items
-          }
-          return value.slice(0, pos).concat(this.items).concat(value.slice(pos))
-        })
-        return
+        accessor.insert(pos, this.items)
+        break
       }
       case 'after': {
         const pos = maxIndex(targets, accessor)
-        accessor.mutate(value => {
-          if (value.length == 0 && pos == 0) {
-            return this.items
-          }
-          return value.slice(0, pos + 1).concat(this.items).concat(value.slice(pos + 1))
-        })
-        return
+        accessor.insert(pos + 1, this.items)
+        break
       }
       default: {
         throw new Error(`Unsupported location atm: ${this.location}`)

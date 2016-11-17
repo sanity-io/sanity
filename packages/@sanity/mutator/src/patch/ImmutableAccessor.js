@@ -102,7 +102,41 @@ export default class ImmutableAccessor {
     array[i] = value
     this.setter(array)
   }
+  delete(key : string) {
+    this._mutate(value => {
+      delete value[key]
+      return value
+    })
+  }
+  deleteIndicies(indicies : Array<number>) {
+    this._mutate(value => {
+      const length = value.length
+      const newValue = []
+      // Copy every value _not_ in the indicies array over to the newValue
+      for (let i = 0; i < length; i++) {
+        if (indicies.indexOf(i) == -1) {
+          newValue.push(value[i])
+        }
+      }
+      return newValue
+    })
+  }
+  insert(pos : number, items : Array<any>) {
+    this._mutate(value => {
+      if (this.getLength() == 0 && pos == 0) {
+        return items
+      }
+      return value.slice(0, pos).concat(items).concat(value.slice(pos))
+    })
+  }
   mutate(fn : Function) {
+    if (!this.isPrimitiveValue()) {
+      throw new Error("Won't mutate container types")
+    }
+    this._mutate(fn)
+  }
+  // Not part of the Accessor protocol
+  _mutate(fn : Function) {
     let val = this.getter()
     // Make sure we send a copy to the mutator
     if (Array.isArray(val)) {

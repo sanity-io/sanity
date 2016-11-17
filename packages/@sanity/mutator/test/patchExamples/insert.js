@@ -32,4 +32,20 @@ export default [
       a: [0, 1, 2, -1, -2, 3, 4]
     }
   },
+
+  {
+    name: 'Insert after empty',
+    before: {
+      a: []
+    },
+    patch: {
+      insert: {
+        after: 'a[-1]',
+        items: [-1, -2]
+      }
+    },
+    after: {
+      a: [-1, -2]
+    }
+  }
 ]

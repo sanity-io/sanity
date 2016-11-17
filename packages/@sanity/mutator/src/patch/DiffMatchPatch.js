@@ -14,14 +14,14 @@ export default class DiffMatchPatch {
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          const value = accessor.getIndexRaw(i)
-          const newValue = dmp.patch_apply(this.dmpPatch, value)[0]
-          accessor.setIndexRaw(i, newValue)
+          accessor.getIndex(i).mutate(value => {
+            return dmp.patch_apply(this.dmpPatch, value)[0]
+          })
         })
       } else if (target.isAttributeReference()) {
-        const value = accessor.getRaw(target.name())
-        const newValue = dmp.patch_apply(this.dmpPatch, value)[0]
-        accessor.setRaw(target.name(), newValue)
+        accessor.get(target.name()).mutate(value => {
+          return dmp.patch_apply(this.dmpPatch, value)[0]
+        })
       } else {
         throw new Error(`Unable to apply diffMatchPatch to target ${target.toString()}`)
       }

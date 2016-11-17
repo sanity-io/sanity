@@ -9,16 +9,14 @@ export default class Set {
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          const val = accessor.getIndexRaw(i)
-          if (typeof val == 'number') {
-            accessor.setIndexRaw(i, val + this.value)
-          }
+          accessor.getIndex(i).mutate(value => {
+            return value + this.value
+          })
         })
       } else if (target.isAttributeReference()) {
-        const val = accessor.getRaw(target.name())
-        if (typeof val == 'number') {
-          accessor.setRaw(target.name(), val + this.value)
-        }
+        accessor.get(target.name()).mutate(value => {
+          return value + this.value
+        })
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }

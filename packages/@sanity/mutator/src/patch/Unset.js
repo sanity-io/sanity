@@ -10,27 +10,13 @@ export default class Unset {
     if (accessor.isIndexable()) {
       const indicies = targetsToIndicies(targets, accessor)
       // TODO: Optimize to use slice operations
-      accessor.mutate(value => {
-        const length = value.length
-        const newValue = []
-        // Copy every value _not_ in the indicies array over to the newValue
-        for (let i = 0; i < length; i++) {
-          if (indicies.indexOf(i) == -1) {
-            newValue.push(value[i])
-          }
-        }
-        return newValue
-      })
+      accessor.deleteIndicies(indicies)
     } else if (accessor.isPlainObject()) {
-      accessor.mutate(value => {
-        targets.forEach(target => {
-          delete value[target.name()]
-        })
-        return value
+      targets.forEach(target => {
+        accessor.delete(target.name())
       })
     } else {
       throw new Error('Target value is neither indexable or an object. This error should potentially just be silently ignored?')
     }
   }
 }
-
