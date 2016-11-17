@@ -150,7 +150,7 @@ export default class SchemaPaneResolver extends React.Component {
           type={type}
           renderItem={this.renderDocumentPaneItem}
           onSetListView={this.handleSetListView}
-          listView={this.getListViewForType(type)}
+          listView={this.getListViewForType(type.name)}
           onUpdate={this.handleUpdate}
         />
       </QueryContainer>

@@ -33,16 +33,19 @@
   composes: root;
 }
 
+.view--card {
+  max-width: 40em;
+}
+
+.view--thumbnail {
+  max-width: 40em;
+}
+
 .listContainer {
   display: block;
   margin: 0;
   padding: 0;
   width: 100%;
-
-  @nest .listView--cards &{
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-  }
 
   @media (--screen-medium) {
     box-sizing: border-box;

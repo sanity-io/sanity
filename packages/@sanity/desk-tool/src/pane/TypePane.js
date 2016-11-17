@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePane.css'
-import DefaultList from 'part:@sanity/components/lists/default'
 
 export default class Pane extends React.Component {
 
