@@ -1,6 +1,7 @@
 // @flow
 
 import {Patcher} from '../patch'
+import luid from './luid'
 
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
@@ -13,7 +14,7 @@ export default class Mutation {
     identity : string,
     previousRev : string,
     resultRev : string,
-    mutations : Object
+    mutations : Array<Object>
   }
   compiled : Function
   constructor(options : Object) {
@@ -35,8 +36,11 @@ export default class Mutation {
   get resultRev() : string {
     return this.params.resultRev
   }
-  get mutations() : Object {
+  get mutations() : Array<Object> {
     return this.params.mutations
+  }
+  assignRandomTransactionId() {
+    this.params.resultRev = this.params.transactionId = luid()
   }
   // Compiles all mutations into a handy function
   compile() {
@@ -72,5 +76,13 @@ export default class Mutation {
   }
   static applyAll(document : Object, mutations : Array<Mutation>) : Object {
     return mutations.reduce((doc, mutation) => mutation.apply(doc), document)
+  }
+  // Given a number of yet-to-be-committed mutation objects, collects them into one big mutation
+  // any metadata like transactionId is ignored and must be submitted by the client. It is assumed
+  // that all mutations are on the same document.
+  // TOOO: Optimize mutations, eliminating mutations that overwrite themselves!
+  static squash(document : Object, mutations : Array<Mutation>) : Mutation {
+    const squashed = mutations.reduce((result, mutation) => result.concat(...mutations.mutations), [])
+    return new Mutation({mutations: squashed})
   }
 }
