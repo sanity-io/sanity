@@ -77,20 +77,20 @@ export default class Expression {
       if (this.isExistenceConstraint()) {
         return true
       }
-      const lhs = probe.getValue()
+      const lhs = probe.value()
       const rhs = this.expr.rhs.value
       return testBinaryOperator(lhs, this.expr.operator, rhs)
     }
     if (!this.constraintTargetIsAttribute()) {
       throw new Error(`Constraint target ${this.expr.lhs.type} not supported`)
     }
-    const lhs = probe.get(this.expr.lhs.name)
+    const lhs = probe.getField(this.expr.lhs.name)
     if (lhs === null || !lhs.isPrimitiveValue()) {
       // LHS is void and empty, or it is a collection
       return false
     }
     const rhs = this.expr.rhs.value
-    return testBinaryOperator(lhs.getValue(), this.expr.operator, rhs)
+    return testBinaryOperator(lhs.value(), this.expr.operator, rhs)
   }
   pathNodes() {
     if (this.isPath()) {

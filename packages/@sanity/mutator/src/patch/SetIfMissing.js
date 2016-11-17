@@ -12,7 +12,7 @@ export default class SetIfMissing {
         return
       } else if (target.isAttributeReference()) {
         if (!accessor.has(target.name())) {
-          accessor.get(target.name()).setValue(this.value)
+          accessor.getField(target.name()).set(this.value)
         }
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)

@@ -19,7 +19,7 @@ export default class DiffMatchPatch {
           })
         })
       } else if (target.isAttributeReference()) {
-        accessor.get(target.name()).mutate(value => {
+        accessor.getField(target.name()).mutate(value => {
           return dmp.patch_apply(this.dmpPatch, value)[0]
         })
       } else {

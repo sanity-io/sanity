@@ -1,7 +1,7 @@
 // @flow
 
 // An immutable probe/accessor for plain JS objects that will never mutate
-// the provided value in place
+// the provided _value in place
 export default class ImmutableAccessor {
   setter : Function
   getter : Function
@@ -15,7 +15,7 @@ export default class ImmutableAccessor {
   }
   getLength() : number {
     if (!this.isIndexable()) {
-      throw new Error("Won't return length of non-indexable value")
+      throw new Error("Won't return length of non-indexable _value")
     }
     return this.getter().length
   }
@@ -46,15 +46,15 @@ export default class ImmutableAccessor {
     }
     return true
   }
-  get(key : string) : any {
+  getField(key : string) : any {
     if (!this.isPlainObject()) {
       throw new Error('get only works on plain Objects')
     }
     return new ImmutableAccessor(
       () => this.getter()[key],
-      value => {
+      _value => {
         const newValue = Object.assign({}, this.getter())
-        newValue[key] = value
+        newValue[key] = _value
         this.setter(newValue)
       })
   }
@@ -67,50 +67,51 @@ export default class ImmutableAccessor {
     }
     return new ImmutableAccessor(
       () => this.getter()[i],
-      value => {
+      _value => {
         if (i < 0 || i >= this.getLength()) {
           throw new Error('Index out of range')
         }
         const newValue = this.getter().slice()
-        newValue[i] = value
+        newValue[i] = _value
         this.setter(newValue)
       })
   }
-  getValue() : any {
+  value() : any {
     if (!this.isPrimitiveValue()) {
-      throw new Error("Won't give primitive value of collections")
+      throw new Error("Won't give value of collections")
     }
     return this.getter()
   }
-  setValue(value) {
+  // TODO: Should not accept collections except empty ones
+  set(value) {
     this.setter(value)
   }
 
-  delete(key : string) {
-    this._mutate(value => {
-      delete value[key]
-      return value
+  deleteKey(key : string) {
+    this._mutate(_value => {
+      delete _value[key]
+      return _value
     })
   }
   deleteIndicies(indicies : Array<number>) {
-    this._mutate(value => {
-      const length = value.length
+    this._mutate(_value => {
+      const length = _value.length
       const newValue = []
-      // Copy every value _not_ in the indicies array over to the newValue
+      // Copy every _value _not_ in the indicies array over to the newValue
       for (let i = 0; i < length; i++) {
         if (indicies.indexOf(i) == -1) {
-          newValue.push(value[i])
+          newValue.push(_value[i])
         }
       }
       return newValue
     })
   }
   insert(pos : number, items : Array<any>) {
-    this._mutate(value => {
+    this._mutate(_value => {
       if (this.getLength() == 0 && pos == 0) {
         return items
       }
-      return value.slice(0, pos).concat(items).concat(value.slice(pos))
+      return _value.slice(0, pos).concat(items).concat(_value.slice(pos))
     })
   }
   mutate(fn : Function) {

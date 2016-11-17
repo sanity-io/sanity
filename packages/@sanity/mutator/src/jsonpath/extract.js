@@ -22,7 +22,7 @@ function descend(matcher, accessor) {
   })
   if (delivery) {
     delivery.targets.forEach(target => {
-      const values = accessorsFromTarget(target, accessor).map(acc => acc.value)
+      const values = accessorsFromTarget(target, accessor).map(acc => acc._value)
       delivery.payload(values)
     })
   }
@@ -35,7 +35,7 @@ function accessorsFromTarget(target : Expression, accessor : PlainProbe) {
       result.push(accessor.getIndex(i))
     })
   } else if (target.isAttributeReference()) {
-    result.push(accessor.get(target.name()))
+    result.push(accessor.getField(target.name()))
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }

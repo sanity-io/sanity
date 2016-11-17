@@ -73,7 +73,7 @@ function accessorsFromTarget(target : Expression, accessor : ImmutableAccessor) 
       result.push(accessor.getIndex(i))
     })
   } else if (target.isAttributeReference()) {
-    result.push(accessor.get(target.name()))
+    result.push(accessor.getField(target.name()))
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }

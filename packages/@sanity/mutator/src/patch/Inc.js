@@ -14,7 +14,7 @@ export default class Set {
           })
         })
       } else if (target.isAttributeReference()) {
-        accessor.get(target.name()).mutate(value => {
+        accessor.getField(target.name()).mutate(value => {
           return value + this.value
         })
       } else {

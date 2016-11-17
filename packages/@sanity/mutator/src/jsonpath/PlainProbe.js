@@ -1,22 +1,22 @@
 // @flow
 
-// A default implementation of a probe for vanilla JS values
+// A default implementation of a probe for vanilla JS _values
 export default class PlainProbe {
-  value : any
-  constructor(value : any) {
-    this.value = value
+  _value : any
+  constructor(_value : any) {
+    this._value = _value
   }
   isIndexable() : bool {
-    return Array.isArray(this.value)
+    return Array.isArray(this._value)
   }
   getLength() : number {
     if (!this.isIndexable()) {
-      throw new Error("Won't return length of non-indexable value")
+      throw new Error("Won't return length of non-indexable _value")
     }
-    return this.value.length
+    return this._value.length
   }
   isPlainObject() : bool {
-    return typeof this.value == 'object' && !this.isIndexable()
+    return typeof this._value == 'object' && !this.isIndexable()
   }
   isPrimitiveValue() : bool {
     return !this.isPlainObject() && !this.isIndexable()
@@ -25,13 +25,13 @@ export default class PlainProbe {
     if (!this.isPlainObject()) {
       return false
     }
-    return this.value.hasOwnProperty(key)
+    return this._value.hasOwnProperty(key)
   }
   attributes() : Array<string> {
     if (!this.isPlainObject()) {
       return []
     }
-    return Object.keys(this.value)
+    return Object.keys(this._value)
   }
   hasIndex(i : number) : bool {
     if (!this.isIndexable()) {
@@ -42,14 +42,14 @@ export default class PlainProbe {
     }
     return true
   }
-  get(key : string) : any {
+  getField(key : string) : any {
     if (this.isIndexable()) {
       return false
     }
     if (!this.has(key)) {
       return null
     }
-    return new PlainProbe(this.value[key])
+    return new PlainProbe(this._value[key])
   }
   getIndex(i : number) : any {
     if (!this.isIndexable()) {
@@ -58,12 +58,12 @@ export default class PlainProbe {
     if (!this.hasIndex(i)) {
       return null
     }
-    return new PlainProbe(this.value[i])
+    return new PlainProbe(this._value[i])
   }
-  getValue() : any {
+  value() : any {
     if (!this.isPrimitiveValue()) {
-      throw new Error("Won't give primitive value of collections")
+      throw new Error("Won't give value of collections")
     }
-    return this.value
+    return this._value
   }
 }

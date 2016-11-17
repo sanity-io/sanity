@@ -13,7 +13,7 @@ export default class Unset {
       accessor.deleteIndicies(indicies)
     } else if (accessor.isPlainObject()) {
       targets.forEach(target => {
-        accessor.delete(target.name())
+        accessor.deleteKey(target.name())
       })
     } else {
       throw new Error('Target value is neither indexable or an object. This error should potentially just be silently ignored?')
