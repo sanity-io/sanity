@@ -39,7 +39,6 @@ export default class DefaultPreview extends React.Component {
     }
 
     if (!value || !('_id' in value) || value._isPreviewMaterializedHack) {
-      debugger
       return <PreviewComponent item={prepareValue(value, previewConfig)}/>
     }
 
