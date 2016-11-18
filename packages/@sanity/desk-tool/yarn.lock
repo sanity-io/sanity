@@ -113,11 +113,11 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.1.tgz#c1388467aa037a0b2fa71d64324b16f7342cc934"
+"@sanity/base@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.2.tgz#202db761ed1a5c7282b10b44ec2c9a4d59416d2f"
   dependencies:
-    "@sanity/client" "^0.3.10"
+    "@sanity/client" "^0.3.11"
     "@sanity/document-store" "0.0.5"
     "@sanity/state-router" "^0.2.1"
     history "^2.1.0"
@@ -140,9 +140,9 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.3.10":
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.10.tgz#3fae6c1e2a4098daa63b469b8419a1d56051aa68"
+"@sanity/client@^0.3.11":
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.11.tgz#922c51565895ce94c80326fd592387f7bdb14644"
   dependencies:
     "@sanity/eventsource" "^1.0.0"
     "@sanity/request" "0.0.3"
@@ -229,9 +229,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.0.48":
-  version "0.0.48"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.48.tgz#7ebb5d723cdced40edd4f5572199a7833c5ac6c4"
+"@sanity/form-builder@^0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.50.tgz#60e5161ea35ae383e1abe638687a2a72428d8075"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     canvas-to-blob "0.0.0"
