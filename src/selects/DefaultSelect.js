@@ -14,6 +14,7 @@ export default class DefaultSelect extends React.Component {
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
     showClearButton: PropTypes.bool,
+    level: PropTypes.number,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -66,13 +67,13 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {label, error, items, value} = this.props
+    const {label, error, items, value, level} = this.props
     const {hasFocus} = this.state
 
     const rootClass = error ? styles.error : styles.root
 
     return (
-      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId || ''}>
+      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId || ''} level={level}>
         <div className={styles.selectContainer}>
           <select
             className={styles.select}
