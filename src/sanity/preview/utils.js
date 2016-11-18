@@ -21,15 +21,28 @@ export function canonicalizePreviewConfig(type) {
 }
 
 export function prepareValue(value, previewConfig) {
+  if (!value) {
+    return value
+  }
   // todo: validation
   if (!previewConfig || !previewConfig.prepare) {
     return value
   }
-  /* todo:
-   only pass down selected fields to document. Might be hard because the select part is free form, and can
-   contain custom datastore query syntax
-   */
-  // const properties = Array.isArray(previewConfig.fields) ? previewConfig.fields : Object.keys(previewConfig.fields)
-  // const valueWithProps = pick(value, properties)
-  return typeof previewConfig.prepare === 'function' ? previewConfig.prepare(value) : value
+  try {
+    /* todo:
+     only pass down selected fields to prepare. Might be hard because the select part is free form, and can
+     contain custom datastore query syntax
+     const properties = Array.isArray(previewConfig.fields) ? previewConfig.fields : Object.keys(previewConfig.fields)
+     const valueWithProps = pick(value, properties)
+     */
+    return previewConfig.prepare(value)
+  } catch (error) {
+    const message = [
+      `Error: Preparing value for preview failed: ${error.message}`,
+      'Please verify that your prepare function can tolerate being called with argument %O',
+      'The prepare function that failed: %O'
+    ].join(' ')
+    console.error(message, value, previewConfig.prepare) // eslint-disable-line-no-console
+    return value
+  }
 }
