@@ -229,9 +229,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.47.tgz#0fa09428c2dce3149df52fd8bd371c0f93b7882b"
+"@sanity/form-builder@^0.0.48":
+  version "0.0.48"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.48.tgz#7ebb5d723cdced40edd4f5572199a7833c5ac6c4"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     canvas-to-blob "0.0.0"
