@@ -2,13 +2,10 @@
 
 Sanity plugin which controls how your data is presented.
 
+## HOWEVER
 
-## BIG FAT DISCLAIMER
+We'll re-design how control of data presentation is handed over to a sanity studio maintainer. Hang on for snake tornado.
 
-This is alpha software. Nothing should be expected to work.
-
-## TODO
-[ ] When gql/gradient supports limit, offset and order, make sure DataAspectsResolver rolls the query cigar correctly.
 
 ## Usage
 
@@ -19,14 +16,12 @@ The config file `config/@sanity/data-aspects.json` lets you control how your dat
 ```
 {
   "hiddenTypes": [
-    "secretTypeName"
+    "nameOfTypeToExcludeFromView"
   ],
   "typeOptions": {
     "article": {
       "displayName": "Article",
-      "itemDisplayField": "name",
-      "limit": 100,
-      "offset": 0
+      "itemDisplayField": "name"
     },
     "siteConfig": {
       "displayName": "Site configuration",
