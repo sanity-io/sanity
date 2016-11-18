@@ -42,7 +42,7 @@ export function prepareValue(value, previewConfig) {
       'Please verify that your prepare function can tolerate being called with argument %O',
       'The prepare function that failed: %O'
     ].join(' ')
-    console.error(message, value, previewConfig.prepare) // eslint-disable-line-no-console
+    console.error(message, value, previewConfig.prepare) // eslint-disable-line no-console
     return value
   }
 }
