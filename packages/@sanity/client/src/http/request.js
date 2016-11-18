@@ -61,12 +61,8 @@ module.exports = function httpRequest(options) {
       const isHttpError = res.statusCode >= 400
 
       if (isHttpError && body) {
-        const msg = (body.errors ? body.errors.map(error => error.message) : [])
-          .concat([body.error, body.message]).filter(Boolean).join('\n')
-
-        const error = new Error(msg || httpError(res))
-        error.responseBody = stringifyBody(body, res)
-        error.statusCode = res.statusCode
+        const error = extractError(body, res)
+        decorateError(error, body, res)
         observer.error(error)
         return
       } else if (isHttpError) {
@@ -105,8 +101,31 @@ module.exports = function httpRequest(options) {
   return observable
 }
 
+function extractError(body, res) {
+  // API/Boom style errors ({statusCode, error, message})
+  if (body.error && body.message) {
+    return new Error(`${body.error} - ${body.message}`)
+  }
+
+  // Query/database errors ({error: {description, other, arb, props}})
+  if (body.error && body.error.description) {
+    const error = new Error(body.error.description)
+    error.details = body.error
+    return error
+  }
+
+  // Other, more arbitrary errors
+  return new Error(body.error || body.message || httpError(res))
+}
+
+function decorateError(error, body, res) {
+  error.responseBody = stringifyBody(body, res)
+  error.statusCode = res.statusCode
+}
+
 function httpError(res) {
-  return `Server responded with HTTP ${res.statusCode} ${res.statusMessage || ''}, no description`
+  const statusMessage = res.statusMessage ? ` ${res.statusMessage}` : ''
+  return `Server responded with HTTP ${res.statusCode}${statusMessage}, no description`
 }
 
 function stringifyBody(body, res) {

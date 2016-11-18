@@ -147,7 +147,7 @@ test('can query for documents', t => {
   }).catch(t.ifError).then(t.end)
 })
 
-test('handles errors gracefully', t => {
+test('handles api errors gracefully', t => {
   const response = {
     statusCode: 403,
     error: 'Forbidden',
@@ -170,6 +170,34 @@ test('handles errors gracefully', t => {
     })
 })
 
+test('handles db errors gracefully', t => {
+  const response = {
+    error: {
+      column: 13,
+      line: 'foo.bar.baz  12#[{',
+      lineNumber: 1,
+      description: 'Unable to parse entire expression',
+      query: 'foo.bar.baz  12#[{',
+      type: 'gqlParseError'
+    }
+  }
+
+  nock(projectHost()).get('/v1/data/query/foo?query=foo.bar.baz%20%2012%23%5B%7B').reply(400, response)
+
+  getClient().fetch('foo.bar.baz  12#[{')
+    .then(res => {
+      t.fail('Resolve handler should not be called on failure')
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err instanceof Error, 'should be error')
+      t.ok(err.message.includes(response.error.description), 'should contain error description')
+      t.equal(err.details.column, response.error.column, 'error should have details object')
+      t.equal(err.details.line, response.error.line, 'error should have details object')
+      t.end()
+    })
+})
+
 test('can query for single document', t => {
   nock(projectHost()).get('/v1/data/doc/foo/123').reply(200, {
     ms: 123,
@@ -179,25 +207,6 @@ test('can query for single document', t => {
   getClient().getDocument('foo/123').then(res => {
     t.equal(res.mood, 'lax', 'data should match')
   }).catch(t.ifError).then(t.end)
-})
-
-test('joins multi-error into one message', t => {
-  nock(projectHost()).get('/v1/data/doc/foo/127').reply(400, {
-    statusCode: 400,
-    errors: [{message: '2 slow'}, {message: '2 placid'}]
-  })
-
-  getClient().getDocument('foo/127')
-    .then(res => {
-      t.fail('Resolve handler should not be called on failure')
-      t.end()
-    })
-    .catch(err => {
-      t.ok(err instanceof Error, 'should be error')
-      t.ok(err.message.includes('2 slow'), 'should contain first error')
-      t.ok(err.message.includes('2 placid'), 'should contain second error')
-      t.end()
-    })
 })
 
 test('gives http statuscode as error if no body is present on >= 400', t => {
