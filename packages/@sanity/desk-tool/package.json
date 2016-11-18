@@ -24,17 +24,17 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.0.4",
-    "@sanity/form-builder": "^0.0.44",
+    "@sanity/form-builder": "^0.0.47",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.1.0",
+    "@sanity/base": "0.1.1",
     "@sanity/check": "^0.0.2",
     "@sanity/client": "^0.3.10",
-    "@sanity/components": "^0.0.57",
+    "@sanity/components": "^0.0.58",
     "@sanity/core": "0.0.7",
     "babel-cli": "^6.18.0",
-    "babel-eslint": "^7.1.0",
+    "babel-eslint": "^7.1.1",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.19.0",

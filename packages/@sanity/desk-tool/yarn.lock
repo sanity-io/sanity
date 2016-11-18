@@ -113,9 +113,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.0.tgz#225680449fa0cb568887387085e3a186ee3c08e2"
+"@sanity/base@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.1.tgz#c1388467aa037a0b2fa71d64324b16f7342cc934"
   dependencies:
     "@sanity/client" "^0.3.10"
     "@sanity/document-store" "0.0.5"
@@ -152,9 +152,9 @@
     xtend "^4.0.1"
     zen-observable "^0.3.0"
 
-"@sanity/components@^0.0.57":
-  version "0.0.57"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.57.tgz#ae51558fd8a3ec1689cd15f0b02b204c433d6338"
+"@sanity/components@^0.0.58":
+  version "0.0.58"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.58.tgz#f4bd245587ef3ab2b2a17108c6eaf79bd32e51a3"
   dependencies:
     "@sanity/date-input" "^0.0.4"
     "@sanity/imagetool" "^0.2.1"
@@ -229,11 +229,11 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.0.44":
-  version "0.0.44"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.44.tgz#7e00a7895c793fa9f2f1690f530c251f1115f2e2"
+"@sanity/form-builder@^0.0.47":
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.47.tgz#0fa09428c2dce3149df52fd8bd371c0f93b7882b"
   dependencies:
-    "@sanity/imagetool" "^0.2.1"
+    "@sanity/imagetool" "^0.2.2"
     canvas-to-blob "0.0.0"
     debug "^2.2.0"
     exif-component "^1.0.1"
@@ -259,6 +259,14 @@
 "@sanity/imagetool@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.1.tgz#dfa97895979b827a8b2e32b9650a5aecefd5ea77"
+  dependencies:
+    debug "^2.2.0"
+    dom-event "1.0.0"
+    lodash.omit "^4.5.0"
+
+"@sanity/imagetool@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@sanity/imagetool/-/imagetool-0.2.2.tgz#126d2f29353a66c493f08fa3e89edd71e8ff4fe9"
   dependencies:
     debug "^2.2.0"
     dom-event "1.0.0"
@@ -632,13 +640,14 @@ babel-core@^6.11.4, babel-core@^6.18.0, babel-core@^6.5.2:
     slash "^1.0.0"
     source-map "^0.5.0"
 
-babel-eslint@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.1.0.tgz#d506a5174ba224e25a2d17e128e2ba8987139ddc"
+babel-eslint@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.1.1.tgz#8a6a884f085aa7060af69cfc77341c2f99370fb2"
   dependencies:
+    babel-code-frame "^6.16.0"
     babel-traverse "^6.15.0"
     babel-types "^6.15.0"
-    babylon "^6.11.2"
+    babylon "^6.13.0"
     lodash.pickby "^4.6.0"
 
 babel-generator@^6.18.0:
@@ -1318,9 +1327,13 @@ babel-types@^6.15.0, babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.8.
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
 
-babylon@^6.11.0, babylon@^6.11.2:
+babylon@^6.11.0:
   version "6.13.1"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.13.1.tgz#adca350e088f0467647157652bafead6ddb8dfdb"
+
+babylon@^6.13.0:
+  version "6.14.1"
+  resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.14.1.tgz#956275fab72753ad9b3435d7afe58f8bf0a29815"
 
 babylon@~5.8.3:
   version "5.8.38"
