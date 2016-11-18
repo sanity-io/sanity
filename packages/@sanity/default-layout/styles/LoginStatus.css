@@ -15,13 +15,15 @@
   width: 5em;
   border-radius: 50%;
   margin: 0 auto;
+  cursor: pointer;
 
   @media(--screen-medium) {
     float: right;
     display: block;
     height: 1.5rem;
     width: 1.5rem;
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
+    margin-right: 0.75rem;
   }
 }
 

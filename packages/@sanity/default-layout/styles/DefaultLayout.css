@@ -13,7 +13,6 @@
   padding: 0;
 
   @media (--screen-medium) {
-    padding: var(--small-padding);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
