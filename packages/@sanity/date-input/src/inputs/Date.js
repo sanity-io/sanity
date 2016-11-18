@@ -1,9 +1,10 @@
+import moment from 'moment'
+import {uniqueId} from 'lodash'
 import React, {PropTypes} from 'react'
 import DatePicker from 'react-datepicker'
-import moment from 'moment'
-import styles from './Date.css'
 import FormField from 'part:@sanity/components/formfields/default'
-import {uniqueId} from 'lodash'
+import KeyboardLessInput from './KeyboardLessInput'
+import styles from './Date.css'
 
 const getLocale = context => {
   const intl = context.intl || {}
@@ -14,7 +15,7 @@ const getLocale = context => {
   )
 }
 
-export default class DateInput extends React.Component {
+export default class DateInput extends React.PureComponent {
   static propTypes = {
     value: PropTypes.string,
     field: PropTypes.shape({
@@ -40,7 +41,7 @@ export default class DateInput extends React.Component {
   handleChange(date) {
     this.props.onChange({
       patch: {
-        type: date ? 'set' : 'unset',
+        type: (date && date.isValid()) ? 'set' : 'unset',
         path: [],
         value: date.format('YYYY-MM-DD')
       }
@@ -50,10 +51,12 @@ export default class DateInput extends React.Component {
   render() {
     const {value, field} = this.props
     const inputId = uniqueId('FormBuilderText')
+    const input = <KeyboardLessInput />
     return (
       <FormField labelHtmlFor={inputId} label={field.title}>
         <div className={styles.root}>
           <DatePicker
+            customInput={input}
             id={inputId}
             locale={getLocale(this.context)}
             selected={value && moment(value)}
