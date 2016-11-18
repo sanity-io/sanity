@@ -1,6 +1,7 @@
 import buildCommand from './build/buildCommand'
 import checkCommand from './check/checkCommand'
 import configCheckCommand from './config/configCheckCommand'
+import datasetGroup from './dataset/datasetGroup'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
 import createDatasetCommand from './dataset/createDatasetCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
@@ -12,6 +13,7 @@ export default [
   buildCommand,
   checkCommand,
   configCheckCommand,
+  datasetGroup,
   listDatasetsCommand,
   createDatasetCommand,
   deleteDatasetCommand,
