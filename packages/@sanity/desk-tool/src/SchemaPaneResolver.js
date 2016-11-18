@@ -48,21 +48,6 @@ function writeListViewSettings(settings) {
   window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
 }
 
-function stringifySelection(fields) {
-  if (Array.isArray(fields)) {
-    return fields.join(',')
-  }
-  return Object.keys(fields).map(key => {
-    if (typeof fields[key] === 'undefined') {
-      return null
-    }
-    return `"${key}":${fields[key]}`
-  })
-    .filter(Boolean)
-    .join(',')
-}
-
-
 export default class SchemaPaneResolver extends React.Component {
 
   static contextTypes = {
@@ -142,7 +127,9 @@ export default class SchemaPaneResolver extends React.Component {
     const type = schema.types.find(t => t.name === typeName)
     const previewConfig = previewUtils.canonicalizePreviewConfig(type)
 
-    const query = `${schema.name}.${type.name}[limit: 200, order: ${this.state.sorting}] {${stringifySelection(previewConfig.fields)}}`
+    const query = `${schema.name}.${type.name}[limit: 200, order: ${this.state.sorting}] {${
+      previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
+    }}`
 
     return (
       <QueryContainer query={query} mapFn={mapQueryResultToProps}>
