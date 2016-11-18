@@ -5,7 +5,8 @@ import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
-import {canonicalizePreviewConfig, prepareValue} from './utils'
+import QueryWrapper from './QueryWrapper'
+import {canonicalizePreviewConfig, prepareValue, stringifyGradientQuerySelection} from './utils'
 
 const previewComponentMap = {
   default: PreviewComponentDefault,
@@ -19,7 +20,7 @@ export default class DefaultPreview extends React.Component {
 
   static propTypes = {
     style: PropTypes.oneOf(Object.keys(previewComponentMap)),
-    value: PropTypes.object,
+    value: PropTypes.object.isRequired,
     field: PropTypes.object.isRequired
   };
 
@@ -33,6 +34,18 @@ export default class DefaultPreview extends React.Component {
     // todo: do this at schema parse time instead
     const previewConfig = canonicalizePreviewConfig(field)
 
-    return <PreviewComponent item={prepareValue(value, previewConfig)} />
+    if (!('_id' in value) || value._isPreviewMaterializedHack) {
+      return <PreviewComponent item={prepareValue(value, previewConfig)}/>
+    }
+
+    const querySelection = stringifyGradientQuerySelection(previewConfig.fields)
+
+    return (
+      <QueryWrapper query={`*[_id == $id] {${querySelection}}`} params={{id: value._id}}>
+        {
+          result => <PreviewComponent item={prepareValue(result[0], previewConfig)}/>
+        }
+      </QueryWrapper>
+    )
   }
 }

@@ -1,12 +1,32 @@
 import guessPreviewFields from './guessPreviewFields'
+import {uniq} from 'lodash'
+
+function objectify(arrayOrObject) {
+  if (Array.isArray(arrayOrObject)) {
+    return arrayOrObject.reduce((objectified, key) => {
+      objectified[key] = key
+      return objectified
+    }, {})
+  }
+  return arrayOrObject
+}
 // Ensure _id is in the list
 export function toGradientQuerySelection(fields) {
+  return {_id: '_id', '_isPreviewMaterializedHack': '_id', ...objectify(fields)}
+}
+
+export function stringifyGradientQuerySelection(fields) {
   if (Array.isArray(fields)) {
-    if (!fields.includes('_id')) {
-      return ['_id', ...fields]
-    }
+    return fields.join(',')
   }
-  return '_id' in fields ? fields : {_id: '_id', ...fields}
+  return Object.keys(fields).map(key => {
+    if (typeof fields[key] === 'undefined') {
+      return null
+    }
+    return `"${key}":${fields[key]}`
+  })
+    .filter(Boolean)
+    .join(',')
 }
 
 export function canonicalizePreviewConfig(type) {

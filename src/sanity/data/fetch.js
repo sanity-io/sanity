@@ -29,6 +29,10 @@ export function materializeReference(id) {
   return materializeReferences([id]).then(res => res[0])
 }
 
+export function fetchQuery(query, params) {
+  return client.fetch(query, params)
+}
+
 export function search(field) {
   const toFieldTypes = field.to.map(toField => toField.type)
   const params = toFieldTypes.reduce((acc, toFieldType, i) => {
