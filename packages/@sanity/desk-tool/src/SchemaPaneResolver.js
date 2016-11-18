@@ -193,15 +193,18 @@ export default class SchemaPaneResolver extends React.Component {
     const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
     if (containerWidth >= (navWidth + editorPaneMinWidth)) {
-      // Editor is free
+      // Enough space. Show all
       this.navigationElement.style.transform = 'translateX(0px)'
       this.editorPaneElement.style.width = `${containerWidth - navWidth}px`
 
     } else if (containerWidth < (editorPaneWidth + navWidth)) {
-      // reset the editor
-      this.editorPaneElement.style.width = 'auto'
+      // Needs more space
       // Move navigation out of the screen to make room for the editor
       const translateX = containerWidth - editorPaneMinWidth - navWidth
+      // Resize the editor
+      const newEditorWidth = containerWidth - translateX - navWidth
+      this.editorPaneElement.style.width = `${newEditorWidth}px`
+
       if ((translateX * -1) <= navWidth - padding) {
         this.navigationElement.style.transform = `translateX(${translateX}px)`
       } else {
