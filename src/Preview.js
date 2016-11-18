@@ -5,7 +5,7 @@ export default class Preview extends React.Component {
 
   static propTypes = {
     style: PropTypes.string,
-    value: PropTypes.object.isRequired,
+    value: PropTypes.object,
     field: PropTypes.object.isRequired
   };
 

@@ -20,7 +20,7 @@ export default class DefaultPreview extends React.Component {
 
   static propTypes = {
     style: PropTypes.oneOf(Object.keys(previewComponentMap)),
-    value: PropTypes.object.isRequired,
+    value: PropTypes.object,
     field: PropTypes.object.isRequired
   };
 
@@ -34,7 +34,12 @@ export default class DefaultPreview extends React.Component {
     // todo: do this at schema parse time instead
     const previewConfig = canonicalizePreviewConfig(field)
 
-    if (!('_id' in value) || value._isPreviewMaterializedHack) {
+    if (!value) {
+      return <div>{value}</div>
+    }
+
+    if (!value || !('_id' in value) || value._isPreviewMaterializedHack) {
+      debugger
       return <PreviewComponent item={prepareValue(value, previewConfig)}/>
     }
 
