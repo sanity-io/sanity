@@ -1,4 +1,4 @@
-const {Observable} = require('rxjs')
+const Observable = require('zen-observable')
 const createCache = require('./utils/createCache')
 const canonicalize = require('./utils/canonicalize')
 const Record = require('./Record')
@@ -48,6 +48,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     const record = RECORDS_CACHE.fetch(documentId, () => Record.create())
 
     return new Observable(observer => {
+      const eventsSubscription = record.events.subscribe(observer)
 
       // Listen for changes in document on server
       const serverSubscription = server
@@ -56,7 +57,6 @@ module.exports = function createDocumentStore({serverConnection}) {
           record.publish(Object.assign({}, event, {origin: 'server'}))
         })
 
-      const eventsSubscription = record.events.subscribe(observer)
       return () => {
         eventsSubscription.unsubscribe()
         serverSubscription.unsubscribe()
@@ -65,7 +65,14 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function byIds(documentIds) {
-    return Observable.merge(...documentIds.map(byId))
+    return new Observable(observer => {
+      const documentSubscriptions = documentIds
+        .map(id => byId(id).subscribe(observer))
+
+      return () => {
+        documentSubscriptions.map(subscription => subscription.unsubscribe())
+      }
+    })
   }
 
   function query(_query, params) {
@@ -75,5 +82,4 @@ module.exports = function createDocumentStore({serverConnection}) {
   function create(document) {
     return Observable.from(serverConnection.create(document))
   }
-
 }

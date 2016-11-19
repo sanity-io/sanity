@@ -1,44 +1,43 @@
-const {Observable} = require('rxjs')
+const Observable = require('zen-observable')
 const debug = require('../../src/utils/debug')
+const fromPromise = require('../../src/utils/fromPromise')
 const db = require('./db')
 
 function byId(documentId) {
+  debug('Server is "fetching" document with id %s', documentId)
   const record = db.getRecord(documentId)
-  return Observable.of({
-    type: 'snapshot',
-    document: record.snapshot
+  return new Observable(observer => {
+    observer.next({
+      type: 'snapshot',
+      document: record.snapshot
+    })
+    return record.events.subscribe(event => observer.next(event))
   })
-    .merge(new Observable(observer => {
-      return record.events.subscribe(event => {
-        observer.next(event)
-      })
-    }))
 }
 
 function query(q) {
   debug(`setting up subscription for query "${q}"`)
-  const records = db.getAllRecords()
-  const snapshots = records.map(record => record.snapshot)
-  return Observable
-    .of({
+  return new Observable(observer => {
+    const records = db.getAllRecords()
+    const snapshots = records.map(record => record.snapshot)
+    observer.next({
       type: 'snapshot',
       query: q,
       results: snapshots
     })
-    .merge(
-      new Observable(observer => {
-        const unsubscribers = records.map(record => {
-          return record.events.subscribe(event => observer.next(event))
-        })
-        return () => unsubscribers.map(unsub => unsub())
-      }))
+    const subscriptions = records.map(record => {
+      return record.events.subscribe(event => observer.next(event))
+    })
+    return () => subscriptions.map(subscription => subscription.unsubscribe())
+  })
 }
 
 function update(documentId, mutation) {
-  return Observable.fromPromise(db.updateRecord(documentId, mutation))
+  return fromPromise(db.updateRecord(documentId, mutation))
 }
+
 function create(document) {
-  return Observable.fromPromise(db.createRecord(document))
+  return fromPromise(db.createRecord(document))
 }
 
 module.exports = {

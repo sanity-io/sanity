@@ -1,5 +1,6 @@
 const createDocumentStore = require('../src')
 const mockServerConnection = require('./helpers/mockServerConnection')
+const firstOf = require('../src/utils/firstOf')
 
 const documents = createDocumentStore({serverConnection: mockServerConnection})
 
@@ -11,9 +12,7 @@ const snapshots = documents.byId(12)
     console.log('Got snapshot of document #12:', event.document)
   })
 
-const updates = documents.byId(12)
-  .filter(event => event.type === 'update')
-  .first()
+const updates = firstOf(documents.byId(12).filter(event => event.type === 'update'))
   .subscribe(event => {
     console.log('Document 12 updated:', event)
   })
@@ -25,23 +24,26 @@ wait(500, () => {
       next() {
         console.log('Updating...')
       },
+      error(err) {
+        console.error(err)
+      },
       complete() {
         console.log('Update complete')
       }
     })
 })
 
-// const first = documents.byId(22).subscribe(event => {
-//   console.log('event', event)
-// })
-// const second = documents.byId(22).subscribe(event => {
-//   console.log('GOT EVENT', event)
-// })
-//
-// wait(1000, () => {
-//   documents.update('44', {patch: {set: {body: 'LOCAL APPLIED'}}})
-// })
-//
-// wait(2000, () => {
-//   second.unsubscribe()
-// })
+const first = documents.byId(22).subscribe(event => {
+  console.log('event', event)
+})
+const second = documents.byId(22).subscribe(event => {
+  console.log('GOT EVENT', event)
+})
+
+wait(1000, () => {
+  documents.update('44', {patch: {set: {body: 'LOCAL APPLIED'}}})
+})
+
+wait(2000, () => {
+  second.unsubscribe()
+})

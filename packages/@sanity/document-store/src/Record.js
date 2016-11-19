@@ -1,4 +1,4 @@
-const {Observable} = require('rxjs')
+const Observable = require('zen-observable')
 const pubsubber = require('nano-pubsub')
 
 class Record {
@@ -22,8 +22,8 @@ class Record {
   }
 }
 
-Record.create = function create(snapshot) {
-  return new Record(snapshot)
+Record.create = function create() {
+  return new Record()
 }
 
 module.exports = Record

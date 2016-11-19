@@ -1,4 +1,4 @@
-const {Observable, ReplaySubject} = require('rxjs')
+const Observable = require('zen-observable')
 const debug = require('./debug')
 const createCache = require('./createCache')
 
@@ -21,26 +21,31 @@ const createCache = require('./createCache')
 
 module.exports = function canonicalize(getKey, producerFn) {
   const cache = createCache()
+  const refCounts = {}
 
-  return (...args) => {
-    const key = getKey(...args)
-    if (cache.has(key)) {
-      debug('reusing cached observable for key #%s', key)
-    }
-    return cache.fetch(key, () => {
-      debug('creating new observable for key #%s', key)
-      return new Observable(observer => {
-        const subscription = producerFn(...args)
-          .subscribe(observer)
+  return canonicalized
 
-        return () => {
-          subscription.unsubscribe()
+  function canonicalized(...args) {
+    return new Observable(observer => {
+      const key = getKey(...args)
+      refCounts[key] = (refCounts[key] || 0) + 1
+      if (cache.has(key)) {
+        debug('reusing cached observable for key #%s', key)
+      }
+      const cachedObservable = cache.fetch(key, () => {
+        debug('calling producer for key #%s', key)
+        return producerFn(...args)
+      })
+      const subscription = cachedObservable.subscribe(observer)
+      return () => {
+        refCounts[key]--
+        if (refCounts[key] === 0) {
           debug('purging observable for key #%s', key)
+          delete refCounts[key]
           cache.remove(key)
         }
-      })
-        .multicast(new ReplaySubject(1))
-        .refCount()
+        subscription.unsubscribe()
+      }
     })
   }
 }
