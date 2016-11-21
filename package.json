@@ -9,6 +9,9 @@
     "prepublish": "npm run test && sanity-check",
     "test": "eslint ."
   },
+  "bin": {
+    "sanity-storybook": "./bin/sanity-storybook"
+  },
   "keywords": [
     "sanity"
   ],
@@ -18,7 +21,8 @@
     "express": "^4.14.0",
     "in-publish": "^2.0.0",
     "normalize.css": "^5.0.0",
-    "react": "^15.3.1"
+    "react": "^15.3.1",
+    "resolve-from": "^2.0.0"
   },
   "peerDependencies": {
     "@sanity/server": "0.0.x"
