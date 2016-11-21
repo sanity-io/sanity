@@ -3,4 +3,3 @@ export default {
   signature: '[COMMAND]',
   description: 'Interact with datasets in your project'
 }
-

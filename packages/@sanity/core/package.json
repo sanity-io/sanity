@@ -22,6 +22,8 @@
     "@sanity/util": "0.0.2",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.3.0",
+    "fs-promise": "^1.0.0",
+    "got": "^6.6.3",
     "in-publish": "^2.0.0",
     "path-exists": "^3.0.0"
   },

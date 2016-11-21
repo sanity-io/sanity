@@ -5,6 +5,7 @@ import datasetGroup from './dataset/datasetGroup'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
 import createDatasetCommand from './dataset/createDatasetCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
+import exportDatasetCommand from './dataset/exportDatasetCommand'
 import installCommand from './install/installCommand'
 import startCommand from './start/startCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
@@ -16,6 +17,7 @@ export default [
   datasetGroup,
   listDatasetsCommand,
   createDatasetCommand,
+  exportDatasetCommand,
   deleteDatasetCommand,
   installCommand,
   startCommand,
