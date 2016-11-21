@@ -54,7 +54,7 @@ export default class CommandRunner {
 
     // The group exists and is not "default", but the subcommand doesn't exist
     if (!command && subCommand && !isDefaultGroup) {
-      throw new Error(noSuchCommandText(subCommand, commandOrGroup))
+      throw new Error(noSuchCommandText(subCommand, commandOrGroup, this.commandGroups))
     }
 
     // Group of commands
@@ -69,7 +69,7 @@ export default class CommandRunner {
     }
 
     if (!command) {
-      throw new Error(noSuchCommandText(commandOrGroup))
+      throw new Error(noSuchCommandText(commandOrGroup, null, this.commandGroups))
     }
 
     const output = this.handlers.outputter
