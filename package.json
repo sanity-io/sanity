@@ -10,7 +10,7 @@
     "test": "eslint ."
   },
   "bin": {
-    "sanity-storybook": "./bin/sanity-storybook"
+    "sanity-storybook": "./bin/sanity-storybook.js"
   },
   "keywords": [
     "sanity"
