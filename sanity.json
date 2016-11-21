@@ -485,6 +485,10 @@
       "description": "Plus circle outlined icon"
     },
     {
+      "name": "part:@sanity/base/search-icon",
+      "description": "Search icon"
+    },
+    {
       "name": "part:@sanity/base/arrow-drop-down",
       "description": "Arrow drop down"
     },
@@ -595,6 +599,10 @@
     {
       "implements": "part:@sanity/base/arrow-drop-down",
       "path": "components/icons/ArrowDropDown.js"
+    },
+    {
+      "implements": "part:@sanity/base/search-icon",
+      "path": "components/icons/Search.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
