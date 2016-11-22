@@ -3,10 +3,8 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
 import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
-import equals from 'shallow-equals'
 
-
-export default class Obj extends React.Component {
+export default class Obj extends React.PureComponent {
   static displayName = 'Object'
 
   static valueContainer = ObjectContainer;
@@ -35,7 +33,23 @@ export default class Obj extends React.Component {
   };
 
   handleFieldChange = (event, fieldName) => {
-    const {onChange} = this.props
+    const {onChange, value} = this.props
+
+    if (value.isEmpty()) {
+      const targetPatch = {
+        ...event.patch,
+        path: [fieldName, ...(event.patch.path || [])]
+      }
+      onChange({
+        patch: {
+          path: [],
+          type: 'setIfMissing',
+          value: value.patch(targetPatch).toJSON()
+        }
+      })
+      return
+    }
+
     // Rewrite patch by prepending the field name to its path
     const patch = {
       ...event.patch,
@@ -46,10 +60,6 @@ export default class Obj extends React.Component {
 
   handleFieldEnter = (event, fieldName) => {
     this.props.onEnter(fieldName)
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
   }
 
   renderField(field, level, index) {
