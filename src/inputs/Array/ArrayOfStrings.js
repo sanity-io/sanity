@@ -1,23 +1,23 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import Arr from './Array'
 import React, {PropTypes} from 'react'
 import TagInput from 'part:@sanity/components/tags/textfield'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 
 export default class ArrayOfStrings extends React.Component {
-  static propTypes = Arr.propTypes
-
-  constructor(...args) {
-    super(...args)
-
-    this.handleRemoveItem = this.handleRemoveItem.bind(this)
-    this.handleAddString = this.handleAddString.bind(this)
-  }
+  static propTypes = {
+    type: FormBuilderPropTypes.type,
+    field: FormBuilderPropTypes.field,
+    value: PropTypes.arrayOf(PropTypes.string),
+    level: PropTypes.number,
+    onChange: PropTypes.func,
+    description: PropTypes.string
+  };
 
   static contextTypes = {
     formBuilder: PropTypes.object
   }
 
-  handleRemoveItem(index) {
+  handleRemoveItem = index => {
     const nextVal = this.props.value.slice()
     nextVal.splice(index, 1)
     this.props.onChange({
@@ -28,15 +28,12 @@ export default class ArrayOfStrings extends React.Component {
     })
   }
 
-  handleAddString(string) {
+  handleAddString = string => {
     const {value, onChange} = this.props
-
-    const current = value || []
-    const nextValue = current.concat(string)
 
     onChange({
       patch: {
-        type: 'set', value: nextValue
+        type: 'set', value: (value || []).concat(string)
       }
     })
   }
