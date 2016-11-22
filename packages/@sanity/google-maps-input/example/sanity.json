@@ -1,0 +1,33 @@
+{
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "api": {
+    "dataset": "production",
+    "projectId": "foobar"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/form-builder"
+  ],
+  "parts": [
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "./Main"
+    },
+    {
+      "implements": "part:@sanity/base/schema",
+      "path": "./schema.js"
+    },
+    {
+      "name": "part:@sanity/google-maps-input/input/geopoint",
+      "implements": "part:@sanity/form-builder/input/geopoint",
+      "path": "../src/GeopointInput.js"
+    },
+    {
+      "implements": "part:@sanity/base/locale-messages",
+      "path": "../locale/strings.json"
+    }
+  ]
+}
