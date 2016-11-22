@@ -25,7 +25,7 @@
     "resolve-from": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.0.1",
+    "@sanity/check": "^0.0.3",
     "babel-eslint": "^6.0.4",
     "babel-preset-react-hmre": "^1.1.1",
     "eslint": "^3.8.1",
