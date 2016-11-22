@@ -24,7 +24,6 @@ function resolveTreeSync(options) {
   const manifest = readManifest(options)
   const plugins = resolvePlugins(manifest.plugins || [], options)
     .concat([getProjectRootPlugin(basePath, manifest)])
-    .concat(options.additionalPlugins || [])
 
   return plugins.reduce(flattenTree, plugins.slice())
 }
@@ -50,7 +49,6 @@ export default function resolveTree(opts = {}) {
       return resolvePlugins(manifest.plugins || [], options)
     })
     .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
-    .then(plugins => plugins.concat(options.additionalPlugins || []))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
     .then(removeDuplicatePlugins)
 }

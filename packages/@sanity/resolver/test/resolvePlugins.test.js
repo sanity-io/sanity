@@ -178,29 +178,6 @@ describe('plugin resolver', () => {
     ])
   })
 
-  describe('loading additional plugins', () => {
-    it('can be told to load additional plugins', () => {
-      mockFs(getBasicTree())
-
-      const addPlugin = {
-        name: 'additional-plugin',
-        path: __dirname,
-        manifest: {parts: [{implements: 'part:@sanity/base/component', path: './someComponent.js'}]},
-        plugins: []
-      }
-
-      const resolveOpts = Object.assign({}, opts, {additionalPlugins: [addPlugin]})
-      return resolveParts(resolveOpts).then(parts => {
-        parts.plugins[parts.plugins.length - 1].name.should.eql('additional-plugin')
-        parts.implementations['part:@sanity/base/component'].should.have.lengthOf(1)
-        parts.definitions['part:@sanity/base/component'].should.contain.all.keys({
-          plugin: 'additional-plugin',
-          path: __dirname
-        })
-      })
-    })
-  })
-
   describe('respects the sanity plugin resolution order', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))

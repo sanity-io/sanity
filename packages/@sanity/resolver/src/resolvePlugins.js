@@ -5,19 +5,9 @@ import readManifest from './readManifest'
 import promiseProps from 'promise-props-recursive'
 
 export function resolvePlugin(options) {
-  const {name, basePath, pluginPath, parentPluginPath, sync} = options
+  const {name, basePath, parentPluginPath, sync} = options
   const plugin = {name}
-
-  // Allow us to explicitly pass a plugin path. This is mainly used to
-  // directly inject a plugin into a tree of plugins, which shouldn't
-  // normally be needed. At the time of writing, this is used in order
-  // to allow Storybook to inject a plugin outside of a studio-context
-  let manifestDir = null
-  if (pluginPath) {
-    manifestDir = sync ? pluginPath : Promise.resolve(pluginPath)
-  } else {
-    manifestDir = resolvePluginPath({name, basePath, parentPluginPath}, sync)
-  }
+  const manifestDir = resolvePluginPath({name, basePath, parentPluginPath}, sync)
 
   if (sync) {
     const manifest = readManifest({
