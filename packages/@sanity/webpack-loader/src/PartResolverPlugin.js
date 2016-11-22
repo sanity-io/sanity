@@ -19,7 +19,9 @@ const PartResolverPlugin = function (options) {
     )
   }
 
-  const configPath = path.join(options.basePath, 'config')
+  const {basePath} = options
+  const additionalPlugins = options.additionalPlugins || []
+  const configPath = path.join(basePath, 'config')
 
   this.apply = resolver => {
     resolver.plugin('module', function (request, callback) {
@@ -29,7 +31,7 @@ const PartResolverPlugin = function (options) {
           request: debugPart,
           query: `?${qs.stringify({
             sanityPart: request.request,
-            basePath: options.basePath
+            basePath: basePath
           })}`
         }, callback)
         return
@@ -43,7 +45,7 @@ const PartResolverPlugin = function (options) {
       const sanityPart = request.request.replace(/^all:/, '')
 
       partResolver
-        .resolveParts({basePath: options.basePath})
+        .resolveParts({basePath, additionalPlugins})
         .then(parts => {
           // Configuration files resolve to a specific path
           // Either the root sanity.json or a plugins JSON config
@@ -52,7 +54,7 @@ const PartResolverPlugin = function (options) {
             const configFor = configMatch[1]
             const req = Object.assign({}, request, {
               request: configFor === 'sanity'
-                ? path.join(options.basePath, 'sanity.json')
+                ? path.join(basePath, 'sanity.json')
                 : path.join(configPath, `${configMatch[1]}.json`)
             })
             return this.doResolve(['file'], req, callback)
@@ -82,7 +84,7 @@ const PartResolverPlugin = function (options) {
           const reqQuery = (request.query || '').replace(/^\?/, '')
           const query = Object.assign({}, qs.parse(reqQuery) || {}, {
             sanityPart: request.request,
-            basePath: options.basePath
+            basePath: basePath
           })
 
           return this.doResolve(['file', 'directory'], Object.assign({}, request, {
