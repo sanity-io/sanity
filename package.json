@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook-only",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Make Sanity only show Storybook. Useful for certain plugin demos.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
