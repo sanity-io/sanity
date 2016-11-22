@@ -15,7 +15,7 @@
   version "1.4.7"
   resolved "https://registry.yarnpkg.com/@kadira/react-split-pane/-/react-split-pane-1.4.7.tgz#6d753d4a9fe62fe82056e323a6bcef7f026972b5"
 
-"@kadira/react-storybook-addon-info@^3.2.1":
+"@kadira/react-storybook-addon-info@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@kadira/react-storybook-addon-info/-/react-storybook-addon-info-3.3.0.tgz#dad3987c1603eed9b3e7718c5b26966098693b35"
   dependencies:
@@ -39,9 +39,9 @@
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/@kadira/storybook-addons/-/storybook-addons-1.6.1.tgz#e84923d298b38c7c1231ddebc219dfb87b2858a6"
 
-"@kadira/storybook-channel-postmsg@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@kadira/storybook-channel-postmsg/-/storybook-channel-postmsg-1.1.0.tgz#5ee89e27d2e25a872ddf2cfd9947e1cb931e7b11"
+"@kadira/storybook-channel-postmsg@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@kadira/storybook-channel-postmsg/-/storybook-channel-postmsg-2.0.0.tgz#9b2382ddf9925e028e56f5e20d50707823f2692e"
   dependencies:
     "@kadira/storybook-channel" "^1.1.0"
     json-stringify-safe "^5.0.1"
@@ -71,15 +71,15 @@
     react-modal "^1.2.1"
     redux "^3.5.2"
 
-"@kadira/storybook@^2.6.1":
-  version "2.30.0"
-  resolved "https://registry.yarnpkg.com/@kadira/storybook/-/storybook-2.30.0.tgz#5727958a8e74876d2448035e78130713fdf27612"
+"@kadira/storybook@^2.32.1":
+  version "2.32.1"
+  resolved "https://registry.yarnpkg.com/@kadira/storybook/-/storybook-2.32.1.tgz#c15f758f79a7328f1b95152d29e94680aff22aab"
   dependencies:
     "@kadira/react-split-pane" "^1.4.0"
     "@kadira/storybook-addon-actions" "^1.0.2"
     "@kadira/storybook-addon-links" "^1.0.0"
     "@kadira/storybook-addons" "^1.5.0"
-    "@kadira/storybook-channel-postmsg" "^1.1.0"
+    "@kadira/storybook-channel-postmsg" "^2.0.0"
     "@kadira/storybook-ui" "^3.8.0"
     airbnb-js-shims "^1.0.1"
     autoprefixer "^6.3.7"
@@ -115,9 +115,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.5.tgz#4887bf205bde7ad3b5ed9926dafabce8066ab637"
+"@sanity/base@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.1.6.tgz#8665034264296fb0ac527a9986c6b7261bdcfb98"
   dependencies:
     "@sanity/client" "^0.3.11"
     "@sanity/document-store" "0.0.5"
@@ -180,13 +180,13 @@
     react-sortable-hoc "^0.1.0"
     scroll "^2.0.0"
 
-"@sanity/core@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.12.tgz#ceaff25e3b6f8bd9945fe932200d478f4c3be45d"
+"@sanity/core@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.13.tgz#ec548d3983acb466312b38bc07542e95c263a0e1"
   dependencies:
     "@sanity/check" "^0.0.3"
     "@sanity/server" "^0.0.16"
-    "@sanity/storybook" "^0.0.9"
+    "@sanity/storybook" "^0.0.14"
     "@sanity/util" "0.0.2"
     deep-sort-object "^1.0.1"
     filesize "^3.3.0"
@@ -195,9 +195,9 @@
     in-publish "^2.0.0"
     path-exists "^3.0.0"
 
-"@sanity/data-aspects@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.4.tgz#665a070407d2888a05a9912b2c59928a933b58c1"
+"@sanity/data-aspects@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.5.tgz#efc03fa73e8df4870aa206805bce941d37f0eb3c"
   dependencies:
     in-publish "^2.0.0"
     lodash "^4.15.0"
@@ -234,9 +234,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.0.52":
-  version "0.0.52"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.52.tgz#e9607b329f73185ca12b207fb0814af5866d76c6"
+"@sanity/form-builder@^0.0.53":
+  version "0.0.53"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.53.tgz#2739005e338a76563e843452b81402349cde3894"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     canvas-to-blob "0.0.0"
@@ -339,16 +339,17 @@
   dependencies:
     lodash "^4.17.2"
 
-"@sanity/storybook@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.9.tgz#73167e41cba4a5bb7df807b5117c5185ed20ed43"
+"@sanity/storybook@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.14.tgz#8ab8f526c2bb59ff9eddc6198fe55c011c78de6c"
   dependencies:
-    "@kadira/react-storybook-addon-info" "^3.2.1"
-    "@kadira/storybook" "^2.6.1"
+    "@kadira/react-storybook-addon-info" "^3.3.0"
+    "@kadira/storybook" "^2.32.1"
     express "^4.14.0"
     in-publish "^2.0.0"
     normalize.css "^5.0.0"
     react "^15.3.1"
+    resolve-from "^2.0.0"
 
 "@sanity/util@0.0.2":
   version "0.0.2"
