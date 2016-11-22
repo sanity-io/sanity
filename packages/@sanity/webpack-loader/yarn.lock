@@ -4,9 +4,9 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/resolver@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.6.tgz#5bfb896055678479e24830f8d5f3f06e159a47bc"
+"@sanity/resolver@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.7.tgz#afc73a4dda3cbdb44d3bd54c549a2ae63a4e8715"
   dependencies:
     "@sanity/generate-help-url" "^0.0.2"
     in-publish "^2.0.0"
