@@ -16,7 +16,7 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/check": "^0.0.2",
+    "@sanity/check": "^0.0.3",
     "@sanity/server": "^0.0.16",
     "@sanity/storybook": "^0.0.9",
     "@sanity/util": "0.0.2",
