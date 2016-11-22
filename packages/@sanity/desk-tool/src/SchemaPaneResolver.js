@@ -13,14 +13,6 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
 import {previewUtils} from 'part:@sanity/form-builder'
 
-function mapQueryResultToProps(props) {
-  const {result, ...rest} = props
-  return {
-    items: (result ? result.documents : []),
-    ...rest
-  }
-}
-
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
   let scheduled
@@ -132,16 +124,25 @@ export default class SchemaPaneResolver extends React.Component {
     }}`
 
     return (
-      <QueryContainer query={query} mapFn={mapQueryResultToProps}>
-        <Pane
-          contentType="documents"
-          type={type}
-          renderItem={this.renderDocumentPaneItem}
-          onSetListView={this.handleSetListView}
-          onSetSorting={this.handleSetSort}
-          listView={this.getListViewForType(type.name)}
-          onUpdate={this.handleUpdate}
-        />
+      <QueryContainer query={query}>
+        {({result, loading, error}) => {
+          if (error) {
+            return <div>An error occurred while loading items: {error.message}</div>
+          }
+          return (
+            <Pane
+              contentType="documents"
+              type={type}
+              loading={loading}
+              items={result ? result.documents : []}
+              renderItem={this.renderDocumentPaneItem}
+              onSetListView={this.handleSetListView}
+              onSetSorting={this.handleSetSort}
+              listView={this.getListViewForType(type.name)}
+              onUpdate={this.handleUpdate}
+            />
+          )
+        }}
       </QueryContainer>
     )
   }
