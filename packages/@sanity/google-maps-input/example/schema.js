@@ -1,5 +1,5 @@
 import bundledTypes from 'part:@sanity/base/bundled-types'
-import {keyBy} from 'lodash'
+import keyBy from 'lodash.keyby'
 
 const keyedTypes = keyBy(bundledTypes.types, 'name')
 
