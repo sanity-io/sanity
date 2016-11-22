@@ -64,7 +64,7 @@ export default class Arr extends React.Component {
 
   insert(itemValue, position, atIndex) {
     const {onChange, value} = this.props
-    if (value.isEmpty()) {
+    if (value.length === 0) {
       onChange({
         patch: {
           type: 'set',
@@ -116,6 +116,7 @@ export default class Arr extends React.Component {
   }
 
   handleDropDownAction = menuItem => {
+    this.setState({editIndex: this.props.value.length})
     this.append(this.createValueForField(menuItem.field))
   }
 
