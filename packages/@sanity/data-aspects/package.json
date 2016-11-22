@@ -20,7 +20,7 @@
     "lodash": "^4.15.0"
   },
   "devDependencies": {
-    "@sanity/check": "0.0.2",
+    "@sanity/check": "^0.0.3",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-syntax-class-properties": "^6.8.0",
