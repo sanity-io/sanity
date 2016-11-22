@@ -31,7 +31,7 @@ Observable
 
 ## A minimal Observable
 
-For bundle size sensitive contexts there is a absolute minimal observable implementation (still RxJS based) that can be imported from `@sanity/observable/minimal`. This observable has none of the static methods (`create`, `from`), and implements only the `map`, `filter` and `reduce` instance methods. It weighs around 3.3 KB minified and gzipped.
+For bundle size sensitive contexts there is an absolute minimal observable implementation (still RxJS based) that can be imported from `@sanity/observable/minimal`. This observable has none of the static methods (`create`, `from`), and implements only the `map`, `filter` and `reduce` instance methods. It weighs around 3.3 KB minified and gzipped.
 
 ```js
 import Observable from '@sanity/observable/minimal'
