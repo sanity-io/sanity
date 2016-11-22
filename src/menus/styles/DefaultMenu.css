@@ -5,7 +5,7 @@
 .root {
   position: absolute;
   width: auto;
-  background-color: var(--body-bg);
+  background-color: var(--brand-white);
   color: var(--text-color);
   composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-small);
@@ -41,6 +41,8 @@
   line-height: 3em;
   padding: 0 1em;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     background-color: #eee;
