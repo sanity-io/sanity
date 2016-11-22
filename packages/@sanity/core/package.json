@@ -18,7 +18,7 @@
   "dependencies": {
     "@sanity/check": "^0.0.3",
     "@sanity/server": "^0.0.16",
-    "@sanity/storybook": "^0.0.9",
+    "@sanity/storybook": "^0.0.14",
     "@sanity/util": "0.0.2",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.3.0",

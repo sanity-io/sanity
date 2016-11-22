@@ -6,7 +6,7 @@
   version "1.4.7"
   resolved "https://registry.yarnpkg.com/@kadira/react-split-pane/-/react-split-pane-1.4.7.tgz#6d753d4a9fe62fe82056e323a6bcef7f026972b5"
 
-"@kadira/react-storybook-addon-info@^3.2.1":
+"@kadira/react-storybook-addon-info@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@kadira/react-storybook-addon-info/-/react-storybook-addon-info-3.3.0.tgz#dad3987c1603eed9b3e7718c5b26966098693b35"
   dependencies:
@@ -62,7 +62,7 @@
     react-modal "^1.2.1"
     redux "^3.5.2"
 
-"@kadira/storybook@^2.6.1":
+"@kadira/storybook@^2.32.1":
   version "2.32.1"
   resolved "https://registry.yarnpkg.com/@kadira/storybook/-/storybook-2.32.1.tgz#c15f758f79a7328f1b95152d29e94680aff22aab"
   dependencies:
@@ -106,12 +106,12 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/check@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@sanity/check/-/check-0.0.2.tgz#ca0adb349bb0811b13d27036e7a2a9a433f8dfbc"
+"@sanity/check@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@sanity/check/-/check-0.0.3.tgz#4aeae5ade1610fed3e17faa71a701058b42bf08e"
   dependencies:
     "@sanity/generate-help-url" "^0.0.1"
-    "@sanity/resolver" "^0.0.1"
+    "@sanity/resolver" "^0.0.9"
     chalk "^1.1.3"
     fs-promise "^0.5.0"
     in-publish "^2.0.0"
@@ -132,17 +132,6 @@
 "@sanity/generate-help-url@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
-
-"@sanity/resolver@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.1.tgz#4c70d5f7e72b5e405832b1c2f29f39ae551d8112"
-  dependencies:
-    "@sanity/generate-help-url" "^0.0.1"
-    fs-promise "^0.5.0"
-    in-publish "^2.0.0"
-    lodash.uniq "^4.5.0"
-    path-exists "^3.0.0"
-    promise-props-recursive "^1.0.0"
 
 "@sanity/resolver@^0.0.9":
   version "0.0.9"
@@ -193,16 +182,17 @@
     webpack-dev-middleware "^1.7.0"
     webpack-hot-middleware "^2.12.2"
 
-"@sanity/storybook@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.9.tgz#73167e41cba4a5bb7df807b5117c5185ed20ed43"
+"@sanity/storybook@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.14.tgz#8ab8f526c2bb59ff9eddc6198fe55c011c78de6c"
   dependencies:
-    "@kadira/react-storybook-addon-info" "^3.2.1"
-    "@kadira/storybook" "^2.6.1"
+    "@kadira/react-storybook-addon-info" "^3.3.0"
+    "@kadira/storybook" "^2.32.1"
     express "^4.14.0"
     in-publish "^2.0.0"
     normalize.css "^5.0.0"
     react "^15.3.1"
+    resolve-from "^2.0.0"
 
 "@sanity/util@0.0.2":
   version "0.0.2"
@@ -1485,11 +1475,11 @@ color-convert@^1.3.0:
   dependencies:
     color-name "^1.1.1"
 
-color-name@1.0.x:
+color-name@1.0.x, color-name@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.0.1.tgz#6b34b2b29b7716013972b0b9d5bedcfbb6718df8"
 
-color-name@^1.0.0, color-name@^1.1.1:
+color-name@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.1.tgz#4b1415304cf50028ea81643643bd82ea05803689"
 
@@ -4410,34 +4400,22 @@ readable-stream@^1.0.27-1, readable-stream@^1.1.13:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-"readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.1, readable-stream@^2.0.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.2.tgz#a9e6fec3c7dda85f8bb1b3ba7028604556fc825e"
-  dependencies:
-    buffer-shims "^1.0.0"
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~0.10.x"
-    util-deprecate "~1.0.1"
-
-readable-stream@~2.0.0:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~0.10.x"
-    util-deprecate "~1.0.1"
-
-readable-stream@~2.1.4:
+"readable-stream@^2.0.0 || ^1.1.13", readable-stream@~2.1.4:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.1.5.tgz#66fa8b720e1438b364681f2ad1a63c618448c9d0"
   dependencies:
     buffer-shims "^1.0.0"
+    core-util-is "~1.0.0"
+    inherits "~2.0.1"
+    isarray "~1.0.0"
+    process-nextick-args "~1.0.6"
+    string_decoder "~0.10.x"
+    util-deprecate "~1.0.1"
+
+readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@~2.0.0:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
+  dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.1"
     isarray "~1.0.0"
