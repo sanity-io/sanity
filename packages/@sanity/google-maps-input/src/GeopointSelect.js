@@ -139,12 +139,12 @@ class GeopointSelect extends React.Component {
           ref={this.assignReference('map')}
           className={styles.map}
         />
-
         <div className={styles.searchInput}>
           <input
             name="place"
             ref={this.assignReference('searchInput')}
             placeholder={formatMessage('google-maps.searchInputPlaceholder')}
+            className={styles.input}
           />
         </div>
       </div>
