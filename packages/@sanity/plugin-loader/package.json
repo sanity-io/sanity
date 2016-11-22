@@ -37,7 +37,7 @@
     "nyc": "^8.3.2"
   },
   "dependencies": {
-    "@sanity/resolver": "^0.0.2",
+    "@sanity/resolver": "^0.0.9",
     "css-modules-require-hook": "^4.0.5",
     "interop-require": "^1.0.0"
   }
