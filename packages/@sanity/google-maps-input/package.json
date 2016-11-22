@@ -20,12 +20,12 @@
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.1.3",
+    "@sanity/base": "^0.1.5",
     "@sanity/check": "0.0.2",
     "@sanity/cli": "^0.1.12",
-    "@sanity/components": "0.0.58",
-    "@sanity/core": "0.0.7",
-    "@sanity/form-builder": "0.0.50",
+    "@sanity/components": "^0.0.58",
+    "@sanity/core": "^0.0.12",
+    "@sanity/form-builder": "^0.0.52",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.8.0",
