@@ -111,6 +111,16 @@ export default {
               ]
             },
             {
+              title: 'Link',
+              type: 'link',
+              marks: [
+                'bold',
+                'italic',
+                'underline',
+                'line-through'
+              ]
+            },
+            {
               title: 'String',
               type: 'string'
             },

@@ -12,6 +12,10 @@
   border-left: 1px solid #ccc;
 }
 
+.dividerRight {
+  border-right: 1px solid #ccc;
+}
+
 .insertContainer {
   float: right;
 
@@ -32,6 +36,12 @@
   float: left;
   min-width: 10em;
   padding-right: 0.5em;
+}
+
+.linkContainer {
+  composes: dividerRight;
+  composes: dividerLeft;
+  float: left;
 }
 
 .fullscreenButtonContainer {

@@ -1,21 +1,18 @@
 import assert from 'assert'
 import isEmpty from 'is-empty'
-import {SLATE_TEXT_BLOCKS, SLATE_LIST_BLOCKS, SLATE_BLOCK_FORMATTING_OPTION_KEYS} from '../constants'
-import {pick} from 'lodash'
+import {
+  SLATE_LIST_ITEM_TYPE,
+  SLATE_TEXT_BLOCKS,
+  SLATE_LIST_BLOCKS,
+  SLATE_BLOCK_FORMATTING_OPTION_KEYS
+} from '../constants'
 
-function collapse(value) {
-  return isEmpty(value) ? undefined : value
-}
+import {pick} from 'lodash'
 
 const SERIALIZE = {
   block(block, context = {}) {
-    if (SLATE_TEXT_BLOCKS.includes(block.type)) {
-      assert(
-        block.nodes.size === 1,
-        `Expected ${block.type} blocks to have a single node, instead it had ${block.nodes.size} nodes`
-      )
-      // Skip the field def
-      return SERIALIZE.textBlock(block, block.nodes.get(0), context)
+    if (SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE).includes(block.type)) {
+      return SERIALIZE.textBlock(block, block.nodes, context)
     }
 
     if (SLATE_LIST_BLOCKS.includes(block.type)) {
@@ -43,19 +40,6 @@ const SERIALIZE = {
       .map(node => SERIALIZE.node(node, context))
   },
 
-  inline(inline, context = {}) {
-    return {
-      data: collapse(inline.data.toJSON()),
-      key: inline.key,
-      kind: inline.kind,
-      isVoid: inline.isVoid,
-      type: inline.type,
-      nodes: inline.nodes
-        .toArray()
-        .map(node => SERIALIZE.node(node, context))
-    }
-  },
-
   node(node, context) {
     switch (node.kind) {
       case 'block':
@@ -80,31 +64,27 @@ const SERIALIZE = {
     }
   },
 
-  textBlock(block, text, context = {}) {
-    return Object.assign(
-      {
-        key: text.key,
-        _type: block.type,
-        ranges: text
-          .getRanges()
-          .toArray()
-          .map(range => SERIALIZE.range(range, context))
-      },
-      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-    )
+  text(text, context = {}) {
+    return {
+      key: text.key,
+      _type: 'text',
+      ranges: text
+        .getRanges()
+        .toArray()
+        .map(range => SERIALIZE.range(range, context))
+    }
   },
 
-  listBlock(block, items, context = {}) {
+  inline(inline, context = {}) {
     return Object.assign(
       {
-        key: block.key,
-        _type: block.type,
-        items: items
+        key: inline.key,
+        _type: inline.type,
+        children: inline.nodes
           .toArray()
-          .map(item => SERIALIZE.textBlock(item, item.nodes.get(0), context))
-
+          .map(node => SERIALIZE.node(node, context))
       },
-      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      pick(inline.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
     )
   },
 
@@ -112,7 +92,35 @@ const SERIALIZE = {
     return {
       type: mark.type
     }
+  },
+
+  textBlock(block, nodes, context = {}) {
+    return Object.assign(
+      {
+        key: block.key,
+        _type: block.type,
+        children: nodes
+          .toArray()
+          .map(node => SERIALIZE.node(node, context))
+
+      },
+      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    )
+  },
+
+  listBlock(block, nodes, context = {}) {
+    return Object.assign(
+      {
+        key: block.key,
+        _type: block.type,
+        children: nodes
+          .toArray()
+          .map(node => SERIALIZE.node(node, context))
+      },
+      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    )
   }
+
 }
 
 export default function fromSlate(state, context) {

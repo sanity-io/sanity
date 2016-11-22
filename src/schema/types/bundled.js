@@ -135,5 +135,14 @@ export default {
       marks: PropTypes.array,
       title: PropTypes.string
     }
+  },
+  link: {
+    primitive: 'object',
+    options: {
+      marks: PropTypes.array,
+      title: PropTypes.string,
+      target: PropTypes.string,
+      href: PropTypes.string
+    }
   }
 }

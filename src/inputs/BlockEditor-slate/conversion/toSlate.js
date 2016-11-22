@@ -1,42 +1,32 @@
 // Converts a persisted array to a slate compatible json document
 import {pick} from 'lodash'
-import {Raw, Block, Document, State, Character, Mark, Text} from 'slate'
+import {Raw, Block, Document, State, Character, Mark, Text, Inline} from 'slate'
 import {createFieldValue} from '../../../state/FormBuilderState'
 import {SLATE_TEXT_BLOCKS, SLATE_LIST_BLOCKS, SLATE_DEFAULT_NODE, SLATE_BLOCK_FORMATTING_OPTION_KEYS} from '../constants'
 
 const DESERIALIZE = {
-  textBlock(para, context) {
+  textBlock(para, context = {}) {
     return Block.create({
       type: para._type,
       data: pick(para, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
       isVoid: false,
-      nodes: Block.createList([
-        Text.create({
-          key: para.key,
-          characters: para.ranges.reduce((characters, range) => {
-            return characters.concat(DESERIALIZE.range(range, context))
-          }, Character.createList())
-        })
-      ])
+      nodes: Block.createList(para.children.map(childChild => {
+        return DESERIALIZE.node(childChild, context)
+      }))
     })
   },
 
-  listBlock(para, context) {
+  listBlock(para, context = {}) {
     return Block.create({
       type: para._type,
       data: pick(para, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
       isVoid: false,
-      nodes: Block.createList(para.items.map(item => {
+      nodes: Block.createList(para.children.map(child => {
         return Block.create({
           type: 'listItem',
-          nodes: Block.createList([
-            Text.create({
-              key: item.key,
-              characters: item.ranges.reduce((characters, range) => {
-                return characters.concat(DESERIALIZE.range(range, context))
-              }, Character.createList())
-            })
-          ])
+          nodes: Block.createList(child.children.map((childChild) => {
+            return DESERIALIZE.node(childChild, context)
+          }))
         })
       }))
     })
@@ -55,13 +45,43 @@ const DESERIALIZE = {
       }))
   },
 
-  node(node, context) {
+  text(node, context = {}) {
+    return Text.create({
+      key: node.key,
+      characters: node.ranges.reduce((characters, range) => {
+        return characters.concat(DESERIALIZE.range(range, context))
+      }, Character.createList())
+    })
+  },
+
+
+  link(node, context = {}) {
+    return Inline.create({
+      type: 'link',
+      data: pick(node, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
+      isVoid: false,
+      nodes: Inline.createList(node.children.map(childChild => {
+        return DESERIALIZE.node(childChild, context)
+      }))
+    })
+  },
+
+  node(node, context = {}) {
+
+    if (node._type === 'link') {
+      return DESERIALIZE.link(node, context)
+    }
+
+    if (node._type === 'text') {
+      return DESERIALIZE.text(node, context)
+    }
+
     if (SLATE_TEXT_BLOCKS.includes(node._type)) {
-      return DESERIALIZE.textBlock(node)
+      return DESERIALIZE.textBlock(node, context)
     }
 
     if (SLATE_LIST_BLOCKS.includes(node._type)) {
-      return DESERIALIZE.listBlock(node)
+      return DESERIALIZE.listBlock(node, context)
     }
 
     // find type in field definition's `of` property

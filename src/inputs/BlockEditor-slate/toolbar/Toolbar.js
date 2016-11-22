@@ -7,6 +7,7 @@ import BlockFormat, {blockFormatShape} from './BlockFormat'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import LinkButton from './LinkButton'
 
 export default class Toolbar extends React.Component {
 
@@ -16,6 +17,7 @@ export default class Toolbar extends React.Component {
     className: PropTypes.string,
     fullscreen: PropTypes.bool,
     onMarkButtonClick: PropTypes.func,
+    onLinkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
     onFormatSelectChange: PropTypes.func,
     insertBlocks: PropTypes.arrayOf(insertBlockShape),
@@ -29,7 +31,12 @@ export default class Toolbar extends React.Component {
       value: PropTypes.arrayOf(blockFormatShape),
       items: PropTypes.arrayOf(blockFormatShape),
       onSelect: PropTypes.func
-    })
+    }),
+    activeLink: PropTypes.shape({
+      href: PropTypes.string,
+      target: PropTypes.string
+    }),
+    showLinkButton: PropTypes.boolean
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -51,7 +58,10 @@ export default class Toolbar extends React.Component {
       onFormatSelectChange,
       listFormats,
       textFormats,
-      insertBlocks
+      insertBlocks,
+      onLinkButtonClick,
+      activeLink,
+      showLinkButton
     } = this.props
 
     return (
@@ -71,6 +81,14 @@ export default class Toolbar extends React.Component {
             <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
           </div>
         )}
+
+        {
+          showLinkButton && (
+            <div className={styles.linkContainer}>
+              <LinkButton activeLink={activeLink} onClick={onLinkButtonClick} />
+            </div>
+          )
+        }
 
         <div className={styles.fullscreenButtonContainer}>
           <Button

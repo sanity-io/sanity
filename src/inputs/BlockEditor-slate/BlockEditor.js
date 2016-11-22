@@ -21,7 +21,8 @@ import {
   SLATE_LIST_BLOCKS,
   SLATE_LIST_ITEM_TYPE,
   SLATE_DEFAULT_NODE,
-  SLATE_TEXT_BLOCKS
+  SLATE_TEXT_BLOCKS,
+  SLATE_LINK_TYPE
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
@@ -194,6 +195,39 @@ export default class BlockEditor extends React.Component {
     onChange({patch: createLocalStatePatch(nextState)})
   }
 
+  handleOnClickLinkButton = (href, target, text) => {
+
+    const {value, onChange} = this.props
+    const {state} = value
+    let transform = state.transform()
+
+    if (!href) {
+      transform = transform
+       .unwrapInline(SLATE_LINK_TYPE)
+       .collapseToEnd()
+    } else if (href) {
+      if (state.isExpanded) {
+        transform = transform
+          .wrapInline({
+            type: SLATE_LINK_TYPE,
+            data: {href: href, target: target}
+          })
+          .collapseToEnd()
+      } else {
+        transform = transform
+          .insertText(text)
+          .extendBackward(text.length)
+          .wrapInline({
+            type: SLATE_LINK_TYPE,
+            data: {href: href, target: target}
+          })
+          .collapseToEnd()
+      }
+    }
+    const nextState = transform.apply()
+    onChange({patch: createLocalStatePatch(nextState)})
+  }
+
   hasMark(type) {
     const {value} = this.props
     return value.state.marks.some(mark => mark.type == type)
@@ -207,6 +241,11 @@ export default class BlockEditor extends React.Component {
           pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
         )
     )
+  }
+
+  hasLinks() {
+    const {value} = this.props
+    return value.state.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
   }
 
   isWithinList() {
@@ -307,6 +346,25 @@ export default class BlockEditor extends React.Component {
     }
   }
 
+  getActiveLink() {
+    const {value} = this.props
+    if (!value.state.inlines) {
+      return null
+    }
+    if (this.hasLinks()) {
+      const linkNode = value.state.inlines
+        .find(inline => inline.type === SLATE_LINK_TYPE)
+      if (linkNode) {
+        return {
+          href: linkNode.data.get('href'),
+          target: linkNode.data.get('target')
+        }
+      }
+      return null
+    }
+    return null
+  }
+
   handleToggleFullscreen = () => {
     this.setState({
       fullscreen: !this.state.fullscreen
@@ -321,6 +379,10 @@ export default class BlockEditor extends React.Component {
     const {validation, value, field, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
     const inputId = uniqueId('FormBuilderText')
+    const activeLink = this.getActiveLink()
+    const showLinkButton = (value.state.selection && value.state.selection.isExpanded)
+      || activeLink
+
     return (
       <FormField label={field.title} labelHtmlFor={inputId} level={level}>
         <div
@@ -340,6 +402,9 @@ export default class BlockEditor extends React.Component {
             onFormatSelectChange={this.handleSelectBlockFormatting}
             listFormats={this.getListFormats()}
             textFormats={this.getTextFormats()}
+            onLinkButtonClick={this.handleOnClickLinkButton}
+            activeLink={activeLink}
+            showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
           <div className={styles.inputContainer}>
