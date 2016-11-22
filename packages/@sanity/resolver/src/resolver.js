@@ -16,7 +16,8 @@ export function resolveParts(opts = {}) {
     return mergeResult(resolveTree(options), options)
   }
 
-  return resolveTree(options).then(plugins => mergeResult(plugins, options))
+  return resolveTree(options)
+    .then(plugins => mergeResult(plugins, options))
 }
 
 function resolveTreeSync(options) {

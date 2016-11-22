@@ -1,24 +1,38 @@
+import fs from 'fs'
 import path from 'path'
 import pathExists from 'path-exists'
 import uniq from 'lodash.uniq'
 import readManifest from './readManifest'
 import promiseProps from 'promise-props-recursive'
 
+const dirMatcher = /^\.\.?[/\\]?/
+
 export function resolvePlugin(options) {
   const {name, basePath, parentPluginPath, sync} = options
-  const plugin = {name}
-  const manifestDir = resolvePluginPath({name, basePath, parentPluginPath}, sync)
+  const resolver = sync ? dir => dir : dir => Promise.resolve(dir)
+  const parentDir = parentPluginPath || basePath
+  const isDirPlugin = dirMatcher.test(name)
+
+  const pluginName = isDirPlugin
+    ? readPluginName(parentDir, name)
+    : name
+
+  const manifestDir = isDirPlugin
+    ? resolver(path.resolve(parentDir, name))
+    : resolvePluginPath({name, basePath, parentPluginPath}, sync)
+
+  const plugin = {name: pluginName}
 
   if (sync) {
     const manifest = readManifest({
       sync,
       basePath,
       manifestDir,
-      plugin: name
+      plugin: pluginName
     })
 
     return {
-      name,
+      name: pluginName,
       manifest,
       path: manifestDir,
       plugins: resolvePlugins(manifest.plugins || [], {
@@ -31,7 +45,7 @@ export function resolvePlugin(options) {
 
   return manifestDir
     .then(resolvedPath => Object.assign(plugin, {path: resolvedPath}))
-    .then(() => readManifest({basePath, manifestDir: plugin.path, plugin: name}))
+    .then(() => readManifest({basePath, manifestDir: plugin.path, plugin: pluginName}))
     .then(manifest => promiseProps(Object.assign(plugin, {
       manifest,
       plugins: resolvePlugins(manifest.plugins || [], {
@@ -103,4 +117,28 @@ function getPluginNotFoundError(pluginName, locations) {
   err.locations = locations
 
   return err
+}
+
+function readPluginName(parent, dir) {
+  const pkgPath = path.join(parent, dir, 'package.json')
+  const manifestPath = path.join(parent, dir, 'sanity.json')
+  const baseError = `Plugin/project at "${parent}" has the path "${dir}" as a plugin, but Sanity was not able to load`
+  const info = {}
+  try {
+    info.name = readJson(pkgPath).name.replace(/^sanity-plugin-/, '')
+  } catch (err) {
+    throw new Error(`${baseError} "${pkgPath}" in order to get the plugin name`)
+  }
+
+  try {
+    info.manifest = readJson(manifestPath)
+  } catch (err) {
+    throw new Error(`${baseError} "${manifestPath}" in order to get the plugin parts`)
+  }
+
+  return info.name
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, {encoding: 'utf8'}))
 }

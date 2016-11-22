@@ -13,6 +13,7 @@ import {
   getScopedPluginsTree,
   getStyleTree,
   getMultiTree,
+  getParentDirTree,
   getDuplicatePartTree,
   getInvalidPartDeclaration,
   getStyleOverriderTree,
@@ -438,6 +439,28 @@ describe('plugin resolver', () => {
       resolveProjectRoot: true
     }).then(parts => {
       parts.plugins[parts.plugins.length - 1].path.should.eql('/sanity')
+    })
+  })
+
+  it('can resolve relative paths as plugins', () => {
+    mockFs(getParentDirTree())
+
+    return resolveParts({basePath: '/sanity/app'}).then(parts => {
+      parts.plugins[3].should.include.keys({
+        name: 'my-parent-plugin',
+        path: '/sanity/my-parent-plugin',
+        manifest: {
+          parts: [{
+            name: 'part:my-parent-plugin/foo/bar',
+            path: 'foobar.js'
+          }]
+        }
+      })
+
+      parts.implementations['part:my-parent-plugin/foo/bar'][0].should.eql({
+        plugin: 'my-parent-plugin',
+        path: '/sanity/my-parent-plugin/foobar.js'
+      })
     })
   })
 })

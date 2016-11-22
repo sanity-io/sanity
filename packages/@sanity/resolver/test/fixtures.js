@@ -531,6 +531,28 @@ export function getRootLevelPartsTree() {
   })
 }
 
+export function getParentDirTree() {
+  return {
+    '/sanity/app/sanity.json': sanityManifest(['@sanity/core', 'instagram', '../my-parent-plugin']),
+    '/sanity/app/node_modules': {
+      'sanity-plugin-instagram': {
+        'sanity.json': instagramManifest(),
+      },
+      '@sanity': sanityCore()
+    },
+    '/sanity/my-parent-plugin/package.json': JSON.stringify({
+      name: 'my-parent-plugin',
+      version: '1.0.0'
+    }),
+    '/sanity/my-parent-plugin/sanity.json': pluginManifest({
+      parts: [{
+        name: 'part:my-parent-plugin/foo/bar',
+        path: 'foobar.js'
+      }]
+    })
+  }
+}
+
 export function getNodeResolutionTree() {
   return Object.assign({}, getBasicTree(), {
     '/sanity/app/sanity.json': sanityManifest(
