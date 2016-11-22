@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@sanity/base": "^0.1.3",
+    "@sanity/check": "0.0.2",
     "@sanity/cli": "^0.1.12",
     "@sanity/components": "0.0.58",
     "@sanity/core": "0.0.7",
