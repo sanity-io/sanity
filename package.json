@@ -16,9 +16,8 @@
     "sanity"
   ],
   "dependencies": {
-    "@kadira/react-storybook-addon-info": "^3.2.1",
-    "@kadira/storybook": "^2.6.1",
-    "@sanity/server": "^0.0.14",
+    "@kadira/react-storybook-addon-info": "^3.3.0",
+    "@kadira/storybook": "^2.32.1",
     "express": "^4.14.0",
     "in-publish": "^2.0.0",
     "normalize.css": "^5.0.0",
