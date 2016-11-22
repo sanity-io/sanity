@@ -31,6 +31,7 @@ export default (config = {}) => {
   const env = config.env || 'development'
   const isProd = env === 'production'
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
+  const resolverOpts = Object.assign({basePath}, config.resolver || {})
 
   const cssExtractor = isProd
     && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
@@ -105,7 +106,7 @@ export default (config = {}) => {
     plugins: [
       cssExtractor,
       new OccurrenceOrderPlugin(),
-      new webpack.ResolverPlugin([new RoleResolverPlugin({basePath})], ['normal']),
+      new webpack.ResolverPlugin([new RoleResolverPlugin(resolverOpts)], ['normal']),
       commonChunkPlugin
     ].filter(Boolean),
     postcss: postcssPlugins({basePath})
