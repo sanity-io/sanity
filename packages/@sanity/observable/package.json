@@ -1,7 +1,7 @@
 {
   "name": "@sanity/observable",
   "description": "A small-ish RxJS based Observable implementation for Sanity",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "compile": "babel src --copy-files --out-dir lib",
