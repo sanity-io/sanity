@@ -10,6 +10,8 @@ import {
   ReactDOM
 } from '@sanity/server'
 
+const absoluteMatch = /^https?:\/\//i
+
 export default (args, context) => {
   const {output, workDir} = context
   const flags = args.extOptions
@@ -53,7 +55,7 @@ export default (args, context) => {
       spin.text = 'Building index document'
       return getDocumentElement(compilationConfig, {
         scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => ({
-          path: `js/${asset}`,
+          path: absoluteMatch.test(asset) ? asset : `js/${asset}`,
           hash: chunkMap[asset]
         }))
       })
