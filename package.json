@@ -48,7 +48,7 @@
   "devDependencies": {
     "@sanity/base": "^0.1.5",
     "@sanity/check": "^0.0.2",
-    "@sanity/core": "^0.0.10",
+    "@sanity/core": "^0.0.11",
     "@sanity/storybook": "^0.0.13",
     "@sanity/storybook-only": "^1.0.1",
     "babel-cli": "^6.9.0",
