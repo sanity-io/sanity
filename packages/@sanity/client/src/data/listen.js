@@ -1,5 +1,5 @@
 const assign = require('xtend/mutable')
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable/minimal')
 const encodeQueryString = require('./encodeQueryString')
 const validators = require('../validators')
 const pick = require('../util/pick')

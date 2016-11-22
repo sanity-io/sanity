@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-function, no-process-env */
 const request = require('@sanity/request') // `request` in node, `xhr` in browsers
 const queryString = require('./queryString')
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable/minimal')
 const assign = require('xtend/mutable')
 
 const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1

@@ -2,7 +2,7 @@
 
 [![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)[![Coverage Status](https://img.shields.io/coveralls/sanity-io/client/master.svg?style=flat-square)](https://coveralls.io/github/sanity-io/client)[![Dependency status](https://img.shields.io/david/sanity-io/client.svg?style=flat-square)](https://david-dm.org/sanity-io/client)
 
-Javascript cliio for Sanity. Works in browsers (IE9+) and node.js.
+Javascript client for Sanity. Works in browsers (IE9+) and node.js.
 
 ## Requirements
 Sanity Client requires the JavaScript runtime to have a global ES6-compliant `Promise` available. If your runtime environment doesn't provide a spec compliant `Promise` implementation, we recommend using [native-promise-only](https://www.npmjs.com/package/native-promise-only), [es6-promise](https://www.npmjs.com/package/es6-promise) or another [spec-compliant](https://promisesaplus.com/implementations) implementation.
@@ -63,7 +63,7 @@ const subscription = client.listen(query, params)
 
 `client.listen(query, params = {}, options = {includeResult: true})`
 
-Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [Observable](https://github.com/zenparsing/zen-observable). When calling `subscribe()` on the observable, a subscription is returned which can be used to unsubscribe from the query.
+Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [Observable](https://github.com/sanity-io/observable). When calling `subscribe()` on the observable, a subscription is returned which can be used to unsubscribe from the query.
 
 The objects which are emitted always contain `mutation`, which is an object containing the mutation which triggered the document to appear as part of the query.
 
