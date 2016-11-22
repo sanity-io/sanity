@@ -4,9 +4,20 @@ import uniq from 'lodash.uniq'
 import readManifest from './readManifest'
 import promiseProps from 'promise-props-recursive'
 
-function resolvePlugin({name, basePath, parentPluginPath, sync}) {
+export function resolvePlugin(options) {
+  const {name, basePath, pluginPath, parentPluginPath, sync} = options
   const plugin = {name}
-  const manifestDir = resolvePluginPath({name, basePath, parentPluginPath}, sync)
+
+  // Allow us to explicitly pass a plugin path. This is mainly used to
+  // directly inject a plugin into a tree of plugins, which shouldn't
+  // normally be needed. At the time of writing, this is used in order
+  // to allow Storybook to inject a plugin outside of a studio-context
+  let manifestDir = null
+  if (pluginPath) {
+    manifestDir = sync ? pluginPath : Promise.resolve(pluginPath)
+  } else {
+    manifestDir = resolvePluginPath({name, basePath, parentPluginPath}, sync)
+  }
 
   if (sync) {
     const manifest = readManifest({
@@ -29,7 +40,7 @@ function resolvePlugin({name, basePath, parentPluginPath, sync}) {
   }
 
   return manifestDir
-    .then(pluginPath => Object.assign(plugin, {path: pluginPath}))
+    .then(resolvedPath => Object.assign(plugin, {path: resolvedPath}))
     .then(() => readManifest({basePath, manifestDir: plugin.path, plugin: name}))
     .then(manifest => promiseProps(Object.assign(plugin, {
       manifest,
@@ -40,7 +51,7 @@ function resolvePlugin({name, basePath, parentPluginPath, sync}) {
     })))
 }
 
-function resolvePlugins(pluginNames, options) {
+export function resolvePlugins(pluginNames, options) {
   const plugins = pluginNames.map(pluginName =>
     resolvePlugin(Object.assign({name: pluginName}, options))
   )
@@ -103,5 +114,3 @@ function getPluginNotFoundError(pluginName, locations) {
 
   return err
 }
-
-export default resolvePlugins

@@ -2,11 +2,12 @@ import path from 'path'
 import generateHelpUrl from '@sanity/generate-help-url'
 import flattenTree from './flattenTree'
 import readManifest from './readManifest'
-import resolvePlugins from './resolvePlugins'
+import {resolvePlugins, resolvePlugin} from './resolvePlugins'
 import resolveSanityRoot from './resolveProjectRoot'
 import removeDuplicatePlugins from './removeDuplicatePlugins'
 
 export const resolveProjectRoot = resolveSanityRoot
+export {resolvePlugin}
 
 export function resolveParts(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
