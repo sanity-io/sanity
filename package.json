@@ -18,18 +18,15 @@
   "dependencies": {
     "@kadira/react-storybook-addon-info": "^3.2.1",
     "@kadira/storybook": "^2.6.1",
+    "@sanity/server": "^0.0.14",
     "express": "^4.14.0",
     "in-publish": "^2.0.0",
     "normalize.css": "^5.0.0",
     "react": "^15.3.1",
     "resolve-from": "^2.0.0"
   },
-  "peerDependencies": {
-    "@sanity/server": "0.0.x"
-  },
   "devDependencies": {
     "@sanity/check": "^0.0.1",
-    "@sanity/server": "0.0.x",
     "babel-eslint": "^6.0.4",
     "babel-preset-react-hmre": "^1.1.1",
     "eslint": "^3.8.1",
