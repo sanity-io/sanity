@@ -17,7 +17,9 @@ export default async function reinitializePluginConfigs(options) {
   const missingConfigs = await Promise.all(withLocalConfigs.map(createMissingConfig))
   const configPlugins = missingConfigs.map(warnOnDifferingChecksum)
 
-  return await saveNewChecksums(configPlugins)
+  return missingConfigs.length > 0
+    ? await saveNewChecksums(configPlugins)
+    : Promise.resolve()
 
   function hasLocalConfig(plugin) {
     return localConfigExists(workDir, plugin.name)
