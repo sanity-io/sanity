@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/storybook",
+    "@sanity/storybook-only"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema.js"
+    }
+  ],
+  "storybook": {
+    "port": 9001
+  }
+}
