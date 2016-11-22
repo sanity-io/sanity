@@ -34,8 +34,8 @@
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
     "@sanity/extract-text-webpack-plugin": "^1.0.1",
-    "@sanity/resolver": "^0.0.7",
-    "@sanity/webpack-loader": "^0.0.5",
+    "@sanity/resolver": "^0.0.9",
+    "@sanity/webpack-loader": "^0.0.6",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.2",
     "babel-plugin-syntax-class-properties": "^6.8.0",
