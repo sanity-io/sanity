@@ -2,6 +2,13 @@ import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 import {omit} from 'lodash'
 import {Observable} from 'rxjs'
+import debounce from 'debounce-promise'
+
+function wrapInObservable(fn) {
+  return (...args) => {
+    return Observable.fromPromise(fn(...args))
+  }
+}
 
 const serverConnection = {
   byId(id) {
@@ -38,11 +45,26 @@ const serverConnection = {
       }))
   },
 
-  update(id, patch) {
-    return Observable.from(client
-      .patch(id, patch)
-      .commit({returnDocuments: false}))
-  },
+  update: wrapInObservable(debounce(calls => {
+    // Ugh, this is heartbreakingly ugly. Should be refactored soon.
+    const patchesById = calls.reduce((collapsedPatch, call) => {
+      const [id, patch] = call
+      const operations = Object.keys(patch)
+      operations.forEach(opName => {
+        collapsedPatch[id] = collapsedPatch[id] || {}
+        collapsedPatch[id][opName] = collapsedPatch[id][opName] || {}
+        Object.assign(collapsedPatch[id][opName], patch[opName])
+      })
+      return collapsedPatch
+    }, {})
+    const patches = Object.keys(patchesById).map(id => {
+      const operations = patchesById[id]
+      return Object.assign({id: id}, operations)
+    })
+    return Promise.all(patches.map(mut => {
+      return client.mutate({patch: mut}, {returnDocuments: false})
+    }))
+  }, 500, {accumulate: true})),
 
   delete(id) {
     return Observable.from(client.delete(id, {returnDocuments: false}))

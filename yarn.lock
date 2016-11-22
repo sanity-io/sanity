@@ -1113,6 +1113,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+debounce-promise@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/debounce-promise/-/debounce-promise-2.1.1.tgz#4c6a6a2ba6b4a75bac544d688dd1ad4fcce9f30b"
+
 debug@^2.1.1, debug@^2.2.0:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.2.tgz#94cb466ef7d6d2c7e5245cdd6e4104f2d0d70d30"
