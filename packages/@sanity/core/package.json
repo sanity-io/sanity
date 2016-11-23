@@ -25,7 +25,8 @@
     "fs-promise": "^1.0.0",
     "got": "^6.6.3",
     "in-publish": "^2.0.0",
-    "path-exists": "^3.0.0"
+    "path-exists": "^3.0.0",
+    "pretty-ms": "^2.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

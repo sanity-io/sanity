@@ -1,5 +1,6 @@
 import path from 'path'
 import fsp from 'fs-promise'
+import prettyMs from 'pretty-ms'
 import streamDataset from '../../actions/dataset/streamDataset'
 
 export default {
@@ -8,13 +9,20 @@ export default {
   signature: '[NAME] [DESTINATION]',
   description: 'Export dataset to local filesystem',
   action: async (args, context) => {
-    const {apiClient, output} = context
+    const {apiClient, output, chalk} = context
     const client = apiClient()
     const [dataset, destination] = args.argsWithoutOptions
-    const signature = 'sanity dataset export [dataset]'
+    const signature = 'sanity dataset export [dataset] [destination]'
+
     if (!dataset) {
       throw new Error(
         `Dataset must be specified ("${signature}")`
+      )
+    }
+
+    if (!destination) {
+      throw new Error(
+        `Destination filename must be specified. Use "-" to print to stdout. ("${signature}")`
       )
     }
 
@@ -30,17 +38,25 @@ export default {
 
     // If we are dumping to a file, let the user know where it's at
     if (outputPath) {
-      output.print(`Exporting dataset "${dataset}" to "${outputPath}"`)
+      output.print(`Exporting dataset "${chalk.cyan(dataset)}" to "${chalk.cyan(outputPath)}"`)
     }
+
+    const startTime = Date.now()
 
     streamDataset(client, dataset)
       .pipe(outputPath ? fsp.createWriteStream(outputPath) : process.stdout)
       .on('error', err => output.error(err))
+      .on('close', () => {
+        if (outputPath) {
+          const time = prettyMs(Date.now() - startTime, {verbose: true})
+          output.print(`Done. Time spent: ${chalk.cyan(time)}`)
+        }
+      })
   }
 }
 
 async function getOutputPath(destination, dataset) {
-  if (!destination) {
+  if (destination === '-') {
     return null
   }
 
