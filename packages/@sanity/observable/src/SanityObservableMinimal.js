@@ -12,7 +12,12 @@ function SanityObservableMinimal() {
 }
 
 SanityObservableMinimal.prototype = Object.create(Observable.prototype)
-SanityObservableMinimal.prototype.constructor = SanityObservableMinimal
+Object.defineProperty(SanityObservableMinimal.prototype, 'constructor', {
+  value: SanityObservableMinimal,
+  enumerable: false,
+  writable: true,
+  configurable: true
+})
 
 SanityObservableMinimal.prototype.lift = function lift(operator) {
   const observable = new SanityObservableMinimal()
