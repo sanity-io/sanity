@@ -20,7 +20,7 @@ export function formatMessage(message) {
       'Module not found:'
     )
     // Internal stacks are generally useless so we strip them
-    .replace(/^\s*at\s.*:\d+:\d+[\s\)]*\n/gm, '') // at ... ...:x:y
+    .replace(/^\s*at\s.*:\d+:\d+[\s)]*\n/gm, '') // at ... ...:x:y
     // Webpack loader names obscure CSS filenames
     .replace(/\.\/~\/css-loader.*?!\.\/~\/postcss-loader!/, '')
     // Make Sanity part names readable
@@ -31,7 +31,7 @@ export function formatMessage(message) {
       return ` (${chalk.yellow(decodeURIComponent(part))})`
     })
     // Make paths red
-    .replace(/(\s+@\s+)([.\/]\S+)( \(.*?\))/g, (full, prefix, path, part) => {
+    .replace(/(\s+@\s+)([./]\S+)( \(.*?\))/g, (full, prefix, path, part) => {
       return `${prefix}${chalk.red(path)}${part}`
     })
 }
