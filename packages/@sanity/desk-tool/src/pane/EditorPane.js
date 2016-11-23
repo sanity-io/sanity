@@ -56,11 +56,12 @@ export default class EditorPane extends React.PureComponent {
     const byId = documentStore.byId(documentId)
 
     const initialSubscription = byId
-      .first(event => event.type === 'snapshot')
+      .filter(event => event.type === 'snapshot')
       .subscribe(event => {
         this.setState({
           value: createFormBuilderStateFrom(event.document, typeName)
         })
+        initialSubscription.unsubscribe()
       })
 
     const updateSubscription = byId
