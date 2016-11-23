@@ -58,8 +58,12 @@ const serverConnection = {
       const operations = Object.keys(patch)
       operations.forEach(opName => {
         collapsedPatch[id] = collapsedPatch[id] || {}
-        collapsedPatch[id][opName] = collapsedPatch[id][opName] || {}
-        Object.assign(collapsedPatch[id][opName], patch[opName])
+        if (opName === 'unset') {
+          collapsedPatch[id][opName] = (collapsedPatch[id][opName] || []).concat(patch[opName])
+        } else {
+          collapsedPatch[id][opName] = collapsedPatch[id][opName] || {}
+          Object.assign(collapsedPatch[id][opName], patch[opName])
+        }
       })
       return collapsedPatch
     }, {})
