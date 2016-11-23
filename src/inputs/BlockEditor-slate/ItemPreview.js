@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
+import Preview from '../../Preview'
+
 
 export default class ItemPreview extends React.Component {
 
@@ -25,16 +27,11 @@ export default class ItemPreview extends React.Component {
   render() {
     const {value, field} = this.props
 
-    const fieldType = this.getFieldType(field)
-
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType)
-
     return (
-      <PreviewComponent
+      <Preview
         style="default"
         value={value.serialize()}
         field={field}
-        schema={this.context.formBuilder.schema}
       />
     )
   }
