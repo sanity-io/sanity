@@ -53,7 +53,7 @@ export default class CommandRunner {
 
     const command = commandInfo.command
 
-    if (command.parentName) {
+    if (command.group && command.group !== 'default') {
       cmdArgs.argsWithoutOptions = args.argsWithoutOptions.slice(1)
     }
 
@@ -81,7 +81,7 @@ export default class CommandRunner {
       debug(`Command "${cmdName}" doesnt have a valid "action"-property, showing help`)
       return context.output.print(generateCommandDocumentation(
         command,
-        command.parentName,
+        command.group && command.group !== 'default' ? command.group : null,
         subCommandName
       ))
     }
