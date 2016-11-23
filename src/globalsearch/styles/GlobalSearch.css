@@ -1,0 +1,94 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  color: inherit;
+  position: relative;
+  line-height: 1em;
+}
+
+.input {
+  border: none;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  background-color: transparent;
+  padding-left: 1.2em;
+  line-height: 1em;
+  font-size: inherit;
+}
+
+.listContainer {
+  position: absolute;
+  top: 100%;
+  left: 1em;
+  width: calc(100% - 1em);
+  height: auto;
+}
+
+.listContainerClosed {
+  display: none;
+}
+
+.label {
+  font-size: inherit;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.icon {
+  font-size: 1em;
+  position: absolute;
+  top: -0.15em;
+  left: 0;
+}
+
+.spinner {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.labelText {
+  display: none;
+}
+
+.topItems {
+  background-color: #ccc;
+}
+
+.items {
+  background-color: color(var(--component-bg) a(90%));
+  padding: 0;
+  display: block;
+  margin: 0;
+}
+
+.item {
+  background-color: transparent;
+  cursor: pointer;
+
+  @nest &:hover {
+    background-color: var(--gray-light--transparent);
+  }
+}
+
+.topItem {
+  composes: item;
+  background-color: var(--gray--transparent);
+  color: var(--brand-white);
+
+  @nest &:hover {
+    background-color: var(--gray-dark--transparent);
+  }
+}
+
+.selectedItem {
+  background-color: green;
+  background-color: var(--selected-item-color-hover);
+  color: var(--selected-item-color-hover--inverted);
+}
+
+.selectedTopItem {
+  composes: selectedItem;
+}

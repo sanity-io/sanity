@@ -662,6 +662,22 @@
       "path": "previews/styles/MediaPreview.css"
     },
     {
+      "name": "part:@sanity/components/globalsearch/default",
+      "description": "Global search component. For use on root site"
+    },
+    {
+      "implements": "part:@sanity/components/globalsearch/default",
+      "path": "globalsearch/GlobalSearch.js"
+    },
+    {
+      "name": "part:@sanity/components/globalsearch/default-style",
+      "description": "Global search component. For use on root site"
+    },
+    {
+      "implements": "part:@sanity/components/globalsearch/default-style",
+      "path": "globalsearch/styles/GlobalSearch.css"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
@@ -756,6 +772,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "datepicker/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "globalsearch/story.js"
     }
 
   ]

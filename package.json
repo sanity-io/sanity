@@ -46,7 +46,7 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.1.6",
+    "@sanity/base": "^0.2.1",
     "@sanity/check": "^0.0.3",
     "@sanity/core": "^0.0.13",
     "@sanity/storybook": "^0.0.14",
