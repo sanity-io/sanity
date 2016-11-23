@@ -967,6 +967,26 @@ test('uploads images', t => {
     })
 })
 
+test('uploads images with custom label', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const label = 'xy zzy'
+  nock(projectHost())
+    .post(`/v1/assets/images/foo?label=${encodeURIComponent(label)}`, body =>
+      new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+    )
+    .reply(201, {
+      label: label
+    })
+
+  getClient().assets.upload('image', fs.createReadStream(fixturePath), {label: label})
+    .filter(event => event.type === 'response') // todo: test progress events too
+    .map(event => event.body)
+    .subscribe(body => {
+      t.equal(body.label, label)
+      t.end()
+    })
+})
+
 test('uploads files', t => {
   const fixturePath = fixture('vildanden.pdf')
 

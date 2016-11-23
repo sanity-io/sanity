@@ -21,13 +21,15 @@ assign(AssetsClient.prototype, {
       : {}
 
     const assetEndpointSegment = ASSET_TYPES_TO_ENDPOINT[assetType]
+    const query = options.label ? `?label=${encodeURIComponent(options.label)}` : ''
+    const uri = `/assets/${assetEndpointSegment}/${dataset}${query}`
 
     return this.client.requestObservable({
       method: 'POST',
       headers: assign({
         Accept: 'application/json',
       }, customHeaders),
-      uri: `/assets/${assetEndpointSegment}/${dataset}`,
+      uri: uri,
       body: file,
       json: false,
       timeout: 0
