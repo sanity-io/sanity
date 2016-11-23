@@ -18,7 +18,7 @@
       "path": "./Main"
     },
     {
-      "implements": "part:@sanity/base/sanity-studio-logo",
+      "implements": "part:@sanity/base/company-logo",
       "path": "./Logo.js"
     },
     {
