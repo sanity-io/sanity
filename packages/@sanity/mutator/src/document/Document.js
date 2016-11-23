@@ -70,7 +70,7 @@ export default class Document {
   // Call to signal that we are submitting a mutation. Returns a callback object with a
   // success and failure handler that must be called according to the outcome of our
   // submission.
-  stage(mutation : Mutation) : SubmissionResponder {
+  stage(mutation : Mutation, silent? : bool) : SubmissionResponder {
     if (!mutation.transactionId) {
       throw new Error('Mutations _must_ have transactionId when submitted')
     }
@@ -79,7 +79,7 @@ export default class Document {
     this.pending.push(mutation)
     this.EDGE = mutation.apply(this.EDGE)
 
-    if (this.onMutation) {
+    if (this.onMutation && !silent) {
       this.onMutation({
         mutation,
         document: this.EDGE,

@@ -82,7 +82,7 @@ export default class Mutation {
   // that all mutations are on the same document.
   // TOOO: Optimize mutations, eliminating mutations that overwrite themselves!
   static squash(document : Object, mutations : Array<Mutation>) : Mutation {
-    const squashed = mutations.reduce((result, mutation) => result.concat(...mutations.mutations), [])
+    const squashed = mutations.reduce((result, mutation) => result.concat(...mutation.mutations), [])
     return new Mutation({mutations: squashed})
   }
 }

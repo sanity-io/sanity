@@ -1,8 +1,11 @@
 // @flow
+
+// A test jig for the Document model
+
 import {Document, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
 
-export default class DocTester {
+export default class DocumentTester {
   doc : Document
   constructor(tap, attrs) {
     this.doc = new Document(attrs)

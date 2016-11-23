@@ -1,10 +1,10 @@
 // @flow
 import {test} from 'tap'
 
-import DocTester from './util/DocTester'
+import DocumentTester from './util/DocumentTester'
 
 test('simple remote mutation', tap => {
-  (new DocTester(tap, {
+  (new DocumentTester(tap, {
     _rev: '1',
     title: 'Hello'
   }))
@@ -26,7 +26,7 @@ test('simple remote mutation', tap => {
 })
 
 test('simple local mutation arrives', tap => {
-  (new DocTester(tap, {
+  (new DocumentTester(tap, {
     _rev: '1',
     title: 'Hello'
   }))
@@ -65,7 +65,7 @@ test('simple local mutation arrives', tap => {
 
 
 test('local mutation submitted, but remote mutation wins the race and causes a rebase', tap => {
-  (new DocTester(tap, {
+  (new DocumentTester(tap, {
     _rev: '1',
     count: 1
   }))
@@ -107,7 +107,7 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
 
 
 test('simple local mutation failing', tap => {
-  (new DocTester(tap, {
+  (new DocumentTester(tap, {
     _rev: '1',
     title: 'Hello'
   }))
@@ -138,7 +138,7 @@ test('simple local mutation failing', tap => {
 })
 
 test('simple local mutation arriving out of order', tap => {
-  (new DocTester(tap, {
+  (new DocumentTester(tap, {
     _rev: '1',
     numbers: []
   }))

@@ -1,6 +1,7 @@
 // @flow
 import PlainProbe from './PlainProbe'
 import {Expression, Matcher} from '../jsonpath'
+import {compact} from 'lodash'
 
 export default function extract(path : string, value : Object) : Array<any> {
   const result = []
@@ -39,5 +40,5 @@ function accessorsFromTarget(target : Expression, accessor : PlainProbe) {
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }
-  return result
+  return compact(result)
 }

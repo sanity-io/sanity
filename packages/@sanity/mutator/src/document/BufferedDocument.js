@@ -36,9 +36,9 @@ export default class BufferedDocument {
   onRebase : Function
   commitHandler : Function
   constructor(doc) {
-    this.doc = new Document(doc)
-    this.doc.onMutation = msg => this.handleDocMutation(msg)
-    this.doc.onRebase = msg => this.handleDocRebase(msg)
+    this.document = new Document(doc)
+    this.document.onMutation = msg => this.handleDocMutation(msg)
+    this.document.onRebase = msg => this.handleDocRebase(msg)
     this.LOCAL = doc
     this.mutations = []
     this.commits = []
@@ -47,6 +47,7 @@ export default class BufferedDocument {
   // Add a change to the buffer
   add(mutation : Mutation) {
     this.mutations.push(mutation)
+    const oldLocal = this.LOCAL
     this.LOCAL = mutation.apply(this.LOCAL)
     if (this.onMutation) {
       this.onMutation({
@@ -68,7 +69,9 @@ export default class BufferedDocument {
     if (this.mutations.length == 0) {
       return
     }
+    // Collect current staged mutations into a commit and ...
     this.commits.push(new Commit(this.mutations))
+    // ... clear the table for the next commit.
     this.mutations = []
     this.performCommits()
   }
@@ -96,7 +99,7 @@ export default class BufferedDocument {
     this.committerRunning = true
     const commit = this.commits.shift()
     const squashed = commit.squash(this.LOCAL)
-    const docResponder = this.doc.stage(squashed)
+    const docResponder = this.document.stage(squashed, true)
 
     const responder = {
       success: () => {
@@ -114,7 +117,11 @@ export default class BufferedDocument {
         setTimeout(() => this.cycleCommitter(), 1000)
       }
     }
-    this.commitHandler(squashed.mutations, responder)
+    this.commitHandler({
+      mutation: squashed,
+      success: responder.success,
+      failure: responder.failure
+    })
   }
 
   handleDocRebase(msg) {
@@ -124,7 +131,7 @@ export default class BufferedDocument {
   handleDocMutation(msg) {
     // If we have no local changes, we can just pass this on to the client
     if (this.commits.length == 0 && this.mutations.length == 0) {
-      this.LOCAL = this.doc.EDGE
+      this.LOCAL = this.document.EDGE
       if (this.onMutation) {
         this.onMutation(msg)
       }
@@ -135,10 +142,10 @@ export default class BufferedDocument {
 
   rebase() {
     const oldLocal = this.LOCAL
-    this.LOCAL = this.commits.reduce((doc, commit) => commit.apply(doc), this.doc.EDGE)
+    this.LOCAL = this.commits.reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
     this.LOCAL = Mutation.applyAll(this.LOCAL, this.mutations)
     // Copy over rev, since we don't care if it changed, we only care about the content
-    oldLocal._rev = this.EDGE._rev
+    oldLocal._rev = this.LOCAL._rev
     const changed = !isEqual(this.LOCAL, oldLocal)
     if (changed && this.onRebase) {
       this.onRebase(this.LOCAL)
