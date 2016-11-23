@@ -1,0 +1,14 @@
+.resetList {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.noLink {
+  color: inherit;
+  text-decoration: none;
+
+  @nest &:hover {
+    color: inherit;
+  }
+}

@@ -115,6 +115,10 @@
       "description": "Overrides scrollbar styling and scrolling helpers"
     },
     {
+      "name": "part:@sanity/base/theme/layout/helpers",
+      "description": "Helpers for normal styling, like resets"
+    },
+    {
       "name": "part:@sanity/base/theme/body-style",
       "description": "Resets, fontsize, font-family etc"
     },
@@ -351,6 +355,10 @@
     {
       "implements": "part:@sanity/base/theme/layout/scrolling-style",
       "path": "styles/layout/scrolling.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/layout/helpers",
+      "path": "styles/layout/helpers.css"
     },
     {
       "implements": "part:@sanity/base/theme/buttons/default-style",

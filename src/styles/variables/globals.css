@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 :root {
   --header-height: 3rem;
 

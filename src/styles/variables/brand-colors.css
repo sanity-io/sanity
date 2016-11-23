@@ -16,7 +16,6 @@
   --brand-secondary-lighter:        #ffa299;
   --brand-secondary-lighter--text:  var(--brand-black);
 
-
   --brand-success:                #19b366;
   --brand-success--text:          var(--brand-white);
   --brand-success-light:          #20df80;
@@ -36,6 +35,8 @@
   --brand-danger--text: var(--brand-white);
 
   --body-bg: var(--brand-white);
+
+  --component-bg: var(--body-bg);
 
   --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
 }

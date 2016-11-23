@@ -1,5 +1,4 @@
 @import 'part:@sanity/base/theme/variables/gray-colors-style';
-@use postcss-cssnext;
 
 :root {
 

@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .center-both {
   position: absolute;
   box-sizing: border-box;

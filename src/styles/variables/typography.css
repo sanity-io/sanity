@@ -1,6 +1,5 @@
 @import "part:@sanity/base/theme/variables/brand-colors-style";
 @import "part:@sanity/base/theme/variables/gray-colors-style";
-@use postcss-cssnext;
 
 :root {
   --text-color: var(--gray-darker);

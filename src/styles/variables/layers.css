@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 :root {
   --zindex-navbar: 1000;
   --zindex-dropdown: 1010;

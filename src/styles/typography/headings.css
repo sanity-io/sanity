@@ -1,5 +1,4 @@
 @import 'part:@sanity/base/theme/variables/typography-style';
-@use postcss-cssnext;
 
 .root {
   text-align: left;

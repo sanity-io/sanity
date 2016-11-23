@@ -1,10 +1,13 @@
 @import 'part:@sanity/base/theme/variables/brand-colors-style';
 @import 'part:@sanity/base/theme/variables/gray-colors-style';
-@use postcss-cssnext;
 
 :root {
   --selectable-item-color: var(--gray-darker);
+  --selectable-item-color--inverted: var(--brand-white);
   --selectable-item-color-hover: var(--gray);
+  --selectable-item-color-hover--inverted: var(--brand-white);
   --selected-item-color: var(--brand-primary);
+  --selected-item-color--inverted: var(--brand-white);
   --selected-item-color-hover: color(var(--brand-primary) lightness(+10%));
+  --selected-item-color-hover--inverted: var(--brand-white);
 }
