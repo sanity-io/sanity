@@ -1,9 +1,9 @@
-import Observable from '../utils/SanityStoreObservable'
+import Observable from '@sanity/observable'
 import createActions from '../utils/createActions'
-import pubsubber from '../utils/pubsubber'
+import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 
-const userChannel = pubsubber()
+const userChannel = pubsub()
 
 let _currentUser = null
 

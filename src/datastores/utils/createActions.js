@@ -1,6 +1,6 @@
 // Todo: refactor out
-import pubsubber from './pubsubber'
-import Observable from './SanityStoreObservable'
+import pubsub from 'nano-pubsub'
+import Observable from '@sanity/observable'
 
 export default function createActions(actions) {
   return Object.keys(actions).reduce((acc, name) => {
@@ -11,7 +11,7 @@ export default function createActions(actions) {
 
 function createAction(name, fn) {
 
-  const calls = pubsubber()
+  const calls = pubsub()
 
   const functor = function action(...args) {
     const retValue = fn(...args)

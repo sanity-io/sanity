@@ -1,6 +1,5 @@
-import Observable from '../utils/SanityStoreObservable'
+import Observable from '@sanity/observable'
 import createActions from '../utils/createActions'
-import pubsubber from '../utils/pubsubber'
 import projectFetcher from 'part:@sanity/base/project-fetcher'
 import config from 'config:sanity'
 
@@ -38,14 +37,6 @@ function handleApiError(errObj, observer) {
   return observer.error(new UnknownApiError(errObj))
 }
 
-
-const projectChannel = pubsubber()
-
-let _currentProject = null
-
-projectChannel.subscribe(val => {
-  _currentProject = val
-})
 
 function currentProject() {
 

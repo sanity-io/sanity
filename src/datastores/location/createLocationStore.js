@@ -1,4 +1,4 @@
-import Observable from '../utils/SanityStoreObservable'
+import Observable from '@sanity/observable'
 import Location from '../utils/Location'
 import {createHistory} from 'history'
 import createActions from '../utils/createActions'
