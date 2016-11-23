@@ -22,7 +22,15 @@ class GlobalSearch extends React.Component {
 
   static defaultProps = {
     isOpen: false,
-    renderItem() {}
+    isSearching: false,
+    label: 'Search',
+    placeholder: '',
+    onClose() {},
+    onBlur() {},
+    renderItem() {},
+    onFocus() {},
+    topItems: [],
+    items: []
   }
 
   constructor(props) {
@@ -129,7 +137,7 @@ class GlobalSearch extends React.Component {
     // select first
     if (!selectedItem) {
       this.setState({
-        selectedItem: topItems && topItems[0]
+        selectedItem: (topItems && topItems[0]) || (items && items[0])
       })
     }
 
