@@ -64,7 +64,10 @@ export default class EditorPane extends React.PureComponent {
       })
 
     const updateSubscription = byId
-      .filter(event => event.type === 'mutation')
+      .filter(event => {
+        return event.type === 'mutation'
+                && event.origin !== 'server' // skip events from server for now
+      })
       .subscribe(event => {
         this.handleIncomingPatch(event.patch)
       })
