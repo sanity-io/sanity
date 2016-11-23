@@ -1,4 +1,4 @@
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable')
 const debug = require('../../src/utils/debug')
 const fromPromise = require('../../src/utils/fromPromise')
 const db = require('./db')

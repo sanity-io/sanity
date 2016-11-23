@@ -1,4 +1,4 @@
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable')
 
 module.exports = function fromPromise(promise) {
   return new Observable(observer => {

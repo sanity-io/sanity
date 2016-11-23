@@ -1,4 +1,4 @@
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable')
 const debug = require('./debug')
 const createCache = require('./createCache')
 

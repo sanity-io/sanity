@@ -1,4 +1,4 @@
-const Observable = require('zen-observable')
+const Observable = require('@sanity/observable')
 const pubsubber = require('nano-pubsub')
 
 class Record {
