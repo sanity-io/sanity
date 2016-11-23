@@ -1,9 +1,9 @@
 import fs from 'fs'
 
 export default function readFirstLine(file) {
-  const stream = fs.createReadStream(file, {encoding: 'utf8'})
-
   return new Promise((resolve, reject) => {
+    const stream = fs.createReadStream(file, {encoding: 'utf8'})
+
     let buffer = ''
     stream
       .on('data', data => {
