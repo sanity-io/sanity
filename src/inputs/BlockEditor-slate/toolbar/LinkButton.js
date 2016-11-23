@@ -7,7 +7,7 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
 import styles from './styles/LinkButton.css'
 
-export default class TextFormatToolbar extends React.Component {
+export default class LinkButton extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
@@ -57,7 +57,7 @@ export default class TextFormatToolbar extends React.Component {
       <div>
         <ToggleButton
           onClick={this.handleToggleButtonClick}
-          selected={this.props.activeLink}
+          selected={!!this.props.activeLink}
           title={'Link'}
           className={styles.button}
         >

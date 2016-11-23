@@ -44,7 +44,7 @@ export default class TextFormatToolbar extends React.Component {
     return (
       <ToggleButton
         key={`markButton${mark.type}`}
-        selected={mark.active}
+        selected={!!mark.active}
         onClick={onClick}
         title={mark.type}
         className={styles.button}

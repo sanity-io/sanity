@@ -36,7 +36,7 @@ export default class Toolbar extends React.Component {
       href: PropTypes.string,
       target: PropTypes.string
     }),
-    showLinkButton: PropTypes.boolean
+    showLinkButton: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps, nextState) {

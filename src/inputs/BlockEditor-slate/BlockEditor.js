@@ -381,7 +381,7 @@ export default class BlockEditor extends React.Component {
     const inputId = uniqueId('FormBuilderText')
     const activeLink = this.getActiveLink()
     const showLinkButton = (value.state.selection && value.state.selection.isExpanded)
-      || activeLink
+      || !!activeLink
 
     return (
       <FormField label={field.title} labelHtmlFor={inputId} level={level}>
