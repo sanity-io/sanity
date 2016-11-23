@@ -40,7 +40,7 @@ export function generateCommandDocumentation(command, group, subCommand) {
     )
   }
 
-  const cmdParts = [group, subCommand].filter(Boolean).join(' ')
+  const cmdParts = [group || command.name, subCommand].filter(Boolean).join(' ')
   return [
     `usage: sanity ${cmdParts} ${command.signature}`,
     '',

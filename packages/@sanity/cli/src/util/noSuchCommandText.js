@@ -17,23 +17,23 @@ const helpText = `
 Run the command again within a Sanity project directory, where "@sanity/core"
 is installed as a dependency.`
 
-export default (cmd, parent, groups) => {
-  if (parent) {
-    return suggestCommand(cmd, groups[parent], parent)
+export default (cmdName, parentGroupName, groups) => {
+  if (parentGroupName) {
+    return suggestCommand(cmdName, groups[parentGroupName], parentGroupName)
   }
 
-  const isCoreCommand = coreCommands.indexOf(cmd) >= 0
+  const isCoreCommand = coreCommands.indexOf(cmdName) >= 0
   if (isCoreCommand) {
-    return `"${cmd}" is not available outside of a Sanity project context.${helpText}`
+    return `"${cmdName}" is not available outside of a Sanity project context.${helpText}`
   }
 
-  return suggestCommand(cmd, groups.default)
+  return suggestCommand(cmdName, groups.default)
 }
 
-function suggestCommand(cmd, group, parent = null) {
+function suggestCommand(cmdName, group, parentGroupName = null) {
   // Try to find something similar
   const closest = group
-    .map(command => leven(command.name, cmd))
+    .map(command => leven(command.name, cmdName))
     .reduce((current, distance, index) => {
       return distance < current.distance
         ? {index, distance}
@@ -48,16 +48,16 @@ function suggestCommand(cmd, group, parent = null) {
   }
 
   // Is this a common mistake that we can suggest an alias for?
-  if (!suggestCmd && commonMistakes[cmd]) {
-    suggestCmd = commonMistakes[cmd]
+  if (!suggestCmd && commonMistakes[cmdName]) {
+    suggestCmd = commonMistakes[cmdName]
   }
 
-  const input = chalk.yellow(`"${cmd}"`)
+  const input = chalk.cyan(`"${cmdName}"`)
   const suggest = chalk.green(`"${suggestCmd}"`)
-  const help = chalk.yellow('"sanity --help"')
+  const help = chalk.cyan('"sanity --help"')
 
   const didYouMean = suggestCmd ? `Did you mean ${suggest}? ` : ' '
-  return parent
-    ? `${input} is not a subcommand of "sanity ${parent}". ${didYouMean}See ${help}`
+  return parentGroupName
+    ? `${input} is not a subcommand of "sanity ${parentGroupName}". ${didYouMean}See ${help}`
     : `${input} is not a sanity command. ${didYouMean}See ${help}`
 }
