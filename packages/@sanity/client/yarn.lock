@@ -16,9 +16,9 @@
     eventsource "^0.2.1"
     eventsource-polyfill "^0.9.6"
 
-"@sanity/observable@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.0.1.tgz#39a9a2163704fe1daa990ac32b6f0c0444e0e3cf"
+"@sanity/observable@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.1.0.tgz#352654f140a251431fdc8000bffe66298571e12e"
   dependencies:
     rxjs "^5.0.0-rc.4"
 
