@@ -259,7 +259,7 @@ export default class BlockEditor extends React.Component {
     const {state} = value
     const {document} = state
     return state.blocks.some(node => {
-      const parent = document.getParent(node)
+      const parent = document.getParent(node.key)
       return parent && parent.data && parent.type === field.type
         && isEqual(
           pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
