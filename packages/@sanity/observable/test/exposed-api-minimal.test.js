@@ -35,6 +35,7 @@ test('instance methods', t => {
     'map',
     'filter',
     'reduce',
+    'toPromise',
     'subscribe',
     'forEach' // spec
   ])
@@ -43,6 +44,7 @@ test('instance methods', t => {
     'map',
     'filter',
     'reduce',
+    'toPromise',
     'lift',
     'subscribe',
     'forEach'

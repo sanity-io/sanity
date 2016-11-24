@@ -5,6 +5,7 @@ const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
 const {mergeMap} = require('rxjs/operator/mergeMap')
+const {toPromise} = require('rxjs/operator/toPromise')
 
 /*
   A subset of rxjs that align as closely as possible with the current es-observable spec
@@ -22,7 +23,8 @@ Object.assign(SanityObservable.prototype, {
   map,
   filter,
   reduce,
-  flatMap: mergeMap
+  flatMap: mergeMap,
+  toPromise
 })
 
 SanityObservable.of = function SanityObservableOf(...args) {

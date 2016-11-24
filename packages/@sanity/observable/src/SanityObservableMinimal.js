@@ -2,6 +2,7 @@ const {Observable} = require('rxjs/Observable')
 const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
+const {toPromise} = require('rxjs/operator/toPromise')
 
 /*
  A minimal rxjs based observable that align as closely as possible with the current es-observable spec,
@@ -29,5 +30,6 @@ SanityObservableMinimal.prototype.lift = function lift(operator) {
 SanityObservableMinimal.prototype.map = map
 SanityObservableMinimal.prototype.filter = filter
 SanityObservableMinimal.prototype.reduce = reduce
+SanityObservableMinimal.prototype.toPromise = toPromise
 
 module.exports = SanityObservableMinimal
