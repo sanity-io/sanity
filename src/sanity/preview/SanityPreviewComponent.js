@@ -16,7 +16,7 @@ const previewComponentMap = {
   inline: PreviewComponentInline
 }
 
-export default class DefaultPreview extends React.Component {
+export default class SanityPreviewComponent extends React.Component {
 
   static propTypes = {
     style: PropTypes.oneOf(Object.keys(previewComponentMap)),
@@ -34,12 +34,8 @@ export default class DefaultPreview extends React.Component {
     // todo: do this at schema parse time instead
     const previewConfig = canonicalizePreviewConfig(field)
 
-    if (!value) {
-      return <div>{value}</div>
-    }
-
     if (!value || !('_id' in value) || value._isPreviewMaterializedHack) {
-      return <PreviewComponent item={prepareValue(value, previewConfig)}/>
+      return <PreviewComponent item={prepareValue(value, previewConfig)} />
     }
 
     const querySelection = stringifyGradientQuerySelection(previewConfig.fields)
@@ -47,7 +43,7 @@ export default class DefaultPreview extends React.Component {
     return (
       <QueryWrapper query={`*[_id == $id] {${querySelection}}`} params={{id: value._id}}>
         {
-          result => <PreviewComponent item={prepareValue(result[0], previewConfig)}/>
+          result => <PreviewComponent item={prepareValue(result[0], previewConfig)} />
         }
       </QueryWrapper>
     )
