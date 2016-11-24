@@ -28,6 +28,15 @@ test('can get and set config', t => {
   t.end()
 })
 
+test('config getter returns a cloned object', t => {
+  const client = sanityClient({projectId: 'abc123'})
+  t.equal(client.config().projectId, 'abc123', 'constructor opts are set')
+  const config = client.config()
+  config.projectId = 'def456'
+  t.equal(client.config().projectId, 'abc123', 'returned object does not mutate client config')
+  t.end()
+})
+
 test('throws if no projectId is set', t => {
   t.throws(sanityClient, /projectId/)
   t.end()

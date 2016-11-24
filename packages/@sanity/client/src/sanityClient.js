@@ -25,7 +25,7 @@ assign(SanityClient.prototype, dataMethods)
 assign(SanityClient.prototype, {
   config(newConfig) {
     if (typeof newConfig === 'undefined') {
-      return this.clientConfig
+      return assign({}, this.clientConfig)
     }
 
     this.clientConfig = initConfig(newConfig, this.clientConfig || {})
