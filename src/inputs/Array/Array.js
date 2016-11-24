@@ -63,16 +63,13 @@ export default class Arr extends React.Component {
   }
 
   insert(itemValue, position, atIndex) {
-    const {onChange, value} = this.props
-    if (value.length === 0) {
-      onChange({
-        patch: {
-          type: 'set',
-          value: [itemValue]
-        }
-      })
-      return
-    }
+    const {onChange} = this.props
+    onChange({
+      patch: {
+        type: 'setIfMissing',
+        value: [itemValue]
+      }
+    })
     onChange({
       patch: {
         path: [atIndex],

@@ -4,6 +4,13 @@ import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
 import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
 
+function createSetIfMissingPatch(field) {
+  return {
+    type: 'setIfMissing',
+    value: field.type === 'object' ? {} : {_type: field.type}
+  }
+}
+
 export default class Obj extends React.PureComponent {
   static displayName = 'Object'
 
@@ -29,33 +36,21 @@ export default class Obj extends React.PureComponent {
 
   static contextTypes = {
     resolveInputComponent: PropTypes.func,
-    schema: PropTypes.object
+    formBuilder: PropTypes.object
   };
 
   handleFieldChange = (event, fieldName) => {
-    const {onChange, value} = this.props
+    const {onChange, field, isRoot} = this.props
+    if (!isRoot) {
+      onChange({patch: createSetIfMissingPatch(field)})
+    }
 
-    if (value.isEmpty()) {
-      const targetPatch = {
+    onChange({
+      patch: {
         ...event.patch,
         path: [fieldName, ...(event.patch.path || [])]
       }
-      onChange({
-        patch: {
-          path: [],
-          type: 'setIfMissing',
-          value: value.patch(targetPatch).toJSON()
-        }
-      })
-      return
-    }
-
-    // Rewrite patch by prepending the field name to its path
-    const patch = {
-      ...event.patch,
-      path: [fieldName, ...(event.patch.path || [])]
-    }
-    onChange({patch})
+    })
   }
 
   handleFieldEnter = (event, fieldName) => {

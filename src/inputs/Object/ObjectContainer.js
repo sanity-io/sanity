@@ -13,6 +13,7 @@ export default class ObjectContainer {
     if (serialized && hasOwn(serialized, '_id')) {
       deserialized._id = serialized._id
     }
+
     type.fields.forEach(fieldDef => {
       deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {
         field: fieldDef,
