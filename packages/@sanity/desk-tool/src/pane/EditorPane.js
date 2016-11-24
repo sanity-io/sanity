@@ -15,22 +15,17 @@ const preventDefault = ev => ev.preventDefault()
 function createFormBuilderStateFrom(serialized, typeName) {
   return serialized ? FormBuilder.deserialize(unprefixType(serialized), typeName) : FormBuilder.createEmpty(typeName)
 }
-const noop = () => {}
 
 export default class EditorPane extends React.PureComponent {
   static contextTypes = {
     router: PropTypes.object
   };
+
   static propTypes = {
     documentId: PropTypes.string,
-    onCreated: PropTypes.func,
-    onUpdated: PropTypes.func,
     typeName: PropTypes.string
   };
-  static defaultProps = {
-    onCreated: noop,
-    onUpdated: noop,
-  };
+
   constructor(props, ...rest) {
     super(props, ...rest)
 

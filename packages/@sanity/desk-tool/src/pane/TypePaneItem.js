@@ -10,8 +10,7 @@ export default class TypePaneItem extends React.Component {
       name: PropTypes.string,
       title: PropTypes.string
     }),
-    selected: PropTypes.bool,
-    linkState: PropTypes.object,
+    selected: PropTypes.bool
   }
 
   render() {
