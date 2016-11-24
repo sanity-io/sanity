@@ -52,29 +52,15 @@ const serverConnection = {
   },
 
   update: wrapInObservable(debounce(calls => {
-    // Ugh, this is heartbreakingly ugly. Should be refactored soon.
-    const patchesById = calls.reduce((collapsedPatch, call) => {
+    const mutations = calls.map(call => {
       const [id, patch] = call
-      const operations = Object.keys(patch)
-      operations.forEach(opName => {
-        collapsedPatch[id] = collapsedPatch[id] || {}
-        if (opName === 'unset') {
-          collapsedPatch[id][opName] = (collapsedPatch[id][opName] || []).concat(patch[opName])
-        } else {
-          collapsedPatch[id][opName] = collapsedPatch[id][opName] || {}
-          Object.assign(collapsedPatch[id][opName], patch[opName])
-        }
-      })
-      return collapsedPatch
-    }, {})
-    const patches = Object.keys(patchesById).map(id => {
-      const operations = patchesById[id]
-      return Object.assign({id: id}, operations)
+      return {
+        patch: Object.assign({id: id}, patch)
+      }
     })
-    return Promise.all(patches.map(mut => {
-      return client.mutate({patch: mut}, {returnDocuments: false})
-    }))
-  }, 500, {accumulate: true})),
+    return client.mutate(mutations, {returnDocuments: false})
+      .then(res => res.documentIds)
+  }, 1000, {accumulate: true})),
 
   delete(id) {
     return Observable.from(client.delete(id, {returnDocuments: false}))
