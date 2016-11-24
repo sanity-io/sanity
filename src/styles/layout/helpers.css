@@ -4,6 +4,13 @@
   padding: 0;
 }
 
+.resetListItem {
+  display: block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 .noLink {
   color: inherit;
   text-decoration: none;
