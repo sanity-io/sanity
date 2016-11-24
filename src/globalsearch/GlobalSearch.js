@@ -189,6 +189,7 @@ class GlobalSearch extends React.Component {
             className={styles.input}
             type="search"
             onChange={this.handleInputChange}
+            onFocus={this.props.onFocus}
             placeholder={placeholder}
             ref={this.setInputElement}
           />

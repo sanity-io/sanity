@@ -38,15 +38,17 @@ const style = {
   padding: '1em',
   backgroundColor: '#269',
   // eslint-disable-next-line max-len
-  backgroundImage: 'linear-gradient(white 2px, transparent 2px), linear-radient(90deg, white 2px, transparent 2px), linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px)',
-  backgroundSize: '100px 100px, 100px 100px, 20px 20px, 20px 20px',
-  backgroundPosition: '-2px -2px, -2px -2px, -1px -1px, -1px -1px'
+  backgroundImage: 'linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black)',
+  backgroundSize: '60px 60px',
+  backgroundPosition: '0 0, 30px 30px'
 }
 
 const innerStyle = {
-  position: 'absolute',
-  left: '1em',
-  top: '1em',
+
+}
+
+const elementStyle = {
+  position: 'relative',
   width: '30em',
   fontSize: '1rem',
   padding: '0.5rem',
@@ -80,20 +82,23 @@ storiesOf('Global Search')
 .addWithInfo(
   'Closed',
   `
-    Global search. Can be invoked with cmd+shift+f, cmd+shift+s, ctrl+shift+f, ctrl+shift+s
+    Global search. Can be invoked with cmd+shift+f, cmd+shift+s, ctrl+shift+f, ctrl+shift+s.
+    Needs to be in an relative container.
   `,
   () => {
     return (
-      <GlobalSearch
-        label="Label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onSearch={action('onSearch')}
-        onClose={action('onClose')}
-        items={items}
-      />
+      <div style={elementStyle}>
+        <GlobalSearch
+          label="Label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onSearch={action('onSearch')}
+          onClose={action('onClose')}
+          items={items}
+        />
+      </div>
     )
   },
   {
@@ -110,17 +115,19 @@ storiesOf('Global Search')
   `,
   () => {
     return (
-      <GlobalSearch
-        label="Label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onSearch={action('onSearch')}
-        onClose={action('onClose')}
-        isSearching
-        isOpen
-      />
+      <div style={elementStyle}>
+        <GlobalSearch
+          label="Label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onSearch={action('onSearch')}
+          onClose={action('onClose')}
+          isSearching
+          isOpen
+        />
+      </div>
     )
   },
   {
@@ -137,19 +144,21 @@ storiesOf('Global Search')
   `,
   () => {
     return (
-      <GlobalSearch
-        label="Label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onSearch={action('onSearch')}
-        onClose={action('onClose')}
-        topItems={topItems}
-        items={items}
-        renderItem={renderItem}
-        isOpen
-      />
+      <div style={elementStyle}>
+        <GlobalSearch
+          label="Label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onSearch={action('onSearch')}
+          onClose={action('onClose')}
+          topItems={topItems}
+          items={items}
+          renderItem={renderItem}
+          isOpen
+        />
+      </div>
     )
   },
   {

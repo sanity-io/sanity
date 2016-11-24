@@ -2,7 +2,6 @@
 
 .root {
   color: inherit;
-  position: relative;
   line-height: 1em;
 }
 
@@ -20,9 +19,11 @@
 .listContainer {
   position: absolute;
   top: 100%;
-  left: 1em;
-  width: calc(100% - 1em);
+  width: 100%;
+  left: 0;
   height: auto;
+  backdrop-filter: blur(10px);
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
 }
 
 .listContainerClosed {
@@ -32,21 +33,20 @@
 .label {
   font-size: inherit;
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 0.5em;
+  top: 50%;
+  transform: translateY(-60%);
 }
 
 .icon {
   font-size: 1em;
-  position: absolute;
-  top: -0.15em;
-  left: 0;
 }
 
 .spinner {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0.5em;
 }
 
 .labelText {
