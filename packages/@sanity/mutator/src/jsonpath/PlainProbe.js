@@ -3,8 +3,10 @@
 // A default implementation of a probe for vanilla JS _values
 export default class PlainProbe {
   _value : any
-  constructor(_value : any) {
+  path : Array<any>
+  constructor(_value : any, path : Array<any>) {
     this._value = _value
+    this.path = path || []
   }
   isIndexable() : bool {
     return Array.isArray(this._value)
@@ -49,7 +51,7 @@ export default class PlainProbe {
     if (!this.has(key)) {
       return null
     }
-    return new PlainProbe(this._value[key])
+    return new PlainProbe(this._value[key], this.path.concat(key))
   }
   getIndex(i : number) : any {
     if (!this.isIndexable()) {
@@ -58,7 +60,7 @@ export default class PlainProbe {
     if (!this.hasIndex(i)) {
       return null
     }
-    return new PlainProbe(this._value[i])
+    return new PlainProbe(this._value[i], this.path.concat(i))
   }
   value() : any {
     if (!this.isPrimitiveValue()) {

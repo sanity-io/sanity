@@ -24,6 +24,9 @@ const symbols = {
   keyword: [
     '$', '@'
   ],
+  boolean: [
+    'true', 'false'
+  ],
   paren: [
     '[', ']'
   ]
@@ -38,10 +41,10 @@ class Tokenizer {
     this.length = path.length
     this.i = 0
     this.tokenizers = [
+      this.tokenizeSymbol,
       this.tokenizeIdentifier,
       this.tokenizeNumber,
-      this.tokenizeQuoted,
-      this.tokenizeSymbol
+      this.tokenizeQuoted
     ].map(fn => fn.bind(this))
   }
 

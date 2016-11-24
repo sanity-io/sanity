@@ -159,6 +159,13 @@ class Parser {
         value: literalString.value
       }
     }
+    const literalBoolean = this.match({type: 'boolean'})
+    if (literalBoolean) {
+      return {
+        type: 'boolean',
+        value: literalBoolean.symbol == 'true'
+      }
+    }
     return this.parseNumber()
   }
 

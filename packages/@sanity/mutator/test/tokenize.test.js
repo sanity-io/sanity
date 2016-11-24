@@ -103,7 +103,29 @@ const cases = {
     type: 'quoted',
     value: '"quoted"',
     quote: 'double'
-  }]
+  }],
+  '[true, false]': [
+    {
+      'symbol': '[',
+      'type': "paren"
+    },
+    {
+      'symbol': 'true',
+      'type': 'boolean'
+    },
+    {
+      'symbol': ',',
+      'type': 'operator'
+    },
+    {
+      'symbol': 'false',
+      'type': 'boolean'
+    },
+    {
+      'symbol': ']',
+      'type': 'paren'
+    }
+  ]
 }
 
 test('Tokenization of jsonpath', t => {
