@@ -8,7 +8,7 @@
   "scripts": {
     "compile": "babel --source-maps inline --copy-files -d lib/ src/",
     "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
-    "test": "mocha test/**/*.test.js",
+    "test": "mocha --recursive test/**/*.test.js",
     "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
     "posttest": "eslint ."
@@ -18,15 +18,24 @@
   ],
   "dependencies": {
     "@sanity/check": "^0.0.3",
+    "@sanity/client": "^0.3.15",
+    "@sanity/mutator": "^0.0.6",
     "@sanity/server": "^0.0.16",
     "@sanity/storybook": "^0.0.14",
     "@sanity/util": "0.0.2",
+    "batch-stream-operation": "^1.0.1",
+    "debug": "^2.3.3",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.3.0",
     "fs-promise": "^1.0.0",
     "got": "^6.6.3",
     "in-publish": "^2.0.0",
-    "path-exists": "^3.0.0"
+    "jsonpath": "^0.2.9",
+    "lodash": "^4.17.2",
+    "path-exists": "^3.0.0",
+    "pretty-ms": "^2.1.0",
+    "split2": "^2.1.0",
+    "through2": "^2.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

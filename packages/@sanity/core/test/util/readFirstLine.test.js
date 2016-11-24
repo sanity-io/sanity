@@ -1,16 +1,11 @@
 import path from 'path'
-import chai, {expect} from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-import {describe, it, before} from 'mocha'
+import {expect} from 'chai'
+import {describe, it} from 'mocha'
 import readFirstLine from '../../src/util/readFirstLine'
 
 const fixturesDir = path.join(__dirname, '..', 'fixtures', 'readFirstLine')
 
 describe('readFirstLine', () => {
-  before(() => {
-    chai.use(chaiAsPromised)
-  })
-
   it('reads first line of file if file has multiple short lines', async () => {
     const file = path.join(fixturesDir, 'short-lines.txt')
     const firstLine = await readFirstLine(file)
