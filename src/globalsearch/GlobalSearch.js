@@ -8,8 +8,8 @@ class GlobalSearch extends React.Component {
   static propTypes = {
     onSearch: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    topItems: PropTypes.array,
-    items: PropTypes.array,
+    topItems: PropTypes.array, // eslint-disable-line
+    items: PropTypes.array, // eslint-disable-line
     renderItem: PropTypes.func, // props: item, {options}
     isOpen: PropTypes.bool,
     isSearching: PropTypes.bool,
@@ -63,6 +63,9 @@ class GlobalSearch extends React.Component {
   setFocus = () => {
     this.props.onFocus()
     this.inputElement.focus()
+    if (this.inputElement.value !== '') {
+      this.inputElement.select()
+    }
   }
 
   setBlur = () => {
@@ -114,6 +117,7 @@ class GlobalSearch extends React.Component {
     const {topItems, items} = this.props
     const {selectedItem} = this.state
 
+    // Concat both list to control index
     const allItems = topItems.concat(items)
 
     // select first
@@ -136,6 +140,7 @@ class GlobalSearch extends React.Component {
     const {topItems, items} = this.props
     const {selectedItem} = this.state
 
+    // Concat both list to control index
     const allItems = topItems.concat(items)
 
     // select first

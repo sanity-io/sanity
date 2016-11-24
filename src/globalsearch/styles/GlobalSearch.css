@@ -83,6 +83,7 @@
 }
 
 .selectedItem {
+  composes: item;
   background-color: var(--selected-item-color-hover);
   color: var(--selected-item-color-hover--inverted);
 }
