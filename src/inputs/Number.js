@@ -17,19 +17,22 @@ export default class Num extends React.Component {
     onChange() {}
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleChange(e) {
-    const val = e.target.value.trim()
+  handleChange = event => {
+    const eventValue = event.target.value
+    let outputVal = Number(eventValue)
+    if (eventValue === '') {
+      outputVal = undefined
+    }
     this.props.onChange({
       patch: {
         type: 'set',
-        value: val === '' ? undefined : Number(e.target.value)
+        value: outputVal
       }
     })
+  }
+
+  setInputElement = input => {
+    this.inputElement = input
   }
 
   render() {
@@ -42,10 +45,8 @@ export default class Num extends React.Component {
         level={level}
         placeholder={field.placeholder || 'Must be a number. Ex 1234'}
         onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        value={String(value)}
+        value={typeof value === 'undefined' ? value : String(value)}
         focus={focus}
-        ref={this.setInputElement}
       />
     )
   }
