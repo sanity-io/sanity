@@ -18,7 +18,7 @@ export default class PlainProbe {
     return this._value.length
   }
   isPlainObject() : bool {
-    return typeof this._value == 'object' && !this.isIndexable()
+    return this._value !== null && typeof this._value == 'object' && !this.isIndexable()
   }
   isPrimitiveValue() : bool {
     return !this.isPlainObject() && !this.isIndexable()
