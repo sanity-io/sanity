@@ -24,14 +24,14 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.0.5",
-    "@sanity/form-builder": "^0.0.54",
+    "@sanity/form-builder": "^0.0.55",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.2.2",
+    "@sanity/base": "^0.2.3",
     "@sanity/check": "^0.0.3",
-    "@sanity/client": "^0.3.13",
-    "@sanity/components": "^0.0.63",
+    "@sanity/client": "^0.3.14",
+    "@sanity/components": "^0.0.64",
     "@sanity/core": "^0.0.13",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",

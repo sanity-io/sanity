@@ -113,9 +113,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.2.2.tgz#1fb18ca4a6736b0fddee8a02212f2588d3a3f2dc"
+"@sanity/base@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.2.3.tgz#60f6308a69630fd9b2cf3715dfecbb41289255d9"
   dependencies:
     "@sanity/client" "^0.3.12"
     "@sanity/document-store" "0.1.0"
@@ -141,7 +141,7 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.3.12", "@sanity/client@^0.3.13":
+"@sanity/client@^0.3.12":
   version "0.3.13"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.13.tgz#d8059681e661c03848535cd52ae82211c7c6b13b"
   dependencies:
@@ -153,9 +153,21 @@
     in-publish "^2.0.0"
     xtend "^4.0.1"
 
-"@sanity/components@^0.0.63":
-  version "0.0.63"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.63.tgz#f9b7942288bcfe6be116f3a71c30698e979ad28e"
+"@sanity/client@^0.3.14":
+  version "0.3.15"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.3.15.tgz#a6760e56c46505338533d5a320cc39ffa2f6909a"
+  dependencies:
+    "@sanity/eventsource" "^1.0.0"
+    "@sanity/observable" "^1.1.0"
+    "@sanity/request" "0.0.3"
+    debug "^2.2.0"
+    deep-assign "^2.0.0"
+    in-publish "^2.0.0"
+    xtend "^4.0.1"
+
+"@sanity/components@^0.0.64":
+  version "0.0.64"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.64.tgz#c5dcbff7cff12e2987e2dd1ddefa5419822a8454"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -232,9 +244,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.0.54":
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.54.tgz#8cfa772ad0497c858b40c53489f9b73b66902009"
+"@sanity/form-builder@^0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.0.55.tgz#fc6445b307d506bdf3ea71ca70b50181a1128ebb"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     canvas-to-blob "0.0.0"
@@ -248,7 +260,7 @@
     prosemirror "^0.10.1"
     react-sortable-hoc "0.1.1"
     shallow-equals "0.0.0"
-    slate "^0.14.16"
+    slate "^0.15.9"
     slate-insert-block-on-enter "0.0.2"
 
 "@sanity/generate-help-url@^0.0.1":
@@ -270,6 +282,12 @@
 "@sanity/observable@^1.0.1", "@sanity/observable@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.0.2.tgz#0b9937476210185cd888ca074586df537097f6b2"
+  dependencies:
+    rxjs "^5.0.0-rc.4"
+
+"@sanity/observable@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.1.0.tgz#352654f140a251431fdc8000bffe66298571e12e"
   dependencies:
     rxjs "^5.0.0-rc.4"
 
@@ -1897,6 +1915,12 @@ debug@^2.1.1, debug@^2.2.0:
   dependencies:
     ms "0.7.2"
 
+debug@^2.3.2:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
+  dependencies:
+    ms "0.7.2"
+
 debug@~0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-0.7.4.tgz#06e1ea8082c2cb14e39806e22e2f6f757f92af39"
@@ -2151,7 +2175,7 @@ es6-iterator@2:
     es5-ext "^0.10.7"
     es6-symbol "3"
 
-es6-map@^0.1.3:
+es6-map@^0.1.3, es6-map@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/es6-map/-/es6-map-0.1.4.tgz#a34b147be224773a4d7da8072794cefa3632b897"
   dependencies:
@@ -2209,15 +2233,15 @@ escope@^3.6.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint-config-bengler@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-bengler/-/eslint-config-bengler-3.0.0.tgz#d63f202508bd7ec3054462096595d1b192f34f22"
+eslint-config-bengler@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-bengler/-/eslint-config-bengler-3.0.1.tgz#4968c9d71c93ab989f22cfa2e4fa80bc64d9796b"
 
-eslint-config-sanity@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-sanity/-/eslint-config-sanity-2.0.0.tgz#abc9564105a35fb1a55074b12e63e50c2b9c5189"
+eslint-config-sanity@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-sanity/-/eslint-config-sanity-2.0.1.tgz#3e6ed8fdca9b8be65451e3647e5bb74664e3565d"
   dependencies:
-    eslint-config-bengler "^3.0.0"
+    eslint-config-bengler "^3.0.1"
 
 eslint-plugin-react@^6.7.1:
   version "6.7.1"
@@ -5263,15 +5287,15 @@ slate-insert-block-on-enter@0.0.2:
   dependencies:
     debug "^2.2.0"
 
-slate@^0.14.16:
-  version "0.14.16"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.14.16.tgz#b15b1f59f2aabd7b79da23265a260f536308ae4b"
+slate@^0.15.9:
+  version "0.15.9"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.15.9.tgz#672829e76b95f3956e6a7d10fc49eacf5889d041"
   dependencies:
-    uid "0.0.2"
     cheerio "^0.22.0"
-    debug "^2.2.0"
+    debug "^2.3.2"
     detect-browser "^1.3.3"
     direction "^0.1.5"
+    es6-map "^0.1.4"
     esrever "^0.2.0"
     get-window "^1.1.1"
     immutable "^3.8.1"
@@ -5597,10 +5621,6 @@ uglify-to-browserify@~1.0.0:
 uid-number@~0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
-
-uid@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/uid/-/uid-0.0.2.tgz#5e4a5d4b78138b4f70f89fd3c76fc59aa9d2f103"
 
 underscore@~1.6.0:
   version "1.6.0"
