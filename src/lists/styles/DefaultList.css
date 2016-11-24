@@ -14,12 +14,21 @@
 }
 
 .list {
-  display: block;
-  border: 0;
-  margin: 0;
-  padding: 0;
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
 .sortableList {
   composes: list;
+}
+
+.item {
+  user-select: none;
+
+  @nest .isSortable & {
+    cursor: move;
+  }
+
+  @nest .isSortable.usesDragHandle & {
+    cursor: default;
+  }
 }

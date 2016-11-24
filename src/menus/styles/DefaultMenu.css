@@ -19,15 +19,11 @@
 }
 
 .list {
-  display: block;
-  margin: 0;
-  padding: 0;
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
 .item {
-  display: block;
-  margin: 0;
-  padding: 0;
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   white-space: nowrap;
 }
 

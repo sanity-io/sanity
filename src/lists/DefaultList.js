@@ -115,7 +115,14 @@ export default class DefaultList extends React.Component {
     })
 
     return (
-      <div className={`${scrollable ? styles.scrollable : styles.root} ${className} `}>
+      <div
+        className={`
+          ${scrollable ? styles.scrollable : styles.root}
+          ${sortable ? styles.isSortable : ''}
+          ${useDragHandle ? styles.usesDragHandle : ''}
+          ${className}
+        `}
+      >
         <div className={styles.inner}>
           {
             !sortable && <ul className={styles.list} ref={this.setListContainer}>

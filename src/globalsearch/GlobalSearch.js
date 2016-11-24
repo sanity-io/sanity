@@ -83,8 +83,12 @@ class GlobalSearch extends React.Component {
       || (event.key === 'S' && event.shiftKey && event.ctrlKey)
 
 
-    if (trigger) {
+    if (trigger && !this.state.isOpen) {
       this.setFocus()
+    }
+
+    if (trigger && this.state.isOpen) {
+      this.onClose()
     }
 
     if (event.key === 'Escape') {

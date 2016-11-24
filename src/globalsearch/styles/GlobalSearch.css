@@ -59,12 +59,11 @@
 
 .items {
   background-color: color(var(--component-bg) a(90%));
-  padding: 0;
-  display: block;
-  margin: 0;
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
 .item {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: pointer;
 
@@ -75,16 +74,15 @@
 
 .topItem {
   composes: item;
-  background-color: var(--gray--transparent);
+  background-color: var(--gray-darker-transparent);
   color: var(--brand-white);
 
   @nest &:hover {
-    background-color: var(--gray-dark--transparent);
+    background-color: var(--gray-darkest--transparent);
   }
 }
 
 .selectedItem {
-  background-color: green;
   background-color: var(--selected-item-color-hover);
   color: var(--selected-item-color-hover--inverted);
 }
