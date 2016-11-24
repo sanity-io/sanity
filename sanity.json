@@ -235,6 +235,10 @@
       "description": "Standard context menu"
     },
     {
+      "name": "part:@sanity/components/menus/state",
+      "description": "Context menu that takes linkState on each item to the router"
+    },
+    {
       "name": "part:@sanity/components/menus/default-style",
       "description": "Styling for standard context menu"
     },
@@ -592,6 +596,10 @@
     {
       "implements": "part:@sanity/components/menus/default",
       "path": "menus/DefaultMenu.js"
+    },
+    {
+      "implements": "part:@sanity/components/menus/state",
+      "path": "menus/StateMenu.js"
     },
     {
       "implements": "part:@sanity/components/menus/default-style",

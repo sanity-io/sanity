@@ -1,5 +1,6 @@
 import React from 'react'
 import Menu from 'part:@sanity/components/menus/default'
+//import StateMenu from 'part:@sanity/components/menus/state'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
 
@@ -19,6 +20,7 @@ storiesOf('Menus')
       >
         <Menu
           onAction={action('Clicked item')}
+          onClose={action('onClose')}
           onClickOutside={action('Clicked outside')}
           items={[
             {
@@ -89,6 +91,7 @@ storiesOf('Menus')
       >
         <Menu
           onAction={action('Clicked item')}
+          onClose={action('onClose')}
           onClickOutside={action('Clicked outside')}
           items={items}
           opened
@@ -101,3 +104,59 @@ storiesOf('Menus')
     role: 'part:@sanity/components/menus/default'
   }
 )
+
+// Commented out intil we have state in storybook or the StateLink fails silently
+// .addWithInfo(
+//   'State menu',
+//   `
+//     Takes linkState on item, and the router is called
+//   `,
+//   () => {
+//     const linkState = {
+//       Tool: {
+//         action: 'edit',
+//         selectedType: 'type',
+//         selectedDocumentId: 'id'
+//       },
+//       tool: 'Tool'
+//     }
+//     return (
+//       <div
+//         style={{
+//           width: '300px',
+//           position: 'relative'
+//         }}
+//       >
+//         <StateMenu
+//           onAction={action('Clicked item')}
+//           onClose={action('onClose')}
+//           onClickOutside={action('Clicked outside')}
+//           items={[
+//             {
+//               title: 'First item',
+//               linkState: linkState
+//             },
+//             {
+//               title: 'Second item',
+//               linkState: linkState
+//             },
+//             {
+//               title: 'Third item',
+//               linkState: linkState
+//             },
+//             {
+//               title: 'Extra item',
+//               linkState: linkState,
+//               divider: true
+//             }
+//           ]}
+//           opened
+//         />
+//       </div>
+//     )
+//   },
+//   {
+//     propTables: [StateMenu],
+//     role: 'part:@sanity/components/menus/default'
+//   }
+// )

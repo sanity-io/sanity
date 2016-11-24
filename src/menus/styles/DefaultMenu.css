@@ -27,6 +27,10 @@
   white-space: nowrap;
 }
 
+.selectedItem {
+  composes: item;
+}
+
 .iconContainer {
   margin-right: 0.5em;
 }
@@ -41,6 +45,10 @@
   color: inherit;
 
   &:hover {
+    background-color: #eee;
+  }
+
+  @nest .selectedItem & {
     background-color: #eee;
   }
 }

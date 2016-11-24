@@ -1,11 +1,12 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/menus/default-style'
 import Ink from 'react-ink'
+import {StateLink} from 'part:@sanity/base/router'
+
 import enhanceWithClickOutside from 'react-click-outside'
 
-class DefaultMenu extends React.Component {
+class StateMenu extends React.Component {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
     opened: PropTypes.bool,
     origin: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
     ripple: PropTypes.bool,
@@ -16,7 +17,8 @@ class DefaultMenu extends React.Component {
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
-        icon: PropTypes.func
+        icon: PropTypes.func,
+        linkState: PropTypes.object.isRequired
       })
     )
   }
@@ -28,6 +30,10 @@ class DefaultMenu extends React.Component {
     ripple: true,
     onClickOutside() {},
     onClose() {}
+  }
+
+  static contextTypes = {
+    router: PropTypes.object
   }
 
   constructor(props) {
@@ -72,18 +78,13 @@ class DefaultMenu extends React.Component {
     }
 
     if (event.key == 'Enter' && this.props.opened && this.state.selectedItem) {
-      this.props.onAction(this.props.items[currentIndex])
+      const {router} = this.context
+      router.navigate(selectedItem.linkState)
     }
 
   }
 
-  handleItemClick = event => {
-    const actionId = event.currentTarget.getAttribute('data-action-id')
-    this.props.onAction(this.props.items[actionId])
-  }
-
   render() {
-    const {selectedItem} = this.state
     const {items, origin, ripple, fullWidth, className} = this.props
     const originStyle = styles[`origin__${origin}`]
 
@@ -94,17 +95,9 @@ class DefaultMenu extends React.Component {
             items.map((item, i) => {
               const Icon = item.icon
               return (
-                <li
-                  key={i}
-                  className={`
-                    ${item === selectedItem ? styles.selectedItem : styles.item}
-                    ${styles.item}
-                    ${item.divider && styles.divider}
-                  `}
-                >
-                  <a
-                    onClick={this.handleItemClick}
-                    data-action-id={i}
+                <li key={i} className={`${styles.item} ${item.divider && styles.divider}`}>
+                  <StateLink
+                    state={item.linkState}
                     className={styles.link}
                   >
                     {
@@ -114,7 +107,7 @@ class DefaultMenu extends React.Component {
                     {
                       ripple && <Ink />
                     }
-                  </a>
+                  </StateLink>
                 </li>
               )
             })
@@ -125,4 +118,4 @@ class DefaultMenu extends React.Component {
   }
 }
 
-export default enhanceWithClickOutside(DefaultMenu)
+export default enhanceWithClickOutside(StateMenu)
