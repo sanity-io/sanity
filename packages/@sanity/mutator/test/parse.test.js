@@ -118,6 +118,19 @@ const cases = {
       type: 'attribute',
       name: '_weak'
     }]
+  },
+  '[_ref?]': {
+    nodes: [
+      {
+        lhs: {
+          name: '_ref',
+          type: 'attribute',
+        },
+        operator: '?',
+        type: 'constraint',
+      }
+    ],
+    type: 'union'
   }
 }
 

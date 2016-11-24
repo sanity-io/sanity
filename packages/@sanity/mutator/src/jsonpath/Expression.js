@@ -63,6 +63,9 @@ export default class Expression {
   name() : string {
     return this.expr.name
   }
+  isSelfReference() : bool {
+    return this.expr.type == 'alias' && this.expr.target == 'self'
+  }
   constraintTargetIsSelf() {
     return this.isConstraint() && this.expr.lhs.type == 'alias' && this.expr.lhs.target == 'self'
   }
@@ -88,6 +91,10 @@ export default class Expression {
     if (lhs === null || !lhs.isPrimitiveValue()) {
       // LHS is void and empty, or it is a collection
       return false
+    }
+    if (this.isExistenceConstraint()) {
+      // There is no rhs, and if we're here the key did exist
+      return true
     }
     const rhs = this.expr.rhs.value
     return testBinaryOperator(lhs.value(), this.expr.operator, rhs)

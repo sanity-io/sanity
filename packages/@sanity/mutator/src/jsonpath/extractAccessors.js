@@ -36,6 +36,8 @@ function accessorsFromTarget(target : Expression, accessor : PlainProbe) {
     })
   } else if (target.isAttributeReference()) {
     result.push(accessor.getField(target.name()))
+  } else if (target.isSelfReference()) {
+    result.push(accessor)
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }

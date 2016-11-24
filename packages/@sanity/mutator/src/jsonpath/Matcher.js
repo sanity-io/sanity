@@ -95,7 +95,11 @@ export default class Matcher {
     const targets = []
     this.active.forEach(descender => {
       if (descender.hasArrived()) {
-        // This descender is done, no further processing
+        // This was allready arrived, so matches this value, not descenders
+        targets.push(new Expression({
+          type: 'alias',
+          target: 'self'
+        }))
         return
       }
       if (probe.isIndexable() && !descender.head.isIndexReference()) {

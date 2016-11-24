@@ -28,7 +28,7 @@ export default class Descender {
           return descender.iterateConstraints(probe)
         }))
         anyConstraints = result.find(descender => {
-          descender.head.isConstraint()
+          return descender.head && descender.head.isConstraint()
         })
       }
     }
@@ -52,7 +52,7 @@ export default class Descender {
   }
   iterateConstraints(probe : Probe) : Array<Descender> {
     const head = this.head
-    if (!head.isConstraint()) {
+    if (head === null || !head.isConstraint()) {
       // Not a constraint, no rewrite
       return [this]
     }
