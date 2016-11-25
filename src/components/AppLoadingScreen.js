@@ -1,72 +1,47 @@
 import React, {PropTypes} from 'react'
-import SanityLogo from './icons/SanityLogo'
-import SpinnerIcon from './icons/SpinnerIcon'
+import SanityLogo from 'part:@sanity/base/sanity-logo'
 
 const AppLoadingScreenStyles = `
-@-webkit-keyframes sanity-app-loader__spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
 
+@keyframes sanity-app-loading-screen__fadeIn {
+  0% {
+    opacity: 0;
+  }
   100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
+    opacity: 1;
   }
 }
-@keyframes sanity-app-loader__spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
 
+@keyframes sanity-app-loading-screen__spinner {
+   from {left: -200px; width: 30%;}
+   50% {width: 30%;}
+   70% {width: 70%;}
+   80% { left: 50%;}
+   95% {left: 120%;}
+   to {left: 100%;}
+}
+
+@-webkit-keyframes sanity-app-loading-screen__spinner {
+   from {left: -200px; width: 30%;}
+   50% {width: 30%;}
+   70% {width: 70%;}
+   80% { left: 50%;}
+   95% {left: 120%;}
+   to {left: 100%;}
+}
+
+
+@-webkit-keyframes sanity-app-loading-screen__fadeIn {
+  0% {
+    opacity: 0;
+  }
   100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes sanity-app-loading-screen__colorFade {
-  0% {
-    fill: #383838;
-    opacity: 100%;
-  }
-
-  30% {
-    fill: #383838;
-    opacity: 50%;
-  }
-
-  60% {
-    fill: #2097ac;
-    opacity: 70%;
-  }
-
-  90% {
-    fill: #f43;
-    opacity: 10%;
+    opacity: 1;
   }
 }
 
-@keyframes sanity-app-loading-screen__colorFade {
-  0% {
-    fill: #383838;
-    opacity: 100%;
-  }
-
-  30% {
-    fill: #383838;
-    opacity: 50%;
-  }
-
-  60% {
-    fill: #2097ac;
-    opacity: 70%;
-  }
-
-  90% {
-    fill: #f43;
-    opacity: 10%;
-  }
+.sanity-app-loading-screen {
+  background-color: #f00;
 }
 
 .sanity-app-loading-screen__root {
@@ -75,7 +50,7 @@ const AppLoadingScreenStyles = `
 
 .sanity-app-loading-screen__inner {
   position: fixed;
-  top: 50vh;
+  top: 37vh;
   left: 50vw;
   -webkit-transform: translateX(-50%) translateY(-50%);
           transform: translateX(-50%) translateY(-50%);
@@ -83,69 +58,55 @@ const AppLoadingScreenStyles = `
 }
 
 .sanity-app-loading-screen__logo {
-  font-size: 5em;
+  min-width: 10rem;
   color: #383838;
-}
 
-.sanity-app-loading-screen__logo .sanityIconAnimate path:nth-child(odd) {
-  -webkit-animation-name: sanity-app-loading-screen__colorFade;
-          animation-name: sanity-app-loading-screen__colorFade;
-  -webkit-animation-duration: 5s;
-          animation-duration: 5s;
-  -webkit-animation-duration: 5s;
-          animation-duration: 5s;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate;
-          animation-direction: alternate;
-}
+  -webkit-animation-name: sanity-app-loading-screen__fadeIn;
+          animation-name: sanity-app-loading-screen__fadeIn;
+  -webkit-animation-duration: 0.15s;
+          animation-duration: 0.15s;
+  -webkit-animation-duration: 0.15s;
+          animation-duration: 0.15s;
 
-.sanity-app-loading-screen__logo .sanityIconAnimate path:nth-child(even) {
-  -webkit-animation-name: sanity-app-loading-screen__colorFade;
-          animation-name: sanity-app-loading-screen__colorFade;
-  -webkit-animation-duration: 5s;
-          animation-duration: 5s;
-  -webkit-animation-duration: 5s;
-          animation-duration: 5s;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate-reverse;
-          animation-direction: alternate-reverse;
+  animation-timing-function: ease-in;
+  -webkit-animation-timing-function: ease-in;
 }
 
 .sanity-app-loading-screen__text {
-  font-weight: 100
+  font-weight: 400
+  font-size: 5em;
 }
 
 .sanity-app-loading-screen__spinner {
   display: block;
   z-index: 1;
   position: fixed;
-  top: 75vh;
+  top: 43vh;
   left: 50vw;
   -webkit-transform: translateX(-50%);
           transform: translateX(-50%);
 }
+
 .sanity-app-loader__spinner-inner {
+  height: 1px;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background-color: #efefef;
+}
+
+
+.sanity-app-loader__spinner-inner:before {
+  display: block;
   position: absolute;
-  height: 1em;
-  width: 1em;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 2px;
+  background-color: #aaa ;
+  -webkit-animation: sanity-app-loading-screen__spinner 2s linear infinite;
+  animation: sanity-app-loading-screen__spinner 2s linear infinite;
 }
-
-.sanity-app-loader__spinner-inner svg {
-  -webkit-transform-origin: center center;
-          transform-origin: center center;
-  -webkit-animation-name: sanity-app-loader__spin;
-          animation-name: sanity-app-loader__spin;
-  -webkit-animation-duration: 2s;
-          animation-duration: 2s;
-  -webkit-animation-timing-function: linear;
-          animation-timing-function: linear;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-}
-
-`
 
 export default class AppLoadingScreen extends React.Component {
   static propTypes = {
@@ -153,7 +114,7 @@ export default class AppLoadingScreen extends React.Component {
   }
 
   static defaultProps = {
-    text: 'Loading sanity…'
+    text: ''
   }
 
   render() {
@@ -169,9 +130,7 @@ export default class AppLoadingScreen extends React.Component {
           </div>
         </div>
         <div className="sanity-app-loading-screen__spinner">
-          <div className="sanity-app-loader__spinner-inner">
-            <SpinnerIcon />
-          </div>
+          <div className="sanity-app-loader__spinner-inner" />
         </div>
       </div>
     )
