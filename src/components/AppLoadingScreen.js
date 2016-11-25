@@ -154,7 +154,7 @@ export default class AppLoadingScreen extends React.Component {
   }
 
   static defaultProps = {
-    text: 'Loading sanity…'
+    text: 'Restoring sanity…'
   }
 
   render() {
