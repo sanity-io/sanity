@@ -14,6 +14,7 @@ const partLoaderPath = require.resolve('@sanity/webpack-loader/src/partLoader')
 
 export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
+  const skipMinify = config.skipMinify || false
 
   const reactPath = resolveFrom(basePath, 'react')
   const reactDomPath = resolveFrom(basePath, 'react-dom')
@@ -37,7 +38,7 @@ export default (config = {}) => {
     && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
 
   const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
-  const cssLoader = isProd
+  const cssLoader = isProd && !skipMinify
     ? `${baseCssLoader}&minimize`
     : `${baseCssLoader}&sourceMap`
 

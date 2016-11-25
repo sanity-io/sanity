@@ -3,6 +3,7 @@ import getBaseConfig from './webpack.config'
 
 export default config => {
   const baseConfig = getBaseConfig(Object.assign({}, config, {env: 'production'}))
+  const skipMinify = config.skipMinify
 
   return Object.assign({}, baseConfig, {
     devtool: 'source-map',
@@ -12,11 +13,11 @@ export default config => {
           NODE_ENV: JSON.stringify('production')
         }
       }),
-      new webpack.optimize.UglifyJsPlugin({
+      !skipMinify && new webpack.optimize.UglifyJsPlugin({
         compressor: {
           warnings: false
         }
       })
-    ])
+    ].filter(Boolean))
   })
 }
