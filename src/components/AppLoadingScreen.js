@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import SanityLogo from './logos/SanityLogo'
+import SanityLogo from 'part:@sanity/base/sanity-logo'
 
 const AppLoadingScreenStyles = `
 @keyframes sanity-app-loading-screen__fadeIn {
@@ -113,7 +113,7 @@ export default class AppLoadingScreen extends React.Component {
   }
 
   static defaultProps = {
-    text: 'Restoring Sanity'
+    text: ''
   }
 
   render() {
