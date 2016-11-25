@@ -1,13 +1,9 @@
 import Geopoint from './types/Geopoint'
-import ImageAsset from './types/ImageAsset'
-import ImageVersion from './types/ImageVersion'
-import Image from './types/Image'
+
+export {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD} from './types/Image'
 
 export default {
   types: [
-    Geopoint,
-    ImageAsset,
-    ImageVersion,
-    Image
+    Geopoint
   ]
 }

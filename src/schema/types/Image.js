@@ -1,68 +1,52 @@
-export default {
-  name: 'image',
+
+export const ASSET_FIELD = {
+  name: 'asset',
+  type: 'reference',
+  to: [{type: 'imageAsset'}]
+}
+
+export const HOTSPOT_FIELD = {
+  name: 'hotspot',
   type: 'object',
   fields: [
     {
-      name: 'asset',
-      type: 'reference',
-      to: [{type: 'imageAsset'}],
-      title: 'Media'
+      name: 'x',
+      type: 'number'
     },
     {
-      name: 'hotspot',
-      type: 'object',
-      fields: [
-        {
-          name: 'x',
-          type: 'number'
-        },
-        {
-          name: 'y',
-          type: 'number'
-        },
-        {
-          name: 'height',
-          type: 'number'
-        },
-        {
-          name: 'width',
-          type: 'number'
-        }
-      ]
+      name: 'y',
+      type: 'number'
     },
     {
-      name: 'crop',
-      type: 'object',
-      fields: [
-        {
-          name: 'top',
-          type: 'number'
-        },
-        {
-          name: 'bottom',
-          type: 'number'
-        },
-        {
-          name: 'left',
-          type: 'number'
-        },
-        {
-          name: 'right',
-          type: 'number'
-        }
-      ]
+      name: 'height',
+      type: 'number'
     },
     {
-      name: 'caption',
-      type: 'string'
+      name: 'width',
+      type: 'number'
+    }
+  ]
+}
+
+export const CROP_FIELD = {
+  name: 'crop',
+  type: 'object',
+  fields: [
+    {
+      name: 'top',
+      type: 'number'
     },
     {
-      name: 'altText',
-      type: 'string'
+      name: 'bottom',
+      type: 'number'
     },
     {
-      name: 'license',
-      type: 'string'
+      name: 'left',
+      type: 'number'
+    },
+    {
+      name: 'right',
+      type: 'number'
     }
   ]
 }
