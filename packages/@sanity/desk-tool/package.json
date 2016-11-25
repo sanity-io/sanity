@@ -24,11 +24,11 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.0.5",
-    "@sanity/form-builder": "^0.0.55",
+    "@sanity/form-builder": "^0.0.56",
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.2.3",
+    "@sanity/base": "^0.2.5",
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.3.14",
     "@sanity/components": "^0.0.64",
