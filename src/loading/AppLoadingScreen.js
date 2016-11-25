@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
-import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 import SanityLogo from 'part:@sanity/base/sanity-logo-icon'
+import SpinnerIcon from 'part:@sanity/base/spinner-icon'
+
 
 const AppLoadingScreenStyles = `
 @-webkit-keyframes sanity-app-loader__spin {
@@ -114,7 +115,9 @@ const AppLoadingScreenStyles = `
 }
 
 .sanity-app-loading-screen__text {
-  font-weight: 100
+  font-weight: 400
+  font-size: 5em;
+  font-family: sans-serif;
 }
 
 .sanity-app-loading-screen__spinner {
@@ -144,7 +147,6 @@ const AppLoadingScreenStyles = `
   -webkit-animation-iteration-count: infinite;
           animation-iteration-count: infinite;
 }
-
 `
 
 export default class AppLoadingScreen extends React.Component {
@@ -153,7 +155,7 @@ export default class AppLoadingScreen extends React.Component {
   }
 
   static defaultProps = {
-    text: 'Loading sanity…'
+    text: 'Restoring sanity…'
   }
 
   render() {
