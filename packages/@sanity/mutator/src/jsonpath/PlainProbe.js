@@ -58,9 +58,6 @@ export default class PlainProbe {
   }
 
   value() : any {
-    if (this.containerType() != 'primitive') {
-      throw new Error("Won't give value of collections")
-    }
     return this._value
   }
 }

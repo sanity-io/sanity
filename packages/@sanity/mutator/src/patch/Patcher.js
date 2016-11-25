@@ -15,7 +15,7 @@ export default class Patcher {
     // exact same object it was provided (in the case of no changes),
     // or a completely new object. It will never mutate the object in place.
     const accessor = new ImmutableAccessor(value)
-    return this.applyViaAccessor(accessor)._value
+    return this.applyViaAccessor(accessor).value()
   }
   // If you want to use your own accessor implementation, you can use this method
   // to invoke the patcher. Since all subsequent accessors for children of this accessor
@@ -46,11 +46,11 @@ function process(matcher, accessor) {
   leads.forEach(lead => {
     if (lead.target.isIndexReference()) {
       lead.target.toIndicies().forEach(i => {
-        result = result.setIndex(i, process(lead.matcher, result.getIndex(i))._value)
+        result = result.setIndex(i, process(lead.matcher, result.getIndex(i)).value())
       })
     } else if (lead.target.isAttributeReference()) {
       result = result.setAttribute(lead.target.name(),
-        process(lead.matcher, result.getAttribute(lead.target.name()))._value)
+        process(lead.matcher, result.getAttribute(lead.target.name())).value())
     } else {
       throw new Error(`Unable to handle target ${lead.target.toString()}`)
     }

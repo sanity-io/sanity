@@ -19,6 +19,12 @@ export default class ImmutableAccessor {
     return 'primitive'
   }
 
+  // Common reader, supported by all containers
+  value() : any {
+    return this._value
+  }
+
+  // Array reader
   length() : number {
     if (this.containerType() != 'array') {
       throw new Error("Won't return length of non-indexable _value")
@@ -35,7 +41,7 @@ export default class ImmutableAccessor {
     return new ImmutableAccessor(this._value[i], this.path.concat(i))
   }
 
-
+  // Attribute reader
   hasAttribute(key : string) : bool {
     if (this.containerType() != 'object') {
       return false
@@ -56,13 +62,6 @@ export default class ImmutableAccessor {
       return null
     }
     return new ImmutableAccessor(this._value[key], this.path.concat(key))
-  }
-
-  value() : any {
-    if (this.containerType() != 'primitive') {
-      throw new Error("Won't give value of collections")
-    }
-    return this._value
   }
 
   // Common writer, supported by all containers
