@@ -18,7 +18,7 @@ Run the command again within a Sanity project directory, where "@sanity/core"
 is installed as a dependency.`
 
 export default (cmdName, parentGroupName, groups) => {
-  if (parentGroupName) {
+  if (parentGroupName && groups[parentGroupName]) {
     return suggestCommand(cmdName, groups[parentGroupName], parentGroupName)
   }
 
