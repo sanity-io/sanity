@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import SanityLogo from 'part:@sanity/base/sanity-logo'
 
 const AppLoadingScreenStyles = `
-
 @keyframes sanity-app-loading-screen__fadeIn {
   0% {
     opacity: 0;
@@ -29,7 +28,6 @@ const AppLoadingScreenStyles = `
    95% {left: 120%;}
    to {left: 100%;}
 }
-
 
 @-webkit-keyframes sanity-app-loading-screen__fadeIn {
   0% {
@@ -106,7 +104,7 @@ const AppLoadingScreenStyles = `
   background-color: #aaa ;
   -webkit-animation: sanity-app-loading-screen__spinner 2s linear infinite;
   animation: sanity-app-loading-screen__spinner 2s linear infinite;
-}
+}`
 
 export default class AppLoadingScreen extends React.Component {
   static propTypes = {
