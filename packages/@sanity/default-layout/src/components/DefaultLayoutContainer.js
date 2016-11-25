@@ -2,7 +2,8 @@ import React from 'react'
 import DefaultLayout from './DefaultLayout'
 import locationStore from 'part:@sanity/base/location'
 import SanityIntlProvider from 'part:@sanity/base/sanity-intl-provider'
-import LoginWrapper from 'part:@sanity/base/login-wrapper'
+import LoginWrapperPart from 'part:@sanity/base/login-wrapper?'
+import NoLogin from './NoLogin'
 import NotFound from './NotFound'
 import config from 'config:sanity'
 import {RouterProvider} from 'part:@sanity/base/router'
@@ -28,6 +29,7 @@ class DefaultLayoutContainer extends React.Component {
     const {location} = this.state
     const locale = config.locale || {}
     const supportedLanguages = locale.supportedLanguages || ['en-US']
+    const LoginWrapper = LoginWrapperPart || NoLogin
 
     if (!location) {
       return null
@@ -37,7 +39,7 @@ class DefaultLayoutContainer extends React.Component {
       <SanityIntlProvider supportedLanguages={supportedLanguages}>
         <LoginWrapper>
           <RouterProvider router={rootRouter} state={rootRouter.decode(location.pathname)} onNavigate={this.handleNavigate}>
-            {rootRouter.isNotFound(location.pathname) ? <NotFound/> : <DefaultLayout />}
+            {rootRouter.isNotFound(location.pathname) ? <NotFound /> : <DefaultLayout />}
           </RouterProvider>
         </LoginWrapper>
       </SanityIntlProvider>
