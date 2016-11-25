@@ -67,7 +67,7 @@ export default {
       }
 
       const fields = [ASSET_FIELD].concat(
-        (typeDef.fields || []).filter(fieldDef => fieldDef.name === 'asset')
+        (typeDef.fields || []).filter(fieldDef => fieldDef.name !== 'asset')
       )
       return primitives.object.parse(Object.assign({}, typeDef, {
         fields: fields
