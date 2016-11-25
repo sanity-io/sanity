@@ -5,7 +5,7 @@ import debug from '../../debug'
 export default function batchedMutationStream(options) {
   const {apiClient, dataset, mutator, preCommit} = options
   const timeout = 45000
-  const batchSize = options.batchSize || 250
+  const batchSize = options.batchSize || 175
   const concurrency = options.concurrency || 3
   const client = createClient(Object.assign({}, apiClient().config(), {dataset, timeout}))
 

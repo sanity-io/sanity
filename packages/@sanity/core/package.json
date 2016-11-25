@@ -34,6 +34,7 @@
     "lodash": "^4.17.2",
     "path-exists": "^3.0.0",
     "pretty-ms": "^2.1.0",
+    "promise-each-concurrency": "^1.1.1",
     "split2": "^2.1.0",
     "through2": "^2.0.1"
   },

@@ -21,7 +21,8 @@ export default (args, context) => {
     env: 'production',
     staticPath: resolveStaticPath(workDir, config),
     basePath: workDir,
-    outputPath: path.join(outputDir, 'static')
+    outputPath: path.join(outputDir, 'static'),
+    skipMinify: flags.skipMinify || false
   }
 
   const compiler = getWebpackCompiler(compilationConfig)

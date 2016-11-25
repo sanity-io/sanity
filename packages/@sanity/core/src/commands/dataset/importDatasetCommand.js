@@ -90,6 +90,6 @@ export default {
 
     // That... should be it.
     const totalTime = prettyMs(Date.now() - importStartTime, {verbose: true})
-    output.print(`${chalk.green('All done!')} Spent ${totalTime}`)
+    return output.print(`${chalk.green('All done!')} Spent ${totalTime}`)
   }
 }
