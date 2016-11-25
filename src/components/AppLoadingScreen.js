@@ -73,6 +73,7 @@ const AppLoadingScreenStyles = `
 .sanity-app-loading-screen__text {
   font-weight: 400
   font-size: 5em;
+  font-family: sans-serif;
 }
 
 .sanity-app-loading-screen__spinner {
