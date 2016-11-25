@@ -1,5 +1,6 @@
 import {test} from 'tap'
 import {Schema} from '../../src'
+import {ASSET_FIELD} from '../../src/schema/types/bundled'
 
 test('image types with fields', t => {
   const schema = Schema.compile({
@@ -17,8 +18,15 @@ test('image types with fields', t => {
   t.deepEqual(schema.getType('someImage'), {
     name: 'someImage',
     type: 'image',
-    fields: [{name: 'caption', type: 'string', format: 'plain'}],
+    fields: [
+      ASSET_FIELD,
+      {name: 'caption', type: 'string', format: 'plain'}
+    ],
     fieldsets: [
+      {
+        single: true,
+        field: ASSET_FIELD
+      },
       {
         single: true,
         field: {name: 'caption', type: 'string', format: 'plain'}
@@ -42,8 +50,15 @@ test('image types without fields', t => {
   t.deepEqual(schema.getType('someImage'), {
     name: 'someImage',
     type: 'image',
-    fields: [],
-    fieldsets: [],
+    fields: [
+      ASSET_FIELD
+    ],
+    fieldsets: [
+      {
+        field: ASSET_FIELD,
+        single: true
+      }
+    ],
     options: {}
   })
   t.end()

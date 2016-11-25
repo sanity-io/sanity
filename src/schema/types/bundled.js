@@ -1,7 +1,7 @@
 import PropTypes from 'proptypes'
 import primitives from './primitives'
 
-const ASSET_FIELD = {
+export const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
   to: [{type: 'imageAsset'}]

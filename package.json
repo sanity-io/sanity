@@ -10,7 +10,7 @@
     "postpublish": "rimraf lib",
     "lint": "eslint . --quiet",
     "tap": "tap --node-arg -r --node-arg ./test/.init.js",
-    "test": "npm run tap ./test/**/*.test.js",
+    "test": "npm run tap ./test/*.test.js ./test/**/*.test.js",
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
