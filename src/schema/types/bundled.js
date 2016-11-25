@@ -61,8 +61,8 @@ export default {
       if (hasAssetField) {
         // eslint-disable-next-line no-console
         console.error(new Error(
-          'Found image type with a field named "asset". This should be removed as the "asset" field is impliclity added'
-          + 'Please remove it from the fields array of the following type definition in your schema:'
+          'Found image type with a field named "asset". This should be removed as the "asset" field is impliclity added.'
+          + ' Please remove it from the fields array of the following type definition in your schema:'
         ), typeDef)
       }
 
