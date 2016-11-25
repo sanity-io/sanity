@@ -1,4 +1,4 @@
-import baseSchema from './baseSchema'
+import Geopoint from './types/Geopoint'
 
 const extendTypes = (result, schema) =>
   Object.assign(result, {
@@ -8,7 +8,7 @@ const extendTypes = (result, schema) =>
 
 const createSchema = (...schemas) =>
   schemas.reduce(extendTypes, {
-    types: [].concat(baseSchema.types)
+    types: [].concat(Geopoint)
   })
 
 export default createSchema
