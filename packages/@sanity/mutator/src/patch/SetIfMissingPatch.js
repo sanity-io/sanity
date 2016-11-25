@@ -1,4 +1,4 @@
-export default class SetIfMissing {
+export default class SetIfMissingPatch {
   path : string
   value : any
   constructor(path : string, value : any) {
@@ -6,17 +6,19 @@ export default class SetIfMissing {
     this.value = value
   }
   apply(targets, accessor) {
+    let result = accessor
     targets.forEach(target => {
       if (target.isIndexReference()) {
         // setIfMissing do not apply to arrays, since Gradient will reject nulls in arrays
         return
       } else if (target.isAttributeReference()) {
-        if (!accessor.has(target.name())) {
-          accessor.getField(target.name()).set(this.value)
+        if (!result.hasAttribute(target.name())) {
+          result = accessor.setAttribute(target.name(), this.value)
         }
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }
     })
+    return result
   }
 }

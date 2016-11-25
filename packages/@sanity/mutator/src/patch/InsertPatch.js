@@ -2,7 +2,7 @@
 import {targetsToIndicies} from './util'
 import {min, max} from 'lodash'
 
-export default class Insert {
+export default class InsertPatch {
   location : string
   path : string
   items : Array<any>
@@ -12,25 +12,26 @@ export default class Insert {
     this.items = items
   }
   apply(targets, accessor) {
-    if (!accessor.isIndexable()) {
+    let result = accessor
+    if (accessor.containerType() != 'array') {
       throw new Error('Attempt to apply insert patch to non-array value')
     }
-    let mutator : Function
     switch (this.location) {
       case 'before': {
         const pos = minIndex(targets, accessor)
-        accessor.insert(pos, this.items)
+        result = result.insertItemsAt(pos, this.items)
         break
       }
       case 'after': {
         const pos = maxIndex(targets, accessor)
-        accessor.insert(pos + 1, this.items)
+        result = result.insertItemsAt(pos + 1, this.items)
         break
       }
       default: {
         throw new Error(`Unsupported location atm: ${this.location}`)
       }
     }
+    return result
   }
 
 }

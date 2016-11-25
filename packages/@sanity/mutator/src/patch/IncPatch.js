@@ -1,4 +1,4 @@
-export default class Set {
+export default class IncPatch {
   path : string
   value : number
   constructor(path : string, value : number) {
@@ -6,20 +6,20 @@ export default class Set {
     this.value = value
   }
   apply(targets, accessor) {
+    let result = accessor
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          accessor.getIndex(i).mutate(value => {
-            return value + this.value
-          })
+          const previousValue = result.getIndex(i).value()
+          result = result.setIndex(i, previousValue + this.value)
         })
       } else if (target.isAttributeReference()) {
-        accessor.getField(target.name()).mutate(value => {
-          return value + this.value
-        })
+        const previousValue = result.getAttribute(target.name()).value()
+        result = result.setAttribute(target.name(), previousValue + this.value)
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }
     })
+    return result
   }
 }

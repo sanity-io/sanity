@@ -11,20 +11,22 @@ export default class DiffMatchPatch {
     this.dmpPatch = dmp.patch_fromText(dmpPatchSrc)
   }
   apply(targets, accessor) {
+    let result = accessor
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          accessor.getIndex(i).mutate(value => {
-            return dmp.patch_apply(this.dmpPatch, value)[0]
-          })
+          const oldValue = result.getIndex(i).value()
+          const nextValue = dmp.patch_apply(this.dmpPatch, oldValue)[0]
+          result = result.setIndex(i, nextValue)
         })
       } else if (target.isAttributeReference()) {
-        accessor.getField(target.name()).mutate(value => {
-          return dmp.patch_apply(this.dmpPatch, value)[0]
-        })
+        const oldValue = result.getAttribute(target.name()).value()
+        const nextValue = dmp.patch_apply(this.dmpPatch, oldValue)[0]
+        result = result.setAttribute(target.name(), nextValue)
       } else {
         throw new Error(`Unable to apply diffMatchPatch to target ${target.toString()}`)
       }
     })
+    return result
   }
 }

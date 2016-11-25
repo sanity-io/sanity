@@ -1,134 +1,129 @@
 // @flow
 
-// An immutable probe/accessor for plain JS objects that will never mutate
-// the provided _value in place
+// An immutable probe/writer for plain JS objects that will never mutate
+// the provided _value in place. Each setter returns a new (wrapped) version
+// of the value.
 export default class ImmutableAccessor {
-  setter : Function
-  getter : Function
-  constructor(getter : Function, setter : Function) {
-    this.getter = getter
-    this.setter = setter
+  _value : any
+  path : Array<any>
+  constructor(_value : any, path : Array<any>) {
+    this._value = _value
+    this.path = path || []
   }
-  // Probe interface (the interface used by Matcher to traverse the document)
-  isIndexable() : bool {
-    return Array.isArray(this.getter())
-  }
-  getLength() : number {
-    if (!this.isIndexable()) {
-      throw new Error("Won't return length of non-indexable _value")
+  containerType() {
+    if (Array.isArray(this._value)) {
+      return 'array'
+    } else if (this._value !== null && typeof this._value == 'object') {
+      return 'object'
     }
-    return this.getter().length
-  }
-  isPlainObject() : bool {
-    return typeof this.getter() == 'object' && !this.isIndexable()
-  }
-  isPrimitiveValue() : bool {
-    return !this.isPlainObject() && !this.isIndexable()
-  }
-  has(key : string) : bool {
-    if (!this.isPlainObject()) {
-      return false
-    }
-    return this.getter().hasOwnProperty(key)
-  }
-  attributes() : Array<string> {
-    if (!this.isPlainObject()) {
-      return []
-    }
-    return Object.keys(this.getter())
-  }
-  hasIndex(i : number) : bool {
-    if (!this.isIndexable()) {
-      return false
-    }
-    if (i >= this.getLength()) {
-      return false
-    }
-    return true
-  }
-  getField(key : string) : any {
-    if (!this.isPlainObject()) {
-      throw new Error('get only works on plain Objects')
-    }
-    return new ImmutableAccessor(
-      () => this.getter()[key],
-      _value => {
-        const newValue = Object.assign({}, this.getter())
-        newValue[key] = _value
-        this.setter(newValue)
-      })
-  }
-  getIndex(i : number) : any {
-    if (!this.isIndexable()) {
-      throw new Error('get only works on indicies')
-    }
-    if (!this.hasIndex(i)) {
-      return null
-    }
-    return new ImmutableAccessor(
-      () => this.getter()[i],
-      _value => {
-        if (i < 0 || i >= this.getLength()) {
-          throw new Error('Index out of range')
-        }
-        const newValue = this.getter().slice()
-        newValue[i] = _value
-        this.setter(newValue)
-      })
-  }
-  value() : any {
-    if (!this.isPrimitiveValue()) {
-      throw new Error("Won't give value of collections")
-    }
-    return this.getter()
-  }
-  // TODO: Should not accept collections except empty ones
-  set(value) {
-    this.setter(value)
+    return 'primitive'
   }
 
-  deleteKey(key : string) {
-    this._mutate(_value => {
-      delete _value[key]
-      return _value
-    })
+  length() : number {
+    if (this.containerType() != 'array') {
+      throw new Error("Won't return length of non-indexable _value")
+    }
+    return this._value.length
   }
-  deleteIndicies(indicies : Array<number>) {
-    this._mutate(_value => {
-      const length = _value.length
-      const newValue = []
-      // Copy every _value _not_ in the indicies array over to the newValue
-      for (let i = 0; i < length; i++) {
-        if (indicies.indexOf(i) == -1) {
-          newValue.push(_value[i])
-        }
+  getIndex(i : number) : any {
+    if (this.containerType() != 'array') {
+      return false
+    }
+    if (i >= this.length()) {
+      return null
+    }
+    return new ImmutableAccessor(this._value[i], this.path.concat(i))
+  }
+
+
+  hasAttribute(key : string) : bool {
+    if (this.containerType() != 'object') {
+      return false
+    }
+    return this._value.hasOwnProperty(key)
+  }
+  attributeKeys() : Array<string> {
+    if (this.containerType() != 'object') {
+      return []
+    }
+    return Object.keys(this._value)
+  }
+  getAttribute(key : string) : any {
+    if (this.containerType() != 'object') {
+      throw new Error('getAttribute only applies to plain objects')
+    }
+    if (!this.hasAttribute(key)) {
+      return null
+    }
+    return new ImmutableAccessor(this._value[key], this.path.concat(key))
+  }
+
+  value() : any {
+    if (this.containerType() != 'primitive') {
+      throw new Error("Won't give value of collections")
+    }
+    return this._value
+  }
+
+  // Common writer, supported by all containers
+  set(value) {
+    if (value === this._value) {
+      return this
+    }
+    return new ImmutableAccessor(value, this.path)
+  }
+
+  // array writer interface
+  setIndex(i : number, value : any) {
+    if (value === this._value[i]) {
+      return this
+    }
+    const nextValue = this._value.slice()
+    nextValue[i] = value
+    return new ImmutableAccessor(nextValue, this.path)
+  }
+  unsetIndicies(indicies : Array<number>) {
+    const length = this._value.length
+    const nextValue = []
+    // Copy every _value _not_ in the indicies array over to the newValue
+    for (let i = 0; i < length; i++) {
+      if (indicies.indexOf(i) == -1) {
+        nextValue.push(this._value[i])
       }
-      return newValue
-    })
+    }
+    return new ImmutableAccessor(nextValue, this.path)
   }
-  insert(pos : number, items : Array<any>) {
-    this._mutate(_value => {
-      if (this.getLength() == 0 && pos == 0) {
-        return items
-      }
-      return _value.slice(0, pos).concat(items).concat(_value.slice(pos))
-    })
+  insertItemsAt(pos : number, items : Array<any>) {
+    let nextValue
+    if (this.length() == 0 && pos == 0) {
+      nextValue = items
+    } else {
+      nextValue = this._value.slice(0, pos).concat(items).concat(this._value.slice(pos))
+    }
+    return new ImmutableAccessor(nextValue, this.path)
   }
+
+  // Object writer interface
+  setAttribute(key : string, value : any) {
+    if (value === this._value[key]) {
+      return this
+    }
+    const nextValue = Object.assign({}, this._value)
+    nextValue[key] = value
+    return new ImmutableAccessor(nextValue, this.path)
+  }
+  unsetAttribute(key : string) {
+    const nextValue = Object.assign({}, this._value)
+    delete nextValue[key]
+    return new ImmutableAccessor(nextValue, this.path)
+  }
+
+  // primitive writer interface
   mutate(fn : Function) {
-    if (!this.isPrimitiveValue()) {
+    if (this.containerType() != 'primitive') {
       throw new Error("Won't mutate container types")
     }
-    this._mutate(fn)
-  }
-  // Not part of the Accessor protocol
-  _mutate(fn : Function) {
-    let val = this.getter()
-    // Make sure we send a copy to the mutator
-    if (Array.isArray(val)) {
-      val = val.slice()
-    } else if (typeof val == 'object') {
-      val = Object.assign({}, val)
-    }
-    this.setter(fn(val))
+    const nextValue = fn(this._value)
+    return new ImmutableAccessor(nextValue, this.path)
   }
 }

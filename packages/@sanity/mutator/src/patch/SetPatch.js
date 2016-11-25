@@ -1,4 +1,4 @@
-export default class Set {
+export default class SetPatch {
   path : string
   value : any
   constructor(path : string, value : any) {
@@ -6,16 +6,20 @@ export default class Set {
     this.value = value
   }
   apply(targets, accessor) {
+    let result = accessor
     targets.forEach(target => {
-      if (target.isIndexReference()) {
+      if (target.isSelfReference()) {
+        result = result.set(this.value)
+      } else if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          accessor.getIndex(i).set(this.value)
+          result = result.setIndex(i, this.value)
         })
       } else if (target.isAttributeReference()) {
-        accessor.getField(target.name()).set(this.value)
+        result = result.setAttribute(target.name(), this.value)
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }
     })
+    return result
   }
 }

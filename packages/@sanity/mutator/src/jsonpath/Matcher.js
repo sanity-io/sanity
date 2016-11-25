@@ -47,12 +47,12 @@ export default class Matcher {
         return true
       }
       // Index references are only relevant for indexable values
-      if (probe.isIndexable() && head.isIndexReference()) {
+      if (probe.containerType() == 'array' && head.isIndexReference()) {
         return true
       }
       // Attribute references are relevant for plain objects
-      if (probe.isPlainObject()) {
-        if (head.isAttributeReference() && probe.has(head.name())) {
+      if (probe.containerType() == 'object') {
+        if (head.isAttributeReference() && probe.hasAttribute(head.name())) {
           return true
         }
       }
@@ -102,11 +102,11 @@ export default class Matcher {
         }))
         return
       }
-      if (probe.isIndexable() && !descender.head.isIndexReference()) {
+      if (probe.containerType() == 'array' && !descender.head.isIndexReference()) {
         // This descender does not match an indexable value
         return
       }
-      if (probe.isPlainObject() && !descender.head.isAttributeReference()) {
+      if (probe.containerType() == 'object' && !descender.head.isAttributeReference()) {
         // This descender never match a plain object
         return
       }
@@ -131,16 +131,16 @@ export default class Matcher {
     if (this.hasRecursives()) {
       // The recustives matcher will have no active set, only inherit recursives from this
       const recursivesMatcher = new Matcher([], this)
-      if (probe.isIndexable()) {
-        const length = probe.getLength()
+      if (probe.containerType() == 'array') {
+        const length = probe.length()
         for (let i = 0; i < length; i++) {
           leads.push({
             target: Expression.indexReference(i),
             matcher: recursivesMatcher
           })
         }
-      } else if (probe.isPlainObject()) {
-        probe.attributes().forEach(name => {
+      } else if (probe.containerType() == 'object') {
+        probe.attributeKeys().forEach(name => {
           leads.push({
             target: Expression.attributeReference(name),
             matcher: recursivesMatcher

@@ -48,7 +48,7 @@ export default class Expression {
   expandRange(probe : Probe) : Object {
     let start = this.expr.start || 0
     start = interpretNegativeIndex(start, probe)
-    let end = this.expr.end || probe.getLength()
+    let end = this.expr.end || probe.length()
     end = interpretNegativeIndex(end, probe)
     const step = this.expr.step || 1
     return {start, end, step}
@@ -74,7 +74,7 @@ export default class Expression {
   }
   testConstraint(probe : Probe) : bool {
     if (this.constraintTargetIsSelf()) {
-      if (!probe.isPrimitiveValue()) {
+      if (probe.containerType() != 'primitive') {
         return false
       }
       if (this.isExistenceConstraint()) {
@@ -87,8 +87,11 @@ export default class Expression {
     if (!this.constraintTargetIsAttribute()) {
       throw new Error(`Constraint target ${this.expr.lhs.type} not supported`)
     }
-    const lhs = probe.getField(this.expr.lhs.name)
-    if (lhs === null || !lhs.isPrimitiveValue()) {
+    if (probe.containerType() != 'object') {
+      return false
+    }
+    const lhs = probe.getAttribute(this.expr.lhs.name)
+    if (lhs === null || lhs.containerType() != 'primitive') {
       // LHS is void and empty, or it is a collection
       return false
     }
@@ -204,7 +207,7 @@ function testBinaryOperator(lhsValue, operator, rhsValue) {
 }
 function interpretNegativeIndex(index : number, probe : Probe) {
   if (index < 0) {
-    return index + probe.getLength()
+    return index + probe.length()
   }
   return index
 }

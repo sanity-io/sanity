@@ -8,62 +8,57 @@ export default class PlainProbe {
     this._value = _value
     this.path = path || []
   }
-  isIndexable() : bool {
-    return Array.isArray(this._value)
+  containerType() {
+    if (Array.isArray(this._value)) {
+      return 'array'
+    } else if (this._value !== null && typeof this._value == 'object') {
+      return 'object'
+    }
+    return 'primitive'
   }
-  getLength() : number {
-    if (!this.isIndexable()) {
+
+  length() : number {
+    if (this.containerType() != 'array') {
       throw new Error("Won't return length of non-indexable _value")
     }
     return this._value.length
   }
-  isPlainObject() : bool {
-    return this._value !== null && typeof this._value == 'object' && !this.isIndexable()
-  }
-  isPrimitiveValue() : bool {
-    return !this.isPlainObject() && !this.isIndexable()
-  }
-  has(key : string) : bool {
-    if (!this.isPlainObject()) {
-      return false
-    }
-    return this._value.hasOwnProperty(key)
-  }
-  attributes() : Array<string> {
-    if (!this.isPlainObject()) {
-      return []
-    }
-    return Object.keys(this._value)
-  }
-  hasIndex(i : number) : bool {
-    if (!this.isIndexable()) {
-      return false
-    }
-    if (i >= this.getLength()) {
-      return false
-    }
-    return true
-  }
-  getField(key : string) : any {
-    if (this.isIndexable()) {
-      return false
-    }
-    if (!this.has(key)) {
-      return null
-    }
-    return new PlainProbe(this._value[key], this.path.concat(key))
-  }
   getIndex(i : number) : any {
-    if (!this.isIndexable()) {
+    if (this.containerType() != 'array') {
       return false
     }
-    if (!this.hasIndex(i)) {
+    if (i >= this.length()) {
       return null
     }
     return new PlainProbe(this._value[i], this.path.concat(i))
   }
+
+
+  hasAttribute(key : string) : bool {
+    if (this.containerType() != 'object') {
+      return false
+    }
+    return this._value.hasOwnProperty(key)
+  }
+  attributeKeys() : Array<string> {
+    if (this.containerType() != 'object') {
+      return []
+    }
+    return Object.keys(this._value)
+  }
+  getAttribute(key : string) : any {
+    if (this.containerType() != 'object') {
+      console.log(this._value)
+      throw new Error('getAttribute only applies to plain objects')
+    }
+    if (!this.hasAttribute(key)) {
+      return null
+    }
+    return new PlainProbe(this._value[key], this.path.concat(key))
+  }
+
   value() : any {
-    if (!this.isPrimitiveValue()) {
+    if (this.containerType() != 'primitive') {
       throw new Error("Won't give value of collections")
     }
     return this._value

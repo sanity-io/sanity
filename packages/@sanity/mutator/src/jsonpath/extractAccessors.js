@@ -35,7 +35,7 @@ function accessorsFromTarget(target : Expression, accessor : PlainProbe) {
       result.push(accessor.getIndex(i))
     })
   } else if (target.isAttributeReference()) {
-    result.push(accessor.getField(target.name()))
+    result.push(accessor.getAttribute(target.name()))
   } else if (target.isSelfReference()) {
     result.push(accessor)
   } else {

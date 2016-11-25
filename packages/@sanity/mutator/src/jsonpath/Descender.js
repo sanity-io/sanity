@@ -59,7 +59,7 @@ export default class Descender {
 
     const result : Array<Descender> = []
 
-    if (probe.isPrimitiveValue() && head.constraintTargetIsSelf()) {
+    if (probe.containerType() == 'primitive' && head.constraintTargetIsSelf()) {
       if (head.testConstraint(probe)) {
         result.push(...this.descend())
       }
@@ -67,8 +67,8 @@ export default class Descender {
     }
 
     // The value is an array
-    if (probe.isIndexable()) {
-      const length = probe.getLength()
+    if (probe.containerType() == 'array') {
+      const length = probe.length()
       if (head.constraintTargetIsSelf()) {
         for (let i = 0; i < length; i++) {
           // Push new descenders with constraint translated to literal indicies
@@ -96,7 +96,7 @@ export default class Descender {
     }
 
     // The value is an object
-    if (probe.isPlainObject()) {
+    if (probe.containerType() == 'object') {
       if (this.head.constraintTargetIsSelf()) {
         // There are no matches for target self ('@') on a plain object
         return []
