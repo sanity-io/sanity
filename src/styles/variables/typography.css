@@ -2,7 +2,7 @@
 @import "part:@sanity/base/theme/variables/gray-colors-style";
 
 :root {
-  --text-color: var(--gray-darker);
+  --text-color: var(--gray-darkest);
   --link-color: var(--brand-primary);
   --link-hover-color: color(var(--brand-success) lightness(+25%));
   --link-hover-decoration: underline;
