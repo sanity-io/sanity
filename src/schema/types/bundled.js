@@ -1,5 +1,12 @@
 import PropTypes from 'proptypes'
 import primitives from './primitives'
+
+const ASSET_FIELD = {
+  name: 'asset',
+  type: 'reference',
+  to: [{type: 'imageAsset'}]
+}
+
 export default {
   any: {
     options: {
@@ -50,8 +57,20 @@ export default {
       }))
     },
     parse(typeDef, types) {
+      const hasAssetField = (typeDef.fields || []).some(fieldDef => fieldDef.name === 'asset')
+      if (hasAssetField) {
+        // eslint-disable-next-line no-console
+        console.error(new Error(
+          'Found image type with a field named "asset". This should be removed as the "asset" field is impliclity added'
+          + 'Please remove it from the fields array of the following type definition in your schema:'
+        ), typeDef)
+      }
+
+      const fields = [ASSET_FIELD].concat(
+        (typeDef.fields || []).filter(fieldDef => fieldDef.name === 'asset')
+      )
       return primitives.object.parse(Object.assign({}, typeDef, {
-        fields: typeDef.fields || []
+        fields: fields
       }), types)
     }
   },
