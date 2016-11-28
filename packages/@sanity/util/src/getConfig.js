@@ -6,7 +6,7 @@ import {loadJsonSync} from './safeJson'
 const defaults = {
   server: {
     staticPath: './static',
-    port: 3910,
+    port: 3333,
     hostname: 'localhost'
   }
 }
