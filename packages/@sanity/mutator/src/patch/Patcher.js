@@ -49,6 +49,10 @@ function process(matcher, accessor) {
         result = result.setIndex(i, process(lead.matcher, result.getIndex(i)).get())
       })
     } else if (lead.target.isAttributeReference()) {
+      if (!result.hasAttribute(lead.target.name())) {
+        // Don't follow lead, no such attribute
+        return
+      }
       result = result.setAttribute(lead.target.name(),
         process(lead.matcher, result.getAttribute(lead.target.name())).get())
     } else {

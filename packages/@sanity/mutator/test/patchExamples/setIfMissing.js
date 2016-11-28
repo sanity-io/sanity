@@ -44,19 +44,19 @@ export default [
     name: 'Recursive set if missing',
     before: {
       z: [
-        {a: 7, p: 'Thorvald Meyers gt.'},
-        {b: 7, p: 'Thorvald Meyers gt.'}
+        {a: 7, p: 'Thorvald Meyers gt.', zz: {}},
+        {b: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 10}}
       ]
     },
     patch: {
       setIfMissing: {
-        '..[p=="Thorvald Meyers gt."].a': 100
+        '..[p=="Thorvald Meyers gt."].zz.zzz': 100
       }
     },
     after: {
       z: [
-        {a: 7, p: 'Thorvald Meyers gt.'},
-        {b: 7, p: 'Thorvald Meyers gt.', a: 100}
+        {a: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 100}},
+        {b: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 10}}
       ]
     },
   }
