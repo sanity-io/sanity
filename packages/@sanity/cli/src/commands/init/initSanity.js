@@ -100,14 +100,14 @@ export default async function initSanity(args, context) {
       message: 'Create temporary account?',
       type: 'list',
       choices: [
-        {value: 'provisional', name: 'A temp account sounds swell'},
+        {value: 'provisional', name: 'A temp account sounds great'},
         {value: 'login', name: 'No, I already have an account'},
         {value: 'arrow', name: 'I took an arrow to the knee'}
       ]
     })
 
     if (authMethod === 'arrow') {
-      output.print("Cool story bout the arrow, guess you're in a hurry. Creating temp account.")
+      output.print("Cool story about the arrow, guess you're in a hurry. Here's a temp account.")
     }
 
     if (authMethod === 'arrow' || authMethod === 'provisional') {
@@ -223,4 +223,3 @@ export default async function initSanity(args, context) {
     return {datasetName: selected}
   }
 }
-
