@@ -11,7 +11,7 @@ import gatherInput from './gatherInput'
 import {bootstrapSanity} from './bootstrap'
 
 export default async function initSanity(args, context) {
-  const {output, prompt, workDir, apiClient, yarn} = context
+  const {output, prompt, workDir, apiClient, yarn, chalk} = context
   output.print('This utility walks you through creating a Sanity installation.')
   output.print('Press ^C at any time to quit.\n')
 
@@ -82,9 +82,9 @@ export default async function initSanity(args, context) {
 
   // Check if we're currently in the output path, so we can give a better start message
   if (outputPath === process.cwd()) {
-    output.print('Success! You can now run `sanity start`')
+    output.print(`\n${chalk.green('Success!')} You can now run "${chalk.cyan('sanity start')}"`)
   } else {
-    output.print(`Success! You can now change to directory ${outputPath} and run \`sanity start\``)
+    output.print(`\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(outputPath)}" and run "${chalk.cyan('sanity start')}"`)
   }
 
 
