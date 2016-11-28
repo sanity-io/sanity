@@ -38,5 +38,26 @@ export default [
         c: 10
       }
     }
+  },
+
+  {
+    name: 'Recursive set if missing',
+    before: {
+      z: [
+        {a: 7, p: 'Thorvald Meyers gt.'},
+        {b: 7, p: 'Thorvald Meyers gt.'}
+      ]
+    },
+    patch: {
+      setIfMissing: {
+        '..[p=="Thorvald Meyers gt."].a': 100
+      }
+    },
+    after: {
+      z: [
+        {a: 7, p: 'Thorvald Meyers gt.'},
+        {b: 7, p: 'Thorvald Meyers gt.', a: 100}
+      ]
+    },
   }
 ]
