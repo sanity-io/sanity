@@ -38,7 +38,7 @@ export default class InsertPatch {
 
 function minIndex(targets, accessor) : number {
   let result = min(targetsToIndicies(targets, accessor))
-  // Ranges may be zero-length and not turn up in indicies
+  // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {
     if (target.isRange()) {
       const {start} = target.expandRange()
@@ -52,7 +52,7 @@ function minIndex(targets, accessor) : number {
 
 function maxIndex(targets, accessor) : number {
   let result = max(targetsToIndicies(targets, accessor))
-  // Ranges may be zero-length and not turn up in indicies
+  // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {
     if (target.isRange()) {
       const {end} = target.expandRange()

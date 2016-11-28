@@ -71,7 +71,7 @@ export default class Descender {
       const length = probe.length()
       if (head.constraintTargetIsSelf()) {
         for (let i = 0; i < length; i++) {
-          // Push new descenders with constraint translated to literal indicies
+          // Push new descenders with constraint translated to literal indices
           // where they match
           if (head.testConstraint(probe.getIndex(i))) {
              result.push(new Descender(
@@ -84,7 +84,7 @@ export default class Descender {
         // The target of the constraint is really the values of the descendants
         // Push the constraint back onto the tail
         const newTail = head.concat(this.tail)
-        // Then make descenders for all indicies
+        // Then make descenders for all indices
         for (let i = 0; i < length; i++) {
           result.push(new Descender(
             new Expression({type: 'index', value: i}),

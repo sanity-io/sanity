@@ -10,7 +10,7 @@ export default class UnsetPatch {
     let result = accessor
     switch (accessor.containerType()) {
       case 'array':
-        result = result.unsetIndicies(targetsToIndicies(targets, accessor))
+        result = result.unsetIndices(targetsToIndicies(targets, accessor))
         break
       case 'object':
         targets.forEach(target => {

@@ -41,7 +41,7 @@ export default class ImmutableAccessor {
     return new ImmutableAccessor(this._value[i], this.path.concat(i))
   }
 
-  // Attribute reader
+  // Object reader
   hasAttribute(key : string) : bool {
     if (this.containerType() != 'object') {
       return false
@@ -81,12 +81,12 @@ export default class ImmutableAccessor {
     nextValue[i] = value
     return new ImmutableAccessor(nextValue, this.path)
   }
-  unsetIndicies(indicies : Array<number>) {
+  unsetIndices(indices : Array<number>) {
     const length = this._value.length
     const nextValue = []
-    // Copy every _value _not_ in the indicies array over to the newValue
+    // Copy every _value _not_ in the indices array over to the newValue
     for (let i = 0; i < length; i++) {
-      if (indicies.indexOf(i) == -1) {
+      if (indices.indexOf(i) == -1) {
         nextValue.push(this._value[i])
       }
     }

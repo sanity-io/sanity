@@ -155,7 +155,7 @@ export default class Expression {
       }
       return result
     }
-    throw new Error(`Unable to convert ${this.expr.type} to indicies`)
+    throw new Error(`Unable to convert ${this.expr.type} to indices`)
   }
   toFieldReferences() : Array<any> {
     if (this.isIndexReference()) {
