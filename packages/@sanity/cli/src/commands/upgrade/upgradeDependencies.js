@@ -11,19 +11,21 @@ export default async (args, context) => {
   const {extOptions, argsWithoutOptions} = args
   const modules = argsWithoutOptions.slice()
 
+  // Find which modules are outdated
   const allOutdated = await getOutdatedModules(context)
   const outdated = modules.length === 0
     ? allOutdated
     : allOutdated.filter(outOfDate => modules.indexOf(outOfDate.name) !== -1)
 
+  // If all modules are up-to-date, say so and exit
   if (outdated.length === 0) {
     const specified = modules.length === 0 ? 'All' : 'All *specified*'
     context.output.print(`${chalk.green('✔')} ${specified} Sanity modules are at latest versions`)
     return
   }
 
+  // Replace versions in `package.json`
   const oldManifest = await readLocalManifest(workDir)
-
   const newManifest = outdated.reduce((target, mod) => {
     if (oldManifest.dependencies && oldManifest.dependencies[mod.name]) {
       target.dependencies[mod.name] = `^${mod.latest}`
@@ -36,9 +38,19 @@ export default async (args, context) => {
     return target
   }, oldManifest)
 
+  // Write new `package.json`
   const manifestPath = path.join(context.workDir, 'package.json')
   await fsp.writeJson(manifestPath, newManifest, {spaces: 2})
 
+  // Delete `yarn.lock` to ensure we're getting new modules
+  // (workaround, shouldnt be needed in the future)
+  const yarnLockPath = path.join(context.workDir, 'yarn.lock')
+  const hasLockFile = fsp.existsSync(yarnLockPath) // eslint-disable-line no-sync
+  if (hasLockFile) {
+    await fsp.unlink(yarnLockPath)
+  }
+
+  // Run `yarn install`
   const flags = extOptions.offline ? ['--offline'] : []
   const cmd = ['install'].concat(flags)
   await yarn(cmd, {...output, rootDir: workDir})
