@@ -91,7 +91,7 @@ export default class Expression {
       return false
     }
     const lhs = probe.getAttribute(this.expr.lhs.name)
-    if (lhs === null || lhs.containerType() != 'primitive') {
+    if (lhs === undefined || lhs === null || lhs.containerType() != 'primitive') {
       // LHS is void and empty, or it is a collection
       return false
     }
