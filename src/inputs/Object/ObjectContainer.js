@@ -43,7 +43,7 @@ export default class ObjectContainer {
   patch(patch) {
     const {context} = this
 
-    if (patch.path.length === 0 && patch.type === 'setIfMissing') {
+    if ((patch.path || []).length === 0 && patch.type === 'setIfMissing') {
       return this.isEmpty()
         ? ObjectContainer.deserialize(patch.value, this.context) // eslint-disable-line max-depth
         : this
