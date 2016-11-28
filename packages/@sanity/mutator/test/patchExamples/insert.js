@@ -47,5 +47,21 @@ export default [
     after: {
       a: [-1, -2]
     }
+  },
+
+  {
+    name: 'Insert object in array',
+    before: {
+      addresses: [{address: 'Mogata 24'}]
+    },
+    patch: {
+      insert: {
+        after: 'addresses[-1]',
+        items: [{address: '123 Banana Rd.'}]
+      }
+    },
+    after: {
+      addresses: [{address: 'Mogata 24'}, {address: '123 Banana Rd.'}]
+    }
   }
 ]

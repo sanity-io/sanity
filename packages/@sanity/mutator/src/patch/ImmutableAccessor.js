@@ -104,6 +104,9 @@ export default class ImmutableAccessor {
 
   // Object writer interface
   setAttribute(key : string, value : any) {
+    if (this.containerType() != 'object') {
+      throw new Error('Unable to set attribute of non-object container')
+    }
     if (value === this._value[key]) {
       return this
     }
