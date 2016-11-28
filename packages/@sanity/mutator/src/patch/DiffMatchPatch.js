@@ -15,12 +15,12 @@ export default class DiffMatchPatch {
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          const oldValue = result.getIndex(i).value()
+          const oldValue = result.getIndex(i).get()
           const nextValue = dmp.patch_apply(this.dmpPatch, oldValue)[0]
           result = result.setIndex(i, nextValue)
         })
       } else if (target.isAttributeReference()) {
-        const oldValue = result.getAttribute(target.name()).value()
+        const oldValue = result.getAttribute(target.name()).get()
         const nextValue = dmp.patch_apply(this.dmpPatch, oldValue)[0]
         result = result.setAttribute(target.name(), nextValue)
       } else {

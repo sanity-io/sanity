@@ -80,7 +80,7 @@ export default class Expression {
       if (this.isExistenceConstraint()) {
         return true
       }
-      const lhs = probe.value()
+      const lhs = probe.get()
       const rhs = this.expr.rhs.value
       return testBinaryOperator(lhs, this.expr.operator, rhs)
     }
@@ -100,7 +100,7 @@ export default class Expression {
       return true
     }
     const rhs = this.expr.rhs.value
-    return testBinaryOperator(lhs.value(), this.expr.operator, rhs)
+    return testBinaryOperator(lhs.get(), this.expr.operator, rhs)
   }
   pathNodes() {
     if (this.isPath()) {

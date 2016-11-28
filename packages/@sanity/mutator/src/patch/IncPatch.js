@@ -10,11 +10,11 @@ export default class IncPatch {
     targets.forEach(target => {
       if (target.isIndexReference()) {
         target.toIndicies(accessor).forEach(i => {
-          const previousValue = result.getIndex(i).value()
+          const previousValue = result.getIndex(i).get()
           result = result.setIndex(i, previousValue + this.value)
         })
       } else if (target.isAttributeReference()) {
-        const previousValue = result.getAttribute(target.name()).value()
+        const previousValue = result.getAttribute(target.name()).get()
         result = result.setAttribute(target.name(), previousValue + this.value)
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)

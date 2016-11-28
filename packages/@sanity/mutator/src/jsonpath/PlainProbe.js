@@ -57,7 +57,7 @@ export default class PlainProbe {
     return new PlainProbe(this._value[key], this.path.concat(key))
   }
 
-  value() : any {
+  get() : any {
     return this._value
   }
 }

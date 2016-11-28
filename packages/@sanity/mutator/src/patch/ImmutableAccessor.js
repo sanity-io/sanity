@@ -20,7 +20,7 @@ export default class ImmutableAccessor {
   }
 
   // Common reader, supported by all containers
-  value() : any {
+  get() : any {
     return this._value
   }
 
@@ -115,6 +115,9 @@ export default class ImmutableAccessor {
     return new ImmutableAccessor(nextValue, this.path)
   }
   unsetAttribute(key : string) {
+    if (this.containerType() != 'object') {
+      throw new Error('Unable to unset attribute of non-object container')
+    }
     const nextValue = Object.assign({}, this._value)
     delete nextValue[key]
     return new ImmutableAccessor(nextValue, this.path)
