@@ -10,6 +10,9 @@ import DiffMatchPatch from './DiffMatchPatch'
 // Parses a Gradient patch into our own personal patch implementations
 export default function parse(patch : Object) : Array<Object> {
   const result = []
+  if (Array.isArray(patch)) {
+    return patch.reduce((r, p) => r.concat(parse(p)), result)
+  }
   if (patch.set) {
     Object.keys(patch.set).forEach(path => {
       result.push(new SetPatch(path, patch.set[path]))

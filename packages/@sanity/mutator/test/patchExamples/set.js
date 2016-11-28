@@ -172,5 +172,16 @@ export default [
       a: [{deep: 'Hello', b: {deep: 'banana', fnah: 'How deep?'}}],
       deep: 12.3
     }
+  },
+
+  {
+    name: 'Array of patches',
+    before: {
+      a: 0
+    },
+    patch: [{inc: {a: 1}}, {inc: {a: 2}}],
+    after: {
+      a: 3
+    }
   }
 ]
