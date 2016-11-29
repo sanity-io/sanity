@@ -6,7 +6,7 @@ export default config => {
   const skipMinify = config.skipMinify
 
   return Object.assign({}, baseConfig, {
-    devtool: 'source-map',
+    devtool: config.sourceMaps ? 'source-map' : undefined,
     plugins: (baseConfig.plugins || []).concat([
       new webpack.DefinePlugin({
         'process.env': {
