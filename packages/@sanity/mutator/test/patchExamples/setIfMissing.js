@@ -44,8 +44,8 @@ export default [
     name: 'Recursive set if missing',
     before: {
       z: [
-        {a: 7, p: 'Thorvald Meyers gt.', zz: {}},
-        {b: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 10}}
+        {a: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55}},
+        {b: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 10}}
       ]
     },
     patch: {
@@ -55,8 +55,8 @@ export default [
     },
     after: {
       z: [
-        {a: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 100}},
-        {b: 7, p: 'Thorvald Meyers gt.', zz: {zzz: 10}}
+        {a: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 100}},
+        {b: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 10}}
       ]
     },
   }
