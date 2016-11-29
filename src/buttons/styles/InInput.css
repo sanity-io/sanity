@@ -7,7 +7,7 @@
   position: relative;
   text-transform: uppercase;
   outline: none;
-  cursor: pointer;
+  cursor: default;
   border: 0;
   line-height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2 - var(--input-border-size) * 2);
   user-select: none;

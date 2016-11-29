@@ -13,6 +13,7 @@
   box-sizing: border-box;
   text-overflow: ellipsis;
   user-select: none;
+  cursor: default;
 
   &.selected {
     background-color: color(var(--default-item-selected-color) a(60%));

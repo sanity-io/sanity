@@ -23,6 +23,7 @@
 
 .item {
   user-select: none;
+  cursor: default;
 
   @nest .isSortable & {
     cursor: move;

@@ -13,6 +13,7 @@
   width: 100%;
   height: 100%;
   background-color: #fafafa;
+  cursor: default;
 
   &:hover {
     background-color: var(--default-item-background-color-hover);

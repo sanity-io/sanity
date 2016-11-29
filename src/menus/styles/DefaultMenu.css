@@ -40,7 +40,7 @@
   position: relative;
   line-height: 3em;
   padding: 0 1em;
-  cursor: pointer;
+  cursor: default;
   text-decoration: none;
   color: inherit;
 

@@ -40,6 +40,8 @@
 }
 
 .item {
+  cursor: default;
+
   @nest .default & {
     display: flex;
     list-style: none;
