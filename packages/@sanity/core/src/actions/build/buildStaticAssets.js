@@ -12,7 +12,7 @@ import {
 
 const absoluteMatch = /^https?:\/\//i
 
-export default (args, context) => {
+export default async (args, context) => {
   const {output, workDir} = context
   const flags = args.extOptions
   const outputDir = args.argsWithoutOptions[0] || path.join(workDir, 'dist')
@@ -22,7 +22,8 @@ export default (args, context) => {
     staticPath: resolveStaticPath(workDir, config),
     basePath: workDir,
     outputPath: path.join(outputDir, 'static'),
-    skipMinify: flags.skipMinify || false
+    sourceMaps: flags['source-maps'],
+    skipMinify: flags['skip-minify'] || false
   }
 
   const compiler = getWebpackCompiler(compilationConfig)
@@ -33,57 +34,59 @@ export default (args, context) => {
 
   const bundle = {}
 
-  return compile()
-    .then(statistics => {
-      const stats = statistics.toJson()
-      if (stats.errors && stats.errors.length > 0) {
-        throw new Error(
-          `Errors while building:\n\n${stats.errors.join('\n\n')}`
-        )
-      }
-
-      const chunkMap = {}
-      stats.chunks.forEach(chunk =>
-        chunk.files.forEach(file => {
-          chunkMap[file] = chunk.hash
-        })
+  try {
+    // Compile the bundle
+    const statistics = await compile()
+    const stats = statistics.toJson()
+    if (stats.errors && stats.errors.length > 0) {
+      throw new Error(
+        `Errors while building:\n\n${stats.errors.join('\n\n')}`
       )
+    }
 
-      bundle.stats = stats
-      return chunkMap
-    })
-    .then(chunkMap => {
-      spin.text = 'Building index document'
-      return getDocumentElement(compilationConfig, {
-        scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => ({
-          path: absoluteMatch.test(asset) ? asset : `js/${asset}`,
-          hash: chunkMap[asset]
-        }))
+    // Get hashes for each chunk
+    const chunkMap = {}
+    stats.chunks.forEach(chunk =>
+      chunk.files.forEach(file => {
+        chunkMap[file] = chunk.hash
       })
-    })
-    .then(doc =>
-      fsp.writeFile(
-        path.join(outputDir, 'index.html'),
-        `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
-      )
     )
-    .then(() => spin.stop())
-    .then(() => {
-      bundle.stats.warnings.forEach(output.print)
 
-      output.print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
+    bundle.stats = stats
 
-      if (flags.stats) {
-        output.print('\nLargest modules (unminified, uncompressed sizes):')
-        sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
-          output.print(`[${filesize(module.size)}] ${module.name}`)
-        )
-      }
+    // Build new index document with correct hashes
+    spin.text = 'Building index document'
+    const doc = await getDocumentElement(compilationConfig, {
+      scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => ({
+        path: absoluteMatch.test(asset) ? asset : `js/${asset}`,
+        hash: chunkMap[asset]
+      }))
     })
-    .catch(err => {
-      spin.stop()
-      output.error(err)
-    })
+
+    // Write index file to output destination
+    await fsp.writeFile(
+      path.join(outputDir, 'index.html'),
+      `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
+    )
+
+    spin.stop()
+
+    // Print build output, optionally stats if requested
+    bundle.stats.warnings.forEach(output.print)
+    output.print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
+
+    if (flags.stats) {
+      output.print('\nLargest modules (unminified, uncompressed sizes):')
+      sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
+        output.print(`[${filesize(module.size)}] ${module.name}`)
+      )
+    }
+  } catch (err) {
+    spin.stop()
+    output.error(err)
+  }
+
+  return bundle
 }
 
 function resolveStaticPath(rootDir, config) {
