@@ -161,9 +161,9 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/mutator@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.0.6.tgz#0644d200401d3d628924456ad006219dbf8539d0"
+"@sanity/mutator@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.0.12.tgz#e0e256ab4c2651a2a6f3519f486cd9db7691e82d"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
@@ -192,9 +192,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.16.tgz#94ac4b63520562eecefdffa2eacb3470b511d2fa"
+"@sanity/server@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.18.tgz#e9c4ce60a8dd0f9d796c756603119a78a62de5d4"
   dependencies:
     "@sanity/extract-text-webpack-plugin" "^1.0.1"
     "@sanity/resolver" "^0.0.9"
@@ -230,9 +230,9 @@
     webpack-dev-middleware "^1.7.0"
     webpack-hot-middleware "^2.12.2"
 
-"@sanity/storybook@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.14.tgz#8ab8f526c2bb59ff9eddc6198fe55c011c78de6c"
+"@sanity/storybook@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@sanity/storybook/-/storybook-0.0.15.tgz#6ef758695318fb31def0e62c376b5a162e6f1d53"
   dependencies:
     "@kadira/react-storybook-addon-info" "^3.3.0"
     "@kadira/storybook" "^2.32.1"
@@ -242,7 +242,7 @@
     react "^15.3.1"
     resolve-from "^2.0.0"
 
-"@sanity/util@0.0.3":
+"@sanity/util@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@sanity/util/-/util-0.0.3.tgz#d525f534f83020163db52939ea399057a37a94bf"
   dependencies:
@@ -2137,8 +2137,8 @@ eslint-config-sanity@^1.1.3:
     eslint-config-bengler "^2.0.1"
 
 eslint@^3.4.0:
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.11.0.tgz#41d34f8b3e69949beee5c097ff4e75ad13ba2d00"
+  version "3.11.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.11.1.tgz#408be581041385cba947cd8d1cd2227782b55dbf"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -3584,14 +3584,14 @@ node-libs-browser@^0.6.0:
     vm-browserify "0.0.4"
 
 node-pre-gyp@^0.6.29:
-  version "0.6.31"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.31.tgz#d8a00ddaa301a940615dbcc8caad4024d58f6017"
+  version "0.6.32"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.32.tgz#fc452b376e7319b3d255f5f34853ef6fd8fe1fd5"
   dependencies:
     mkdirp "~0.5.1"
     nopt "~3.0.6"
-    npmlog "^4.0.0"
+    npmlog "^4.0.1"
     rc "~1.1.6"
-    request "^2.75.0"
+    request "^2.79.0"
     rimraf "~2.5.4"
     semver "~5.3.0"
     tar "~2.2.1"
@@ -3642,7 +3642,7 @@ normalize.css@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-5.0.0.tgz#7cec875ce8178a5333c4de80b68ea9c18b9d7c37"
 
-npmlog@^4.0.0:
+npmlog@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-4.0.1.tgz#d14f503b4cd79710375553004ba96e6662fbc0b8"
   dependencies:
@@ -4470,11 +4470,11 @@ q@^1.1.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
-qs@6.2.0:
+qs@6.2.0, qs@^6.1.0, qs@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
+qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
@@ -4689,8 +4689,8 @@ readline2@^1.0.1:
     mute-stream "0.0.5"
 
 recast@^0.11.5:
-  version "0.11.17"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.11.17.tgz#67e829df49ef8ea822381cc516d305411e60bad8"
+  version "0.11.18"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.11.18.tgz#07af6257ca769868815209401d4d60eef1b5b947"
   dependencies:
     ast-types "0.9.2"
     esprima "~3.1.0"
@@ -4788,7 +4788,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@^2.72.0, request@^2.74.0, request@^2.75.0:
+request@^2.72.0, request@^2.74.0, request@^2.79.0:
   version "2.79.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.79.0.tgz#4dfe5bf6be8b8cdc37fcf93e04b65577722710de"
   dependencies:
@@ -5201,8 +5201,8 @@ thenify-all@^1.0.0, thenify-all@^1.6.0:
     any-promise "^1.0.0"
 
 through2@^2.0.1, through2@~2.0.0:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.2.tgz#316d3a4f444af641496aa7f45a713be72576baf4"
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
   dependencies:
     readable-stream "^2.1.5"
     xtend "~4.0.1"
@@ -5394,8 +5394,8 @@ uuid@^2.0.1, uuid@^2.0.3:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
 
 uuid@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.0.tgz#6728fc0459c450d796a99c31837569bdf672d728"
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
 
 v8flags@^2.0.10:
   version "2.0.11"
