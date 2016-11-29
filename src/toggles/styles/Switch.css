@@ -48,7 +48,7 @@
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
-  cursor: pointer;
+  cursor: default;
 
   @nest .checked & {
     background: var(--switch-track-color);
@@ -135,7 +135,7 @@
 
 .label {
   position: relative;
-  cursor: pointer;
+  cursor: default;
   font-size: var(--switch-label-font-size);
   line-height: var(--switch-label-height);
   margin: 0;
@@ -155,7 +155,7 @@
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
-  cursor: pointer;
+  cursor: default;
 
   @nest .checked & {
     background: var(--switch-on-track-color);

@@ -65,7 +65,7 @@
 .item {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
-  cursor: pointer;
+  cursor: default;
 
   @nest &:hover {
     background-color: var(--gray-light--transparent);

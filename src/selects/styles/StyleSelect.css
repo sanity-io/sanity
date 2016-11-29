@@ -8,7 +8,7 @@
 
 .inner {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
-  cursor: pointer;
+  cursor: default;
 
   @nest .transparent & {
     transition: all 0.05s linear;
@@ -74,7 +74,7 @@
   white-space: nowrap;
   overflow: hidden;
   min-height: 2em;
-  cursor: pointer;
+  cursor: default;
   padding-right: 1em;
 
   &:last-child {

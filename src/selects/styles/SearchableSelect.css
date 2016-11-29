@@ -16,7 +16,7 @@
 
 .icon {
   composes: icon from 'part:@sanity/components/selects/default-style';
-  cursor: pointer;
+  cursor: default;
   pointer-events: unset;
 }
 

@@ -128,7 +128,7 @@
   height: 100%;
   width: 100%;
   color: var(--gray-lighter);
-  cursor: pointer;
+  cursor: default;
   transition: transform 0.1s linear;
 
   &:hover {
