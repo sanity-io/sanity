@@ -26,6 +26,7 @@ function createDB() {
   const index = {}
   return {
     create,
+    delete: del,
     getById,
     getAll() {
       return docs.slice()
@@ -45,6 +46,11 @@ function createDB() {
   }
   function getById(id) {
     return docs[indexOf(id)]
+  }
+  function del(id) {
+    const idx = indexOf(id)
+    delete index[id]
+    docs.slice(idx, 1)
   }
   function create(doc) {
     if (doc._id) {
@@ -83,6 +89,9 @@ export default {
   },
   create(doc) {
     return Promise.resolve({documentId: DB.create(doc)._id})
+  },
+  delete(id) {
+    return Promise.resolve(DB.delete(id))
   },
   patch(id, operations) {
     return new Patch(id, operations, this)

@@ -12,6 +12,17 @@ import * as convertPatch from '../utils/convertPatch'
 
 const preventDefault = ev => ev.preventDefault()
 
+function omit(source, ...keys) {
+  return Object.keys(source)
+    .reduce((target, key) => {
+      if (keys.includes(key)) {
+        return target
+      }
+      target[key] = source[key]
+      return target
+    }, {})
+}
+
 function createFormBuilderStateFrom(serialized, typeName) {
   return serialized ? FormBuilder.deserialize(unprefixType(serialized), typeName) : FormBuilder.createEmpty(typeName)
 }
@@ -140,10 +151,7 @@ export default class EditorPane extends React.PureComponent {
 
   handleIncomingDelete(event) {
     const {router} = this.context
-    router.navigate({
-      ...router.state,
-      selectedDocumentId: undefined
-    }, {replace: true})
+    router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
 
   render() {
