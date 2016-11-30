@@ -171,6 +171,10 @@
       "description": "Provides boxes"
     },
     {
+      "name": "part:@sanity/base/theme/layout/backgrounds-style",
+      "description": "Provides backgrounds"
+    },
+    {
       "name": "part:@sanity/base/theme/forms/text-input-style",
       "description": "Styling for <input>"
     },
@@ -347,6 +351,10 @@
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
       "path": "styles/layout/box.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/layout/backgrounds-style",
+      "path": "styles/layout/backgrounds.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",
