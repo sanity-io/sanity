@@ -74,7 +74,7 @@ export default {
     // todo: reproject fields
     const [type] = query.split(/\[/)
     if (ID_QUERY.test(query)) {
-      return Promise.resolve(DB.getById(params.id))
+      return Promise.resolve([DB.getById(params.id)])
     }
     return Promise.resolve(DB.getAll().filter(doc => doc._type === type))
   },
