@@ -6,6 +6,7 @@ import DefaultButton from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
 import {unprefixType} from '../utils/unprefixType'
 import dataAspects from '../utils/dataAspects'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 import styles from './styles/EditorPane.css'
 import * as convertPatch from '../utils/convertPatch'
@@ -161,9 +162,15 @@ export default class EditorPane extends React.PureComponent {
 
     return (
       <div className={styles.root}>
+
+        {
+          // Test for the snackbar. Needs a messaging system
+          !progress && <Snackbar kind="success" time={500}>Saved</Snackbar>
+        }
+
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {value.getFieldValue(titleProp).serialize()}
+            {value.getFieldValue(titleProp).serialize() || 'Untitled…'}
           </h1>
 
           <div className={progress ? styles.spinner : styles.spinnerInactive}>

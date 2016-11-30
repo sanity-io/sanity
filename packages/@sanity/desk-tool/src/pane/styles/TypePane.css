@@ -6,6 +6,11 @@
   height: 100%;
   position: relative;
 
+  @media (--max-screen-medium) {
+    width: 100%;
+    max-width: 100%;
+  }
+
   @media (--screen-medium) {
     /*min-width: 7em;*/
     padding-right: 1em;
@@ -19,6 +24,9 @@
 
 .isInactive {
   composes: root;
+  @media (--max-screen-medium) {
+    display: none;
+  }
 }
 
 .selected {

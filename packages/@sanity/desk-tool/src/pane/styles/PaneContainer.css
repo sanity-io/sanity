@@ -25,8 +25,7 @@
 .root {
   display: block;
   position: relative;
-  float: left;
-
+  
   @media (--screen-medium) {
     display: flex;
     box-sizing: border-box;

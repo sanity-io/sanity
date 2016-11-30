@@ -4,15 +4,17 @@ import styles from './styles/TypePane.css'
 export default class Pane extends React.Component {
 
   static propTypes = {
-    isActive: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
     onUpdate: PropTypes.func
   }
 
   static defaultProps = {
-    isActive: false,
     onUpdate() {}
+  }
+
+  static contextTypes = {
+    router: PropTypes.object
   }
 
   componentDidUpdate() {
@@ -20,7 +22,12 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {isActive, items, renderItem} = this.props
+    const {items, renderItem} = this.props
+
+    const {router} = this.context
+    const {selectedType, action, selectedDocumentId} = router.state
+
+    const isActive = !selectedType && !action && !selectedDocumentId
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>

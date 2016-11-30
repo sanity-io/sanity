@@ -9,7 +9,6 @@ import GridList from 'part:@sanity/components/lists/grid'
 export default class Pane extends React.Component {
 
   static propTypes = {
-    isActive: PropTypes.bool,
     loading: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
@@ -21,9 +20,12 @@ export default class Pane extends React.Component {
   }
 
   static defaultProps = {
-    isActive: false,
     listView: 'default',
     onUpdate() {}
+  }
+
+  static contextTypes = {
+    router: PropTypes.object
   }
 
   constructor(...args) {
@@ -37,6 +39,12 @@ export default class Pane extends React.Component {
 
   componentDidUpdate() {
     this.props.onUpdate()
+  }
+
+  handleMenuToggle = () => {
+    this.setState({
+      menuOpened: !this.state.menuOpened
+    })
   }
 
   handleMenuOpen = () => {
@@ -64,7 +72,12 @@ export default class Pane extends React.Component {
   }
 
   handleMenuButtonClick = () => {
-    this.handleMenuOpen()
+    this.handleMenuToggle()
+  }
+
+  handleMenuButtonMouseOver = event => {
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   renderListView() {
@@ -88,8 +101,13 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {loading, isActive, contentType, listView} = this.props
+    const {loading, contentType, listView} = this.props
     const {menuOpened} = this.state
+
+    const {router} = this.context
+    const {selectedType, action, selectedDocumentId} = router.state
+
+    const isActive = selectedType && !action && !selectedDocumentId
 
     return (
       <div
@@ -102,7 +120,7 @@ export default class Pane extends React.Component {
         {
           contentType == 'documents'
           && <div className={styles.menuContainer}>
-            <div className={styles.menuButton} onClick={this.handleMenuButtonClick}>
+            <div className={styles.menuButton} onClick={this.handleMenuButtonClick} onMouseOver={this.handleMenuButtonMouseOver}>
               {
                 <IconHamburger />
               }

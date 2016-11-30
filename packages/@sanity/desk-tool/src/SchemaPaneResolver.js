@@ -185,6 +185,19 @@ export default class SchemaPaneResolver extends React.Component {
       return
     }
 
+    // Uses the css the determine if it should reposition with an Media Query
+    const computedStyle = window.getComputedStyle(this.containerElement, '::before')
+    const contentValue = computedStyle.getPropertyValue('content')
+    const shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
+
+    if (!shouldReposition) {
+      // reset to default and don't do more
+      this.navigationElement.style.transform = 'translateX(0px)'
+      this.editorPaneElement.style.width = '100%'
+      return
+    }
+
+
     const navWidth = this.navigationElement.offsetWidth
     const editorPaneWidth = this.editorPaneElement.offsetWidth
     const containerWidth = this.containerElement.offsetWidth
@@ -197,7 +210,6 @@ export default class SchemaPaneResolver extends React.Component {
       // Enough space. Show all
       this.navigationElement.style.transform = 'translateX(0px)'
       this.editorPaneElement.style.width = `${containerWidth - navWidth}px`
-
     } else if (containerWidth < (editorPaneWidth + navWidth)) {
       // Needs more space
       // Move navigation out of the screen to make room for the editor
@@ -250,7 +262,7 @@ export default class SchemaPaneResolver extends React.Component {
           }
           {
             !selectedType && (
-              <h2>Select a type to begin…</h2>
+              <h2 className={styles.emptyText}>Select a type to begin…</h2>
             )
           }
           <div>&nbsp;</div>

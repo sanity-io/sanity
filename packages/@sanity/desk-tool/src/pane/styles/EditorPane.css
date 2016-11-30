@@ -6,11 +6,13 @@
 
 .editor {
   display: block;
-  max-width: 40em;
-  clear: both;
-  margin-top: 1em;
-  box-sizing: border-box;
-  lost-utility: clearfix;
+  @media (--screen-medium) {
+    max-width: 40em;
+    clear: both;
+    margin-top: 1em;
+    box-sizing: border-box;
+    lost-utility: clearfix;
+  }
 }
 
 .header {
@@ -18,6 +20,7 @@
   padding-bottom: 0.5em;
   position: relative;
   border-bottom: 1px solid #ccc;
+  margin-bottom: 1rem;
 }
 
 .title {
@@ -25,10 +28,6 @@
   font-weight: 100;
   margin: 0;
   padding: 0;
-}
-
-.lastEdited {
-
 }
 
 .spinner {

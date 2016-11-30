@@ -13,29 +13,45 @@
   position: absolute;
   box-sizing: border-box;
   background-color: var(--gray-lightest);
-  box-shadow: 2px 2px 5px var(--gray-light) inset;
   bottom: 0;
+
+  @nest &::before {
+    content: "shouldReposition";
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    box-shadow: 2px 2px 5px var(--gray-light) inset;
+  }
+
+  @media (--max-screen-medium) {
+    @nest &::before {
+      content: "shouldNotReposition";
+    }
+  }
+
 }
 
 .navigationPanesContainer {
-  width: auto;
-  /*display: flex;
-  flex-wrap: nowrap;*/
+  width: 100%;
+  height: 100%;
   position: absolute;
-  min-width: var(--navMinWidth);
   left: 0;
   top: 0;
-  height: 100%;
   z-index: 1;
-  background-color: rgba(255,255,255,0.95);
-  box-shadow: 0 2px 5px var(--gray-light);
-  transform: translateX(0);
-  transition: transform 0.12s ease-out, opacity 0.12s linear;
 
+  @media (--screen-medium) {
+    width: auto;
+    min-width: var(--navMinWidth);
+    background-color: rgba(255,255,255,0.95);
+    box-shadow: 0 2px 5px var(--gray-light);
+    transform: translateX(0);
+    transition: transform 0.12s ease-out, opacity 0.12s linear;
 
-  @supports (backdrop-filter: blur(20px)) {
-    background-color: rgba(255,255,255,0.6);
-    backdrop-filter: blur(20px);
+    @supports (backdrop-filter: blur(20px)) {
+      background-color: rgba(255,255,255,0.6);
+      backdrop-filter: blur(20px);
+    }
   }
 
   &:hover {
@@ -44,25 +60,48 @@
   }
 }
 
+/*
 :root {
   @custom-media --max-screen-medium-desk-tool (max-width: 44em);
 }
+*/
 
 .editorContainer {
   overflow-y: scroll;
+  padding: var(--small-padding);
+  box-sizing: border-box;
+  height: 100%;
+
   @media (--screen-medium) {
-    height: 100%;
     width: auto;
     min-width: var(--screen-medium-break);
     position: absolute;
     top: 0;
     right: 0;
-    box-sizing: border-box;
     bottom: 0;
     padding: var(--large-padding);
   }
+
+  /*
   @media (--max-screen-medium-desk-tool) {
     min-width: calc(var(--screen-medium-break) - var(--navMinWidth) - var(--large-padding) * 4);
     max-width: calc(var(--screen-medium-break) - var(--navMinWidth) - var(--large-padding) * 2);
   }
+  */
+}
+
+.emptyText {
+  display: none;
+
+  @media (--screen-medium) {
+    display: block;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    font-weight: 300;
+    opacity: 0.5;
+
+  }
+
 }

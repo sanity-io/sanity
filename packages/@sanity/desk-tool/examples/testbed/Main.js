@@ -50,10 +50,19 @@ export default class DeskToolTestBed extends React.Component {
     if (router.isNotFound(location.pathname)) {
       return <div>Page not found</div>
     }
+    const relativeWrapper = {
+      height: '100vh',
+      width: '100vw',
+      position: 'absolute',
+      boxSizing: 'border-box',
+      overflow: 'hidden'
+    }
     return (
       <RouterProvider state={router.decode(location.pathname)} router={router} onNavigate={handleNavigate}>
         <RouteScope scope="desktool">
-          <DeskTool />
+          <div style={relativeWrapper}>
+            <DeskTool />
+          </div>
         </RouteScope>
       </RouterProvider>
     )

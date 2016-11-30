@@ -10,7 +10,7 @@
 .link {
   color: inherit;
   text-decoration: inherit;
-  padding-left: 0.5rem;
+  padding-left: var(--medium-padding);
   max-width: 20em;
   white-space: nowrap;
   text-overflow: ellipsis;

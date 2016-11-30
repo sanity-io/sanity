@@ -5,9 +5,12 @@
   float: left;
   height: 100%;
   position: relative;
-  max-width: 25em;
+  max-width: 100%;
+  width: 100%;
 
   @media (--screen-medium) {
+    width: auto;
+    max-width: 25em;
     &:before {
       content: '';
       background-color: color(var(--body-bg) a(95%));
@@ -31,6 +34,9 @@
 
 .isInactive {
   composes: root;
+  @media (--max-screen-medium) {
+    display: none;
+  }
 }
 
 .view--card {
@@ -42,25 +48,22 @@
 }
 
 .listContainer {
+  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
+  composes: lightScrollbars from 'part:@sanity/base/theme/layout/scrolling-style';
   display: block;
   margin: 0;
   padding: 0;
   width: 100%;
-
-  @media (--screen-medium) {
-    box-sizing: border-box;
-    max-height: 100%;
-    padding-top: 3em;
-    composes: lightScrollbars from 'part:@sanity/base/theme/layout/scrolling-style';
-    composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-  }
+  max-height: 100%;
+  box-sizing: border-box;
+  padding-top: 3em;
 }
 
 .menuButton {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  z-index: 1;
+  z-index: 11;
 }
 
 .menu {
