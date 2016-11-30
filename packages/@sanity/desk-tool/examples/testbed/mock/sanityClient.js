@@ -22,14 +22,14 @@ function createAuthor(number) {
 
 
 function createDB() {
-  const docs = []
-  const index = {}
+  const docs = window.docs = []
+  const index = window.idx = {}
   return {
     create,
     delete: del,
     getById,
     getAll() {
-      return docs.slice()
+      return docs.filter(Boolean)
     },
     patch(spec) {
       // Todo: apply patch locally, then call update(patch.id, newDocument)
@@ -50,7 +50,7 @@ function createDB() {
   function del(id) {
     const idx = indexOf(id)
     delete index[id]
-    docs.slice(idx, 1)
+    docs[idx] = null
   }
   function create(doc) {
     if (doc._id) {
