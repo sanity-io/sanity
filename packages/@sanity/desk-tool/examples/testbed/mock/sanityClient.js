@@ -1,6 +1,6 @@
 import {range} from 'lodash'
 import {Patch} from '@sanity/client'
-import Observable from 'zen-observable'
+import Observable from '@sanity/observable'
 
 function generateId(n) {
   return ((n + 1) / 1.1111111111111).toString(32).substring(2)
@@ -30,8 +30,9 @@ function createDB() {
     getAll() {
       return docs.slice()
     },
-    patch(patch) {
+    patch(spec) {
       // Todo: apply patch locally, then call update(patch.id, newDocument)
+      return Promise.resolve({documentIds: spec.map(s => s.patch.id)})
     }
   }
   function indexOf(id) {
@@ -67,9 +68,14 @@ range(20)
   .map(createBlogPost)
   .map(DB.create)
 
+const ID_QUERY = /\[_id\s*==\s*[$\w]+]/
 export default {
-  fetch(query) {
-    const [type] = query.split(' ')
+  fetch(query, params) {
+    // todo: reproject fields
+    const [type] = query.split(/\[/)
+    if (ID_QUERY.test(query)) {
+      return Promise.resolve(DB.getById(params.id))
+    }
     return Promise.resolve(DB.getAll().filter(doc => doc._type === type))
   },
   getDocument(id) {
@@ -87,6 +93,6 @@ export default {
     })
   },
   mutate(spec) {
-    return Promise.resolve(DB.patch(spec.patch))
+    return Promise.resolve(DB.patch(spec))
   }
 }

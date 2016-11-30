@@ -74,11 +74,11 @@ export default class SchemaPaneResolver extends React.Component {
 
     if (router.state.action === 'create' && !router.state.selectedDocumentId) {
       const selectedType = router.state.selectedType
-      documentStore.create({_type: `${schema.name}.${selectedType}`}).subscribe(document => {
+      documentStore.create({_type: `${schema.name}.${selectedType}`}).subscribe(result => {
         router.navigate({
-          action: 'create',
+          action: 'edit',
           selectedType: selectedType,
-          selectedDocumentId: UrlDocId.encode(document._id)
+          selectedDocumentId: UrlDocId.encode(result.documentId)
         }, {replace: true})
       })
     }
