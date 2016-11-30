@@ -1,6 +1,9 @@
 # Logs
 *.log
 
+# idea
+.idea
+
 # Compiled files
 lib
 

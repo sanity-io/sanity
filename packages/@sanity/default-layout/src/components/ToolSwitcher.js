@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import {StateLink} from 'part:@sanity/base/router'
-import styles from '../../styles/ToolSwitcher.css'
+import styles from './styles/ToolSwitcher.css'
 
 class ToolSwitcher extends React.Component {
 

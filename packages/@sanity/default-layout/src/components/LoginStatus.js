@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import styles from '../../styles/LoginStatus.css'
+import styles from './styles/LoginStatus.css'
 import userStore from 'part:@sanity/base/user'
 import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 import Menu from 'part:@sanity/components/menus/default'

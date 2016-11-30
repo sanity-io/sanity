@@ -5,11 +5,12 @@ import tools from 'all:part:@sanity/base/tool'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import CompanyLogo from 'part:@sanity/base/company-logo?'
-import styles from '../../styles/DefaultLayout.css'
+import styles from './styles/DefaultLayout.css'
 import LoginStatus from './LoginStatus'
 import ToolSwitcher from './ToolSwitcher'
 import RenderTool from './RenderTool'
 import Hamburger from './Hamburger'
+import Search from './Search'
 
 class DefaultLayout extends React.Component {
   static contextTypes = {
@@ -48,11 +49,13 @@ class DefaultLayout extends React.Component {
               CompanyLogo && <div className={styles.companyLogoContainer}><CompanyLogo projectName={projectName} /></div>
             }
           </StateLink>
-
           <div className={styles.menu}>
             <Hamburger>
               <ToolSwitcher tools={tools} activeToolName={router.state.tool} className={styles.toolSwitcher} />
               <LoginStatus className={styles.loginStatus} />
+              <div className={styles.searchContainer}>
+                <Search />
+              </div>
             </Hamburger>
           </div>
         </div>
@@ -62,8 +65,6 @@ class DefaultLayout extends React.Component {
             <RenderTool tool={router.state.tool} />
           </RouteScope>
         </div>
-
-
         {absolutes.map((Abs, i) => <Abs key={i} />)}
       </div>
     )

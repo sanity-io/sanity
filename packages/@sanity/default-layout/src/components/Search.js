@@ -1,0 +1,164 @@
+import React, {PropTypes} from 'react'
+import GlobalSearch from 'part:@sanity/components/globalsearch/default'
+import schema from 'part:@sanity/base/schema?'
+import client from 'part:@sanity/base/client?'
+import {union} from 'lodash'
+import Preview from 'part:@sanity/base/preview'
+
+const typeNames = schema.types.map(schemaType => schemaType.name)
+
+class Search extends React.Component {
+
+  static propTypes = {}
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      isOpen: false,
+      topItems: [],
+      items: []
+    }
+  }
+
+  static contextTypes = {
+    router: PropTypes.object
+  }
+
+  componentDidMount() {
+    this.getTopItems()
+  }
+
+  handleSearch = q => {
+    const params = {}
+    const searchableFields = []
+
+    this.setState({
+      isSearching: true
+    })
+
+    // Get all fields that we want to search in (text and string)
+    schema.types.forEach(type => {
+      if (type.fields) {
+        type.fields.forEach(field => {
+          if (field.type == 'text' || field.type == 'string') {
+            searchableFields.push(field.name)
+          }
+        })
+      }
+    })
+
+    const query = `* [(${union(searchableFields).join(', ')}) match "${q}", limit: 10]`
+
+    client.fetch(query, params)
+      .then(response => {
+        this.setState({
+          isSearching: false,
+          isOpen: true,
+          items: response
+        })
+      })
+
+    this.setState({
+      isOpen: true
+    })
+  }
+
+  getTopItems = () => {
+    // We use 3 last edited items until we have logic for most used etc.
+    const fullTypeNames = []
+
+    // TODO hack until gradient supports 'schemaName.*'
+    typeNames.forEach(type => {
+      fullTypeNames.push(`${schema.name}.${type}`)
+    })
+
+    const query = `(${fullTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
+    const params = {}
+
+    client.fetch(query, params)
+      .then(response => {
+        this.setState({
+          topItems: response
+        })
+      })
+  }
+
+  handleFocus = () => {
+    this.setState({
+      active: true,
+      isOpen: true
+    })
+  }
+  handleClose = () => {
+    this.setState({
+      isOpen: false
+    })
+  }
+
+  handleGoToItem = item => {
+    // TODO Hack for assuming desktool until we have a path resolver
+    const type = item._type.split('.')[1]
+    const id = item._id.split('/').join('.')
+    const {router} = this.context
+    router.navigate({
+      Desk: {
+        action: 'edit',
+        selectedType: type,
+        selectedDocumentId: id
+      },
+      tool: 'Desk'
+    })
+    this.setState({
+      isOpen: false
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      isOpen: false
+    })
+  }
+
+  renderItem = (item, options) => {
+    const typeName = item._type.split('.')[1]
+    const type = schema.types.find(t => t.name === typeName)
+    if (type) {
+      return (
+        <Preview
+          value={item}
+          style="default"
+          typeDef={type}
+        />
+      )
+    }
+    return null
+  }
+
+  render() {
+
+    if (!schema) {
+      return <div>No schema</div>
+    }
+
+    return (
+      <div>
+        <GlobalSearch
+          onSearch={this.handleSearch}
+          isSearching={this.state.isSearching}
+          onChange={this.handleGoToItem}
+          onBlur={this.handleBlur}
+          renderItem={this.renderItem}
+          onFocus={this.handleFocus}
+          onClose={this.handleClose}
+          isOpen={this.state.isOpen}
+          label="Search"
+          topItems={this.state.topItems}
+          items={this.state.items}
+        />
+      </div>
+    )
+  }
+}
+
+export default Search

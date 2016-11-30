@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 
-import styles from '../../styles/Hamburger.css'
+import styles from './styles/Hamburger.css'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 
 class Hamburger extends React.Component {

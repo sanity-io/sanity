@@ -1,0 +1,135 @@
+@import "part:@sanity/base/theme/variables-style";
+@import "part:@sanity/base/theme/body-style";
+
+:global(body) {
+  overflow-x: hidden;
+  @media (--screen-medium) {
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
+
+.defaultLayout {
+  padding: 0;
+
+  @media (--screen-medium) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100vh;
+    max-height: 100vh;
+  }
+}
+
+.top {
+  @media (--screen-medium) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex-basis: var(--header-height);
+    min-height: var(--header-height);
+    border-bottom: 1px solid #ccc;
+    order: 1;
+    z-index: 1;
+  }
+}
+
+.toolContainer {
+  @media (--screen-medium) {
+    order: 2;
+    flex-grow: 2;
+    align-self: stretch;
+
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: relative;
+  }
+}
+
+.menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  @media (--screen-medium) {
+    position: relative;
+    width: 100%;
+  }
+}
+
+.toolSwitcher {
+  @media (--screen-medium) {
+    float: left;
+  }
+}
+
+.loginStatus {
+  @media (--screen-medium) {
+    float: right;
+  }
+}
+
+.companyBranding {
+  display: block;
+  float: left;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 300;
+}
+
+.projectName {
+  font-size: 1em;
+  padding-left: var(--small-padding);
+  white-space: nowrap;
+  float: left;
+}
+
+.projectNameHidden {
+  composes: projectName;
+  display: none;
+
+}
+
+.companyLogoContainer {
+  float: left;
+  z-index: 10;
+  cursor: pointer;
+  & svg {
+    height: 1rem;
+    padding-top: 1rem;
+    padding-left: 0.5rem;
+    width: auto;
+  }
+}
+
+.searchContainer {
+  float: right;
+  padding: 0.75rem;
+  z-index: 100;
+  width: 20em;
+  margin-right: 1em;
+  position: relative;
+}
+
+.sanityStudioLogoContainer {
+  position: fixed;
+  height: 1rem;
+  width: 10em;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 5000;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+  & svg {
+    height: 0.75rem;
+  }
+}
