@@ -31,7 +31,7 @@
     "@sanity/client": "^0.3.12",
     "@sanity/document-store": "0.1.0",
     "@sanity/observable": "^1.0.2",
-    "@sanity/state-router": "^0.2.1",
+    "@sanity/state-router": "^0.3.0-beta.0",
     "debounce-promise": "^2.1.1",
     "history": "2",
     "http-hash": "^2.0.0",
