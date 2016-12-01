@@ -84,9 +84,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/state-router@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.2.1.tgz#002f10b9695ac8cdf35f92f367958e88d01a93b8"
+"@sanity/state-router@^0.3.0-beta.0":
+  version "0.3.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@sanity/state-router/-/state-router-0.3.0-beta.0.tgz#3b1cbeae484ff59bf3fd7cb45ab48b3a3bfa6b1d"
   dependencies:
     lodash "^4.17.2"
 
