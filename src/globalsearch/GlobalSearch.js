@@ -8,8 +8,8 @@ class GlobalSearch extends React.Component {
   static propTypes = {
     onSearch: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    topItems: PropTypes.array, // eslint-disable-line
     items: PropTypes.array, // eslint-disable-line
+    topItems: PropTypes.array, // eslint-disable-line
     renderItem: PropTypes.func, // props: item, {options}
     isOpen: PropTypes.bool,
     isSearching: PropTypes.bool,

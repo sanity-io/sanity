@@ -58,7 +58,7 @@
 }
 
 .items {
-  background-color: color(var(--component-bg) a(90%));
+  background-color: color(var(--brand-white) a(90%));
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 

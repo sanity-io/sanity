@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables/state-colors-style";
 
-@use postcss-cssnext;
-
 @keyframes reveal {
   0% {
     transform: translateY(100%);
@@ -15,6 +13,7 @@
 .root {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   transition: transform 0.2s linear;
   animation-name: reveal;
@@ -24,7 +23,7 @@
 }
 
 .inner {
-  width: 80%;
+  width: 100%;
   height: 2em;
   line-height: 2em;
   margin: 0 auto;
@@ -35,24 +34,24 @@
 
   @nest .info & {
     border-color: var(--state-info-border);
-    background-color: var(--state-info-bg);
+    background-color: color(var(--brand-info) a(20%));
     color: var(--state-info-text);
   }
 
   @nest .warning & {
-    background-color: var(--state-warning-bg);
+    background-color: color(var(--brand-warning) a(20%));
     color: var(--state-warning-text);
     border-color: var(--state-warning-border);
   }
 
   @nest .success & {
-    background-color: var(--state-success-bg);
+    background-color: color(var(--brand-success) a(20%));
     color: var(--state-success-text);
     border-color: var(--state-success-border);
   }
 
   @nest .error & {
-    background-color: var(--state-danger-bg);
+    background-color: color(var(--brand-danger) a(20%));
     color: var(--state-danger-text);
     border-color: var(--state-danger-border);
   }
