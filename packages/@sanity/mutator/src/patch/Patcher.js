@@ -46,15 +46,18 @@ function process(matcher, accessor) {
   leads.forEach(lead => {
     if (lead.target.isIndexReference()) {
       lead.target.toIndicies().forEach(i => {
-        result = result.setIndex(i, process(lead.matcher, result.getIndex(i)).get())
+        result = result.setIndexAccessor(i, process(lead.matcher, result.getIndex(i)))
       })
     } else if (lead.target.isAttributeReference()) {
       if (!result.hasAttribute(lead.target.name())) {
         // Don't follow lead, no such attribute
         return
       }
-      result = result.setAttribute(lead.target.name(),
-        process(lead.matcher, result.getAttribute(lead.target.name())).get())
+      const oldValueAccessor = result.getAttribute(lead.target.name())
+      const newValueAccessor = process(lead.matcher, result.getAttribute(lead.target.name()))
+      if (oldValueAccessor !== newValueAccessor) {
+        result = result.setAttributeAccessor(lead.target.name(), newValueAccessor)
+      }
     } else {
       throw new Error(`Unable to handle target ${lead.target.toString()}`)
     }

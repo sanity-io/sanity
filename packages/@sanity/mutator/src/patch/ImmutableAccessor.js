@@ -72,6 +72,10 @@ export default class ImmutableAccessor {
     return new ImmutableAccessor(value, this.path)
   }
 
+  setAccessor(accessor) {
+    return accessor
+  }
+
   // array writer interface
   setIndex(i : number, value : any) {
     if (value === this._value[i]) {
@@ -80,6 +84,9 @@ export default class ImmutableAccessor {
     const nextValue = this._value.slice()
     nextValue[i] = value
     return new ImmutableAccessor(nextValue, this.path)
+  }
+  setIndexAccessor(i : number, accessor) {
+    return this.setIndex(i, accessor.get())
   }
   unsetIndices(indices : Array<number>) {
     const length = this._value.length
@@ -113,6 +120,9 @@ export default class ImmutableAccessor {
     const nextValue = Object.assign({}, this._value)
     nextValue[key] = value
     return new ImmutableAccessor(nextValue, this.path)
+  }
+  setAttributeAccessor(key : string, accessor) {
+    return this.setAttribute(key, accessor.get())
   }
   unsetAttribute(key : string) {
     if (this.containerType() != 'object') {
