@@ -1,4 +1,5 @@
 ## @sanity/mutator
+[![Build Status](https://travis-ci.org/sanity-io/mutator.svg?branch=master)](https://travis-ci.org/sanity-io/mutator)
 
 ## Features
 - Sanity flavored jsonpath matching engine with flexible interface that plays well with React
