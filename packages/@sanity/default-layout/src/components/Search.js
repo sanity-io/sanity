@@ -9,7 +9,13 @@ const typeNames = schema.types.map(schemaType => schemaType.name)
 
 class Search extends React.Component {
 
-  static propTypes = {}
+  static propTypes = {
+    onSelect: PropTypes.func
+  }
+
+  static defaultProps = {
+    onSelect() {}
+  }
 
   constructor(props) {
     super(props)
@@ -117,6 +123,7 @@ class Search extends React.Component {
     this.setState({
       isOpen: false
     })
+    this.props.onSelect()
   }
 
   handleBlur = () => {

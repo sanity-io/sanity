@@ -11,12 +11,11 @@
 }
 
 .searchContainer {
-  float: right;
-  padding: 0.75rem;
+  position: absolute;
+  width: calc(100vw - 2rem);
+  top: var(--small-padding);
+  left: var(--small-padding);
   z-index: 100;
-  width: 20em;
-  margin-right: 1em;
-  position: relative;
 }
 
 .root {

@@ -41,10 +41,6 @@ class MobileNavigation extends React.Component {
     return (
       <div className={styles.root}>
         <CompanyBranding />
-        <div className={styles.searchContainer}>
-          <Search />
-        </div>
-
         <Button
           kind="simple"
           className={styles.hamburgerButton}
@@ -54,6 +50,9 @@ class MobileNavigation extends React.Component {
         />
 
         <div className={`${isOpen ? styles.menuOpen : styles.menuClosed}`}>
+          <div className={styles.searchContainer}>
+            <Search onSelect={this.handleClose} />
+          </div>
           <LoginStatus className={styles.loginStatus} />
           <ToolSwitcher
             tools={tools}
