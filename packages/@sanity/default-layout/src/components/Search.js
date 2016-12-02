@@ -3,7 +3,7 @@ import GlobalSearch from 'part:@sanity/components/globalsearch/default'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import {union} from 'lodash'
-import Preview from 'part:@sanity/base/preview'
+import Preview from 'part:@sanity/base/preview?'
 
 const typeNames = schema.types.map(schemaType => schemaType.name)
 
@@ -32,6 +32,11 @@ class Search extends React.Component {
   handleSearch = q => {
     const params = {}
     const searchableFields = []
+
+    if (!client) {
+      console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
+      return
+    }
 
     this.setState({
       isSearching: true
@@ -122,8 +127,9 @@ class Search extends React.Component {
 
   renderItem = (item, options) => {
     const typeName = item._type.split('.')[1]
-    const type = schema.types.find(t => t.name === typeName)
-    if (type) {
+    const type = schema && schema.types.find(t => t.name === typeName)
+
+    if (type && Preview && schema) {
       return (
         <Preview
           value={item}

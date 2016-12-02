@@ -1,0 +1,66 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+}
+
+.searchContainer {
+  float: right;
+  padding: 0.75rem;
+  z-index: 100;
+  width: 20em;
+  margin-right: 1em;
+  position: relative;
+}
+
+.root {
+  display: block;
+}
+
+.content {
+  display: block;
+}
+
+.hamburgerButton {
+  position: absolute !important;
+  padding: 1em;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  display: block;
+}
+
+.menu {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+.menuClosed {
+  display: none;
+}
+
+.menuOpen {
+  composes: menu;
+  display: block;
+}
+
+.toolSwitcher {
+  margin-top: 2rem;
+}
+
+.content {
+  @nest .isClosed & {
+    display: none;
+  }
+}

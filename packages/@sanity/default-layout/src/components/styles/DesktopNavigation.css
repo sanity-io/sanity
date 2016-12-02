@@ -1,0 +1,22 @@
+.root {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.toolSwitcher {
+  float: left;
+}
+
+.loginStatus {
+  float: right;
+}
+
+.searchContainer {
+  float: right;
+  padding: 0.75rem;
+  z-index: 100;
+  width: 20em;
+  margin-right: 1em;
+  position: relative;
+}

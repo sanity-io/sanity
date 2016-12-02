@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/LoginStatus.css'
 import userStore from 'part:@sanity/base/user'
-import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 import Menu from 'part:@sanity/components/menus/default'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
 
@@ -59,7 +58,9 @@ export default class LoginStatus extends React.Component {
           <img src={user.profileImage} className={styles.userImage} />
         </div>
 
-        {userMenuOpened &&
+        <div className={styles.userName}>{user.name}</div>
+
+        {userMenuOpened && (
           <div className={styles.userMenu}>
             <Menu
               onAction={this.handleUserMenuItemClick}
@@ -73,6 +74,7 @@ export default class LoginStatus extends React.Component {
               onClickOutside={this.handleUserMenuClose}
             />
           </div>
+        )
         }
       </div>
     )

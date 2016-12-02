@@ -3,9 +3,10 @@ import {StateLink} from 'part:@sanity/base/router'
 import styles from './styles/ToolSwitcher.css'
 
 class ToolSwitcher extends React.Component {
-
   static propTypes = {
     activeToolName: PropTypes.string,
+    onClick: PropTypes.func,
+    className: PropTypes.string,
     tools: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -17,7 +18,7 @@ class ToolSwitcher extends React.Component {
   render() {
     const {tools, activeToolName} = this.props
     return (
-      <div className={styles.toolSwitcher}>
+      <div className={`${styles.toolSwitcher} ${this.props.className}`}>
         <ul className={styles.toolList}>
           {tools.map(tool => {
             const itemClass = activeToolName === tool.name
@@ -28,12 +29,12 @@ class ToolSwitcher extends React.Component {
 
             return (
               <li key={tool.name} className={itemClass}>
-                <StateLink className={styles.toolLink} state={{tool: tool.name}}>
+                <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={this.props.onClick}>
                   <div className={styles.iconContainer}>
                     <ToolIcon />
                   </div>
                   <div className={styles.toolName}>
-                    {tool.name}
+                    {tool.title || tool.name}
                   </div>
                 </StateLink>
               </li>

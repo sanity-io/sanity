@@ -1,16 +1,21 @@
 import {route} from 'part:@sanity/base/router'
 import React from 'react'
 
+const styles = {
+  backgroundColor: 'red',
+}
+
 function MyTool(props) {
   return (
     <div>
-      <h2>My Tool</h2>
+      This is a tool
     </div>
   )
 }
 export default {
   name: 'my-tool',
-  icon: () => <div/>,
+  title: 'My Tool',
+  icon: () => <div />,
   router: route('/'),
   component: MyTool
 }

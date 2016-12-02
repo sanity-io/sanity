@@ -5,7 +5,7 @@ export default {
   getCurrentUser() {
     return Promise.resolve({
       name: 'Catty Mc. Catface',
-      profileImage: 'https://placekitten.com/100/100'
+      profileImage: 'https://api.adorable.io/avatars/100/abott@adorable.io.png'
     })
   }
 }

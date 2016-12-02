@@ -12,7 +12,7 @@
 }
 
 .item {
-  display: inline-block;
+  display: block;
   position: relative;
   text-align: center;
   color: var(--selectable-item-color);
@@ -20,7 +20,10 @@
   transition: border 0.1s linear;
   box-sizing: border-box;
 
+
   @media (--screen-medium) {
+    font-size: 1em;
+    display: inline-block;
     height: 3rem;
     line-height: 1rem;
     float: left;
@@ -32,15 +35,15 @@
     @media (--screen-medium) {
       /* border-bottom: 1px solid var(--selectable-item-color-hover); */
     }
-
   }
 }
 
 .activeItem {
   composes: item;
-  color: var(--selected-item-color);
-  border-color: var(--selected-item-color);
-
+  @media (--screen-medium) {
+    color: var(--selected-item-color);
+    border-color: var(--selected-item-color);
+  }
 }
 
 .iconContainer {
@@ -58,8 +61,10 @@
 .toolLink {
   color: inherit;
   text-decoration: none;
-  text-transform: uppercase;
-  font-size: var(--font-size-small);
   line-height: 1rem;
+
+  @media (--screen-medium) {
+    font-size: var(--font-size-small);
+  }
 
 }

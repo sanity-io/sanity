@@ -16,6 +16,7 @@
   border-radius: 50%;
   margin: 0 auto;
   cursor: pointer;
+  margin-top: 4rem;
 
   @media(--screen-medium) {
     float: right;
@@ -28,8 +29,10 @@
 }
 
 .userName {
+  display: block;
+
   @media(--screen-medium) {
-    display: inline-block;
+    display: none;
   }
 }
 

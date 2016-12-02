@@ -1,0 +1,35 @@
+@import "part:@sanity/base/theme/variables-style";
+@import "part:@sanity/base/theme/body-style";
+
+.root {
+  display: block;
+  float: left;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 300;
+}
+
+.projectName {
+  font-size: 1em;
+  padding-left: var(--small-padding);
+  white-space: nowrap;
+  float: left;
+}
+
+.projectNameHidden {
+  composes: projectName;
+  display: none;
+}
+
+.companyLogoContainer {
+  float: left;
+  z-index: 10;
+  cursor: pointer;
+
+  @nest & svg {
+    height: 1rem;
+    padding-top: 1rem;
+    padding-left: 0.5rem;
+    width: auto;
+  }
+}
