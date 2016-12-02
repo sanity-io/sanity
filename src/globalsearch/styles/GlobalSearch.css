@@ -12,7 +12,7 @@
   width: 100%;
   background-color: transparent;
   padding-left: 1.2em;
-  line-height: 1em;
+  line-height: inherit;
   font-size: inherit;
 }
 
@@ -59,6 +59,7 @@
 
 .items {
   background-color: color(var(--brand-white) a(90%));
+  color: var(--brand-black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
