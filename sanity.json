@@ -79,10 +79,6 @@
       "description": "Z-Index variables"
     },
     {
-      "name": "part:@sanity/base/theme/variables/list-group-style",
-      "description": "List group variables"
-    },
-    {
       "name": "part:@sanity/base/theme/variables/list-style",
       "description": "List variables"
     },
@@ -260,12 +256,6 @@
       "implements": "part:@sanity/base/theme/variables/layers-style",
       "path": "styles/variables/layers.css"
     },
-
-    {
-      "implements": "part:@sanity/base/theme/variables/list-group-style",
-      "path": "styles/variables/list-group.css"
-    },
-
     {
       "implements": "part:@sanity/base/theme/variables/list-style",
       "path": "styles/variables/list.css"
