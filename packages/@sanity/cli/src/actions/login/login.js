@@ -2,22 +2,18 @@ import fs from 'fs'
 import path from 'path'
 import http from 'http'
 import url from 'url'
-import got from 'got'
 import open from 'opn'
 import chalk from 'chalk'
 import {parseJson} from '@sanity/util/lib/safeJson'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 
-const baseUrl = 'https://api.sanity.io/v1'
-const providersUrl = `${baseUrl}/auth/providers`
-const exchangeUrl = `${baseUrl}/auth/tokens/fetch`
-
 export default async function login(args, context) {
-  const {prompt, output} = context
+  const {prompt, output, apiClient} = context
+  const client = apiClient({requireUser: false, requireProject: false})
+
   const spin = output.spinner('Fetching providers...').start()
-  const {body} = await got(providersUrl, {json: true})
-  const providers = body.providers
+  const {providers} = await client.request({uri: '/auth/providers'})
   spin.stop()
 
   const provider = await promptProviders(prompt, providers)
@@ -27,8 +23,9 @@ export default async function login(args, context) {
   )
 }
 
-function loginFlow({output, provider}, resolve, reject) {
+function loginFlow({output, provider, apiClient}, resolve, reject) {
   debug('Starting OAuth receiver webserver')
+  const client = apiClient({requireUser: false, requireProject: false})
   const spin = output.spinner('Waiting for login flow to complete...')
   const server = http
     .createServer(onServerRequest)
@@ -60,18 +57,18 @@ function loginFlow({output, provider}, resolve, reject) {
   function exchangeToken(req, res) {
     const returnUrl = url.parse(req.url, true)
     const tmpToken = (returnUrl.query || {}).fetcher
-    got(`${exchangeUrl}/${tmpToken}`, {json: true})
+    client.request({uri: `/auth/tokens/fetch/${tmpToken}`})
       .then(httpRes => onTokenExchanged(httpRes, req, res))
       .catch(err => onTokenExchangeError(err, res))
   }
 
-  function onTokenExchanged(httpRes, req, res) {
-    const token = httpRes.body.token
+  function onTokenExchanged(body, req, res) {
+    const token = body.token
     if (!token) {
       const query = url.parse(req.url, true).query || {}
       const error = query.error ? parseJson(query.error, {}) : {}
 
-      debug('Token exchange failed, body: %s', JSON.stringify(httpRes.body))
+      debug('Token exchange failed, body: %s', JSON.stringify(body))
       if (error) {
         debug('Error details: %s', JSON.stringify(error))
       }

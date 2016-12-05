@@ -1,15 +1,11 @@
 import chalk from 'chalk'
-import got from 'got'
 import getUserConfig from '../../util/getUserConfig'
-
-const baseUrl = 'https://api.sanity.io/v1'
-const logoutUrl = `${baseUrl}/auth/logout`
 
 export default {
   name: 'logout',
   signature: 'logout',
   description: 'Logs out of the Sanity.io session',
-  async action(args, {output, prompt}) {
+  async action(args, {output, prompt, apiClient}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')
@@ -43,8 +39,9 @@ export default {
     logout(cfg)
 
     async function logout() {
+      const client = apiClient({requireUser: false, requireProject: false})
       if (token) {
-        await got(logoutUrl, {headers: {'Sanity-Token': token}})
+        await client.request({url: '/auth/logout'})
       }
 
       cfg.del('authType')

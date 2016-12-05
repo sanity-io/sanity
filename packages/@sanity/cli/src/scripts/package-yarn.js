@@ -1,26 +1,36 @@
 /* eslint-disable no-console */
 import path from 'path'
 import fsp from 'fs-promise'
-import got from 'got'
+import simpleGet from 'simple-get'
 
-const version = '0.17.8'
+const version = '0.17.10'
 const baseUrl = 'https://github.com/yarnpkg/yarn/releases/download'
 const bundleUrl = `${baseUrl}/v${version}/yarn-legacy-${version}.js`
 const licenseUrl = 'https://raw.githubusercontent.com/yarnpkg/yarn/master/LICENSE'
 const destination = path.join(__dirname, '..', '..', 'vendor', 'yarn')
 const writeFlags = {encoding: 'utf8', mode: 0o755}
+const request = url => new Promise((resolve, reject) => simpleGet.concat(url, (err, res, body) => {
+  if (err) {
+    reject(err)
+  } else {
+    resolve(body.toString())
+  }
+}))
 
 function download() {
   console.log('[package-yarn] Downloading bundle')
-  got.stream(bundleUrl).pipe(
-    fsp.createWriteStream(destination, writeFlags)
-      .on('close', writeHeader)
-  )
+  simpleGet(bundleUrl, (err, res) => {
+    if (err) {
+      throw err
+    }
+
+    res.pipe(fsp.createWriteStream(destination, writeFlags).on('close', writeHeader))
+  })
 }
 
 async function writeHeader() {
   console.log('[package-yarn] Downloading license')
-  const license = await got(licenseUrl).then(res => res.body)
+  const license = await request(licenseUrl)
   const commented = license.split('\n').map(line => ` * ${line}`).join('\n')
   const wrappedLicense = `/*\n${commented}*/`
 

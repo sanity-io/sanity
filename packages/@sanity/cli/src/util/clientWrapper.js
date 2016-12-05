@@ -17,7 +17,12 @@ export default function clientWrapper(manifest, path) {
     const userConfig = getUserConfig()
     const userApiConf = userConfig.get('api')
     const token = userConfig.get('authToken')
-    const apiConfig = api || (manifest && manifest.api) || userApiConf || {}
+    const apiConfig = Object.assign(
+      {},
+      userApiConf || {},
+      (manifest && manifest.api) || {},
+      api || {}
+    )
 
     if (requireUser && !token) {
       throw new Error('You must login first - run "sanity login"')
