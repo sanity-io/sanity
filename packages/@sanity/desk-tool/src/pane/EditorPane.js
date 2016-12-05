@@ -165,7 +165,7 @@ export default class EditorPane extends React.PureComponent {
 
         {
           // Test for the snackbar. Needs a messaging system
-          !progress && <Snackbar kind="success" time={500}>Saved</Snackbar>
+          !progress && <Snackbar kind="success">Saved</Snackbar>
         }
 
         <div className={styles.header}>
