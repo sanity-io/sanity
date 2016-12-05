@@ -185,7 +185,7 @@ export default class EditorPane extends React.PureComponent {
             onChange={this.handleChange}
           />
 
-          <DefaultButton onClick={this.handleDelete} kind="danger">
+          <DefaultButton onClick={this.handleDelete} color="danger">
             Delete
           </DefaultButton>
         </form>
