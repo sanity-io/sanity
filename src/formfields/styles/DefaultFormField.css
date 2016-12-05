@@ -4,7 +4,10 @@
 .root {
   display: block;
   width: 100%;
-  margin-bottom: 2rem;
+}
+
+.root + .root {
+  margin-top: var(--large-padding);
 }
 
 .inline {

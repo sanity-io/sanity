@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 .root {
   position: relative;
   display: inline-block;
@@ -28,20 +26,6 @@
   composes: shadow;
 }
 
-.colored {
-  background-color: var(--brand-primary);
-  color: color(var(--brand-primary--text));
-  composes: default;
-}
-
-.secondary {
-  border: none;
-  background-color: transparent;
-  box-shadow: none;
-  color: var(--gray);
-  composes: default;
-}
-
 .inverted {
   border: 1px solid var(--gray-base);
   border-color: var(--gray-base);
@@ -54,27 +38,45 @@
     background-color: inherit;
     color: var(--brand-danger);
   }
+}
 
-  &.colored {
+.color__primary {
+  border-color: var(--brand-primary);
+  background-color: var(--brand-primary);
+  color: var(--brand-primary--text);
+
+  @nest &.inverted,
+  &.simple {
     border-color: var(--brand-primary);
-    background-color: inherit;
+    background-color: transparent;
     color: var(--brand-primary);
   }
 }
 
-.danger {
+.color__danger {
   border-color: var(--brand-danger);
   background-color: var(--brand-danger);
   color: var(--brand-danger--text);
-  composes: default;
+
+  @nest &.inverted,
+  &.simple {
+    border-color: var(--brand-danger);
+    background-color: transparent;
+    color: var(--brand-danger);
+  }
 }
 
-.delete {
-  composes: danger;
-}
+.color__success {
+  border-color: var(--brand-success);
+  background-color: var(--brand-success);
+  color: var(--brand-success--text);
 
-.add {
-  composes: colored;
+  @nest &.inverted,
+  &.simple {
+    border-color: var(--brand-success);
+    background-color: transparent;
+    color: var(--brand-success);
+  }
 }
 
 .save {
@@ -107,19 +109,15 @@
 }
 
 .icon {
-  @nest .colored & {
-    fill: #fff;
-  }
-
-  @nest .danger & {
-    fill: #fff;
-  }
-
-  @nest .danger.inverted & {
-    fill: var(--brand-danger);
-  }
-
   transform: scale(1.2);
+}
+
+.secondary {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--gray);
+  composes: default;
 }
 
 .disabled {

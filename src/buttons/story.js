@@ -31,28 +31,70 @@ storiesOf('Buttons')
   '',
   () => (
     <div>
-      <Button onClick={action('clicked')}>Default</Button>
-      <Button onClick={action('clicked')} kind="simple">Simple</Button>
-      <Button onClick={action('clicked')} colored>colored</Button>
-      <Button onClick={action('clicked')} inverted>Inverted</Button>
-      <Button onClick={action('clicked')} kind="danger">Kind=danger</Button>
-      <Button onClick={action('clicked')} kind="danger" inverted>Kind=danger inverted</Button>
-      <Button onClick={action('clicked')} colored inverted>colored inverted</Button>
+      <h2>Default</h2>
+      <Button onClick={action('clicked')}>
+        Default
+      </Button>
+      <Button onClick={action('clicked')} kind="simple">
+        Simple
+      </Button>
       <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} inverted>
         Secondary
       </Button>
+
+      <h2>Colors</h2>
+      <Button onClick={action('clicked')} color="primary">
+        Color:Primary
+      </Button>
+      <Button onClick={action('clicked')} color="danger">
+        Color:Danger
+      </Button>
+      <Button onClick={action('clicked')} color="danger" inverted>
+        Color:Danger inverted
+      </Button>
+      <Button onClick={action('clicked')} color="success">
+        Color:Success
+      </Button>
+      <Button onClick={action('clicked')} color="success" inverted>
+        Color:Success inverted
+      </Button>
+      <Button onClick={action('clicked')} kind="simple" color="success">
+        Simple Color:Success
+      </Button>
+      <Button onClick={action('clicked')} kind="simple" color="success" inverted>
+        Simple Color:Success inverted
+      </Button>
+
+      <h2>Inverted</h2>
+      <Button onClick={action('clicked')} inverted>
+        Inverted
+      </Button>
+      <Button onClick={action('clicked')} color="danger" inverted>
+        Inverted color:danger
+      </Button>
+
+      <Button onClick={action('clicked')} color="danger">
+        Color:danger
+      </Button>
+
+      <h2>With icons</h2>
       <Button onClick={action('clicked')} icon={SanityLogoIcon}>
         With icon
       </Button>
-      <Button onClick={action('clicked')} colored icon={SanityLogoIcon}>
+      <Button onClick={action('clicked')} color="danger" icon={SanityLogoIcon}>
         Colored with icon
       </Button>
-      <Button onClick={action('clicked')} kind="danger" icon={SanityLogoIcon} inverted>
+      <Button onClick={action('clicked')} color="danger" icon={SanityLogoIcon} inverted>
         Danger, inverted & icon
       </Button>
-      <Button onClick={action('clicked')} kind="small" icon={SanityLogoIcon} inverted>
-        I'm small!
-      </Button>
+
+      <h2>Only icons</h2>
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} title="Default" />
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} color="danger" title="Danger" />
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted title="Inverted" />
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted color="danger" title="Inverted danger" />
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" title="Simple" />
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" color="danger" title="Simple danger" />
     </div>
   ),
   {propTables: [Button], role: 'part:@sanity/components/buttons/default'}

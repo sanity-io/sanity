@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables/state-colors-style";
+@import "part:@sanity/base/theme/variables-style";
 
 @keyframes reveal {
   0% {
@@ -12,6 +12,7 @@
 
 .root {
   position: fixed;
+  z-index: var(--zindex-modal);
   bottom: 0;
   left: 0;
   width: 100%;
@@ -31,27 +32,28 @@
   border: 1px solid #000;
   border-bottom: 0;
   position: relative;
+  text-align: right;
 
   @nest .info & {
     border-color: var(--state-info-border);
-    background-color: color(var(--brand-info) a(20%));
+    background-color: color(var(--brand-info) a(90%));
     color: var(--state-info-text);
   }
 
   @nest .warning & {
-    background-color: color(var(--brand-warning) a(20%));
+    background-color: color(var(--brand-warning) a(90%));
     color: var(--state-warning-text);
     border-color: var(--state-warning-border);
   }
 
   @nest .success & {
-    background-color: color(var(--brand-success) a(20%));
-    color: var(--state-success-text);
+    background-color: color(var(--brand-success) a(90%));
+    color: var(--brand-white);
     border-color: var(--state-success-border);
   }
 
   @nest .error & {
-    background-color: color(var(--brand-danger) a(20%));
+    background-color: color(var(--brand-danger) a(90%));
     color: var(--state-danger-text);
     border-color: var(--state-danger-border);
   }

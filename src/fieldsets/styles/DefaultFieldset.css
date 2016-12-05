@@ -1,15 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 @import 'part:@sanity/base/theme/body-style';
 
-@use postcss-cssnext;
-@use lost;
-
 .root {
   margin: 0;
   padding: 0;
-  margin-bottom: var(--large-padding);
   border: 0;
-  width: 100%;
+  composes: root from "part:@sanity/components/formfields/default-style";
 
   & & {
     /* nested inside itself */
