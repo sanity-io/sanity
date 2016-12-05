@@ -121,6 +121,26 @@ export default {
               ]
             },
             {
+              name: 'caption',
+              type: 'array',
+              title: 'Caption',
+              editor: 'slate',
+              of: [
+                {
+                  title: 'Paragraph',
+                  type: 'paragraph',
+                  marks: [
+                    'bold',
+                    'italic',
+                    'underline',
+                    'overline',
+                    'line-through',
+                    'code'
+                  ]
+                }
+              ]
+            },
+            {
               title: 'String',
               type: 'string'
             },
