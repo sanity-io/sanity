@@ -20,7 +20,7 @@
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.3.15",
     "@sanity/mutator": "^0.0.12",
-    "@sanity/server": "^0.0.18",
+    "@sanity/server": "^0.0.19",
     "@sanity/storybook": "^0.0.15",
     "@sanity/util": "^0.0.3",
     "batch-stream-operation": "^1.0.1",
