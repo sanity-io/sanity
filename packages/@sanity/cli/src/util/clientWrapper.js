@@ -20,7 +20,7 @@ export default function clientWrapper(manifest, path) {
     const apiConfig = api || (manifest && manifest.api) || userApiConf || {}
 
     if (requireUser && !token) {
-      throw new Error('You must login first')
+      throw new Error('You must login first - run "sanity login"')
     }
 
     if (requireProject && !apiConfig.projectId) {
