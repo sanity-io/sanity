@@ -41,7 +41,7 @@ export default {
     async function logout() {
       const client = apiClient({requireUser: false, requireProject: false})
       if (token) {
-        await client.request({url: '/auth/logout'})
+        await client.request({uri: '/auth/logout'})
       }
 
       cfg.del('authType')
