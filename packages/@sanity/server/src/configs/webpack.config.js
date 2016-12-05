@@ -94,7 +94,7 @@ export default (config = {}) => {
         loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
         loaders: !isProd && ['style-loader', cssLoader, 'postcss-loader']
       }, {
-        test: /\.(jpe?g|png|gif|svg|webp)$/,
+        test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot)$/,
         loader: require.resolve('file-loader'),
         query: {
           name: 'assets/[name]-[hash].[ext]'
