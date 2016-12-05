@@ -10,7 +10,8 @@ const cases = [
   [[1, 2, 3], '[1][2][3]'],
   [[1, 'foo', 'bar', 4], '[1].foo.bar[4]'],
   [[1, '-foo', 'bar', 4], "[1]['-foo'].bar[4]"],
-  [[1, {foo: 'bar', bar: 'baz'}, 4], "[1][foo=='bar'][bar=='baz'][4]"]
+  [[1, {foo: 'bar'}, 4], '[1][foo=="bar"][4]'],
+  [[1, {foo: 'bar', bar: 'baz'}, 4], '[1][foo=="bar"][bar=="baz"][4]']
 
   // future maybe:
   // [[1, [{foo: 'bar'}, {bar: 'baz'}], 4], "[1][foo=='bar'||bar=='baz'][4]"]
