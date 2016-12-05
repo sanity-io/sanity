@@ -31,7 +31,7 @@
   --font-size-h5: var(--font-size-base);
   --font-size-h6: 0.875rem;
 
-  --line-height-base: 1.428571429; /* 20/14 */
+  --line-height-base: 1.428571429;
   --line-height-computed: calc(var(--font-size-base) * var(--line-height-base)));
 
   --headings-font-family: inherit;
