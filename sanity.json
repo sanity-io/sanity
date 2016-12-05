@@ -507,6 +507,14 @@
       "description": "Thin circle icon"
     },
     {
+      "name": "part:@sanity/base/trash-icon",
+      "description": "Thin circle icon"
+    },
+    {
+      "implements": "part:@sanity/base/trash-icon",
+      "path": "components/icons/TrashOutline.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo-icon",
       "path": "components/icons/SanityLogo.js"
     },
