@@ -7,7 +7,7 @@
   @custom-media --max-screen-medium (max-width: 32em);
   @custom-media --max-medium (max-width: 32em);
 
-  @custom-media --screen-medium (screen and (min-width: 32em));
+  @custom-media --screen-medium (min-width: 32em);
   @custom-media --min-medium (min-width: 32em);
   @custom-media --screen-default (min-width: 40em);
   @custom-media --min-default (min-width: 40em);
