@@ -314,42 +314,40 @@ export default class ImageInput extends React.PureComponent {
     const isImageToolEnabled = this.isImageToolEnabled()
 
     return (
-      <div>
-        <ImageInputFieldset
-          status={status}
-          legend={field.title}
-          level={level}
-          percent={progress && progress.percent}
-          onSelect={this.handleSelect}
-          onCancel={this.handleCancel}
-          hotspotImage={{
-            hotspot: isImageToolEnabled ? value.getFieldValue('hotspot').toJSON() : DEFAULT_HOTSPOT,
-            crop: isImageToolEnabled ? value.getFieldValue('crop').toJSON() : DEFAULT_CROP,
-            imageUrl: imageUrl
-          }}
-        >
-          {this.renderFields(fieldGroups.highlighted || [])}
+      <ImageInputFieldset
+        status={status}
+        legend={field.title}
+        level={level}
+        percent={progress && progress.percent}
+        onSelect={this.handleSelect}
+        onCancel={this.handleCancel}
+        hotspotImage={{
+          hotspot: isImageToolEnabled ? value.getFieldValue('hotspot').toJSON() : DEFAULT_HOTSPOT,
+          crop: isImageToolEnabled ? value.getFieldValue('crop').toJSON() : DEFAULT_CROP,
+          imageUrl: imageUrl
+        }}
+      >
+        {this.renderFields(fieldGroups.highlighted || [])}
 
-          {imageUrl && (
-            <div>
-              <Button
-                icon={UploadIcon}
-                ripple={false}
+        {imageUrl && (
+          <div>
+            <Button
+              icon={UploadIcon}
+              ripple={false}
+            >
+              <ImageSelect
+                name={fieldName}
+                onSelect={this.handleSelect}
+                {...rest}
               >
-                <ImageSelect
-                  name={fieldName}
-                  onSelect={this.handleSelect}
-                  {...rest}
-                >
-                  Upload new
-                </ImageSelect>
-              </Button>
-              {fieldGroups.other && fieldGroups.other.length > 0 && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
-            </div>
-          )}
-        </ImageInputFieldset>
+                Upload new
+              </ImageSelect>
+            </Button>
+            {fieldGroups.other && fieldGroups.other.length > 0 && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
+          </div>
+        )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </div>
+      </ImageInputFieldset>
     )
   }
 }

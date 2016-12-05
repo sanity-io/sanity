@@ -4,6 +4,8 @@ import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
 import styles from './styles/ItemPreview.css'
 import Preview from '../../Preview'
+import Button from 'part:@sanity/components/buttons/default'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 
 export default class ItemPreview extends React.Component {
   constructor(props, context) {
@@ -37,9 +39,14 @@ export default class ItemPreview extends React.Component {
     // Handle toggle insted of edit
   }
 
-  handleRemove() {
+  handleRemove(event) {
     const {index, onRemove} = this.props
+    event.stopPropagation()
+    event.preventDefault()
     onRemove(index)
+  }
+  handleMouseDown(event) {
+    event.stopPropagation()
   }
 
   getFieldType(field) {
@@ -50,11 +57,19 @@ export default class ItemPreview extends React.Component {
     const {value, field} = this.props
     return (
       <div className={styles.root} onClick={this.handleEdit}>
-        <Preview
-          style="default"
-          value={value.serialize()}
-          field={field}
-        />
+        <div className={styles.functions}>
+          <Button
+            kind="simple"
+            color="danger"
+            icon={TrashIcon}
+            title="Delete"
+            onClick={this.handleRemove}
+            onMouseDown={this.handleMouseDown}
+          />
+        </div>
+        <div className={styles.content}>
+          <Preview style="default" value={value.serialize()} field={field} />
+        </div>
       </div>
     )
   }

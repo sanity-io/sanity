@@ -1,34 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
-@use postcss-cssnext;
 
 .root {
-  /* array container */
+  display: block;
 }
 
-.item {
-  /**/
-}
-
-.list {
-  /* This is the list that contains the items */
-  padding-bottom: var(--medium-padding);
-
-  &:empty {
-    display: none;
-  }
-}
-
-.itemActive {
-  composes: item;
-}
-
-.itemInner {
-  border-bottom: var(--list-border);
-  padding: 0.5rem 1rem;
-  transition: background-color 0.1s linear;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--gray-lighter);
-  }
+.list + .functions {
+  padding-top: var(--medium-padding);
 }

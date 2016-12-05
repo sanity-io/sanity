@@ -11,6 +11,7 @@ import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc'
+import styles from './styles/Array.css'
 
 const SortableDefaultList = SortableContainer(DefaultList)
 
@@ -166,9 +167,8 @@ export default class Arr extends React.Component {
   renderEditItemForm(index) {
     const itemValue = this.props.value.at(index)
     const itemField = this.getItemField(itemValue)
-    const actions = [{kind: 'danger', title: 'Remove', handleClick: () => this.handleRemoveItem(index)}]
     return (
-      <EditItemPopOver actions={actions} title={itemField.title} onClose={this.handleClose}>
+      <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
           index={index}
@@ -235,26 +235,30 @@ export default class Arr extends React.Component {
   }
 
   render() {
-    const {field, level} = this.props
+    const {field, level, value} = this.props
 
     return (
       <Fieldset legend={field.title} description={field.description} level={level}>
-
-        {this.renderList()}
-
-        <div>
+        <div className={styles.root}>
           {
-            this.props.type.of.length == 1
-            && <Button onClick={this.handleAddBtnClick} ripple kind="add">
-              Add
-            </Button>
+            value.value && value.value.length > 0 && (
+              <div className={styles.list}>
+                {this.renderList()}
+              </div>
+            )
           }
-          {
-            this.props.type.of.length > 1 && this.renderSelectType()
-          }
-
+          <div className={styles.functions}>
+            {
+              this.props.type.of.length == 1
+              && <Button onClick={this.handleAddBtnClick} color="primary" className={styles.addButton}>
+                Add
+              </Button>
+            }
+            {
+              this.props.type.of.length > 1 && this.renderSelectType()
+            }
+          </div>
         </div>
-
       </Fieldset>
     )
   }

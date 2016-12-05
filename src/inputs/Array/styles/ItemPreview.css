@@ -1,14 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
-@use postcss-cssnext;
 
 .root {
   overflow: hidden;
 }
 
-.heading {
-
-}
-
-.buttons {
+.functions {
   float: right;
 }
