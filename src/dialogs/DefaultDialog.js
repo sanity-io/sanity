@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
+import Portal from 'react-portal'
 
 export default class DefaultDialog extends React.Component {
   static propTypes = {
@@ -10,8 +11,8 @@ export default class DefaultDialog extends React.Component {
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
     onOpen: PropTypes.func,
-    onClose: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func,
+    isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
@@ -83,7 +84,7 @@ export default class DefaultDialog extends React.Component {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader, kind} = this.props
+    const {title, actions, isOpen, showHeader, kind, onClose} = this.props
     const classNames = `
       ${styles[kind]}
       ${isOpen ? styles.isOpen : styles.isClosed}
@@ -92,51 +93,56 @@ export default class DefaultDialog extends React.Component {
     `
 
     return (
-      <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
-        <div className={styles.dialog} onClick={this.handleDialogClick}>
-          {
-            !showHeader && <button className={styles.closeButtonOutside} onClick={this.handleCloseClick}>
-              <CloseIcon color="inherit" />
-            </button>
-          }
-          <div className={styles.inner}>
+      <Portal isOpened={isOpen} onClose={onClose}>
+        <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
+          <div className={styles.dialog} onClick={this.handleDialogClick}>
             {
-              showHeader && <div className={styles.header}>
-                <h1 className={styles.title}>{title}</h1>
-                <button className={styles.closeButton} onClick={this.handleCloseClick}>
+              !showHeader && onClose && (
+                <button className={styles.closeButtonOutside} onClick={this.handleCloseClick}>
                   <CloseIcon color="inherit" />
                 </button>
-              </div>
+              )
             }
-
-            <div className={styles.content}>
-              {this.props.children}
-            </div>
-
-            <div className={styles.footer}>
+            <div className={styles.inner}>
               {
-                actions.length > 0 && <div className={styles.functions}>
-                  {
-                    actions.map((action, i) => {
-                      return (
-                        <Button
-                          key={i}
-                          onClick={this.handleActionClick}
-                          data-action-index={i}
-                          kind={action.kind}
-                          className={styles[`button_${action.kind}`] || styles.button}
-                        >
-                          {action.title}
-                        </Button>
-                      )
-                    })
-                  }
-                </div>
+                showHeader && onClose && (
+                  <div className={styles.header}>
+                    <h1 className={styles.title}>{title}</h1>
+                    <button className={styles.closeButton} onClick={this.handleCloseClick}>
+                      <CloseIcon color="inherit" />
+                    </button>
+                  </div>
+                )
               }
+              <div className={styles.content}>
+                {this.props.children}
+              </div>
+
+              <div className={styles.footer}>
+                {
+                  actions.length > 0 && <div className={styles.functions}>
+                    {
+                      actions.map((action, i) => {
+                        return (
+                          <Button
+                            key={i}
+                            onClick={this.handleActionClick}
+                            data-action-index={i}
+                            kind={action.kind}
+                            className={styles[`button_${action.kind}`] || styles.button}
+                          >
+                            {action.title}
+                          </Button>
+                        )
+                      })
+                    }
+                  </div>
+                }
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Portal>
     )
   }
 }

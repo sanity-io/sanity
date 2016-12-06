@@ -42,6 +42,7 @@
     "react-click-outside": "^2.1.0",
     "react-draggable": "^2.2.2",
     "react-ink": "^5.1.1",
+    "react-portal": "^3.0.0",
     "react-sortable-hoc": "^0.2.0",
     "scroll": "^2.0.0"
   },

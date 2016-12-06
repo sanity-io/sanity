@@ -343,7 +343,7 @@ storiesOf('Dialogs')
   }
 )
 .addWithInfo(
-  'Default (danger with actions nad header)',
+  'Default (danger with actions and header)',
   '',
   () => {
     const actions = [
@@ -365,7 +365,8 @@ storiesOf('Dialogs')
       <div>
         <DefaultDialog
           title="This is the title"
-          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
+          isOpen
+          onClose={linkTo('Dialogs', 'Fullscreen')}
           showHeader
           actions={actions}
           onAction={action('onAction')}
