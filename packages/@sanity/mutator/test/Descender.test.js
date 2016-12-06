@@ -25,8 +25,7 @@ test('Match attribute constraint on array', tap => {
     a: 7
   }]))
   expectDescendants(tap, iterated, [
-    '<[0]|[a == 7][b,c].d>',
-    '<[1]|[a == 7][b,c].d>',
+    '<[1]|[b,c].d>'
   ])
   tap.end()
 })
