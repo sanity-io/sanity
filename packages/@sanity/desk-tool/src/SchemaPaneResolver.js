@@ -12,6 +12,7 @@ import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
 import {previewUtils} from 'part:@sanity/form-builder'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -127,7 +128,11 @@ export default class SchemaPaneResolver extends React.Component {
       <QueryContainer query={query}>
         {({result, loading, error}) => {
           if (error) {
-            return <div>An error occurred while loading items: {error.message}</div>
+            return (
+              <FullscreenDialog kind="danger" title="An error occurred while loading items" isOpen>
+                {error.message}
+              </FullscreenDialog>
+            )
           }
           return (
             <Pane
@@ -166,7 +171,6 @@ export default class SchemaPaneResolver extends React.Component {
       sorting: sorting
     })
   }
-
 
   setContainerElement = element => {
     this.containerElement = element
