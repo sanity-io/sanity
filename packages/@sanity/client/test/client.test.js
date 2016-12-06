@@ -1,5 +1,7 @@
+/* eslint-disable strict */
 // (Node 4 compat)
-'use strict' // eslint-disable-line strict
+
+'use strict'
 
 const test = require('tape')
 const nock = require('nock')

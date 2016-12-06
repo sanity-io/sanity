@@ -4,7 +4,9 @@ const projectHeader = 'Sanity-Project-ID'
 module.exports = config => {
   const headers = {}
 
-  if (config.token) {
+  if (config.token && config.gradientMode) {
+    headers.Authorization = `Bearer ${config.token}`
+  } else if (config.token) {
     headers[tokenHeader] = config.token
   }
 
@@ -14,7 +16,7 @@ module.exports = config => {
 
   return {
     headers: headers,
-    timeout: ('timeout' in config) ? config.timeout : 15000,
+    timeout: ('timeout' in config) ? config.timeout : 30000,
     withCredentials: true,
     json: true
   }

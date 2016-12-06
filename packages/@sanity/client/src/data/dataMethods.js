@@ -23,13 +23,20 @@ const getQuerySizeLimit = 1948
 module.exports = {
   listen: listen,
 
+  getDataUrl(endpoint, uri) {
+    const projectId = this.clientConfig.projectId
+    return this.clientConfig.gradientMode
+      ? `/${endpoint}/${projectId}/${uri}`
+      : `/data/${endpoint}/${uri}`
+  },
+
   fetch(query, params) {
     return this.dataRequest('query', {query, params}).then(res => res.result || [])
   },
 
   getDocument(id) {
     return this.request({
-      uri: `/data/doc/${id}`,
+      uri: this.getDataUrl('doc', id),
       json: true
     }).then(res => res.documents && res.documents[0])
   },
@@ -81,7 +88,7 @@ module.exports = {
     return validators.promise.hasDataset(this.clientConfig)
       .then(dataset => this.request({
         method: useGet ? 'GET' : 'POST',
-        uri: `/data/${endpoint}/${dataset}${stringQuery}`,
+        uri: this.getDataUrl(endpoint, `${dataset}${stringQuery}`),
         json: true,
         body: useGet ? undefined : body,
         query: isMutation && getMutationQuery(options)

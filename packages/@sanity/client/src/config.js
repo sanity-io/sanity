@@ -3,7 +3,8 @@ const validate = require('./validators')
 
 const defaultConfig = exports.defaultConfig = {
   apiHost: 'https://api.sanity.io',
-  useProjectHostname: true
+  useProjectHostname: true,
+  gradientMode: false
 }
 
 exports.initConfig = (config, prevConfig) => {
@@ -27,14 +28,18 @@ exports.initConfig = (config, prevConfig) => {
     validate.dataset(newConfig.dataset)
   }
 
-  const hostParts = newConfig.apiHost.split('://', 2)
-  const protocol = hostParts[0]
-  const host = hostParts[1]
-
-  if (newConfig.useProjectHostname) {
-    newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v1`
+  if (newConfig.gradientMode) {
+    newConfig.url = newConfig.apiHost
   } else {
-    newConfig.url = `${newConfig.apiHost}/v1`
+    const hostParts = newConfig.apiHost.split('://', 2)
+    const protocol = hostParts[0]
+    const host = hostParts[1]
+
+    if (newConfig.useProjectHostname) {
+      newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v1`
+    } else {
+      newConfig.url = `${newConfig.apiHost}/v1`
+    }
   }
 
   return newConfig
