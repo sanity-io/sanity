@@ -204,24 +204,27 @@ export default class BlockEditor extends React.Component {
     if (!href) {
       transform = transform
        .unwrapInline(SLATE_LINK_TYPE)
-       .collapseToEnd()
+       .focus()
     } else if (href) {
       if (state.isExpanded) {
         transform = transform
+          .unwrapInline(SLATE_LINK_TYPE)
           .wrapInline({
             type: SLATE_LINK_TYPE,
             data: {href: href, target: target}
           })
-          .collapseToEnd()
+          .focus()
       } else {
+        const linkNode = value.state.inlines
+          .find(inline => inline.type === SLATE_LINK_TYPE)
         transform = transform
-          .insertText(text)
-          .extendBackward(text.length)
+          .focus()
+          .moveToRangeOf(linkNode)
+          .unwrapInline(SLATE_LINK_TYPE)
           .wrapInline({
             type: SLATE_LINK_TYPE,
             data: {href: href, target: target}
           })
-          .collapseToEnd()
       }
     }
     const nextState = transform.apply()
