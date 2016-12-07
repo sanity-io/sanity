@@ -1,13 +1,16 @@
+import noop from 'lodash/noop'
+import prettyMs from 'pretty-ms'
 import createClient from '@sanity/client'
 import batchStreamOperation from 'batch-stream-operation'
 import debug from '../../debug'
 
 export default function batchedMutationStream(options) {
-  const {apiClient, dataset, mutator, preCommit} = options
+  const {dataset, mutator, preCommit} = options
   const timeout = 45000
-  const batchSize = options.batchSize || 175
+  const batchSize = options.batchSize || 75
   const concurrency = options.concurrency || 3
-  const client = createClient(Object.assign({}, apiClient().config(), {dataset, timeout}))
+  const client = createClient(Object.assign({}, options.client.config(), {dataset, timeout}))
+  const progress = options.progress || noop
 
   const streamOptions = {objectMode: true}
   const stream = batchStreamOperation({
@@ -32,10 +35,13 @@ export default function batchedMutationStream(options) {
     const currentBatch = ++batchNumber
     debug(`Performing transaction of ${batch.length} mutations (batch #${currentBatch})`)
 
+    const transactionStart = Date.now()
     const transaction = preCommit ? preCommit(reduced) : reduced
     transaction.commit()
       .then(() => {
-        debug(`Batch #${currentBatch} completed, calling back`)
+        const timeSpent = prettyMs(Date.now() - transactionStart)
+        debug(`Batch #${currentBatch} completed (${timeSpent})`)
+        progress()
         callback()
       })
       .catch(err => {

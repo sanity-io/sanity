@@ -5,6 +5,7 @@ import generateGuid from '../../util/generateGuid'
 import readFirstLine from '../../util/readFirstLine'
 import strengthenReferences from '../../actions/dataset/strengthenReferences'
 import importDocumentsToDataset from '../../actions/dataset/importDocumentsToDataset'
+import createClient from '@sanity/client'
 
 export default {
   name: 'import',
@@ -13,7 +14,16 @@ export default {
   description: 'Import dataset from local filesystem',
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
-    const client = apiClient()
+
+    const gradientMode = args.extOptions.gradient
+    const client = getSanityClient({
+      gradient: gradientMode,
+      token: args.extOptions.token,
+      apiClient: apiClient
+    })
+
+    const operation = getMutationOperation(args.extOptions)
+
     const [file, specifiedDataset] = args.argsWithoutOptions
     const signature = 'sanity dataset import [file] [dataset]'
     if (!file) {
@@ -44,31 +54,45 @@ export default {
     debug(`Target dataset has been resolved to "${targetDataset}"`)
     debug(`IDs ${rewriteDataset ? 'needs' : 'do not need'} to be rewritten`)
 
+    let spinner = null
+
     // Verify existence of dataset before trying to import to it
-    debug('Verifying if dataset already exists')
-    let spinner = output.spinner('Checking if destination dataset exists').start()
-    const datasets = await client.datasets.list()
-    if (!datasets.find(set => set.name === targetDataset)) {
-      spinner.fail()
-      throw new Error([
-        `Dataset with name "${targetDataset}" not found.`,
-        `Create it by running "${chalk.cyan(`sanity dataset create ${targetDataset}`)}" first`
-      ].join('\n'))
+    if (!gradientMode) {
+      debug('Verifying if dataset already exists')
+      spinner = output.spinner('Checking if destination dataset exists').start()
+      const datasets = await client.datasets.list()
+      if (!datasets.find(set => set.name === targetDataset)) {
+        spinner.fail()
+        throw new Error([
+          `Dataset with name "${targetDataset}" not found.`,
+          `Create it by running "${chalk.cyan(`sanity dataset create ${targetDataset}`)}" first`
+        ].join('\n'))
+      }
+      spinner.succeed()
     }
-    spinner.succeed()
 
     // Import documents to the target dataset
-    spinner = output.spinner('Importing documents to dataset').start()
+    let batchNumber = 0
+    const baseImportText = 'Importing documents to dataset'
+    spinner = output.spinner(baseImportText).start()
+
+    const importProgress = () => {
+      spinner.text = `${baseImportText} (batch #${++batchNumber})`
+    }
+
     try {
       const importResult = await importDocumentsToDataset({
         sourceFile,
         targetDataset,
         fromDataset,
-        importId
+        importId,
+        operation,
+        client,
+        progress: importProgress
       }, context)
 
       const time = prettyMs(importResult.timeSpent, {verbose: true})
-      spinner.text = `${spinner.text} (${time})`
+      spinner.text = `${baseImportText} (${time})`
       spinner.succeed()
     } catch (err) {
       spinner.fail()
@@ -76,10 +100,18 @@ export default {
     }
 
     // Make previously strong references strong once again
+    let strengthenCount = 0
     const strengthenStart = Date.now()
-    spinner = output.spinner('Strengthening weak references').start()
+    const baseStrengthenText = 'Strengthening weak references'
+    spinner = output.spinner(baseStrengthenText).start()
+
+    const strengthenProgress = docCount => {
+      strengthenCount += docCount
+      spinner.text = `${baseStrengthenText} (${strengthenCount} documents complete)`
+    }
+
     try {
-      await strengthenReferences(context, {dataset: targetDataset, importId})
+      await strengthenReferences({dataset: targetDataset, progress: strengthenProgress, client, importId})
       const strengthenTime = prettyMs(Date.now() - strengthenStart, {verbose: true})
       spinner.text = `${spinner.text} (${strengthenTime})`
       spinner.succeed()
@@ -92,4 +124,34 @@ export default {
     const totalTime = prettyMs(Date.now() - importStartTime, {verbose: true})
     return output.print(`${chalk.green('All done!')} Spent ${totalTime}`)
   }
+}
+
+function getSanityClient(options) {
+  if (!options.gradient) {
+    return options.apiClient()
+  }
+
+  const config = options.apiClient({requireUser: false}).config()
+  return createClient(Object.assign({}, config, {
+    gradientMode: true,
+    apiHost: options.gradient,
+    token: options.token || config.token
+  }))
+}
+
+function getMutationOperation(flags) {
+  const {replace, missing} = flags
+  if (replace && missing) {
+    throw new Error('Cannot use both --replace and --missing')
+  }
+
+  if (flags.replace) {
+    return 'createOrReplace'
+  }
+
+  if (flags.missing) {
+    return 'createIfNotExists'
+  }
+
+  return 'create'
 }

@@ -10,15 +10,15 @@ export default (options, context) => new Promise((resolve, reject) => {
 
 function importDocumentsToDataset(options, context, promise) {
   const {resolve, reject} = promise
-  const {sourceFile, targetDataset, fromDataset, importId} = options
-  const {apiClient} = context
+  const {sourceFile, targetDataset, fromDataset, importId, client, operation} = options
 
   // Create stream that batches documents into transactions
   const mutationStream = batchedMutationStream({
-    apiClient,
+    client,
     preCommit,
     dataset: targetDataset,
     mutator: mutateDocument,
+    progress: options.progress
   })
 
   const startTime = Date.now()
@@ -42,7 +42,7 @@ function importDocumentsToDataset(options, context, promise) {
       batchState.referenceMaps.push(referenceMap)
     }
 
-    return transaction.createOrReplace(doc)
+    return transaction[operation](doc)
   }
 
   // Create a document that holds all the references we need to fix post-import

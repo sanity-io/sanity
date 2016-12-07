@@ -1,15 +1,16 @@
+import noop from 'lodash/noop'
 import sanityClient from '@sanity/client'
 import promiseEach from 'promise-each-concurrency'
 import debug from '../../debug'
 
 const importMapQuery = 'sanity.importmap[importId == $importId && _id != $prevImportMapId, limit: 1]'
 
-export default async function strengthenReferences(context, options) {
-  const {apiClient} = context
+export default async function strengthenReferences(options) {
   const {importId, dataset} = options
+  const progress = options.progress || noop
   const timeout = 45000
   const concurrency = 4
-  const client = sanityClient(Object.assign({}, apiClient().config(), {dataset, timeout}))
+  const client = sanityClient(Object.assign({}, options.client.config(), {dataset, timeout}))
   const getReferenceDoc = ({prevImportMapId}) =>
     client.fetch(importMapQuery, {importId, prevImportMapId}).then(docs => docs[0])
 
@@ -22,6 +23,8 @@ export default async function strengthenReferences(context, options) {
     debug('Deleting refmap with ID %s', referenceDoc._id)
     await client.delete(referenceDoc._id)
     referenceDoc = await getReferenceDoc({prevImportMapId: referenceDoc._id})
+
+    progress(referenceDoc.referenceMaps.length)
   }
 
   function unsetRefMapKeys(refMap) {
