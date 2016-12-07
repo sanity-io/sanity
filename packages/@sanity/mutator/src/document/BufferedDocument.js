@@ -114,7 +114,7 @@ export default class BufferedDocument {
         docResponder.failure()
         // Retry
         // TODO: Be able to _not_ retry if failure is permanent
-        setTimeout(() => this.cycleCommitter(), 1000)
+        setTimeout(() => this._cycleCommitter(), 1000)
       }
     }
     this.commitHandler({
