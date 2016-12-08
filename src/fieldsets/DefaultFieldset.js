@@ -8,13 +8,12 @@ export default function Fieldset(props) {
   const levelString = `level${level}`
   const rootClass = `
     ${styles.root}
-    ${columns ? styles[`columns${columns}`] : styles.columns1}
+    ${columns && styles[`columns${columns}`]}
     ${styles[levelString]}
     ${className}
   `
   return (
     <fieldset className={rootClass} data-nesting-level={props.level}>
-
       <div className={styles.inner}>
         <legend className={styles.legend}>{legend || fieldset.legend}</legend>
         {
@@ -24,7 +23,9 @@ export default function Fieldset(props) {
           </p>
         }
         <div className={styles.content}>
-          {props.children}
+          <div className={styles.fieldWrapper}>
+            {props.children}
+          </div>
         </div>
       </div>
     </fieldset>

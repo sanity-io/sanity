@@ -13,25 +13,54 @@
   }
 }
 
-.fieldWrapper {
+.inner > .content > .fieldWrapper > * {
   box-sizing: border-box;
   lost-column: none;
 
+  @nest &:not(:first-child) {
+    margin-top: var(--medium-padding);
+  }
+
   @media (--screen-medium) {
+    @nest &:not(:first-child) {
+      margin-top: 0;
+      margin-top: var(--medium-padding);
+    }
+
     @nest .columns4 & {
       lost-column: 1/4;
+
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+5) {
+        margin-top: var(--medium-padding);
+      }
     }
 
-    @nest .columns3 & {
+    @nest .columns3 > & {
       lost-column: 1/3;
+
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+4) {
+        margin-top: var(--medium-padding);
+      }
     }
 
-    @nest .columns2 & {
+    @nest .columns2 > & {
       lost-column: 1/2;
-    }
 
-    @nest .columns1 & {
-      lost-column: 1/1;
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+3) {
+        margin-top: var(--medium-padding);
+      }
     }
   }
 }
@@ -86,6 +115,10 @@
   display: block;
 }
 
+.legend + .content {
+  margin-top: var(--small-padding);
+}
+
 .legend {
   composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
   display: block;
@@ -93,38 +126,24 @@
   margin: 0;
   padding: 0;
 
-  /* Should compose heading3, but it is not allowed */
-
-  /*
-    @nest .root .root & {
-    font-size: var(--font-size-h3);
-    text-transform: none;
-    padding-top: var(--medium-padding);
-  }
-  */
-
   @nest .level1 & {
     font-size: var(--font-size-h4);
     text-transform: none;
-    padding-top: var(--medium-padding);
   }
 
   @nest .level2 & {
     font-size: var(--font-size-h4);
     text-transform: none;
-    padding-top: var(--medium-padding);
   }
 
   @nest .level3 & {
     font-size: var(--font-size-h4);
     text-transform: none;
-    padding-top: var(--medium-padding);
   }
 
   @nest .level4 & {
     font-size: var(--font-size-h4);
     text-transform: none;
-    padding-top: var(--medium-padding);
   }
 }
 
@@ -134,7 +153,9 @@
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin-bottom: 0;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: var(--small-padding);
   padding-bottom: 0;
 }
 

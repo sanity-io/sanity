@@ -1,6 +1,7 @@
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
+import DefaultTextField from 'part:@sanity/components/textfields/default'
 import Chance from 'chance'
 const chance = new Chance()
 
@@ -74,7 +75,7 @@ storiesOf('Fieldsets')
   `,
   () => {
     return (
-      <Fieldset legend="3 columns" columns="3" description={chance.paragraph()} level={0}>
+      <Fieldset legend="3 columns" columns={3} description={chance.paragraph()} level={0}>
         <FieldWrapper>
           <Fieldset legend="Test" description={chance.paragraph()} level={1} />
         </FieldWrapper>
@@ -194,6 +195,100 @@ storiesOf('Fieldsets')
       <Fieldset legend="Level 4" level={4}>
         This fieldset has no description
       </Fieldset>
+    )
+  },
+  {
+    propTables: [Fieldset],
+    role: 'part:@sanity/components/fieldsets/default'
+  }
+)
+.addWithInfo(
+  'Example',
+  `
+    A mix of fieldsets
+  `,
+  () => {
+    return (
+      <div style={{margin: '10px'}}>
+        <Fieldset legend="Level 0" >
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0" description="This is the desription" level={0}>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0 with 2 columns" description="This is the desription" level={0} columns={2}>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0 with 3 columns" description="This is the desription" level={0} columns={3}>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0 with 2 columns. No desriptions" level={0} columns={2}>
+          <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
+          <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
+          <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
+          <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0 with 3 columns. No desriptions" level={0} columns={3}>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
+        <Fieldset legend="Level 0 with 2 columns. No desriptions" level={0} columns={2}>
+          <DefaultTextField label="Content" level={1} />
+          <DefaultTextField label="Content" level={1} />
+          <DefaultTextField label="Content" level={1} />
+        </Fieldset>
+        <Fieldset legend="This is messy" level={0} columns={2} description="A real life example of how messy things can get">
+          <Fieldset legend="Level 1" level={1} description="This is someething with a description">
+            <DefaultTextField label="Content" level={1} />
+            <DefaultTextField label="Content" level={1} description="Descrption here" />
+          </Fieldset>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={1} />
+            <DefaultTextField label="Content" level={1} description="Test this one" />
+            <DefaultTextField label="Content" level={1} />
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+          <Fieldset legend="Level 1" level={1}>
+            <DefaultTextField label="Content" level={1} />
+          </Fieldset>
+        </Fieldset>
+      </div>
     )
   },
   {
