@@ -37,6 +37,7 @@ test('instance methods', t => {
     'map',
     'filter',
     'reduce',
+    'scan',
     'flatMap',
     'toPromise',
     'lift',
