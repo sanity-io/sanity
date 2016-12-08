@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
-import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 
 function createSetIfMissingPatch(field) {
   return {
@@ -89,11 +89,7 @@ export default class Obj extends React.PureComponent {
         columns={columns}
       >
         {fieldset.fields.map((field, fieldIndex) => {
-          return (
-            <FieldWrapper key={field.name}>
-              {this.renderField(field, level + 1, index + fieldIndex)}
-            </FieldWrapper>
-          )
+          return this.renderField(field, level + 1, index + fieldIndex)
         })}
       </Fieldset>
     )
