@@ -13,7 +13,7 @@ export default class ReferencePreview extends React.Component {
   };
 
   state = {
-    loading: false,
+    loading: true,
     materialized: null
   }
 
@@ -29,7 +29,6 @@ export default class ReferencePreview extends React.Component {
   materialize(value) {
     const {materializeReference} = this.props
     if (value && value._ref) {
-      this.setState({loading: true})
       materializeReference(value._ref)
         .then(materialized => {
           this.setState({materialized: materialized, loading: false})
