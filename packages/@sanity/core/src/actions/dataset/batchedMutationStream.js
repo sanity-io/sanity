@@ -6,9 +6,9 @@ import debug from '../../debug'
 
 export default function batchedMutationStream(options) {
   const {dataset, mutator, preCommit} = options
-  const timeout = 45000
-  const batchSize = options.batchSize || 75
-  const concurrency = options.concurrency || 3
+  const timeout = 605000
+  const batchSize = options.batchSize || 150
+  const concurrency = options.concurrency || 4
   const client = createClient(Object.assign({}, options.client.config(), {dataset, timeout}))
   const progress = options.progress || noop
 

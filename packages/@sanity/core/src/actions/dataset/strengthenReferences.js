@@ -8,8 +8,8 @@ const importMapQuery = 'sanity.importmap[importId == $importId && _id != $prevIm
 export default async function strengthenReferences(options) {
   const {importId, dataset} = options
   const progress = options.progress || noop
-  const timeout = 45000
-  const concurrency = 4
+  const timeout = 605000
+  const concurrency = 10
   const client = sanityClient(Object.assign({}, options.client.config(), {dataset, timeout}))
   const getReferenceDoc = ({prevImportMapId}) =>
     client.fetch(importMapQuery, {importId, prevImportMapId}).then(docs => docs[0])
