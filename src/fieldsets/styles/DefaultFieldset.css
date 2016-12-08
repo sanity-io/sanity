@@ -74,11 +74,15 @@
 }
 
 .content {
-  display: block;
   padding: var(--medium-padding);
   background-color: var(--gray-lighter);
   position: relative;
   lost-utility: clearfix;
+  display: none;
+
+  @nest &.isOpen {
+    display: block;
+  }
 
   & & {
     /* nested inside itself */
@@ -125,6 +129,8 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  user-select: none;
+  cursor: default;
 
   @nest .level1 & {
     font-size: var(--font-size-h4);
@@ -151,12 +157,42 @@
   margin-top: 1em;
 }
 
+.arrow {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  margin-right: 0.25em;
+  vertical-align: middle;
+  transition: transform 0.1s linear;
+  transform: rotate(-90deg);
+  margin-top: -0.1em;
+
+  @nest &.isOpen {
+    transform: rotate(0);
+  }
+
+  @nest & svg {
+    position: absolute;
+    transform: scale(1.2);
+  }
+}
+
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
   margin-top: 0;
   padding-top: 0;
   margin-bottom: var(--small-padding);
   padding-bottom: 0;
+  display: none;
+
+  @nest &.isOpen {
+    display: block;
+  }
 }
 
 .debugNestingLevel {

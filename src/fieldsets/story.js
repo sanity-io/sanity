@@ -69,6 +69,49 @@ storiesOf('Fieldsets')
 )
 
 .addWithInfo(
+  'Collapsable',
+  `
+    Fieldsets can be collapsed
+  `,
+  () => {
+    return (
+      <div>
+        <Fieldset collapsable legend="Noooo, pick me, pick me!" description={chance.sentence()} level={0}>
+          <DefaultTextField label="Content" level={1} />
+          <DefaultTextField label="Content" level={1} description="Test this one" />
+          <DefaultTextField label="Content" level={1} />
+          <DefaultTextField label="Content" level={1} />
+        </Fieldset>
+        <Fieldset legend="Fieldsets can be collapsed" description={chance.sentence()} level={0}>
+          <Fieldset collapsable legend="Open me" description={chance.sentence()} level={1}>
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} description="Test this one" />
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset collapsable legend="No, open me!" description={chance.sentence()} level={1}>
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} description="Test this one" />
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset collapsable legend="Noooo, pick me, pick me!" description={chance.sentence()} level={1}>
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} description="Test this one" />
+            <DefaultTextField label="Content" level={2} />
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
+      </div>
+    )
+  },
+  {
+    propTables: [Fieldset],
+    role: 'part:@sanity/components/fieldsets/default'
+  }
+)
+
+.addWithInfo(
   'Columns',
   `
     Columns are only supported when wrapping it in a fieldWrapper. This is used on object in form builder
