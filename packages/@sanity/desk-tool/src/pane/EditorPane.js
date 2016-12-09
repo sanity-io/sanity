@@ -7,9 +7,10 @@ import FormBuilder from 'part:@sanity/form-builder'
 import {unprefixType} from '../utils/unprefixType'
 import dataAspects from '../utils/dataAspects'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import {debounce} from 'lodash'
 
 import styles from './styles/EditorPane.css'
-import * as convertPatch from '../utils/convertPatch'
+import {Patcher} from '@sanity/mutator'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -38,66 +39,65 @@ export default class EditorPane extends React.PureComponent {
     typeName: PropTypes.string
   };
 
-  constructor(props, ...rest) {
-    super(props, ...rest)
+  subscriptions = [];
 
-    this.state = {
-      value: FormBuilder.createEmpty(props.typeName),
-      progress: null
-    }
-
-    this.handleChange = this.handleChange.bind(this)
-    this.handleIncomingPatch = this.handleIncomingPatch.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
-    this.subscriptions = []
+  state = {
+    loading: true,
+    spin: false,
+    progress: {kind: 'info', message: 'Loading'}
   }
 
   setupSubscriptions(props) {
     this.tearDownSubscriptions()
-    const {documentId, typeName} = props
+    const {documentId} = props
 
-    this.setState({
-      value: FormBuilder.createEmpty(typeName)
+    this.document = documentStore.checkout(documentId)
+
+    const documentEvents = this.document.events.subscribe({
+      next: this.handleDocumentEvent,
+      error: this.handleDocumentError
     })
 
-    const byId = documentStore.byId(documentId)
+    this.subscriptions = [documentEvents]
+  }
 
-    const initialSubscription = byId
-      .filter(event => event.type === 'snapshot')
-      .subscribe(event => {
+  handleDocumentError = error => {
+    this.setState({progress: {kind: 'error', message: error.message}})
+  }
+
+  handleDocumentEvent = event => {
+    const {typeName} = this.props
+
+    switch (event.type) {
+      case 'snapshot': {
+        this.setState({
+          loading: false,
+          progress: null,
+          value: createFormBuilderStateFrom(event.document, typeName)
+        })
+        break
+      }
+      case 'rebase': {
         this.setState({
           value: createFormBuilderStateFrom(event.document, typeName)
         })
-        initialSubscription.unsubscribe()
-      })
-
-    const updateSubscription = byId
-      .filter(event => {
-        return event.type === 'mutation'
-                && event.origin !== 'server' // skip events from server for now
-      })
-      .subscribe(event => {
-        this.handleIncomingPatch(event.patch)
-      })
-
-    const deleteSubscription = byId
-      .filter(event => event.type === 'delete')
-      .subscribe(event => {
-        this.handleIncomingDelete(event)
-      })
-
-    this.subscriptions = [
-      initialSubscription,
-      updateSubscription,
-      deleteSubscription
-    ]
+        break
+      }
+      case 'mutate': {
+        this.handleIncomingMutation(event.mutations)
+        break
+      }
+      default: {
+        console.log('Unhandled document event type "%s"', event.type, event)
+      }
+    }
   }
 
   tearDownSubscriptions() {
     this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.setupSubscriptions(this.props)
   }
 
@@ -111,69 +111,88 @@ export default class EditorPane extends React.PureComponent {
     }
   }
 
-  handleChange(event) {
-    const id = this.props.documentId
+  handleIncomingMutation(mutations) {
+    const patches = mutations
+      .filter(mut => 'patch' in mut)
+      .map(mut => mut.patch)
 
-    if (event.patch.local) {
-      this.setState({value: this.state.value.patch(event.patch)})
-      return
-    }
-    this.update(id, event.patch)
-  }
-
-  handleDelete() {
-    const id = this.props.documentId
-    this.setState({progress: 'Deleting…'})
-
-    this.subscriptions.push(
-      documentStore
-        .delete(id)
-        .subscribe(result => this.setState({progress: null}))
-    )
-  }
-
-  update(id, patch) {
-    this.setState({progress: 'Saving…'})
-    return documentStore
-      .update(id, convertPatch.toGradient(patch))
-      .subscribe(result => {
-        this.setState({progress: null})
-      })
-  }
-
-  handleIncomingPatch(patch) {
-    const formBuilderPatches = convertPatch.toFormBuilder(patch)
     let nextValue = this.state.value
-    formBuilderPatches.forEach(fbPatch => {
-      nextValue = nextValue.patch(fbPatch)
+    patches.forEach(patch => {
+      nextValue = new Patcher(patch).applyViaAccessor(nextValue)
     })
     this.setState({value: nextValue})
   }
+
 
   handleIncomingDelete(event) {
     const {router} = this.context
     router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
 
-  render() {
-    const {value, progress, validation} = this.state
+  commit = debounce(() => {
+    this.setState({spin: true, progress: null})
+    this.document.commit().subscribe({
+      next: () => {
+        this.setState({progress: {kind: 'success', message: 'Saved…'}})
+      },
+      error: err => {
+        setTimeout(this.commit, 1000)
+        this.setState({progress: {kind: 'error', message: `Save failed ${err.message}`}})
+      },
+      complete: () => {
+        this.setState({spin: false})
+      }
+    })
+  }, 1000)
 
-    const titleProp = dataAspects.getItemDisplayField(value.getFieldValue('_type'))
+  handleChange = event => {
+    this.document
+      .patch(event.patches)
+    this.commit()
+  }
+
+  handleDelete = () => {
+    const id = this.props.documentId
+    this.setState({progress: {kind: 'info', message: 'Deleting…'}})
+
+    this.subscriptions.push(
+      documentStore
+        .delete(id)
+        .subscribe(result => {
+          this.setState({progress: {kind: 'success', message: 'Deleted…'}})
+        })
+    )
+  }
+
+  render() {
+    const {value, loading, spin, progress, validation} = this.state
+    const {typeName} = this.props
+
+    const titleProp = dataAspects.getItemDisplayField(typeName)
+
+    if (loading) {
+      return (
+        <div className={styles.root}>
+          <div className={styles.spinner}>
+            <Spinner />
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className={styles.root}>
-
         {
           // Test for the snackbar. Needs a messaging system
-          !progress && <Snackbar kind="success">Saved</Snackbar>
+          progress && <Snackbar kind={progress.kind}>{progress.message}</Snackbar>
         }
 
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {value.getFieldValue(titleProp).serialize() || 'Untitled…'}
+            {value.getAttribute(titleProp).serialize() || 'Untitled…'}
           </h1>
 
-          <div className={progress ? styles.spinner : styles.spinnerInactive}>
+          <div className={spin ? styles.spinner : styles.spinnerInactive}>
             <Spinner />
           </div>
 
