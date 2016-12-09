@@ -1,6 +1,6 @@
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import Fieldset, {FieldWrapper} from 'part:@sanity/components/fieldsets/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
 import Chance from 'chance'
 const chance = new Chance()
@@ -114,20 +114,14 @@ storiesOf('Fieldsets')
 .addWithInfo(
   'Columns',
   `
-    Columns are only supported when wrapping it in a fieldWrapper. This is used on object in form builder
+    Columns
   `,
   () => {
     return (
       <Fieldset legend="3 columns" columns={3} description={chance.paragraph()} level={0}>
-        <FieldWrapper>
-          <Fieldset legend="Test" description={chance.paragraph()} level={1} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Fieldset legend="Test 2" description={chance.paragraph()} level={1} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Fieldset legend="Test 3" description={chance.paragraph()} level={1} />
-        </FieldWrapper>
+        <Fieldset legend="Test" description={chance.paragraph()} level={1} />
+        <Fieldset legend="Test 2" description={chance.paragraph()} level={1} />
+        <Fieldset legend="Test 3" description={chance.paragraph()} level={1} />
       </Fieldset>
     )
   },
@@ -263,6 +257,17 @@ storiesOf('Fieldsets')
             <DefaultTextField label="Content" level={2} />
           </Fieldset>
         </Fieldset>
+        <Fieldset collapsable legend="Collapsable Level 0" level={0}>
+          <DefaultTextField label="Content" level={1} />
+        </Fieldset>
+        <Fieldset collapsable legend="Collapsable Level 0, 2 columns" level={0} columns={2}>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+          <Fieldset legend="Level 1" description="This is the desription" level={1}>
+            <DefaultTextField label="Content" level={2} />
+          </Fieldset>
+        </Fieldset>
         <Fieldset legend="Level 0 with 2 columns" description="This is the desription" level={0} columns={2}>
           <Fieldset legend="Level 1" description="This is the desription" level={1}>
             <DefaultTextField label="Content" level={2} />
@@ -297,6 +302,14 @@ storiesOf('Fieldsets')
           <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
           <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
         </Fieldset>
+
+        <Fieldset legend="Level 0 with 2 columns. Collapsable" level={0} columns={2}>
+          <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+          <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+          <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+          <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+        </Fieldset>
+
         <Fieldset legend="Level 0 with 3 columns. No desriptions" level={0} columns={3}>
           <Fieldset legend="Level 1" level={1}>
             <DefaultTextField label="Content" level={2} />
