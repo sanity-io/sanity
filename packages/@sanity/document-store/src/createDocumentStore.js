@@ -85,9 +85,7 @@ function createBufferedDocument(documentId, server) {
         bufferedDocumentReady.promise.then(addMutations)
       }
       function addMutations(bufferedDocument) {
-        mutations.forEach(mutation =>
-          bufferedDocument.add(new Mutation({mutations: mutations}))
-        )
+        bufferedDocument.add(new Mutation({mutations: mutations}))
       }
     },
     commit() {
