@@ -1,11 +1,13 @@
 import path from 'path'
 import prettyMs from 'pretty-ms'
+import progrescii from 'progrescii'
+import linecount from 'linecount/promise'
+import createClient from '@sanity/client'
 import debug from '../../debug'
 import generateGuid from '../../util/generateGuid'
 import readFirstLine from '../../util/readFirstLine'
 import strengthenReferences from '../../actions/dataset/strengthenReferences'
 import importDocumentsToDataset from '../../actions/dataset/importDocumentsToDataset'
-import createClient from '@sanity/client'
 
 export default {
   name: 'import',
@@ -51,6 +53,9 @@ export default {
       )
     }
 
+    const documentCount = await linecount(sourceFile)
+
+    debug(`Found ${documentCount} lines in source file`)
     debug(`Target dataset has been resolved to "${targetDataset}"`)
     debug(`IDs ${rewriteDataset ? 'needs' : 'do not need'} to be rewritten`)
 
@@ -72,30 +77,34 @@ export default {
     }
 
     // Import documents to the target dataset
-    let batchNumber = 0
-    const baseImportText = 'Importing documents to dataset'
-    spinner = output.spinner(baseImportText).start()
+    const batchSize = 150
+    const progress = progrescii.create({
+      total: documentCount,
+      template: `${chalk.yellow('●')} Importing documents :b :p% in :ts`
+    })
 
-    const importProgress = () => {
-      spinner.text = `${baseImportText} (batch #${++batchNumber})`
-    }
+    const progressTicker = setInterval(() => progress.render(), 60)
 
     try {
-      const importResult = await importDocumentsToDataset({
+      await importDocumentsToDataset({
         sourceFile,
         targetDataset,
         fromDataset,
         importId,
         operation,
+        batchSize,
         client,
-        progress: importProgress
-      }, context)
+        progress: () => {
+          if (progress.progress + batchSize >= documentCount) {
+            progress.template = `${chalk.green('✔')} Importing documents :b :p% in :ts`
+          }
 
-      const time = prettyMs(importResult.timeSpent, {verbose: true})
-      spinner.text = `${baseImportText} (${time})`
-      spinner.succeed()
+          progress.step(batchSize)
+        }
+      }, context)
+      clearInterval(progressTicker)
     } catch (err) {
-      spinner.fail()
+      clearInterval(progressTicker)
       return output.error(err)
     }
 

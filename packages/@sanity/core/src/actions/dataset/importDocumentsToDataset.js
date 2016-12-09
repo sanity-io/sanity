@@ -18,7 +18,8 @@ function importDocumentsToDataset(options, context, promise) {
     preCommit,
     dataset: targetDataset,
     mutator: mutateDocument,
-    progress: options.progress
+    progress: options.progress,
+    batchSize: options.batchSize
   })
 
   const startTime = Date.now()
