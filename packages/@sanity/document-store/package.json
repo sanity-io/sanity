@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-store",
-  "version": "0.2.0-mutator.0",
+  "version": "0.2.0-mutator.1",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
