@@ -161,9 +161,9 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/mutator@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.0.12.tgz#e0e256ab4c2651a2a6f3519f486cd9db7691e82d"
+"@sanity/mutator@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.5.tgz#6c16edd0e5a90e754cdb621e412969535a3dabaa"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
