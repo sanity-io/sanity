@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.0.61",
+  "version": "0.1.0-mutator.0",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -21,10 +21,14 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/imagetool": "^0.2.2",
+    "@sanity/mutator": "^0.1.5",
+    "arrify": "^1.0.1",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.2.0",
     "exif-component": "^1.0.1",
+    "get-random-values": "^1.2.0",
     "get-window": "^1.1.1",
+    "immutable": "^3.8.1",
     "is-empty": "^1.0.0",
     "lodash": "^4.16.6",
     "object-inspect": "^1.2.1",

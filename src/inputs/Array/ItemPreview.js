@@ -16,7 +16,6 @@ export default class ItemPreview extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    index: PropTypes.number.isRequired,
     value: PropTypes.any,
     onEdit: PropTypes.func,
     onRemove: PropTypes.func
@@ -31,8 +30,8 @@ export default class ItemPreview extends React.Component {
   }
 
   handleEdit() {
-    const {index, onEdit} = this.props
-    onEdit(index)
+    const {value, onEdit} = this.props
+    onEdit(value)
   }
 
   toggleEdit() {
@@ -40,10 +39,10 @@ export default class ItemPreview extends React.Component {
   }
 
   handleRemove(event) {
-    const {index, onRemove} = this.props
     event.stopPropagation()
     event.preventDefault()
-    onRemove(index)
+    const {value, onRemove} = this.props
+    onRemove(value)
   }
   handleMouseDown(event) {
     event.stopPropagation()

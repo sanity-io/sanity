@@ -3,13 +3,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-
-function createSetIfMissingPatch(field) {
-  return {
-    type: 'setIfMissing',
-    value: field.type === 'object' ? {} : {_type: field.type}
-  }
-}
+import arrify from 'arrify'
 
 export default class Obj extends React.PureComponent {
   static displayName = 'Object'
@@ -40,17 +34,15 @@ export default class Obj extends React.PureComponent {
   };
 
   handleFieldChange = (event, fieldName) => {
-    const {onChange, field, isRoot} = this.props
-    if (!isRoot) {
-      onChange({patch: createSetIfMissingPatch(field)})
-    }
+    const {onChange} = this.props
 
-    onChange({
-      patch: {
-        ...event.patch,
-        path: [fieldName, ...(event.patch.path || [])]
+    const patches = arrify(event.patch).map(patch => {
+      return {
+        ...patch,
+        path: [fieldName, ...(patch.path || [])]
       }
     })
+    onChange({patch: patches})
   }
 
   handleFieldEnter = (event, fieldName) => {
@@ -61,7 +53,7 @@ export default class Obj extends React.PureComponent {
     const {value, focus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getFieldValue(field.name)
+    const fieldValue = value.getAttribute(field.name)
 
     return (
       <RenderField

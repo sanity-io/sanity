@@ -12,6 +12,9 @@ import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc'
 import styles from './styles/Array.css'
+import arrify from 'arrify'
+import {getFieldType} from '../../schema/getFieldType'
+import randomKey from './randomKey'
 
 const SortableDefaultList = SortableContainer(DefaultList)
 
@@ -22,6 +25,22 @@ const SortableItem = SortableElement(props => {
     </div>
   )
 })
+
+function createProtoValue(schema, field) {
+  const type = getFieldType(schema, field)
+  if (field.type === 'object') {
+    return {
+      _key: randomKey(12)
+    }
+  }
+  if (type.type !== 'object') {
+    throw new Error(`Invalid item type: "${type.type}" Default array input can only handle object types (for now)`)
+  }
+  return {
+    _type: type.name,
+    _key: randomKey(12)
+  }
+}
 
 export default class Arr extends React.Component {
   static displayName = 'Array';
@@ -46,38 +65,42 @@ export default class Arr extends React.Component {
 
   state = {
     addItemField: null,
-    editIndex: -1
+    editItemKey: null
   };
 
   handleAddBtnClick = () => {
-    if (this.props.type.of.length > 1) {
+    const {type, value} = this.props
+    if (type.of.length > 1) {
       this.setState({selectType: true})
       return
     }
 
-    this.append(this.createValueForField(this.props.type.of[0]))
+    const item = createProtoValue(value.context.schema, type.of[0])
+
+    this.append(item)
 
     this.setState({
       selectType: false,
-      editIndex: this.props.value.length
+      editItemKey: item._key
     })
   }
 
   insert(itemValue, position, atIndex) {
     const {onChange} = this.props
     onChange({
-      patch: {
-        type: 'setIfMissing',
-        value: [itemValue]
-      }
-    })
-    onChange({
-      patch: {
-        path: [atIndex],
-        type: 'insert',
-        position: position,
-        items: [itemValue]
-      }
+      patch: [
+        {
+          path: [atIndex],
+          type: 'insert',
+          position: position,
+          items: [itemValue]
+        },
+        {
+          path: [],
+          type: 'setIfMissing',
+          value: [itemValue]
+        }
+      ]
     })
   }
 
@@ -89,33 +112,32 @@ export default class Arr extends React.Component {
     this.insert(value, 'after', -1)
   }
 
-  createValueForField(field) {
-    return {_type: field.type}
-  }
-
-  handleRemoveItem = index => {
-    if (index === this.state.editIndex) {
-      this.setState({editIndex: -1})
-    }
+  handleRemoveItem = item => {
+    const {onChange} = this.props
     const patch = {
       type: 'unset',
-      path: [index]
+      path: [{_key: item.key}]
     }
-    this.props.onChange({patch})
+    if (item.key === this.state.editItemKey) {
+      this.setState({editItemKey: null})
+    }
+    onChange({patch})
   }
 
   handleClose = () => {
-    const {editIndex} = this.state
-    const itemValue = this.props.value.at(editIndex)
+    const {editItemKey} = this.state
+    const itemValue = this.props.value.byKey(editItemKey)
     if (itemValue.isEmpty()) {
-      this.handleRemoveItem(editIndex)
+      this.handleRemoveItem(itemValue)
     }
-    this.setState({editIndex: -1})
+    this.setState({editItemKey: null})
   }
 
   handleDropDownAction = menuItem => {
-    this.setState({editIndex: this.props.value.length})
-    this.append(this.createValueForField(menuItem.field))
+    const {value} = this.props
+    const item = createProtoValue(value.context.schema, menuItem.field)
+    this.setState({editItemKey: item._key})
+    this.append(item)
   }
 
   renderSelectType() {
@@ -136,19 +158,22 @@ export default class Arr extends React.Component {
     )
   }
 
-  handleItemChange = (event, index) => {
+  handleItemChange = (event, item) => {
     const {onChange} = this.props
+
+    const itemTarget = item.key ? {_key: item.key} : this.value.indexOf(item)
     // Rewrite patch by prepending the item index to its path
-    onChange({
-      patch: {
-        ...event.patch,
-        path: [index, ...(event.patch.path || [])]
+    const patches = arrify(event.patch).map(patch => {
+      return {
+        ...patch,
+        path: [itemTarget, ...(patch.path || [])]
       }
     })
+    onChange({patch: patches})
   }
 
-  handleItemEdit = index => {
-    this.setState({editIndex: index})
+  handleItemEdit = item => {
+    this.setState({editItemKey: item.key})
   }
 
   handleMove = event => {
@@ -161,17 +186,17 @@ export default class Arr extends React.Component {
   }
 
   handleItemEnter = () => {
-    this.setState({editIndex: -1})
+    this.setState({editItemKey: null})
   }
 
-  renderEditItemForm(index) {
-    const itemValue = this.props.value.at(index)
+  renderEditItemForm(key) {
+    const itemValue = this.props.value.byKey(key)
     const itemField = this.getItemField(itemValue)
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
-          index={index}
+          itemKey={key}
           field={itemField}
           level={this.props.level + 1}
           value={itemValue}
@@ -190,7 +215,7 @@ export default class Arr extends React.Component {
 
   renderItem = (item, index) => {
     const {type} = this.props
-    const {editIndex} = this.state
+    const {editItemKey} = this.state
     const itemField = this.getItemField(item)
     if (!itemField) {
       return (
@@ -202,15 +227,14 @@ export default class Arr extends React.Component {
     }
 
     return (
-      <SortableItem key={index} disabled={editIndex > 0} index={index}>
+      <SortableItem key={item.key} disabled={Boolean(editItemKey)} index={index}>
         <ItemPreview
-          index={index}
           field={itemField}
           value={item}
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
         />
-        {editIndex === index && this.renderEditItemForm(editIndex)}
+        {editItemKey === item.key && this.renderEditItemForm(editItemKey)}
       </SortableItem>
     )
   }

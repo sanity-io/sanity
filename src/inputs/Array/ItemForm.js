@@ -4,16 +4,8 @@ import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
 
 export default class ItemForm extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleRemove = this.handleRemove.bind(this)
-    this.handleEnter = this.handleEnter.bind(this)
-  }
-
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    index: PropTypes.number.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
     focus: PropTypes.bool,
@@ -30,19 +22,14 @@ export default class ItemForm extends React.Component {
     return !equals(nextProps, this.props)
   }
 
-  handleChange(event) {
-    const {index, onChange} = this.props
-    onChange(event, index)
-  }
-
-  handleRemove() {
-    const {index, onRemove} = this.props
-    onRemove(index)
+  handleChange = event => {
+    const {value, onChange} = this.props
+    onChange(event, value)
   }
 
   handleEnter() {
-    const {index, onEnter} = this.props
-    onEnter(index)
+    const {value, onEnter} = this.props
+    onEnter(value)
   }
 
   resolveInputComponent(field, fieldType) {

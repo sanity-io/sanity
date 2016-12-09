@@ -59,13 +59,13 @@ export default class ImageInput extends React.PureComponent {
 
   componentDidMount() {
     const {value} = this.props
-    const imageReference = value.getFieldValue('asset')
+    const imageReference = value.getAttribute('asset')
     this.materializeImageRef(imageReference)
   }
 
   componentWillReceiveProps(nextProps) {
-    const nextRef = nextProps.value.getFieldValue('asset')
-    if (this.props.value.getFieldValue('asset') !== nextRef) {
+    const nextRef = nextProps.value.getAttribute('asset')
+    if (this.props.value.getAttribute('asset') !== nextRef) {
       this.cancel()
       this.materializeImageRef(nextRef)
     }
@@ -227,8 +227,8 @@ export default class ImageInput extends React.PureComponent {
 
   renderImageTool() {
     const {value} = this.props
-    const hotspot = value.getFieldValue('hotspot').toJSON() || DEFAULT_HOTSPOT
-    const crop = value.getFieldValue('crop').toJSON() || DEFAULT_CROP
+    const hotspot = value.getAttribute('hotspot').toJSON() || DEFAULT_HOTSPOT
+    const crop = value.getAttribute('crop').toJSON() || DEFAULT_CROP
 
     const {uploadingImage, materializedImage} = this.state
 
@@ -273,7 +273,7 @@ export default class ImageInput extends React.PureComponent {
     const {value, validation, level} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getFieldValue(field.name)
+    const fieldValue = value.getAttribute(field.name)
 
     return (
       <RenderField

@@ -1,19 +1,13 @@
-import applySimplePatch from '../utils/patching/primitive'
-
-export default class DefaultContainer {
+export default class PrimitiveValueContainer {
   static passSerialized = true;
 
   static deserialize(rawValue, context) {
-    return new DefaultContainer(rawValue, context)
+    return new PrimitiveValueContainer(rawValue, context)
   }
 
   constructor(value, context) {
     this.value = value
     this.context = context
-  }
-
-  patch(patch) {
-    return new DefaultContainer(applySimplePatch(this.value, patch), this.context)
   }
 
   validate() {
@@ -31,10 +25,19 @@ export default class DefaultContainer {
   }
 
   isEmpty() {
-    return this.value === undefined
+    return typeof this.value === 'undefined'
   }
 
   toJSON() {
     return this.serialize()
   }
+
+  containerType() {
+    return 'primitive'
+  }
+
+  get() {
+    return this.value
+  }
+
 }

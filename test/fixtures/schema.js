@@ -2,21 +2,29 @@ export default {
   name: 'test-schema',
   types: [
     {
-      name: 'simple',
+      name: 'user',
       type: 'object',
       fields: [
         {
-          name: 'someString',
+          name: 'name',
           type: 'string'
         },
-        {name: 'someLatLon', type: 'latlon'},
-        {name: 'home', type: 'homeAddress'}
+        {
+          name: 'addresses',
+          type: 'array',
+          of: [
+            {
+              type: 'address'
+            }
+          ]
+        }
       ]
     },
     {
-      name: 'homeAddress',
+      name: 'address',
       type: 'object',
       fields: [
+        {name: 'street', type: 'string'},
         {name: 'zip', type: 'string'},
         {name: 'location', type: 'latlon'}
       ]

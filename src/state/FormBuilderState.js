@@ -1,4 +1,4 @@
-import DefaultContainer from './DefaultContainer'
+import PrimitiveValueContainer from './PrimitiveValueContainer'
 import {getFieldType} from '../schema/getFieldType'
 import inspect from 'object-inspect'
 
@@ -20,7 +20,7 @@ export function createFieldValue(value, context) {
     throw error
   }
 
-  const ResolvedContainer = (ResolvedInput && ResolvedInput.valueContainer) || DefaultContainer
+  const ResolvedContainer = (ResolvedInput && ResolvedInput.valueContainer) || PrimitiveValueContainer
 
   return ResolvedContainer.deserialize(value, context)
 }

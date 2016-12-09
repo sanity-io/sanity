@@ -4,7 +4,7 @@ import {Raw, Block, Document, State, Character, Mark, Text, Inline} from 'slate'
 import {createFieldValue} from '../../../state/FormBuilderState'
 import {SLATE_TEXT_BLOCKS, SLATE_LIST_BLOCKS, SLATE_DEFAULT_NODE, SLATE_BLOCK_FORMATTING_OPTION_KEYS} from '../constants'
 
-const DESERIALIZE = {
+export const DESERIALIZE = {
   textBlock(para, context = {}) {
     return Block.create({
       type: para._type,

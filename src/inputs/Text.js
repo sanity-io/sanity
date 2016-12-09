@@ -1,11 +1,10 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import equals from 'shallow-equals'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import {uniqueId} from 'lodash'
 
-export default class Text extends React.Component {
+export default class Text extends React.PureComponent {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
@@ -22,10 +21,7 @@ export default class Text extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
+    this.inputId = uniqueId('FormBuilderText')
   }
 
   handleChange(e) {
@@ -33,14 +29,12 @@ export default class Text extends React.Component {
     this.props.onChange({patch: {type: 'set', path: [], value: val}})
   }
 
-
   render() {
     const {value, field, level} = this.props
-    const inputId = uniqueId('FormBuilderText')
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level} description={field.description}>
+      <FormField label={field.title} labelHtmlFor={this.inputId} level={level} description={field.description}>
         <TextArea
-          id={inputId}
+          id={this.inputId}
           placeholder={field.placeholder}
           onChange={this.handleChange}
           rows={field.rows}

@@ -1,5 +1,4 @@
 import assert from 'assert'
-import isEmpty from 'is-empty'
 import {
   SLATE_LIST_ITEM_TYPE,
   SLATE_TEXT_BLOCKS,
@@ -9,7 +8,7 @@ import {
 
 import {pick} from 'lodash'
 
-const SERIALIZE = {
+export const SERIALIZE = {
   block(block, context = {}) {
     if (SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE).includes(block.type)) {
       return SERIALIZE.textBlock(block, block.nodes, context)

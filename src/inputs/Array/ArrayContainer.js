@@ -1,7 +1,25 @@
 import {createFieldValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
 import {resolveJSType} from '../../schema/types/utils'
-import applyArrayPatch from '../../utils/patching/array'
+import assert from 'assert'
+
+function resolveItemType(item) {
+  return (item && item._type) || resolveJSType(item)
+}
+
+function wrapItemValue(item, context) {
+  const itemType = resolveItemType(item)
+  const fieldType = getFieldType(context.schema, context.field)
+
+  // find type in of
+  const fieldDef = fieldType.of.find(ofType => ofType.type === itemType)
+
+  return createFieldValue(item, {
+    field: fieldDef,
+    schema: context.schema,
+    resolveInputComponent: context.resolveInputComponent
+  })
+}
 
 export default class ArrayContainer {
 
@@ -10,23 +28,9 @@ export default class ArrayContainer {
       return new ArrayContainer([], context)
     }
 
-    const {field, schema, resolveInputComponent} = context
+    const deserialized = serializedArray.map(item => wrapItemValue(item, context))
 
-    const type = getFieldType(schema, field)
-
-    const deserialized = serializedArray.map(item => {
-      const itemType = (item && item._type) || resolveJSType(item)
-
-      // find type in of
-      const fieldDef = type.of.find(ofType => ofType.type === itemType)
-
-      return createFieldValue(item, {field: fieldDef, schema, resolveInputComponent})
-    })
     return new ArrayContainer(deserialized, context)
-  }
-
-  get length() {
-    return this.value.length
   }
 
   constructor(value, context) {
@@ -34,8 +38,12 @@ export default class ArrayContainer {
     this.value = value
   }
 
+  byKey(key) {
+    return this.value.find(val => val.key === key)
+  }
+
   at(index) {
-    return this.value[index]
+    return this.getIndex(index)
   }
 
   indexOf(value) {
@@ -66,36 +74,79 @@ export default class ArrayContainer {
     return result
   }
 
-  getFieldDef(typeName) {
-    return this.context.field.of.find(ofField => ofField.type === typeName)
-  }
-
-  patch(patch) {
-    const {context} = this
-    const nextValue = applyArrayPatch(this.value, patch, {
-      applyItemPatch: (item, itemPatch) => item.patch(itemPatch),
-      createItem: item => {
-        const fieldDef = this.getFieldDef(item._type)
-        return createFieldValue(item, {
-          ...context,
-          field: fieldDef
-        })
-      }
-    })
-    return new ArrayContainer(nextValue, this.context)
-  }
-
-  serialize() {
-    return this.value.length === 0
-      ? undefined
-      : this.map(val => val.serialize())
-  }
-
-  isEmpty() {
-    return this.value.every(value => value.isEmpty())
-  }
-
   toJSON() {
     return this.serialize()
   }
+
+  serialize() {
+    if (this.value.length === 0) {
+      return undefined
+    }
+    return this.map(item => {
+      const itemVal = item.serialize()
+      if (item.containerType() === 'object' && item.key) {
+        return Object.assign({}, itemVal, {_key: item.key})
+      }
+      return itemVal
+    })
+  }
+
+  isEmpty() {
+    return this.value.every(item => item.isEmpty())
+  }
+
+  // Accessor methods
+  containerType() {
+    return 'array'
+  }
+
+  setIndex(index, item) {
+    const nextValue = this.value.slice()
+    nextValue[index] = wrapItemValue(item, this.context)
+    return new ArrayContainer(nextValue, this.context)
+  }
+
+  setIndexAccessor(index, accessor) {
+    const nextValue = this.value.slice()
+    nextValue[index] = accessor
+    return new ArrayContainer(nextValue, this.context)
+  }
+
+  unsetIndices(indices) {
+    if (indices.length === 0) {
+      return this
+    }
+    const nextValue = this.value.filter((_ignore, index) => !indices.includes(index))
+    return new ArrayContainer(nextValue, this.context)
+  }
+
+  insertItemsAt(pos, items) {
+    const {value, context} = this
+    assert(pos >= 0 && pos <= value.length, `Array position "${pos}" is out of bounds: [0, ${value.length}]`)
+
+    const wrappedItems = items.map(item => wrapItemValue(item, context))
+
+    if (value.length === 0) {
+      return new ArrayContainer(wrappedItems, context)
+    }
+
+    return new ArrayContainer(value.slice(0, pos).concat(wrappedItems).concat(value.slice(pos)), context)
+  }
+
+  length() {
+    return this.value.length
+  }
+
+  getIndex(index) {
+    return this.value[index]
+  }
+
+  set(nextValue) {
+    return ArrayContainer.deserialize(nextValue, this.context)
+  }
+
+  get() {
+    return this.serialize()
+  }
+
 }

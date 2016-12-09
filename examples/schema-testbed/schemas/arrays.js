@@ -43,7 +43,7 @@ export default {
       ]
     },
     {
-      name: 'pokemon',
+      name: 'cars',
       type: 'object',
       fields: [
         {
@@ -69,6 +69,22 @@ export default {
           of: [{
             type: 'car'
           }]
+        },
+        {
+          name: 'mixed',
+          type: 'array',
+          title: 'Mixed array',
+          description: 'This array are defined in the field.',
+          of: [
+            {
+              type: 'string',
+              title: 'String'
+            },
+            {
+              type: 'car',
+              title: 'Car'
+            }
+          ]
         },
         {
           name: 'carGrid',

@@ -14,21 +14,6 @@ function withDefaultFallback(fn, defaultFn) {
   }
 }
 
-function logPatch(onChange) {
-  return event => {
-    const {patch} = event
-    console.info( // eslint-disable-line no-console
-      '%c%s%c %s => %o',
-      'color:#2097ac',
-      patch.type,
-      'color:inherit',
-      patch.path.join('.'),
-      patch.value
-    )
-    onChange(event)
-  }
-}
-
 export default function createFormBuilder(config = {}) {
   const {schema} = config
   const resolveInputComponent = withDefaultFallback(config.resolveInputComponent, defaultConfig.resolveInputComponent)
@@ -101,7 +86,7 @@ export default function createFormBuilder(config = {}) {
     render() {
       const {value, onChange} = this.props
       return (
-        <FormBuilderInner value={value} onChange={logPatch(onChange)} />
+        <FormBuilderInner value={value} onChange={onChange} />
       )
     }
   }

@@ -1,6 +1,5 @@
 import React from 'react'
 import styles from './styles/SchemaForm.css'
-import {bindAll} from 'lodash'
 import Header from './Header'
 import Inspector from './Inspector'
 import {save, restore} from '../lib/persist'
@@ -15,7 +14,10 @@ import MyCustomImageInput from './custom/MyCustomImageInput'
 import MyCustomFileInput from './custom/MyCustomFileInput'
 import MyCustomReferencePreview from './custom/MyCustomReferencePreview'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
+import toGradientPatch from '../../../src/sanity/utils/toGradientPatch'
 import resolveReferenceInput from './custom/resolveReferenceInput'
+import arrify from 'arrify'
+import {arrayToJSONMatchPath, Patcher} from '@sanity/mutator'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -23,6 +25,17 @@ const params = parseParams(document.location.pathname)
 const schema = params.schemaName && params.typeName && Schema.compile(sourceSchemas[params.schemaName])
 
 const PERSISTKEY = `form-builder-value-${params.schemaName}-${params.typeName}`
+
+function logPatch(patch) {
+  console.info( // eslint-disable-line no-console
+    '%c%s%c %s => %o',
+    'color:#2097ac',
+    patch.type,
+    'color:inherit',
+    arrayToJSONMatchPath(patch.path),
+    patch.value
+  )
+}
 
 const FormBuilder = schema && createFormBuilder({
   schema: schema,
@@ -59,25 +72,24 @@ const FormBuilder = schema && createFormBuilder({
 })
 
 export default class Main extends React.Component {
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      inspect: false,
-      value: FormBuilder.createEmpty(params.typeName),
-      saved: false
-    }
-    bindAll(this, [
-      'handleDispatchCommand',
-      'handleChange',
-      'CommandButton'
-    ])
+  state = {
+    inspect: false,
+    value: FormBuilder.createEmpty(params.typeName),
+    saved: false
   }
 
-  handleChange(event) {
+  handleChange = event => {
     const {patch} = event
-    //console.log('%c%s%c %s:', 'color:red', patch.type, 'color:inherit', patch.path.join('.'), patch.value)
+
+    let pendingValue = this.state.value
+    arrify(patch).map(logPatch)
+    const gpatches = arrify(patch).map(toGradientPatch)
+    gpatches.forEach(gpatch => {
+      pendingValue = new Patcher(gpatch).applyViaAccessor(pendingValue)
+    })
+
     this.setState({
-      value: this.state.value.patch(patch),
+      value: pendingValue,
       saved: false
     })
   }
@@ -98,7 +110,7 @@ export default class Main extends React.Component {
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})
   }
-  handleDispatchCommand(event) {
+  handleDispatchCommand = event => {
     const command = event.currentTarget.getAttribute('data-cmd')
     const methodName = `cmd${command}`
     if ((typeof this[methodName]) !== 'function') {
@@ -113,7 +125,7 @@ export default class Main extends React.Component {
     }
   }
 
-  CommandButton(props) {
+  CommandButton = props => {
     return (
       <button
         type="button"
