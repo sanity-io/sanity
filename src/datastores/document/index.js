@@ -1,14 +1,7 @@
 import Observable from '@sanity/observable'
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
-import debounce from 'debounce-promise'
 import observableTimer from '../utils/observableTimer'
-
-function wrapInObservable(fn) {
-  return (...args) => {
-    return Observable.from(fn(...args))
-  }
-}
 
 function getSnapshot(id) {
   return client.getDocument(id)
@@ -28,7 +21,7 @@ const serverConnection = {
 
     return new Observable(observer => {
       let mutationsSubscription
-      // todo can be removed if/when gradient supports emitting current snapshot on subscribe
+      // todo need to sync events with snapshot
       getSnapshot(id).then(snapshot => {
         observer.next(snapshot)
         mutationsSubscription = mutations.subscribe(observer)
@@ -42,6 +35,7 @@ const serverConnection = {
   },
 
   query(query, params) {
+    // todo
     return observableTimer(0, 10000)
       .flatMap(() => client.fetch(query, params))
       .map(documents => ({
@@ -51,16 +45,9 @@ const serverConnection = {
       // .map(event => (console.log('document store event %O', event), event)) // debug
   },
 
-  update: wrapInObservable(debounce(calls => {
-    const mutations = calls.map(call => {
-      const [id, patch] = call
-      return {
-        patch: Object.assign({id: id}, patch)
-      }
-    })
-    return client.mutate(mutations, {returnDocuments: false})
-      .then(res => res.documentIds)
-  }, 1000, {accumulate: true})),
+  mutate(mutations) {
+    return Observable.from(client.dataRequest('mutate', mutations, {returnDocuments: false}))
+  },
 
   delete(id) {
     return Observable.from(client.delete(id, {returnDocuments: false}))
