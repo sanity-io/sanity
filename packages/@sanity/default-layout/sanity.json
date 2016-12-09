@@ -14,16 +14,6 @@
       "implements": "part:@sanity/base/root",
       "name": "part:@sanity/default-layout/root",
       "path": "components/DefaultLayoutContainer"
-    },
-    {
-      "implements": "part:@sanity/base/action-button",
-      "name": "part:@sanity/default-layout/action-button",
-      "path": "components/ActionButton"
-    },
-    {
-      "implements": "part:@sanity/default-layout/action-modal-style",
-      "name": "part:@sanity/default-layout/action-modal/default-style",
-      "path": "./styles/ActionModal.css"
     }
   ]
 }
