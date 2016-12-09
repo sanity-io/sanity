@@ -3,8 +3,6 @@ const mockServerConnection = require('./helpers/mockServerConnection')
 
 const documents = createDocumentStore({serverConnection: mockServerConnection})
 
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-
 const log = prefix => (...args) => console.log(`${prefix}: `, ...args)
 
 const create = documents.create({_type: 'test'})

@@ -13,19 +13,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sanity/observable": "^1.0.1",
+    "@sanity/mutator": "^0.1.5",
+    "@sanity/observable": "^1.2.0",
+    "lodash": "^4.17.2",
     "nano-pubsub": "^1.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.11.4",
-    "babel-preset-es2015": "^6.13.2",
-    "eslint": "^3.9.1",
-    "eslint-config-sanity": "^1.1.3",
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "eslint": "^3.11.1",
+    "eslint-config-sanity": "^2.0.1",
+    "get-random-values": "^1.2.0",
     "in-publish": "^2.0.0",
-    "lodash": "^4.15.0",
-    "nano-pubsub": "^1.0.1",
     "rimraf": "^2.5.4",
-    "rxjs": "^5.0.0-rc.4",
     "tap": "^8.0.1"
   }
 }
