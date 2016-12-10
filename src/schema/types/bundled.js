@@ -24,7 +24,7 @@ export default {
     }
   },
   reference: {
-    primitive: 'string',
+    primitive: 'object',
     options: {
       title: PropTypes.string,
       to: PropTypes.oneOfType([
