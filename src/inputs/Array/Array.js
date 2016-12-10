@@ -113,10 +113,11 @@ export default class Arr extends React.Component {
   }
 
   handleRemoveItem = item => {
-    const {onChange} = this.props
+    const {onChange, value} = this.props
+    const target = item.key ? {_key: item.key} : value.indexOf(item)
     const patch = {
       type: 'unset',
-      path: [{_key: item.key}]
+      path: [target]
     }
     if (item.key === this.state.editItemKey) {
       this.setState({editItemKey: null})
@@ -125,8 +126,7 @@ export default class Arr extends React.Component {
   }
 
   handleClose = () => {
-    const {editItemKey} = this.state
-    const itemValue = this.props.value.byKey(editItemKey)
+    const itemValue = this.getEditItem()
     if (itemValue.isEmpty()) {
       this.handleRemoveItem(itemValue)
     }
@@ -159,21 +159,35 @@ export default class Arr extends React.Component {
   }
 
   handleItemChange = (event, item) => {
-    const {onChange} = this.props
+    const {onChange, value} = this.props
 
-    const itemTarget = item.key ? {_key: item.key} : this.value.indexOf(item)
+    const key = item.key || randomKey(12)
+
+    let setKeyPatch = []
+
+    if (!item.key) {
+      setKeyPatch = {
+        path: [value.indexOf(item), '_key'],
+        type: 'set',
+        value: key
+      }
+    }
+
     // Rewrite patch by prepending the item index to its path
-    const patches = arrify(event.patch).map(patch => {
+    const patches = []
+      .concat(setKeyPatch)
+      .concat(arrify(event.patch)
+      .map(patch => {
       return {
         ...patch,
-        path: [itemTarget, ...(patch.path || [])]
+        path: [{_key: key}, ...(patch.path || [])]
       }
-    })
+    }))
     onChange({patch: patches})
   }
 
   handleItemEdit = item => {
-    this.setState({editItemKey: item.key})
+    this.setState({editItemKey: item.key || this.props.value.indexOf(item)})
   }
 
   handleMove = event => {
@@ -189,23 +203,30 @@ export default class Arr extends React.Component {
     this.setState({editItemKey: null})
   }
 
-  renderEditItemForm(key) {
-    const itemValue = this.props.value.byKey(key)
-    const itemField = this.getItemField(itemValue)
+  renderEditItemForm(item) {
+    const itemField = this.getItemField(item)
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
-          itemKey={key}
+          itemKey={item.key || this.props.value.indexOf(item)}
           field={itemField}
           level={this.props.level + 1}
-          value={itemValue}
+          value={item}
           onChange={this.handleItemChange}
           onEnter={this.handleItemEnter}
           onRemove={this.handleRemoveItem}
         />
       </EditItemPopOver>
     )
+  }
+
+  getEditItem() {
+    const {editItemKey} = this.state
+    const {value} = this.props
+    return typeof editItemKey === 'number'
+    ? value.at(editItemKey)
+    : value.byKey(editItemKey)
   }
 
   getItemField(item) {
@@ -234,7 +255,7 @@ export default class Arr extends React.Component {
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
         />
-        {editItemKey === item.key && this.renderEditItemForm(editItemKey)}
+        {this.getEditItem() === item && this.renderEditItemForm(item)}
       </SortableItem>
     )
   }

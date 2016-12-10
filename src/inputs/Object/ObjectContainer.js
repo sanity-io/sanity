@@ -118,6 +118,12 @@ export default class ObjectContainer {
   }
 
   setAttribute(key, value) {
+    if (key === '_key') {
+      // todo: clean up _key special casing
+      return new ObjectContainer(Object.assign({}, this.value, {
+        _key: value
+      }), this.context)
+    }
     const fieldDef = this._getFieldDefForFieldName(key)
     const nextValue = Object.assign({}, this.value, {
       [key]: createFieldValue(value, {
