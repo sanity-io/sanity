@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const validators = require('../validators')
 
 function AssetsClient(client) {
@@ -11,35 +11,25 @@ const ASSET_TYPES_TO_ENDPOINT = {
 }
 
 assign(AssetsClient.prototype, {
-  upload(assetType, file, options = {}) {
+  upload(assetType, body, options = {}) {
     validators.validateAssetType(assetType)
 
     const dataset = validators.hasDataset(this.client.clientConfig)
-
-    const customHeaders = ('contentType' in options)
+    const headers = ('contentType' in options)
       ? {'Content-Type': options.contentType}
       : {}
 
     const assetEndpointSegment = ASSET_TYPES_TO_ENDPOINT[assetType]
-    const query = options.label ? `?label=${encodeURIComponent(options.label)}` : ''
-    const uri = `/assets/${assetEndpointSegment}/${dataset}${query}`
+    const query = options.label ? {label: options.label} : {}
+    const url = `/assets/${assetEndpointSegment}/${dataset}`
 
     return this.client.requestObservable({
       method: 'POST',
-      headers: assign({
-        Accept: 'application/json',
-      }, customHeaders),
-      uri: uri,
-      body: file,
-      json: false,
-      timeout: 0
-    }).map(event => {
-      if (event.type !== 'response') {
-        return event
-      }
-      return assign({}, event, {
-        body: JSON.parse(event.body)
-      })
+      timeout: 0,
+      query,
+      headers,
+      uri: url,
+      body
     })
   }
 })

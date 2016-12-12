@@ -1,5 +1,5 @@
 const deepAssign = require('deep-assign')
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const validate = require('../validators')
 const validateObject = validate.validateObject
 const validateInsert = validate.validateInsert

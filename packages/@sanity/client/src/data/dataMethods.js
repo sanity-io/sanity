@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const validators = require('../validators')
 const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')

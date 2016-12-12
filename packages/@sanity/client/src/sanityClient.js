@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const Patch = require('./data/patch')
 const Transaction = require('./data/transaction')
 const dataMethods = require('./data/dataMethods')
@@ -44,7 +44,7 @@ assign(SanityClient.prototype, {
     return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
       options,
-      {uri: this.getUrl(options.uri)}
+      {url: this.getUrl(options.url || options.uri)}
     ))
   }
 })

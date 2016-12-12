@@ -1,135 +1,87 @@
 /* eslint-disable no-empty-function, no-process-env */
-const request = require('@sanity/request') // `request` in node, `xhr` in browsers
-const queryString = require('./queryString')
-const Observable = require('@sanity/observable/minimal')
-const assign = require('xtend/mutable')
+const getIt = require('get-it')
+const createErrorClass = require('create-error-class')
+const observable = require('get-it/lib/middleware/observable')
+const retry = require('get-it/lib/middleware/retry')
+const debug = require('get-it/src/middleware/debug')
+const jsonRequest = require('get-it/src/middleware/jsonRequest')
+const jsonResponse = require('get-it/lib/middleware/jsonResponse')
+const sanityObservable = require('@sanity/observable/minimal')
 
-const debug = (process.env.DEBUG || '').indexOf('sanity') !== -1
+const ClientError = createErrorClass('ClientError', extractError)
+const ServerError = createErrorClass('ServerError', extractError)
 
-let log = () => {}
-if (process.env.NODE_ENV !== 'production') {
-  log = require('debug')('sanity:client')
+const httpError = ({
+  onResponse: res => {
+    if (res.statusCode >= 500) {
+      throw new ServerError(res)
+    } else if (res.statusCode >= 400) {
+      throw new ClientError(res)
+    }
+
+    return res
+  }
+})
+
+function retry5xx(err) {
+  // Retry low-level network errors
+  if (retry.shouldRetry(err)) {
+    return true
+  }
+
+  return err.response.statusCode >= 500
 }
 
-module.exports = function httpRequest(options) {
-  if (options.query) {
-    options.uri += `?${queryString.stringify(options.query)}`
-  }
+function extractError(res) {
+  const body = res.body
+  this.response = res
+  this.statusCode = res.statusCode
+  this.responseBody = stringifyBody(body, res)
 
-  if (debug) {
-    log('HTTP %s %s', options.method || 'GET', options.uri)
-    if (options.method === 'POST' && options.body) {
-      log('Request body: %s', JSON.stringify(options.body, null, 2))
-    }
-  }
-
-  const observable = new Observable(observer => {
-
-    const opts = assign({}, options, {
-      beforeSend(req) {
-        if (options.beforeSend) {
-          options.beforeSend(req)
-        }
-
-        // Todo: shim over node/browser differences
-        if ('upload' in req && 'onprogress' in req.upload) {
-          req.upload.onprogress = handleProgress('upload')
-        }
-
-        if ('onprogress' in req) {
-          req.onprogress = handleProgress('download')
-        }
-
-        req.onabort = function () {
-          observer.next({type: 'abort'})
-          observer.complete()
-        }
-      }
-    })
-
-    const req = request(opts, (err, res, body) => {
-      if (err) {
-        observer.error(err)
-        return
-      }
-
-      log('Response code: %s', res.statusCode)
-      if (debug && body) {
-        log('Response body: %s', stringifyBody(body, res))
-      }
-
-      const isHttpError = res.statusCode >= 400
-
-      if (isHttpError && body) {
-        const error = extractError(body, res)
-        decorateError(error, body, res)
-        observer.error(error)
-        return
-      } else if (isHttpError) {
-        const httpErr = new Error(httpError(res))
-        httpErr.statusCode = res.statusCode
-        observer.error(httpErr)
-        return
-      }
-
-      observer.next({type: 'response', body})
-      observer.complete()
-    })
-
-    return () => req.abort()
-
-    function handleProgress(stage) {
-      return event => {
-        const percent = event.lengthComputable ? ((event.loaded / event.total) * 100) : -1
-        observer.next({
-          type: 'progress',
-          stage,
-          percent
-        })
-      }
-    }
-  })
-
-  observable.toPromise = () => {
-    let last
-    return observable
-      .forEach(value => {
-        last = value
-      })
-      .then(() => last.body)
-  }
-  return observable
-}
-
-function extractError(body, res) {
   // API/Boom style errors ({statusCode, error, message})
   if (body.error && body.message) {
-    return new Error(`${body.error} - ${body.message}`)
+    this.message = `${body.error} - ${body.message}`
+    return
   }
 
   // Query/database errors ({error: {description, other, arb, props}})
   if (body.error && body.error.description) {
-    const error = new Error(body.error.description)
-    error.details = body.error
-    return error
+    this.message = body.error.description
+    this.details = body.error
+    return
   }
 
   // Other, more arbitrary errors
-  return new Error(body.error || body.message || httpError(res))
+  this.message = body.error || body.message || httpErrorMessage(res)
 }
 
-function decorateError(error, body, res) {
-  error.responseBody = stringifyBody(body, res)
-  error.statusCode = res.statusCode
-}
-
-function httpError(res) {
+function httpErrorMessage(res) {
   const statusMessage = res.statusMessage ? ` ${res.statusMessage}` : ''
-  return `Server responded with HTTP ${res.statusCode}${statusMessage}, no description`
+  return `${res.method}-request to ${res.url} resulted in HTTP ${res.statusCode}${statusMessage}`
 }
 
 function stringifyBody(body, res) {
   const contentType = (res.headers['content-type'] || '').toLowerCase()
   const isJson = contentType.indexOf('application/json') !== -1
   return isJson ? JSON.stringify(body, null, 2) : body
+}
+
+const request = getIt([
+  debug({verbose: true, namespace: 'sanity:client'}),
+  jsonRequest(),
+  jsonResponse(),
+  httpError,
+  observable({implementation: sanityObservable}),
+  retry({maxRetries: 5, shouldRetry: retry5xx})
+])
+
+module.exports = function httpRequest(options) {
+  const obs = request(options)
+  obs.toPromise = () => new Promise((resolve, reject) => {
+    obs.filter(ev => ev.type === 'response').subscribe(
+      res => resolve(res.body),
+      reject
+    )
+  })
+  return obs
 }

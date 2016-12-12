@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const Observable = require('@sanity/observable/minimal')
 const encodeQueryString = require('./encodeQueryString')
 const validators = require('../validators')

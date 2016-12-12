@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const validate = require('./validators')
 
 const defaultConfig = exports.defaultConfig = {

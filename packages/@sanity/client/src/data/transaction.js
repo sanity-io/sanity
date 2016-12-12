@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 const validators = require('../validators')
 const Patch = require('./patch')
 

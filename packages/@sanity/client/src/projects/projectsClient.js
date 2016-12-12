@@ -1,4 +1,4 @@
-const assign = require('xtend/mutable')
+const assign = require('object-assign')
 
 function ProjectsClient(client) {
   this.client = client
