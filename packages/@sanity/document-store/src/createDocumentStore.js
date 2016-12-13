@@ -22,32 +22,39 @@ function defer() {
 }
 
 function createBufferedDocument(documentId, server) {
-  let bufferedDocument = null
   const events = pubsub()
+  let _bufferedDocument = null
+  const whenBufferedDocumentReady = defer()
 
-  const bufferedDocumentReady = defer()
+  function withBufferedDocument(fn) {
+    if (_bufferedDocument) {
+      fn(_bufferedDocument)
+    } else {
+      whenBufferedDocumentReady.promise.then(() => fn(_bufferedDocument))
+    }
+  }
 
   // todo refcount/dispose
   const subscription = server.byId(documentId)
     .subscribe(event => {
       if (event.type === 'snapshot') {
-        assert(bufferedDocument === null, 'Expected bufferedDocument to be null when receiving snapshot')
-        bufferedDocument = new BufferedDocument(event.document)
+        assert(_bufferedDocument === null, 'Expected bufferedDocument to be null when receiving snapshot')
+        _bufferedDocument = new BufferedDocument(event.document)
 
-        bufferedDocument.onRebase = edge => {
+        _bufferedDocument.onRebase = edge => {
           events.publish({type: 'rebase', document: edge})
         }
 
-        bufferedDocument.onMutation = ({mutation, remote}) => {
+        _bufferedDocument.onMutation = ({mutation, remote}) => {
           events.publish({
             type: 'mutate',
-            document: bufferedDocument.LOCAL,
+            document: _bufferedDocument.LOCAL,
             mutations: mutation.mutations,
             origin: remote ? 'remote' : 'local'
           })
         }
 
-        bufferedDocument.commitHandler = opts => {
+        _bufferedDocument.commitHandler = opts => {
           const payload = opts.mutation.params
 
           // TODO:
@@ -60,16 +67,16 @@ function createBufferedDocument(documentId, server) {
               error: opts.failure
             })
         }
-        bufferedDocumentReady.resolve(bufferedDocument)
+        whenBufferedDocumentReady.resolve()
       } else {
-        bufferedDocument.arrive(new Mutation(event))
+        _bufferedDocument.arrive(new Mutation(event))
       }
     })
 
   return {
     events: new Observable(observer => {
-      bufferedDocumentReady.promise.then(bd => {
-        observer.next({type: 'snapshot', document: bd.LOCAL})
+      withBufferedDocument(bufferedDocument => {
+        observer.next({type: 'snapshot', document: bufferedDocument.LOCAL})
         events.subscribe(ev => observer.next(ev))
       })
     }),
@@ -78,25 +85,31 @@ function createBufferedDocument(documentId, server) {
         .map(patch => Object.assign({}, patch, {id: documentId}))
         .map(patch => ({patch: patch}))
 
-      if (bufferedDocument) {
-        // important: this must be sync, or else cursors in input fields gets wonky
-        addMutations(bufferedDocument)
-      } else {
-        bufferedDocumentReady.promise.then(addMutations)
-      }
-      function addMutations(bufferedDocument) {
+      withBufferedDocument(bufferedDocument => {
         bufferedDocument.add(new Mutation({mutations: mutations}))
-      }
+      })
     },
-    commit() {
-      return Observable
-        .from(bufferedDocumentReady.promise)
-        // .flatMap(bd => bd.commit()) // todo: flatmap
-        .map(bd => bd.commit())
+    create(document) {
+      const mutation = {
+        create: Object.assign({id: documentId}, document)
+      }
+      withBufferedDocument(bufferedDocument => {
+        bufferedDocument.add(new Mutation({mutations: [mutation]}))
+      })
     },
     delete() {
-      bufferedDocumentReady.promise.then(bd => {
-        bd.add(new Mutation({delete: {id: documentId}}))
+      withBufferedDocument(bufferedDocument => {
+        bufferedDocument.add(new Mutation({mutations: [{delete: {id: documentId}}]}))
+      })
+    },
+    commit() {
+      return new Observable(observer => {
+        withBufferedDocument(bufferedDocument => {
+          // todo: connect with bufferedDocument.commit
+          bufferedDocument.commit()
+          observer.next()
+          observer.complete()
+        })
       })
     }
   }
