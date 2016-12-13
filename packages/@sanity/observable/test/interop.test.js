@@ -1,6 +1,6 @@
 const {test} = require('tap')
 
-const RxObservable = require('rxjs/Rx').Observable
+const RxObservable = require('rxjs').Observable
 const ZenObservable = require('zen-observable')
 const isObservable = require('is-observable')
 
@@ -74,6 +74,33 @@ test('Works with zen-observable', t => {
     .reduce(toArray, [])
     .subscribe(squares => {
       t.same(squares, [1, 4])
+      t.end()
+    })
+})
+
+test('Can be wrapped in an RxObservable', t => {
+  let subscribeCount = 0
+  RxObservable.from(new SanityObservable(observer => {
+    subscribeCount++
+    if (subscribeCount < 5) {
+      observer.error(new Error('Ooops, that failed'))
+    } else {
+      observer.next('OK')
+      observer.complete()
+    }
+  }))
+    // can now use rxjs observable methods
+    .retryWhen(errors => errors
+      .delay(100)
+      .scan((count, error) => {
+        if (count > 4) {
+          throw error
+        }
+        return count + 1
+      }, 0)
+    )
+    .subscribe(value => {
+      t.equal(value, 'OK')
       t.end()
     })
 })

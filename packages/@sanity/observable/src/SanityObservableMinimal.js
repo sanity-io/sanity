@@ -3,6 +3,7 @@ const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
 const {toPromise} = require('rxjs/operator/toPromise')
+const assign = require('object-assign')
 
 /*
  A minimal rxjs based observable that align as closely as possible with the current es-observable spec,
@@ -12,7 +13,7 @@ function SanityObservableMinimal() {
   Observable.apply(this, arguments) // eslint-disable-line prefer-rest-params
 }
 
-SanityObservableMinimal.prototype = Object.create(Observable.prototype)
+SanityObservableMinimal.prototype = Object.create(assign(Object.create(null), Observable.prototype))
 Object.defineProperty(SanityObservableMinimal.prototype, 'constructor', {
   value: SanityObservableMinimal,
   enumerable: false,

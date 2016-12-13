@@ -11,13 +11,23 @@ const {toPromise} = require('rxjs/operator/toPromise')
 /*
   A subset of rxjs that align as closely as possible with the current es-observable spec
 */
-class SanityObservable extends Observable {
-  lift(operator) {
-    const observable = new SanityObservable()
-    observable.source = this
-    observable.operator = operator
-    return observable
-  }
+function SanityObservable(...args) {
+  Observable.call(this, ...args)
+}
+
+SanityObservable.prototype = Object.create(Object.assign({}, Observable.prototype))
+Object.defineProperty(SanityObservable.prototype, 'constructor', {
+  value: SanityObservable,
+  enumerable: false,
+  writable: true,
+  configurable: true
+})
+
+function lift(operator) {
+  const observable = new SanityObservable()
+  observable.source = this
+  observable.operator = operator
+  return observable
 }
 
 Object.assign(SanityObservable.prototype, {
@@ -26,7 +36,8 @@ Object.assign(SanityObservable.prototype, {
   reduce,
   scan,
   flatMap: mergeMap,
-  toPromise
+  toPromise,
+  lift
 })
 
 SanityObservable.of = function SanityObservableOf(...args) {
