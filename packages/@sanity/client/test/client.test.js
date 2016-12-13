@@ -173,7 +173,7 @@ test('handles api errors gracefully', t => {
     message: 'You are not allowed to access this resource'
   }
 
-  nock(projectHost()).get('/v1/data/query/foo?query=area51').reply(403, response)
+  nock(projectHost()).get('/v1/data/query/foo?query=area51').times(5).reply(403, response)
 
   getClient().fetch('area51')
     .then(res => {
