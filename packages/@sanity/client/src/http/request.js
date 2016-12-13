@@ -29,7 +29,7 @@ function retry5xx(err) {
     return true
   }
 
-  return err.response.statusCode >= 500
+  return err.response && err.response.statusCode >= 500
 }
 
 function extractError(res) {

@@ -54,11 +54,11 @@ exports.validateInsert = (at, selector, items) => {
 }
 
 exports.hasDataset = config => {
-  if (!config.dataset) {
+  if (!config.gradientMode && !config.dataset) {
     throw new Error('`dataset` must be provided to perform queries')
   }
 
-  return config.dataset
+  return config.dataset || ''
 }
 
 exports.promise = {

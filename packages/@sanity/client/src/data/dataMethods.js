@@ -25,9 +25,10 @@ module.exports = {
 
   getDataUrl(endpoint, uri) {
     const projectId = this.clientConfig.projectId
-    return this.clientConfig.gradientMode
+    return (this.clientConfig.gradientMode
       ? `/${endpoint}/${projectId}/${uri}`
       : `/data/${endpoint}/${uri}`
+    ).replace(/\/($|\?)/, '$1')
   },
 
   fetch(query, params) {
@@ -98,6 +99,7 @@ module.exports = {
           return res
         }
 
+        // Should we return documents?
         const results = res.results || []
         if (options.returnDocuments) {
           return returnFirst
@@ -105,10 +107,14 @@ module.exports = {
             : results.map(mut => mut.document)
         }
 
-        // Only return IDs
+        // Return a reduced subset
         const key = returnFirst ? 'documentId' : 'documentIds'
         const ids = returnFirst ? results[0] && results[0].id : results.map(mut => mut.id)
-        return {transactionId: res.transactionId, [key]: ids}
+        return {
+          transactionId: res.transactionId,
+          results: results,
+          [key]: ids
+        }
       })
   },
 
