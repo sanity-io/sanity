@@ -88,6 +88,7 @@ export default class EditorPane extends React.PureComponent {
         break
       }
       default: {
+        // eslint-disable-next-line no-console
         console.log('Unhandled document event type "%s"', event.type, event)
       }
     }
