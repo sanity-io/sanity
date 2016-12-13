@@ -1,12 +1,12 @@
 const createDocumentStore = require('../src')
-const mockServerConnection = require('./helpers/mockServerConnection')
+const mockServerConnection = require('./mock-db/mockServerConnection')
 const firstOf = require('../src/utils/firstOf')
 
 const documentStore = createDocumentStore({serverConnection: mockServerConnection})
 
 const wait = (ms, fn) => setTimeout(fn, ms)
 
-const buffered = documentStore.bufferedDocument(22)
+const buffered = documentStore.checkout(22)
 
 const byId = documentStore.byId(22).subscribe(event => {
   console.log('Got event from byId', event)
@@ -19,7 +19,7 @@ const mutations = buffered.events
   })
 
 wait(500, () => {
-  const buffered = documentStore.bufferedDocument(22)
+  const buffered = documentStore.checkout(22)
 
   buffered.events.subscribe(event => {
     console.log('Doc event #22!', event)
@@ -44,7 +44,7 @@ wait(1000, () => {
 // simulate some other subscriber mutates
 
 wait(2000, () => {
-  const doc = documentStore.bufferedDocument(22)
+  const doc = documentStore.checkout(22)
   doc.patch([
     {set: {body: 'UPDATED3'}}
   ])

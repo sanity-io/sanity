@@ -1,5 +1,5 @@
 const createDocumentStore = require('../src')
-const mockServerConnection = require('./helpers/mockServerConnection')
+const mockServerConnection = require('./mock-db/mockServerConnection')
 
 const documents = createDocumentStore({serverConnection: mockServerConnection})
 
@@ -12,24 +12,24 @@ const subscription1 = documents.byId('12')
 const subscription2 = documents.byId('12')
   .subscribe(log('subscriber2'))
 
-wait(2000, () => {
+wait(500, () => {
   console.log('  subscribing 3')
   const subscriber3 = documents.byId('12').subscribe(log('subscriber2'))
   console.log('  unsubscribing 3')
   subscriber3.unsubscribe()
 })
 
-wait(3000, () => {
+wait(1000, () => {
   subscription1.unsubscribe()
 })
 
-wait(5000, () => {
+wait(1500, () => {
   subscription2.unsubscribe()
 })
 
-wait(10000, () => {
+wait(2000, () => {
   const latecomer = documents.byId(12)
     .subscribe(log('latecomer'))
-  wait(2000, () => latecomer.unsubscribe())
+  wait(500, () => latecomer.unsubscribe())
 })
 

@@ -1,36 +1,41 @@
-const {Observable} = require('rxjs')
+const RxObservable = require('rxjs').Observable
+const Observable = require('@sanity/observable')
+const createDocumentStore = require('../src')
+const mockServerConnection = require('./mock-db/mockServerConnection')
 
 const serverConnection = {
   byId(id) {
-    return Observable.of(1, 1, 0)
-      .flatMap((n, i) => Observable.of(n).delay(i * 1000))
-      .map(n => {
-        if (n === 0) {
+    let attemptNo = 0
+    return new Observable(observer => {
+      observer.next(attemptNo++)
+    })
+      .flatMap(attemptNo => {
+        if (attemptNo < 3) {
           throw new Error('Ooops, that failed')
         }
-        return {type: 'OK', n: n}
-      })
-      .do(() => {
-        console.log('Passing…')
+        return mockServerConnection.byId(id)
       })
   }
 }
-// const createDocumentStore = require('../')
-//
-// const documents = createDocumentStore({serverConnection: serverConnection})
 
-serverConnection.byId(12)
-  .do(v => console.log(v))
+const documents = createDocumentStore({serverConnection: serverConnection})
+// for some reason using documents ^ instead of serverConnection directly fails
+RxObservable.from(serverConnection.byId(12))
   .retryWhen(errors => errors
-    .do(error => console.log('Got error... retrying in 2s'))
-    .delay(2000)
-    .do(error => console.log('Retrying now'))
+    .do(err => {
+      console.log('Got error: %s. Retrying...', err.message)
+    })
+    .delay(200)
     .scan((count, error) => {
-      console.log('retry count', count)
+      if (count > 4) {
+        throw error
+      }
       return count + 1
     }, 0)
   )
-  .subscribe(v => {})
+  .subscribe(document => {
+    console.log('Finally got', document)
+  })
 
 // documents.byId('32')
 //   .subscribe({

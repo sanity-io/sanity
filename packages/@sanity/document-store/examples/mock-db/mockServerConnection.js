@@ -8,7 +8,7 @@ function byId(documentId) {
 
 function query(q) {
   debug(`setting up subscription for query "${q}"`)
-  return db.query(q)
+  return db.getAllRecords()
 }
 
 function mutate(payload) {
