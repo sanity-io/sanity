@@ -8,7 +8,7 @@
     "compile:watch": "npm run compile -- --watch",
     "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
-    "test": "tap test/*.test.js test/**/*.test.js"
+    "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js test/**/*.test.js"
   },
   "keywords": [],
   "author": "Sanity.io <hello@sanity.io>",

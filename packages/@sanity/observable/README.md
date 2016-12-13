@@ -1,5 +1,7 @@
 # @sanity/observable
 
+[![Build Status](https://travis-ci.org/sanity-io/observable.svg?branch=master)](https://travis-ci.org/sanity-io/observable)
+
 A small-ish RxJS based Observable implementation for Sanity
 
 ## Installation
