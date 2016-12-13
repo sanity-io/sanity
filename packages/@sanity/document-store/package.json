@@ -7,7 +7,7 @@
     "compile": "babel src --copy-files --out-dir lib",
     "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js"
   },
   "keywords": [],
   "author": "",

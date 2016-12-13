@@ -1,5 +1,5 @@
 import {test} from 'tap'
-import Observable from 'zen-observable'
+import Observable from '@sanity/observable'
 import canonicalize from '../src/utils/canonicalize'
 
 const wait = ms => observer => {
