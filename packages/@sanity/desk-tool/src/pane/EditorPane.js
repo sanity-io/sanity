@@ -4,7 +4,8 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
-import {unprefixType} from '../utils/unprefixType'
+import schemaTypePrefix from '../utils/schemaTypePrefix'
+import schema from 'part:@sanity/base/schema'
 import dataAspects from '../utils/dataAspects'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {debounce} from 'lodash'
@@ -25,9 +26,15 @@ function omit(source, ...keys) {
     }, {})
 }
 
-function createFormBuilderStateFrom(serialized, typeName) {
-  return serialized ? FormBuilder.deserialize(unprefixType(serialized), typeName) : FormBuilder.createEmpty(typeName)
+function getInitialState() {
+  return {
+    loading: true,
+    spin: false,
+    deleted: null,
+    progress: {kind: 'info', message: 'Loading'}
+  }
 }
+
 
 export default class EditorPane extends React.PureComponent {
   static contextTypes = {
@@ -41,10 +48,24 @@ export default class EditorPane extends React.PureComponent {
 
   subscriptions = [];
 
-  state = {
-    loading: true,
-    spin: false,
-    progress: {kind: 'info', message: 'Loading'}
+  state = getInitialState();
+
+  get schemaTypePrefix() {
+    if (!this._schemaTypePrefix) {
+      this._schemaTypePrefix = schemaTypePrefix(schema)
+    }
+    return this._schemaTypePrefix
+  }
+
+  deserialize(serialized) {
+    const {typeName} = this.props
+    return serialized
+      ? FormBuilder.deserialize(this.schemaTypePrefix.removeFrom(serialized), typeName)
+      : FormBuilder.createEmpty(typeName)
+  }
+
+  serialize(value) {
+    return this.schemaTypePrefix.addTo(value.serialize())
   }
 
   setupSubscriptions(props) {
@@ -66,25 +87,29 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleDocumentEvent = event => {
-    const {typeName} = this.props
-
     switch (event.type) {
       case 'snapshot': {
         this.setState({
           loading: false,
           progress: null,
-          value: createFormBuilderStateFrom(event.document, typeName)
+          value: this.deserialize(event.document)
         })
         break
       }
       case 'rebase': {
         this.setState({
-          value: createFormBuilderStateFrom(event.document, typeName)
+          value: this.deserialize(event.document)
         })
         break
       }
       case 'mutate': {
-        this.handleIncomingMutation(event.mutations)
+        this.handleIncomingMutations(event.mutations)
+        break
+      }
+      case 'create': {
+        this.setState({
+          value: this.deserialize(event.document)
+        })
         break
       }
       default: {
@@ -108,28 +133,43 @@ export default class EditorPane extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.documentId !== this.props.documentId) {
+      this.setState(getInitialState())
       this.setupSubscriptions(nextProps)
     }
   }
 
-  handleIncomingMutation(mutations) {
-    const patches = mutations
-      .filter(mut => 'patch' in mut)
-      .map(mut => mut.patch)
-
-    let nextValue = this.state.value
-    patches.forEach(patch => {
-      nextValue = new Patcher(patch).applyViaAccessor(nextValue)
+  handleIncomingMutations(mutations) {
+    const operations = []
+    mutations.forEach(mutation => {
+      if (mutation.create) {
+        operations.push(prev => {
+          if (prev) {
+            throw new Error('Had an unexpected existing document when receiving a create mutation')
+          }
+          return this.deserialize(mutation.create)
+        })
+      } else if (mutation.delete) {
+        operations.push(() => null)
+      } else if (mutation.patch) {
+        operations.push(previous => new Patcher(mutation.patch).applyViaAccessor(previous))
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(new Error(`Received unsupported mutation ${JSON.stringify(mutation, null, 2)}`))
+      }
     })
-    this.setState({value: nextValue})
+
+    const previousValue = this.state.value
+    const nextValue = operations.reduce((prev, operation) => operation(prev), previousValue)
+
+    this.setState({
+      deleted: nextValue === null ? this.serialize(previousValue) : null,
+      value: nextValue
+    })
   }
-
-
   handleIncomingDelete(event) {
     const {router} = this.context
     router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
-
   commit = debounce(() => {
     this.setState({spin: true, progress: null})
     this.document.commit().subscribe({
@@ -137,7 +177,6 @@ export default class EditorPane extends React.PureComponent {
         this.setState({progress: {kind: 'success', message: 'Saved…'}})
       },
       error: err => {
-        setTimeout(this.commit, 1000)
         this.setState({progress: {kind: 'error', message: `Save failed ${err.message}`}})
       },
       complete: () => {
@@ -153,20 +192,20 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleDelete = () => {
-    const id = this.props.documentId
     this.setState({progress: {kind: 'info', message: 'Deleting…'}})
+    this.document.delete()
+    this.commit()
+  }
 
-    this.subscriptions.push(
-      documentStore
-        .delete(id)
-        .subscribe(result => {
-          this.setState({progress: {kind: 'success', message: 'Deleted…'}})
-        })
-    )
+  handleRestore = () => {
+    const {deleted} = this.state
+    this.setState({progress: {kind: 'info', message: 'Restoring…'}})
+    this.document.create(deleted)
+    this.commit()
   }
 
   render() {
-    const {value, loading, spin, progress, validation} = this.state
+    const {value, deleted, loading, spin, progress, validation} = this.state
     const {typeName} = this.props
 
     const titleProp = dataAspects.getItemDisplayField(typeName)
@@ -177,6 +216,15 @@ export default class EditorPane extends React.PureComponent {
           <div className={styles.spinner}>
             <Spinner />
           </div>
+        </div>
+      )
+    }
+
+    if (deleted) {
+      return (
+        <div className={styles.root}>
+          <p>Document was deleted</p>
+          <DefaultButton onClick={this.handleRestore}>Restore</DefaultButton>
         </div>
       )
     }

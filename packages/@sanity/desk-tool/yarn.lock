@@ -115,20 +115,18 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.2.19":
-  version "0.2.19"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.2.19.tgz#71c1850a74dc74ce39d9dada2128a32917942d9a"
+"@sanity/base@^0.3.0":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.1.tgz#ffbb30d54620e7b09aae56f2ebc1a40a3b766042"
   dependencies:
     "@sanity/client" "^0.3.17"
-    "@sanity/document-store" "0.1.0"
-    "@sanity/observable" "^1.2.0"
+    "@sanity/document-store" "^0.2.2"
+    "@sanity/observable" "^1.3.1"
     "@sanity/state-router" "^0.3.0-beta.1"
-    debounce-promise "^2.1.1"
     history "2"
-    http-hash "^2.0.0"
     in-publish "^2.0.0"
     lodash "^4.17.2"
-    postcss-cssnext "^2.8.0"
+    postcss-cssnext "^2.9.0"
     react-icons "^2.2.1"
     react-intl "^2.1.5"
 
@@ -155,9 +153,9 @@
     in-publish "^2.0.0"
     xtend "^4.0.1"
 
-"@sanity/components@^0.0.71":
-  version "0.0.71"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.71.tgz#7f1f8e131666c9e78ca6e80ca73f954db4fbdeaa"
+"@sanity/components@^0.0.72":
+  version "0.0.72"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.72.tgz#1eab3ebcb8c448ca1e5d7d3f476a6461c74a662d"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -181,13 +179,13 @@
     react-sortable-hoc "^0.2.0"
     scroll "^2.0.0"
 
-"@sanity/core@^0.0.25":
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.25.tgz#04e3db884783bad0eef3a86f8c79bc8d99a30c93"
+"@sanity/core@^0.0.26":
+  version "0.0.26"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.26.tgz#7a955bcfa0584eef8ef390845ba4ba0143a7c7f3"
   dependencies:
     "@sanity/check" "^0.0.3"
     "@sanity/client" "^0.3.15"
-    "@sanity/mutator" "^0.0.12"
+    "@sanity/mutator" "^0.1.5"
     "@sanity/server" "^0.0.20"
     "@sanity/storybook" "^0.0.15"
     "@sanity/util" "^0.0.3"
@@ -225,11 +223,13 @@
     postcss-simple-extend "^1.0.0"
     react-datepicker "^0.34.0"
 
-"@sanity/document-store@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.1.0.tgz#5eed89cc5d02cf61a9aa334b755cb49a5434dc7c"
+"@sanity/document-store@^0.2.2":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.2.3.tgz#e1f53bf0d3b22b4fccffb69c76c549a7143c10c7"
   dependencies:
-    "@sanity/observable" "^1.0.1"
+    "@sanity/mutator" "^0.1.6"
+    "@sanity/observable" "^1.3.1"
+    lodash "^4.17.2"
     nano-pubsub "^1.0.1"
 
 "@sanity/eventsource@^1.0.1":
@@ -247,9 +247,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@0.1.0-mutator.0":
-  version "0.1.0-mutator.0"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.0-mutator.0.tgz#0cc4f452615a6a8a07853b6b5923e1c7c441f89c"
+"@sanity/form-builder@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.1.tgz#4666f49efd26748d08c92ef3f71f5e1a9b42dedd"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.1.5"
@@ -286,13 +286,6 @@
     dom-event "1.0.0"
     lodash.omit "^4.5.0"
 
-"@sanity/mutator@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.0.12.tgz#e0e256ab4c2651a2a6f3519f486cd9db7691e82d"
-  dependencies:
-    diff-match-patch "^1.0.0"
-    lodash "^4.15.0"
-
 "@sanity/mutator@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.5.tgz#6c16edd0e5a90e754cdb621e412969535a3dabaa"
@@ -300,11 +293,25 @@
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
-"@sanity/observable@^1.0.1", "@sanity/observable@^1.1.0", "@sanity/observable@^1.2.0":
+"@sanity/mutator@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.6.tgz#6e2c821abf451e99c2e99085e9a9db7b75f2c3d2"
+  dependencies:
+    diff-match-patch "^1.0.0"
+    lodash "^4.15.0"
+
+"@sanity/observable@^1.1.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.2.0.tgz#b74ffc16fce5d427b7871bf867c8478752d172d0"
   dependencies:
     rxjs "^5.0.0-rc.4"
+
+"@sanity/observable@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.3.1.tgz#dc0fed1e3ee16e716dd210a199bc4c09c87860e9"
+  dependencies:
+    object-assign "^4.1.0"
+    rxjs "^5.0.1"
 
 "@sanity/request@0.0.3":
   version "0.0.3"
@@ -1094,7 +1101,7 @@ babel-plugin-transform-object-rest-spread@6.16.0:
     babel-plugin-syntax-object-rest-spread "^6.8.0"
     babel-runtime "^6.0.0"
 
-babel-plugin-transform-object-rest-spread@^6.19.0:
+babel-plugin-transform-object-rest-spread@^6.20.2:
   version "6.20.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-object-rest-spread/-/babel-plugin-transform-object-rest-spread-6.20.2.tgz#e816c55bba77b14c16365d87e2ae48c8fd18fc2e"
   dependencies:
@@ -1921,10 +1928,6 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debounce-promise@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/debounce-promise/-/debounce-promise-2.1.1.tgz#4c6a6a2ba6b4a75bac544d688dd1ad4fcce9f30b"
-
 debug@2.2.0, debug@~2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
@@ -2267,16 +2270,16 @@ eslint-config-sanity@^2.0.1:
   dependencies:
     eslint-config-bengler "^3.0.1"
 
-eslint-plugin-react@^6.7.1:
+eslint-plugin-react@^6.8.0:
   version "6.8.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-6.8.0.tgz#741ab5438a094532e5ce1bbb935d6832356f492d"
   dependencies:
     doctrine "^1.2.2"
     jsx-ast-utils "^1.3.4"
 
-eslint@^3.11.1:
-  version "3.11.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.11.1.tgz#408be581041385cba947cd8d1cd2227782b55dbf"
+eslint@^3.12.1:
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.12.1.tgz#507a609fe251dfefd58fda03e6dbd7e851c07581"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -2289,7 +2292,7 @@ eslint@^3.11.1:
     esutils "^2.0.2"
     file-entry-cache "^2.0.0"
     glob "^7.0.3"
-    globals "^9.2.0"
+    globals "^9.14.0"
     ignore "^3.2.0"
     imurmurhash "^0.1.4"
     inquirer "^0.12.0"
@@ -2774,7 +2777,7 @@ global@^4.2.1, global@^4.3.0, global@~4.3.0:
     min-document "^2.19.0"
     process "~0.5.1"
 
-globals@^9.0.0, globals@^9.2.0:
+globals@^9.0.0, globals@^9.14.0:
   version "9.14.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.14.0.tgz#8859936af0038741263053b39d0e76ca241e4034"
 
@@ -2931,10 +2934,6 @@ http-errors@~1.5.0:
     inherits "2.0.3"
     setprototypeof "1.0.2"
     statuses ">= 1.3.1 < 2"
-
-http-hash@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/http-hash/-/http-hash-2.0.0.tgz#0b1c2615277e87c73084ec2c3d8c33cf2237b200"
 
 http-signature@~1.1.0:
   version "1.1.1"
@@ -5307,6 +5306,12 @@ rx-lite@^3.1.2:
 rxjs@^5.0.0-rc.4:
   version "5.0.0-rc.5"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.0-rc.5.tgz#8cbd17fc242a54c07ef9116da23b0ec8e7d5cea9"
+  dependencies:
+    symbol-observable "^1.0.1"
+
+rxjs@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.1.tgz#3a69bdf9f0ca0a986303370d4708f72bdfac8356"
   dependencies:
     symbol-observable "^1.0.1"
 
