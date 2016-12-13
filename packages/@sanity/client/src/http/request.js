@@ -81,8 +81,8 @@ if (process.env.BROWSERIFY_ENV !== 'build') {
 
 const request = getIt(middleware)
 
-module.exports = function httpRequest(options) {
-  const obs = request(options)
+function httpRequest(options, requester = request) {
+  const obs = requester(options)
   obs.toPromise = () => new Promise((resolve, reject) => {
     obs.filter(ev => ev.type === 'response').subscribe(
       res => resolve(res.body),
@@ -91,3 +91,7 @@ module.exports = function httpRequest(options) {
   })
   return obs
 }
+
+httpRequest.defaultRequester = request
+
+module.exports = httpRequest

@@ -12,6 +12,7 @@ const path = require('path')
 const fs = require('fs')
 const sanityClient = require('../src/sanityClient')
 const validators = require('../src/validators')
+const sanityObservable = require('@sanity/observable')
 const noop = () => {} // eslint-disable-line no-empty-function
 
 const apiHost = 'api.sanity.url'
@@ -1016,6 +1017,31 @@ test('uploads files', t => {
     }, ifError(t))
 })
 
+// Don't rely on this unless you're working at Sanity Inc ;)
+test('can use alternative http requester', t => {
+  const requester = () => sanityObservable.of({
+    type: 'response',
+    body: {documents: [{foo: 'bar'}]}
+  })
+
+  getClient({requester}).getDocument('foo/bar')
+    .then(res => {
+      t.equal(res.foo, 'bar')
+      t.end()
+    })
+    .catch(err => {
+      t.ifError(err)
+      t.fail('should not call catch handler')
+      t.end()
+    })
+})
+
+// Don't rely on this unless you're working at Sanity Inc ;)
+test('exposes default requester', t => {
+  t.equal(typeof sanityClient.requester, 'function')
+  t.end()
+})
+
 test('handles HTTP errors gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   const expectedBody = {mutations: [{create: doc}]}
@@ -1036,7 +1062,7 @@ test('handles HTTP errors gracefully', t => {
     })
 })
 
-// @todo these tests are failing because `nock` doesn't work well with `nock`
+// @todo these tests are failing because `nock` doesn't work well with `timed-out`
 test.skip('handles connection timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   const expectedBody = {mutations: [{create: doc}]}
@@ -1058,7 +1084,7 @@ test.skip('handles connection timeouts gracefully', t => {
     })
 })
 
-// @todo these tests are failing because `nock` doesn't work well with `nock`
+// @todo these tests are failing because `nock` doesn't work well with `timed-out`
 test.skip('handles socket timeouts gracefully', t => {
   const doc = {_id: 'foo/bar', visits: 5}
   const expectedBody = {mutations: [{create: doc}]}

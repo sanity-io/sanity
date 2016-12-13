@@ -45,7 +45,7 @@ assign(SanityClient.prototype, {
       getRequestOptions(this.clientConfig),
       options,
       {url: this.getUrl(options.url || options.uri)}
-    ))
+    ), this.clientConfig.requester)
   }
 })
 
@@ -66,5 +66,6 @@ function createClient(config) {
 
 createClient.Patch = Patch
 createClient.Transaction = Transaction
+createClient.requester = httpRequest.defaultRequester
 
 module.exports = createClient
