@@ -5,7 +5,7 @@
   "main": "lib/sanityClient.js",
   "umd": "umd/sanityClient.min.js",
   "scripts": {
-    "browserify": "NODE_ENV=production DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
+    "browserify": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
     "build": "npm run clean && npm run compile && npm run browserify && npm run minify && npm run size",
     "size": "node -r babel-register src/scripts/print-bundle-size",
     "watch": "npm run compile -- --watch",

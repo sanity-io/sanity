@@ -3,7 +3,6 @@ const getIt = require('get-it')
 const createErrorClass = require('create-error-class')
 const observable = require('get-it/lib/middleware/observable')
 const retry = require('get-it/lib/middleware/retry')
-const debug = require('get-it/lib/middleware/debug')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
 const sanityObservable = require('@sanity/observable/minimal')
@@ -66,14 +65,21 @@ function stringifyBody(body, res) {
   return isJson ? JSON.stringify(body, null, 2) : body
 }
 
-const request = getIt([
-  debug({verbose: true, namespace: 'sanity:client'}),
+const middleware = [
   jsonRequest(),
   jsonResponse(),
   httpError,
   observable({implementation: sanityObservable}),
   retry({maxRetries: 5, shouldRetry: retry5xx})
-])
+]
+
+// Don't include debug middleware in browsers
+if (process.env.BROWSERIFY_ENV !== 'build') {
+  const debug = require('get-it/lib/middleware/debug')
+  middleware.unshift(debug({verbose: true, namespace: 'sanity:client'}))
+}
+
+const request = getIt(middleware)
 
 module.exports = function httpRequest(options) {
   const obs = request(options)
