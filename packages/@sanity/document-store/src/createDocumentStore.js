@@ -128,19 +128,19 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function patchDoc(documentId, patches) {
-    return bufferedDocument(documentId)
+    return checkout(documentId)
       .patch(patches)
       .commit()
   }
 
   function deleteDoc(documentId) {
-    return bufferedDocument(documentId)
+    return checkout(documentId)
       .delete()
       .commit()
   }
 
   function byId(documentId) {
-    return bufferedDocument(documentId).events
+    return checkout(documentId).events
   }
 
   function checkout(documentId) {
