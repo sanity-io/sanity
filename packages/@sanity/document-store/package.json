@@ -7,7 +7,9 @@
     "compile": "babel src --copy-files --out-dir lib",
     "prepublish": "in-publish && npm run compile || not-in-publish",
     "postpublish": "rimraf lib",
-    "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js"
+    "examples": "echo 'Running examples'; for i in examples/*.js; do echo '\n## '$i' ----\n' && node $i; done",
+    "tap": "tap --node-arg=--require --node-arg=babel-register test/*.test.js",
+    "test": "npm run tap && npm run examples"
   },
   "keywords": [],
   "author": "",
