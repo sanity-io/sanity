@@ -41,17 +41,37 @@ export default class Mutation {
     return this.params.mutations
   }
   get timestamp() : Date {
-    return new Date(this.params.timestamp)
+    if (typeof this.params.timestamp == 'string') {
+      return new Date(this.params.timestamp)
+    }
+    return undefined
   }
   assignRandomTransactionId() {
     this.params.resultRev = this.params.transactionId = luid()
+  }
+  appliesToMissingDocument() {
+    if (typeof this._appliesToMissingDocument != 'undefined') {
+      return this._appliesToMissingDocument
+    }
+    // Only mutations starting with a create operation apply to documents that do not exist ...
+    const firstMut = this.mutations[0]
+    if (firstMut) {
+      this._appliesToMissingDocument = (firstMut.create || firstMut.createIfNotExist || firstMut.createOrReplace)
+    } else {
+      this._appliesToMissingDocument = true
+    }
+    return this._appliesToMissingDocument
   }
   // Compiles all mutations into a handy function
   compile() {
     const operations = []
     this.mutations.forEach(mutation => {
       if (mutation.create) {
-        operations.push(() => mutation.create)
+        operations.push(doc => (doc === null ? mutation.create : doc))
+      } else if (mutation.createIfNotExist) {
+        operations.push(doc => (doc === null ? mutation.createIfNotExist : doc))
+      } else if (mutation.createOrReplace) {
+        operations.push(() => mutation.createOrReplace)
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {

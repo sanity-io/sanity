@@ -34,6 +34,7 @@ export default class BufferedDocument {
   mutations : Array<Mutation>
   onMutation : Function
   onRebase : Function
+  onDelete : Function
   commitHandler : Function
   constructor(doc) {
     this.document = new Document(doc)
@@ -117,7 +118,11 @@ export default class BufferedDocument {
       failure: () => {
         // Re stage commit
         commit.tries += 1
-        this.commits.unshift(commit)
+        if (this.LOCAL !== null) {
+          // Only schedule this commit for a retry of the document still exist to avoid looping
+          // indefinitely when the document was deleted from under our noses
+          this.commits.unshift(commit)
+        }
         docResponder.failure()
         // Retry
         // TODO: Be able to _not_ retry if failure is permanent
@@ -135,6 +140,17 @@ export default class BufferedDocument {
     this.rebase()
   }
 
+  handleDocumentDeleted() {
+    // If the document was just deleted, fire the onDelete event with the absolutely latest version of the document
+    // before someone deleted it so that the client may revive the document in the last state the user saw it, should
+    // she so desire.
+    if (this.LOCAL !== null && this.onDelete) {
+      this.onDelete(this.LOCAL)
+    }
+    this.commits = []
+    this.mutations = []
+  }
+
   handleDocMutation(msg) {
     // If we have no local changes, we can just pass this on to the client
     if (this.commits.length == 0 && this.mutations.length == 0) {
@@ -143,16 +159,28 @@ export default class BufferedDocument {
         this.onMutation(msg)
       }
     }
-    // It wasn't. Need to rebase
+
+    // If there are local edits, and the document was deleted, we need to purge those local edits now
+    if (this.document.EDGE === null) {
+      this.handleDocumentDeleted()
+    }
+
+    // We had local changes, so need to signal rebase
     this.rebase()
   }
 
   rebase() {
+    if (this.document.EDGE === null) {
+      this.handleDocumentDeleted()
+    }
+
     const oldLocal = this.LOCAL
     this.LOCAL = this.commits.reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
     this.LOCAL = Mutation.applyAll(this.LOCAL, this.mutations)
     // Copy over rev, since we don't care if it changed, we only care about the content
-    oldLocal._rev = this.LOCAL._rev
+    if (oldLocal !== null && this.LOCAL !== null) {
+      oldLocal._rev = this.LOCAL._rev
+    }
     const changed = !isEqual(this.LOCAL, oldLocal)
     if (changed && this.onRebase) {
       this.onRebase(this.LOCAL)

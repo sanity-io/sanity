@@ -95,3 +95,51 @@ test('simple edit cycle with remote edits', tap => {
 
   .end()
 })
+
+test('document being deleted by remote', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
+
+  .stage('when applying first local edit')
+  .localPatch({
+    set: {
+      text: 'goodbye'
+    }
+  })
+  .onMutationFired()
+  .hasLocalEdits()
+  .assertLOCAL('text', 'goodbye')
+
+  .stage('when remote patch appear')
+  .remoteMutation('1', '2', {
+    delete: {id: '1'}
+  })
+  .didRebase()
+  .onDeleteDidFire()
+  .hasNoLocalEdits()
+  .assertALLDeleted()
+
+  .stage('when local user creates document')
+  .localMutation(null, '3', {
+    create: {_id: 'a', text: 'good morning'}
+  })
+  .assertLOCAL('text', 'good morning')
+  .assertHEADDeleted()
+  .assertEDGEDeleted()
+
+  .stage('when committing local create')
+  .commit()
+  .assertHEADDeleted()
+  .assertEDGE('text', 'good morning')
+
+  .stage('when commit succeeds')
+  .commitSucceeds()
+
+  .assertALL('text', 'good morning')
+
+  .end()
+})

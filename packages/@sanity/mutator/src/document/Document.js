@@ -124,15 +124,23 @@ export default class Document {
     let mustRebase = false
     let nextMut : Mutation
     // Filter mutations that are older than the document
-    const updatedAt = new Date(this.HEAD._updatedAt)
-    if (this.incoming.find(mut => mut.timestamp < updatedAt)) {
-      this.incoming = this.incoming.filter(mut => mut.timestamp < updatedAt)
+    if (this.HEAD) {
+      const updatedAt = new Date(this.HEAD._updatedAt)
+      if (this.incoming.find(mut => mut.timestamp && mut.timestamp < updatedAt)) {
+        this.incoming = this.incoming.filter(mut => mut.timestamp < updatedAt)
+      }
     }
 
     // Keep applying mutations as long as any apply
     do {
       // Find next mutation that can be applied to HEAD (if any)
-      nextMut = this.incoming.find(mut => mut.previousRev == this.HEAD._rev)
+      if (this.HEAD) {
+        nextMut = this.incoming.find(mut => mut.previousRev == this.HEAD._rev)
+      } else {
+        // When HEAD is null, that means the document is currently deleted. Only mutations that start with a create
+        // operation will be considered.
+        nextMut = this.incoming.find(mut => mut.appliesToMissingDocument())
+      }
       mustRebase = mustRebase || this.applyIncoming(nextMut)
     } while (nextMut)
 
@@ -164,6 +172,13 @@ export default class Document {
     }
 
     this.HEAD = mut.apply(this.HEAD)
+
+    if (this.HEAD === null) {
+      // If the document was deleted, clear all upcoming pending edits that do no apply to missing documents
+      while (this.pending.length > 0 && !this.pending[0].appliesToMissingDocument()) {
+        this.pending.shift()
+      }
+    }
 
     // Eliminate from incoming set
     this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)

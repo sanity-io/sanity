@@ -17,6 +17,9 @@ export default class BufferedDocumentTester {
     this.doc.onMutation = (edge, mutation) => {
       this.onMutationCalled = true
     }
+    this.doc.onDelete = (local) => {
+      this.onDeleteCalled = true
+    }
     this.doc.commitHandler = opts => {
       this.pendingCommit = opts
     }
@@ -27,6 +30,7 @@ export default class BufferedDocumentTester {
   resetState() {
     this.onMutationCalled = false
     this.onRebaseCalled = false
+    this.onDeleteCalled = false
   }
   resetDocument(doc) {
     this.resetState()
@@ -47,10 +51,32 @@ export default class BufferedDocumentTester {
     this.doc.arrive(mut)
     return this
   }
+  remoteMutation(fromRev, toRev, operation) {
+    this.resetState()
+    const mut = new Mutation({
+      transactionId: toRev,
+      resultRev: toRev,
+      previousRev: fromRev,
+      mutations: [operation]
+    })
+    this.doc.arrive(mut)
+    return this
+  }
   localPatch(patch) {
     this.resetState()
     const mut = new Mutation({
       mutations: [{patch}]
+    })
+    this.doc.add(mut)
+    return this
+  }
+  localMutation(fromRev, toRev, operation) {
+    this.resetState()
+    const mut = new Mutation({
+      transactionId: toRev,
+      resultRev: toRev,
+      previousRev: fromRev,
+      mutations: [operation]
     })
     this.doc.add(mut)
     return this
@@ -64,7 +90,9 @@ export default class BufferedDocumentTester {
     this.resetState()
     this.pendingCommit.success()
     // Magically this commit is based on the current HEAD revision
-    this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+    if (this.doc.document.HEAD) {
+      this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+    }
     this.doc.arrive(this.pendingCommit.mutation)
     this.pendingCommit = null
     return this
@@ -93,6 +121,24 @@ export default class BufferedDocumentTester {
     this.assertLOCAL(path, values)
     return this
   }
+  assertLOCALDeleted() {
+    this.tap.ok(this.doc.LOCAL === null, `LOCAL should be deleted ${this.context}`)
+    return this
+  }
+  assertEDGEDeleted() {
+    this.tap.ok(this.doc.document.EDGE === null, `EDGE should be deleted ${this.context}`)
+    return this
+  }
+  assertHEADDeleted() {
+    this.tap.ok(this.doc.document.HEAD === null, `HEAD should be deleted ${this.context}`)
+    return this
+  }
+  assertALLDeleted() {
+    this.assertLOCALDeleted()
+    this.assertEDGEDeleted()
+    this.assertHEADDeleted()
+    return this
+  }
   didRebase() {
     this.tap.ok(this.onRebaseCalled, `should rebase ${this.context}`)
     return this
@@ -107,6 +153,14 @@ export default class BufferedDocumentTester {
   }
   onMutationDidNotFire() {
     this.tap.notOk(this.onMutationCalled, `should not mutate ${this.context}`)
+    return this
+  }
+  onDeleteDidFire() {
+    this.tap.ok(this.onDeleteCalled, `should fire onDelete event ${this.context}`)
+    return this
+  }
+  onDeleteDidNotFire() {
+    this.tap.notOk(this.onDeleteCalled, `should not fire onDelete event ${this.context}`)
     return this
   }
   isConsistent() {
