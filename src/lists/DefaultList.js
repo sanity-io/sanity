@@ -9,6 +9,31 @@ import DragBarsIcon from 'part:@sanity/base/bars-icon'
 
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
+
+const SortableItem = SortableElement(({value, index, renderListItem, props}) => {
+  return renderListItem(value, props, index)
+})
+
+const SortableList = SortableContainer(({sortableItems, renderListItem, setListContainer, props}) => {
+  return (
+    <ul className={styles.sortableList} ref={setListContainer}>
+      {
+        sortableItems.map((value, index) => {
+          return (
+            <SortableItem
+              key={`sortableItem-${index}`}
+              index={index}
+              value={value}
+              renderListItem={renderListItem}
+              props={props}
+            />
+          )
+        })
+      }
+    </ul>
+  )
+})
+
 export default class DefaultList extends React.Component {
   static propTypes = {
     items: PropTypes.arrayOf(
@@ -69,9 +94,9 @@ export default class DefaultList extends React.Component {
     // }
   }
 
-  renderListitem = (item, props, index) => {
+  renderListItem = (item, props, index) => {
     const ListItemContainer = props.ListItemContainer || ListItem
-    const {renderItem, decoration, selectedItem, highlightedItem, sortable, useDragHandle} = this.props
+    const {renderItem, decoration, selectedItem, highlightedItem, sortable, useDragHandle} = props
     return (
       <ListItemContainer
         className={styles.item}
@@ -96,23 +121,6 @@ export default class DefaultList extends React.Component {
 
     const {items, className, scrollable, sortable, useDragHandle, onSortStart, onSortEnd, onSortMove} = this.props
 
-    const SortableItem = sortable && SortableElement(({value, index}) => {
-      return this.renderListitem(value, this.props, index)
-    })
-
-    const SortableList = sortable && SortableContainer(({sortableItems}) => {
-      return (
-        <ul className={styles.sortableList} ref={this.setListContainer}>
-          {
-            sortableItems.map((value, index) => {
-              return (
-                <SortableItem key={`sortableItem-${index}`} index={index} value={value} />
-              )
-            })
-          }
-        </ul>
-      )
-    })
 
     return (
       <div
@@ -146,7 +154,10 @@ export default class DefaultList extends React.Component {
                 axis="y"
                 lockAxis="y"
                 useDragHandle={useDragHandle}
+                renderListItem={this.renderListItem}
                 hideSortableGhost
+                setListContainer={this.setListContainer}
+                props={this.props}
               />
             )
           }
