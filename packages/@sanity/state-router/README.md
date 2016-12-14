@@ -1,5 +1,7 @@
 ## @sanity/state-router
 
+[![Build Status](https://travis-ci.org/sanity-io/state-router.svg?branch=master)](https://travis-ci.org/sanity-io/state-router)
+
 ## Features
 Based on a routing schema:
 - A state object can be derived from the current pathname
