@@ -103,7 +103,7 @@ export default class EditorPane extends React.PureComponent {
         break
       }
       case 'mutate': {
-        this.handleIncomingMutations(event.mutations)
+        this.handleIncomingMutationEvent(event)
         break
       }
       case 'create': {
@@ -138,7 +138,8 @@ export default class EditorPane extends React.PureComponent {
     }
   }
 
-  handleIncomingMutations(mutations) {
+  handleIncomingMutationEvent(event) {
+    const {mutations, origin} = event
     const operations = []
     mutations.forEach(mutation => {
       if (mutation.create) {
@@ -149,7 +150,10 @@ export default class EditorPane extends React.PureComponent {
           return this.deserialize(mutation.create)
         })
       } else if (mutation.delete) {
-        operations.push(() => null)
+        // Handle deletions after the fact
+        if (origin !== 'local') {
+          operations.push(() => null)
+        }
       } else if (mutation.patch) {
         operations.push(previous => new Patcher(mutation.patch).applyViaAccessor(previous))
       } else {
