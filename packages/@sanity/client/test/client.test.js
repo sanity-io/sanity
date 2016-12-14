@@ -950,6 +950,45 @@ test('transaction commit() throws if called without a client', t => {
 })
 
 /*****************
+ * LISTENERS     *
+ *****************/
+test('listeners connect to listen endpoint, emits events', t => {
+  const doc = {_id: 'foo/blah', _type: 'foo.bar', prop: 'value'}
+  const response = [
+    ':',
+    '',
+    'event: welcome',
+    'data: {"listenerName":"LGFXwOqrf1GHawAjZRnhd6"}',
+    '',
+    'event: mutation',
+    `data: ${JSON.stringify({document: doc})}`,
+    '',
+    'event: disconnect',
+    'data: {"reason":"forcefully closed"}'
+  ].join('\n')
+
+  nock(projectHost()).get('/v1/data/listen/foo?query=foo.bar&includeResult=true').reply(200, response, {
+    'cache-control': 'no-cache',
+    'content-type': 'text/event-stream; charset=utf-8',
+    'transfer-encoding': 'chunked',
+  })
+
+  const sub = getClient().listen('foo.bar').subscribe({
+    next: evt => {
+      sub.unsubscribe()
+      t.deepEqual(evt.document, doc)
+      t.end()
+    },
+    error: err => {
+      sub.unsubscribe()
+      t.ifError(err)
+      t.fail('Should not call error handler')
+      t.end()
+    }
+  })
+})
+
+/*****************
  * HTTP REQUESTS *
  *****************/
 

@@ -28,7 +28,7 @@ module.exports = function listen(query, params, opts = {}) {
   const listenOpts = pick(options, possibleOptions)
   const qs = encodeQueryString({query, params, options: listenOpts})
   const dataset = validators.hasDataset(this.clientConfig)
-  const uri = `${this.clientConfig.apiHost}${this.getDataUrl('listen', `${dataset}${qs}`)}`
+  const uri = `${this.clientConfig.url}${this.getDataUrl('listen', `${dataset}${qs}`)}`
   const token = this.clientConfig.token
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
