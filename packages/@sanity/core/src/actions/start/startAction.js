@@ -21,9 +21,10 @@ export default async (args, context) => {
   })
 
   const {port, hostname} = config
+  const httpHost = flags.host === 'all' ? '0.0.0.0' : (flags.host || hostname)
   const httpPort = flags.port || port
   const compiler = server.locals.compiler
-  const listeners = [thenify(server.listen.bind(server))(httpPort, hostname)]
+  const listeners = [thenify(server.listen.bind(server))(httpPort, httpHost)]
   const configSpinner = output.spinner('Checking configuration files...')
 
   // "invalid" doesn't mean the bundle is invalid, but that it is *invalidated*,
@@ -39,7 +40,7 @@ export default async (args, context) => {
   try {
     httpServers = await Promise.all(listeners)
   } catch (err) {
-    gracefulDeath(config, err)
+    gracefulDeath(httpHost, config, err)
   }
 
   // "done" event fires when Webpack has finished recompiling the bundle.
@@ -55,7 +56,7 @@ export default async (args, context) => {
     const hasWarnings = stats.hasWarnings()
 
     if (!hasErrors && !hasWarnings) {
-      output.print(chalk.green(`Compiled successfully! Server listening on http://${hostname}:${httpPort}`))
+      output.print(chalk.green(`Compiled successfully! Server listening on http://${httpHost}:${httpPort}`))
       return
     }
 
@@ -70,7 +71,7 @@ export default async (args, context) => {
       printWarnings(output, warnings)
     }
 
-    output.print(chalk.green(`Server listening on http://${hostname}:${httpPort}`))
+    output.print(chalk.green(`Server listening on http://${httpHost}:${httpPort}`))
     if (httpServers.length > 1) {
       output.print(chalk.green(`Storybook listening on ${httpServers[1]}`))
     }
@@ -112,7 +113,7 @@ function resolveStaticPath(rootDir, config) {
     : path.resolve(path.join(rootDir, staticPath))
 }
 
-function gracefulDeath(config, err) {
+function gracefulDeath(httpHost, config, err) {
   if (err.code === 'EADDRINUSE') {
     throw new Error('Port number for Sanity server is already in use, configure `server.port` in `sanity.json`')
   }
@@ -120,7 +121,7 @@ function gracefulDeath(config, err) {
   if (err.code === 'EACCES') {
     const help = config.port < 1024
       ? 'port numbers below 1024 requires root privileges'
-      : `do you have access to listen to the given hostname (${config.hostname})?`
+      : `do you have access to listen to the given host (${httpHost})?`
 
     throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
   }
