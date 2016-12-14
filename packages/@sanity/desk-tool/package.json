@@ -29,9 +29,9 @@
     "shallow-equals": "0.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.3.0",
+    "@sanity/base": "^0.3.4",
     "@sanity/check": "^0.0.3",
-    "@sanity/client": "^0.3.17",
+    "@sanity/client": "^0.4.3",
     "@sanity/components": "^0.0.72",
     "@sanity/core": "^0.0.26",
     "babel-cli": "^6.18.0",
