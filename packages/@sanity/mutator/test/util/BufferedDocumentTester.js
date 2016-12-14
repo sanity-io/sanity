@@ -24,16 +24,20 @@ export default class BufferedDocumentTester {
     this.pendingCommit = null
     this.context = 'initially'
   }
-  reset() {
+  resetState() {
     this.onMutationCalled = false
     this.onRebaseCalled = false
+  }
+  resetDocument(doc) {
+    this.resetState()
+    this.doc.reset(doc)
   }
   stage(title) {
     this.context = title
     return this
   }
   remotePatch(fromRev, toRev, patch) {
-    this.reset()
+    this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
       resultRev: toRev,
@@ -44,7 +48,7 @@ export default class BufferedDocumentTester {
     return this
   }
   localPatch(patch) {
-    this.reset()
+    this.resetState()
     const mut = new Mutation({
       mutations: [{patch}]
     })
@@ -52,12 +56,12 @@ export default class BufferedDocumentTester {
     return this
   }
   commit() {
-    this.reset()
+    this.resetState()
     this.doc.commit()
     return this
   }
   commitSucceeds() {
-    this.reset()
+    this.resetState()
     this.pendingCommit.success()
     // Magically this commit is based on the current HEAD revision
     this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
@@ -66,7 +70,7 @@ export default class BufferedDocumentTester {
     return this
   }
   commitFails() {
-    this.reset()
+    this.resetState()
     this.pendingCommit.failure()
     this.pendingCommit = null
     return this

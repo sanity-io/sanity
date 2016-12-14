@@ -14,7 +14,8 @@ export default class Mutation {
     identity : string,
     previousRev : string,
     resultRev : string,
-    mutations : Array<Object>
+    mutations : Array<Object>,
+    timestamp: String,
   }
   compiled : Function
   constructor(options : Object) {
@@ -38,6 +39,9 @@ export default class Mutation {
   }
   get mutations() : Array<Object> {
     return this.params.mutations
+  }
+  get timestamp() : Date {
+    return new Date(this.params.timestamp)
   }
   assignRandomTransactionId() {
     this.params.resultRev = this.params.transactionId = luid()

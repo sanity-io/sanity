@@ -52,12 +52,19 @@ export default class Document {
   lastStagedAt : Date
 
   constructor(doc : Object) {
+    this.reset(doc)
+  }
+
+  // Reset the state of the Document, used to recover from unsavory states by reloading the document
+  reset(doc : Object) {
     this.incoming = []
     this.submitted = []
     this.pending = []
     this.inconsistentAt = null
     this.HEAD = doc
     this.EDGE = doc
+    this.considerIncoming()
+    this.updateConsistencyFlag()
   }
 
   // Call when a mutation arrives from Sanity
@@ -116,6 +123,13 @@ export default class Document {
   considerIncoming() {
     let mustRebase = false
     let nextMut : Mutation
+    // Filter mutations that are older than the document
+    const updatedAt = new Date(this.HEAD._updatedAt)
+    if (this.incoming.find(mut => mut.timestamp < updatedAt)) {
+      this.incoming = this.incoming.filter(mut => mut.timestamp < updatedAt)
+    }
+
+    // Keep applying mutations as long as any apply
     do {
       // Find next mutation that can be applied to HEAD (if any)
       nextMut = this.incoming.find(mut => mut.previousRev == this.HEAD._rev)

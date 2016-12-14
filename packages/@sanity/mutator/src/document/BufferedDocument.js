@@ -44,6 +44,13 @@ export default class BufferedDocument {
     this.commits = []
   }
 
+  // Used to reset the state of the local document model. If the model has been inconsistent
+  // for too long, it has probably missed a notification, and should reload the document from the server
+  reset(doc) {
+    this.document.reset(doc)
+    this.rebase()
+  }
+
   // Add a change to the buffer
   add(mutation : Mutation) {
     this.mutations.push(mutation)
