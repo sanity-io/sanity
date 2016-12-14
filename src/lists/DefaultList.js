@@ -136,7 +136,7 @@ export default class DefaultList extends React.Component {
             !sortable && <ul className={styles.list} ref={this.setListContainer}>
               {
                 items && items.map((item, index) => {
-                  return this.renderListitem(item, this.props, index)
+                  return this.renderListItem(item, this.props, index)
                 })
               }
             </ul>
