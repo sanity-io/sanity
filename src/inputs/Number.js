@@ -15,7 +15,7 @@ export default class Num extends React.Component {
 
   static defaultProps = {
     onChange() {}
-  };
+  }
 
   handleChange = event => {
     const eventValue = event.target.value
@@ -43,7 +43,7 @@ export default class Num extends React.Component {
         description={field.description}
         type="number"
         level={level}
-        placeholder={field.placeholder || 'Must be a number. Ex 1234'}
+        placeholder={field.placeholder || 'Must be a number'}
         onChange={this.handleChange}
         value={typeof value === 'undefined' ? value : String(value)}
         focus={focus}
