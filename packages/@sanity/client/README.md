@@ -30,6 +30,13 @@ const client = sanityClient({
 
 Initializes a new Sanity Client. Required options are `projectId`, `dataset` and `token`.
 
+## Fetch a single document
+
+```js
+client.getDocument('bikeshop/bike-123').then(bike => {
+  console.log(`${bike.name} (${bike.seats} seats)`)
+})
+```
 
 ## Performing queries
 
