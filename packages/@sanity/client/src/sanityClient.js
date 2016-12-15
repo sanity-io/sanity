@@ -23,6 +23,10 @@ function SanityClient(config = defaultConfig) {
 
 assign(SanityClient.prototype, dataMethods)
 assign(SanityClient.prototype, {
+  clone() {
+    return new SanityClient(this.config())
+  },
+
   config(newConfig) {
     if (typeof newConfig === 'undefined') {
       return assign({}, this.clientConfig)

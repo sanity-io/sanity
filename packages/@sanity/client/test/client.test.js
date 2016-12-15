@@ -48,6 +48,17 @@ test('config getter returns a cloned object', t => {
   t.end()
 })
 
+test('can clone client', t => {
+  const client = sanityClient({projectId: 'abc123'})
+  t.equal(client.config().projectId, 'abc123', 'constructor opts are set')
+
+  const client2 = client.clone()
+  client2.config({projectId: 'def456'})
+  t.equal(client.config().projectId, 'abc123')
+  t.equal(client2.config().projectId, 'def456')
+  t.end()
+})
+
 test('throws if no projectId is set', t => {
   t.throws(sanityClient, /projectId/)
   t.end()

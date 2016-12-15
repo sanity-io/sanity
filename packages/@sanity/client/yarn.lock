@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@rexxars/timed-out@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@rexxars/timed-out/-/timed-out-3.0.1.tgz#c8a435891708323ac01bd108e88ed09713b3df66"
-
 "@sanity/eventsource@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/eventsource/-/eventsource-1.0.1.tgz#47c24b72b318da6247f1b9e495f90520bccacae4"
@@ -1412,9 +1408,9 @@ eslint-config-sanity@^2.0.1:
   dependencies:
     eslint-config-bengler "^3.0.1"
 
-eslint@^3.9.0:
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.12.1.tgz#507a609fe251dfefd58fda03e6dbd7e851c07581"
+eslint@^3.12.2:
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.12.2.tgz#6be5a9aa29658252abd7f91e9132bab1f26f3c34"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -1729,11 +1725,10 @@ get-caller-file@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.2.tgz#f702e63127e7e231c160a80c1554acb70d5047e5"
 
-get-it@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.10.tgz#ea8b07ae00064f60fd33a14677576e6f8cc909aa"
+get-it@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.11.tgz#3c920457da3b432019b2efad56b8264817159c6f"
   dependencies:
-    "@rexxars/timed-out" "^3.0.1"
     create-error-class "^3.0.2"
     debug "^2.3.3"
     follow-redirects "^1.2.0"
@@ -1748,6 +1743,7 @@ get-it@^0.0.10:
     progress-stream "^1.2.0"
     same-origin "^0.1.1"
     simple-concat "^1.0.0"
+    timed-out "^3.1.0"
     unzip-response "^2.0.1"
     url-parse "^1.1.7"
 
@@ -3491,6 +3487,10 @@ through2@~0.2.3:
 "through@>=2.2.7 <3", through@^2.3.6, through@~2.3.4, through@~2.3.8:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
+
+timed-out@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.1.0.tgz#43b98b14bb712c9161c28f4dc1f3068d67a04ec2"
 
 timers-browserify@^1.0.1:
   version "1.4.2"
