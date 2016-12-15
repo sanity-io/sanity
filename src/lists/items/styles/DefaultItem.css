@@ -14,25 +14,27 @@
   text-overflow: ellipsis;
   user-select: none;
   cursor: default;
+}
 
-  &.selected {
-    background-color: color(var(--default-item-selected-color) a(60%));
-    color: #fff;
-  }
+.selected {
+  background-color: color(var(--default-item-selected-color) a(60%));
+  color: #fff;
+}
 
-  &.highlighted {
-    background-color: color(var(--default-item-selected-color) a(50%));
-    color: #fff;
-  }
+.highlighted {
+  background-color: color(var(--default-item-selected-color) a(50%));
+  color: #fff;
+}
 
-  &.active {
-    background-color: color(var(--default-item-selected-color) a(80%));
-    color: #fff;
-  }
+.active {
+  background-color: color(var(--default-item-selected-color) a(80%));
+  color: #fff;
+}
 
-  &.sortableHelper {
-    background-color: color(var(--default-item-selected-color) a(50%));
-  }
+.sortableHelper {
+  background-color: inherit;
+  color: inherit;
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
 }
 
 .default {
@@ -62,12 +64,12 @@
 
 .sortableHelper {
   display: block;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .dragHandle {
   float: left;
-  cursor: move;
+  cursor: row-resize;
   font-size: 1em;
   height: 100%;
   line-height: 100%;

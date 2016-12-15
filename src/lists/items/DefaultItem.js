@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/items/default-style'
-import ReactDOM from 'react-dom'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
@@ -34,6 +33,7 @@ export default class DefaultListItem extends React.Component {
     })
     window.addEventListener('mouseup', this.handleMouseUp)
   }
+
   handleMouseUp = event => {
     this.setState({
       mouseIsDown: false
@@ -46,12 +46,21 @@ export default class DefaultListItem extends React.Component {
   }
 
   componentDidUpdate() {
-    this.ensureVisible()
+    //this.ensureVisible()
+  }
+
+  setElement = element => {
+    this._element = element
   }
 
   ensureVisible() {
-    if (this.props.selected) {
-      this.props.scrollIntoView(ReactDOM.findDOMNode(this))
+    const {selected, scrollIntoView} = this.props
+    if (selected && scrollIntoView) {
+      // TODO fix this
+      // Hack because the ref in defaultlist is called after this
+      setTimeout(() => {
+        scrollIntoView(this._element)
+      }, 0)
     }
   }
 
@@ -67,7 +76,7 @@ export default class DefaultListItem extends React.Component {
       ${className}
     `
     return (
-      <li className={rootClasses} onClick={this.handleClick} data-item-key={item.key} onMouseDown={this.handleMouseDown}>
+      <li className={rootClasses} onClick={this.handleClick} data-item-key={item.key} onMouseDown={this.handleMouseDown} ref={this.setElement}>
         {this.props.children}
       </li>
     )
