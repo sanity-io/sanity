@@ -14,9 +14,9 @@ const SortableItem = SortableElement(({value, index, renderListItem, props}) => 
   return renderListItem(value, props, index)
 })
 
-const SortableList = SortableContainer(({sortableItems, renderListItem, setListContainer, props}) => {
+const SortableList = SortableContainer(({sortableItems, renderListItem}) => {
   return (
-    <ul className={styles.sortableList} ref={setListContainer}>
+    <ul className={styles.sortableList}>
       {
         sortableItems.map((value, index) => {
           return (
@@ -25,7 +25,6 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, setListC
               index={index}
               value={value}
               renderListItem={renderListItem}
-              props={props}
             />
           )
         })
@@ -77,10 +76,6 @@ export default class DefaultList extends React.Component {
     this.props.onSelect(item)
   }
 
-  setListContainer = element => {
-    this._listContainer = element
-  }
-
   scrollElementIntoViewIfNeeded = domNode => {
     const containerDomNode = ReactDOM.findDOMNode(this)
     const offset = domNode.offsetTop
@@ -94,9 +89,18 @@ export default class DefaultList extends React.Component {
     // }
   }
 
-  renderListItem = (item, props, index) => {
-    const ListItemContainer = props.ListItemContainer || ListItem
-    const {renderItem, decoration, selectedItem, highlightedItem, sortable, useDragHandle} = props
+  renderListItem = (item, index) => {
+
+    const {
+      ListItemContainer = ListItem,
+      renderItem,
+      decoration,
+      selectedItem,
+      highlightedItem,
+      sortable,
+      useDragHandle
+    } = this.props
+
     return (
       <ListItemContainer
         className={styles.item}
@@ -119,7 +123,16 @@ export default class DefaultList extends React.Component {
 
   render() {
 
-    const {items, className, scrollable, sortable, useDragHandle, onSortStart, onSortEnd, onSortMove} = this.props
+    const {
+      items,
+      className,
+      scrollable,
+      sortable,
+      useDragHandle,
+      onSortStart,
+      onSortEnd,
+      onSortMove
+    } = this.props
 
 
     return (
@@ -135,9 +148,7 @@ export default class DefaultList extends React.Component {
           {
             !sortable && <ul className={styles.list} ref={this.setListContainer}>
               {
-                items && items.map((item, index) => {
-                  return this.renderListItem(item, this.props, index)
-                })
+                items && items.map(this.renderListItem)
               }
             </ul>
           }
@@ -156,8 +167,6 @@ export default class DefaultList extends React.Component {
                 useDragHandle={useDragHandle}
                 renderListItem={this.renderListItem}
                 hideSortableGhost
-                setListContainer={this.setListContainer}
-                props={this.props}
               />
             )
           }
