@@ -147,7 +147,7 @@ export default async function initSanity(args, context) {
     if (projects.length === 0) {
       debug('No projects found for user, prompting for name')
       const projectName = await prompt.single({message: 'Informal name for your project'})
-      return await createProject(apiClient, {displayName: projectName})
+      return createProject(apiClient, {displayName: projectName})
     }
 
     debug(`User has ${projects.length} project(s) already, showing list of choices`)
@@ -169,7 +169,7 @@ export default async function initSanity(args, context) {
 
     if (selected === 'new') {
       debug('User wants to create a new project, prompting for name')
-      return await createProject(apiClient, {
+      return createProject(apiClient, {
         displayName: await prompt.single({message: 'Informal name for your project'})
       })
     }

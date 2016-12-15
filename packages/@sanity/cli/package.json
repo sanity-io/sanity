@@ -35,13 +35,13 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/client": "^0.3.6",
+    "@sanity/client": "^0.4.3",
     "@sanity/resolver": "^0.0.9",
-    "@sanity/util": "0.0.2",
-    "babel-polyfill": "^6.13.0",
+    "@sanity/util": "^0.0.3",
+    "babel-polyfill": "^6.20.0",
     "chalk": "^1.1.3",
     "configstore": "^2.0.0",
-    "debug": "^2.2.0",
+    "debug": "^2.4.4",
     "deep-sort-object": "^1.0.1",
     "execa": "^0.5.0",
     "fs-promise": "^1.0.0",
@@ -49,7 +49,7 @@
     "gitconfiglocal": "^2.0.1",
     "github-url-to-object": "^2.1.0",
     "in-publish": "^2.0.0",
-    "inquirer": "^1.2.2",
+    "inquirer": "^2.0.0",
     "is-git-url": "^0.2.3",
     "leven": "^2.0.0",
     "lodash": "^4.5.0",
@@ -64,7 +64,7 @@
     "simple-get": "^2.3.0",
     "split2": "^2.1.0",
     "thenify": "^3.2.0",
-    "update-notifier": "^1.0.2",
+    "update-notifier": "^1.0.3",
     "validate-npm-package-name": "^2.2.2"
   },
   "devDependencies": {
@@ -75,9 +75,9 @@
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.8.1",
-    "eslint-config-sanity": "^1.1.3",
-    "mocha": "^3.1.2",
+    "eslint": "^3.12.2",
+    "eslint-config-sanity": "^2.0.1",
+    "mocha": "^3.2.0",
     "rimraf": "^2.5.2",
     "source-map-support": "^0.4.6"
   }
