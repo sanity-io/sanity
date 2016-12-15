@@ -11,8 +11,10 @@ export default {
       ]
     },
     {
+
       name: 'car',
       type: 'object',
+      title: 'Car',
       options: {
       },
       fields: [
@@ -34,9 +36,10 @@ export default {
         {
           name: 'relatedCars',
           type: 'array',
-          title: 'Array of objects',
+          title: 'Array of related cars',
           description: 'This array are defined in the field.',
           of: [{
+            title: 'Related car',
             type: 'car'
           }]
         }
@@ -45,6 +48,7 @@ export default {
     {
       name: 'cars',
       type: 'object',
+      title: 'List of cars',
       fields: [
         {
           name: 'tags',
@@ -67,6 +71,7 @@ export default {
           title: 'Array of cars in a list',
           description: 'This array are defined in the field.',
           of: [{
+            title: 'Car in a list',
             type: 'car'
           }]
         },
@@ -95,6 +100,7 @@ export default {
             view: 'grid'
           },
           of: [{
+            title: 'Car',
             type: 'car'
           }]
         },
@@ -107,6 +113,7 @@ export default {
             sortable: true
           },
           of: [{
+            title: 'Car',
             type: 'car'
           }]
         }

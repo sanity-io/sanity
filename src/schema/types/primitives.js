@@ -7,7 +7,7 @@ import {ifNotUniqueProp} from './utils'
 export default {
   object: {
     options: {
-      title: PropTypes.string,
+      title: PropTypes.string.isRequired,
       fields: PropTypes.array.isRequired,
       fieldsets: PropTypes.array,
       displayField: PropTypes.string,

@@ -15,6 +15,7 @@ import styles from './styles/Array.css'
 import arrify from 'arrify'
 import {getFieldType} from '../../schema/getFieldType'
 import randomKey from './randomKey'
+import {get} from 'lodash'
 
 const SortableDefaultList = SortableContainer(DefaultList)
 
@@ -152,7 +153,7 @@ export default class Arr extends React.Component {
     })
 
     return (
-      <DropDownButton items={items} ripple inverted kind="add" onAction={this.handleDropDownAction}>
+      <DropDownButton items={items} color="primary" onAction={this.handleDropDownAction}>
         New {this.props.field.title}
       </DropDownButton>
     )
@@ -178,11 +179,11 @@ export default class Arr extends React.Component {
       .concat(setKeyPatch)
       .concat(arrify(event.patch)
       .map(patch => {
-      return {
-        ...patch,
-        path: [{_key: key}, ...(patch.path || [])]
-      }
-    }))
+        return {
+          ...patch,
+          path: [{_key: key}, ...(patch.path || [])]
+        }
+      }))
     onChange({patch: patches})
   }
 
@@ -236,7 +237,6 @@ export default class Arr extends React.Component {
 
   renderItem = (item, index) => {
     const {type} = this.props
-    const {editItemKey} = this.state
     const itemField = this.getItemField(item)
     if (!itemField) {
       return (
@@ -248,7 +248,7 @@ export default class Arr extends React.Component {
     }
 
     return (
-      <SortableItem key={item.key} disabled={Boolean(editItemKey)} index={index}>
+      <div>
         <ItemPreview
           field={itemField}
           value={item}
@@ -256,7 +256,7 @@ export default class Arr extends React.Component {
           onRemove={this.handleRemoveItem}
         />
         {this.getEditItem() === item && this.renderEditItemForm(item)}
-      </SortableItem>
+      </div>
     )
   }
 
@@ -266,14 +266,17 @@ export default class Arr extends React.Component {
       return <GridList renderItem={this.renderItem} items={value.value} />
     }
 
+    const sortable = get(type, 'options.sortable')
+
     return (
-      <SortableDefaultList
+      <DefaultList
         lockAxis="y"
         distance={5}
         onSortEnd={this.handleMove}
         renderItem={this.renderItem}
         items={value.value}
         useDragHandle
+        sortable={sortable}
         decoration="divider"
       />
     )
@@ -295,7 +298,7 @@ export default class Arr extends React.Component {
           <div className={styles.functions}>
             {
               this.props.type.of.length == 1
-              && <Button onClick={this.handleAddBtnClick} color="primary" className={styles.addButton}>
+              && <Button onClick={this.handleAddBtnClick} className={styles.addButton} color="primary">
                 Add
               </Button>
             }

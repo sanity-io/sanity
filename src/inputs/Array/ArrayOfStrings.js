@@ -39,11 +39,12 @@ export default class ArrayOfStrings extends React.Component {
   }
 
   render() {
-    const {field, value} = this.props
+    const {field, value, level} = this.props
 
     return (
       <TagInput
         label={field.title}
+        level={level}
         description={field.description}
         tags={value || []}
         onRemoveTag={this.handleRemoveItem}
