@@ -23,16 +23,3 @@ export function createReferenceMap(doc, refs) {
     refs: refs.map(item => serializePath(item.path))
   }
 }
-
-export function transformStrongRefs(doc) {
-  const refs = findStrongRefs(doc)
-
-  // Sorry, we're mutating the documents here in order to ease import
-  refs.forEach(item => {
-    // Make strong references weak
-    item.ref._weak = true
-  })
-
-  const referenceMap = createReferenceMap(doc, refs)
-  return {doc, referenceMap}
-}

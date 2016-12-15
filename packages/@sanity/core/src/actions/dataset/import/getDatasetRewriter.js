@@ -20,7 +20,10 @@ export default function getDatasetRewriter(fromDataset, toDataset) {
 
     // Yes, we're mutating. This is in a stream though,
     // and deep-cloning would be expensive and unnecessary
-    doc._id = replaceId(doc._id)
+    if (doc._id) {
+      doc._id = replaceId(doc._id)
+    }
+
     extractWithPath('..[_ref]', doc)
       .map(match => get(doc, match.path.slice(0, -1)))
       .forEach(ref => {

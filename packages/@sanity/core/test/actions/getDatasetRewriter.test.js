@@ -3,7 +3,7 @@ import path from 'path'
 import split2 from 'split2'
 import {expect} from 'chai'
 import {describe, it} from 'mocha'
-import getDatasetRewriter from '../../src/actions/dataset/getDatasetRewriter'
+import getDatasetRewriter from '../../src/actions/dataset/import/getDatasetRewriter'
 
 const fixturesDir = path.join(__dirname, '..', 'fixtures', 'datasetRewriter')
 

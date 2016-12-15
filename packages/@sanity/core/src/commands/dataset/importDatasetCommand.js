@@ -6,8 +6,8 @@ import createClient from '@sanity/client'
 import debug from '../../debug'
 import generateGuid from '../../util/generateGuid'
 import readFirstLine from '../../util/readFirstLine'
-import strengthenReferences from '../../actions/dataset/strengthenReferences'
-import importDocumentsToDataset from '../../actions/dataset/importDocumentsToDataset'
+import strengthenReferences from '../../actions/dataset/import/strengthenReferences'
+import importDocumentsToDataset from '../../actions/dataset/import/importDocumentsToDataset'
 
 export default {
   name: 'import',
@@ -42,15 +42,22 @@ export default {
     let rewriteDataset = false
     try {
       const firstLine = await readFirstLine(sourceFile)
-      const firstDocId = JSON.parse(firstLine)._id
+      const firstDocId = JSON.parse(firstLine)._id || ''
       fromDataset = firstDocId.split('/', 2)[0]
       rewriteDataset = specifiedDataset && fromDataset !== specifiedDataset
       targetDataset = specifiedDataset ? specifiedDataset : fromDataset
     } catch (err) {
       throw new Error(err.code === 'ENOENT'
         ? `File "${chalk.cyan(sourceFile)}" does not exist`
-        : `Failed to parse specified file ("${chalk.cyan(sourceFile)}")`
+        : `Failed to parse specified file ("${chalk.cyan(sourceFile)}"): ${err.message}`
       )
+    }
+
+    if (!targetDataset) {
+      throw new Error([
+        'Could not resolve dataset for import, please specify target dataset:',
+        chalk.cyan(`sanity dataset import ${file} ${chalk.bold('<targetDataset>')}`)
+      ].join('\n'))
     }
 
     const documentCount = await linecount(sourceFile)
@@ -99,12 +106,13 @@ export default {
             progress.template = `${chalk.green('✔')} Importing documents :b :p% in :ts`
           }
 
-          progress.step(batchSize)
+          progress.step(Math.min(batchSize, documentCount))
         }
       }, context)
       clearInterval(progressTicker)
     } catch (err) {
       clearInterval(progressTicker)
+      output.print('\n')
       return output.error(err)
     }
 
