@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/client": "^0.4.3",
+    "@sanity/client": "^0.4.4",
     "@sanity/resolver": "^0.0.9",
     "@sanity/util": "^0.0.3",
     "babel-polyfill": "^6.20.0",

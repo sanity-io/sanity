@@ -2,19 +2,15 @@
 # yarn lockfile v1
 
 
-"@rexxars/timed-out@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@rexxars/timed-out/-/timed-out-3.0.1.tgz#c8a435891708323ac01bd108e88ed09713b3df66"
-
-"@sanity/client@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.3.tgz#092c968416557b11ffa1bb0632b4ae279ba210a2"
+"@sanity/client@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.4.tgz#257cd5772b8d47d5ad466110fad7cf899aba4e63"
   dependencies:
     "@sanity/eventsource" "^1.0.1"
     "@sanity/observable" "^1.1.0"
     create-error-class "^3.0.2"
     deep-assign "^2.0.0"
-    get-it "^0.0.10"
+    get-it "^0.0.11"
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
@@ -523,15 +519,7 @@ babel-plugin-transform-strict-mode@^6.18.0:
     babel-runtime "^6.0.0"
     babel-types "^6.18.0"
 
-babel-polyfill@^6.16.0:
-  version "6.16.0"
-  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.16.0.tgz#2d45021df87e26a374b6d4d1a9c65964d17f2422"
-  dependencies:
-    babel-runtime "^6.9.1"
-    core-js "^2.4.0"
-    regenerator-runtime "^0.9.5"
-
-babel-polyfill@^6.20.0:
+babel-polyfill@^6.16.0, babel-polyfill@^6.20.0:
   version "6.20.0"
   resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.20.0.tgz#de4a371006139e20990aac0be367d398331204e7"
   dependencies:
@@ -583,14 +571,7 @@ babel-register@^6.18.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.2"
 
-babel-runtime@^6.0.0, babel-runtime@^6.11.6, babel-runtime@^6.9.0, babel-runtime@^6.9.1:
-  version "6.18.0"
-  resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.18.0.tgz#0f4177ffd98492ef13b9f823e9994a02584c9078"
-  dependencies:
-    core-js "^2.4.0"
-    regenerator-runtime "^0.9.5"
-
-babel-runtime@^6.20.0:
+babel-runtime@^6.0.0, babel-runtime@^6.11.6, babel-runtime@^6.20.0, babel-runtime@^6.9.0, babel-runtime@^6.9.1:
   version "6.20.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.20.0.tgz#87300bdcf4cd770f09bf0048c64204e17806d16f"
   dependencies:
@@ -891,13 +872,7 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.2.0:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
-  dependencies:
-    ms "0.7.2"
-
-debug@^2.3.3, debug@^2.4.4:
+debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.4.4:
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.4.tgz#c04d17a654e9202464803f096153f70a6f31f4be"
   dependencies:
@@ -1390,11 +1365,10 @@ generate-object-property@^1.1.0:
   dependencies:
     is-property "^1.0.0"
 
-get-it@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.10.tgz#ea8b07ae00064f60fd33a14677576e6f8cc909aa"
+get-it@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.11.tgz#3c920457da3b432019b2efad56b8264817159c6f"
   dependencies:
-    "@rexxars/timed-out" "^3.0.1"
     create-error-class "^3.0.2"
     debug "^2.3.3"
     follow-redirects "^1.2.0"
@@ -1409,6 +1383,7 @@ get-it@^0.0.10:
     progress-stream "^1.2.0"
     same-origin "^0.1.1"
     simple-concat "^1.0.0"
+    timed-out "^3.1.0"
     unzip-response "^2.0.1"
     url-parse "^1.1.7"
 
@@ -2523,10 +2498,6 @@ regenerator-runtime@^0.10.0:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.1.tgz#257f41961ce44558b18f7814af48c17559f9faeb"
 
-regenerator-runtime@^0.9.5:
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.9.6.tgz#d33eb95d0d2001a4be39659707c51b0cb71ce029"
-
 regex-cache@^0.4.2:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/regex-cache/-/regex-cache-0.4.3.tgz#9b1a6c35d4d0dfcef5711ae651e8e9d3d7114145"
@@ -2904,6 +2875,10 @@ through@^2.3.6:
 timed-out@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.0.0.tgz#ff88de96030ce960eabd42487db61d3add229273"
+
+timed-out@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.1.0.tgz#43b98b14bb712c9161c28f4dc1f3068d67a04ec2"
 
 tmp@^0.0.29:
   version "0.0.29"
