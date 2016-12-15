@@ -13,7 +13,8 @@ export default class TagsTextField extends React.Component {
     focus: PropTypes.func,
     showClearButton: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.string),
-    description: PropTypes.string
+    description: PropTypes.string,
+    level: PropTypes.number
   }
 
   static defaultProps = {
@@ -95,7 +96,7 @@ export default class TagsTextField extends React.Component {
   }
 
   render() {
-    const {tags, label, description} = this.props
+    const {tags, label, description, level} = this.props
     const setInput = component => {
       this._input = component
     }
@@ -105,6 +106,7 @@ export default class TagsTextField extends React.Component {
           ${styles.root}
           ${this.state.isFocused ? styles.isFocused : 'noFocus'}
         `}
+        level={level}
         label={label}
         labelHtmlFor={this._inputId}
         description={description}
