@@ -1056,6 +1056,22 @@ test('uploads files', t => {
     }, ifError(t))
 })
 
+test('uploads images and can cast to promise', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo', isImage)
+    .reply(201, {url: 'https://some.asset.url'})
+
+  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+    .toPromise()
+    .then(body => {
+      t.equal(body.url, 'https://some.asset.url')
+      t.end()
+    }, ifError(t))
+})
+
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('can use alternative http requester', t => {
   const requester = () => sanityObservable.of({
