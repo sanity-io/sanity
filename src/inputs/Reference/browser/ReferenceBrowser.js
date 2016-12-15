@@ -15,7 +15,6 @@ export default class ReferenceBrowser extends React.Component {
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     fetchFn: PropTypes.func,
-    materializeReferences: PropTypes.func,
     onChange: PropTypes.func
   };
 
