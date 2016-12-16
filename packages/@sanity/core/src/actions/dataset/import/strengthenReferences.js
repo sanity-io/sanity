@@ -1,15 +1,12 @@
 import noop from 'lodash/noop'
-import sanityClient from '@sanity/client'
 import promiseEach from 'promise-each-concurrency'
 import debug from '../../../debug'
 
 export default async function strengthenReferences(options) {
-  const {importId, dataset} = options
+  const {importId, client} = options
   const progress = options.progress || noop
-  const timeout = 605000
   const concurrency = 20
   const importMapQuery = `sanity.importmap[importId == $importId && importMapNumber > $prevMapNumber, limit: ${concurrency}]`
-  const client = sanityClient(Object.assign({}, options.client.config(), {dataset, timeout}))
   const getReferenceDocs = ({prevMapNumber}) =>
     client.fetch(importMapQuery, {importId, prevMapNumber})
 

@@ -2,7 +2,6 @@ import path from 'path'
 import prettyMs from 'pretty-ms'
 import progrescii from 'progrescii'
 import linecount from 'linecount/promise'
-import createClient from '@sanity/client'
 import debug from '../../debug'
 import generateGuid from '../../util/generateGuid'
 import readFirstLine from '../../util/readFirstLine'
@@ -18,12 +17,6 @@ export default {
     const {apiClient, output, chalk} = context
 
     const gradientMode = args.extOptions.gradient
-    const client = getSanityClient({
-      gradient: gradientMode,
-      token: args.extOptions.token,
-      apiClient: apiClient
-    })
-
     const operation = getMutationOperation(args.extOptions)
 
     const [file, specifiedDataset] = args.argsWithoutOptions
@@ -59,6 +52,13 @@ export default {
         chalk.cyan(`sanity dataset import ${file} ${chalk.bold('<targetDataset>')}`)
       ].join('\n'))
     }
+
+    const client = getSanityClient({
+      gradient: gradientMode,
+      token: args.extOptions.token,
+      dataset: targetDataset,
+      apiClient: apiClient
+    })
 
     const documentCount = await linecount(sourceFile)
 
@@ -104,6 +104,7 @@ export default {
         progress: () => {
           if (progress.progress + batchSize >= documentCount) {
             progress.template = `${chalk.green('✔')} Importing documents :b :p% in :ts`
+            clearInterval(progressTicker)
           }
 
           progress.step(Math.min(batchSize, documentCount))
@@ -148,12 +149,15 @@ function getSanityClient(options) {
     return options.apiClient()
   }
 
-  const config = options.apiClient({requireUser: false}).config()
-  return createClient(Object.assign({}, config, {
+  const existing = options.apiClient({requireUser: false})
+  const config = existing.config()
+
+  return existing.clone().config({
     gradientMode: true,
     apiHost: options.gradient,
-    token: options.token || config.token
-  }))
+    dataset: options.dataset || config.dataset,
+    token: options.token || config.token,
+  })
 }
 
 function getMutationOperation(flags) {

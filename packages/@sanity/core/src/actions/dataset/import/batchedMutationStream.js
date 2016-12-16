@@ -1,15 +1,14 @@
 import noop from 'lodash/noop'
 import prettyMs from 'pretty-ms'
-import createClient from '@sanity/client'
 import batchStreamOperation from 'batch-stream-operation'
 import debug from '../../../debug'
 
 export default function batchedMutationStream(options) {
-  const {dataset, mutator} = options
+  const {mutator} = options
   const timeout = 605000
   const batchSize = options.batchSize || 150
   const concurrency = options.concurrency || 4
-  const client = createClient(Object.assign({}, options.client.config(), {dataset, timeout}))
+  const client = options.client.clone().config({timeout})
   const progress = options.progress || noop
 
   const streamOptions = {objectMode: true}

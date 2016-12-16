@@ -1,8 +1,10 @@
 import fsp from 'fs-promise'
+import pumpify from 'pumpify'
 import batchedMutationStream from './batchedMutationStream'
 import getJsonStreamer from './getJsonStreamer'
 import getDatasetRewriter from './getDatasetRewriter'
 import getReferenceWeakener from './getReferenceWeakener'
+import getAssetImporter from './getAssetImporter'
 
 export default (options, context) => new Promise((resolve, reject) => {
   importDocumentsToDataset(options, context, {resolve, reject})
@@ -22,17 +24,21 @@ function importDocumentsToDataset(options, context, promise) {
   })
 
   const startTime = Date.now()
-
-  // Read from input file
-  fsp.createReadStream(sourceFile)
+  const stream = pumpify(
+    // Read from input file
+    fsp.createReadStream(sourceFile),
     // Split on each newline character and parse line as JSON
-    .pipe(getJsonStreamer())
+    getJsonStreamer(),
     // Rewrite IDs if we're importing to a different dataset
-    .pipe(getDatasetRewriter(fromDataset, targetDataset))
+    getDatasetRewriter(fromDataset, targetDataset),
     // Make strong references weak, create reference maps so we can transform them back
-    .pipe(getReferenceWeakener(options))
+    getReferenceWeakener(options),
+    // Transform and upload assets
+    getAssetImporter(options),
     // Batch into a transaction of mutations
-    .pipe(mutationStream)
-    .once('error', reject)
-    .on('complete', () => resolve({timeSpent: Date.now() - startTime}))
+    mutationStream
+  )
+
+  stream.once('error', reject)
+  mutationStream.on('complete', () => resolve({timeSpent: Date.now() - startTime}))
 }
