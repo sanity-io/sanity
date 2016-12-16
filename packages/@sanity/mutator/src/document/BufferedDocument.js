@@ -57,7 +57,7 @@ export default class BufferedDocument {
     this.mutations.push(mutation)
     const oldLocal = this.LOCAL
     this.LOCAL = mutation.apply(this.LOCAL)
-    if (this.onMutation) {
+    if (this.onMutation && oldLocal != this.LOCAL) {
       this.onMutation({
         mutation,
         document: this.LOCAL,
