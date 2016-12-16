@@ -1083,6 +1083,15 @@ test('uploads images and can cast to promise', t => {
     }, ifError(t))
 })
 
+test('delete assets', t => {
+  nock(projectHost()).delete('/v1/assets/images/foo/bar').reply(200, {some: 'prop'})
+
+  getClient().assets.delete('image', 'foo/bar').then(body => {
+    t.equal(body.some, 'prop')
+    t.end()
+  }, ifError(t))
+})
+
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('can use alternative http requester', t => {
   const requester = () => sanityObservable.of({
