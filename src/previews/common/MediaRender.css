@@ -8,23 +8,25 @@
   box-sizing: border-box;
 }
 
-.vanillaImage {
+.image {
   position: absolute;
   box-sizing: border-box;
   top: 0;
   left: 0;
+  height: 100%;
+  width: 100%;
 }
 
-.vanillaImageLandscape {
-  composes: vanillaImage;
+.landscape {
+  composes: image;
   height: 100%;
   width: auto;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.vanillaImagePortrait {
-  composes: vanillaImage;
+.portrait {
+  composes: image;
   height: auto;
   width: 100%;
   top: 50%;

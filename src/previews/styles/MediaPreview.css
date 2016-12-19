@@ -3,14 +3,7 @@
   composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   overflow: hidden;
-}
-
-.media {
-  @nest & img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+  width: 100%;
 }
 
 .title {
@@ -36,6 +29,7 @@
 }
 
 .meta {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   position: absolute;
   opacity: 0;
   top: 0;
@@ -44,8 +38,6 @@
   right: 0;
   width: 100%;
   height: 100%;
-  background-color: color(#000 a(80%));
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;

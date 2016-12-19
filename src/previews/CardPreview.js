@@ -10,10 +10,12 @@ export default class CardPreview extends React.Component {
       subtitle: PropTypes.string,
       description: PropTypes.string,
       date: PropTypes.object,
-      media: PropTypes.node,
+      media: PropTypes.element,
       imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
+      sanityImage: PropTypes.object,
+      aspect: PropTypes.number
     }),
+    aspect: PropTypes.number,
     emptyText: PropTypes.string,
     children: PropTypes.node
   }
@@ -54,8 +56,13 @@ export default class CardPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children} = this.props
+    const {item, emptyText, children, aspect} = this.props
     const {emWidth} = this.state
+
+    const containerAspect = aspect || 1
+    const imageAspect = this.state.aspect || this.props.item.aspect || 1
+
+    const {imageUrl, sanityImage, media} = item
 
     if (!item) {
       return (
@@ -68,9 +75,41 @@ export default class CardPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>
+
           {
-            item.imageUrl && <img src={item.imageUrl} className={styles.media} />
+            (item.media || item.sanityImage || item.imageUrl) && (
+              <div className={`${styles.media}`}>
+
+                <div className={`${styles.media}`}>
+                  {
+                    imageUrl && (
+                      <img src={imageUrl} className={imageAspect >= containerAspect ? styles.landscape : styles.portrait} />
+                    )
+                  }
+                  {
+                    sanityImage && (
+                      <div className={styles.sanityImage}>SanityImage</div>
+                    )
+                  }
+
+                  {
+                    media && (
+                      <div className={styles.media}>
+                        {media}
+                      </div>
+                    )
+                  }
+
+                </div>
+                {
+                  // <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
+                  // <MediaRender item={item} aspect={item.imageAspect || aspect} />
+                }
+
+              </div>
+            )
           }
+
           <div className={styles.meta} ref="meta">
             <div className={styles.heading}>
               {

@@ -3,17 +3,19 @@ import styles from './MediaRender.css'
 
 export default class MediaRender extends React.Component {
   static propTypes = {
+    aspect: PropTypes.number,
     item: PropTypes.shape({
       media: PropTypes.node,
       imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
+      sanityImage: PropTypes.object,
+      aspect: PropTypes.number
     })
   }
 
   constructor(...args) {
     super(...args)
     this.state = {
-      vanillaAspect: null
+      aspect: null
     }
   }
 
@@ -22,9 +24,9 @@ export default class MediaRender extends React.Component {
   }
 
   componentDidMount() {
-    const {imageUrl} = this.props.item
+    const {imageUrl, aspect} = this.props.item
 
-    if (imageUrl) {
+    if (imageUrl && !aspect) {
       this.renderImage(imageUrl)
     }
   }
@@ -34,7 +36,7 @@ export default class MediaRender extends React.Component {
     image.src = url
     image.onload = i => {
       this.setState({
-        vanillaAspect: image.width / image.height
+        aspect: image.width / image.height
       })
     }
   }
@@ -45,24 +47,30 @@ export default class MediaRender extends React.Component {
 
   render() {
     const {media, imageUrl, sanityImage} = this.props.item
-    const {vanillaAspect} = this.state
+
+    const containerAspect = this.props.aspect || 1
+    const imageAspect = this.props.item.aspect || this.state.aspect || 1
+
 
     return (
-      <div className={`${styles.root}`}>
+      <div className={styles.root}>
         {
-          imageUrl && vanillaAspect && (
-            <img src={imageUrl} className={vanillaAspect >= 1 ? styles.vanillaImageLandscape : styles.vanillaImagePortrait} />
+          imageUrl && (
+            <img src={imageUrl} className={imageAspect > containerAspect ? styles.landscape : styles.portrait} />
+          )
+        }
+        {
+          sanityImage && (
+            <div className={styles.sanityImage}>SanityImage</div>
           )
         }
 
         {
-          sanityImage && <div>SanityImage</div>
-        }
-
-        {
-          media && <div>
-            <media />
-          </div>
+          media && (
+            <div className={styles.media}>
+              {media}
+            </div>
+          )
         }
 
       </div>

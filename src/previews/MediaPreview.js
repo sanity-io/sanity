@@ -10,18 +10,20 @@ export default class MediaPreview extends React.Component {
       description: PropTypes.string,
       media: PropTypes.node,
       imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
+      sanityImage: PropTypes.object,
     }),
+    aspect: PropTypes.number,
     emptyText: PropTypes.string,
     children: PropTypes.node
   }
 
   static defaultProps = {
     emptyText: 'Nothing here…',
+    aspect: 1
   }
 
   render() {
-    const {item, emptyText, children} = this.props
+    const {item, emptyText, children, aspect} = this.props
 
     if (!item) {
       return (
@@ -33,12 +35,15 @@ export default class MediaPreview extends React.Component {
 
     return (
       <div className={`${styles.root}`}>
-
+        <div className={styles.padder} style={{paddingTop: `${100 * aspect}%`}} />
         {
-          (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
-            <MediaRender item={item} />
-          </div>
+          (item.media || item.sanityImage || item.imageUrl) && (
+            <div className={`${styles.media}`}>
+              <MediaRender item={item} aspect={aspect} />
+            </div>
+          )
         }
+
         <div className={`${styles.meta}`}>
           <div className={`${styles.metaInner}`}>
             <h2 className={styles.title}>

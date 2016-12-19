@@ -3,8 +3,6 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
-import GridList from 'part:@sanity/components/lists/grid'
-import CardPreview from 'part:@sanity/components/previews/card'
 
 import {arrayMove} from 'react-sortable-hoc'
 import {range, random} from 'lodash'
@@ -346,72 +344,5 @@ storiesOf('List (default)')
   {
     propTables: [DefaultList],
     role: 'part:@sanity/components/lists/default'
-  }
-)
-
-
-storiesOf('List (grid)')
-
-.addWithInfo(
-  'GridList',
-  `
-    Showing landscape thumbs in a grid
-  `,
-  () => {
-    const items = range(100).map((item, i) => {
-      const randomImage = `http://lorempixel.com/${300}/${200}?${i}`
-      return {
-        key: `${i}`,
-        title: chance.name(),
-        mediaRender() {
-          return (
-            <img src={randomImage} />
-          )
-        }
-      }
-    })
-    return (
-      <GridList items={items} onSelect={action('Select')} />
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-.addWithInfo(
-  'GridList (cards masonry)',
-  `
-    Showing landscape thumbs in a grid
-  `,
-  () => {
-
-    const items = range(100).map((item, i) => {
-      const width = random(10, 100) * 10
-      const height = random(10, 50) * 10
-      const randomImage = `http://placekitten.com/${width}/${height}`
-      return {
-        key: `${i}`,
-        title: chance.name(),
-        subtitle: chance.sentence(),
-        description: chance.paragraph(),
-        mediaRender() {
-          return (
-            <img src={randomImage} />
-          )
-        }
-      }
-    })
-    const renderItem = function (item, i) {
-      return <CardPreview item={item} />
-    }
-    return (
-      <GridList items={items} layout="masonry" onSelect={action('Select')} renderItem={renderItem} />
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
   }
 )

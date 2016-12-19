@@ -28,6 +28,7 @@
     "@sanity/imagetool": "^0.2.2",
     "canvas-to-blob": "^0.0.0",
     "chance": "^1.0.4",
+    "classnames": "^2.2.5",
     "dialog-polyfill": "^0.4.3",
     "ease-component": "^1.0.0",
     "exif-component": "^1.0.1",
@@ -40,10 +41,11 @@
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
     "react-click-outside": "^2.1.0",
+    "react-container-query": "^0.8.0",
     "react-draggable": "^2.2.2",
     "react-ink": "^5.1.1",
     "react-portal": "^3.0.0",
-    "react-sortable-hoc": "^0.2.0",
+    "react-sortable-hoc": "^0.4.5",
     "scroll": "^2.0.0"
   },
   "devDependencies": {

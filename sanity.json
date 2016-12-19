@@ -707,6 +707,10 @@
     },
     {
       "implements": "part:@sanity/base/component",
+      "path": "lists/story_grid.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
       "path": "snackbar/story.js"
     },
     {

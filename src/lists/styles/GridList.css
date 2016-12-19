@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .root {
   display: block;
 }
@@ -13,9 +11,7 @@
 }
 
 .inner {
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
+  display: block;
 }
 
 .list {
@@ -35,24 +31,51 @@
   @nest .masonry & {
     display: block;
     columns: 4;
-    column-gap: 0.5em;
+    column-gap: 0;
+    padding: 0.5rem;
+  }
+
+  @nest .masonry.containerQuery__small & {
+    columns: 1;
+  }
+
+  @nest .masonry.containerQuery__medium & {
+    columns: 3;
+  }
+
+  @nest .masonry.containerQuery__large & {
+    columns: 5;
   }
 }
 
 .item {
   cursor: default;
+  position: relative;
 
   @nest .default & {
-    display: flex;
+    display: block;
     list-style: none;
     flex-grow: 1;
-    flex-basis: 5em;
+    flex-basis: 10em;
     margin: 0.25em;
+  }
+
+  @nest .default.containerQuery__small & {
+    flex-basis: 3em;
+  }
+
+  @nest .default.containerQuery__medium & {
+    flex-basis: 16.6666666667%;
+  }
+
+  @nest .default.containerQuery__large & {
+    flex-basis: 10%;
   }
 
   @nest .masonry & {
     display: block;
-    margin-bottom: 0.5em;
+    padding: 0 0.25rem;
+    padding-bottom: 0.5rem;
     break-inside: avoid;
   }
 }

@@ -31,22 +31,21 @@ export default class DefaultListItem extends React.Component {
     this.setState({
       mouseIsDown: true
     })
-    window.addEventListener('mouseup', this.handleMouseUp)
   }
 
   handleMouseUp = event => {
     this.setState({
       mouseIsDown: false
     })
-    window.removeEventListener('mouseup', this.handleMouseUp)
   }
 
   componentDidMount() {
     this.ensureVisible()
+    window.addEventListener('mouseup', this.handleMouseUp)
   }
 
-  componentDidUpdate() {
-    //this.ensureVisible()
+  componentWillUnmount() {
+    window.removeEventListener('mouseup', this.handleMouseUp)
   }
 
   setElement = element => {

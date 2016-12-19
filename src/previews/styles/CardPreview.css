@@ -17,6 +17,7 @@
   font-weight: 300;
   margin: 0;
   padding: 0;
+  margin-bottom: 0.5em;
 }
 
 .date {
@@ -28,7 +29,16 @@
 .media {
   position: relative;
   width: 100%;
-  min-height: 5rem;
+
+  @nest & img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.padder {
+  border: 1px solid red;
 }
 
 .description {
