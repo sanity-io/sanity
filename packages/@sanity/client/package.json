@@ -23,7 +23,7 @@
     "@sanity/observable": "^1.1.0",
     "create-error-class": "^3.0.2",
     "deep-assign": "^2.0.0",
-    "get-it": "^0.0.12",
+    "get-it": "^1.0.0",
     "in-publish": "^2.0.0",
     "object-assign": "^4.1.0"
   },

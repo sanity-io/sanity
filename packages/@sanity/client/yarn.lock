@@ -1725,9 +1725,9 @@ get-caller-file@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.2.tgz#f702e63127e7e231c160a80c1554acb70d5047e5"
 
-get-it@^0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.12.tgz#737faa60b3b7045ded9494daee982fe0f890c8ad"
+get-it@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-1.0.0.tgz#f1bfce920567d4f540172a7637f5425757b7b1d0"
   dependencies:
     create-error-class "^3.0.2"
     debug "^2.3.3"
