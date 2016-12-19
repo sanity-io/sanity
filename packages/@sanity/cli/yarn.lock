@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@sanity/client@^0.4.6":
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.6.tgz#155cd555ae7290be31af38f73974defc518c8d4e"
+"@sanity/client@^0.4.7":
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.7.tgz#d7ddbb7212df53c6854533600eac0bb60fdd954c"
   dependencies:
     "@sanity/eventsource" "^1.0.1"
     "@sanity/observable" "^1.1.0"
     create-error-class "^3.0.2"
     deep-assign "^2.0.0"
-    get-it "^0.0.12"
+    get-it "^1.0.0"
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
@@ -872,13 +872,7 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.2.0:
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.4.tgz#c04d17a654e9202464803f096153f70a6f31f4be"
-  dependencies:
-    ms "0.7.2"
-
-debug@^2.3.3, debug@^2.4.5:
+debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.4.5:
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
   dependencies:
@@ -1371,9 +1365,9 @@ generate-object-property@^1.1.0:
   dependencies:
     is-property "^1.0.0"
 
-get-it@^0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.12.tgz#737faa60b3b7045ded9494daee982fe0f890c8ad"
+get-it@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-1.0.0.tgz#f1bfce920567d4f540172a7637f5425757b7b1d0"
   dependencies:
     create-error-class "^3.0.2"
     debug "^2.3.3"
