@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@sanity/client@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.4.tgz#257cd5772b8d47d5ad466110fad7cf899aba4e63"
+"@sanity/client@^0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.6.tgz#155cd555ae7290be31af38f73974defc518c8d4e"
   dependencies:
     "@sanity/eventsource" "^1.0.1"
     "@sanity/observable" "^1.1.0"
     create-error-class "^3.0.2"
     deep-assign "^2.0.0"
-    get-it "^0.0.11"
+    get-it "^0.0.12"
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
@@ -527,9 +527,9 @@ babel-polyfill@^6.16.0, babel-polyfill@^6.20.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
-babel-preset-es2015-node4@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-es2015-node4/-/babel-preset-es2015-node4-2.1.0.tgz#9852f281e2332b57d49c189841ac25466a6ebe98"
+babel-preset-es2015-node4@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/babel-preset-es2015-node4/-/babel-preset-es2015-node4-2.1.1.tgz#e31f290859b58619c8cfa241d1b0bc900f941cdb"
   dependencies:
     babel-plugin-transform-es2015-destructuring "^6.6.5"
     babel-plugin-transform-es2015-function-name "^6.5.0"
@@ -761,9 +761,9 @@ cli-cursor@^1.0.1, cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-spinners@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-0.2.0.tgz#85078737913b880f6ec9ffe7b65e83ec7776284f"
+cli-spinners@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-1.0.0.tgz#ef987ed3d48391ac3dab9180b406a742180d6e6a"
 
 cli-width@^2.0.0:
   version "2.1.0"
@@ -872,9 +872,15 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.4.4:
+debug@^2.1.1, debug@^2.2.0:
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.4.tgz#c04d17a654e9202464803f096153f70a6f31f4be"
+  dependencies:
+    ms "0.7.2"
+
+debug@^2.3.3, debug@^2.4.5:
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
   dependencies:
     ms "0.7.2"
 
@@ -1365,9 +1371,9 @@ generate-object-property@^1.1.0:
   dependencies:
     is-property "^1.0.0"
 
-get-it@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.11.tgz#3c920457da3b432019b2efad56b8264817159c6f"
+get-it@^0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.12.tgz#737faa60b3b7045ded9494daee982fe0f890c8ad"
   dependencies:
     create-error-class "^3.0.2"
     debug "^2.3.3"
@@ -2223,13 +2229,13 @@ optionator@^0.8.2:
     type-check "~0.3.2"
     wordwrap "~1.0.0"
 
-ora@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-0.3.0.tgz#367a078ad25cfb096da501115eb5b401e07d7495"
+ora@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-0.4.0.tgz#fccb5a82e169ccd27c491bd00cc1924ff7a390bd"
   dependencies:
     chalk "^1.1.1"
     cli-cursor "^1.0.2"
-    cli-spinners "^0.2.0"
+    cli-spinners "^1.0.0"
     log-symbols "^1.0.2"
 
 original@^1.0.0:
