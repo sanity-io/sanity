@@ -17,7 +17,7 @@ export default async context => {
   const packages = values(await promiseProps(buildPackageArray(
     sanityModules,
     context.workDir
-  ), {includeCli: true}))
+  , {includeCli: true})))
   spin.stop()
 
   return packages.map(mod => {
