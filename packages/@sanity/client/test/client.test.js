@@ -409,6 +409,15 @@ test('delete() sends correct mutation', t => {
   getClient().delete('foo/123').catch(t.ifError).then(() => t.end())
 })
 
+test('delete() can use query', t => {
+  const expectedBody = {mutations: [{delete: {query: 'foo.sometype'}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123'})
+
+  getClient().delete({query: 'foo.sometype'}).catch(t.ifError).then(() => t.end())
+})
+
 test('delete() can be told not to return documents', t => {
   const expectedBody = {mutations: [{delete: {id: 'foo/123'}}]}
   nock(projectHost())
@@ -633,7 +642,7 @@ test('can apply splice()', t => {
 })
 
 test('serializing invalid selectors throws', t => {
-  t.throws(() => getClient().patch(123).serialize(), /unknown selection for patch/i)
+  t.throws(() => getClient().patch(123).serialize(), /unknown selection/i)
   t.end()
 })
 

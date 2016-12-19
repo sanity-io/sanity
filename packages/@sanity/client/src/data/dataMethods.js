@@ -1,5 +1,6 @@
 const assign = require('object-assign')
 const validators = require('../validators')
+const getSelection = require('../util/getSelection')
 const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
@@ -58,9 +59,10 @@ module.exports = {
     return new Patch(selector, operations, this)
   },
 
-  delete(documentId, options) {
-    validators.validateDocumentId('delete', documentId)
-    return this.dataRequest('mutate', {mutations: [{delete: {id: documentId}}]}, options)
+  delete(selection, options) {
+    return this.dataRequest('mutate', {
+      mutations: [{delete: getSelection(selection)}]
+    }, options)
   },
 
   mutate(mutations, options) {
