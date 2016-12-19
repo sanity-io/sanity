@@ -28,8 +28,14 @@
   opacity: 0.5;
 }
 
+.mediaContainer {
+  display: block;
+}
+
 .meta {
   composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  display: flex;
+  display: none;
   position: absolute;
   opacity: 0;
   top: 0;
@@ -38,7 +44,6 @@
   right: 0;
   width: 100%;
   height: 100%;
-  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;

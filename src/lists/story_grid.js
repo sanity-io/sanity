@@ -187,16 +187,17 @@ storiesOf('List (grid)')
   () => {
     const items = range(50).map((item, i) => {
       const width = random(10, 80) * 10
-      const height = random(10, 50) * 10
+      const height = random(10, 30) * 10
       const randomImage = `http://placekitten.com/${width}/${height}`
       return {
         key: `${i}`,
         title: chance.name(),
-        media: <img src={randomImage} height={height} width={width} />
+        imageUrl: randomImage,
+        aspect: width / height
       }
     })
     const renderItem = function (item, i) {
-      return <MediaPreview item={item} aspect={item.imageAspect} />
+      return <MediaPreview item={item} aspect={item.aspect} />
     }
     return (
       <GridList items={items} onSelect={action('Select')} layout="masonry" renderItem={renderItem} />

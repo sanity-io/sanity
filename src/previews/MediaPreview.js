@@ -34,16 +34,11 @@ export default class MediaPreview extends React.Component {
     }
 
     return (
-      <div className={`${styles.root}`}>
-        <div className={styles.padder} style={{paddingTop: `${100 * aspect}%`}} />
-        {
-          (item.media || item.sanityImage || item.imageUrl) && (
-            <div className={`${styles.media}`}>
-              <MediaRender item={item} aspect={aspect} />
-            </div>
-          )
-        }
-
+      <div className={styles.root}>
+        <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
+        <div className={styles.mediaContainer}>
+          <MediaRender item={item} aspect={aspect} />
+        </div>
         <div className={`${styles.meta}`}>
           <div className={`${styles.metaInner}`}>
             <h2 className={styles.title}>

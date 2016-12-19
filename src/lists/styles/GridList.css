@@ -14,7 +14,7 @@
   display: block;
 }
 
-.scrollable {
+.isScrollable {
   max-height: 100%;
   height: 100%;
   position: relative;
@@ -94,5 +94,9 @@
     padding: 0 0.25rem;
     padding-bottom: 0.5rem;
     break-inside: avoid;
+  }
+
+  @nest .isSortable & {
+    cursor: move;
   }
 }

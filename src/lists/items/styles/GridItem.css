@@ -14,6 +14,7 @@
   height: 100%;
   background-color: #fafafa;
   cursor: default;
+  transition: all 0.2s linear;
 
   &:hover {
     background-color: var(--default-item-background-color-hover);
@@ -37,4 +38,10 @@
   &:hover {
     background-color: var(--default-item-active-color);
   }
+}
+
+.sortableHelper {
+  display: block;
+  opacity: 0.7;
+  transition: all 0 linear;
 }

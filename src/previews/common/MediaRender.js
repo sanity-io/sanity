@@ -51,29 +51,21 @@ export default class MediaRender extends React.Component {
     const containerAspect = this.props.aspect || 1
     const imageAspect = this.props.item.aspect || this.state.aspect || 1
 
-
-    return (
-      <div className={styles.root}>
-        {
-          imageUrl && (
-            <img src={imageUrl} className={imageAspect > containerAspect ? styles.landscape : styles.portrait} />
-          )
-        }
-        {
-          sanityImage && (
-            <div className={styles.sanityImage}>SanityImage</div>
-          )
-        }
-
-        {
-          media && (
-            <div className={styles.media}>
-              {media}
-            </div>
-          )
-        }
-
-      </div>
-    )
+    if (imageUrl) {
+      return (
+        <div className={styles.root}>
+          <img
+            src={imageUrl}
+            className={imageAspect > containerAspect ? styles.landscape : styles.portrait}
+          />
+        </div>
+      )
+    } else if (sanityImage) {
+      return <div className={styles.sanityImage}>SanityImage</div>
+    } else if (media) {
+      return <div className={styles.media}>{media}</div>
+    } else { // eslint-disable-line
+      return <div>No media</div>
+    }
   }
 }
