@@ -19,11 +19,13 @@ export default async (args, context) => {
   let spinner = output.spinner('Checking project info').start()
   const project = await client.projects.getById(client.config().projectId)
   let studioHostname = project && project.studioHostname
+  spinner.succeed()
 
   if (!studioHostname) {
     output.print('Your project has not been assigned a studio hostname.')
     output.print('To deploy your Sanity Studio to our hosted Sanity.Studio service,')
     output.print('you will need one. Please enter the part you want to use.')
+
 
     studioHostname = await prompt.single({
       type: 'input',
@@ -31,8 +33,6 @@ export default async (args, context) => {
       validate: name => validateHostname(name, client)
     })
   }
-
-  spinner.succeed()
 
   // Ensure that the directory exists, is a directory and seems to have valid content
   spinner = output.spinner('Verifying local content').start()
@@ -53,11 +53,10 @@ export default async (args, context) => {
   try {
     const response = await client.request({
       method: 'POST',
-      uri: '/deploy',
+      url: '/deploy',
       body: tarball,
-      json: false,
-      headers: {Accept: 'application/json'}
-    }).then(body => JSON.parse(body))
+      maxRedirects: 0
+    })
 
     spinner.succeed()
 
