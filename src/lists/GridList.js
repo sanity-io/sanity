@@ -129,8 +129,8 @@ class GridList extends React.Component {
 
     const rootStyle = `
       ${layout == 'masonry' ? styles.masonry : styles.default}
-      ${scrollable && styles.isScrollable}
-      ${loading && styles.isLoading}
+      ${scrollable ? styles.scrollable : ''}
+      ${loading ? styles.isLoading : ''}
       ${className}
     `
 

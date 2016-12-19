@@ -14,6 +14,12 @@
   display: block;
 }
 
+.scrollable {
+  max-height: 100%;
+  height: 100%;
+  position: relative;
+}
+
 .list {
   user-select: none;
   margin: 0;
@@ -46,6 +52,17 @@
   @nest .masonry.containerQuery__large & {
     columns: 5;
   }
+}
+
+.scrollableList {
+  composes: list;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .item {
