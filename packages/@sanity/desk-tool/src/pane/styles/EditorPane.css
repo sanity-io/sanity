@@ -44,3 +44,7 @@
   opacity: 0;
   transition: opacity 0.5s ease-out;
 }
+
+.deleteContainer {
+  margin-top: 3rem;
+}

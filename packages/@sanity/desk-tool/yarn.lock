@@ -119,12 +119,12 @@
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@rexxars/timed-out/-/timed-out-3.0.1.tgz#c8a435891708323ac01bd108e88ed09713b3df66"
 
-"@sanity/base@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.4.tgz#1038d83aedebbc624ebb130178b461931fe55efa"
+"@sanity/base@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.8.tgz#7f4f033d98d6ed3520cb1aa2bebb713c5ead48db"
   dependencies:
-    "@sanity/client" "^0.4.3"
-    "@sanity/document-store" "^0.2.4"
+    "@sanity/client" "^0.4.8"
+    "@sanity/document-store" "^0.2.8"
     "@sanity/observable" "^1.3.1"
     "@sanity/state-router" "^0.3.0-beta.1"
     history "2"
@@ -166,6 +166,18 @@
     create-error-class "^3.0.2"
     deep-assign "^2.0.0"
     get-it "^0.0.10"
+    in-publish "^2.0.0"
+    object-assign "^4.1.0"
+
+"@sanity/client@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.8.tgz#befcfa557f857ae756075b7ff159dd29e4f4dcf3"
+  dependencies:
+    "@sanity/eventsource" "^1.0.1"
+    "@sanity/observable" "^1.1.0"
+    create-error-class "^3.0.2"
+    deep-assign "^2.0.0"
+    get-it "^1.0.0"
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
@@ -239,11 +251,11 @@
     postcss-simple-extend "^1.0.0"
     react-datepicker "^0.34.0"
 
-"@sanity/document-store@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.2.4.tgz#225f0a42365b6627d019ac3c2e1812c8ec59ca31"
+"@sanity/document-store@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.2.8.tgz#319b3d3e4e8ae7120658a3975e7fc2b2147b914b"
   dependencies:
-    "@sanity/mutator" "^0.1.7"
+    "@sanity/mutator" "^0.2.2"
     "@sanity/observable" "^1.3.1"
     lodash "^4.17.2"
     nano-pubsub "^1.0.1"
@@ -263,12 +275,12 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.4.tgz#700a346ce1b7f7086cd026a8caad5a8ffbd0d49c"
+"@sanity/form-builder@0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.6.tgz#a7e814dd7a6f7b4cf7e67aeac907ceae05eb6181"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
-    "@sanity/mutator" "^0.1.8"
+    "@sanity/mutator" "^0.2.2"
     arrify "^1.0.1"
     canvas-to-blob "0.0.0"
     debug "^2.4.1"
@@ -309,17 +321,11 @@
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
-"@sanity/mutator@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.7.tgz#dfffff11e27019da7d7f8792f4901e3ec40722ee"
+"@sanity/mutator@^0.2.2":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.4.tgz#a77e9dd110d2ece1af779a47dd6b800af8b0feff"
   dependencies:
-    diff-match-patch "^1.0.0"
-    lodash "^4.15.0"
-
-"@sanity/mutator@^0.1.8":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.9.tgz#af6147f3494272452553aef5aca9d339ec3c6767"
-  dependencies:
+    debug "^2.4.5"
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
@@ -1951,13 +1957,13 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3:
+debug@^2.1.1, debug@^2.2.0, debug@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
   dependencies:
     ms "0.7.2"
 
-debug@^2.4.1:
+debug@^2.3.2, debug@^2.4.1, debug@^2.4.5:
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
   dependencies:
@@ -2755,6 +2761,28 @@ get-it@^0.0.10:
     progress-stream "^1.2.0"
     same-origin "^0.1.1"
     simple-concat "^1.0.0"
+    unzip-response "^2.0.1"
+    url-parse "^1.1.7"
+
+get-it@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-1.0.0.tgz#f1bfce920567d4f540172a7637f5425757b7b1d0"
+  dependencies:
+    create-error-class "^3.0.2"
+    debug "^2.3.3"
+    follow-redirects "^1.2.0"
+    in-publish "^2.0.0"
+    into-stream "^3.1.0"
+    is-plain-object "^2.0.1"
+    is-retry-allowed "^1.1.0"
+    is-stream "^1.1.0"
+    nano-pubsub "^1.0.1"
+    object-assign "^4.1.0"
+    parse-headers "^2.0.1"
+    progress-stream "^1.2.0"
+    same-origin "^0.1.1"
+    simple-concat "^1.0.0"
+    timed-out "^3.1.0"
     unzip-response "^2.0.1"
     url-parse "^1.1.7"
 
@@ -5822,6 +5850,10 @@ through@^2.3.6:
 timed-out@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.0.0.tgz#ff88de96030ce960eabd42487db61d3add229273"
+
+timed-out@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.1.0.tgz#43b98b14bb712c9161c28f4dc1f3068d67a04ec2"
 
 timers-browserify@^2.0.2:
   version "2.0.2"
