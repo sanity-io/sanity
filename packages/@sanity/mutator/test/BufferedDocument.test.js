@@ -114,7 +114,7 @@ test('document being deleted by remote', tap => {
   .hasLocalEdits()
   .assertLOCAL('text', 'goodbye')
 
-  .stage('when remote patch appear')
+  .stage('when remote delete patch appear')
   .remoteMutation('1', '2', {
     delete: {id: '1'}
   })

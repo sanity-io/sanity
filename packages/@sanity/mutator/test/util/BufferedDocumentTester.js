@@ -182,11 +182,11 @@ export default class BufferedDocumentTester {
     return this
   }
   hasLocalEdits() {
-    this.tap.ok(this.doc.mutations.length > 0, `should have local edits ${this.context}`)
+    this.tap.true(this.doc.buffer.hasChanges(), `should have local edits ${this.context}`)
     return this
   }
   hasNoLocalEdits() {
-    this.tap.ok(this.doc.mutations.length == 0, `should not have local edits ${this.context}`)
+    this.tap.false(this.doc.buffer.hasChanges(), `should not have local edits ${this.context}`)
     return this
   }
   hasPendingCommit() {

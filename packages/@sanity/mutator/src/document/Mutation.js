@@ -88,7 +88,7 @@ export default class Mutation {
         throw new Error(`Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`)
       }
       const result = operations.reduce((revision, operation) => operation(revision), doc)
-      if (result) {
+      if (result && rev) {
         result._rev = rev
       }
       return result

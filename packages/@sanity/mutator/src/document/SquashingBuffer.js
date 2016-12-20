@@ -1,0 +1,174 @@
+// @flow
+import Mutation from './Mutation'
+import extractWithPath from '../jsonpath/extractWithPath'
+import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
+import DiffMatchPatch from 'diff-match-patch'
+
+// An operation is one single operation of a mutation
+type Operation = Object
+
+// Implements a buffer for mutations that incrementally optimises the mutations by eliminating set-operations that
+// overwrite earlier set-operations, and rewrite set-operations that change strings into other strings into diffMatchPatch
+// operations.
+export default class SquashingBuffer {
+  // The document forming the basis of this squash
+  BASIS : Object
+  // The operations in the out-Mutation are not able to be optimized any further
+  out : Mutation
+  // The document after the out-Mutation has been applied, but before the staged operations are committed.
+  PRESTAGE : Object
+  // setOperations contain the latest set operation by path. If the set-operations are updating strings to new
+  // strings, they are rewritten as diffMatchPatch operations, any new set operations on the same paths overwrites
+  // any older set operations. Only set-operations assigning plain values gets optimized like this.
+  setOperations : Object
+  staged : Array<any>
+
+  constructor(doc : Object) {
+    this.staged = []
+    this.setOperations = {}
+    this.BASIS = doc
+    this.PRESTAGE = doc
+    this.dmp = new DiffMatchPatch()
+  }
+
+  add(mut : Mutation) {
+    mut.mutations.forEach(op => this.addOperation(op))
+  }
+
+  hasChanges() {
+    return (this.out || Object.keys(this.setOperations).length > 0)
+  }
+
+  // Extracts the mutations in this buffer. After this is done, the buffer lifecycle is over and the client should
+  // create an new one with the new, updated BASIS.
+  purge(txnId : string) : Mutation {
+    this.stashStagedOperations()
+    const result = new Mutation({
+      mutations: this.out.mutations,
+      resultRev: txnId,
+      transactionId: txnId
+    })
+    this.out = null
+    return result
+  }
+
+  addOperation(op : Operation) {
+    // Is this a set patch, and only a set patch?
+    if (op.patch && op.patch.set && Object.keys(op.patch).length == 1) {
+      // console.log("Attempting to apply optimised set patch")
+      const setPatch = op.patch.set
+      const unoptimizable = {}
+      // Apply all optimisable keys in the patch
+      for (const path of Object.keys(setPatch)) {
+        // console.log("...", path)
+        if (setPatch.hasOwnProperty(path)) {
+          if (!this.optimiseSetOperation(path, setPatch[path])) {
+            // If not optimisable, add to unoptimizable set
+            unoptimizable[path] = setPatch[path]
+          }
+        }
+      }
+      // If any weren't optimisable, add them to an unoptimised set-operation, then
+      // stash everything.
+      if (Object.keys(unoptimizable).length > 0) {
+        // console.log("There were unoptimizable operations, stashing", JSON.stringify(unoptimizable))
+        this.staged.push({patch: {set: unoptimizable}})
+        this.stashStagedOperations()
+      }
+      return
+    }
+    // Un-optimisable operations causes everything to be stashed
+    this.staged.push(op)
+    this.stashStagedOperations()
+  }
+
+  // Attempt to perform one single set operation in an optimised manner, return value reflects whether the
+  // operation could be performed.
+  optimiseSetOperation(path : string, nextValue : any) : bool {
+    // console.log('optimiseSetOperation', path, nextValue)
+    // If target value is not a plain value, unable to optimise
+    if (typeof nextValue == 'object') {
+      // console.log("Not optimisable because next value is object")
+      return false
+    }
+    // Check the source values, if there is more than one value being assigned,
+    // we won't optimise
+    const matches = extractWithPath(path, this.PRESTAGE)
+    // If we are not overwriting exactly one key, this cannot be optimised, so we bail
+    if (matches.length != 1) {
+      // console.log('Not optimisable because match count is != 1', JSON.stringify(matches))
+      return false
+    }
+    // Okay, we are assigning exactly one value to exactly one existing slot, so we might optimise
+    const match = matches[0]
+    // If the value of the match is an array or object, we cannot safely optimise this since the meaning
+    // of pre-existing operations might change (in theory, at least), so we bail
+    if (typeof match.value == 'object') {
+      // console.log("Not optimisable because old value is object")
+      return false
+    }
+    // If the new and old value are the equal, we optimise this operation by discarding it
+    // Now, let's build the operation
+    let op
+    if (match.value == nextValue) {
+      // If new and old values are equal, we optimise this by deleting the operation
+      // console.log("Omitting operation")
+      op = null
+    } else if (typeof match.value == 'string') {
+      // console.log("Rewriting to dmp")
+      // We are updating a string to another string, so we are making a diffMatchPatch
+      const patch = this.dmp.patch_make(match.value, nextValue).toString()
+      op = {patch: {diffMatchPatch: {[path]: patch}}}
+    } else {
+      // console.log("Not able to rewrite to dmp, making normal set")
+      // We are changing the type of the value, so must make a normal set-operation
+      op = {patch: {set: {[path]: nextValue}}}
+    }
+    // Let's make a plain, concrete path from the array-path. We use this to keep only the latest set
+    // operation touching this path in the buffer.
+    const canonicalPath = arrayToJSONMatchPath(match.path)
+    // Store this operation, overwriting any previous operations touching this same path
+    if (op) {
+      this.setOperations[canonicalPath] = op
+    } else {
+      delete this.setOperations[canonicalPath]
+    }
+    // Signal that we succeeded in optimizing this patch
+    return true
+  }
+
+  stashStagedOperations() {
+    // console.log('stashStagedOperations')
+    // Short circuit if there are no staged operations
+    let ops = []
+    if (this.out) {
+      ops = this.out.mutations
+    }
+    // Extract the existing outgoing operations if any
+    Object.keys(this.setOperations).forEach(key => {
+      ops.push(this.setOperations[key])
+    })
+    ops.push(...this.staged)
+    if (ops.length > 0) {
+      this.out = new Mutation({mutations: ops})
+      this.PRESTAGE = this.out.apply(this.BASIS)
+      this.staged = []
+      this.setOperations = {}
+    }
+  }
+
+  // Rebases given the new base-document. Returns the new "edge" document with the buffered changes
+  // integrated.
+  rebase(newBasis : Object) {
+    this.stashStagedOperations()
+    if (newBasis === null) {
+      // If document was just deleted, we must throw out local changes
+      this.out = null
+      this.PRESTAGE = this.BASIS = newBasis
+    } else {
+      this.BASIS = newBasis
+      this.PRESTAGE = this.out.apply(this.BASIS)
+    }
+    return this.PRESTAGE
+  }
+}
