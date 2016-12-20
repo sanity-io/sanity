@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@sanity/mutator@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.8.tgz#4342f678f641edde1b31a3464ecb4793d45fe0ef"
+"@sanity/mutator@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.0.tgz#59cb107fc4905209d1c1c3569410cfb7e03430bb"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
