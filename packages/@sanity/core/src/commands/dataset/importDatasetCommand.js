@@ -85,8 +85,9 @@ export default {
 
     // Import documents to the target dataset
     const batchSize = 150
+    const progressTotal = documentCount * 2 // @todo figure out how many reference maps we're gonna need and make a progress thing that makes sense
     const progress = progrescii.create({
-      total: documentCount,
+      total: progressTotal,
       template: `${chalk.yellow('●')} Importing documents :b :p% in :ts`
     })
 

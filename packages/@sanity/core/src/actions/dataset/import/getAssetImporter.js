@@ -20,7 +20,7 @@ export default options => {
       .filter(item => item.asset)
 
     // Ensure images exist in Sanity. This also mutates the in-memory document,
-    // replacing {_sanityAsset: 'url'} with {_ref: 'some/documentId'}
+    // replacing {_sanityAsset: 'url'} with {asset: {_ref: 'some/documentId'}}
     promiseEach(assets, uploadAsset, {concurrency: 3})
       .then(() => cb(null, doc))
       .catch(err => cb(err))
@@ -32,7 +32,8 @@ export default options => {
 
     // Secondly, mutate (yes, in-place) the ref to now hold an actual reference
     delete item.ref[assetKey]
-    item.ref._ref = assetDocId
+    item.ref._type = item.asset.type
+    item.ref.asset = {_ref: assetDocId}
   }
 
   // Checks for existing asset or uploads new one. Returns document ID
