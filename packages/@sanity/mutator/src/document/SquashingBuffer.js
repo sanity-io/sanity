@@ -43,11 +43,14 @@ export default class SquashingBuffer {
   // create an new one with the new, updated BASIS.
   purge(txnId : string) : Mutation {
     this.stashStagedOperations()
-    const result = new Mutation({
-      mutations: this.out.mutations,
-      resultRev: txnId,
-      transactionId: txnId
-    })
+    let result = null
+    if (this.out) {
+      result = new Mutation({
+        mutations: this.out.mutations,
+        resultRev: txnId,
+        transactionId: txnId
+      })
+    }
     this.out = null
     return result
   }
@@ -168,7 +171,11 @@ export default class SquashingBuffer {
       this.PRESTAGE = this.BASIS = newBasis
     } else {
       this.BASIS = newBasis
-      this.PRESTAGE = this.out.apply(this.BASIS)
+      if (this.out) {
+        this.PRESTAGE = this.out.apply(this.BASIS)
+      } else {
+        this.PRESTAGE = this.BASIS
+      }
     }
     return this.PRESTAGE
   }

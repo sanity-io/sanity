@@ -84,3 +84,16 @@ test('rebase with generated diff-match-patches', tap => {
   }, 'The rebase then reapply did not apply correctly')
   tap.end()
 })
+
+test('rebase with no local edits', tap => {
+  const sb = new SquashingBuffer({_id: '1', a: 'A string value'})
+  const initial = {_id: '1', a: 'A rebased string value!'}
+  sb.rebase(initial)
+  const mut = sb.purge('txn_id')
+  tap.true(mut == null, 'purge should not return anything when there are no local changes')
+  tap.same(sb.PRESTAGE, {
+    _id: '1',
+    a: 'A rebased string value!'
+  }, 'The rebase with no local edits applied incorrectly')
+  tap.end()
+})
