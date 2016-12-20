@@ -24,7 +24,19 @@ export default class Patcher {
   // to see an example of how accessors are implemented.
   applyViaAccessor(accessor : Object) {
     let result = accessor
+    const idAccessor = accessor.getAttribute('_id')
+    let id
+    if (idAccessor) {
+      id = idAccessor.get()
+    } else {
+      throw new Error('Cannot apply patch to document with no _id')
+    }
     this.patches.forEach(patch => {
+      if (patch.id != id) {
+        // Ignore patches that are not targetted at this document
+        console.log("Ignored patch because id did not match document id", patch.id, id)
+        return
+      }
       const matcher = Matcher.fromPath(patch.path).setPayload(patch)
       result = process(matcher, result)
     })

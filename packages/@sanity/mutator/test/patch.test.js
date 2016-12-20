@@ -14,9 +14,23 @@ const examples = [].concat(set, setIfMissing, unset, diffMatchPatch, insert, inc
 
 examples.forEach(example => {
   test(example.name, tap => {
+    // Fake some id's in there
+    example.before._id = 'a'
+    if (Array.isArray(example.patch)) {
+      example.patch.forEach(patch => patch.id = 'a')
+    } else {
+      example.patch.id = 'a'
+    }
+
     const patcher = new Patcher(example.patch)
     const pristine = cloneDeep(example.before)
     const patched = patcher.apply(example.before)
+
+    // Don't care about ids in result
+    delete patched._id
+    delete pristine._id
+    delete example.before._id
+
     // Verify patch
     tap.same(patched, example.after, 'patch result must match example')
     // Verify immutability

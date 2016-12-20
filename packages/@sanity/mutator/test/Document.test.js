@@ -5,6 +5,7 @@ import DocumentTester from './util/DocumentTester'
 
 test('simple remote mutation', tap => {
   (new DocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     title: 'Hello'
   }))
@@ -12,6 +13,7 @@ test('simple remote mutation', tap => {
 
   .stage('when remote patch arrive')
   .remotePatch('1', '2', {
+    id: 'a',
     set: {
       'title': 'Good bye'
     }
@@ -27,6 +29,7 @@ test('simple remote mutation', tap => {
 
 test('simple local mutation arrives', tap => {
   (new DocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     title: 'Hello'
   }))
@@ -34,6 +37,7 @@ test('simple local mutation arrives', tap => {
 
   .stage('when local patch is pending')
   .localPatch('1', '2', {
+    id: 'a',
     set: {
       'title': 'Good bye'
     }
@@ -66,11 +70,13 @@ test('simple local mutation arrives', tap => {
 
 test('local mutation submitted, but remote mutation wins the race and causes a rebase', tap => {
   (new DocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     count: 1
   }))
   .isConsistent()
   .localPatch('2', '3', {
+    id: 'a',
     inc: {
       count: 1
     }
@@ -83,6 +89,7 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
 
   .stage('when remote pach change initial count under our feet')
   .remotePatch('1', '2', {
+    id: 'a',
     set: {
       count: 10
     }
@@ -108,6 +115,7 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
 
 test('simple local mutation failing', tap => {
   (new DocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     title: 'Hello'
   }))
@@ -115,6 +123,7 @@ test('simple local mutation failing', tap => {
 
   .stage('when local patch is pending')
   .localPatch('1', '2', {
+    id: 'a',
     set: {
       'title': 'Good bye'
     }
@@ -139,6 +148,7 @@ test('simple local mutation failing', tap => {
 
 test('simple local mutation arriving out of order', tap => {
   (new DocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     numbers: []
   }))
@@ -146,6 +156,7 @@ test('simple local mutation arriving out of order', tap => {
 
   .stage('when first local patch is pending')
   .localPatch('2', '3', {
+    id: 'a',
     insert: {
       after: 'numbers[-1]',
       items: [1]
@@ -157,6 +168,7 @@ test('simple local mutation arriving out of order', tap => {
 
   .stage('when second local patch is pending')
   .localPatch('1', '2', {
+    id: 'a',
     insert: {
       after: 'numbers[-1]',
       items: [2]

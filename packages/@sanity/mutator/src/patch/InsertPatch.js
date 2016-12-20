@@ -6,7 +6,9 @@ export default class InsertPatch {
   location : string
   path : string
   items : Array<any>
-  constructor(location : string, path : string, items : Array<any>) {
+  id : string
+  constructor(id : string, location : string, path : string, items : Array<any>) {
+    this.id = id
     this.location = location
     this.path = path
     this.items = items

@@ -3,7 +3,8 @@ import {targetsToIndicies} from './util'
 export default class UnsetPatch {
   path : string
   value : any
-  constructor(path : string) {
+  constructor(id : string, path : string) {
+    this.id = id
     this.path = path
   }
   apply(targets, accessor) {

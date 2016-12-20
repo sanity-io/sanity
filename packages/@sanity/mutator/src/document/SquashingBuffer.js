@@ -72,7 +72,7 @@ export default class SquashingBuffer {
       // stash everything.
       if (Object.keys(unoptimizable).length > 0) {
         // console.log("There were unoptimizable operations, stashing", JSON.stringify(unoptimizable))
-        this.staged.push({patch: {set: unoptimizable}})
+        this.staged.push({patch: {id: this.PRESTAGE._id, set: unoptimizable}})
         this.stashStagedOperations()
       }
       return
