@@ -114,7 +114,13 @@ export default class ObjectContainer {
   }
 
   getAttribute(key) {
-    return key === '_key' ? new ImmutableAccessor(this.key) : this.value[key]
+    if (key === '_key') {
+      return new ImmutableAccessor(this.key)
+    }
+    if (key === '_id') {
+      return new ImmutableAccessor(this.value._id)
+    }
+    return this.value[key]
   }
 
   setAttribute(key, value) {
