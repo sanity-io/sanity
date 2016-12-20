@@ -15,6 +15,8 @@
 import Mutation from './Mutation'
 import {isEqual} from 'lodash'
 
+import debug from './debug'
+
 type SubmissionResponder = {
   success : Function,
   failure : Function
@@ -144,6 +146,10 @@ export default class Document {
       mustRebase = mustRebase || this.applyIncoming(nextMut)
     } while (nextMut)
 
+    if (this.incoming.length > 0) {
+      debug('Unable to apply mutations %s', this.incoming.map(mut => mut.transactionId).join(', '))
+    }
+
     if (mustRebase) {
       this.rebase()
     }
@@ -161,6 +167,11 @@ export default class Document {
     }
     // Handle onConsistencyChanged callback
     if (wasConsistent != isConsistent && this.onConsistencyChanged) {
+      if (isConsistent) {
+        debug('Buffered document is inconsistent')
+      } else {
+        debug('Buffered document is consistent')
+      }
       this.onConsistencyChanged(isConsistent)
     }
   }
@@ -170,6 +181,7 @@ export default class Document {
     if (!mut) {
       return false
     }
+    debug('Applying mutation %s -> %s to rev %s', mut.previousRev, mut.resultRev, this.HEAD && this.HEAD._rev)
 
     this.HEAD = mut.apply(this.HEAD)
 

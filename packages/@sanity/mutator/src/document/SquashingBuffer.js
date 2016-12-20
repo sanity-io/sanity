@@ -3,6 +3,7 @@ import Mutation from './Mutation'
 import extractWithPath from '../jsonpath/extractWithPath'
 import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
 import DiffMatchPatch from 'diff-match-patch'
+import debug from './debug'
 
 // An operation is one single operation of a mutation
 type Operation = Object
@@ -24,6 +25,7 @@ export default class SquashingBuffer {
   staged : Array<any>
 
   constructor(doc : Object) {
+    debug('Reset mutation buffer to rev %s', doc._rev)
     this.staged = []
     this.setOperations = {}
     this.BASIS = doc
@@ -45,6 +47,7 @@ export default class SquashingBuffer {
     this.stashStagedOperations()
     let result = null
     if (this.out) {
+      debug('Purged mutation buffer')
       result = new Mutation({
         mutations: this.out.mutations,
         resultRev: txnId,
@@ -74,12 +77,13 @@ export default class SquashingBuffer {
       // If any weren't optimisable, add them to an unoptimised set-operation, then
       // stash everything.
       if (Object.keys(unoptimizable).length > 0) {
-        // console.log("There were unoptimizable operations, stashing", JSON.stringify(unoptimizable))
+        debug('Unoptimizable set-operation detected, purging optimization buffer')
         this.staged.push({patch: {id: this.PRESTAGE._id, set: unoptimizable}})
         this.stashStagedOperations()
       }
       return
     }
+    debug('Unoptimizable mutation detected, purging optimization buffer')
     // console.log("Unoptimizable operation, stashing", JSON.stringify(op))
     // Un-optimisable operations causes everything to be stashed
     this.staged.push(op)
