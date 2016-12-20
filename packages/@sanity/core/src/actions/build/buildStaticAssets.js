@@ -56,7 +56,6 @@ export default async (args, context) => {
 
     // Build new index document with correct hashes
     spin.text = 'Building index document'
-    console.log(chunkMap)
     const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap}, {
       scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => {
         const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
