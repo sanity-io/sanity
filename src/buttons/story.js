@@ -95,6 +95,19 @@ storiesOf('Buttons')
       <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted color="danger" title="Inverted danger" />
       <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" title="Simple" />
       <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" color="danger" title="Simple danger" />
+
+      <h2>On color areas</h2>
+      <div style={{backgroundColor: 'red', padding: '1rem'}}>
+        <Button onClick={action('clicked')} color="white">
+          White
+        </Button>
+        <Button onClick={action('clicked')} inverted>
+          Inverted
+        </Button>
+        <Button onClick={action('clicked')} inverted color="white">
+          White inverted
+        </Button>
+      </div>
     </div>
   ),
   {propTables: [Button], role: 'part:@sanity/components/buttons/default'}

@@ -4,7 +4,7 @@ import Button from 'part:@sanity/components/buttons/default'
 
 export default class DefaultSnackbar extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
+    kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
     children: PropTypes.node.isRequired,
     className: PropTypes.string,
     time: PropTypes.number,
@@ -56,7 +56,7 @@ export default class DefaultSnackbar extends React.Component {
           </div>
           <div className={styles.action}>
             {
-              action && <Button onClick={this.handleAction}>{action.title}</Button>
+              action && <Button inverted color="white" onClick={this.handleAction}>{action.title}</Button>
             }
           </div>
         </div>

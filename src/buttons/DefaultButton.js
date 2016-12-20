@@ -6,7 +6,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 export default class DefaultButton extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['simple', 'secondary']),
-    color: PropTypes.oneOf(['primary', 'success', 'danger']),
+    color: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
     onClick: PropTypes.func,
     children: PropTypes.node,
     inverted: PropTypes.bool,

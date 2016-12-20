@@ -4,7 +4,7 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 
 storiesOf('Snackbar')
 .addWithInfo(
-  'Snackbar (info)',
+  'Info',
   `
     Default snackbar.
   `,
@@ -16,7 +16,7 @@ storiesOf('Snackbar')
     role: 'part:@sanity/components/snackbar/default'
   }
 ).addWithInfo(
-  'Snackbar (warning)',
+  'Wwarning',
   `
     Used to give a warning
   `,
@@ -29,7 +29,7 @@ storiesOf('Snackbar')
   }
 )
 .addWithInfo(
-  'Snackbar (success)',
+  'Success',
   `
     Default snackbar.
   `,
@@ -42,7 +42,7 @@ storiesOf('Snackbar')
   }
 )
 .addWithInfo(
-  'Snackbar (error)',
+  'Error',
   `
     Default snackbar.
   `,
@@ -55,7 +55,7 @@ storiesOf('Snackbar')
   }
 )
 .addWithInfo(
-  'Snackbar (with action)',
+  'With action',
   `
     Default snackbar.
   `,
@@ -67,6 +67,28 @@ storiesOf('Snackbar')
     return (
       <Snackbar action={myAction}>
         You published the document
+      </Snackbar>
+    )
+  },
+  {
+    propTables: [Snackbar],
+    role: 'part:@sanity/components/snackbar/default'
+  }
+)
+
+.addWithInfo(
+  'Danger with action',
+  `
+    Default snackbar.
+  `,
+  () => {
+    const myAction = {
+      title: 'Revert',
+      action: () => action('Action fired!')
+    }
+    return (
+      <Snackbar kind="danger" action={myAction} time={10000}>
+        You deleted <strong>Name of something</strong>
       </Snackbar>
     )
   },

@@ -25,48 +25,44 @@
 
 .inner {
   width: 100%;
-  height: 2em;
-  line-height: 2em;
-  margin: 0 auto;
+  height: 4em;
+  line-height: 4em;
   display: block;
-  border: 1px solid #000;
-  border-bottom: 0;
   position: relative;
-  text-align: right;
 
   @nest .info & {
-    border-color: var(--state-info-border);
     background-color: color(var(--brand-info) a(90%));
-    color: var(--state-info-text);
+    color: var(--brand-white);
   }
 
   @nest .warning & {
-    background-color: color(var(--brand-warning) a(90%));
-    color: var(--state-warning-text);
-    border-color: var(--state-warning-border);
+    background-color: color(var(--state-warning-color) a(90%));
+    color: var(--brand-white);
   }
 
   @nest .success & {
-    background-color: color(var(--brand-success) a(90%));
+    background-color: color(var(--state-success-color) a(90%));
     color: var(--brand-white);
-    border-color: var(--state-success-border);
   }
 
   @nest .error & {
     background-color: color(var(--brand-danger) a(90%));
-    color: var(--state-danger-text);
-    border-color: var(--state-danger-border);
+    color: var(--brand-white);
+  }
+
+  @nest .danger & {
+    background-color: color(var(--brand-danger) a(90%));
+    color: var(--brand-white);
   }
 }
 
 .content {
-  padding: 0 1em;
+  margin: 0 1em;
+  float: left;
 }
 
 .action {
-  position: absolute;
-  right: 0;
-  top: 0;
+  float: right;
 }
 
 .info {

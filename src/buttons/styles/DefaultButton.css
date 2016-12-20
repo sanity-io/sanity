@@ -79,6 +79,17 @@
   }
 }
 
+.color__white {
+  background-color: var(--brand-white);
+
+  @nest &.inverted,
+  &.simple {
+    border-color: var(--brand-white);
+    background-color: transparent;
+    color: var(--brand-white);
+  }
+}
+
 .save {
   composes: root;
 }
