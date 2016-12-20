@@ -263,21 +263,21 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.1.tgz#4666f49efd26748d08c92ef3f71f5e1a9b42dedd"
+"@sanity/form-builder@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.4.tgz#700a346ce1b7f7086cd026a8caad5a8ffbd0d49c"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
-    "@sanity/mutator" "^0.1.5"
+    "@sanity/mutator" "^0.1.8"
     arrify "^1.0.1"
     canvas-to-blob "0.0.0"
-    debug "^2.2.0"
+    debug "^2.4.1"
     exif-component "^1.0.1"
     get-random-values "^1.2.0"
     get-window "^1.1.1"
     immutable "^3.8.1"
     is-empty "^1.0.0"
-    lodash "^4.16.6"
+    lodash "^4.17.2"
     object-inspect "^1.2.1"
     proptypes "^0.14.3"
     prosemirror "^0.10.1"
@@ -312,6 +312,13 @@
 "@sanity/mutator@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.7.tgz#dfffff11e27019da7d7f8792f4901e3ec40722ee"
+  dependencies:
+    diff-match-patch "^1.0.0"
+    lodash "^4.15.0"
+
+"@sanity/mutator@^0.1.8":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.9.tgz#af6147f3494272452553aef5aca9d339ec3c6767"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
@@ -1947,6 +1954,12 @@ debug@2.2.0, debug@~2.2.0:
 debug@^2.1.1, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
+  dependencies:
+    ms "0.7.2"
+
+debug@^2.4.1:
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
   dependencies:
     ms "0.7.2"
 
@@ -3657,7 +3670,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.16.6, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
+lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
