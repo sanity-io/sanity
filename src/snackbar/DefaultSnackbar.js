@@ -16,7 +16,7 @@ export default class DefaultSnackbar extends React.Component {
 
   static defaultProps = {
     kind: 'info',
-    time: 2
+    time: 4
   }
 
   constructor(props, context) {
