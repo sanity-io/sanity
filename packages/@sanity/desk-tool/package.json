@@ -24,14 +24,14 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.0.5",
-    "@sanity/form-builder": "0.1.6"
+    "@sanity/form-builder": "0.1.7"
   },
   "devDependencies": {
     "@sanity/base": "^0.3.8",
     "@sanity/check": "^0.0.3",
-    "@sanity/client": "^0.4.3",
-    "@sanity/components": "^0.0.72",
-    "@sanity/core": "^0.0.26",
+    "@sanity/client": "^0.4.8",
+    "@sanity/components": "^0.0.78",
+    "@sanity/core": "^0.0.33",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
     "babel-plugin-syntax-class-properties": "^6.13.0",
@@ -40,10 +40,10 @@
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
-    "eslint": "^3.12.1",
+    "eslint": "^3.12.2",
     "eslint-config-sanity": "^2.0.1",
     "eslint-plugin-react": "^6.8.0",
-    "history": "^4.4.1",
+    "history": "^4.5.0",
     "in-publish": "^2.0.0",
     "postcss-cssnext": "^2.9.0",
     "react": "^15.4.1",
