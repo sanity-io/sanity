@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "@sanity/check": "^0.0.3",
-    "@sanity/mutator": "^0.1.7",
+    "@sanity/mutator": "^0.1.8",
     "@sanity/server": "^0.0.20",
     "@sanity/storybook": "^0.0.15",
     "@sanity/util": "^0.0.3",
