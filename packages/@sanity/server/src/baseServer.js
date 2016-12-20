@@ -6,10 +6,14 @@ import {resolveParts} from '@sanity/resolver'
 import requireUncached from 'require-uncached'
 
 const docPart = 'part:@sanity/base/document'
-const assetify = assetPath => ({path: assetPath})
 const getDefaultModule = mod => {
   return mod && mod.__esModule ? mod.default : mod
 }
+
+const assetify = (assetPath, hashes) => ({
+  path: assetPath,
+  hash: hashes[assetPath]
+})
 
 const getDocumentComponent = basePath =>
   resolveParts({basePath}).then(res => {
@@ -27,17 +31,17 @@ export function getBaseServer() {
   return express()
 }
 
-export function getDocumentElement({basePath}, props = {}) {
+export function getDocumentElement({basePath, hashes}, props = {}) {
   return getDocumentComponent(basePath)
     .then(Document =>
       React.createElement(Document, Object.assign({
-        stylesheets: ['css/main.css'].map(assetify),
+        stylesheets: ['css/main.css'].map(item => assetify(item, hashes)),
         scripts: [
           // @todo figure out a better way to include polyfill when necessary
           'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
           'js/vendor.bundle.js',
           'js/app.bundle.js'
-        ].map(assetify)
+        ].map(item => assetify(item, hashes))
       }, props))
     )
 }
