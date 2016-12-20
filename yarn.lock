@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@rexxars/timed-out@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@rexxars/timed-out/-/timed-out-3.0.1.tgz#c8a435891708323ac01bd108e88ed09713b3df66"
-
 "@sanity/check@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@sanity/check/-/check-0.0.3.tgz#4aeae5ade1610fed3e17faa71a701058b42bf08e"
@@ -17,23 +13,23 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.3.tgz#092c968416557b11ffa1bb0632b4ae279ba210a2"
+"@sanity/client@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.8.tgz#befcfa557f857ae756075b7ff159dd29e4f4dcf3"
   dependencies:
     "@sanity/eventsource" "^1.0.1"
     "@sanity/observable" "^1.1.0"
     create-error-class "^3.0.2"
     deep-assign "^2.0.0"
-    get-it "^0.0.10"
+    get-it "^1.0.0"
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/document-store@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.2.4.tgz#225f0a42365b6627d019ac3c2e1812c8ec59ca31"
+"@sanity/document-store@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@sanity/document-store/-/document-store-0.2.7.tgz#183d497a70cc7b17d9ed30bb5f48776564e596be"
   dependencies:
-    "@sanity/mutator" "^0.1.7"
+    "@sanity/mutator" "^0.2.0"
     "@sanity/observable" "^1.3.1"
     lodash "^4.17.2"
     nano-pubsub "^1.0.1"
@@ -53,16 +49,16 @@
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-0.0.2.tgz#abb6e54930a333907ef670b2c4dc1c1b1f1f79d1"
 
-"@sanity/mutator@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.7.tgz#dfffff11e27019da7d7f8792f4901e3ec40722ee"
+"@sanity/mutator@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.8.tgz#4342f678f641edde1b31a3464ecb4793d45fe0ef"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
-"@sanity/mutator@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.8.tgz#4342f678f641edde1b31a3464ecb4793d45fe0ef"
+"@sanity/mutator@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.0.tgz#59cb107fc4905209d1c1c3569410cfb7e03430bb"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
@@ -1630,11 +1626,10 @@ get-caller-file@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.2.tgz#f702e63127e7e231c160a80c1554acb70d5047e5"
 
-get-it@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-0.0.10.tgz#ea8b07ae00064f60fd33a14677576e6f8cc909aa"
+get-it@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-1.0.0.tgz#f1bfce920567d4f540172a7637f5425757b7b1d0"
   dependencies:
-    "@rexxars/timed-out" "^3.0.1"
     create-error-class "^3.0.2"
     debug "^2.3.3"
     follow-redirects "^1.2.0"
@@ -1649,6 +1644,7 @@ get-it@^0.0.10:
     progress-stream "^1.2.0"
     same-origin "^0.1.1"
     simple-concat "^1.0.0"
+    timed-out "^3.1.0"
     unzip-response "^2.0.1"
     url-parse "^1.1.7"
 
@@ -3121,10 +3117,11 @@ read-pkg@^1.0.0:
     normalize-package-data "^2.3.2"
     path-type "^1.0.0"
 
-readable-stream@^2.0.0, readable-stream@^2.0.2, readable-stream@~2.0.0:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
+readable-stream@^2.0.0, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@~2.1.4:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.1.5.tgz#66fa8b720e1438b364681f2ad1a63c618448c9d0"
   dependencies:
+    buffer-shims "^1.0.0"
     core-util-is "~1.0.0"
     inherits "~2.0.1"
     isarray "~1.0.0"
@@ -3132,11 +3129,10 @@ readable-stream@^2.0.0, readable-stream@^2.0.2, readable-stream@~2.0.0:
     string_decoder "~0.10.x"
     util-deprecate "~1.0.1"
 
-"readable-stream@^2.0.0 || ^1.1.13", readable-stream@~2.1.4:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.1.5.tgz#66fa8b720e1438b364681f2ad1a63c618448c9d0"
+readable-stream@^2.0.2, readable-stream@~2.0.0:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
   dependencies:
-    buffer-shims "^1.0.0"
     core-util-is "~1.0.0"
     inherits "~2.0.1"
     isarray "~1.0.0"
@@ -3595,6 +3591,10 @@ through2@~0.2.3:
 through@^2.3.6:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
+
+timed-out@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-3.1.0.tgz#43b98b14bb712c9161c28f4dc1f3068d67a04ec2"
 
 to-fast-properties@^1.0.1:
   version "1.0.2"
