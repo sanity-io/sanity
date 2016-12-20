@@ -5,6 +5,7 @@ import BufferedDocumentTester from './util/BufferedDocumentTester'
 
 test('simple edit cycle', tap => {
   (new BufferedDocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     title: 'Hello'
   }))
@@ -12,6 +13,7 @@ test('simple edit cycle', tap => {
 
   .stage('when applying first local edit')
   .localPatch({
+    id: 'a',
     set: {
       'title': 'Good bye'
     }
@@ -21,6 +23,7 @@ test('simple edit cycle', tap => {
 
   .stage('when applying second local edit')
   .localPatch({
+    id: 'a',
     set: {
       'body': 'My friend'
     }
@@ -51,6 +54,7 @@ test('simple edit cycle', tap => {
 
 test('simple edit cycle with remote edits', tap => {
   (new BufferedDocumentTester(tap, {
+    _id: 'a',
     _rev: '1',
     numbers: [0]
   }))
@@ -58,6 +62,7 @@ test('simple edit cycle with remote edits', tap => {
 
   .stage('when applying first local edit')
   .localPatch({
+    id: 'a',
     insert: {
       after: 'numbers[-1]',
       items: [1]
@@ -69,6 +74,7 @@ test('simple edit cycle with remote edits', tap => {
 
   .stage('when remote patch appear')
   .remotePatch('1', '2', {
+    id: 'a',
     insert: {
       before: 'numbers[0]',
       items: [-1]
@@ -106,6 +112,7 @@ test('document being deleted by remote', tap => {
 
   .stage('when applying first local edit')
   .localPatch({
+    id: 'a',
     set: {
       text: 'goodbye'
     }
@@ -116,7 +123,7 @@ test('document being deleted by remote', tap => {
 
   .stage('when remote delete patch appear')
   .remoteMutation('1', '2', {
-    delete: {id: '1'}
+    delete: {id: 'a'}
   })
   .didRebase()
   .onDeleteDidFire()

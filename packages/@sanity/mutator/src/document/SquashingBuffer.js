@@ -54,7 +54,7 @@ export default class SquashingBuffer {
 
   addOperation(op : Operation) {
     // Is this a set patch, and only a set patch?
-    if (op.patch && op.patch.set && Object.keys(op.patch).length == 1) {
+    if (op.patch && op.patch.set && op.patch.id == this.PRESTAGE._id && Object.keys(op.patch).length == 2) {
       // console.log("Attempting to apply optimised set patch")
       const setPatch = op.patch.set
       const unoptimizable = {}
@@ -77,6 +77,7 @@ export default class SquashingBuffer {
       }
       return
     }
+    // console.log("Unoptimizable operation, stashing", JSON.stringify(op))
     // Un-optimisable operations causes everything to be stashed
     this.staged.push(op)
     this.stashStagedOperations()
@@ -118,11 +119,11 @@ export default class SquashingBuffer {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
       const patch = this.dmp.patch_make(match.value, nextValue).toString()
-      op = {patch: {diffMatchPatch: {[path]: patch}}}
+      op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
     } else {
       // console.log("Not able to rewrite to dmp, making normal set")
       // We are changing the type of the value, so must make a normal set-operation
-      op = {patch: {set: {[path]: nextValue}}}
+      op = {patch: {id: this.PRESTAGE._id, set: {[path]: nextValue}}}
     }
     // Let's make a plain, concrete path from the array-path. We use this to keep only the latest set
     // operation touching this path in the buffer.
