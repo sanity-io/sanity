@@ -1,26 +1,26 @@
+import {ImmutableAccessor} from '@sanity/mutator'
+import hasOwn from '../../../utils/hasOwn'
+
+const VALID_KEYS = ['_type', '_ref', '_key']
+
 export default class ReferenceContainer {
 
-  static deserialize(rawValue, context) {
-    return new ReferenceContainer(rawValue, context)
+  static deserialize(serialized = {}, context) {
+    const deserialized = {_type: 'reference'}
+    if (serialized) {
+      if (hasOwn(serialized, '_key')) {
+        deserialized._key = serialized._key
+      }
+      if (hasOwn(serialized, '_ref')) {
+        deserialized._ref = serialized._ref
+      }
+    }
+    return new ReferenceContainer(deserialized, context)
   }
 
   constructor(value, context) {
-    this.value = value
     this.context = context
-  }
-
-  get refId() {
-    return this.value && this.value._ref
-  }
-
-  patch(patch) {
-    if (patch.type === 'set') {
-      return new ReferenceContainer(patch.value, this.context)
-    }
-    if (patch.type === 'unset') {
-      return new ReferenceContainer(undefined, this.context)
-    }
-    throw new Error(`Only the 'set' and 'unset' patch types are supported by reference value container, got: ${JSON.stringify(patch.type)}`)
+    this.value = value
   }
 
   validate() {
@@ -34,14 +34,65 @@ export default class ReferenceContainer {
   }
 
   serialize() {
-    return this.value
+    const serialized = {}
+    if (hasOwn(this.value, '_key')) {
+      serialized._key = this.value._key
+    }
+    if (hasOwn(this.value, '_ref')) {
+      serialized._ref = this.value._ref
+    }
+
+    return Object.keys(serialized).length
+      ? Object.assign({_type: 'reference'}, serialized)
+      : undefined
   }
 
-  isEmpty() {
-    return this.value === null || this.value === undefined || !this.value._ref
+  get key() {
+    return this.value._key
   }
 
   toJSON() {
     return this.serialize()
   }
+
+  // Accessor methods
+  containerType() {
+    return 'object'
+  }
+
+  hasAttribute(key) {
+    return VALID_KEYS.includes(key)
+  }
+
+  getAttribute(key) {
+    return new ImmutableAccessor(this.value[key])
+  }
+
+  setAttribute(key, value) {
+    const nextValue = Object.assign({}, this.value, {
+      [key]: value
+    })
+    return new ReferenceContainer(nextValue, this.context)
+  }
+
+  unsetAttribute(fieldName) {
+    return this.setAttribute(fieldName, undefined)
+  }
+
+  attributeKeys() {
+    return VALID_KEYS
+  }
+
+  set(nextValue) {
+    return ReferenceContainer.deserialize(nextValue, this.context)
+  }
+
+  get() {
+    return this.serialize()
+  }
+
+  isEmpty() {
+    return this.value._ref === undefined
+  }
+
 }

@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
 import Preview from '../../../Preview'
-import Button from 'part:@sanity/components/buttons/default' //eslint-disable-line
 import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line
 import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
@@ -75,11 +74,9 @@ export default class ReferenceBrowser extends React.Component {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
           const patch = {
+            path: ['_ref'],
             type: 'set',
-            value: {
-              _type: 'reference',
-              _ref: dialogSelectedItem._id
-            }
+            value: dialogSelectedItem._id
           }
           onChange({patch: patch})
         }
@@ -128,6 +125,7 @@ export default class ReferenceBrowser extends React.Component {
         })
       })
   }
+
   renderItem = item => {
     const field = this.getItemFieldForType(item._type)
     return (

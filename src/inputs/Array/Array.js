@@ -10,22 +10,13 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
-import {SortableContainer, SortableElement} from 'react-sortable-hoc'
 import styles from './styles/Array.css'
 import arrify from 'arrify'
 import {getFieldType} from '../../schema/getFieldType'
 import randomKey from './randomKey'
 import {get} from 'lodash'
 
-const SortableDefaultList = SortableContainer(DefaultList)
-
-const SortableItem = SortableElement(props => {
-  return (
-    <div disabled={props.disabled} key={props.index}>
-      {props.children}
-    </div>
-  )
-})
+const KEYABLE_TYPES = ['object', 'reference']
 
 function createProtoValue(schema, field) {
   const type = getFieldType(schema, field)
@@ -34,8 +25,14 @@ function createProtoValue(schema, field) {
       _key: randomKey(12)
     }
   }
-  if (type.type !== 'object') {
-    throw new Error(`Invalid item type: "${type.type}" Default array input can only handle object types (for now)`)
+  if (field.type === 'reference') {
+    return {
+      _type: 'reference',
+      _key: randomKey(12)
+    }
+  }
+  if (!KEYABLE_TYPES.includes(type.type)) {
+    throw new Error(`Invalid item type: "${type.type}". Default array input can contain types of "${KEYABLE_TYPES.join(', ')}" (for now)`)
   }
   return {
     _type: type.name,
@@ -52,8 +49,7 @@ export default class Arr extends React.Component {
     field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
     level: PropTypes.number,
-    onChange: PropTypes.func,
-    description: PropTypes.string
+    onChange: PropTypes.func
   };
 
   static defaultProps = {

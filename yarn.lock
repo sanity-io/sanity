@@ -180,9 +180,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.76":
-  version "0.0.76"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.76.tgz#369e264f6d3f1d7a7e7ed81b0a2ccbc037538780"
+"@sanity/components@^0.0.78":
+  version "0.0.78"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.78.tgz#a1e5d2328a3870c8808f75bd46503d88e529489d"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -293,10 +293,11 @@
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
-"@sanity/mutator@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.2.tgz#8009f8cbeca7e3d7c31e2a61fd2b3ae5b8bda6a9"
+"@sanity/mutator@^0.2.2", "@sanity/mutator@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.4.tgz#a77e9dd110d2ece1af779a47dd6b800af8b0feff"
   dependencies:
+    debug "^2.4.5"
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
