@@ -24,6 +24,7 @@ class SearchableSelect extends React.Component {
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     loading: PropTypes.bool,
+    renderItem: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -170,7 +171,7 @@ class SearchableSelect extends React.Component {
   }
 
   render() {
-    const {label, error, onClear, placeholder, loading, value, description, items} = this.props
+    const {label, error, onClear, placeholder, loading, value, description, items, renderItem} = this.props
     const {hasFocus, showList, arrowNavigationPosition} = this.state
 
 
@@ -214,6 +215,7 @@ class SearchableSelect extends React.Component {
             highlightedItem={(items && items[arrowNavigationPosition]) || value}
             selectedItem={value}
             onSelect={this.handleSelect}
+            renderItem={renderItem}
           />
         </div>
 

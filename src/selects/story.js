@@ -203,6 +203,37 @@ storiesOf('Selects')
 )
 
 .addWithInfo(
+  'Searchable (selected value, renderItem)',
+  `
+    When provided with items, the component searches inside these when no onSearch is provided
+  `,
+  () => {
+    const renderItem = function (item) {
+      return (
+        <div>{item.title}</div>
+      )
+    }
+    return (
+      <SearchableSelect
+        label="This is the label"
+        placeholder="This is the placeholder"
+        onChange={action('onChange')}
+        onFocus={action('onChange')}
+        onBlur={action('onBlur')}
+        onOpen={action('onOpen')}
+        value={items[5]}
+        items={items}
+        renderItem={renderItem}
+      />
+    )
+  },
+  {
+    propTables: [SearchableSelect],
+    role: 'part:@sanity/components/selects/searchable'
+  }
+)
+
+.addWithInfo(
   'Searchable (with onClear)',
   `
     When provided with items, the component searches inside these when no onSearch is provided
