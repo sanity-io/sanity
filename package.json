@@ -21,7 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/imagetool": "^0.2.2",
-    "@sanity/mutator": "^0.1.8",
+    "@sanity/mutator": "^0.2.0",
     "arrify": "^1.0.1",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.4.1",
