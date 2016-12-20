@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@sanity/mutator@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.7.tgz#dfffff11e27019da7d7f8792f4901e3ec40722ee"
+"@sanity/mutator@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.1.8.tgz#4342f678f641edde1b31a3464ecb4793d45fe0ef"
   dependencies:
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
@@ -1004,9 +1004,9 @@ eslint-config-sanity@^2.0.1:
   dependencies:
     eslint-config-bengler "^3.0.1"
 
-eslint@^3.12.1:
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.12.1.tgz#507a609fe251dfefd58fda03e6dbd7e851c07581"
+eslint@^3.12.2:
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.12.2.tgz#6be5a9aa29658252abd7f91e9132bab1f26f3c34"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
