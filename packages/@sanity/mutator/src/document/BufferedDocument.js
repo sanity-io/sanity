@@ -51,7 +51,11 @@ export default class BufferedDocument {
   // Used to reset the state of the local document model. If the model has been inconsistent
   // for too long, it has probably missed a notification, and should reload the document from the server
   reset(doc) {
-    debug('Document sttate reset to revision %s', doc._rev)
+    if (doc) {
+      debug('Document sttate reset to revision %s', doc._rev)
+    } else {
+      debug('Document sttate reset to being deleted')
+    }
     this.document.reset(doc)
     this.rebase()
   }
@@ -171,6 +175,8 @@ export default class BufferedDocument {
       if (this.onMutation) {
         this.onMutation(msg)
       }
+    } else {
+      debug('Document mutated from remote with local changes')
     }
 
     // If there are local edits, and the document was deleted, we need to purge those local edits now
@@ -178,7 +184,6 @@ export default class BufferedDocument {
       this.handleDocumentDeleted()
     }
 
-    debug('Document mutated from remote with local changes')
     // We had local changes, so need to signal rebase
     this.rebase()
   }

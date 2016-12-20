@@ -25,7 +25,11 @@ export default class SquashingBuffer {
   staged : Array<any>
 
   constructor(doc : Object) {
-    debug('Reset mutation buffer to rev %s', doc._rev)
+    if (doc) {
+      debug('Reset mutation buffer to rev %s', doc._rev)
+    } else {
+      debug('Reset mutation buffer state to document being deleted')
+    }
     this.staged = []
     this.setOperations = {}
     this.BASIS = doc
