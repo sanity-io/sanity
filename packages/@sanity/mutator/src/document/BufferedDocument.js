@@ -157,6 +157,7 @@ export default class BufferedDocument {
     // If we have no local changes, we can just pass this on to the client
     if (this.commits.length == 0 && !this.buffer.hasChanges()) {
       this.LOCAL = this.document.EDGE
+      this.buffer = new SquashingBuffer(this.LOCAL)
       if (this.onMutation) {
         this.onMutation(msg)
       }
