@@ -72,6 +72,7 @@ export default class Obj extends React.PureComponent {
 
   renderFieldset(fieldset, level, index) {
     const columns = fieldset.options && fieldset.options.columns
+    const collapsable = fieldset.options && fieldset.options.collapsable
     return (
       <Fieldset
         key={fieldset.name}
@@ -79,6 +80,7 @@ export default class Obj extends React.PureComponent {
         description={fieldset.description}
         level={level}
         columns={columns}
+        collapsable={collapsable}
       >
         {fieldset.fields.map((field, fieldIndex) => {
           return this.renderField(field, level + 1, index + fieldIndex)

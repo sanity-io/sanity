@@ -11,23 +11,25 @@ export default {
           title: 'Headings',
           description: 'FIELDSET HEADINGS DESCRIPTION',
           options: {
-            columns: 2
+            columns: 2,
           }
         },
         {
           name: 'author',
-          title: 'Author details',
+          title: 'Author details (collapsable)',
           description: 'Author details with 2 column grid',
           options: {
-            columns: 2
+            columns: 2,
+            collapsable: true
           }
         },
         {
           name: 'checkboxes',
-          title: 'Checkbox Mc. Checkboxface',
+          title: 'Checkbox (collapsable)',
           description: 'Lets put 3 checkboxes in an a 3 column',
           options: {
-            columns: 3
+            columns: 3,
+            collapsable: true
           }
         }
       ],
