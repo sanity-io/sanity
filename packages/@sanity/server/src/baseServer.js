@@ -32,16 +32,17 @@ export function getBaseServer() {
 }
 
 export function getDocumentElement({basePath, hashes}, props = {}) {
+  const assetHashes = hashes || {}
   return getDocumentComponent(basePath)
     .then(Document =>
       React.createElement(Document, Object.assign({
-        stylesheets: ['css/main.css'].map(item => assetify(item, hashes)),
+        stylesheets: ['css/main.css'].map(item => assetify(item, assetHashes)),
         scripts: [
           // @todo figure out a better way to include polyfill when necessary
           'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
           'js/vendor.bundle.js',
           'js/app.bundle.js'
-        ].map(item => assetify(item, hashes))
+        ].map(item => assetify(item, assetHashes))
       }, props))
     )
 }
