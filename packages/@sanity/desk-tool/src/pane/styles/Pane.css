@@ -40,11 +40,13 @@
 }
 
 .view--card {
-  max-width: 40em;
+  width: 70rem;
+  max-width: 80vw;
 }
 
-.view--thumbnail {
-  max-width: 40em;
+.view--media {
+  width: 70rem;
+  max-width: 80vw;
 }
 
 .listContainer {
@@ -60,9 +62,10 @@
 }
 
 .menuButton {
+  font-size: 1rem;
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0;
+  right: -0.25rem;
   z-index: 11;
 }
 

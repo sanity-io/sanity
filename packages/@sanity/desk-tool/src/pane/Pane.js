@@ -5,6 +5,7 @@ import PaneMenu from './PaneMenu.js'
 import IconHamburger from 'part:@sanity/base/hamburger-icon'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
+import Button from 'part:@sanity/components/buttons/default'
 
 export default class Pane extends React.Component {
 
@@ -101,7 +102,7 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {loading, contentType, listView} = this.props
+    const {loading, listView} = this.props
     const {menuOpened} = this.state
 
     const {router} = this.context
@@ -117,23 +118,20 @@ export default class Pane extends React.Component {
           ${styles[`view--${listView}`]}
         `}
       >
-        {
-          contentType == 'documents'
-          && <div className={styles.menuContainer}>
-            <div className={styles.menuButton} onClick={this.handleMenuButtonClick} onMouseOver={this.handleMenuButtonMouseOver}>
-              {
-                <IconHamburger />
-              }
-            </div>
-            <div className={styles.menu}>
-              <PaneMenu
-                opened={menuOpened}
-                onClickOutside={this.handleMenuClose}
-                onAction={this.handleMenuAction}
-              />
-            </div>
+        <div className={styles.menuContainer}>
+          <div className={styles.menuButton}>
+            <Button kind="simple" onClick={this.handleMenuButtonClick}>
+              <IconHamburger />
+            </Button>
           </div>
-        }
+          <div className={styles.menu}>
+            <PaneMenu
+              opened={menuOpened}
+              onClickOutside={this.handleMenuClose}
+              onAction={this.handleMenuAction}
+            />
+          </div>
+        </div>
         {loading && <Spinner />}
         <div className={styles.listContainer}>
           {this.renderListView()}

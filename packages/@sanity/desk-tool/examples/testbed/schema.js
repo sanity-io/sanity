@@ -2,6 +2,7 @@ export default {
   name: 'exampleBlog',
   types: [
     {
+      title: 'Blogpost',
       name: 'blogpost',
       type: 'object',
       fields: [
@@ -69,6 +70,7 @@ export default {
       ]
     },
     {
+      title: 'Latitud & Longitude',
       name: 'latlon',
       type: 'object',
       fields: [
@@ -87,9 +89,9 @@ export default {
       ]
     },
     {
+      title: 'Author',
       name: 'author',
       type: 'object',
-      title: 'Author',
       description: 'Fill inn information about the author',
       fields: [
         {
