@@ -1,4 +1,5 @@
 export default {
+  title: 'Geographical Point',
   name: 'geopoint',
   type: 'object',
   fields: [
