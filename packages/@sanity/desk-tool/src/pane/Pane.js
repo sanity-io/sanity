@@ -86,7 +86,7 @@ export default class Pane extends React.Component {
     const listView = this.props.listView
 
     switch (listView) { // eslint-disable-line default-case
-      case 'thumbnail':
+      case 'media':
         return <GridList items={items} renderItem={renderItem} />
 
       case 'card':

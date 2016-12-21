@@ -56,7 +56,7 @@ class PaneMenu extends React.Component {
         title: 'Thumbnails',
         icon: IconThumbnails,
         action: 'setListView',
-        key: 'thumbnail'
+        key: 'media'
 
       },
       {
