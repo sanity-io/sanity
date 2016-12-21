@@ -291,7 +291,7 @@ export default class ImageInput extends React.PureComponent {
 
   render() {
     const {status, progress, isAdvancedEditOpen} = this.state
-    const {field, level, value, fieldName, ...rest} = omit(this.props,
+    const {field, level, value} = omit(this.props,
       'uploadFn',
       'materializeReferenceFn',
       'onChange',
@@ -314,40 +314,24 @@ export default class ImageInput extends React.PureComponent {
     const isImageToolEnabled = this.isImageToolEnabled()
 
     return (
-      <ImageInputFieldset
-        status={status}
-        legend={field.title}
-        level={level}
-        percent={progress && progress.percent}
-        onSelect={this.handleSelect}
-        onCancel={this.handleCancel}
-        hotspotImage={{
-          hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
-          crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
-          imageUrl: imageUrl
-        }}
-      >
-        {this.renderFields(fieldGroups.highlighted || [])}
-
-        {imageUrl && (
-          <div>
-            <Button
-              icon={UploadIcon}
-              ripple={false}
-            >
-              <ImageSelect
-                name={fieldName}
-                onSelect={this.handleSelect}
-                {...rest}
-              >
-                Upload new
-              </ImageSelect>
-            </Button>
-            {fieldGroups.other && fieldGroups.other.length > 0 && <Button onClick={this.handleEditBtnClick}>Edit image</Button>}
-          </div>
-        )}
+      <div>
+        <ImageInputFieldset
+          status={status}
+          legend={field.title}
+          level={level}
+          percent={progress && progress.percent}
+          onSelect={this.handleSelect}
+          onCancel={this.handleCancel}
+          hotspotImage={{
+            hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
+            crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
+            imageUrl: imageUrl
+          }}
+        >
+          {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
+        </ImageInputFieldset>
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </ImageInputFieldset>
+      </div>
     )
   }
 }

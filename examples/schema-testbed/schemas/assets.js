@@ -17,8 +17,13 @@ export default {
           type: 'file'
         },
         {
+          name: 'singleImageNoFields',
+          title: 'Single image without fields',
+          type: 'image'
+        },
+        {
           name: 'singleImage',
-          title: 'Single image',
+          title: 'Single image with fields',
           type: 'image',
           fields: [
             {
