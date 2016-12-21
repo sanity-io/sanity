@@ -28,7 +28,7 @@ export function wrapBaseType(baseType) {
       const result = check()
       if (result.length) {
         result.forEach(validation => {
-          console.error(validation.error) // eslint-disable-line no-console
+          console.warn('[Warning] %s', validation.error.message) // eslint-disable-line no-console
         })
       }
 
