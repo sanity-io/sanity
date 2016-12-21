@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
