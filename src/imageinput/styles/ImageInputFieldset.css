@@ -32,6 +32,7 @@
   color: #fff;
   transition: background-color 0.1s linear;
   user-select: none;
+  max-height: 100vw;
 
   @nest .level0 & {
     margin: calc(var(--medium-padding) * -1);
@@ -169,6 +170,7 @@
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
+  filter: drop-shadow(0 0 3px #666);
 }
 
 .uploadIcon {

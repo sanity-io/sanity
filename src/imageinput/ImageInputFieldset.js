@@ -106,12 +106,26 @@ export default class ImageInputFieldset extends React.Component {
                     </div>
                   )
                 }
+                <ImageSelect
+                  className={styles.imageSelect}
+                  name={fieldName}
+                  onSelect={this.props.onSelect}
+                >
+                  <div className={styles.uploadInner}>
+                    <div className={styles.uploadIconContainer}>
+                      <UploadIcon className={styles.uploadIcon} />
+                    </div>
+                    <span className={styles.uploadIconText}>Upload new image</span>
+                  </div>
+                </ImageSelect>
               </div>
             }
 
             {
               // Empty state and ready
-              (status === 'ready') && (
+              status === 'ready' && !imageUrl
+              && !(hotspotImage && hotspotImage.imageUrl)
+              && (
                 <ImageSelect
                   className={styles.imageSelect}
                   name={fieldName}
