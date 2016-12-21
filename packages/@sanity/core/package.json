@@ -19,11 +19,11 @@
   "dependencies": {
     "@sanity/check": "^0.0.3",
     "@sanity/mutator": "^0.2.4",
-    "@sanity/server": "^0.0.21",
+    "@sanity/server": "^0.0.22",
     "@sanity/storybook": "^0.0.15",
     "@sanity/util": "^0.0.3",
     "batch-stream-operation": "^1.0.1",
-    "debug": "^2.4.5",
+    "debug": "^2.5.1",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.3.0",
     "fs-promise": "^1.0.0",

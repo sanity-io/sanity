@@ -152,9 +152,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/server@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.21.tgz#71863a4f7aa9f2de4b6b6be67fdb7f4a25f3fe05"
+"@sanity/server@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@sanity/server/-/server-0.0.22.tgz#787c9fe38378700832dc9cd39c6ff4845753918c"
   dependencies:
     "@sanity/extract-text-webpack-plugin" "^1.0.1"
     "@sanity/resolver" "^0.0.9"
@@ -1824,9 +1824,9 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@2, debug@^2.1.1, debug@^2.2.0, debug@^2.4.5:
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
+debug@2, debug@^2.1.1, debug@^2.2.0, debug@^2.4.5, debug@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.5.1.tgz#9107bb4a506052ec2a02314bc606313ed2b921c1"
   dependencies:
     ms "0.7.2"
 
