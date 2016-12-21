@@ -33,6 +33,10 @@ export default class ReferenceContainer {
     return {messages: messages || []}
   }
 
+  get refId() {
+    return this.value && this.value._ref
+  }
+
   serialize() {
     const serialized = {}
     if (hasOwn(this.value, '_key')) {
