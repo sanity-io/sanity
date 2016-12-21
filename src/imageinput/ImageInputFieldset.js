@@ -9,11 +9,18 @@ import createImageLoader from './common/createImageLoader'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
-import Button from 'part:@sanity/components/buttons/default'
+// import Button from 'part:@sanity/components/buttons/default'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
 })
+
+const DEFAULT_HOTSPOT = {
+  height: 0,
+  width: 0,
+  x: 0.5,
+  y: 0.5
+}
 
 export default class ImageInputFieldset extends React.Component {
   static propTypes = {
@@ -103,7 +110,8 @@ export default class ImageInputFieldset extends React.Component {
             }
 
             {
-              (hotspotImage && !hotspotImage.imageUrl) && (
+              // Empty state and ready
+              (status === 'ready') && (
                 <ImageSelect
                   className={styles.imageSelect}
                   name={fieldName}
@@ -147,19 +155,6 @@ export default class ImageInputFieldset extends React.Component {
                   <ProgressCircle percent={100} completed className={styles.progressComplete} />
                 </div>
               </div>
-            }
-
-            {
-              (status == 'ready' || status == 'ready')
-              && (imageUrl || hotspotImage) && (
-                <div className={styles.reUploadContainer}>
-                  <Button>
-                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
-                      Reupload
-                    </ImageSelect>
-                  </Button>
-                </div>
-              )
             }
           </div>
           {

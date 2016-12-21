@@ -86,6 +86,7 @@ storiesOf('Image input')
       <ImageInput
         legend="Image input fieldset"
         onSelect={action('Select image')}
+        status="ready"
       >
         <h2>Content goes here</h2>
       </ImageInput>
@@ -107,6 +108,7 @@ storiesOf('Image input')
       <ImageInput
         legend="Image input fieldset"
         onSelect={action('Select image')}
+        status="ready"
         level={1}
       >
         <h2>Content goes here</h2>
