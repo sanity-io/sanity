@@ -241,15 +241,15 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.7.tgz#780b46dc1801032284e9dfbf0cd3e7e39f2ecc61"
+"@sanity/form-builder@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.8.tgz#fbfaebda0c385dd226152a6b793148a510169970"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.4"
     arrify "^1.0.1"
     canvas-to-blob "0.0.0"
-    debug "^2.4.1"
+    debug "^2.5.1"
     exif-component "^1.0.1"
     get-random-values "^1.2.0"
     get-window "^1.1.1"
@@ -259,9 +259,9 @@
     object-inspect "^1.2.1"
     proptypes "^0.14.3"
     prosemirror "^0.10.1"
-    react-sortable-hoc "0.1.1"
+    react-sortable-hoc "0.4.5"
     shallow-equals "0.0.0"
-    slate "^0.16.1"
+    slate "^0.16.8"
     slate-insert-block-on-enter "0.0.2"
 
 "@sanity/generate-help-url@^0.0.1":
@@ -1918,7 +1918,7 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@2, debug@^2.3.2, debug@^2.4.1, debug@^2.4.5:
+debug@2, debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.4.5:
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
   dependencies:
@@ -1930,9 +1930,9 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.1.1, debug@^2.2.0, debug@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
+debug@^2.3.2, debug@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.5.1.tgz#9107bb4a506052ec2a02314bc606313ed2b921c1"
   dependencies:
     ms "0.7.2"
 
@@ -4907,11 +4907,11 @@ q@^1.1.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
-qs@6.2.0:
+qs@6.2.0, qs@^6.1.0, qs@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
+qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
@@ -5121,15 +5121,7 @@ react-simple-di@^1.2.0:
     babel-runtime "6.x.x"
     hoist-non-react-statics "1.x.x"
 
-react-sortable-hoc@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.1.1.tgz#afbb1b6e8d1ac55af5400de0d4c9dad7822ff852"
-  dependencies:
-    babel-runtime "^6.11.6"
-    invariant "^2.2.1"
-    lodash "^4.12.0"
-
-react-sortable-hoc@^0.4.5:
+react-sortable-hoc@0.4.5, react-sortable-hoc@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.5.tgz#8b60c6a42cfb886771cf28ec586efb0442d003fc"
   dependencies:
@@ -5554,9 +5546,9 @@ slate-insert-block-on-enter@0.0.2:
   dependencies:
     debug "^2.2.0"
 
-slate@^0.16.1:
-  version "0.16.4"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.4.tgz#d4c0e8ba8520f3293259fcfd3aebb8f2b78c4b50"
+slate@^0.16.8:
+  version "0.16.8"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.8.tgz#404053b9721ee15c1d3191e8a6ef01c6055b3b76"
   dependencies:
     cheerio "^0.22.0"
     debug "^2.3.2"
