@@ -5,10 +5,6 @@ import Debug from 'debug'
 import SchemaForm from './SchemaForm'
 import styles from './styles/Main.css'
 
-// Todo: figure out why it complains so much
-// import {whyDidYouUpdate} from 'why-did-you-update'
-// whyDidYouUpdate(React)
-
 Debug.disable('*')
 // Debug.enable('slate*')
 if (process.env.DEBUG) {
