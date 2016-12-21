@@ -322,8 +322,8 @@ export default class ImageInput extends React.PureComponent {
         onSelect={this.handleSelect}
         onCancel={this.handleCancel}
         hotspotImage={{
-          hotspot: isImageToolEnabled ? value.getFieldValue('hotspot').toJSON() : DEFAULT_HOTSPOT,
-          crop: isImageToolEnabled ? value.getFieldValue('crop').toJSON() : DEFAULT_CROP,
+          hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
+          crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
           imageUrl: imageUrl
         }}
       >
