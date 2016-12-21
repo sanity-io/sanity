@@ -102,8 +102,17 @@ export default class Obj extends React.PureComponent {
       return <div>{renderedFields}</div>
     }
 
+    const columns = field.options && field.options.columns
+    const collapsable = field.options && field.options.collapsable
+
     return (
-      <Fieldset level={level} legend={field.title} description={field.description}>
+      <Fieldset
+        level={level}
+        legend={field.title}
+        description={field.description}
+        columns={columns}
+        collapsable={collapsable}
+      >
         {renderedFields}
       </Fieldset>
     )
