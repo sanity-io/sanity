@@ -42,14 +42,15 @@ function run(t) {
       'reduce',
       'scan',
       'flatMap',
+      'mergeMap',
+      'concatMap',
       'toPromise',
       'lift',
       'subscribe',
       'forEach' // spec
     ])
 
-    ;
-    ['map',
+    ;['map',
       'filter',
       'reduce',
       'flatMap',

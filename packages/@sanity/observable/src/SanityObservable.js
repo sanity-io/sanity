@@ -6,6 +6,7 @@ const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
 const {scan} = require('rxjs/operator/scan')
 const {mergeMap} = require('rxjs/operator/mergeMap')
+const {concatMap} = require('rxjs/operator/concatMap')
 const {toPromise} = require('rxjs/operator/toPromise')
 
 /*
@@ -36,6 +37,8 @@ Object.assign(SanityObservable.prototype, {
   reduce,
   scan,
   flatMap: mergeMap,
+  mergeMap: mergeMap,
+  concatMap: concatMap,
   toPromise,
   lift
 })
