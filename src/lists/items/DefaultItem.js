@@ -27,25 +27,8 @@ export default class DefaultListItem extends React.Component {
     this.props.onSelect(this.props.item)
   }
 
-  handleMouseDown = event => {
-    this.setState({
-      mouseIsDown: true
-    })
-  }
-
-  handleMouseUp = event => {
-    this.setState({
-      mouseIsDown: false
-    })
-  }
-
   componentDidMount() {
     this.ensureVisible()
-    window.addEventListener('mouseup', this.handleMouseUp)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('mouseup', this.handleMouseUp)
   }
 
   setElement = element => {
@@ -64,19 +47,24 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {item, selected, highlighted, className, decoration} = this.props
-    const {mouseIsDown} = this.state
+    const {selected, highlighted, className, decoration} = this.props
 
     const rootClasses = `
-      ${decoration && styles[decoration]}
-      ${highlighted && styles.highlighted}
-      ${selected && styles.selected}
-      ${mouseIsDown && styles.active}
+      ${styles.root}
+      ${decoration ? styles[decoration] : ''}
+      ${highlighted ? styles.highlighted : ''}
+      ${selected ? styles.selected : ''}
+    `
+
+    const linkClasses = `
+      ${styles.link}
       ${className}
     `
     return (
-      <li className={rootClasses} onClick={this.handleClick} data-item-key={item.key} onMouseDown={this.handleMouseDown} ref={this.setElement}>
-        {this.props.children}
+      <li className={rootClasses} ref={this.setElement}>
+        <a className={linkClasses} onClick={this.handleClick}>
+          {this.props.children}
+        </a>
       </li>
     )
   }

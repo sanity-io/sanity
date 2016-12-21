@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 :root {
   --default-item-selected-color: var(--brand-primary);
   --default-item-active-color: var(--brand-primary);
@@ -11,33 +9,29 @@
 
 .root {
   width: 100%;
-  height: 100%;
+  height: auto;
   background-color: #fafafa;
   cursor: default;
-  transition: all 0.2s linear;
-
-  &:hover {
-    background-color: var(--default-item-background-color-hover);
-  }
+  box-sizing: border-box;
 }
 
-.inner {
+.link {
+  display: block;
   width: 100%;
-  overflow: hidden;
+
+  @nest &:hover {
+    color: var(--brand-black);
+    background-color: var(--default-item-background-color-hover);
+  }
+
+  @nest &:active {
+    color: var(--brand-white);
+    background-color: var(--default-item-active-color);
+  }
 }
 
 .selected {
-  composes: root;
   background-color: var(--default-item-selected-color);
-}
-
-.active {
-  background-color: var(--default-item-active-color);
-  color: #fff;
-
-  &:hover {
-    background-color: var(--default-item-active-color);
-  }
 }
 
 .sortableHelper {

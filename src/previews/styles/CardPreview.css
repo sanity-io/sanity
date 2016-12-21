@@ -1,12 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: #fff;
+  background-color: inherit;
   composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
 }
 
 .title {
   composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
+  color: inherit;
   margin: 0;
   padding: 0;
 }
@@ -18,6 +19,7 @@
   margin: 0;
   padding: 0;
   margin-bottom: 0.5em;
+  color: inherit;
 }
 
 .date {
@@ -37,13 +39,9 @@
   }
 }
 
-.padder {
-  border: 1px solid red;
-}
-
 .description {
   font-size: var(--font-size-xsmall);
-  color: var(--text-color);
+  color: inherit;
   font-weight: 400;
   padding: 0;
   margin: 0;

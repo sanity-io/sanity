@@ -16,19 +16,26 @@
   cursor: default;
 }
 
+.link {
+  display: block;
+
+  @nest &:hover {
+    background-color: color(var(--gray-base) a(7%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--default-item-selected-color) a(100%));
+    color: #fff;
+  }
+}
+
 .selected {
-  background-color: color(var(--default-item-selected-color) a(60%));
+  background-color: color(var(--default-item-selected-color) a(80%));
   color: #fff;
 }
 
 .highlighted {
-  background-color: color(var(--default-item-selected-color) a(50%));
-  color: #fff;
-}
-
-.active {
-  background-color: color(var(--default-item-selected-color) a(80%));
-  color: #fff;
+  background-color: color(var(--default-item-selected-color) a(30%));
 }
 
 .sortableHelper {
@@ -50,15 +57,7 @@
   composes: root;
 
   @nest &:nth-child(even) {
-    background-color: color(var(--gray-base) a(5%));
-
-    @nest &.active {
-      background-color: color(var(--default-item-selected-color) a(60%));
-    }
-
-    @nest &.selected {
-      background-color: color(var(--default-item-selected-color) a(60%));
-    }
+    background-color: color(var(--gray-base) a(4%));
   }
 }
 

@@ -3,86 +3,39 @@ import styles from 'part:@sanity/components/lists/items/grid-style'
 
 export default class GridItem extends React.Component {
   static propTypes = {
-    title: PropTypes.string,
-    content: PropTypes.node,
-    index: PropTypes.string,
-    extraContent: PropTypes.node,
-    icon: PropTypes.node,
-    onClick: PropTypes.func,
-    onSelect: PropTypes.func,
+    className: PropTypes.string,
+    item: PropTypes.object,
+    children: PropTypes.node.isRequired,
+    onSelect: PropTypes.func.isRequired,
     layout: PropTypes.string,
-    description: PropTypes.string,
-    image: PropTypes.string,
-    square: PropTypes.bool,
-    showInfo: PropTypes.bool,
-    children: PropTypes.node,
-    className: PropTypes.string
+    selected: PropTypes.bool,
+    highlighted: PropTypes.bool,
+    scrollIntoView: PropTypes.func,
   }
 
   static defaultProps = {
-    onClick() {},
-    action() {},
     onSelect() {},
-    height: 100,
-    width: 133
   }
 
-  constructor(context, props) {
-    super(context, props)
-    this.handleClick = this.handleClick.bind(this)
-    this.handleMouseDown = this.handleMouseDown.bind(this)
-    this.handleMouseUp = this.handleMouseUp.bind(this)
-    this.state = {
-      loading: false,
-      mouseIsDown: false
-    }
-  }
-
-  componentDidMount() {
-    // const image = new Image()
-    // image.src = this.props.image
-    // image.onload = () => {
-    //   this.setState({
-    //     loading: false
-    //   })
-    // }
-  }
-
-  handleClick(event) {
-    this.props.onSelect(event)
-  }
-
-  handleMouseDown(event) {
-    this.setState({
-      mouseIsDown: true
-    })
-  }
-  handleMouseUp(event) {
-    this.setState({
-      mouseIsDown: false
-    })
+  handleClick = () => {
+    this.props.onSelect(this.props.item)
   }
 
   render() {
-    const {children, className} = this.props
-    const {mouseIsDown} = this.state
+    const {children, className, selected, highlighted} = this.props
 
     const rootStyles = `
       ${styles.root}
-      ${mouseIsDown && styles.active}
+      ${selected ? styles.selected : ''}
+      ${highlighted ? styles.highlighted : ''}
       ${className}
     `
     return (
-      <div
-        className={rootStyles}
-        onClick={this.handleClick}
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-      >
-        <div className={styles.inner}>
+      <li className={rootStyles}>
+        <a onClick={this.handleClick} className={styles.link}>
           {children}
-        </div>
-      </div>
+        </a>
+      </li>
     )
   }
 }

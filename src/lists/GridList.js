@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/grid-style'
-import ListItem from 'part:@sanity/components/lists/items/default'
+import ListItem from 'part:@sanity/components/lists/items/grid'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import {ContainerQuery} from 'react-container-query'
 import classnames from 'classnames'
@@ -75,10 +75,6 @@ class GridList extends React.Component {
     }
   }
 
-  handleSelect(index) {
-    this.props.onSelect(index)
-  }
-
   renderListItem = (item, index) => {
 
     const {
@@ -88,7 +84,8 @@ class GridList extends React.Component {
       selectedItem,
       highlightedItem,
       sortable,
-      useDragHandle
+      useDragHandle,
+      onSelect
     } = this.props
 
     return (
@@ -97,7 +94,7 @@ class GridList extends React.Component {
         index={item.index}
         key={`item-${index}`}
         item={item}
-        onSelect={this.handleSelect}
+        onSelect={onSelect}
         selected={item == selectedItem}
         highlighted={item == highlightedItem}
         decoration={decoration}

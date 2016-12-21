@@ -216,3 +216,11 @@
   left: 0;
   transform: translateY(-50%);
 }
+
+.reUploadContainer {
+  z-index: 100;
+  border: 2px solid red;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}

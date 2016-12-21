@@ -9,13 +9,7 @@ import createImageLoader from './common/createImageLoader'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
-
-const DEFAULT_HOTSPOT = {
-  height: 0,
-  width: 0,
-  x: 0.5,
-  y: 0.5
-}
+import Button from 'part:@sanity/components/buttons/default'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -73,7 +67,7 @@ export default class ImageInputFieldset extends React.Component {
 
   render() {
 
-    const {legend, level, hotspotImage, imageUrl, fieldName, percent, status, children} = this.props
+    const {legend, level, hotspotImage, imageUrl, fieldName, percent, status, onCancel, children} = this.props
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
@@ -133,7 +127,7 @@ export default class ImageInputFieldset extends React.Component {
               </div>
             }
             {
-              status === 'pending' && this.props.onCancel
+              status === 'pending' && onCancel
               && <a className={styles.cancel} onClick={this.props.onCancel}>Cancel</a>
             }
             {
@@ -153,6 +147,19 @@ export default class ImageInputFieldset extends React.Component {
                   <ProgressCircle percent={100} completed className={styles.progressComplete} />
                 </div>
               </div>
+            }
+
+            {
+              (status == 'ready' || status == 'ready')
+              && (imageUrl || hotspotImage) && (
+                <div className={styles.reUploadContainer}>
+                  <Button>
+                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
+                      Reupload
+                    </ImageSelect>
+                  </Button>
+                </div>
+              )
             }
           </div>
           {
