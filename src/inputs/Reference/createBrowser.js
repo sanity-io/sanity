@@ -11,12 +11,13 @@ export default function createReferenceInput({fetch, materializeReferences}) {
   return ReferenceInput
 
   function ReferenceInput(props) {
+    const {field, level, ...rest} = props
     return (
-      <FormField label={props.field.title} level={props.level}>
+      <FormField label={field.title} description={field.description} level={level}>
         <ReferenceBrowser
           fetchFn={fetch}
           materializeReferences={materializeReferences}
-          {...props}
+          {...rest}
         />
       </FormField>
     )

@@ -14,6 +14,7 @@ export default {
             {
               title: 'Pet',
               type: 'reference',
+              description: 'Pet you pet',
               to: {
                 type: 'pet'
               }
