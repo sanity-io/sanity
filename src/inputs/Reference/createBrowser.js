@@ -17,6 +17,7 @@ export default function createReferenceInput({fetch, materializeReferences}) {
         <ReferenceBrowser
           fetchFn={fetch}
           materializeReferences={materializeReferences}
+          field={field}
           {...rest}
         />
       </FormField>
