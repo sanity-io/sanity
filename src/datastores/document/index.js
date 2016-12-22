@@ -1,9 +1,8 @@
 import Observable from '@sanity/observable'
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
-import {timer} from './observableUtils'
 
-function getSnapshot(id) {
+function fetchDocumentSnapshot(id) {
   return client.getDocument(id)
     .then(document => {
       return {
@@ -13,25 +12,33 @@ function getSnapshot(id) {
     })
 }
 
+function fetchQuerySnapshot(query, params) {
+  return client.fetch(query, params)
+    .then(documents => {
+      return {
+        type: 'snapshot',
+        documents: documents
+      }
+    })
+}
+
 const serverConnection = {
   byId(id) {
     return Observable.from(client.listen('*[_id == $id]', {id: id}, {events: ['welcome', 'mutation']}))
       .concatMap(event => {
         return (event.type === 'welcome')
-          ? Observable.from(getSnapshot(id))
+          ? Observable.from(fetchDocumentSnapshot(id))
           : Observable.of(event)
       })
   },
 
   query(query, params) {
-    // todo
-    return timer(0, 10000)
-      .flatMap(() => client.fetch(query, params))
-      .map(documents => ({
-        type: 'snapshot',
-        documents: documents
-      }))
-      // .map(event => (console.log('document store event %O', event), event)) // debug
+    return Observable.from(client.listen(query, params || {}, {events: ['welcome', 'mutation']}))
+      .concatMap(event => {
+        return (event.type === 'welcome')
+          ? Observable.from(fetchQuerySnapshot(query, params))
+          : Observable.of(event)
+      })
   },
 
   mutate(mutations) {
