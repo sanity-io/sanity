@@ -188,11 +188,23 @@ export default class Arr extends React.Component {
   }
 
   handleMove = event => {
+    const {value} = this.props
+    const item = value.at(event.oldIndex)
+    const refItem = value.at(event.newIndex)
+    console.log('from %d => %d', event.oldIndex, event.newIndex, event)
     this.props.onChange({
-      patch: {
-        type: 'move',
-        value: {from: event.oldIndex, to: event.newIndex}
-      }
+      patch: [
+        {
+          type: 'unset',
+          path: [{_key: item.key}]
+        },
+        {
+          type: 'insert',
+          path: [{_key: refItem.key}],
+          position: event.oldIndex > event.newIndex ? 'before' : 'after',
+          items: [item.get()]
+        }
+      ]
     })
   }
 
@@ -262,7 +274,7 @@ export default class Arr extends React.Component {
       return <GridList renderItem={this.renderItem} items={value.value} />
     }
 
-    const sortable = get(type, 'options.sortable')
+    const sortable = get(type, 'options.sortable') !== false
 
     return (
       <DefaultList
