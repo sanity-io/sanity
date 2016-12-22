@@ -48,8 +48,17 @@ export default class QueryContainer extends React.Component {
     this._subscription = store.query(query, params).subscribe(this)
   }
 
-  next = result => {
-    this.setState({error: null, result})
+  next = event => {
+    switch (event.type) {
+      case 'snapshot': {
+        this.setState({error: null, result: {documents: event.documents}})
+        break
+      }
+      case 'mutation': {
+        this.receiveMutations(event)
+        break
+      }
+    }
   }
 
   error = error => {
@@ -59,6 +68,33 @@ export default class QueryContainer extends React.Component {
 
   complete = () => {
     this.setState({complete: true})
+  }
+
+  receiveMutations(event) {
+    /*
+    const example = {
+      type: 'mutation',
+      eventId: 'yr50wh-mzc-lby-hcf-3zumkc867#public/hi3HUGlrHu2c292ZddrZes',
+      documentId: 'public/hi3HUGlrHu2c292ZddrZes',
+      transactionId: 'yr50wh-mzc-lby-hcf-3zumkc867',
+      transition: 'disappear',
+      identity: 'Z29vZ2xlX29hdXRoMjo6MTA2MTc2MDY5MDI1MDA3MzA5MTAwOjozMjM=',
+      mutations: [
+        {
+          delete: {
+            id: 'public/hi3HUGlrHu2c292ZddrZes'
+          }
+        }
+      ],
+      previousRev: 'm5qsec-ovr-cv8-i1q-qck9otism',
+      resultRev: 'yr50wh-mzc-lby-hcf-3zumkc867',
+      timestamp: '2016-12-22T12:24:02.433897Z'
+    }
+     */
+    if (event.transition === 'appear' || event.transition === 'disappear') {
+      // todo:  Implement add/remove just resubcribing for now.
+      this.subscribe(this.props.query, this.props.params)
+    }
   }
 
   unsubscribe() {
