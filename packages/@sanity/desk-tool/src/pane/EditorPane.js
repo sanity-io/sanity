@@ -8,7 +8,7 @@ import schemaTypePrefix from '../utils/schemaTypePrefix'
 import schema from 'part:@sanity/base/schema'
 import dataAspects from '../utils/dataAspects'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {debounce} from 'lodash'
+import {throttle} from 'lodash'
 
 import styles from './styles/EditorPane.css'
 import {Patcher} from '@sanity/mutator'
@@ -174,7 +174,7 @@ export default class EditorPane extends React.PureComponent {
     const {router} = this.context
     router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
-  commit = debounce(() => {
+  commit = throttle(() => {
     this.setState({spin: true, progress: null})
     this.document.commit().subscribe({
       next: () => {
@@ -187,7 +187,7 @@ export default class EditorPane extends React.PureComponent {
         this.setState({spin: false})
       }
     })
-  }, 1000)
+  }, 1000, {leading: true, trailing: true})
 
   handleChange = event => {
     this.document
