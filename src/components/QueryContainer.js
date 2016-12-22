@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {bindAll} from 'lodash'
+import {throttle} from 'lodash'
 import store from 'part:@sanity/base/datastore/document'
 
 function deprecatedCheck(props, propName, componentName, ...rest) {
@@ -71,8 +71,10 @@ export default class QueryContainer extends React.Component {
   }
 
   receiveMutations(event) {
+    // todo: apply mutations on this.state.collection. Need to figure out how to do this with previews
+    // just resubcribing for now.
     /*
-    const example = {
+    const exampleEvent = {
       type: 'mutation',
       eventId: 'yr50wh-mzc-lby-hcf-3zumkc867#public/hi3HUGlrHu2c292ZddrZes',
       documentId: 'public/hi3HUGlrHu2c292ZddrZes',
@@ -91,11 +93,12 @@ export default class QueryContainer extends React.Component {
       timestamp: '2016-12-22T12:24:02.433897Z'
     }
      */
-    if (event.transition === 'appear' || event.transition === 'disappear') {
-      // todo:  Implement add/remove just resubcribing for now.
-      this.subscribe(this.props.query, this.props.params)
-    }
+    this.refresh()
   }
+
+  refresh = throttle(() => {
+    this.subscribe(this.props.query, this.props.params)
+  }, 1000, {leading: true, trailing: true})
 
   unsubscribe() {
     if (this._subscription) {
