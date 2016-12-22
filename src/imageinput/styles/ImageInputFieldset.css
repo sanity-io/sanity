@@ -131,6 +131,7 @@
   color: var(--gray-lighter);
   cursor: default;
   transition: transform 0.1s linear;
+  z-index: 15;
 
   &:hover {
     transform: scale(1.05);

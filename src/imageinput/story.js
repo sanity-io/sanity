@@ -76,8 +76,10 @@ storiesOf('Image input')
   }
 )
 
+storiesOf('Image input Fieldset')
+
 .addWithInfo(
-  'Fieldset (level 0)',
+  'Level 0',
   `
     Image input for uploading images.
   `,
@@ -99,7 +101,7 @@ storiesOf('Image input')
 )
 
 .addWithInfo(
-  'Fieldset (level 1)',
+  'Level 1',
   `
     Image input for uploading images.
   `,
@@ -123,7 +125,7 @@ storiesOf('Image input')
 
 
 .addWithInfo(
-  'Fieldset (only image)',
+  'Only image',
   `
     Image input for uploading images.
   `,
@@ -143,7 +145,7 @@ storiesOf('Image input')
 )
 
 .addWithInfo(
-  'Fieldset (error)',
+  'Error on upload',
   `
     Image input for uploading images.
   `,
@@ -170,7 +172,7 @@ storiesOf('Image input')
 
 
 .addWithInfo(
-  'Fieldset (43%)',
+  'Progress 43%',
   `
     Image input for uploading images.
   `,
@@ -224,7 +226,7 @@ storiesOf('Image input')
 )
 
 .addWithInfo(
-  'Fieldset (just imageUrl)',
+  'Provided only imageUrl (status ready)',
   `
     Image input for uploading images.
   `,
@@ -235,6 +237,54 @@ storiesOf('Image input')
         onSelect={action('Select image')}
         status="ready"
         imageUrl={imageUrl}
+      >
+        <h2>Content goes here</h2>
+      </ImageInput>
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+
+.addWithInfo(
+  'Invalid url',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        status="complete"
+        hotspotImage={{imageUrl: 'This is no a valid url'}}
+      >
+        <h2>Content goes here</h2>
+      </ImageInput>
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+
+.addWithInfo(
+  'Invalid blob',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        status="complete"
+        hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
       >
         <h2>Content goes here</h2>
       </ImageInput>

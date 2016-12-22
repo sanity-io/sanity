@@ -83,7 +83,7 @@ export default class ImageInputFieldset extends React.Component {
             className={`
               ${hotspotImage && hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
               ${children ? styles.hasContent : styles.noContent}
-              ${status == 'error' && styles.error}
+              ${status == 'error' ? styles.error : ''}
             `}
           >
             {
@@ -92,7 +92,7 @@ export default class ImageInputFieldset extends React.Component {
                 {
                   hotspotImage && (
                     <HotspotImage
-                      aspectRatio="auto"
+                      aspectRatio={children ? 3 / 4 : 16 / 9}
                       hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
                       crop={hotspotImage.crop || DEFAULT_CROP}
                       src={hotspotImage.imageUrl}

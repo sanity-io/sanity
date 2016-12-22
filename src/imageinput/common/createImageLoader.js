@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 export default function createImageLoader(Component, mapImageToProps) {
   return class ImageLoader extends React.PureComponent {
@@ -26,9 +27,15 @@ export default function createImageLoader(Component, mapImageToProps) {
       }
 
       image.onerror = () => {
-        this.setState({
-          error: new Error(`Could not load image from ${JSON.stringify(this.props.src)}`)
-        })
+        if (this.props.src.split('blob:http').length > 1) {
+          this.setState({
+            error: new Error('Could not preview image from your computer')
+          })
+        } else {
+          this.setState({
+            error: new Error(`Could not preview image from ${JSON.stringify(this.props.src)}`)
+          })
+        }
       }
 
       image.src = src
@@ -43,7 +50,7 @@ export default function createImageLoader(Component, mapImageToProps) {
     render() {
       const {error, loadedImage} = this.state
       if (error) {
-        return <div style={{display: 'inline-block'}}>{error.message}</div>
+        return <Snackbar kind="danger">{error.message}</Snackbar>
       }
       if (!loadedImage) {
         return null
