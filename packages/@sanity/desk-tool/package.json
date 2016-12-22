@@ -27,7 +27,7 @@
     "@sanity/form-builder": "^0.1.13"
   },
   "devDependencies": {
-    "@sanity/base": "^0.3.10",
+    "@sanity/base": "^0.3.11",
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.4.8",
     "@sanity/components": "^0.0.82",

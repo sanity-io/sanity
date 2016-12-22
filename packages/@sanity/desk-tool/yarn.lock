@@ -106,9 +106,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.10":
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.10.tgz#416c29b59219368fb30caa4b1a586aa402ce0578"
+"@sanity/base@^0.3.11":
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.11.tgz#321665637ec9993ce8c90081fdce7e6d0402d811"
   dependencies:
     "@sanity/client" "^0.4.8"
     "@sanity/document-store" "^0.2.8"
