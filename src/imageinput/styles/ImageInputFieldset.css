@@ -132,6 +132,7 @@
   cursor: default;
   transition: transform 0.1s linear;
   z-index: 15;
+  user-select: none;
 
   &:hover {
     transform: scale(1.05);
