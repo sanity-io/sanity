@@ -98,7 +98,7 @@ export default {
   },
   listen() {
     return new Observable(observer => {
-
+      observer.next({type: 'welcome'})
     })
   },
   mutate(spec) {
