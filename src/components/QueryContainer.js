@@ -49,7 +49,7 @@ export default class QueryContainer extends React.Component {
   }
 
   next = result => {
-    this.setState({result})
+    this.setState({error: null, result})
   }
 
   error = error => {
