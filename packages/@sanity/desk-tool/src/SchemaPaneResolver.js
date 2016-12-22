@@ -101,15 +101,11 @@ export default class SchemaPaneResolver extends React.Component {
     const {selectedType, selectedDocumentId} = this.context.router.state
     const selected = UrlDocId.encode(item._id) === selectedDocumentId
     const listView = this.getListViewForType(selectedType)
-
-    const linkState = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
-
     const schemaType = schema.types.find(type => type.name === selectedType)
     return (
       <DocumentPaneItem
         document={item}
         selected={selected}
-        linkState={linkState}
         listView={listView}
         schemaType={schemaType}
       />

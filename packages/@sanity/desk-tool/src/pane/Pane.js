@@ -6,6 +6,7 @@ import IconHamburger from 'part:@sanity/base/hamburger-icon'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import Button from 'part:@sanity/components/buttons/default'
+import UrlDocId from '../utils/UrlDocId'
 
 export default class Pane extends React.Component {
 
@@ -81,6 +82,13 @@ export default class Pane extends React.Component {
     event.stopPropagation()
   }
 
+  handleSelect = item => {
+    const {router} = this.context
+    const {selectedType} = this.context.router.state
+
+    router.navigate({selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)})
+  }
+
   renderListView() {
     const {items, renderItem} = this.props
 
@@ -88,17 +96,17 @@ export default class Pane extends React.Component {
 
     switch (listView) { // eslint-disable-line default-case
       case 'media':
-        return <GridList items={items} renderItem={renderItem} />
+        return <GridList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
 
       case 'card':
-        return <GridList items={items} layout="masonry" renderItem={renderItem} />
+        return <GridList items={items} layout="masonry" renderItem={renderItem} onSelect={this.handleSelect} />
 
       case 'detail':
       case 'default':
-        return <DefaultList items={items} renderItem={renderItem} />
+        return <DefaultList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
     }
     console.error(new Error(`Invalid list view option: ${listView}`)) // eslint-disable-line no-console
-    return <DefaultList items={items} renderItem={renderItem} />
+    return <DefaultList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
   }
 
   render() {
