@@ -8,6 +8,7 @@ export default class FileInput extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func,
     upload: PropTypes.func.isRequired,
+    value: PropTypes.object.isRequired,
   }
   static valueContainer = ObjectValueContainer
 
@@ -26,8 +27,7 @@ export default class FileInput extends React.PureComponent {
 
     this.subscription = this.props.upload(file).subscribe({
       next: this.handleUploadProgress,
-      error: this.handleUploadError,
-      complete: this.handleUploadComplete,
+      error: this.handleUploadError
     })
   }
   componentWillUnmount() {
@@ -39,11 +39,41 @@ export default class FileInput extends React.PureComponent {
     }
   }
 
-  handleUploadProgress = progress => {
-    this.setState({
-      status: 'pending',
-      progress: progress
-    })
+  createSetIfMissingPatch() {
+    return {
+      type: 'setIfMissing',
+      value: {
+        _type: this.props.value.context.field.type,
+        asset: {}
+      }
+    }
+  }
+
+  handleUploadProgress = event => {
+    if (event.type === 'progress' && event.stage === 'upload') {
+      this.setState({
+        status: 'pending',
+        progress: {percent: event.percent}
+      })
+    }
+
+    if (event.type === 'complete') {
+      const {onChange} = this.props
+      onChange({
+        patch: this.createSetIfMissingPatch()
+      })
+      onChange({
+        patch: {
+          type: 'set',
+          path: ['asset'],
+          value: {_ref: event.id}
+        }
+      })
+      this.setState({
+        uploadingFile: null,
+        status: 'complete'
+      })
+    }
   }
 
   handleUploadError = error => {

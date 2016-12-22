@@ -13,6 +13,7 @@ import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
 import resolveReference from './resolveReference'
 import Image from '../inputs/Image'
+import File from '../inputs/File'
 
 const primitiveTypes = {
   array,
@@ -44,6 +45,9 @@ export default function inputResolver(field, fieldType) {
   }
   if (field.type === 'image') {
     return Image
+  }
+  if (field.type === 'file') {
+    return File
   }
   return field.editor || inputRole
 }
