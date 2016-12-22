@@ -30,7 +30,7 @@
   "dependencies": {
     "@sanity/client": "^0.4.8",
     "@sanity/document-store": "^0.2.8",
-    "@sanity/observable": "^1.3.1",
+    "@sanity/observable": "^1.4.0",
     "@sanity/state-router": "^0.3.0-beta.1",
     "history": "2",
     "in-publish": "^2.0.0",

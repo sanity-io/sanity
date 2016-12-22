@@ -63,6 +63,13 @@
     object-assign "^4.1.0"
     rxjs "^5.0.1"
 
+"@sanity/observable@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.4.0.tgz#582ba24b86ff2ac59ec29c9550a2d7795d14d7b7"
+  dependencies:
+    object-assign "^4.1.0"
+    rxjs "^5.0.1"
+
 "@sanity/resolver@^0.0.9":
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-0.0.9.tgz#c900e9e4a5aaadd42e0e20255461f308e55fb3d3"

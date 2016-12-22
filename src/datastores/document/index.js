@@ -1,7 +1,7 @@
 import Observable from '@sanity/observable'
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
-import observableTimer from '../utils/observableTimer'
+import {timer} from './observableUtils'
 
 function getSnapshot(id) {
   return client.getDocument(id)
@@ -15,28 +15,17 @@ function getSnapshot(id) {
 
 const serverConnection = {
   byId(id) {
-    const mutations = client
-      .listen('*[_id == $id]', {id: id})
-      .filter(event => event.type === 'mutation')
-
-    return new Observable(observer => {
-      let mutationsSubscription
-      // todo need to sync events with snapshot
-      getSnapshot(id).then(snapshot => {
-        observer.next(snapshot)
-        mutationsSubscription = mutations.subscribe(observer)
-      }, err => observer.error(err))
-      return () => {
-        if (mutationsSubscription) {
-          mutationsSubscription.unsubscribe()
-        }
-      }
-    })
+    return Observable.from(client.listen('*[_id == $id]', {id: id}, {events: ['welcome', 'mutation']}))
+      .concatMap(event => {
+        return (event.type === 'welcome')
+          ? Observable.from(getSnapshot(id))
+          : Observable.of(event)
+      })
   },
 
   query(query, params) {
     // todo
-    return observableTimer(0, 10000)
+    return timer(0, 10000)
       .flatMap(() => client.fetch(query, params))
       .map(documents => ({
         type: 'snapshot',

@@ -1,6 +1,6 @@
 import Observable from '@sanity/observable'
 
-export default function observableTimer(initialDelay, period) {
+export function timer(initialDelay, period) {
   return new Observable(observer => {
     let n = 0
     let intervalId = -1
@@ -21,3 +21,4 @@ export default function observableTimer(initialDelay, period) {
     }
   })
 }
+
