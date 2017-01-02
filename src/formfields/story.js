@@ -87,7 +87,7 @@ storiesOf('Form fields')
     const id = 'storyFormField_Default1'
     return (
       <DefaultFormField
-        level="0"
+        level={0}
         label="This is the label"
         description={chance.paragraph()}
         labelHtmlFor={id}
@@ -110,7 +110,7 @@ storiesOf('Form fields')
     const id = 'storyFormField_Default1'
     return (
       <DefaultFormField
-        level="1"
+        level={1}
         label="This is the label"
         description={chance.paragraph()}
         labelHtmlFor={id}
@@ -133,7 +133,7 @@ storiesOf('Form fields')
     const id = 'storyFormField_Default1'
     return (
       <DefaultFormField
-        level="2"
+        level={2}
         label="This is the label"
         description={chance.paragraph()}
         labelHtmlFor={id}
@@ -156,7 +156,7 @@ storiesOf('Form fields')
     const id = 'storyFormField_Default1'
     return (
       <DefaultFormField
-        level="3"
+        level={3}
         label="This is the label"
         description={chance.paragraph()}
         labelHtmlFor={id}

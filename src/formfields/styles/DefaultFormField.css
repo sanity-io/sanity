@@ -4,6 +4,7 @@
 .root {
   display: block;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .root + .root {
@@ -52,6 +53,7 @@
   background-color: #fff;
   border: 1px solid #ccc;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .inner {

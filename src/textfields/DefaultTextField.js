@@ -24,6 +24,7 @@ export default class DefaultTextField extends React.Component {
   }
 
   static defaultProps = {
+    level: 0,
     value: '',
     onKeyPress() {},
     onChange() {},
