@@ -11,6 +11,10 @@
   margin-top: var(--large-padding);
 }
 
+.block {
+  display: block;
+}
+
 .inline {
   composes: root;
   display: inline;
