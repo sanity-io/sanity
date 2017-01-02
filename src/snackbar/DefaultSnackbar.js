@@ -16,13 +16,15 @@ export default class DefaultSnackbar extends React.Component {
 
   static defaultProps = {
     kind: 'info',
-    time: 4
+    time: 4,
   }
 
   constructor(props, context) {
     super(props, context)
     this.state = {
-      visible: true
+      visible: true,
+      mouseOver: false,
+      timeLeft: this.props.time
     }
   }
 
@@ -38,8 +40,20 @@ export default class DefaultSnackbar extends React.Component {
     clearTimeout(this.timeOut)
   }
 
-  handleAction() {
+  handleAction = () => {
     this.props.action.action()
+  }
+
+  handleMouseOver = () => {
+    clearTimeout(this.timeOut)
+  }
+
+  handleMouseLeave = () => {
+    this.timeOut = setTimeout(() => {
+      this.setState({
+        visible: false
+      })
+    }, this.props.time * 1000)
   }
 
   render() {
@@ -50,7 +64,7 @@ export default class DefaultSnackbar extends React.Component {
 
     return (
       <div className={style}>
-        <div className={styles.inner}>
+        <div className={styles.inner} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
           <div className={styles.content}>
             {children}
           </div>

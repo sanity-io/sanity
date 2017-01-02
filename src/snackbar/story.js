@@ -84,10 +84,12 @@ storiesOf('Snackbar')
   () => {
     const myAction = {
       title: 'Revert',
-      action: () => action('Action fired!')
+      action: () => {
+        action('Action fired!')
+      }
     }
     return (
-      <Snackbar kind="danger" action={myAction} time={10000}>
+      <Snackbar kind="danger" action={myAction} time={2}>
         You deleted <strong>Name of something</strong>
       </Snackbar>
     )
