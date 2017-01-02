@@ -31,7 +31,6 @@ export default class ImageInputFieldset extends React.Component {
     fieldName: PropTypes.string,
     onSelect: PropTypes.func,
     onCancel: PropTypes.func,
-    imageUrl: PropTypes.string,
     hotspotImage: PropTypes.shape({
       hotspot: PropTypes.object,
       crop: PropTypes.object,
@@ -55,26 +54,10 @@ export default class ImageInputFieldset extends React.Component {
     // this._inputId = uniqueId('ImageInputFieldset')
   }
 
-  componentDidMount() {
-    const {imageUrl} = this.props
-    if (imageUrl) {
-      this.renderImage(imageUrl)
-    }
-  }
-
-  renderImage = url => {
-    const image = new Image()
-    image.src = url
-    image.onload = i => {
-      this.setState({
-        aspect: image.width / image.height
-      })
-    }
-  }
 
   render() {
 
-    const {legend, level, hotspotImage, imageUrl, fieldName, percent, status, onCancel, children} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, children} = this.props
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
@@ -87,7 +70,7 @@ export default class ImageInputFieldset extends React.Component {
             `}
           >
             {
-              ((hotspotImage && hotspotImage.imageUrl) || imageUrl)
+              ((hotspotImage && hotspotImage.imageUrl))
               && <div className={status === 'complete' || status === 'ready' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
                 {
                   hotspotImage && (
@@ -97,13 +80,6 @@ export default class ImageInputFieldset extends React.Component {
                       crop={hotspotImage.crop || DEFAULT_CROP}
                       src={hotspotImage.imageUrl}
                     />
-                  )
-                }
-                {
-                  imageUrl && !hotspotImage && this.state.aspect && (
-                    <div className={styles.vanillaImageWrapper}>
-                      <img src={imageUrl} className={this.state.aspect >= 1 ? styles.landscapeImage : styles.portraitImage} />
-                    </div>
                   )
                 }
                 <ImageSelect
@@ -123,7 +99,7 @@ export default class ImageInputFieldset extends React.Component {
 
             {
               // Empty state and ready
-              status === 'ready' && !imageUrl
+              status === 'ready'
               && !(hotspotImage && hotspotImage.imageUrl)
               && (
                 <ImageSelect

@@ -226,30 +226,6 @@ storiesOf('Image input Fieldset')
 )
 
 .addWithInfo(
-  'Provided only imageUrl (status ready)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        status="ready"
-        imageUrl={imageUrl}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-
-.addWithInfo(
   'Invalid url',
   `
     Image input for uploading images.
