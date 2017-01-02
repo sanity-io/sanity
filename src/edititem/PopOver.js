@@ -53,6 +53,7 @@ export default class EditItemPopOver extends React.Component {
   }
 
   handleClose() {
+    scroll.top(this.scrollContainer, this.initialScrollTop, this.scrollOptions)
     this.props.onClose()
   }
 
@@ -89,7 +90,7 @@ export default class EditItemPopOver extends React.Component {
     const scrollTop = this.scrollContainer.scrollTop
 
     // Scroll container when there is no space
-    // But we cant scroll more than the height of the element
+    // But we can't scroll more than the height of the element
     if ((containerOffsetHeight + scrollTop) < (top + height)) {
       let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
       // If element is to big for screen, scroll top only top of the element
