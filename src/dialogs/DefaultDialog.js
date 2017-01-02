@@ -6,7 +6,7 @@ import Portal from 'react-portal'
 
 export default class DefaultDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
+    kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
     title: PropTypes.string.isRequired,
     children: PropTypes.node,
