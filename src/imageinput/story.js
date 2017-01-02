@@ -6,7 +6,7 @@ import buttonStyles from 'part:@sanity/components/buttons/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 
-const imageUrl = `http://placekitten.com/g/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
+const imageUrl = `https://unsplash.it/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
 
 storiesOf('Image input')
 .addWithInfo(
@@ -125,7 +125,7 @@ storiesOf('Image input Fieldset')
 
 
 .addWithInfo(
-  'Only image',
+  'Only image (Level 0)',
   `
     Image input for uploading images.
   `,
@@ -135,6 +135,28 @@ storiesOf('Image input Fieldset')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         hotspotImage={{imageUrl: imageUrl}}
+        level={0}
+      />
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+.addWithInfo(
+  'Only image (Level 1)',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        hotspotImage={{imageUrl: imageUrl}}
+        level={1}
       />
     )
   },
@@ -236,7 +258,7 @@ storiesOf('Image input Fieldset')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="complete"
-        hotspotImage={{imageUrl: 'This is no a valid url'}}
+        hotspotImage={{imageUrl: 'http://This.is.not.a.valid.url'}}
       >
         <h2>Content goes here</h2>
       </ImageInput>

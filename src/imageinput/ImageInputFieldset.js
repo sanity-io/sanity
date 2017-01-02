@@ -40,6 +40,7 @@ export default class ImageInputFieldset extends React.Component {
   }
 
   static defaultProps = {
+    level: 0,
     status: 'ready'
   }
 
@@ -61,11 +62,10 @@ export default class ImageInputFieldset extends React.Component {
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
-        <div className={styles.grid}>
+        <div className={`${styles.grid} ${children ? styles.hasContent : styles.noContent}`}>
           <div
             className={`
               ${hotspotImage && hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
-              ${children ? styles.hasContent : styles.noContent}
               ${status == 'error' ? styles.error : ''}
             `}
           >
@@ -82,18 +82,22 @@ export default class ImageInputFieldset extends React.Component {
                     />
                   )
                 }
-                <ImageSelect
-                  className={styles.imageSelect}
-                  name={fieldName}
-                  onSelect={this.props.onSelect}
-                >
-                  <div className={styles.uploadInner}>
-                    <div className={styles.uploadIconContainer}>
-                      <UploadIcon className={styles.uploadIcon} />
-                    </div>
-                    <span className={styles.uploadIconText}>Replace image</span>
-                  </div>
-                </ImageSelect>
+                {
+                  (status != 'error' && status != 'pending') && (
+                    <ImageSelect
+                      className={styles.imageSelect}
+                      name={fieldName}
+                      onSelect={this.props.onSelect}
+                    >
+                      <div className={styles.uploadInner}>
+                        <div className={styles.uploadIconContainer}>
+                          <UploadIcon className={styles.uploadIcon} />
+                        </div>
+                        <span className={styles.uploadIconText}>Replace image</span>
+                      </div>
+                    </ImageSelect>
+                  )
+                }
               </div>
             }
 
