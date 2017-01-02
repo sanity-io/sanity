@@ -6,6 +6,10 @@
     "@sanity/storybook",
     "@sanity/storybook-only"
   ],
+  "server": {
+    "port": 9002,
+    "hostname": "0.0.0.0"
+  },
   "storybook": {
     "port": 9001
   }
