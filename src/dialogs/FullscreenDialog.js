@@ -46,7 +46,7 @@ export default class FullScreenDialog extends React.Component {
 
     return (
       <Portal closeOnEsc isOpened={isOpen} onClose={onClose}>
-        <div className={classNames} portal>
+        <div className={classNames}>
           {
             onClose && (
               <button className={styles.closeButton} onClick={onClose}>

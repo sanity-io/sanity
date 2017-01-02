@@ -25,7 +25,9 @@ export default class Fieldset extends React.Component {
   }
 
   static defaultProps = {
-    fieldset: {}
+    level: 0,
+    fieldset: {},
+    className: ''
   }
 
   handleToggle = () => {
@@ -42,17 +44,17 @@ export default class Fieldset extends React.Component {
     const levelString = `level${level}`
     const rootClass = `
       ${styles.root}
-      ${columns && styles[`columns${columns}`]}
+      ${columns ? styles[`columns${columns}`] : ''}
       ${styles[levelString]}
       ${className}
     `
     return (
       <fieldset className={rootClass} data-nesting-level={level}>
         <div className={styles.inner}>
-          <legend className={`${styles.legend} ${isOpen && styles.isOpen}`} onClick={this.handleToggle}>
+          <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
             {
               collapsable && (
-                <div className={`${styles.arrow} ${isOpen && styles.isOpen}`}>
+                <div className={`${styles.arrow} ${isOpen ? styles.isOpen : ''}`}>
                   <ArrowDropDown />
                 </div>
               )
@@ -61,12 +63,12 @@ export default class Fieldset extends React.Component {
           </legend>
           {
             (description || fieldset.description) && (
-              <p className={`${styles.description} ${isOpen && styles.isOpen}`}>
+              <p className={`${styles.description} ${isOpen ? styles.isOpen : ''}`}>
                 {description || fieldset.description}
               </p>
             )
           }
-          <div className={`${styles.content} ${isOpen && styles.isOpen}`}>
+          <div className={`${styles.content} ${isOpen ? styles.isOpen : ''}`}>
             <div className={styles.fieldWrapper}>
               {children}
             </div>
