@@ -49,6 +49,16 @@ test('optimisation of assignments to same key with aliases', tap => {
   tap.end()
 })
 
+test('assigning non-string values to string field', tap => {
+  const initial = {_id: '1', a: 'A string value'}
+  const sb = new SquashingBuffer(initial)
+  patch(sb, {id: '1', set: {a: 42}})
+  const mut = sb.purge('txn_id')
+  const final = mut.apply(initial)
+  tap.same(final.a, 42)
+  tap.end()
+})
+
 test('stashing of changes when unoptimizable operations arrive', tap => {
   const initial = {_id: '1', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)

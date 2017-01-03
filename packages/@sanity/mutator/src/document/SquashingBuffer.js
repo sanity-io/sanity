@@ -126,7 +126,7 @@ export default class SquashingBuffer {
       // If new and old values are equal, we optimise this by deleting the operation
       // console.log("Omitting operation")
       op = null
-    } else if (typeof match.value == 'string') {
+    } else if (typeof match.value == 'string' && typeof nextValue == 'string') {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
       const patch = this.dmp.patch_make(match.value, nextValue).toString()
