@@ -191,6 +191,9 @@ export default class Arr extends React.Component {
     const {value} = this.props
     const item = value.at(event.oldIndex)
     const refItem = value.at(event.newIndex)
+    if (event.oldIndex === event.newIndex || item.key === refItem.key) {
+      return
+    }
     console.log('from %d => %d', event.oldIndex, event.newIndex, event)
     this.props.onChange({
       patch: [
