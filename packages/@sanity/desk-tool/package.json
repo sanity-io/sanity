@@ -30,7 +30,7 @@
     "@sanity/base": "^0.3.11",
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.4.8",
-    "@sanity/components": "^0.0.84",
+    "@sanity/components": "^0.0.85",
     "@sanity/core": "^0.0.34",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",

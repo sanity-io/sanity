@@ -144,9 +144,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.84":
-  version "0.0.84"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.84.tgz#5dc928a3b99cdcc72bfc54f1c3fa8b3647dd8c5f"
+"@sanity/components@^0.0.85":
+  version "0.0.85"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.85.tgz#689fc3d421b23d99a3b7e4dd177b3206d98a1ce2"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -4895,11 +4895,11 @@ q@^1.1.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
-qs@6.2.0:
+qs@6.2.0, qs@^6.1.0, qs@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
+qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
