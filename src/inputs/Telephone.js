@@ -18,8 +18,16 @@ export default class Telephone extends React.Component {
     onChange() {}
   };
 
+
   handleChange(event) {
-    this.props.onChange({type: 'set', value: event.target.value})
+    const value = event.target.value || undefined
+    this.props.onChange({
+      patch: {
+        type: value ? 'set' : 'unset',
+        path: [],
+        value: value
+      }
+    })
   }
 
   render() {

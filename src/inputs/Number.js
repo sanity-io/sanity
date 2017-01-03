@@ -18,15 +18,12 @@ export default class Num extends React.Component {
   }
 
   handleChange = event => {
-    const eventValue = event.target.value
-    let outputVal = Number(eventValue)
-    if (eventValue === '') {
-      outputVal = undefined
-    }
+    const nextValue = event.target.value === '' ? undefined : Number(event.target.value)
     this.props.onChange({
       patch: {
-        type: 'set',
-        value: outputVal
+        type: (typeof nextValue === 'undefined') ? 'unset' : 'set',
+        path: [],
+        value: nextValue
       }
     })
   }
