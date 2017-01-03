@@ -241,27 +241,27 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.15.tgz#4c037e8721002b6b05d1ea4965131016ff62b787"
+"@sanity/form-builder@^0.1.16":
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.16.tgz#705fd2c50f4bf8c0f6e0ae98806241345ca7527a"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.4"
     arrify "^1.0.1"
     canvas-to-blob "0.0.0"
-    debug "^2.5.1"
+    debug "^2.6.0"
     exif-component "^1.0.1"
     get-random-values "^1.2.0"
     get-window "^1.1.1"
     immutable "^3.8.1"
     is-empty "^1.0.0"
-    lodash "^4.17.2"
+    lodash "^4.17.4"
     object-inspect "^1.2.1"
     proptypes "^0.14.3"
     prosemirror "^0.10.1"
     react-sortable-hoc "0.4.5"
     shallow-equals "0.0.0"
-    slate "^0.16.8"
+    slate "^0.16.9"
     slate-insert-block-on-enter "0.0.2"
 
 "@sanity/generate-help-url@^0.0.1":
@@ -1931,7 +1931,7 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@2, debug@^2.1.1, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3, debug@^2.4.5, debug@^2.5.1:
+debug@2, debug@^2.1.1, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3, debug@^2.4.5, debug@^2.5.1, debug@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
@@ -3678,7 +3678,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@4.*, lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
+lodash@4.*, lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -5527,7 +5527,7 @@ slate-insert-block-on-enter@0.0.2:
   dependencies:
     debug "^2.2.0"
 
-slate@^0.16.8:
+slate@^0.16.9:
   version "0.16.9"
   resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.9.tgz#93a61d01903f0227c02726a76c793af91b8d4467"
   dependencies:
