@@ -106,13 +106,13 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.8":
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.8.tgz#7f4f033d98d6ed3520cb1aa2bebb713c5ead48db"
+"@sanity/base@^0.3.11":
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.11.tgz#321665637ec9993ce8c90081fdce7e6d0402d811"
   dependencies:
     "@sanity/client" "^0.4.8"
     "@sanity/document-store" "^0.2.8"
-    "@sanity/observable" "^1.3.1"
+    "@sanity/observable" "^1.4.0"
     "@sanity/state-router" "^0.3.0-beta.1"
     history "2"
     in-publish "^2.0.0"
@@ -180,9 +180,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.78":
-  version "0.0.78"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.78.tgz#a1e5d2328a3870c8808f75bd46503d88e529489d"
+"@sanity/components@0.0.85":
+  version "0.0.85"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.85.tgz#689fc3d421b23d99a3b7e4dd177b3206d98a1ce2"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -294,9 +294,9 @@
     diff-match-patch "^1.0.0"
     lodash "^4.15.0"
 
-"@sanity/observable@^1.1.0", "@sanity/observable@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.3.1.tgz#dc0fed1e3ee16e716dd210a199bc4c09c87860e9"
+"@sanity/observable@^1.1.0", "@sanity/observable@^1.3.1", "@sanity/observable@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/observable/-/observable-1.4.0.tgz#582ba24b86ff2ac59ec29c9550a2d7795d14d7b7"
   dependencies:
     object-assign "^4.1.0"
     rxjs "^5.0.1"
@@ -2235,9 +2235,9 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@2, debug@^2.3.2, debug@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.5.1.tgz#9107bb4a506052ec2a02314bc606313ed2b921c1"
+debug@2, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.3.2, debug@^2.3.3, debug@^2.4.5, debug@^2.5.1, debug@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
     ms "0.7.2"
 
@@ -2246,12 +2246,6 @@ debug@2.2.0, debug@~2.2.0:
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
   dependencies:
     ms "0.7.1"
-
-debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.3.3, debug@^2.4.5:
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.4.5.tgz#34c7b12a1ca96674428f41fe92c49b4ce7cd0607"
-  dependencies:
-    ms "0.7.2"
 
 debug@~0.7.4:
   version "0.7.4"
@@ -4476,13 +4470,9 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@4.*, lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
-  version "4.17.2"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
-
-lodash@4.12.0:
-  version "4.12.0"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.12.0.tgz#2bd6dc46a040f59e686c972ed21d93dc59053258"
+lodash@4.*, lodash@4.x.x, lodash@^4.0.0, lodash@^4.12.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.16.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.1:
+  version "4.17.4"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 lodash@4.16.4:
   version "4.16.4"
@@ -6720,9 +6710,9 @@ slate-insert-block-on-enter@0.0.2:
   dependencies:
     debug "^2.2.0"
 
-slate@^0.16.8:
-  version "0.16.8"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.8.tgz#404053b9721ee15c1d3191e8a6ef01c6055b3b76"
+slate@^0.16.9:
+  version "0.16.9"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.9.tgz#93a61d01903f0227c02726a76c793af91b8d4467"
   dependencies:
     cheerio "^0.22.0"
     debug "^2.3.2"
@@ -7533,12 +7523,6 @@ which@^1.2.4, which@^1.2.9:
   resolved "https://registry.yarnpkg.com/which/-/which-1.2.12.tgz#de67b5e450269f194909ef23ece4ebe416fa1192"
   dependencies:
     isexe "^1.1.1"
-
-why-did-you-update@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/why-did-you-update/-/why-did-you-update-0.0.8.tgz#389d97dd6c147e1edbc9f5d5470d44d985c8ae38"
-  dependencies:
-    lodash "4.12.0"
 
 wide-align@^1.1.0:
   version "1.1.0"
