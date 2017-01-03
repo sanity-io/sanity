@@ -56,6 +56,7 @@ class SortableComponent extends React.Component {
 
   handleOnSortEnd = ({oldIndex, newIndex}) => {
     const {items} = this.state
+    console.log(`${oldIndex} to  ${newIndex}`) // eslint-disable-line
     this.setState({
       items: arrayMove(items, oldIndex, newIndex)
     })

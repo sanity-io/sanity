@@ -26,6 +26,7 @@ export default class EditItemPopOver extends React.Component {
 
   static defaultProps = {
     onClose() {},
+    scrollContainerId: 'Sanity_Default_DeskTool_Editor_ScrollContainer',
     actions: []
   }
 
@@ -53,7 +54,9 @@ export default class EditItemPopOver extends React.Component {
   }
 
   handleClose() {
-    scroll.top(this.scrollContainer, this.initialScrollTop, this.scrollOptions)
+    if (this.scrollContainer) {
+      scroll.top(this.scrollContainer, this.initialScrollTop, this.scrollOptions)
+    }
     this.props.onClose()
   }
 
@@ -144,13 +147,14 @@ export default class EditItemPopOver extends React.Component {
 
   componentDidMount() {
     // Sets a scrollContainer with ID
-    if (!this.props.scrollContainer && this.props.scrollContainerId) {
+    if (this.props.scrollContainerId && !this.scrollContainer) {
       this.scrollContainer = document.getElementById(this.props.scrollContainerId)
-    } else if (this.props.scrollContainer) {
-      this.scrollContainer = this.props.scrollContainer
-    } else {
-      this.scrollContainer = document.getElementById('Sanity_Default_DeskTool_Editor_ScrollContainer')
     }
+
+    if (this.props.scrollContainer) {
+      this.scrollContainer = this.props.scrollContainer
+    }
+
     if (this.scrollContainer) {
       this.initialScrollTop = this.scrollContainer.scrollTop
       this.handleResize()
