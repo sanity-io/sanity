@@ -92,15 +92,20 @@ export default class EditItemPopOver extends React.Component {
     const margin = parseInt(innerElement.style.marginLeft, 10) || 0
     const scrollTop = this.scrollContainer.scrollTop
 
+
     // Scroll container when there is no space
-    // But we can't scroll more than the height of the element
-    if ((containerOffsetHeight + scrollTop) < (top + height)) {
+    if ((containerOffsetHeight) < (top + height)) {
+      // console.log('containerOffsetHeight + scrollTop) < (top + height')
       let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
+      // console.log('newScrollTop', newScrollTop)
       // If element is to big for screen, scroll top only top of the element
       if (height > containerOffsetHeight) {
+        // console.log('height > containerOffsetHeight')
         newScrollTop = top + scrollTop - (padding * 3)
+        // console.log('newScrollTop', newScrollTop)
       }
       scroll.top(this.scrollContainer, newScrollTop, this.scrollOptions)
+      // console.log('scroll.top', this.scrollContainer, newScrollTop, this.scrollOptions)
     }
 
     // Need more bottom space

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import Draggable from 'react-draggable'
@@ -5,8 +6,10 @@ import Draggable from 'react-draggable'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Button from 'part:@sanity/components/buttons/default'
 
+import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()
+
 
 const overflowHidden = {
   minHeight: '100vh',
@@ -17,14 +20,14 @@ const overflowHidden = {
 }
 
 const overflowScroll = {
-  height: '90vh',
-  maxHeight: '90vh',
+  height: '100vh',
+  maxHeight: '100vh',
   width: '100vw',
   position: 'relative',
   overflowY: 'scroll',
   overflowX: 'visible',
   boxSizing: 'border-box',
-  border: '10px solid red'
+  border: '5px solid red'
 }
 
 class Mover extends React.Component {
@@ -75,6 +78,56 @@ class Mover extends React.Component {
           {this.props.children}
         </div>
       </div>
+    )
+  }
+}
+
+class EditItemPopOverComponent extends React.Component {
+
+  static propTypes = {
+    children: React.PropTypes.node
+  }
+
+  constructor(props, args) {
+    super(props, args)
+    this.state = {
+      opened: false
+    }
+  }
+
+  handleClose = () => {
+    this.setState({
+      opened: false
+    })
+  }
+
+  handleOpen = () => {
+    this.setState({
+      opened: true
+    })
+  }
+
+  render() {
+
+    const {opened} = this.state
+
+    return (
+      <span style={{position: 'relative', border: '1px solid red', display: 'inline-block'}}>
+        <a href="#" onClick={this.handleOpen} style={{color: 'blue', textDecoration: 'underline'}}>
+          Click me
+        </a>
+        {
+          opened && (
+            <EditItemPopOver
+              title="Edit this item"
+              onClose={this.handleClose}
+              scrollContainerId="myScrollContainerId"
+            >
+              {this.props.children}
+            </EditItemPopOver>
+          )
+        }
+      </span>
     )
   }
 }
@@ -251,6 +304,45 @@ storiesOf('Edit item')
           </EditItemPopOver>
         </Mover>
         <p>{chance.paragraph({sentences: 200})}</p>
+      </div>
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+
+
+.addWithInfo(
+  'PopOver (test inline)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div id="myScrollContainerId" style={overflowScroll}>
+        {
+          range(200).map(i => {
+            return (
+              <p key={i}>
+                {chance.paragraph({sentences: random(5, 20)})}
+                <EditItemPopOverComponent>
+                  Some content, and there is more.
+                  {chance.paragraph({sentences: random(2, 10)})}
+                  <EditItemPopOverComponent>
+                    Some content, and there is more.
+                    {chance.paragraph({sentences: random(1, 20)})}
+                    <EditItemPopOverComponent>
+                      Last content
+                      {chance.paragraph({sentences: random(5, 20)})}
+                    </EditItemPopOverComponent>
+                  </EditItemPopOverComponent>
+                </EditItemPopOverComponent>
+              </p>
+            )
+          })
+        }
       </div>
     )
   },
