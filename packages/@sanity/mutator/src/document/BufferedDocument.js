@@ -52,12 +52,24 @@ export default class BufferedDocument {
   // for too long, it has probably missed a notification, and should reload the document from the server
   reset(doc) {
     if (doc) {
-      debug('Document sttate reset to revision %s', doc._rev)
+      debug('Document state reset to revision %s', doc._rev)
     } else {
-      debug('Document sttate reset to being deleted')
+      debug('Document state reset to being deleted')
     }
     this.document.reset(doc)
     this.rebase()
+  }
+
+  set onConsistencyChanged(callback : Function) {
+    this.document.onConsistencyChanged = callback
+  }
+
+  get onConsistencyChanged() : Function {
+    return this.document.onConsistencyChanged
+  }
+
+  get inconsitentAt() : Date {
+    return this.document.inconsitentAt
   }
 
   // Add a change to the buffer

@@ -6,7 +6,7 @@ import luid from './luid'
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
 // on first application, and any changes in properties will not effectively
-// change its behavior
+// change its behavior after that.
 export default class Mutation {
   params : {
     transactionId : string,
