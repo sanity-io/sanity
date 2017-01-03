@@ -2,6 +2,14 @@ export default {
   name: 'assets',
   types: [
     {
+      name: 'user',
+      type: 'object',
+      fields: [
+        {name: 'name', type: 'string', title: 'Name'},
+        {name: 'photo', type: 'image', title: 'Portrait'}
+      ]
+    },
+    {
       name: 'archive',
       type: 'object',
       fields: [
@@ -20,6 +28,12 @@ export default {
           name: 'singleImageNoFields',
           title: 'Single image without fields',
           type: 'image'
+        },
+        {
+          name: 'imageList',
+          title: 'List of images',
+          type: 'array',
+          of: [{type: 'user'}]
         },
         {
           name: 'singleImage',

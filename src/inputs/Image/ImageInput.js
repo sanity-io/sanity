@@ -10,7 +10,6 @@ import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import createImageLoader from './common/createImageLoader'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
-import UploadIcon from 'part:@sanity/base/upload-icon'
 
 const DEFAULT_HOTSPOT = {
   height: 0,
@@ -18,7 +17,6 @@ const DEFAULT_HOTSPOT = {
   x: 0.5,
   y: 0.5
 }
-
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -93,7 +91,8 @@ export default class ImageInput extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    this.cancel()
+    // todo: fix this properly by unsubscribing to upload observable without cancelling it
+    this._unmounted = true
   }
 
   cancel() {
@@ -111,14 +110,20 @@ export default class ImageInput extends React.PureComponent {
       type: 'setIfMissing',
       value: {
         _type: this.props.value.context.field.type,
-        asset: {}
+        asset: {_type: 'reference'}
       }
+    }
+  }
+
+  setStateIfMounted(nextState) {
+    if (!this._unmounted) {
+      this.setState(nextState)
     }
   }
 
   handleUploadProgress = event => {
     if (event.type === 'progress' && event.stage === 'upload') {
-      this.setState({
+      this.setStateIfMounted({
         status: 'pending',
         progress: {percent: event.percent}
       })
@@ -127,16 +132,16 @@ export default class ImageInput extends React.PureComponent {
     if (event.type === 'complete') {
       const {onChange} = this.props
       onChange({
-        patch: this.createSetIfMissingPatch()
+        patch: [
+          this.createSetIfMissingPatch(),
+          {
+            type: 'set',
+            path: ['asset'],
+            value: {_ref: event.id}
+          }
+        ]
       })
-      onChange({
-        patch: {
-          type: 'set',
-          path: ['asset'],
-          value: {_ref: event.id}
-        }
-      })
-      this.setState({
+      this.setStateIfMounted({
         uploadingImage: null,
         status: 'complete'
       })
@@ -167,14 +172,13 @@ export default class ImageInput extends React.PureComponent {
   handleFieldChange = (event, fieldName) => {
     const {onChange} = this.props
 
-    onChange({
-      patch: this.createSetIfMissingPatch()
-    })
-
-    const patch = {
-      ...event.patch,
-      path: [fieldName, ...(event.patch.path || [])]
-    }
+    const patch = [
+      this.createSetIfMissingPatch(),
+      {
+        ...event.patch,
+        path: [fieldName, ...(event.patch.path || [])]
+      }
+    ]
     onChange({patch})
   }
 
@@ -197,16 +201,16 @@ export default class ImageInput extends React.PureComponent {
   handleImageToolChange = newValue => {
     const {onChange} = this.props
     onChange({
-      patch: this.createSetIfMissingPatch()
-    })
-    onChange({
-      patch: {
-        type: 'merge',
-        value: {
-          crop: newValue.crop,
-          hotspot: newValue.hotspot
+      patch: [
+        this.createSetIfMissingPatch(),
+        {
+          type: 'merge',
+          value: {
+            crop: newValue.crop,
+            hotspot: newValue.hotspot
+          }
         }
-      }
+      ]
     })
   }
 

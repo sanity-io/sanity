@@ -46,8 +46,8 @@ function mockUpload(getBody) {
       const values = [
         event,
         event.percent === 100 && {
-          type: 'response',
-          body: getBody()
+          type: 'complete',
+          id: getBody()
         }
       ].filter(Boolean)
       return Observable.of(...values)
