@@ -241,9 +241,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.16":
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.16.tgz#705fd2c50f4bf8c0f6e0ae98806241345ca7527a"
+"@sanity/form-builder@^0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.17.tgz#96ca63e6a1f9edfdb6b2241c62654b3837d7b141"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.4"

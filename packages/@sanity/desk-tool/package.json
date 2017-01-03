@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.0.5",
-    "@sanity/form-builder": "^0.1.16"
+    "@sanity/form-builder": "^0.1.17"
   },
   "devDependencies": {
     "@sanity/base": "^0.3.11",
