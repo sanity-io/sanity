@@ -25,6 +25,10 @@
       "path": "./Logo.js"
     },
     {
+      "implements": "part:@sanity/base/schema",
+      "path": "./schema.js"
+    },
+    {
       "implements": "part:@sanity/base/root",
       "path": "components/DefaultLayoutRouter"
     },
@@ -35,6 +39,10 @@
     {
       "implements": "part:@sanity/base/login-dialog",
       "path": "./LoginDialog"
+    },
+    {
+      "implements": "part:@sanity/base/preview-resolver",
+      "path": "./previewResolver"
     }
   ]
 }
