@@ -180,9 +180,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@0.0.85":
-  version "0.0.85"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.85.tgz#689fc3d421b23d99a3b7e4dd177b3206d98a1ce2"
+"@sanity/components@^0.0.87":
+  version "0.0.87"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.87.tgz#8219bf3c8824370e4bcf0ac6ed8c417343319eb6"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
