@@ -1,16 +1,17 @@
 import React, {PropTypes} from 'react'
-import styles from './styles/LoginStatus.css'
+import enhanceClickOutside from 'react-click-outside'
 import userStore from 'part:@sanity/base/user'
 import Menu from 'part:@sanity/components/menus/default'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
+import styles from './styles/LoginStatus.css'
 
-export default class LoginStatus extends React.Component {
+class LoginStatus extends React.PureComponent {
   static propTypes = {
     className: PropTypes.string
   }
 
-  constructor(props, args) {
-    super(props, args)
+  constructor(...args) {
+    super(...args)
     this.state = {
       userMenuOpened: false
     }
@@ -26,20 +27,18 @@ export default class LoginStatus extends React.Component {
     this.userSubscription.unsubscribe()
   }
 
-  handleUserMenuClose = () => {
-    this.setState({
-      userMenuOpened: false
-    })
+  handleClickOutside = () => {
+    if (this.state.userMenuOpened) {
+      this.setState({userMenuOpened: false})
+    }
   }
 
-  handleUserMenuOpen = () => {
-    this.setState({
-      userMenuOpened: true
-    })
+  handleUserMenuToggle = () => {
+    this.setState({userMenuOpened: !this.state.userMenuOpened})
   }
 
   handleUserMenuItemClick = item => {
-    if (item.index == 'signOut') {
+    if (item.index === 'signOut') {
       userStore.actions.logout()
     }
   }
@@ -54,7 +53,7 @@ export default class LoginStatus extends React.Component {
     return (
       <div className={`${styles.root} ${className}`}>
 
-        <div onClick={this.handleUserMenuOpen}>
+        <div onClick={this.handleUserMenuToggle}>
           <img src={user.profileImage} className={styles.userImage} />
         </div>
 
@@ -80,3 +79,5 @@ export default class LoginStatus extends React.Component {
     )
   }
 }
+
+export default enhanceClickOutside(LoginStatus)
