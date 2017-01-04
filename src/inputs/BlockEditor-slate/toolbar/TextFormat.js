@@ -41,12 +41,14 @@ export default class TextFormatToolbar extends React.Component {
       this.props.onClick(event, mark.type)
     }
     const Icon = this.getIcon(mark.type)
+    let title = mark.type
+    title = title.charAt(0).toUpperCase() + title.slice(1)
     return (
       <ToggleButton
         key={`markButton${mark.type}`}
         selected={!!mark.active}
         onClick={onClick}
-        title={mark.type}
+        title={title}
         className={styles.button}
       >
         <div className={styles.iconContainer}>
