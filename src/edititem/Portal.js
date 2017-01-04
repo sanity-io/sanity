@@ -134,6 +134,7 @@ export default class Portal extends React.Component {
   renderPortal(props, isOpening) {
     if (!this.node) {
       this.node = document.createElement('div')
+      this.node.className = this.props.className
       if (props.scrollContainer) {
         props.scrollContainer.appendChild(this.node)
       } else {
@@ -170,6 +171,7 @@ export default class Portal extends React.Component {
 Portal.propTypes = {
   children: React.PropTypes.element.isRequired,
   scrollContainer: React.PropTypes.object.isRequired,
+  className: React.PropTypes.string,
   openByClickOn: React.PropTypes.element,
   closeOnEsc: React.PropTypes.bool,
   closeOnOutsideClick: React.PropTypes.bool,

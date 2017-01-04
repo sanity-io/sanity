@@ -25,7 +25,6 @@
 
 .root {
   padding: 0;
-  border: 2px solid red;
 
   @nest &::before {
     content: "shouldReposition";
@@ -48,16 +47,26 @@
   }
 }
 
+.portal {
+  z-index: var(--zindex-popover);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.inner {
+  display: block;
+}
+
 .autoWidth {
-  composes: root;
+  composes: inner;
 }
 
 .fullWidth {
-  composes: root;
+  composes: inner;
 }
 
 .overlay {
-  z-index: var(--zindex-popover-background);
   background-color: var(--backdrop-background-color);
   position: fixed;
   height: 100%;
@@ -66,6 +75,7 @@
   left: 0;
   display: block;
   cursor: default;
+  z-index: 1;
 
   @media (--max-screen-medium) {
     display: none;
@@ -76,11 +86,11 @@
   position: absolute;
   top: -0.35em;
   left: 2em;
-  z-index: 0;
+  z-index: 2;
 
   @nest &:before {
     content: "";
-    z-index: 1;
+    z-index: 3;
     position: absolute;
     height: 1em;
     width: 1em;
@@ -92,13 +102,14 @@
 .portalModal {
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   background-color: #fff;
-  z-index: var(--zindex-popover);
+  z-index: calc(var(--zindex-popover) + 3);
   padding: var(--medium-padding);
   margin-bottom: var(--large-padding);
   box-sizing: border-box;
   position: relative;
   min-width: 30em;
   max-width: 80vw;
+  transform: translateX(-2em);
 
   @nest .fullWidth & {
     min-width: 100%;

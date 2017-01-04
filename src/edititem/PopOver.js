@@ -200,14 +200,13 @@ export default class EditItemPopOver extends React.Component {
   handleKeyDown = event => {
     if (event.key == 'Escape') {
       this.handleClose()
-      event.stopPropagation()
     }
   }
 
   handleBackdropClick = event => {
+    this.handleClose()
     event.stopPropagation()
     event.preventDefault()
-    this.handleClose()
   }
 
   handleBackdropMouseDown = event => {
@@ -243,6 +242,7 @@ export default class EditItemPopOver extends React.Component {
         scrollContainer={scrollContainer}
         onClose={this.handleClose}
         onOpen={this.handleResize}
+        className={styles.portal}
       >
         <div
           className={
@@ -257,6 +257,7 @@ export default class EditItemPopOver extends React.Component {
           ref={this.setPortalInnerElement}
           onClick={this.handleModalClick}
         >
+          <span className={styles.overlay} onClick={this.handleBackdropClick} />
           <div
             className={styles.portalModal}
             ref={this.setPortalModalElement}
@@ -316,7 +317,6 @@ export default class EditItemPopOver extends React.Component {
     const {scrollContainer, rootRects} = this.state
     return (
       <span ref={this.setRootElement} className={styles.root}>
-        <span className={styles.overlay} onClick={this.handleBackdropClick} />
         {
           scrollContainer && isOpen && this.renderPortal(scrollContainer, rootRects)
         }

@@ -112,19 +112,21 @@ class EditItemPopOverComponent extends React.Component {
     const {opened} = this.state
 
     return (
-      <span style={{border: '1px solid red', display: 'inline-block'}}>
+      <span style={{border: '1px solid red', display: 'inline', position: 'relative'}}>
         <a href="#" onClick={this.handleOpen} style={{color: 'blue', textDecoration: 'underline'}}>
           Click me
         </a>
         {
           opened && (
-            <EditItemPopOver
-              title="Edit this item"
-              onClose={this.handleClose}
-              scrollContainerId="myScrollContainerId"
-            >
-              {this.props.children}
-            </EditItemPopOver>
+            <span style={{position: 'absolute', left: '50%', top: '50%'}}>
+              <EditItemPopOver
+                title="Edit this item"
+                onClose={this.handleClose}
+                scrollContainerId="myScrollContainerId"
+              >
+                {this.props.children}
+              </EditItemPopOver>
+            </span>
           )
         }
       </span>
@@ -323,7 +325,7 @@ storiesOf('Edit item')
     return (
       <div id="myScrollContainerId" style={overflowScroll}>
         {
-          range(200).map(i => {
+          range(50).map(i => {
             return (
               <p key={i}>
                 {chance.paragraph({sentences: random(5, 20)})}
