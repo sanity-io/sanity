@@ -112,7 +112,7 @@ class EditItemPopOverComponent extends React.Component {
     const {opened} = this.state
 
     return (
-      <span style={{position: 'relative', border: '1px solid red', display: 'inline-block'}}>
+      <span style={{border: '1px solid red', display: 'inline-block'}}>
         <a href="#" onClick={this.handleOpen} style={{color: 'blue', textDecoration: 'underline'}}>
           Click me
         </a>
