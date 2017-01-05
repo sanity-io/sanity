@@ -34,8 +34,12 @@ export default class SanityPreviewComponent extends React.Component {
     // todo: do this at schema parse time instead
     const previewConfig = canonicalizePreviewConfig(field)
 
-    if (!value || !('_id' in value) || value._isPreviewMaterializedHack) {
+    if (!value || !('_id' in value)) {
       return <PreviewComponent item={prepareValue(value, previewConfig)} />
+    }
+
+    if (value._isPreviewMaterializedHack) {
+      return <PreviewComponent item={value} />
     }
 
     const querySelection = stringifyGradientQuerySelection(previewConfig.fields)
