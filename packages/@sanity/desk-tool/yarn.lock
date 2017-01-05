@@ -144,9 +144,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.87":
-  version "0.0.87"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.87.tgz#8219bf3c8824370e4bcf0ac6ed8c417343319eb6"
+"@sanity/components@^0.0.89":
+  version "0.0.89"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.89.tgz#da83b4105b314955af6e5f59bd7ad1bfa8b895c5"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -241,9 +241,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.17.tgz#96ca63e6a1f9edfdb6b2241c62654b3837d7b141"
+"@sanity/form-builder@^0.1.18":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.18.tgz#b882988e88b23991b0bdd78ee301d264f440ad18"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.4"
