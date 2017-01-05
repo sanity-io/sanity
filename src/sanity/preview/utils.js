@@ -58,7 +58,7 @@ export function prepareValue(value, previewConfig) {
     }
   }
 
-  if (isPlainObject(previewConfig.fields)) {
+  if (isPlainObject(previewConfig.fields) && !value._isPreviewMaterializedHack) {
     return Object.keys(previewConfig.fields).reduce((item, fieldKey) => {
       item[fieldKey] = value[previewConfig.fields[fieldKey]]
       return item
