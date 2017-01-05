@@ -21,7 +21,8 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    overflow: hidden;
+    overflow: auto;
+    overflow-x: hidden;
   }
 }
 
