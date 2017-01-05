@@ -1,6 +1,5 @@
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
-const MEDIA_CANDIDATES = ['image', 'video']
 
 export default function guessPreviewFields(typeDef) {
 
@@ -21,11 +20,8 @@ export default function guessPreviewFields(typeDef) {
     descField = typeDef.fields.find(fieldDef => fieldDef !== titleField && fieldDef.type === 'string')
   }
 
-  const mediaField = typeDef.fields.find(fieldDef => MEDIA_CANDIDATES.includes(fieldDef.name))
-
   return {
     title: titleField && titleField.name,
-    description: descField && descField.name,
-    media: mediaField && mediaField.name
+    description: descField && descField.name
   }
 }
