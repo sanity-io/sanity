@@ -1,8 +1,8 @@
 import guessPreviewFields from './guessPreviewFields'
-import {uniq, isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash'
 
 export function stringifyGradientQuerySelection(fields) {
-  const prelude = '_id, "_isPreviewMaterializedHack": _id'
+  const prelude = '_id, _type, "_isPreviewMaterializedHack": _id'
   if (Array.isArray(fields)) {
     return `${prelude}, ${fields.join(',')}`
   }
