@@ -168,6 +168,7 @@ class Search extends React.Component {
           label="Search"
           topItems={this.state.topItems}
           items={this.state.items}
+          placeholder="Search…"
         />
       </div>
     )
