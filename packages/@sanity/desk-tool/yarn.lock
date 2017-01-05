@@ -241,12 +241,12 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.18":
-  version "0.1.18"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.18.tgz#b882988e88b23991b0bdd78ee301d264f440ad18"
+"@sanity/form-builder@^0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.19.tgz#3d8d842580788fdd69ca2d8be17404967b8ab011"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
-    "@sanity/mutator" "^0.2.4"
+    "@sanity/mutator" "^0.2.5"
     arrify "^1.0.1"
     canvas-to-blob "0.0.0"
     debug "^2.6.0"
@@ -283,6 +283,14 @@
 "@sanity/mutator@^0.2.2", "@sanity/mutator@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.4.tgz#a77e9dd110d2ece1af779a47dd6b800af8b0feff"
+  dependencies:
+    debug "^2.4.5"
+    diff-match-patch "^1.0.0"
+    lodash "^4.15.0"
+
+"@sanity/mutator@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@sanity/mutator/-/mutator-0.2.5.tgz#449941a8b4b22989357a1c1ff3f53baf8b82b78d"
   dependencies:
     debug "^2.4.5"
     diff-match-patch "^1.0.0"
