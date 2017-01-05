@@ -240,7 +240,6 @@ export default class EditItemPopOver extends React.Component {
       <Portal
         isOpen
         scrollContainer={scrollContainer}
-        onClose={this.handleClose}
         onOpen={this.handleResize}
         className={styles.portal}
       >

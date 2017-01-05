@@ -85,7 +85,8 @@ class Mover extends React.Component {
 class EditItemPopOverComponent extends React.Component {
 
   static propTypes = {
-    children: React.PropTypes.node
+    children: React.PropTypes.node,
+    onClose: React.PropTypes.func
   }
 
   constructor(props, args) {
@@ -99,6 +100,7 @@ class EditItemPopOverComponent extends React.Component {
     this.setState({
       opened: false
     })
+    this.props.onClose()
   }
 
   handleOpen = () => {
@@ -329,13 +331,13 @@ storiesOf('Edit item')
             return (
               <p key={i}>
                 {chance.paragraph({sentences: random(5, 20)})}
-                <EditItemPopOverComponent>
+                <EditItemPopOverComponent onClose={action('onClose')}>
                   Some content, and there is more.
                   {chance.paragraph({sentences: random(2, 10)})}
-                  <EditItemPopOverComponent>
+                  <EditItemPopOverComponent onClose={action('onClose')}>
                     Some content, and there is more.
                     {chance.paragraph({sentences: random(1, 20)})}
-                    <EditItemPopOverComponent>
+                    <EditItemPopOverComponent onClose={action('onClose')}>
                       Last content
                       {chance.paragraph({sentences: random(5, 20)})}
                     </EditItemPopOverComponent>
