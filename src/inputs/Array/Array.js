@@ -266,7 +266,9 @@ export default class Arr extends React.Component {
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
         />
-        {this.getEditItem() === item && this.renderEditItemForm(item)}
+        <div className={styles.popupAnchor}>
+          {this.getEditItem() === item && this.renderEditItemForm(item)}
+        </div>
       </div>
     )
   }

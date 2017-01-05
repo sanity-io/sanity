@@ -13,7 +13,7 @@ if (process.env.DEBUG) {
 
 export default function Main() {
   return (
-    <div className={styles.root}>
+    <div className={styles.root} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
       <Router location={document.location.pathname}>
         <Route path="/" component={SelectType} />
         <Route path="/:schemaName" component={SelectType} />

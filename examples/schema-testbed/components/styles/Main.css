@@ -1,1 +1,9 @@
 @import "part:@sanity/base/theme/body-style";
+
+.root {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  overflow: scroll;
+  box-sizing: border-box;
+}

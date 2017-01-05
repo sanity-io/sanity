@@ -7,3 +7,9 @@
 .list + .functions {
   padding-top: var(--medium-padding);
 }
+
+.popupAnchor {
+  position: absolute;
+  top: 75%;
+  left: 2em;
+}
