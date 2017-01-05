@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {omit, groupBy} from 'lodash'
 import RenderField from '../Object/RenderField'
 import ObjectValueContainer from '../Object/ObjectContainer'
@@ -157,6 +156,12 @@ export default class ImageInput extends React.PureComponent {
 
   handleSelect = images => {
     this.upload(images[0])
+  }
+
+  handleClearValue = event => {
+    event.preventDefault()
+    const {onChange} = this.props
+    onChange({patch: {type: 'unset'}})
   }
 
   handleCancel = () => {
@@ -326,6 +331,7 @@ export default class ImageInput extends React.PureComponent {
           percent={progress && progress.percent}
           onSelect={this.handleSelect}
           onCancel={this.handleCancel}
+          onClear={this.handleClearValue}
           hotspotImage={{
             hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
             crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
