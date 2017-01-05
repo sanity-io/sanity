@@ -15,7 +15,7 @@ function createInitialState() {
   return {
     result: null,
     complete: false,
-    loading: false,
+    loading: true,
     error: false
   }
 }
@@ -51,7 +51,7 @@ export default class QueryContainer extends React.Component {
   next = event => {
     switch (event.type) {
       case 'snapshot': {
-        this.setState({error: null, result: {documents: event.documents}})
+        this.setState({error: null, loading: false, result: {documents: event.documents}})
         break
       }
       case 'mutation': {
@@ -63,11 +63,11 @@ export default class QueryContainer extends React.Component {
 
   error = error => {
     console.error(error) // @todo make sure some kind of error dialog is shown, somewhere
-    this.setState({error})
+    this.setState({error, loading: false})
   }
 
   complete = () => {
-    this.setState({complete: true})
+    this.setState({complete: true, loading: false})
   }
 
   receiveMutations(event) {
