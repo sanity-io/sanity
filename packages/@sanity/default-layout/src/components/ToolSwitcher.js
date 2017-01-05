@@ -30,12 +30,12 @@ class ToolSwitcher extends React.Component {
             return (
               <li key={tool.name} className={itemClass}>
                 <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={this.props.onClick}>
-                  <div className={styles.iconContainer}>
+                  <span className={styles.iconContainer}>
                     <ToolIcon />
-                  </div>
-                  <div className={styles.toolName}>
+                  </span>
+                  <span className={styles.toolName}>
                     {tool.title || tool.name}
-                  </div>
+                  </span>
                 </StateLink>
               </li>
             )

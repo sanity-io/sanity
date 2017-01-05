@@ -16,25 +16,15 @@
   position: relative;
   text-align: center;
   color: var(--selectable-item-color);
-  padding: 1rem var(--medium-padding);
   transition: border 0.1s linear;
   box-sizing: border-box;
 
-
   @media (--screen-medium) {
     font-size: 1em;
-    display: inline-block;
+    display: block;
     height: 3rem;
     line-height: 1rem;
     float: left;
-  }
-
-  &:hover {
-    color: var(--selectable-item-color-hover);
-
-    @media (--screen-medium) {
-      /* border-bottom: 1px solid var(--selectable-item-color-hover); */
-    }
   }
 }
 
@@ -61,7 +51,24 @@
 .toolLink {
   color: inherit;
   text-decoration: none;
-  line-height: 1rem;
+  display: block;
+  padding: 1rem var(--medium-padding);
+
+  @media (--screen-medium) {
+    font-size: 1em;
+    display: inline-block;
+    height: 3rem;
+    line-height: 1rem;
+    float: left;
+  }
+
+  @nest &:hover {
+    color: var(--selectable-item-color-hover);
+  }
+
+  @nest &:active {
+    color: var(--black);
+  }
 
   @media (--screen-medium) {
     font-size: var(--font-size-small);
