@@ -106,9 +106,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.11":
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.11.tgz#321665637ec9993ce8c90081fdce7e6d0402d811"
+"@sanity/base@^0.3.12":
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.12.tgz#3b9488c7c017b084adc561be4c87e1fbf510aac1"
   dependencies:
     "@sanity/client" "^0.4.8"
     "@sanity/document-store" "^0.2.8"
@@ -5938,17 +5938,13 @@ q@^1.1.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
-qs@6.2.0:
+qs@6.2.0, qs@~6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
 qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
-
-qs@~6.2.0:
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.1.tgz#ce03c5ff0935bc1d9d69a9f14cbd18e568d67625"
 
 query-string@^3.0.0:
   version "3.0.3"
