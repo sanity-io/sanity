@@ -3,6 +3,12 @@
 .root {
   color: inherit;
   line-height: 1em;
+  height: 1em;
+  position: relative;
+}
+
+.inner {
+  display: block;
 }
 
 .input {
@@ -11,9 +17,10 @@
   color: inherit;
   width: 100%;
   background-color: transparent;
-  padding-left: 1.2em;
+  padding-left: 1.3em;
   line-height: inherit;
   font-size: inherit;
+  margin-top: -0.05em;
 }
 
 .listContainer {
@@ -33,9 +40,7 @@
 .label {
   font-size: inherit;
   position: absolute;
-  left: 0.5em;
-  top: 50%;
-  transform: translateY(-60%);
+  transform: translateY(-14%);
 }
 
 .icon {
@@ -44,9 +49,8 @@
 
 .spinner {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0.5em;
+  top: -0.1em;
+  right: 0;
 }
 
 .labelText {

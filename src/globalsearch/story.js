@@ -166,3 +166,34 @@ storiesOf('Global Search')
     role: 'part:@sanity/components/globalsearch/default'
   }
 )
+
+
+.addWithInfo(
+  'Basic',
+  `
+    Basic without a decoration wrapper
+  `,
+  () => {
+    return (
+      <div style={{backgroundColor: '#fff', width: '15em'}}>
+        <GlobalSearch
+          label="Label"
+          placeholder="This is the placeholder"
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onSearch={action('onSearch')}
+          onClose={action('onClose')}
+          topItems={topItems}
+          items={items}
+          renderItem={renderItem}
+          isSearching
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [GlobalSearch],
+    role: 'part:@sanity/components/globalsearch/default'
+  }
+)
