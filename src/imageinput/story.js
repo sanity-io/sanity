@@ -231,6 +231,7 @@ storiesOf('Image input Fieldset')
       <ImageInput
         legend="Image input fieldset"
         onSelect={action('Select image')}
+        onClear={action('Clear image')}
         status="complete"
         percent={100}
         hotspotImage={{
