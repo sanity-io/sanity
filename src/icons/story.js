@@ -28,6 +28,7 @@ import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import ArrowDropDownIcon from 'part:@sanity/base/arrow-drop-down'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 
 function createIconPreview(title, Icon, role) {
   return (
@@ -67,6 +68,7 @@ storiesOf('Icons')
         {createIconPreview('Fullscreen exit', FullscreenExitIcon, 'part:@sanity/base/fullscreen-exit-icon')}
         {createIconPreview('Plus', PlusIcon, 'part:@sanity/base/plus-icon')}
         {createIconPreview('Arrow Drop Down', ArrowDropDownIcon, 'part:@sanity/base/arrow-drop-down')}
+        {createIconPreview('Trash', TrashIcon, 'part:@sanity/base/trash-icon')}
 
       </ul>
     )

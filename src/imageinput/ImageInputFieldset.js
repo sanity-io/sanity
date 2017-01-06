@@ -8,6 +8,8 @@ import createImageLoader from './common/createImageLoader'
 import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import Button from 'part:@sanity/components/buttons/default'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
   return {srcAspectRatio: image.width / image.height}
@@ -92,7 +94,14 @@ export default class ImageInputFieldset extends React.PureComponent {
                         </div>
                       </ImageSelect>
 
-                      <button style={{position: 'absolute'}} onClick={this.props.onClear}>Remove image</button>
+                      <Button
+                        className={styles.removeButton}
+                        onClick={this.props.onClear}
+                        icon={TrashIcon}
+                        color="danger"
+                      >
+                          Remove
+                      </Button>
                     </div>
                   )
                 }

@@ -145,6 +145,14 @@
   }
 }
 
+.removeButton {
+  position: absolute;
+  bottom: var(--medium-padding);
+  left: var(--medium-padding);
+  font-size: 0.8rem;
+  z-index: 50;
+}
+
 .cancel {
   cursor: pointer;
   color: var(--state-danger-color);
