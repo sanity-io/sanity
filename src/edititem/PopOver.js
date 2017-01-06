@@ -108,7 +108,7 @@ export default class EditItemPopOver extends React.Component {
     // Need more bottom space
     if (scrollContainer.scrollHeight < (scrollTop + top + height)) {
       const extraPaddingBottom = Math.abs(scrollContainer.scrollHeight - scrollTop - height - top)
-      scrollContainer.style.marginBottom = `${extraPaddingBottom}px`
+      scrollContainer.style.paddingBottom = `${extraPaddingBottom}px`
       let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
 
       // If element is to big for screen, scroll top only top of the element
