@@ -30,42 +30,81 @@ storiesOf('Buttons')
   'Variations',
   '',
   () => (
-    <div>
+    <form>
       <h2>Default</h2>
-      <Button onClick={action('clicked')}>
+      <Button onClick={action('clicked')} icon={SanityLogoIcon}>
         Default
       </Button>
-      <Button onClick={action('clicked')} kind="simple">
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted>
+        Inverted
+      </Button>
+      <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple">
         Simple
       </Button>
-      <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} inverted>
+
+      <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon}>
         Secondary
       </Button>
 
+
       <h2>Colors</h2>
+      <Button onClick={action('clicked')}>
+        Undefined
+      </Button>
       <Button onClick={action('clicked')} color="primary">
-        Color:Primary
+        Primary
       </Button>
       <Button onClick={action('clicked')} color="danger">
-        Color:Danger
-      </Button>
-      <Button onClick={action('clicked')} color="danger" inverted>
-        Color:Danger inverted
+        Danger
       </Button>
       <Button onClick={action('clicked')} color="success">
-        Color:Success
-      </Button>
-      <Button onClick={action('clicked')} color="success" inverted>
-        Color:Success inverted
-      </Button>
-      <Button onClick={action('clicked')} kind="simple" color="success">
-        Simple Color:Success
-      </Button>
-      <Button onClick={action('clicked')} kind="simple" color="success" inverted>
-        Simple Color:Success inverted
+        Success
       </Button>
 
-      <h2>Inverted</h2>
+      <h2>Colors (secondary)</h2>
+      <Button onClick={action('clicked')} kind="simple">
+        Undefined
+      </Button>
+      <Button onClick={action('clicked')} kind="secondary" color="primary">
+        Primary
+      </Button>
+      <Button onClick={action('clicked')} kind="secondary" color="danger">
+        Danger
+      </Button>
+      <Button onClick={action('clicked')} kind="secondary" color="success">
+        Success
+      </Button>
+
+
+      <h2>Colors (inverted)</h2>
+      <Button onClick={action('clicked')} inverted>
+        Undefined
+      </Button>
+      <Button onClick={action('clicked')} color="primary" inverted>
+        Primary
+      </Button>
+      <Button onClick={action('clicked')} color="danger" inverted>
+        Danger
+      </Button>
+      <Button onClick={action('clicked')} color="success" inverted>
+        Success
+      </Button>
+
+      <h2>Colors (simple)</h2>
+      <Button onClick={action('clicked')} kind="simple">
+        Undefined
+      </Button>
+      <Button onClick={action('clicked')} kind="simple" color="primary">
+        Primary
+      </Button>
+      <Button onClick={action('clicked')} kind="simple" color="danger">
+        Danger
+      </Button>
+      <Button onClick={action('clicked')} kind="simple" color="success">
+        Success
+      </Button>
+
+      <h2>Secondary</h2>
       <Button onClick={action('clicked')} inverted>
         Inverted
       </Button>
@@ -108,7 +147,7 @@ storiesOf('Buttons')
           White inverted
         </Button>
       </div>
-    </div>
+    </form>
   ),
   {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )

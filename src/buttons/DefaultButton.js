@@ -14,23 +14,37 @@ export default class DefaultButton extends React.Component {
     loading: PropTypes.bool,
     ripple: PropTypes.bool,
     className: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    tabIndex: PropTypes.number
   }
 
   static defaultProps = {
     ripple: true,
     icon: null,
-    onClick() {}
+    onClick() {},
+    tabIndex: 0
   }
 
   constructor(...args) {
     super(...args)
 
     this.handleClick = this.handleClick.bind(this)
+
+    this.state = {
+      recentlyHovered: false
+    }
   }
 
   handleClick(event) {
+    this.setState({
+      recentlyHovered: true
+    })
     this.props.onClick(event)
+    this.timeOut = setTimeout(() => {
+      this.setState({
+        recentlyHovered: true
+      })
+    }, 300)
   }
 
   render() {
@@ -40,12 +54,13 @@ export default class DefaultButton extends React.Component {
     const Icon = icon
 
     const style = `
-      ${styles[kind] || (inverted && styles.inverted) || styles.default}
-      ${color && styles[`color__${color}`]}
-      ${Icon && styles.hasIcon}
-      ${className}
-      ${disabled && styles.disabled}
-    `
+      ${(inverted ? styles.inverted : '')}
+      ${kind ? styles[kind] : styles.default}
+      ${color ? styles[`color__${color}`] : ''}
+      ${Icon ? styles.hasIcon : ''}
+      ${className || ''}
+      ${disabled ? styles.disabled : ''}
+      ${this.state.recentlyHovered ? styles.recentlyHovered : styles.notRecentlyHovered}`
 
     return (
       <button
@@ -55,18 +70,20 @@ export default class DefaultButton extends React.Component {
         onClick={this.handleClick}
         disabled={disabled}
       >
-        {
-          loading && <Spinner />
-        }
-        {
-          Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
-        }
-        {
-          children && <span className={styles.content}>{children}</span>
-        }
-        {
-          ripple && !disabled && <Ink duration={200} opacity={0.10} radius={200} />
-        }
+        <div className={styles.inner}>
+          {
+            loading && <Spinner />
+          }
+          {
+            Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
+          }
+          {
+            children && <span className={styles.content}>{children}</span>
+          }
+          {
+            ripple && !disabled && <Ink duration={200} opacity={0.10} radius={200} />
+          }
+        </div>
       </button>
     )
   }

@@ -1,5 +1,19 @@
 @import "part:@sanity/base/theme/variables-style";
 
+@keyframes focused {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 .root {
   position: relative;
   display: inline-block;
@@ -13,6 +27,17 @@
   line-height: 1em;
   cursor: default;
   user-select: none;
+  transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+
+  @nest &.notRecentlyHovered:focus:not(:hover) {
+    overflow: hidden;
+
+    @nest & .inner {
+      overflow: hidden;
+      animation-name: focused;
+      animation-duration: 0.2s;
+    }
+  }
 }
 
 .shadow {
@@ -20,10 +45,23 @@
 }
 
 .default {
-  background-color: var(--default-button-color);
-  color: var(--default-button-color--text);
   composes: root;
   composes: shadow;
+  background-color: var(--default-button-color);
+  color: var(--default-button-color--text);
+
+  @nest &:hover {
+    background-color: color(var(--default-button-color) lightness(-5%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--default-button-color) lightness(-20%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--default-button-color) lightness(+10%));
+    outline: 0;
+  }
 }
 
 .inverted {
@@ -33,10 +71,17 @@
   box-shadow: none;
   composes: default;
 
-  &.danger {
-    border-color: var(--brand-danger);
-    background-color: inherit;
-    color: var(--brand-danger);
+  @nest &:hover {
+    background-color: color(var(--gray-base) a(10%));
+  }
+
+  @nest &:focus {
+    border-style: dotted;
+    background-color: color(var(--gray-base) a(10%));
+  }
+
+  @nest &:active {
+    border-style: solid;
   }
 }
 
@@ -45,11 +90,42 @@
   background-color: var(--brand-primary);
   color: var(--brand-primary--text);
 
-  @nest &.inverted,
-  &.simple {
+  @nest &:hover, &:focus {
+    background-color: color(var(--brand-primary) lightness(-5%));
+  }
+
+  @nest &.secondary {
+    color: var(--brand-primary);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-primary) a(2%));
+      color: var(--brand-primary);
+      border-color: var(--brand-primary);
+    }
+  }
+
+  @nest &.inverted {
     border-color: var(--brand-primary);
     background-color: transparent;
     color: var(--brand-primary);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-primary) a(10%));
+      border-color: var(--brand-primary);
+    }
+  }
+
+  @nest &.simple {
+    background-color: transparent;
+    color: var(--brand-primary);
+
+    @nest &:hover {
+      background-color: color(var(--brand-primary) a(10%));
+    }
+
+    @nest &:focus {
+      border-color: var(--brand-primary);
+    }
   }
 }
 
@@ -58,11 +134,42 @@
   background-color: var(--brand-danger);
   color: var(--brand-danger--text);
 
-  @nest &.inverted,
-  &.simple {
+  @nest &:hover, &:focus {
+    background-color: color(var(--brand-danger) lightness(-10%));
+  }
+
+  @nest &.secondary {
+    color: var(--brand-danger);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-danger) a(2%));
+      color: var(--brand-danger);
+      border-color: var(--brand-danger);
+    }
+  }
+
+  @nest &.inverted {
     border-color: var(--brand-danger);
     background-color: transparent;
     color: var(--brand-danger);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-danger) a(10%));
+      border-color: var(--brand-danger);
+    }
+  }
+
+  @nest &.simple {
+    background-color: transparent;
+    color: var(--brand-danger);
+
+    @nest &:hover {
+      background-color: color(var(--brand-danger) a(10%));
+    }
+
+    @nest &:focus {
+      border-color: var(--brand-danger);
+    }
   }
 }
 
@@ -71,22 +178,61 @@
   background-color: var(--brand-success);
   color: var(--brand-success--text);
 
-  @nest &.inverted,
-  &.simple {
+  @nest &:hover, &:focus {
+    background-color: color(var(--brand-success) lightness(-5%));
+  }
+
+  @nest &.secondary {
+    color: var(--brand-success);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-success) a(2%));
+      color: var(--brand-success);
+      border-color: var(--brand-success);
+    }
+  }
+
+  @nest &.inverted {
     border-color: var(--brand-success);
     background-color: transparent;
     color: var(--brand-success);
+
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-success) a(10%));
+      border-color: var(--brand-success);
+    }
+  }
+
+  @nest &.simple {
+    background-color: transparent;
+    color: var(--brand-success);
+
+    @nest &:hover {
+      background-color: color(var(--brand-success) a(10%));
+    }
+
+    @nest &:focus {
+      border-color: var(--brand-success);
+    }
   }
 }
 
 .color__white {
   background-color: var(--brand-white);
 
+  @nest &:hover, &:focus {
+    background-color: color(var(--brand-white) lightness(-5%));
+  }
+
   @nest &.inverted,
   &.simple {
     border-color: var(--brand-white);
     background-color: transparent;
     color: var(--brand-white);
+
+    @nest &:hover. &:focus {
+      background-color: color(var(--brand-white) lightness(-5%));
+    }
   }
 }
 
@@ -95,9 +241,17 @@
 }
 
 .noBorder {
-  border: 0;
+  border-width: 1px;
+  border-color: transparent;
   background-color: transparent;
+  border-style: solid;
   text-align: left;
+  box-shadow: none;
+
+  @nest &:focus {
+    border-color: var(--black);
+    border-style: dotted;
+  }
 }
 
 .simple {
@@ -124,11 +278,15 @@
 }
 
 .secondary {
-  border: none;
-  background-color: transparent;
-  box-shadow: none;
-  color: var(--gray);
   composes: default;
+  composes: noBorder;
+  color: var(--black);
+  opacity: 0.6;
+
+  @nest &:hover, &:focus {
+    opacity: 1;
+    background-color: color(var(--black) a(1%));
+  }
 }
 
 .disabled {
