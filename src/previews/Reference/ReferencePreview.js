@@ -1,6 +1,6 @@
+import * as previewUtils from '../../sanity/preview/utils'
 import React, {PropTypes} from 'react'
 import Preview from '../../Preview'
-import * as previewUtils from '../../../lib/sanity/preview/utils'
 
 export default class ReferencePreview extends React.Component {
 
