@@ -92,7 +92,6 @@ export default class EditItemPopOver extends React.Component {
 
     const margin = 0
 
-
     // Scroll container when there is no space
     if ((containerOffsetHeight) < (top + height)) {
       let newScrollTop = (containerOffsetHeight - top - height - scrollTop - padding) * -1
@@ -230,6 +229,7 @@ export default class EditItemPopOver extends React.Component {
     const {title, children, className, isCreatingNewItem, actions, fullWidth} = this.props
     const {top, left} = rootRects
 
+
     this.initialScrollTop = scrollContainer.scrollTop
 
     window.addEventListener('resize', this.handleResize)
@@ -256,14 +256,14 @@ export default class EditItemPopOver extends React.Component {
           ref={this.setPortalInnerElement}
           onClick={this.handleModalClick}
         >
-          <span className={styles.overlay} onClick={this.handleBackdropClick} />
+          <div className={styles.overlay} onClick={this.handleBackdropClick} />
           <div
             className={styles.portalModal}
             ref={this.setPortalModalElement}
             style={{
               position: 'absolute',
-              top: `${top + this.initialScrollTop}px`,
-              left: `${left}px`
+              top: `${top + this.initialScrollTop - scrollContainer.offsetTop}px`,
+              left: `${left - scrollContainer.offsetLeft}px`
             }}
           >
 

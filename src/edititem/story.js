@@ -30,6 +30,19 @@ const overflowScroll = {
   border: '5px solid red'
 }
 
+const overflowScrollOffset = {
+  height: '80vh',
+  maxHeight: '100vh',
+  width: '80vw',
+  position: 'absolute',
+  top: '10vh',
+  left: '10vw',
+  overflowY: 'scroll',
+  overflowX: 'visible',
+  boxSizing: 'border-box',
+  border: '5px solid red'
+}
+
 class Mover extends React.Component {
 
   static propTypes = {
@@ -326,6 +339,45 @@ storiesOf('Edit item')
   () => {
     return (
       <div id="myScrollContainerId" style={overflowScroll}>
+        {
+          range(50).map(i => {
+            return (
+              <p key={i}>
+                {chance.paragraph({sentences: random(5, 20)})}
+                <EditItemPopOverComponent onClose={action('onClose')}>
+                  Some content, and there is more.
+                  {chance.paragraph({sentences: random(2, 10)})}
+                  <EditItemPopOverComponent onClose={action('onClose')}>
+                    Some content, and there is more.
+                    {chance.paragraph({sentences: random(1, 20)})}
+                    <EditItemPopOverComponent onClose={action('onClose')}>
+                      Last content
+                      {chance.paragraph({sentences: random(5, 20)})}
+                    </EditItemPopOverComponent>
+                  </EditItemPopOverComponent>
+                </EditItemPopOverComponent>
+              </p>
+            )
+          })
+        }
+      </div>
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+
+
+.addWithInfo(
+  'PopOver (test inline offsetContainer)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div id="myScrollContainerId" style={overflowScrollOffset}>
         {
           range(50).map(i => {
             return (
