@@ -32,7 +32,7 @@
   "devDependencies": {
     "@sanity/base": "^0.3.11",
     "@sanity/check": "^0.0.3",
-    "@sanity/cli": "^0.1.25",
+    "@sanity/cli": "^0.1.27",
     "@sanity/components": "^0.0.89",
     "@sanity/core": "^0.0.34",
     "@sanity/form-builder": "^0.1.19",
