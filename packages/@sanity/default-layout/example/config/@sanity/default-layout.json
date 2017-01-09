@@ -1,0 +1,10 @@
+{
+  "toolSwitcher": {
+    "order": [
+      "my-tool"
+    ],
+    "hidden": [
+      "some-other-tool"
+    ]
+  }
+}

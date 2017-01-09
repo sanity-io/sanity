@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import LoginStatus from './LoginStatus'
-import ToolSwitcher from './ToolSwitcher'
+import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import styles from './styles/DesktopNavigation.css'
 import CompanyBranding from './CompanyBranding'
 import tools from 'all:part:@sanity/base/tool'

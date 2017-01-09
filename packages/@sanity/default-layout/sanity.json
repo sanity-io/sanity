@@ -14,6 +14,12 @@
       "implements": "part:@sanity/base/root",
       "name": "part:@sanity/default-layout/root",
       "path": "components/DefaultLayoutContainer"
+    },
+
+    {
+      "implements": "part:@sanity/default-layout/tool-switcher",
+      "name": "part:@sanity/default-layout/default-tool-switcher",
+      "path": "components/ToolSwitcher"
     }
   ]
 }

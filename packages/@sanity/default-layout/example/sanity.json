@@ -1,6 +1,6 @@
 {
   "project": {
-    "name": "Default Layout Example Project"
+    "name": "Default Layout"
   },
   "server": {
     "hostname": "0.0.0.0"
@@ -12,25 +12,14 @@
   "plugins": [
     "@sanity/base",
     "@sanity/components",
+    "../",
     "my-tool",
     "my-other-tool"
   ],
   "parts": [
     {
-      "implements": "part:@sanity/base/root",
-      "path": "./Main"
-    },
-    {
-      "implements": "part:@sanity/base/company-logo",
-      "path": "./Logo.js"
-    },
-    {
       "implements": "part:@sanity/base/schema",
       "path": "./schema.js"
-    },
-    {
-      "implements": "part:@sanity/base/root",
-      "path": "components/DefaultLayoutRouter"
     },
     {
       "implements": "part:@sanity/base/authentication-fetcher",

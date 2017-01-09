@@ -1,10 +1,6 @@
 import {route} from 'part:@sanity/base/router'
 import React from 'react'
 
-const styles = {
-  backgroundColor: 'red',
-}
-
 function MyTool(props) {
   return (
     <div>
@@ -12,6 +8,7 @@ function MyTool(props) {
     </div>
   )
 }
+
 export default {
   name: 'my-tool',
   title: 'My Tool',
