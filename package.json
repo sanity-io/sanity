@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
