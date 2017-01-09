@@ -8,7 +8,8 @@ export default {
       route('/:selectedDocumentId')
     ])
   ]),
-  name: 'Desk',
+  title: 'Desk',
+  name: 'desk',
   icon: Icon,
   component: DeskTool
 }
