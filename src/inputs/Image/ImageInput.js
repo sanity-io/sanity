@@ -323,25 +323,23 @@ export default class ImageInput extends React.PureComponent {
     const isImageToolEnabled = this.isImageToolEnabled()
 
     return (
-      <div>
-        <ImageInputFieldset
-          status={status}
-          legend={field.title}
-          level={level}
-          percent={progress && progress.percent}
-          onSelect={this.handleSelect}
-          onCancel={this.handleCancel}
-          onClear={this.handleClearValue}
-          hotspotImage={{
-            hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
-            crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
-            imageUrl: imageUrl
-          }}
-        >
-          {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
-        </ImageInputFieldset>
+      <ImageInputFieldset
+        status={status}
+        legend={field.title}
+        level={level}
+        percent={progress && progress.percent}
+        onSelect={this.handleSelect}
+        onCancel={this.handleCancel}
+        onClear={this.handleClearValue}
+        hotspotImage={{
+          hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
+          crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
+          imageUrl: imageUrl
+        }}
+      >
+        {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </div>
+      </ImageInputFieldset>
     )
   }
 }
