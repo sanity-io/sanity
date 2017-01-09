@@ -16,8 +16,8 @@ const HotspotImage = createImageLoader(_HotspotImage, image => {
 })
 
 const DEFAULT_HOTSPOT = {
-  height: 0,
-  width: 0,
+  height: 1,
+  width: 1,
   x: 0.5,
   y: 0.5
 }
