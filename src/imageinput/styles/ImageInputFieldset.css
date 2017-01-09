@@ -35,7 +35,7 @@
   color: #fff;
   transition: background-color 0.1s linear;
   user-select: none;
-  max-height: 100vw;
+  max-height: 50vw;
   overflow: hidden;
   background-color: #eee;
   background-image:

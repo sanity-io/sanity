@@ -12,7 +12,8 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 import Button from 'part:@sanity/components/buttons/default'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
-  return {srcAspectRatio: image.width / image.height}
+  const srcAspectRatio = image.width / image.height
+  return {srcAspectRatio: srcAspectRatio}
 })
 
 const DEFAULT_HOTSPOT = {
@@ -71,7 +72,7 @@ export default class ImageInputFieldset extends React.PureComponent {
                 {
                   hotspotImage && (
                     <HotspotImage
-                      aspectRatio={children ? 3 / 4 : 16 / 9}
+                      aspectRatio="auto"
                       hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
                       crop={hotspotImage.crop || DEFAULT_CROP}
                       src={hotspotImage.imageUrl}
