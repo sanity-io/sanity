@@ -128,7 +128,7 @@ class EditItemPopOverComponent extends React.Component {
 
     return (
       <span style={{border: '1px solid red', display: 'inline', position: 'relative'}}>
-        <a href="#" onClick={this.handleOpen} style={{color: 'blue', textDecoration: 'underline'}}>
+        <a onClick={this.handleOpen} style={{color: 'blue', textDecoration: 'underline'}}>
           Click me
         </a>
         {
@@ -399,6 +399,122 @@ storiesOf('Edit item')
             )
           })
         }
+      </div>
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+
+
+.addWithInfo(
+  'PopOver (inline offsetContainer, scrolled)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div
+        id="myScrollContainerId"
+        style={{
+          height: '150vh',
+          width: '80vw',
+          position: 'relative',
+          top: '10vh',
+          left: '10vw',
+          overflowY: 'scroll',
+          overflowX: 'visible',
+          boxSizing: 'border-box',
+          border: '5px solid red'
+        }}
+      >
+        {
+          range(50).map(i => {
+            return (
+              <p key={i}>
+                {chance.paragraph({sentences: random(5, 20)})}
+                <EditItemPopOverComponent onClose={action('onClose')}>
+                  Some content, and there is more.
+                  {chance.paragraph({sentences: random(2, 10)})}
+                  <EditItemPopOverComponent onClose={action('onClose')}>
+                    Some content, and there is more.
+                    {chance.paragraph({sentences: random(1, 20)})}
+                    <EditItemPopOverComponent onClose={action('onClose')}>
+                      Last content
+                      {chance.paragraph({sentences: random(5, 20)})}
+                    </EditItemPopOverComponent>
+                  </EditItemPopOverComponent>
+                </EditItemPopOverComponent>
+              </p>
+            )
+          })
+        }
+      </div>
+    )
+  },
+  {
+    propTables: [EditItemPopOver],
+    role: 'part:@sanity/components/edititem/popover'
+  }
+)
+
+.addWithInfo(
+  'PopOver (scrolled inside scrolled)',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    return (
+      <div
+        style={{
+          height: '150vh',
+          width: '80vw',
+          position: 'relative',
+          top: '10vh',
+          left: '10vw',
+          overflowY: 'scroll',
+          overflowX: 'visible',
+          boxSizing: 'border-box',
+          border: '5px solid red'
+        }}
+      >
+        <div
+          id="myScrollContainerId"
+          scrollTop="200"
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'relative',
+            overflowY: 'scroll',
+            overflowX: 'visible',
+            boxSizing: 'border-box',
+            border: '5px solid green'
+          }}
+        >
+          {
+            range(50).map(i => {
+              return (
+                <p key={i}>
+                  {chance.paragraph({sentences: random(5, 20)})}
+                  <EditItemPopOverComponent onClose={action('onClose')}>
+                    Some content, and there is more.
+                    {chance.paragraph({sentences: random(2, 10)})}
+                    <EditItemPopOverComponent onClose={action('onClose')}>
+                      Some content, and there is more.
+                      {chance.paragraph({sentences: random(1, 20)})}
+                      <EditItemPopOverComponent onClose={action('onClose')}>
+                        Last content
+                        {chance.paragraph({sentences: random(5, 20)})}
+                      </EditItemPopOverComponent>
+                    </EditItemPopOverComponent>
+                  </EditItemPopOverComponent>
+                </p>
+              )
+            })
+          }
+        </div>
       </div>
     )
   },

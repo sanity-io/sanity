@@ -46,7 +46,8 @@ export default class EditItemPopOver extends React.Component {
       ease: ease.easeInOutQuart
     }
     this.state = {
-      scrollContainer: null
+      scrollContainer: null,
+      rootOffsetTop: 0
     }
   }
 
@@ -76,7 +77,7 @@ export default class EditItemPopOver extends React.Component {
       return
     }
 
-    const portalModalRects = portalModalElement.getClientRects()[0]
+    const portalModalRects = portalModalElement.getBoundingClientRect()
     const scrollTop = scrollContainer.scrollTop
     const width = portalModalRects.width
     const height = portalModalRects.height
@@ -177,7 +178,7 @@ export default class EditItemPopOver extends React.Component {
   setRootElement = element => {
     this._rootElement = element
     if (element) {
-      const rootRects = element.getClientRects()[0]
+      const rootRects = element.getBoundingClientRect()
       this.setState({
         rootRects: rootRects
       })
@@ -190,6 +191,13 @@ export default class EditItemPopOver extends React.Component {
 
   setPortalModalElement = element => {
     this._portalModalElement = element
+
+    if (element) {
+      const portalModalRects = element.getBoundingClientRect()
+      this.setState({
+        portalModalRects: portalModalRects
+      })
+    }
   }
 
   setArrowElement = element => {
@@ -235,6 +243,12 @@ export default class EditItemPopOver extends React.Component {
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('keydown', this.handleKeyDown)
 
+    const scrollContainerTop = scrollContainer.getBoundingClientRect().top
+
+
+    const modalTop = top + this.initialScrollTop - scrollContainerTop
+    const modalLeft = left - scrollContainer.offsetLeft
+
 
     return (
       <Portal
@@ -262,8 +276,8 @@ export default class EditItemPopOver extends React.Component {
             ref={this.setPortalModalElement}
             style={{
               position: 'absolute',
-              top: `${top + this.initialScrollTop - scrollContainer.offsetTop}px`,
-              left: `${left - scrollContainer.offsetLeft}px`
+              top: `${modalTop}px`,
+              left: `${modalLeft}px`
             }}
           >
 
