@@ -5,6 +5,7 @@ import upgradeCommand from './upgrade/upgradeCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import versionsCommand from './versions/versionsCommand'
+import debugCommand from './debug/debugCommand'
 
 export default [
   initCommand,
@@ -13,5 +14,6 @@ export default [
   installCommand,
   upgradeCommand,
   versionsCommand,
+  debugCommand,
   helpCommand
 ]
