@@ -37,3 +37,7 @@
   composes: listContainer from './Pane.css';
   height: 100%;
 }
+
+.item {
+  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
+}

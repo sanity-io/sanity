@@ -35,7 +35,7 @@ export default class Pane extends React.Component {
           {
             items.map((item, i) => {
               return (
-                <li key={i}>
+                <li key={i} className={styles.item}>
                   {renderItem(item)}
                 </li>
               )

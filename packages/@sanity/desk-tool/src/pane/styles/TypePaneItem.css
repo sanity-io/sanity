@@ -5,6 +5,7 @@
   line-height: 2em;
   height: 2em;
   overflow: hidden;
+  position: relative;
 }
 
 .link {
@@ -14,6 +15,9 @@
   max-width: 20em;
   white-space: nowrap;
   text-overflow: ellipsis;
+  border: 1px solid red;
+  display: block;
+  margin-right: 2em;
 }
 
 .selected {
@@ -37,6 +41,9 @@
   cursor: pointer;
   color: inherit;
   opacity: 0.3;
+  position: absolute;
+  top: 0;
+  right: 0;
 
   @nest &:hover {
     font-weight: 400;
