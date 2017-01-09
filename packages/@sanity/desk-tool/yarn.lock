@@ -106,9 +106,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.12":
-  version "0.3.12"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.12.tgz#3b9488c7c017b084adc561be4c87e1fbf510aac1"
+"@sanity/base@^0.3.13":
+  version "0.3.13"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.13.tgz#7fd0c1467dd631c275955298aee15301aadcf5f3"
   dependencies:
     "@sanity/client" "^0.4.8"
     "@sanity/document-store" "^0.2.8"
@@ -144,9 +144,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.94":
-  version "0.0.94"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.94.tgz#3ef0044179bed610a3f1299af5ab8d831462acc1"
+"@sanity/components@^0.0.97":
+  version "0.0.97"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.97.tgz#48415357e3acade307bea3b8ef55423f5af4ff07"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -241,9 +241,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.20":
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.20.tgz#52297a5aa8c543f364f4971aa6f4f255d601bb03"
+"@sanity/form-builder@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.21.tgz#80ce4d649ff82aaf3d11c270edc893836a85b8ff"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.5"
