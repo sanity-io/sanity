@@ -158,7 +158,7 @@
   bottom: var(--medium-padding);
   left: var(--medium-padding);
   font-size: 0.8rem;
-  z-index: 50;
+  z-index: 15;
 }
 
 .cancel {
