@@ -2,6 +2,7 @@ import path from 'path'
 import zlib from 'zlib'
 import fsp from 'fs-promise'
 import tar from 'tar-fs'
+import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 export default async (args, context) => {
   const {apiClient, workDir, chalk, output, prompt} = context
@@ -32,6 +33,18 @@ export default async (args, context) => {
       message: 'Studio hostname (<value>.sanity.studio):',
       validate: name => validateHostname(name, client)
     })
+  }
+
+  // Ask user if we should build the project first
+  const shouldBuild = await prompt.single({
+    type: 'confirm',
+    message: 'Do you want to build the project first?',
+    default: true
+  })
+
+  if (shouldBuild) {
+    const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
+    await buildStaticAssets({extOptions: {}, argsWithoutOptions: []}, context)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content

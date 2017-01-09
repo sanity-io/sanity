@@ -72,11 +72,11 @@ export default async (args, context) => {
       `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
     )
 
-    spin.stop()
 
     // Print build output, optionally stats if requested
     bundle.stats.warnings.forEach(output.print)
-    output.print(`Javascript bundles built, time spent: ${bundle.stats.time}ms`)
+    spin.text = `Building Sanity (${bundle.stats.time}ms)`
+    spin.succeed()
 
     if (flags.stats) {
       output.print('\nLargest modules (unminified, uncompressed sizes):')
@@ -85,7 +85,7 @@ export default async (args, context) => {
       )
     }
   } catch (err) {
-    spin.stop()
+    spin.fail()
     output.error(err)
   }
 
