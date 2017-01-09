@@ -3,7 +3,7 @@ import tools from 'all:part:@sanity/base/tool'
 
 export default function RenderTool(props) {
   if (!tools.length) {
-    return <div>No tools fulfills the role <code>`part:@sanity/base/tool`</code></div>
+    return <div>No tools fulfills the part <code>`part:@sanity/base/tool`</code></div>
   }
 
   const activeToolName = props.tool

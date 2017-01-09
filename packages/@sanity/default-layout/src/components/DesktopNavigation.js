@@ -3,7 +3,6 @@ import LoginStatus from './LoginStatus'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import styles from './styles/DesktopNavigation.css'
 import CompanyBranding from './CompanyBranding'
-import tools from 'all:part:@sanity/base/tool'
 import Search from './Search'
 
 class DesktopNavigation extends React.Component {
@@ -15,7 +14,12 @@ class DesktopNavigation extends React.Component {
     return (
       <div className={styles.root}>
         <CompanyBranding />
-        <ToolSwitcher tools={tools} activeToolName={router.state.tool} className={styles.toolSwitcher} />
+        <ToolSwitcher
+          tools={this.props.tools}
+          activeToolName={router.state.tool}
+          className={styles.toolSwitcher}
+        />
+
         <LoginStatus className={styles.loginStatus} />
         <div className={styles.searchContainer}>
           <Search />
@@ -23,6 +27,12 @@ class DesktopNavigation extends React.Component {
       </div>
     )
   }
+}
+
+DesktopNavigation.propTypes = {
+  tools: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string
+  }))
 }
 
 export default DesktopNavigation

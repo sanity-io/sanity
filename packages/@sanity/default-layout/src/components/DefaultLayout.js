@@ -6,7 +6,6 @@ import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
 import DesktopNavigation from './DesktopNavigation'
 import MobileNavigation from './MobileNavigation'
-import tools from 'all:part:@sanity/base/tool'
 
 class DefaultLayout extends React.Component {
   static contextTypes = {
@@ -15,8 +14,8 @@ class DefaultLayout extends React.Component {
 
   maybeRedirectToFirstTool() {
     const {router} = this.context
-    if (!router.state.tool && tools.length > 0) {
-      router.navigate({tool: tools[0].name}, {replace: true})
+    if (!router.state.tool && this.props.tools.length > 0) {
+      router.navigate({tool: this.props.tools[0].name}, {replace: true})
     }
   }
 
@@ -30,15 +29,16 @@ class DefaultLayout extends React.Component {
 
   render() {
     const {router} = this.context
+    const {tools} = this.props
     return (
       <div className={styles.defaultLayout}>
 
         <div className={styles.desktopNavigation}>
-          <DesktopNavigation />
+          <DesktopNavigation tools={tools} />
         </div>
 
         <div className={styles.mobileNavigation}>
-          <MobileNavigation />
+          <MobileNavigation tools={tools} />
         </div>
 
         <div className={styles.toolContainer}>
@@ -55,6 +55,12 @@ class DefaultLayout extends React.Component {
       </div>
     )
   }
+}
+
+DefaultLayout.propTypes = {
+  tools: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string
+  }))
 }
 
 export default DefaultLayout

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import LoginStatus from './LoginStatus'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import tools from 'all:part:@sanity/base/tool'
 import styles from './styles/MobileNavigation.css'
 import CompanyBranding from './CompanyBranding'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
@@ -38,6 +37,7 @@ class MobileNavigation extends React.Component {
   render() {
     const {router} = this.context
     const {isOpen} = this.state
+    const {tools} = this.props
     return (
       <div className={styles.root}>
         <CompanyBranding />
@@ -64,6 +64,12 @@ class MobileNavigation extends React.Component {
       </div>
     )
   }
+}
+
+MobileNavigation.propTypes = {
+  tools: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string
+  }))
 }
 
 export default MobileNavigation
