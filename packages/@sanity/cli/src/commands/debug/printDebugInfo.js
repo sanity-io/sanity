@@ -8,12 +8,12 @@ import fsp from 'fs-promise'
 import xdgBasedir from 'xdg-basedir'
 import promiseProps from 'promise-props-recursive'
 import getUserConfig from '../../util/getUserConfig'
+import {printResult as printVersionsResult} from '../versions/printVersionResult'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 
 export default async (args, context) => {
   const {user, globalConfig, projectConfig, project, versions} = await gatherInfo(context)
   const {chalk} = context
-  const print = line => context.output.print(`  ${line}`)
 
   // User info
   context.output.print('\nUser:')
@@ -53,6 +53,12 @@ export default async (args, context) => {
     context.output.print(`Project config (${chalk.yellow(configLocation)}):`)
     context.output.print(`  ${formatObject(projectConfig).replace(/\n/g, '\n  ')}`)
   }
+
+  // Print installed package versions
+  if (versions) {
+    context.output.print('\nPackage versions:')
+    printVersionsResult(versions, line => context.output.print(`  ${line}`))
+  }
 }
 
 function formatObject(obj) {
@@ -82,7 +88,7 @@ async function gatherInfo(context) {
 
   return promiseProps(Object.assign({
     project: gatherProjectInfo(context, baseInfo),
-    //versions: findSanityModuleVersions(context)
+    versions: findSanityModuleVersions(context)
   }, baseInfo))
 }
 

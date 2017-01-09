@@ -4,15 +4,20 @@ import padStart from 'lodash/padStart'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 
 export default async (args, context) => {
-  const versions = await findSanityModuleVersions(context)
-  const {versionLength, formatName} = getFormatters(versions)
+  printResult(
+    await findSanityModuleVersions(context),
+    context.output.print
+  )
+}
 
+export function printResult(versions, print) {
+  const {versionLength, formatName} = getFormatters(versions)
   versions.forEach(mod => {
     const version = padStart(mod.version, versionLength)
     const latest = mod.version === mod.latest
       ? chalk.green('(up to date)')
       : `(latest: ${chalk.yellow(mod.latest)})`
-    context.output.print(`${formatName(mod.name)} ${version} ${latest}`)
+    print(`${formatName(mod.name)} ${version} ${latest}`)
   })
 }
 
