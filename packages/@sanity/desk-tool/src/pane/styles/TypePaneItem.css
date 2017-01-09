@@ -15,7 +15,6 @@
   max-width: 20em;
   white-space: nowrap;
   text-overflow: ellipsis;
-  border: 1px solid red;
   display: block;
   margin-right: 2em;
 }
