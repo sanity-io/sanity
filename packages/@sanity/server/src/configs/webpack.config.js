@@ -104,6 +104,7 @@ export default (config = {}) => {
         loader: partLoaderPath
       }]
     },
+    profile: config.profile || false,
     plugins: [
       cssExtractor,
       new OccurrenceOrderPlugin(),
