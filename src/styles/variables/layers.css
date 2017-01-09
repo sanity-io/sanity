@@ -1,4 +1,5 @@
 :root {
+  --zindex-pane: 900;
   --zindex-navbar: 1000;
   --zindex-dropdown: 1010;
   --zindex-popover-background: 1060;
