@@ -11,8 +11,8 @@ import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
 
 const DEFAULT_HOTSPOT = {
-  height: 0,
-  width: 0,
+  height: 1,
+  width: 1,
   x: 0.5,
   y: 0.5
 }
