@@ -242,7 +242,7 @@ export default class EditorPane extends React.PureComponent {
 
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {value.getAttribute(titleProp).serialize() || 'Untitled…'}
+            {(titleProp && value.getAttribute(titleProp).serialize()) || 'Untitled…'}
           </h1>
 
           <div className={spin ? styles.spinner : styles.spinnerInactive}>
