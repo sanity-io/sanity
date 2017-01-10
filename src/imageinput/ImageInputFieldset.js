@@ -83,7 +83,7 @@ export default class ImageInputFieldset extends React.PureComponent {
                   (status != 'error' && status != 'pending') && (
                     <div>
                       <ImageSelect
-                        className={styles.imageSelect}
+                        className={styles.imageSelectReplace}
                         name={fieldName}
                         onSelect={this.props.onSelect}
                       >

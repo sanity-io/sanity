@@ -46,10 +46,6 @@
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0;
 
-  @nest &:hover {
-    background-color: var(--gray);
-  }
-
   @media (--screen-medium) {
     min-height: 12rem;
     flex-basis: 30%;
@@ -137,20 +133,26 @@
   color: var(--gray-lighter);
   cursor: default;
   transition: transform 0.1s linear;
-  z-index: 15;
+  z-index: 1;
   user-select: none;
+  background-color: #333;
 
   @nest & span {
     cursor: default;
   }
 
-  &:hover {
+  @nest &:hover {
     transform: scale(1.05);
   }
 
-  &:active {
+  @nest &:active {
     color: #fff;
   }
+}
+
+.imageSelectReplace {
+  composes: imageSelect;
+  background-color: transparent;
 }
 
 .removeButton {
@@ -158,7 +160,7 @@
   bottom: var(--medium-padding);
   left: var(--medium-padding);
   font-size: 0.8rem;
-  z-index: 15;
+  z-index: 1;
 }
 
 .cancel {
@@ -167,7 +169,7 @@
   position: absolute;
   top: 50%;
   margin-top: 3rem;
-  z-index: 10;
+  z-index: 1;
   text-align: center;
   width: 100%;
   font-size: 0.8em;
@@ -190,7 +192,10 @@
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
-  filter: drop-shadow(0 0 5px #000);
+
+  @nest .imageSelectReplace & {
+    filter: drop-shadow(0 0 5px #000);
+  }
 }
 
 .uploadIcon {
