@@ -4,7 +4,7 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Portal from 'react-portal'
 
-export default class FullScreenDialog extends React.Component {
+export default class FullScreenDialog extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'info', 'success', 'danger']),
     className: PropTypes.string,
@@ -28,13 +28,16 @@ export default class FullScreenDialog extends React.Component {
   }
 
   handleKeyDown = event => {
-    if (event.key == 'Escape') {
+    if (event.key === 'Escape' && this.isClosable()) {
       this.props.onClose()
     }
   }
 
-  render() {
+  isClosable() {
+    return typeof this.props.onClose === 'function'
+  }
 
+  render() {
     const {kind, title, className, onClose, centered, isOpen} = this.props
 
     const classNames = `
@@ -45,7 +48,7 @@ export default class FullScreenDialog extends React.Component {
     `
 
     return (
-      <Portal closeOnEsc isOpened={isOpen} onClose={onClose}>
+      <Portal closeOnEsc={this.isClosable()} isOpened={isOpen} onClose={onClose}>
         <div className={classNames}>
           {
             onClose && (

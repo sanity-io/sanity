@@ -56,8 +56,12 @@ export default class DefaultDialog extends React.Component {
     window.removeEventListener('keydown', this.handleKeyDown, false)
   }
 
+  isClosable() {
+    return typeof this.props.onClose === 'function'
+  }
+
   handleKeyDown = event => {
-    if (event.key == 'Escape') {
+    if (event.key === 'Escape' && this.isClosable()) {
       this.props.onClose()
     }
   }

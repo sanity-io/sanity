@@ -212,6 +212,24 @@ storiesOf('Dialogs')
 )
 
 .addWithInfo(
+  'Fullscreen (danger, centered, no close button)',
+  '',
+  () => {
+    return (
+      <div>
+        <FullscreenDialog kind="danger" centered title="This is the title" isOpen>
+          This is the content
+        </FullscreenDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [FullscreenDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.addWithInfo(
   'Fullscreen (danger)',
   '',
   () => {
@@ -304,7 +322,7 @@ storiesOf('Dialogs')
   }
 )
 .addWithInfo(
-  'Default (with actions nad header)',
+  'Default (with actions and header)',
   '',
   () => {
     const actions = [
