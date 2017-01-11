@@ -6,6 +6,7 @@ const resolver = require('@sanity/resolver')
 const multiImplementationHandler = require('./multiImplementationHandler')
 
 function sanityPartLoader(input) {
+  this.cacheable()
   const callback = this.async()
 
   const part = this.data.sanityPart
@@ -24,8 +25,6 @@ function sanityPartLoader(input) {
   return resolver
     .resolveParts({basePath: basePath})
     .then(parts => {
-      this.cacheable()
-
       // Also add plugin manifests as dependencies, as parts and paths may change
       parts.plugins.forEach(plugin => {
         this.addDependency(path.join(plugin.path, 'sanity.json'))
@@ -58,6 +57,7 @@ sanityPartLoader.pitch = function (remaining, preceding, data) {
     return
   }
 
+  this.cacheable()
   const qs = remaining.substring(remaining.indexOf('?'))
   Object.assign(data, loaderUtils.parseQuery(qs) || {})
 }
