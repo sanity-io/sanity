@@ -23,7 +23,8 @@ export default async (args, context) => {
     basePath: workDir,
     outputPath: path.join(outputDir, 'static'),
     sourceMaps: flags['source-maps'],
-    skipMinify: flags['skip-minify'] || false
+    skipMinify: flags['skip-minify'] || false,
+    profile: flags.profile || false
   }
 
   const compiler = getWebpackCompiler(compilationConfig)
@@ -72,7 +73,6 @@ export default async (args, context) => {
       `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
     )
 
-
     // Print build output, optionally stats if requested
     bundle.stats.warnings.forEach(output.print)
     spin.text = `Building Sanity (${bundle.stats.time}ms)`
@@ -82,6 +82,13 @@ export default async (args, context) => {
       output.print('\nLargest modules (unminified, uncompressed sizes):')
       sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
         output.print(`[${filesize(module.size)}] ${module.name}`)
+      )
+    }
+
+    if (flags.profile) {
+      await fsp.writeFile(
+        path.join(workDir, 'build-stats.json'),
+        JSON.stringify(statistics.toJson())
       )
     }
   } catch (err) {
