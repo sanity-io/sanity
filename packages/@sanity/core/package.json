@@ -19,7 +19,7 @@
   "dependencies": {
     "@sanity/check": "^0.0.3",
     "@sanity/mutator": "^0.2.5",
-    "@sanity/server": "^0.0.23",
+    "@sanity/server": "^0.0.24",
     "@sanity/storybook": "^0.0.15",
     "@sanity/util": "^0.0.3",
     "batch-stream-operation": "^1.0.1",
