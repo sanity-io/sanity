@@ -24,9 +24,7 @@ function sanityPartLoader(input) {
   return resolver
     .resolveParts({basePath: basePath})
     .then(parts => {
-      if (this.cacheable) {
-        this.cacheable()
-      }
+      this.cacheable()
 
       // Also add plugin manifests as dependencies, as parts and paths may change
       parts.plugins.forEach(plugin => {
