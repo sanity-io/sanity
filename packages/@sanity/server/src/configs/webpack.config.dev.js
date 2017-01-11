@@ -1,4 +1,3 @@
-import path from 'path'
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
