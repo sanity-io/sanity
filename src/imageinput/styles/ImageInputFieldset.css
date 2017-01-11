@@ -65,13 +65,14 @@
   margin-left: 1rem;
   flex-grow: 1;
 
-  @nest .noContent & {
-    display: none;
-  }
-
   @media (--screen-medium) {
     flex-basis: 30%;
   }
+}
+
+.contentAbsolute {
+  position: absolute;
+  display: block;
 }
 
 .progressContainer {

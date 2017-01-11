@@ -38,12 +38,14 @@ export default class ImageInputFieldset extends React.PureComponent {
       crop: PropTypes.object,
       imageUrl: PropTypes.string
     }),
-    children: PropTypes.node
+    children: PropTypes.node,
+    showContent: PropTypes.bool
   }
 
   static defaultProps = {
     level: 0,
-    status: 'ready'
+    status: 'ready',
+    showContent: true
   }
 
   constructor(...args) {
@@ -55,11 +57,11 @@ export default class ImageInputFieldset extends React.PureComponent {
 
   render() {
 
-    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, children} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, showContent, children} = this.props
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
-        <div className={`${styles.grid} ${children ? styles.hasContent : styles.noContent}`}>
+        <div className={`${styles.grid} ${showContent ? styles.hasContent : styles.noContent}`}>
           <div
             className={`
               ${hotspotImage && hotspotImage.imageUrl ? styles.imageWrapper : styles.imageWrapperEmpty}
@@ -161,7 +163,7 @@ export default class ImageInputFieldset extends React.PureComponent {
           </div>
           {
             children && (
-              <div className={styles.content}>
+              <div className={showContent ? styles.content : styles.contentAbsolute}>
                 {children}
               </div>
             )
