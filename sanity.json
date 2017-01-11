@@ -335,10 +335,6 @@
       "path": "components/IntlWrapper.js"
     },
     {
-      "implements": "part:@sanity/base/login-wrapper",
-      "path": "components/login/LoginWrapper.js"
-    },
-    {
       "implements": "part:@sanity/base/theme/layout/box-style",
       "path": "styles/layout/box.css"
     },
