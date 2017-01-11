@@ -10,6 +10,10 @@
       "path": "LoginDialog.js"
     },
     {
+      "implements": "part:@sanity/base/login-wrapper",
+      "path": "LoginWrapper.js"
+    },
+    {
       "implements": "part:@sanity/base/authentication-fetcher",
       "path": "authenticationFetcher.js"
     },

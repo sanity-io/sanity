@@ -10,6 +10,11 @@ import CompanyLogo from 'part:@sanity/base/company-logo?'
 
 const projectName = (config.project && config.project.name) || ''
 
+const providerNames = {
+  'google_oauth2': 'Google',
+  'github': 'Github'
+}
+
 const GithubLogo = React.createClass({
   render: function() {
     return (
@@ -92,7 +97,7 @@ export default class LoginDialog extends React.Component {
                       }
                     </span>
                     <span className={styles.providerName}>
-                      <FormattedMessage id={provider.name} />
+                      {providerNames[provider.name] || provider.name}
                     </span>
                   </button>
                 </li>

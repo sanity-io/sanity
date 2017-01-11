@@ -1,7 +1,6 @@
 {
   "en-US": {
     "loginWithProvider": "Choose login provider",
-    "logoutButtonText": "Log out",
-    "google_oauth2": "Google"
+    "logoutButtonText": "Log out"
   }
 }
