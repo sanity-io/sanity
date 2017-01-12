@@ -32,7 +32,7 @@
     "@sanity/document-store": "^0.2.8",
     "@sanity/observable": "^1.4.0",
     "@sanity/state-router": "^0.3.0-beta.1",
-    "history": "^4.5.1",
+    "history": "^2.0.0",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "postcss-cssnext": "^2.9.0",
