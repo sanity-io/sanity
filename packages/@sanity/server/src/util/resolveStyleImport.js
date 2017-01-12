@@ -24,11 +24,11 @@ function resolveStyleImport(moduleId, opts) {
 }
 
 function isSanityPart(part) {
-  return !!part.match(/^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/)
+  return /^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/.test(part)
 }
 
 export default function getStyleResolver(opts) {
-  return function resolveStyleProxy(moduleId, styleOptions) {
-    return resolveStyleImport(moduleId, assign({root: opts.from}, styleOptions))
+  return function resolveStyleProxy(moduleId, basedir, styleOptions) {
+    return resolveStyleImport(moduleId, assign({root: opts.from, basedir}, styleOptions))
   }
 }
