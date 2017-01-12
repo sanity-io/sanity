@@ -30,44 +30,44 @@ export default class DefaultTextInput extends React.Component {
     onBlur() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleClear = this.handleClear.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.setInputElement = this.setInputElement.bind(this)
-  }
-
-  handleKeyPress(event) {
+  handleKeyPress = event => {
     this.props.onKeyPress(event)
   }
 
-  handleFocus(event) {
+  handleFocus = event => {
     this.props.onFocus(event)
   }
 
-  handleBlur(event) {
+  handleBlur = event => {
     this.props.onBlur(event)
   }
 
-  handleSelect(event) {
+  selectInput = event => {
     this._input.select()
   }
 
-  handleClear(event) {
+  handleClear = event => {
     // this.props.onChange(event)
     this.props.onClear(event)
   }
 
-  setInputElement(element) {
+  setInputElement = element => {
     this._input = element
+  }
+
+  handleChange = event => {
+    this.props.onChange(event)
   }
 
   componentDidMount() {
     if (this.props.selected) {
-      this.handleSelect()
+      this.selectInput()
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.selected) {
+      this.selectInput()
     }
   }
 
@@ -91,6 +91,7 @@ export default class DefaultTextInput extends React.Component {
           type={type}
           value={value}
           placeholder={placeholder}
+          onChange={this.handleChange}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}

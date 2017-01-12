@@ -18,6 +18,7 @@ class DefaultTextInputTest extends React.Component {
     this.setState({
       value: value
     })
+    console.log('value', value) // eslint-disable-line
   }
 
   render() {
