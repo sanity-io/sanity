@@ -47,7 +47,6 @@ export default class DefaultTextInput extends React.Component {
   }
 
   handleClear = event => {
-    // this.props.onChange(event)
     this.props.onClear(event)
   }
 

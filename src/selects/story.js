@@ -209,15 +209,25 @@ storiesOf('Selects')
     When provided with items, the component searches inside these when no onSearch is provided
   `,
   () => {
+    const renderItem = function (item) {
+      return (
+        <div>{item.title}</div>
+      )
+    }
+    const renderValue = function (item) {
+      return item.title
+    }
     return (
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
         onChange={action('onChange')}
-        onFocus={action('onChange')}
+        onFocus={action('onFocus')}
         onBlur={action('onBlur')}
         onOpen={action('onOpen')}
         value={items[5]}
+        renderValue={renderValue}
+        renderItem={renderItem}
         items={items}
       />
     )
@@ -239,17 +249,21 @@ storiesOf('Selects')
         <div>{item.title}</div>
       )
     }
+    const renderValue = function (item) {
+      return item.title
+    }
     return (
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
         onChange={action('onChange')}
-        onFocus={action('onChange')}
+        onFocus={action('onFocus')}
         onBlur={action('onBlur')}
         onOpen={action('onOpen')}
         value={items[5]}
         items={items}
         renderItem={renderItem}
+        renderValue={renderValue}
       />
     )
   },
@@ -265,17 +279,27 @@ storiesOf('Selects')
     When provided with items, the component searches inside these when no onSearch is provided
   `,
   () => {
+    const renderItem = function (item) {
+      return (
+        <div>{item.title}</div>
+      )
+    }
+    const renderValue = function (item) {
+      return item.title
+    }
     return (
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
         onChange={action('onChange')}
-        onFocus={action('onChange')}
+        onFocus={action('onFocus')}
         onBlur={action('onBlur')}
         onOpen={action('onOpen')}
         onClear={action('onClear')}
         value={items[5]}
         items={items}
+        renderItem={renderItem}
+        renderValue={renderValue}
       />
     )
   },
@@ -291,7 +315,14 @@ storiesOf('Selects')
     Takes a loading prop.
   `,
   () => {
-
+    const renderItem = function (item) {
+      return (
+        <div>{item.title}</div>
+      )
+    }
+    const renderValue = function (item) {
+      return item.title
+    }
     return (
       <SearchableSelect
         label="This is the label"
@@ -302,6 +333,8 @@ storiesOf('Selects')
         onOpen={action('onOpen')}
         loading
         items={[]}
+        renderItem={renderItem}
+        renderValue={renderValue}
       />
     )
   },

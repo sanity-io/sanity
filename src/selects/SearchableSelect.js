@@ -38,6 +38,7 @@ class SearchableSelect extends React.Component {
     loading: false,
     onChange() {},
     onBlur() {},
+    onFocus() {},
     onSearch() {},
     onOpen() {},
     onClose() {}
@@ -75,7 +76,7 @@ class SearchableSelect extends React.Component {
     // }
   }
 
-  handleFocus = event => {
+  handleInputFocus = event => {
     this.setState({
       hasFocus: true,
       inputSelected: true
@@ -194,8 +195,8 @@ class SearchableSelect extends React.Component {
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
+            onFocus={this.handleInputFocus}
+            onBlur={this.handleInputBlur}
             value={inputValue || this.props.renderValue(value)}
             selected={inputSelected}
             hasFocus={hasFocus}
