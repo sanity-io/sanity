@@ -17,7 +17,6 @@ import {get} from 'lodash'
 import {resolveJSONRepresentationOfSchemaType} from '../../schema/types/utils'
 
 function createProtoValue(schema, field) {
-  debugger
   const jsonType = resolveJSONRepresentationOfSchemaType(schema, field.type)
   if (jsonType !== 'object') {
     throw new Error(`Invalid item type: "${field.type}". Default array input can only contain objects (for now)`)
