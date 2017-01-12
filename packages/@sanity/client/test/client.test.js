@@ -1035,12 +1035,30 @@ test('uploads images', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath))
-    .filter(event => event.type === 'response') // todo: test progress events too
+    .filter(event => event.type === 'response')
     .map(event => event.body)
     .subscribe(body => {
       t.equal(body.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
+})
+
+test('uploads images with progress events', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo', isImage)
+    .reply(201, {url: 'https://some.asset.url'})
+
+  // @todo write a test that asserts upload events (slowness)
+  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+    .filter(event => event.type === 'progress')
+    .subscribe(
+      event => t.equal(event.type, 'progress'),
+      ifError(t),
+      () => t.end()
+    )
 })
 
 test('uploads images with custom label', t => {

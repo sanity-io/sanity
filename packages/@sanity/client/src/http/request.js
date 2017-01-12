@@ -6,6 +6,7 @@ const retry = require('get-it/lib/middleware/retry')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
 const sanityObservable = require('@sanity/observable/minimal')
+const progress = require('get-it/lib/middleware/progress')
 
 const ClientError = createErrorClass('ClientError', extractError)
 const ServerError = createErrorClass('ServerError', extractError)
@@ -68,6 +69,7 @@ function stringifyBody(body, res) {
 const middleware = [
   jsonRequest(),
   jsonResponse(),
+  progress(),
   httpError,
   observable({implementation: sanityObservable}),
   retry({maxRetries: 5, shouldRetry: retry5xx})
