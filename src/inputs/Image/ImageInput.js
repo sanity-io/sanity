@@ -101,7 +101,10 @@ export default class ImageInput extends React.PureComponent {
   }
 
   hasField(fieldName) {
-    return this.props.field.fields.find(field => field.name === fieldName)
+    if (this.props.field && this.props.field.fields) {
+      return this.props.field.fields.find(field => field.name === fieldName)
+    }
+    return false
   }
 
   createSetIfMissingPatch() {
@@ -336,6 +339,7 @@ export default class ImageInput extends React.PureComponent {
           crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
           imageUrl: imageUrl
         }}
+        showContent={fieldGroups.highlighted.length > 0}
       >
         {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
