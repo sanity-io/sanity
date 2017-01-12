@@ -339,7 +339,6 @@ export default class ImageInput extends React.PureComponent {
           crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
           imageUrl: imageUrl
         }}
-        showContent={fieldGroups.highlighted.length > 0}
       >
         {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
         {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}

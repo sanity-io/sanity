@@ -6,6 +6,11 @@ const ReferenceBrowser = ReferenceInput.createBrowser({
   materializeReferences
 })
 
+const ReferenceBrowserWithSearch = ReferenceInput.createBrowser({
+  search,
+  fetch,
+  materializeReferences
+})
 
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search,
@@ -24,5 +29,12 @@ export default function resolveReference(field) {
       ? ReferenceSearchableSelect
       : ReferenceSelect
   }
-  return ReferenceBrowser
+
+  if (fieldOptions.inputType === 'browser') {
+    return fieldOptions.searchable
+      ? ReferenceBrowserWithSearch
+      : ReferenceBrowser
+  }
+
+  return ReferenceSearchableSelect
 }

@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
+import Preview from '../../../previews/Preview'
+import stringPreview from '../../../sanity/preview/stringPreview'
 
 export default class Reference extends React.Component {
   static propTypes = {
@@ -20,14 +22,11 @@ export default class Reference extends React.Component {
     formBuilder: PropTypes.object
   }
 
-  constructor(props, ...rest) {
-    super(props, ...rest)
-
-    this.state = {
-      fetching: false,
-      query: null,
-      hits: []
-    }
+  state = {
+    fetching: false,
+    query: null,
+    hits: [],
+    materializedValue: null
   }
 
   materializeValue(value) {
@@ -39,24 +38,24 @@ export default class Reference extends React.Component {
 
     materializeReferences([value.refId])
       .then(materializedRefs => {
-        return this.createValueFromDoc(materializedRefs[0])
+        return materializedRefs[0]
       })
       .then(materializedValue => {
         const {refCache} = this.state
-
         this.setState({
           materializedValue: materializedValue,
           refCache: Object.assign({}, refCache, {
-            [materializedValue.value._id]: materializedValue
+            [materializedValue._id]: materializedValue
           })
         })
       })
-
   }
 
   componentDidMount() {
     const {value} = this.props
-    this.materializeValue(value)
+    if (value) {
+      this.materializeValue(value)
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,13 +71,6 @@ export default class Reference extends React.Component {
     })
   }
 
-  createValueFromDoc = doc => {
-    return this.context.formBuilder.createFieldValue(doc, this.getItemFieldForType(doc._type))
-  }
-  createValueFromHit = hit => {
-    return this.createValueFromDoc(hit.document)
-  }
-
   handleFocus = () => {
     //
   }
@@ -86,10 +78,8 @@ export default class Reference extends React.Component {
   handleChange = item => {
     const patch = {
       type: 'set',
-      value: {
-        _type: 'reference',
-        _ref: item.key
-      }
+      path: ['_ref'],
+      value: item._id
     }
     this.props.onChange({patch: patch})
   }
@@ -117,48 +107,40 @@ export default class Reference extends React.Component {
           return // ignore
         }
 
-        const preparedHits = hits.map(hit => {
-          return Object.assign({}, hit, {
-            value: this.createValueFromHit(hit)
-          })
-        })
-
-        const updatedCache = preparedHits.reduce((cache, hit) => {
-          cache[hit.value.value._id] = hit.value
+        const nextRefCache = hits.reduce((cache, hit) => {
+          cache[hit._id] = hit
           return cache
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
-          hits: preparedHits,
           fetching: false,
-          refCache: updatedCache,
+          hits: hits,
+          refCache: nextRefCache,
           query: query
         })
       })
   }
 
-  handleBlur = event => {
-    //
+  renderItem = item => {
+    const field = this.getItemFieldForType(item._type)
+    return (
+      <Preview
+        field={field}
+        value={item}
+        style="default"
+      />
+    )
+  }
+
+  valueToString = value => {
+    const field = this.getItemFieldForType(value._type)
+    const type = field.type === 'object' ? field : this.context.formBuilder.schema.getType(field.type)
+    return value ? stringPreview(value, type) : ''
   }
 
   render() {
-    const {value, field} = this.props
-    const {fetching, hits, materializedValue} = this.state
-
-    const items = hits.map((item, i) => {
-      return {
-        key: item.value.value._id,
-        title: item.value.value.name.value
-      }
-    })
-
-    const materializedSelected = materializedValue && {
-      title: materializedValue.value.name.value,
-      key: materializedValue.value._id
-    }
-
-    const selectedItem = items.find(item => item.key === value.refId) || materializedSelected
-
+    const {field} = this.props
+    const {materializedValue, fetching, hits} = this.state
     return (
       <SearchableSelect
         label={field.title}
@@ -168,9 +150,11 @@ export default class Reference extends React.Component {
         onFocus={this.handleFocus}
         onSearch={this.handleSearch}
         onChange={this.handleChange}
-        value={selectedItem}
+        value={materializedValue}
+        valueToString={this.valueToString}
+        renderItem={this.renderItem}
         loading={fetching}
-        items={items || [value]}
+        items={[materializedValue].concat(hits).filter(Boolean)}
       />
     )
   }

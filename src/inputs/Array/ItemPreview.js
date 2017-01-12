@@ -3,7 +3,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import {getFieldType} from '../../schema/getFieldType'
 import styles from './styles/ItemPreview.css'
-import Preview from '../../Preview'
+import Preview from '../../previews/Preview'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 
