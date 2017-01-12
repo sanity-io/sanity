@@ -1,3 +1,5 @@
+import primitives from './primitives'
+import bundled from './bundled'
 import {uniqWith} from 'lodash'
 
 export function ifNotUniqueProp(array, property, notUniqueFn) {
@@ -6,6 +8,20 @@ export function ifNotUniqueProp(array, property, notUniqueFn) {
       notUniqueFn(item, otherItem)
     }
   })
+}
+
+export function resolveJSONRepresentationOfSchemaType(schema, typeName) {
+  if (typeName in primitives) {
+    return typeName
+  }
+  if (typeName in bundled) {
+    return bundled[typeName].primitive
+  }
+  const typeType = schema.getType(typeName)
+  if (!typeType) {
+    throw new Error(`Unable to resolve JSON type for ${typeName}`)
+  }
+  return resolveJSONRepresentationOfSchemaType(schema, typeType)
 }
 
 const toString = Object.prototype.toString

@@ -12,30 +12,18 @@ import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import styles from './styles/Array.css'
 import arrify from 'arrify'
-import {getFieldType} from '../../schema/getFieldType'
 import randomKey from './randomKey'
 import {get} from 'lodash'
-
-const KEYABLE_TYPES = ['object', 'reference']
+import {resolveJSONRepresentationOfSchemaType} from '../../schema/types/utils'
 
 function createProtoValue(schema, field) {
-  const type = getFieldType(schema, field)
-  if (field.type === 'object') {
-    return {
-      _key: randomKey(12)
-    }
-  }
-  if (field.type === 'reference') {
-    return {
-      _type: 'reference',
-      _key: randomKey(12)
-    }
-  }
-  if (!KEYABLE_TYPES.includes(type.type)) {
-    throw new Error(`Invalid item type: "${type.type}". Default array input can contain types of "${KEYABLE_TYPES.join(', ')}" (for now)`)
+  debugger
+  const jsonType = resolveJSONRepresentationOfSchemaType(schema, field.type)
+  if (jsonType !== 'object') {
+    throw new Error(`Invalid item type: "${field.type}". Default array input can only contain objects (for now)`)
   }
   return {
-    _type: type.name,
+    _type: field.type,
     _key: randomKey(12)
   }
 }
