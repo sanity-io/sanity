@@ -21,7 +21,7 @@ export function resolveJSONRepresentationOfSchemaType(schema, typeName) {
   if (!typeType) {
     throw new Error(`Unable to resolve JSON type for ${typeName}`)
   }
-  return resolveJSONRepresentationOfSchemaType(schema, typeType)
+  return resolveJSONRepresentationOfSchemaType(schema, typeType.type)
 }
 
 const toString = Object.prototype.toString
