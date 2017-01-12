@@ -13,9 +13,9 @@
     in-publish "^2.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/client@^0.4.8":
-  version "0.4.8"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.8.tgz#befcfa557f857ae756075b7ff159dd29e4f4dcf3"
+"@sanity/client@^0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-0.4.9.tgz#b475b9c7f4e322fdf0070da0d9257627d29172e1"
   dependencies:
     "@sanity/eventsource" "^1.0.1"
     "@sanity/observable" "^1.1.0"

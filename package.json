@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/sanity-io/base#readme",
   "dependencies": {
-    "@sanity/client": "^0.4.8",
+    "@sanity/client": "^0.4.9",
     "@sanity/document-store": "^0.2.8",
     "@sanity/observable": "^1.4.0",
     "@sanity/state-router": "^0.3.0-beta.1",
