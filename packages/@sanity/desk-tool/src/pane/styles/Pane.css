@@ -59,6 +59,7 @@
   max-height: 100%;
   box-sizing: border-box;
   padding-top: 3em;
+  padding-bottom: 3em;
 }
 
 .menuButton {
