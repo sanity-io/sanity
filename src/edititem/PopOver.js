@@ -36,8 +36,6 @@ export default class EditItemPopOver extends React.Component {
   constructor(props) {
     super()
     this.handleClose = this.handleClose.bind(this)
-    this.handleClick = this.handleClick.bind(this)
-    this.handleMouseDown = this.handleMouseDown.bind(this)
     this.repositionElement = this.repositionElement.bind(this)
     this.handleResize = debounce(this.handleResize.bind(this), 17) // 60fps
     this.resetPosition = this.resetPosition.bind(this)
@@ -57,10 +55,6 @@ export default class EditItemPopOver extends React.Component {
       scroll.top(scrollContainer, this.initialScrollTop, this.scrollOptions)
     }
     this.props.onClose()
-  }
-
-  handleClick(event) {
-    // event.stopPropagation()
   }
 
   handleMouseDown(event) {
@@ -216,19 +210,6 @@ export default class EditItemPopOver extends React.Component {
     event.preventDefault()
   }
 
-  handleBackdropMouseDown = event => {
-    event.stopPropagation()
-    event.preventDefault()
-  }
-
-  handleModalClick = event => {
-    event.preventDefault()
-    event.stopPropagation()
-  }
-  handleModalMouseDown = event => {
-    event.stopPropagation()
-  }
-
   getScrollContainer = () => {
     return this.scrollContainer
   }
@@ -268,7 +249,6 @@ export default class EditItemPopOver extends React.Component {
             left: 0
           }}
           ref={this.setPortalInnerElement}
-          onClick={this.handleModalClick}
         >
           <div className={styles.overlay} onClick={this.handleBackdropClick} />
           <div

@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {omit} from 'lodash'
+import {omit, uniqueId} from 'lodash'
 
 export default class FileSelect extends React.PureComponent {
   static propTypes = {
@@ -7,6 +7,9 @@ export default class FileSelect extends React.PureComponent {
   }
   static defaultProps = {
     onSelect() {}
+  }
+  componentWillMount() {
+    this._inputId = uniqueId('FileSelect')
   }
   componentDidMount() {
     if ('value' in this.props) {
@@ -28,17 +31,19 @@ export default class FileSelect extends React.PureComponent {
       <label
         style={style}
         className={className}
+        htmlFor={this._inputId}
       >
         <input
           {...rest}
           type="file"
           value=""
+          id={this._inputId}
           onChange={this.handleSelect}
           style={{
-            width: 0.1,
-            height: 0.1,
-            opacity: 0,
             overflow: 'hidden',
+            width: '0.1px',
+            height: '0.1px',
+            opacity: 0,
             position: 'absolute',
             zIndex: -1
           }}
