@@ -25,6 +25,7 @@ class SearchableSelect extends React.Component {
     placeholder: PropTypes.string,
     loading: PropTypes.bool,
     renderItem: PropTypes.func,
+    renderValue: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -48,7 +49,7 @@ class SearchableSelect extends React.Component {
     this.state = {
       hasFocus: false,
       searchResult: this.props.items || [],
-      inputValue: this.props.value && this.props.value.title,
+      inputValue: null,
       inputSelected: false,
       arrowNavigationPosition: 0
     }
@@ -65,14 +66,13 @@ class SearchableSelect extends React.Component {
         showList: true
       })
     }
-    if (nextProps.value != this.props.value) {
-      this.setState({
-        inputValue: nextProps.value.title,
-        inputSelected: true,
-        value: nextProps.value.title,
-        showList: false
-      })
-    }
+    // if (nextProps.value != this.props.value) {
+    //   this.setState({
+    //     inputValue: nextProps.value,
+    //     inputSelected: true,
+    //     showList: false
+    //   })
+    // }
   }
 
   handleFocus = event => {
@@ -84,16 +84,21 @@ class SearchableSelect extends React.Component {
     this.props.onFocus(event)
   }
 
-  handleBlur = event => {
-    // this.setState({
-    //   hasFocus: false,
-    //   inputSelected: false,
-    //   showList: false
-    // })
+  handleInputBlur = event => {
+    if (!this.state.showList) {
+      this.setState({
+        hasFocus: false,
+        inputSelected: false,
+        showList: false
+      })
+    }
     this.props.onBlur(event)
   }
 
   handleSelect = item => {
+    this.setState({
+      inputValue: null
+    })
     this.props.onChange(item)
     this.handleCloseList()
   }
@@ -123,7 +128,8 @@ class SearchableSelect extends React.Component {
   handleInputChange = event => {
     const query = event.target.value
     this.setState({
-      inputValue: query
+      inputValue: query,
+      inputSelected: false
     })
     this.props.onSearch(query)
   }
@@ -138,7 +144,6 @@ class SearchableSelect extends React.Component {
           inputValue: items[arrowNavigationPosition - 1].title,
           showList: true
         })
-        return false
       }
 
       if (event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
@@ -147,7 +152,6 @@ class SearchableSelect extends React.Component {
           inputValue: items[arrowNavigationPosition + 1].title,
           showList: true
         })
-        return false
       }
     }
     return true
@@ -172,7 +176,7 @@ class SearchableSelect extends React.Component {
 
   render() {
     const {label, error, onClear, placeholder, loading, value, description, items, renderItem} = this.props
-    const {hasFocus, showList, arrowNavigationPosition} = this.state
+    const {hasFocus, showList, arrowNavigationPosition, inputSelected, inputValue} = this.state
 
 
     return (
@@ -192,9 +196,9 @@ class SearchableSelect extends React.Component {
             onKeyUp={this.handleKeyUp}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
-            value={this.state.inputValue}
-            selected={this.state.inputSelected}
-            hasFocus={this.state.hasFocus}
+            value={inputValue || this.props.renderValue(value)}
+            selected={inputSelected}
+            hasFocus={hasFocus}
           />
           {
             onClear && <button className={styles.clearButton} onClick={this.props.onClear}><CloseIcon color="inherit" /></button>

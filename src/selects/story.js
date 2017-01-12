@@ -94,8 +94,31 @@ class SearchableTest extends React.Component {
     this.fuse = new Fuse(this.searchAbleItems, fuseOptions)
 
     this.state = {
-      searchResult: []
+      searchResult: [],
+      value: null
     }
+  }
+
+  handleFocus() {
+    console.log('handleFocus') // eslint-disable-line
+  }
+
+  handleChange = value => {
+    this.setState({
+      value: value
+    })
+  }
+
+  renderItem(item) {
+    return <div>{item.title}</div>
+  }
+
+  renderValue(item) {
+    if (item) {
+      return item.title
+    }
+
+    return ''
   }
 
   handleSearch = query => {
@@ -118,11 +141,14 @@ class SearchableTest extends React.Component {
         label="This is the label"
         placeholder="This is the placeholder"
         onSearch={this.handleSearch}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
+        onChange={this.handleChange}
+        onFocus={this.handleFocus}
         onOpen={action('onOpen')}
         loading={this.state.loading}
         items={this.state.searchResult}
+        value={this.state.value}
+        renderItem={this.renderItem}
+        renderValue={this.renderValue}
       />
 
     )
