@@ -15,6 +15,7 @@ import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
 import TextFormattingOnKeyDown from './plugins/TextFormattingOnKeyDown'
 import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
 import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
+import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
   SLATE_BLOCK_FORMATTING_OPTION_KEYS,
@@ -57,6 +58,7 @@ export default class BlockEditor extends React.Component {
     this.groupedFields = slateSchema.fields
     this.slatePlugins = [
       InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
+      OnPasteHtml(),
       FormBuilderNodeOnDrop(),
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.field.of),
       TextFormattingOnKeyDown(),

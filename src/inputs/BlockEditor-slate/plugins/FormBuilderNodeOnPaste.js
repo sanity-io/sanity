@@ -10,7 +10,7 @@ function FormBuilderNodeOnPaste(...args) {
   }
 
   function onPaste(event, data, state, editor) {
-    if (typeof data.fragment === 'undefined') {
+    if (typeof data.fragment === 'undefined' || data.fragment === null) {
       return null
     }
     const newNodesList = Block.createList(data.fragment.nodes.toArray().map(node => {
