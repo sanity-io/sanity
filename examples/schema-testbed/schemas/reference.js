@@ -29,7 +29,19 @@ export default {
         },
         {
           name: 'pet',
-          title: 'Browse for pet',
+          title: 'Default reference picker',
+          description: 'Just the default',
+          type: 'reference',
+          to: [
+            {
+              type: 'pet',
+              title: 'Pet'
+            }
+          ]
+        },
+        {
+          name: 'petTwoTypes',
+          title: 'Default reference picker (two types)',
           description: 'Just the default',
           type: 'reference',
           to: [
@@ -44,12 +56,28 @@ export default {
           ]
         },
         {
+          name: 'pet2',
+          title: 'Reference browser',
+          type: 'reference',
+          description: 'inputType is browse',
+          options: {
+            inputType: 'browser',
+            searchable: false,
+          },
+          to: [
+            {
+              type: 'pet',
+              title: 'Pet'
+            }
+          ]
+        },
+        {
           name: 'pet4',
-          title: 'Browse for pet with search',
+          title: 'Reference browser (with search)',
           type: 'reference',
           description: 'inputType is browser, and searchable is true',
           options: {
-            inputType: 'browse',
+            inputType: 'browser',
             searchable: true,
           },
           to: [
@@ -60,10 +88,10 @@ export default {
           ]
         },
         {
-          name: 'pet2',
-          title: 'Select pet',
-          type: 'reference',
+          name: 'pet3',
+          title: 'Normal select (os UI)',
           description: 'inputType is select, and searchable is false',
+          type: 'reference',
           options: {
             inputType: 'select',
             searchable: false,
@@ -76,8 +104,8 @@ export default {
           ]
         },
         {
-          name: 'pet3',
-          title: 'Type to find pet',
+          name: 'pet5',
+          title: 'Searchable select',
           description: 'inputType is select, and searchable is true',
           type: 'reference',
           options: {
