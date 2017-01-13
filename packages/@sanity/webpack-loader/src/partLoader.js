@@ -2,64 +2,40 @@
 
 const path = require('path')
 const loaderUtils = require('loader-utils')
-const resolver = require('@sanity/resolver')
 const multiImplementationHandler = require('./multiImplementationHandler')
 
 function sanityPartLoader(input) {
   this.cacheable()
-  const callback = this.async()
 
-  const part = this.data.sanityPart
-  const basePath = this.data.basePath
+  const qs = this.resourceQuery.substring(this.resourceQuery.indexOf('?'))
+  const request = (loaderUtils.parseQuery(qs) || {}).sanityPart
 
-  if (!part) {
-    return callback(new Error('`sanityPart` property must be passed to the part loader'))
+  const loadAll = request.indexOf('all:') === 0
+  const partName = loadAll ? request.substr(4) : request
+
+  // In certain cases (CSS when building statically),
+  // a separate compiler instance is triggered
+  if (!this._compiler.sanity) {
+    return input
   }
 
-  if (!basePath) {
-    return callback(new Error('`basePath` property must be passed to part loader'))
-  }
+  const parts = this._compiler.sanity.parts
+  const basePath = this._compiler.sanity.basePath
+
+  const dependencies = parts.plugins.map(plugin => path.join(plugin.path, 'sanity.json'))
+  const implementations = (parts.implementations[partName] || []).map(impl => impl.path)
 
   this.addDependency(path.join(basePath, 'sanity.json'))
+  dependencies.forEach(this.addDependency)
 
-  return resolver
-    .resolveParts({basePath: basePath})
-    .then(parts => {
-      // Also add plugin manifests as dependencies, as parts and paths may change
-      parts.plugins.forEach(plugin => {
-        this.addDependency(path.join(plugin.path, 'sanity.json'))
-      })
-
-      const loadAll = part.indexOf('all:') === 0
-      const partName = loadAll ? part.substr(4) : part
-      const opts = {part: partName, input, parts}
-
-      if (partName === 'sanity:debug') {
-        return setImmediate(
-          callback,
-          null,
-          `module.exports = ${JSON.stringify(parts, null, 2)}\n`
-        )
-      }
-
-      return loadAll
-        ? setImmediate(multiImplementationHandler, opts, callback)
-        : callback(null, input)
-    })
-    .catch(err => {
-      this.emitWarning(err.message)
-      throw err
-    })
-}
-
-sanityPartLoader.pitch = function (remaining, preceding, data) {
-  if (remaining.indexOf('sanityPart=') === -1) {
-    return
+  // The debug role needs to return the whole parts tree
+  if (partName === 'sanity:debug') {
+    return `module.exports = ${JSON.stringify(parts, null, 2)}\n`
   }
 
-  this.cacheable()
-  const qs = remaining.substring(remaining.indexOf('?'))
-  Object.assign(data, loaderUtils.parseQuery(qs) || {})
+  return loadAll
+    ? multiImplementationHandler(partName, implementations)
+    : input
 }
 
 module.exports = sanityPartLoader

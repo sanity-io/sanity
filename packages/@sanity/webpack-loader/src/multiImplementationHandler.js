@@ -15,18 +15,12 @@ const normalizer = [
   '}', ''
 ]
 
-module.exports = function multiImplementationHandler(opts, callback) {
-  const implementations = opts.parts.implementations[opts.part]
-
-  const result = banner
+module.exports = function multiImplementationHandler(partName, implementations) {
+  return banner
     .concat(normalizer)
     .concat(['\nmodule.exports = ['])
-    .concat(implementations.map(
-      (implementer, i) => `  require('${implementer.path}')`
-    ).join(',\n'))
+    .concat(implementations.map((implementer, i) => `  require('${implementer}')`).join(',\n'))
     .concat(['].map(normalize)\n'])
     .join('\n')
-    .replace(/PART_NAME/g, opts.part)
-
-  callback(null, result)
+    .replace(/PART_NAME/g, partName)
 }

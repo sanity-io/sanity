@@ -19,82 +19,99 @@ const PartResolverPlugin = function (options) {
     )
   }
 
-  const {basePath} = options
-  const additionalPlugins = options.additionalPlugins || []
-  const configPath = path.join(basePath, 'config')
+  this.basePath = options.basePath
+  this.additionalPlugins = options.additionalPlugins || []
+  this.configPath = path.join(this.basePath, 'config')
+}
 
-  this.apply = resolver => {
-    resolver.plugin('module', function (request, callback) {
-      // The debug part should return the whole part/plugin tree
-      if (request.request === 'sanity:debug') {
-        this.doResolve(['file'], {
-          request: debugPart,
-          query: `?${qs.stringify({
-            sanityPart: request.request,
-            basePath: basePath
-          })}`
-        }, callback)
-        return
-      }
+PartResolverPlugin.prototype.apply = function (compiler) {
+  const basePath = this.basePath
+  const additionalPlugins = this.additionalPlugins
+  const configPath = this.configPath
 
-      if (!isSanityPart(request)) {
-        callback()
-        return
-      }
+  compiler.plugin('watch-run', (watcher, cb) => cacheParts(watcher).then(cb).catch(cb))
+  compiler.plugin('run', (params, cb) => cacheParts(params).then(cb).catch(cb))
 
-      const sanityPart = request.request.replace(/^all:/, '')
-
-      partResolver
-        .resolveParts({basePath, additionalPlugins})
-        .then(parts => {
-          // Configuration files resolve to a specific path
-          // Either the root sanity.json or a plugins JSON config
-          const configMatch = request.request.match(configMatcher)
-          if (configMatch) {
-            const configFor = configMatch[1]
-            const req = Object.assign({}, request, {
-              request: configFor === 'sanity'
-                ? path.join(basePath, 'sanity.json')
-                : path.join(configPath, `${configMatch[1]}.json`)
-            })
-            return this.doResolve(['file'], req, callback)
-          }
-
-          const loadAll = request.request.indexOf('all:') === 0
-          const allowUnimplemented = request.query === '?'
-
-          // Imports throw if they are not implemented, except if they
-          // are prefixed with `all:` (returns an empty array) or they
-          // are postfixed with `?` (returns undefined)
-          const part = parts.implementations[sanityPart]
-          if (!part) {
-            if (allowUnimplemented) {
-              return this.doResolve(['file'], {request: unimplementedPart}, callback)
-            }
-
-            if (loadAll) {
-              return this.doResolve(['file'], {request: emptyPart}, callback)
-            }
-
-            return callback(new Error(
-              `Part "${sanityPart}" not implemented by any plugins`
-            ))
-          }
-
-          const reqQuery = (request.query || '').replace(/^\?/, '')
-          const query = Object.assign({}, qs.parse(reqQuery) || {}, {
-            sanityPart: request.request,
-            basePath: basePath
-          })
-
-          return this.doResolve(['file', 'directory'], Object.assign({}, request, {
-            request: part[0].path,
-            query: `?${qs.stringify(query)}`
-          }), callback)
-        })
-      .catch(callback)
-    })
+  function cacheParts(params) {
+    const instance = params.compiler || params
+    instance.sanity = compiler.sanity || {basePath: basePath}
+    return partResolver
+      .resolveParts({basePath, additionalPlugins})
+      .then(parts => {
+        instance.sanity.parts = parts
+      })
   }
+
+  compiler.resolvers.normal.plugin('module', function (request, callback) {
+    const parts = compiler.sanity.parts
+    const sanityPart = request.request.replace(/^all:/, '')
+
+    // The debug part should return the whole part/plugin tree
+    if (request.request === 'sanity:debug') {
+      return this.doResolve(['file'], getResolveOptions({
+        resolveTo: debugPart,
+        request: request,
+      }), callback)
+    }
+
+    // Configuration files resolve to a specific path
+    // Either the root sanity.json or a plugins JSON config
+    const configMatch = request.request.match(configMatcher)
+    if (configMatch) {
+      const configFor = configMatch[1]
+      const req = Object.assign({}, request, {
+        request: configFor === 'sanity'
+          ? path.join(basePath, 'sanity.json')
+          : path.join(configPath, `${configMatch[1]}.json`)
+      })
+      return this.doResolve(['file'], req, callback)
+    }
+
+    // If it doesn't match the string pattern of a Sanity part, stop trying to resolve it
+    if (!isSanityPart(request)) {
+      return callback()
+    }
+
+    const loadAll = request.request.indexOf('all:') === 0
+    const allowUnimplemented = request.query === '?'
+    const part = parts.implementations[sanityPart]
+
+    // Imports throw if they are not implemented, except if they
+    // are prefixed with `all:` (returns an empty array) or they
+    // are postfixed with `?` (returns undefined)
+    if (!part) {
+      if (allowUnimplemented) {
+        return this.doResolve(['file'], {request: unimplementedPart}, callback)
+      }
+
+      if (loadAll) {
+        return this.doResolve(['file'], {request: emptyPart}, callback)
+      }
+
+      return callback(new Error(
+        `Part "${sanityPart}" not implemented by any plugins`
+      ))
+    }
+
+    const resolveOpts = getResolveOptions({
+      resolveTo: part[0].path,
+      request: request,
+    })
+
+    return this.doResolve(['file', 'directory'], resolveOpts, callback)
+  })
+}
+
+function getResolveOptions(options) {
+  const reqQuery = (options.request.query || '').replace(/^\?/, '')
+  const query = Object.assign({}, qs.parse(reqQuery) || {}, {
+    sanityPart: options.request.request,
+  })
+
+  return Object.assign({}, options.request, {
+    request: options.resolveTo,
+    query: `?${qs.stringify(query)}`
+  })
 }
 
 module.exports = PartResolverPlugin
