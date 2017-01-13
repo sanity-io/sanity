@@ -8,6 +8,7 @@ import {
   Reference,
   Image,
   File,
+  Slug,
   TextInput,
   UrlInput
 } from './defaultInputComponents'
@@ -27,7 +28,8 @@ const typeNameToInputMap = {
   image: Image,
   file: File,
   reference: Reference,
-  string: StringInput
+  string: StringInput,
+  slug: Slug
 }
 
 function isArrayOfStrings(fieldOrType) {

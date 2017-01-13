@@ -14,6 +14,15 @@ export default {
           required: true
         },
         {
+          name: 'slug',
+          title: 'Slug',
+          type: 'slug',
+          options: {
+            source: 'title',
+            maxLength: 96
+          }
+        },
+        {
           name: 'priority',
           title: 'Priority',
           type: 'number'

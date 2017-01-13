@@ -68,9 +68,14 @@ export default function createFormBuilder(config = {}) {
       formBuilder: PropTypes.shape({
         schema: PropTypes.instanceOf(Schema),
         createFieldValue: PropTypes.func,
-        resolveInputComponent: PropTypes.func
+        resolveInputComponent: PropTypes.func,
+        document: PropTypes.any
       })
     };
+
+    getDocument = () => {
+      return this.props.value
+    }
 
     getChildContext() {
       return {
@@ -78,7 +83,8 @@ export default function createFormBuilder(config = {}) {
           schema: config.schema,
           createFieldValue: _createFieldValue,
           resolveInputComponent: resolveInputComponent,
-          resolvePreviewComponent: resolvePreviewComponent
+          resolvePreviewComponent: resolvePreviewComponent,
+          getDocument: this.getDocument
         }
       }
     }

@@ -1,4 +1,3 @@
-import equals from 'shallow-equals'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {getFieldType} from '../../schema/getFieldType'
 import React, {PropTypes} from 'react'
@@ -32,10 +31,6 @@ export default class RenderField extends React.Component {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.handleEnter = this.handleEnter.bind(this)
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
   }
 
   handleChange(event) {
@@ -73,6 +68,8 @@ export default class RenderField extends React.Component {
 
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
 
+    const docProps = FieldInput.passDocument ? {document: this.context.formBuilder.getDocument()} : {}
+
     return (
       <FieldInput
         fieldName={fieldName}
@@ -84,6 +81,7 @@ export default class RenderField extends React.Component {
         onChange={this.handleChange}
         onEnter={this.handleEnter}
         focus={focus}
+        {...docProps}
       />
     )
   }

@@ -80,6 +80,19 @@ export default {
       title: PropTypes.string
     }
   },
+  slug: {
+    primitive: 'object',
+    options: {
+      title: PropTypes.string,
+      placeholder: PropTypes.string,
+      source: PropTypes.string,
+      maxLength: PropTypes.number
+    },
+    defaultOptions: {
+      source: 'title',
+      maxLength: 128
+    }
+  },
   file: {
     primitive: 'object',
     options: {

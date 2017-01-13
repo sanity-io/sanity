@@ -12,6 +12,7 @@ import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
 import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomImageInput from './custom/MyCustomImageInput'
 import MyCustomFileInput from './custom/MyCustomFileInput'
+import MyCustomSlugInput from './custom/MyCustomSlugInput'
 import MyCustomReferencePreview from './custom/MyCustomReferencePreview'
 import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
 import toGradientPatch from '../../../src/sanity/utils/toGradientPatch'
@@ -57,6 +58,9 @@ const FormBuilder = schema && createFormBuilder({
     }
     if (field.type === 'file') {
       return MyCustomFileInput
+    }
+    if (field.type === 'slug') {
+      return MyCustomSlugInput
     }
     return undefined // signal to use default
   },
