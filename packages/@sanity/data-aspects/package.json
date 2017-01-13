@@ -28,7 +28,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.5.0",
     "eslint": "^3.7.1",
-    "eslint-config-sanity": "^1.1.3",
+    "eslint-config-sanity": "^2.0.1",
     "eslint-plugin-react": "^6.4.1",
     "rimraf": "^2.5.2"
   },
