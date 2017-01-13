@@ -2,8 +2,9 @@ import fsp from 'fs-promise'
 import path from 'path'
 import thenify from 'thenify'
 import filesize from 'filesize'
-import sortModulesBySize from '../../stats/sortModulesBySize'
+import compressJavascript from './compressJavascript'
 import getConfig from '@sanity/util/lib/getConfig'
+import sortModulesBySize from '../../stats/sortModulesBySize'
 import {
   getWebpackCompiler,
   getDocumentElement,
@@ -30,8 +31,7 @@ export default async (args, context) => {
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = thenify(compiler.run.bind(compiler))
 
-  const spin = output.spinner('Building Sanity...')
-  spin.start()
+  let spin = output.spinner('Building Sanity...').start()
 
   const bundle = {}
 
@@ -85,10 +85,22 @@ export default async (args, context) => {
       )
     }
 
+    // Now compress the JS bundles
+    spin = output.spinner('Compressing Javascript bundles...').start()
+    const compressStart = Date.now()
+    await Promise.all(Object.keys(chunkMap)
+      .filter(fileName => path.extname(fileName) === '.js')
+      .map(fileName => path.join(compilationConfig.outputPath, fileName))
+      .map(compressJavascript)
+    )
+
+    spin.text = `Compressing Javascript bundles (${Date.now() - compressStart}ms)`
+    spin.succeed()
+
     if (flags.profile) {
       await fsp.writeFile(
         path.join(workDir, 'build-stats.json'),
-        JSON.stringify(statistics.toJson())
+        JSON.stringify(statistics.toJson('verbose'))
       )
     }
   } catch (err) {
