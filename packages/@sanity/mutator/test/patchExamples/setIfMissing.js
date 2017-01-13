@@ -59,5 +59,27 @@ export default [
         {b: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 10}}
       ]
     },
+  },
+
+  // Potentially redundant, added to exactly match a test case from @sanity/form-builder that was failing.
+  {
+    name: 'Set if missing by key',
+    before: {
+      addresses: [
+        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 45}},
+        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 41, lon: 22}},
+      ]
+    },
+    patch: {
+      setIfMissing: {
+        '..[street=="Thorvald Meyers gate"].location.lon': 61
+      }
+    },
+    after: {
+      addresses: [
+        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 45, lon: 61}},
+        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 41, lon: 22}},
+      ]
+    }
   }
 ]
