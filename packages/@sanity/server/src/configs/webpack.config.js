@@ -108,7 +108,7 @@ export default (config = {}) => {
     plugins: [
       cssExtractor,
       new OccurrenceOrderPlugin(),
-      new webpack.ResolverPlugin([new RoleResolverPlugin(resolverOpts)], ['normal']),
+      new RoleResolverPlugin(resolverOpts),
       commonChunkPlugin
     ].filter(Boolean),
     postcss: postcssPlugins({basePath})

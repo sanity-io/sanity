@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity/extract-text-webpack-plugin": "^1.0.1",
     "@sanity/resolver": "^0.0.9",
-    "@sanity/webpack-loader": "^0.0.7",
+    "@sanity/webpack-loader": "^0.1.0",
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-plugin-syntax-class-properties": "^6.8.0",

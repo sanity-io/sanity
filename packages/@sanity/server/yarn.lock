@@ -25,9 +25,9 @@
     path-exists "^3.0.0"
     promise-props-recursive "^1.0.0"
 
-"@sanity/webpack-loader@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@sanity/webpack-loader/-/webpack-loader-0.0.7.tgz#e66728066be686385d437ff85496319a994d8984"
+"@sanity/webpack-loader@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@sanity/webpack-loader/-/webpack-loader-0.1.0.tgz#0761a0db1e4545124abc3587db795217f122c881"
   dependencies:
     "@sanity/resolver" "^0.0.9"
     loader-utils "^0.2.16"
