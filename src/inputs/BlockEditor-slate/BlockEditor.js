@@ -32,7 +32,6 @@ export default class BlockEditor extends React.Component {
   static valueContainer = SlateValueContainer
 
   static propTypes = {
-    type: PropTypes.any,
     field: PropTypes.any,
     level: PropTypes.number,
     value: PropTypes.instanceOf(SlateValueContainer),
