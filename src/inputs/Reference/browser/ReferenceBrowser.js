@@ -127,12 +127,16 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   renderItem = item => {
+    const showItemType = this.props.field.to.length > 1
     const field = this.getItemFieldForType(item._type)
     return (
-      <Preview
-        field={field}
-        value={item}
-      />
+      <div>
+        <Preview
+          field={field}
+          value={item}
+        />
+        {showItemType && <span className={styles.typeName}>{item._type}</span>}
+      </div>
     )
   }
 

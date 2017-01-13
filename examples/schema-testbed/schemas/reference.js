@@ -36,6 +36,10 @@ export default {
             {
               type: 'pet',
               title: 'Pet'
+            },
+            {
+              type: 'wildAnimal',
+              title: 'Wild Animal'
             }
           ]
         },
@@ -91,6 +95,17 @@ export default {
     },
     {
       name: 'pet',
+      type: 'object',
+      fields: [
+        {
+          name: 'name',
+          title: 'Name',
+          type: 'string'
+        }
+      ]
+    },
+    {
+      name: 'wildAnimal',
       type: 'object',
       fields: [
         {

@@ -9,3 +9,7 @@
 .preview {
   float: left;
 }
+
+.typeName {
+  color: gray;
+}
