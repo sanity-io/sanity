@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
 }
@@ -30,9 +28,11 @@
   box-sizing: border-box;
   transform: translateY(-1px);
   background-color: var(--body-bg);
+  z-index: 1;
 }
 
 .listContainerHidden {
+  composes: listContainer;
   display: none;
 }
 
