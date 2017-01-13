@@ -140,7 +140,7 @@ class SearchableTest extends React.Component {
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
-        onSearch={this.handleSearch}
+        onInputChange={this.handleSearch}
         onChange={this.handleChange}
         onFocus={this.handleFocus}
         onOpen={action('onOpen')}
@@ -206,7 +206,7 @@ storiesOf('Selects')
 .addWithInfo(
   'Searchable (selected value)',
   `
-    When provided with items, the component searches inside these when no onSearch is provided
+    When provided with items, the component searches inside these when no onInputChange is provided
   `,
   () => {
     const renderItem = function (item) {
@@ -214,9 +214,7 @@ storiesOf('Selects')
         <div>{item.title}</div>
       )
     }
-    const renderValue = function (item) {
-      return item.title
-    }
+    const valueToString = item => item.title
     return (
       <SearchableSelect
         label="This is the label"
@@ -226,7 +224,7 @@ storiesOf('Selects')
         onBlur={action('onBlur')}
         onOpen={action('onOpen')}
         value={items[5]}
-        renderValue={renderValue}
+        valueToString={valueToString}
         renderItem={renderItem}
         items={items}
       />
@@ -241,31 +239,39 @@ storiesOf('Selects')
 .addWithInfo(
   'Searchable (selected value, renderItem)',
   `
-    When provided with items, the component searches inside these when no onSearch is provided
+    When provided with items, the component searches inside these when no onInputChange is provided
   `,
   () => {
-    const renderItem = function (item) {
-      return (
-        <div>{item.title}</div>
-      )
+    class Example extends React.Component {
+      state = {
+        value: items[4],
+
+      }
+      render() {
+        const renderItem = function (item) {
+          return (
+            <div>{item.title}</div>
+          )
+        }
+
+        const valueToString = item => item.title
+        return (
+          <SearchableSelect
+            label="This is the label"
+            placeholder="This is the placeholder"
+            onChange={item => this.setState({value: item})}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            onOpen={action('onOpen')}
+            value={this.state.value}
+            items={items}
+            renderItem={renderItem}
+            valueToString={valueToString}
+          />
+        )
+      }
     }
-    const renderValue = function (item) {
-      return item.title
-    }
-    return (
-      <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onOpen={action('onOpen')}
-        value={items[5]}
-        items={items}
-        renderItem={renderItem}
-        renderValue={renderValue}
-      />
-    )
+    return <Example />
   },
   {
     propTables: [SearchableSelect],
@@ -276,7 +282,7 @@ storiesOf('Selects')
 .addWithInfo(
   'Searchable (with onClear)',
   `
-    When provided with items, the component searches inside these when no onSearch is provided
+    When provided with items, the component searches inside these when no onInputChange is provided
   `,
   () => {
     const renderItem = function (item) {
@@ -284,9 +290,8 @@ storiesOf('Selects')
         <div>{item.title}</div>
       )
     }
-    const renderValue = function (item) {
-      return item.title
-    }
+    const valueToString = value => value.title
+
     return (
       <SearchableSelect
         label="This is the label"
@@ -299,7 +304,7 @@ storiesOf('Selects')
         value={items[5]}
         items={items}
         renderItem={renderItem}
-        renderValue={renderValue}
+        valueToString={valueToString}
       />
     )
   },
@@ -327,7 +332,7 @@ storiesOf('Selects')
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
-        onSearch={action('onSearch')}
+        onInputChange={action('onInputChange')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onOpen={action('onOpen')}
@@ -502,7 +507,7 @@ storiesOf('Selects')
 .addWithInfo(
   'Searchable example',
   `
-    When an onSearch is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
   `,
   () => {
 

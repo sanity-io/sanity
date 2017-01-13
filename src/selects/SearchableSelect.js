@@ -1,15 +1,7 @@
 import React, {PropTypes} from 'react'
-import styles from 'part:@sanity/components/selects/searchable-style'
-import {uniqueId} from 'lodash'
-import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
-import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import DefaultList from 'part:@sanity/components/lists/default'
-import Spinner from 'part:@sanity/components/loading/spinner'
-import enhanceWithClickOutside from 'react-click-outside'
-import CloseIcon from 'part:@sanity/base/close-icon'
+import StatelessSearchableSelect from './StatelessSearchableSelect'
 
-class SearchableSelect extends React.Component {
+export default class SearchableSelect extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     description: PropTypes.string,
@@ -21,212 +13,142 @@ class SearchableSelect extends React.Component {
     onClose: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.object,
+    valueToString: PropTypes.func,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
-    loading: PropTypes.bool,
+    isLoading: PropTypes.bool,
     renderItem: PropTypes.func,
-    renderValue: PropTypes.func,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string,
-      })
-    ),
+    items: PropTypes.array,
   }
 
   static defaultProps = {
     placeholder: 'Type to search…',
-    loading: false,
+    isLoading: false,
     onChange() {},
     onBlur() {},
     onFocus() {},
     onSearch() {},
+    valueToString: value => value,
     onOpen() {},
     onClose() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
 
+  constructor(props) {
+    super()
+    const {value, valueToString} = props
     this.state = {
+      inputValue: value ? valueToString(value) : null,
       hasFocus: false,
-      searchResult: this.props.items || [],
-      inputValue: null,
-      inputSelected: false,
+      isOpen: false,
+      highlightIndex: -1,
+      isInputSelected: false,
       arrowNavigationPosition: 0
     }
   }
 
   handleClickOutside = () => {
-    this.handleCloseList()
+    this.setState({isOpen: false})
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.items != this.props.items) {
       this.setState({
         searchResult: this.props.items,
-        showList: true
+        isOpen: true
       })
     }
-    // if (nextProps.value != this.props.value) {
-    //   this.setState({
-    //     inputValue: nextProps.value,
-    //     inputSelected: true,
-    //     showList: false
-    //   })
-    // }
+    if (nextProps.value != this.props.value) {
+      this.setState({
+        inputValue: nextProps.valueToString(nextProps.value),
+        isInputSelected: true,
+        isOpen: false
+      })
+    }
   }
 
-  handleInputFocus = event => {
+  handleFocus = event => {
     this.setState({
       hasFocus: true,
-      inputSelected: true
+      isInputSelected: true
     })
 
+    this.open()
     this.props.onFocus(event)
   }
 
-  handleInputBlur = event => {
-    if (!this.state.showList) {
-      this.setState({
-        hasFocus: false,
-        inputSelected: false,
-        showList: false
-      })
-    }
+  handleBlur = event => {
+    const {valueToString, value} = this.props
+    this.setState({
+      inputValue: value ? valueToString(value) : null,
+      hasFocus: false,
+    })
+    this.close()
     this.props.onBlur(event)
   }
 
-  handleSelect = item => {
+  handleChange = item => {
+    const {onChange, valueToString} = this.props
     this.setState({
-      inputValue: null
+      inputValue: item ? valueToString(item) : null,
     })
-    this.props.onChange(item)
-    this.handleCloseList()
+    onChange(item)
+    this.close()
   }
 
-  handleOpenList = () => {
+  open = () => {
     this.setState({
-      showList: true,
+      isOpen: true,
     })
     this.props.onOpen()
   }
 
-  handleCloseList = () => {
+  close = () => {
     this.setState({
-      showList: false
+      isOpen: false,
+      hasFocus: false
     })
     this.props.onClose()
   }
 
-  handleArrowClick = () => {
-    if (this.state.showList) {
-      this.handleCloseList()
-    } else {
-      this.handleOpenList()
-    }
+  handleOpen = () => {
+    this.open()
+  }
+  handleClose = () => {
+    this.close()
   }
 
-  handleInputChange = event => {
-    const query = event.target.value
+  handleInputChange = inputValue => {
     this.setState({
-      inputValue: query,
-      inputSelected: false
+      inputValue: inputValue,
+      isInputSelected: false
     })
-    this.props.onSearch(query)
+    this.props.onSearch(inputValue)
   }
 
-  handleKeyDown = event => {
-    const {items} = this.props
-    const {arrowNavigationPosition} = this.state
-    if (items) {
-      if (event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
-        this.setState({
-          arrowNavigationPosition: arrowNavigationPosition - 1,
-          inputValue: items[arrowNavigationPosition - 1].title,
-          showList: true
-        })
-      }
-
-      if (event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
-        this.setState({
-          arrowNavigationPosition: arrowNavigationPosition + 1,
-          inputValue: items[arrowNavigationPosition + 1].title,
-          showList: true
-        })
-      }
-    }
-    return true
-  }
-
-  handleKeyUp = event => {
-    const {items} = this.props
-    const {arrowNavigationPosition} = this.state
-    if (event.key == 'Enter' && arrowNavigationPosition) {
-      this.handleSelect(items[arrowNavigationPosition])
-      this.setState({
-        hasFocus: false
-      })
-      return false
-    }
-    return true
-  }
-
-  componentWillMount() {
-    this._inputId = uniqueId('SearchableSelect')
+  handleHighlightIndexChange = nextIndex => {
+    this.setState({highlightIndex: nextIndex})
   }
 
   render() {
-    const {label, error, onClear, placeholder, loading, value, description, items, renderItem} = this.props
-    const {hasFocus, showList, arrowNavigationPosition, inputSelected, inputValue} = this.state
-
+    const {hasFocus, isOpen, highlightIndex, isInputSelected, inputValue} = this.state
 
     return (
-      <DefaultFormField
-        className={`${styles.root} ${hasFocus && styles.focused} ${error && styles.error}`}
-        description={description}
-        labelHtmlFor={this._inputId}
-        label={label}
-      >
-        <div className={styles.selectContainer}>
-          <DefaultTextInput
-            className={styles.select}
-            id={this._inputId}
-            placeholder={placeholder}
-            onChange={this.handleInputChange}
-            onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
-            onFocus={this.handleInputFocus}
-            onBlur={this.handleInputBlur}
-            value={inputValue || this.props.renderValue(value)}
-            selected={inputSelected}
-            hasFocus={hasFocus}
-          />
-          {
-            onClear && <button className={styles.clearButton} onClick={this.props.onClear}><CloseIcon color="inherit" /></button>
-          }
-          {loading && <div className={styles.spinner}><Spinner /></div>}
-          {!loading && <div className={styles.icon} onClick={this.handleArrowClick}>
-            <FaAngleDown color="inherit" />
-          </div>}
-        </div>
-
-        <div className={`${showList ? styles.listContainer : styles.listContainerHidden}`}>
-          {
-            items.length == 0 && <p className={styles.noResultText}>No result</p>
-          }
-          <DefaultList
-            items={items}
-            scrollable
-            highlightedItem={(items && items[arrowNavigationPosition]) || value}
-            selectedItem={value}
-            onSelect={this.handleSelect}
-            renderItem={renderItem}
-          />
-        </div>
-
-      </DefaultFormField>
+      <StatelessSearchableSelect
+        {...this.props}
+        hasFocus={hasFocus}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        onHighlightIndexChange={this.handleHighlightIndexChange}
+        onOpen={this.handleOpen}
+        onClose={this.handleClose}
+        onChange={this.handleChange}
+        isOpen={isOpen}
+        highlightIndex={highlightIndex}
+        isInputSelected={isInputSelected}
+        inputValue={inputValue}
+        onInputChange={this.handleInputChange}
+      />
     )
   }
 }
-
-export default enhanceWithClickOutside(SearchableSelect)
