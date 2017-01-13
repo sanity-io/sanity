@@ -60,7 +60,8 @@ class DataAspectsResolver {
 
   getDisplayName(typeName) {
     const typeOption = this.config.typeOptions[typeName] || {}
-    return typeOption.displayName || startCase(typeName)
+    const type = this.getType(typeName)
+    return typeOption.displayName || type.title || startCase(typeName)
   }
 
   // TODO: limit and offset is not yet implemented i gradient and only works partly because of a fluke
