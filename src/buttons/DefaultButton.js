@@ -40,11 +40,16 @@ export default class DefaultButton extends React.Component {
       recentlyHovered: true
     })
     this.props.onClick(event)
+    clearTimeout(this.timeOut)
     this.timeOut = setTimeout(() => {
       this.setState({
         recentlyHovered: true
       })
     }, 300)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeOut)
   }
 
   render() {
