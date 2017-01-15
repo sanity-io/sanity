@@ -5,16 +5,18 @@ const VALID_KEYS = ['_type', '_ref', '_key']
 
 export default class ReferenceContainer {
 
-  static deserialize(serialized = {}, context) {
-    const deserialized = {_type: 'reference'}
-    if (serialized) {
-      if (hasOwn(serialized, '_key')) {
-        deserialized._key = serialized._key
-      }
-      if (hasOwn(serialized, '_ref')) {
-        deserialized._ref = serialized._ref
-      }
+  static deserialize(serialized, context) {
+    if (!serialized) {
+      return new ReferenceContainer(undefined, context)
     }
+    const deserialized = {_type: 'reference'}
+    if (hasOwn(serialized, '_key')) {
+      deserialized._key = serialized._key
+    }
+    if (hasOwn(serialized, '_ref')) {
+      deserialized._ref = serialized._ref
+    }
+
     return new ReferenceContainer(deserialized, context)
   }
 
@@ -38,6 +40,9 @@ export default class ReferenceContainer {
   }
 
   serialize() {
+    if (!this.value) {
+      return undefined
+    }
     const serialized = {}
     if (hasOwn(this.value, '_key')) {
       serialized._key = this.value._key
@@ -52,7 +57,7 @@ export default class ReferenceContainer {
   }
 
   get key() {
-    return this.value._key
+    return this.value && this.value._key
   }
 
   toJSON() {
@@ -65,7 +70,7 @@ export default class ReferenceContainer {
   }
 
   hasAttribute(key) {
-    return VALID_KEYS.includes(key)
+    return VALID_KEYS.includes(key) && this.value[key] !== undefined
   }
 
   getAttribute(key) {
@@ -73,7 +78,7 @@ export default class ReferenceContainer {
   }
 
   setAttribute(key, value) {
-    const nextValue = Object.assign({}, this.value, {
+    const nextValue = Object.assign({}, this.value || {}, {
       [key]: value
     })
     return new ReferenceContainer(nextValue, this.context)
@@ -95,8 +100,12 @@ export default class ReferenceContainer {
     return this.serialize()
   }
 
-  isEmpty() {
-    return this.value._ref === undefined
+  isMissing() {
+    return this.value === undefined
+  }
+
+  isVoidable() {
+    return !this.refId
   }
 
 }

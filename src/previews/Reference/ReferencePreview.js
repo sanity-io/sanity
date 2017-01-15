@@ -46,6 +46,10 @@ export default class ReferencePreview extends React.Component {
     return materializeReference(ref, previewConfig.fields)
   }
   materialize(value) {
+    if (!value._ref) {
+      // Cannot materialize
+      return Promise.resolve(null)
+    }
     const {materializeReference, field} = this.props
 
     if (field.to.length > 1) {
@@ -60,12 +64,14 @@ export default class ReferencePreview extends React.Component {
 
   render() {
     const {materialized, loading} = this.state
-    const {value, style, field} = this.props
-    if (!value._ref) {
-      return <div />
-    }
+    const {style, field} = this.props
+
     if (loading) {
       return <div>Loading…</div>
+    }
+
+    if (!materialized) {
+      return <div />
     }
 
     const refField = field.to.find(toField => toField.type === materialized._type)

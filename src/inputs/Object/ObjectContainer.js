@@ -34,6 +34,17 @@ export default class ObjectContainer {
     this.value = value
   }
 
+  getFieldValue(fieldName) {
+    return this.value[fieldName]
+  }
+
+  isVoidable() {
+    const {field, schema} = this.context
+    const type = getFieldType(schema, field)
+
+    return type.fields.every(typeField => this.getFieldValue(typeField.name).isVoidable())
+  }
+
   _getFieldDefForFieldName(fieldName) {
     const {field, schema} = this.context
 
@@ -119,7 +130,7 @@ export default class ObjectContainer {
     if (!this._getFieldDefForFieldName(key)) {
       return false
     }
-    return !this.value[key].isEmpty()
+    return !this.value[key].isMissing()
   }
 
   getAttribute(key) {
@@ -179,11 +190,10 @@ export default class ObjectContainer {
     return this.serialize()
   }
 
-  isEmpty() {
+  isMissing() {
     const {field, schema} = this.context
     const type = getFieldType(schema, field)
 
-    return type.fields.every(typeField => this.getAttribute(typeField.name).isEmpty())
+    return type.fields.every(typeField => this.getAttribute(typeField.name).isMissing())
   }
-
 }

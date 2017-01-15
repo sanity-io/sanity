@@ -27,7 +27,7 @@ export default class SlateValueContainer {
     return (nextState === this.state) ? this : new SlateValueContainer(nextState, this.context)
   }
 
-  isEmpty() {
+  isMissing() {
     return this.state.document.length === 0
   }
 

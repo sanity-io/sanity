@@ -24,8 +24,12 @@ export default class PrimitiveValueContainer {
     return this.value
   }
 
-  isEmpty() {
-    return typeof this.value === 'undefined'
+  isMissing() {
+    return this.value === undefined
+  }
+
+  isVoidable() {
+    return this.isMissing()
   }
 
   toJSON() {

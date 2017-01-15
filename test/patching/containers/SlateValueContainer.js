@@ -31,7 +31,7 @@ export default class SlateValueContainer {
     return this.context.field.of.find(ofField => ofField.type === typeName)
   }
 
-  isEmpty() {
+  isMissing() {
     return this.state.document.length === 0
   }
 

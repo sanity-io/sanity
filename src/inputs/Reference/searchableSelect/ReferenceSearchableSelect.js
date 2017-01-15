@@ -3,6 +3,7 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../previews/Preview'
 import stringPreview from '../../../sanity/preview/stringPreview'
+import {uniqBy} from 'lodash'
 
 export default class Reference extends React.Component {
   static propTypes = {
@@ -32,7 +33,7 @@ export default class Reference extends React.Component {
   materializeValue(value) {
     const {materializeReferences} = this.props
 
-    if (value.isEmpty()) {
+    if (!value.refId) {
       return
     }
 
@@ -76,11 +77,19 @@ export default class Reference extends React.Component {
   }
 
   handleChange = item => {
-    const patch = {
-      type: 'set',
-      path: ['_ref'],
-      value: item._id
-    }
+    debugger
+    const patch = [
+      {
+        type: 'setIfMissing',
+        path: [],
+        value: {_type: 'reference'}
+      },
+      {
+        type: 'set',
+        path: ['_ref'],
+        value: item._id
+      }
+    ]
     this.props.onChange({patch: patch})
   }
 
@@ -141,6 +150,7 @@ export default class Reference extends React.Component {
   render() {
     const {field} = this.props
     const {materializedValue, fetching, hits} = this.state
+
     return (
       <SearchableSelect
         label={field.title}
@@ -154,7 +164,7 @@ export default class Reference extends React.Component {
         valueToString={this.valueToString}
         renderItem={this.renderItem}
         loading={fetching}
-        items={[materializedValue].concat(hits).filter(Boolean)}
+        items={hits}
       />
     )
   }
