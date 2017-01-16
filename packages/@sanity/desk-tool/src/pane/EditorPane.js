@@ -7,7 +7,6 @@ import FormBuilder from 'part:@sanity/form-builder'
 import schemaTypePrefix from '../utils/schemaTypePrefix'
 import schema from 'part:@sanity/base/schema'
 import dataAspects from '../utils/dataAspects'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import {throttle} from 'lodash'
 
 import styles from './styles/EditorPane.css'
@@ -235,10 +234,6 @@ export default class EditorPane extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {
-          // Test for the snackbar. Needs a messaging system
-          progress && <Snackbar kind={progress.kind}>{progress.message}</Snackbar>
-        }
 
         <div className={styles.header}>
           <h1 className={styles.title}>
