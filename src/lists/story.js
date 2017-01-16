@@ -325,6 +325,30 @@ storiesOf('List (default)')
 )
 
 .addWithInfo(
+  'Highlighted item outside view',
+  `
+    The default fieldset is used to gather a collection of fields.
+  `,
+  () => {
+    const highlightedItem = defaultItems[50]
+    return (
+      <div style={containerStyle}>
+        <DefaultList
+          items={defaultItems}
+          highlightedItem={highlightedItem}
+          onSelect={action('Select')}
+          scrollable
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+.addWithInfo(
   'Selected item outside view (bottom)',
   `
     The default fieldset is used to gather a collection of fields.

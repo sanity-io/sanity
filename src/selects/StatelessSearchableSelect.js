@@ -182,6 +182,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             items={items}
             highlightedItem={(items && items[highlightIndex]) || value}
             selectedItem={value}
+            scrollable
             onSelect={this.handleSelect}
             renderItem={renderItem}
           />

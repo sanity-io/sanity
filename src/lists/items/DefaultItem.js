@@ -31,13 +31,18 @@ export default class DefaultListItem extends React.Component {
     this.ensureVisible()
   }
 
+  componentDidUpdate() {
+    this.ensureVisible()
+  }
+
   setElement = element => {
     this._element = element
   }
 
   ensureVisible() {
-    const {selected, scrollIntoView} = this.props
-    if (selected && scrollIntoView) {
+    const {selected, scrollIntoView, highlighted} = this.props
+
+    if ((selected || highlighted) && scrollIntoView) {
       // TODO fix this
       // Hack because the ref in defaultlist is called after this
       setTimeout(() => {
