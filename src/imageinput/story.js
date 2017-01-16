@@ -123,6 +123,26 @@ storiesOf('Image input Fieldset')
   }
 )
 
+.addWithInfo(
+  'Only image (showContent not set)',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        hotspotImage={{imageUrl: imageUrl}}
+        level={0}
+      />
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
 
 .addWithInfo(
   'Only image (Level 0)',
@@ -135,6 +155,7 @@ storiesOf('Image input Fieldset')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         hotspotImage={{imageUrl: imageUrl}}
+        showContent={false}
         level={0}
       />
     )
@@ -157,6 +178,7 @@ storiesOf('Image input Fieldset')
         onSelect={action('Select image')}
         hotspotImage={{imageUrl: imageUrl}}
         level={1}
+        showContent={false}
       />
     )
   },

@@ -57,7 +57,12 @@ export default class ImageInputFieldset extends React.PureComponent {
 
   render() {
 
-    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, showContent, children} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, children} = this.props
+    let {showContent} = this.props
+
+    if (!children) {
+      showContent = false
+    }
 
     return (
       <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
