@@ -110,16 +110,7 @@ export default class ObjectContainer {
   }
 
   hasAttribute(key) {
-    if (key == '_key') {
-      return !!this.value._key
-    }
-    if (key == '_id') {
-      return !!this.value._id
-    }
-    if (!this._getFieldDefForFieldName(key)) {
-      return false
-    }
-    return !this.value[key].isEmpty()
+    return key === '_key' || !!this._getFieldDefForFieldName(key)
   }
 
   getAttribute(key) {
