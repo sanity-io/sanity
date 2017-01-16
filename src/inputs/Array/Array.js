@@ -111,7 +111,7 @@ export default class Arr extends React.Component {
 
   handleClose = () => {
     const itemValue = this.getEditItem()
-    if (itemValue.isVoidable()) {
+    if (itemValue.isEmpty()) {
       this.handleRemoveItem(itemValue)
     }
     this.setState({editItemKey: null})

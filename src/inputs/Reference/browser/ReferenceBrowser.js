@@ -73,18 +73,11 @@ export default class ReferenceBrowser extends React.Component {
       case 'set': {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
-          const patch = [
-            {
-              type: 'setIfMissing',
-              path: [],
-              value: {_type: 'reference'}
-            },
-            {
-              type: 'set',
-              path: ['_ref'],
-              value: dialogSelectedItem._id
-            }
-          ]
+          const patch = {
+            path: ['_ref'],
+            type: 'set',
+            value: dialogSelectedItem._id
+          }
           onChange({patch: patch})
         }
         this.setState({dialogSelectedItem: null, showDialog: false})
@@ -186,7 +179,7 @@ export default class ReferenceBrowser extends React.Component {
     const {value, field} = this.props
 
     const renderButtons = () => {
-      if (value.isMissing()) {
+      if (value.isEmpty()) {
         return (
           <div className={styles.buttons}>
             <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
@@ -203,7 +196,7 @@ export default class ReferenceBrowser extends React.Component {
     return (
       <div>
         <div className={styles.preview}>
-          {!value.isMissing() && (
+          {!value.isEmpty() && (
             <Preview
               field={field}
               value={value.serialize()}

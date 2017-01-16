@@ -53,7 +53,7 @@ export default class Obj extends React.PureComponent {
     const {value, focus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getFieldValue(field.name)
+    const fieldValue = value.getAttribute(field.name)
 
     return (
       <RenderField

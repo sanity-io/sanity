@@ -22,25 +22,6 @@ export default {
           ]
         },
         {
-          name: 'petReferenceArrayWithSearchable',
-          type: 'array',
-          title: 'Array with searchable select',
-          of: [
-            {
-              title: 'Pet',
-              type: 'reference',
-              description: 'Pet you pet',
-              options: {
-                inputType: 'select',
-                searchable: true,
-              },
-              to: {
-                type: 'pet'
-              }
-            }
-          ]
-        },
-        {
           name: 'title',
           title: 'Title',
           type: 'string',

@@ -79,7 +79,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   materializeImageRef(ref) {
-    if (!ref.refId) {
+    if (ref.isEmpty()) {
       this.setState({materializedImage: null})
       return
     }

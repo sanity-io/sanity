@@ -91,12 +91,8 @@ export default class ArrayContainer {
     })
   }
 
-  isVoidable() {
-    return this.value.every(item => item.isVoidable())
-  }
-
-  isMissing() {
-    return this.value.every(item => item.isMissing())
+  isEmpty() {
+    return this.value.every(item => item.isEmpty())
   }
 
   // Accessor methods
