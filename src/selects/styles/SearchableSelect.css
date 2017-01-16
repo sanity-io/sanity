@@ -22,13 +22,14 @@
   display: block;
   position: absolute;
   width: 100%;
-  height: 10em;
-  overflow: hidden;
+  max-height: 15em;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: 1px solid var(--input-border-color-focus);
   box-sizing: border-box;
   transform: translateY(-1px);
   background-color: var(--body-bg);
-  z-index: 1;
+  z-index: var(--zindex-dropdown);
 }
 
 .listContainerHidden {

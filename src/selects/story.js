@@ -114,6 +114,7 @@ class SearchableTest extends React.Component {
   }
 
   renderValue(item) {
+    console.log('Value to string:', item, item.title) // eslint-disable-line
     if (item) {
       return item.title
     }
@@ -122,6 +123,7 @@ class SearchableTest extends React.Component {
   }
 
   handleSearch = query => {
+    console.log('query', query) // eslint-disable-line
     const result = this.fuse.search(query)
     this.setState({
       loading: true
@@ -140,7 +142,7 @@ class SearchableTest extends React.Component {
       <SearchableSelect
         label="This is the label"
         placeholder="This is the placeholder"
-        onInputChange={this.handleSearch}
+        onSearch={this.handleSearch}
         onChange={this.handleChange}
         onFocus={this.handleFocus}
         onOpen={action('onOpen')}
@@ -148,7 +150,7 @@ class SearchableTest extends React.Component {
         items={this.state.searchResult}
         value={this.state.value}
         renderItem={this.renderItem}
-        renderValue={this.renderValue}
+        valueToString={this.renderValue}
       />
 
     )
@@ -512,7 +514,10 @@ storiesOf('Selects')
   () => {
 
     return (
-      <SearchableTest />
+      <div>
+        <SearchableTest />
+        This text should be behind the dropdown
+      </div>
     )
   },
   {

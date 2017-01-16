@@ -6,8 +6,8 @@ import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import DefaultList from 'part:@sanity/components/lists/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import enhanceWithClickOutside from 'react-click-outside'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import enhanceWithClickOutside from 'react-click-outside'
 
 const noop = () => {}
 
@@ -85,10 +85,15 @@ class StatelessSearchableSelect extends React.PureComponent {
   }
 
   handleKeyDown = event => {
-    const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen} = this.props
+    const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen, onClose} = this.props
     if (!items || items.length === 0) {
       return
     }
+
+    if (event.key == 'Escape' && isOpen) {
+      onClose()
+    }
+
     if (event.key == 'ArrowUp' && highlightIndex > -1) {
       event.preventDefault()
       onHighlightIndexChange(Math.max(highlightIndex - 1, -1))
@@ -175,7 +180,6 @@ class StatelessSearchableSelect extends React.PureComponent {
           }
           <DefaultList
             items={items}
-            scrollable
             highlightedItem={(items && items[highlightIndex]) || value}
             selectedItem={value}
             onSelect={this.handleSelect}

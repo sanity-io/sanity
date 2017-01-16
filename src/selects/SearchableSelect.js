@@ -54,8 +54,7 @@ export default class SearchableSelect extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.items != this.props.items) {
       this.setState({
-        searchResult: this.props.items,
-        isOpen: true
+        searchResult: this.props.items
       })
     }
     if (nextProps.value != this.props.value) {
@@ -79,11 +78,19 @@ export default class SearchableSelect extends React.Component {
 
   handleBlur = event => {
     const {valueToString, value} = this.props
+    const {isOpen} = this.state
+
     this.setState({
       inputValue: value ? valueToString(value) : null,
-      hasFocus: false,
     })
-    this.close()
+
+    // MouseDown on the list triggers blur
+    if (!isOpen) {
+      this.setState({
+        hasFocus: false
+      })
+      this.close()
+    }
     this.props.onBlur(event)
   }
 
@@ -91,6 +98,7 @@ export default class SearchableSelect extends React.Component {
     const {onChange, valueToString} = this.props
     this.setState({
       inputValue: item ? valueToString(item) : null,
+      hasFocus: false
     })
     onChange(item)
     this.close()
