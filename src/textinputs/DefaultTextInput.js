@@ -43,7 +43,8 @@ export default class DefaultTextInput extends React.Component {
   }
 
   selectInput = event => {
-    this._input.select()
+    // Triggers only when the input is focused
+    this._input.setSelectionRange(0, this.props.value.length)
   }
 
   handleClear = event => {
