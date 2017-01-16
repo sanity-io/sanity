@@ -200,9 +200,9 @@
     tar-fs "^1.15.0"
     through2 "^2.0.1"
 
-"@sanity/data-aspects@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.5.tgz#efc03fa73e8df4870aa206805bce941d37f0eb3c"
+"@sanity/data-aspects@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.6.tgz#53f1ef2838dd007f1335588af6fc49f2bb6f9d46"
   dependencies:
     in-publish "^2.0.0"
     lodash "^4.15.0"
@@ -241,9 +241,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.25":
-  version "0.1.26"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.26.tgz#93cc461ba56bed8aa89265fbbd24ed5d9cd44a42"
+"@sanity/form-builder@^0.1.28":
+  version "0.1.28"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.28.tgz#2d58def272a3ca8a0b1a12c0e890e8b6df9c9671"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.5"
@@ -4961,11 +4961,11 @@ q@^1.1.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
-qs@6.2.0:
+qs@6.2.0, qs@^6.1.0, qs@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
+qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
