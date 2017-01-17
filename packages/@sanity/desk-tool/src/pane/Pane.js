@@ -6,6 +6,7 @@ import UrlDocId from '../utils/UrlDocId'
 import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
 import {find} from 'lodash'
+import {StateLink} from 'part:@sanity/base/router'
 
 export default class Pane extends React.PureComponent {
 
@@ -17,7 +18,8 @@ export default class Pane extends React.PureComponent {
     onSetListView: PropTypes.func,
     onSetSorting: PropTypes.func,
     listView: PropTypes.string,
-    onUpdate: PropTypes.func
+    onUpdate: PropTypes.func,
+    type: PropTypes.object
   }
 
   static defaultProps = {
@@ -62,7 +64,7 @@ export default class Pane extends React.PureComponent {
   }
 
   render() {
-    const {loading, listView} = this.props
+    const {loading, listView, items, type} = this.props
 
     const {router} = this.context
     const {selectedType, action, selectedDocumentId} = router.state
@@ -87,6 +89,21 @@ export default class Pane extends React.PureComponent {
           <div className={styles.spinner}>
             <Spinner center message="Loading items…" />
           </div>
+          )
+        }
+
+        {
+          (!items || items.length == 0) && (
+            <div className={styles.empty}>
+              <h3>Nothing here. Yet…</h3>
+              <StateLink
+                className={styles.emptyCreateNew}
+                title={`Create new ${type.title}`}
+                state={{selectedType: type.name, action: 'create'}}
+              >
+                  Create new {type.title}
+              </StateLink>
+            </div>
           )
         }
 
