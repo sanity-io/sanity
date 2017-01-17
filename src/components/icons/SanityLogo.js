@@ -2,7 +2,7 @@
 import React from 'react'
 import IconBase from 'react-icon-base'
 
-export default class SanityLogoIcon extends React.Component {
+export default class SanityLogoIcon extends React.PureComponent {
   render() {
     return (
       <IconBase viewBox="0 0 1024 1024" {...this.props}>

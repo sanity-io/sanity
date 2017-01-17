@@ -58,11 +58,13 @@ export default class QueryContainer extends React.Component {
         this.receiveMutations(event)
         break
       }
+      default:
     }
   }
 
   error = error => {
-    console.error(error) // @todo make sure some kind of error dialog is shown, somewhere
+    // @todo make sure some kind of error dialog is shown, somewhere
+    console.error(error) // eslint-disable-line no-console
     this.setState({error, loading: false})
   }
 

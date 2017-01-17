@@ -1,8 +1,13 @@
+import React from 'react'
 import {describe, it} from 'mocha'
 import {assert} from 'chai'
 import languageResolver from '../src/locale/languageResolver'
 import proxyquire from 'proxyquire'
 proxyquire.noCallThru()
+
+function componentStub() {
+  return React.createElement('div')
+}
 
 const rawMessagesStub = [
   {
@@ -40,6 +45,10 @@ const messageFetcher = proxyquire('../src/locale/messageFetcher', {
 })
 const SanityIntlProvider = proxyquire('../src/components/SanityIntlProvider', {
   'part:@sanity/base/locale/intl': require('react-intl'),
+  'part:@sanity/components/loading/spinner': componentStub,
+  'part:@sanity/base/locale/formatters': proxyquire('../src/components/IntlWrapper', {
+    'part:@sanity/base/locale/intl': require('react-intl'),
+  }),
   'part:@sanity/base/language-resolver': languageResolver,
   'part:@sanity/base/locale-message-fetcher': require('../src/locale/messageFetcher')
 })

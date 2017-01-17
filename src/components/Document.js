@@ -44,7 +44,7 @@ function Document(props) {
   return (
     <html>
       <head>
-        <meta charSet="utf-8" />
+        <meta charSet={props.charset} />
         <title>{props.title}</title>
         {stylesheets}
         {favicons}

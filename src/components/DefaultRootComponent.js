@@ -25,7 +25,7 @@ function DefaultRootComponent() {
       <h1>Hello, Sanity!</h1>
 
       <p>
-        If you're seeing this, it means that no plugin has fulfilled
+        If you are seeing this, it means that no plugin has fulfilled
         the <code>part:@sanity/base/root</code> role.
       </p>
 

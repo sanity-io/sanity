@@ -148,7 +148,7 @@ const AppLoadingScreenStyles = `
 }
 `
 
-export default class AppLoadingScreen extends React.Component {
+export default class AppLoadingScreen extends React.PureComponent {
   static propTypes = {
     text: PropTypes.string
   }

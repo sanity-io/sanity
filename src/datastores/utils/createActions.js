@@ -13,7 +13,7 @@ function createAction(name, fn) {
 
   const calls = pubsub()
 
-  const functor = function action(...args) {
+  const functor = function action(...args) { // eslint-disable-line func-name-matching
     const retValue = fn(...args)
 
     calls.publish({
