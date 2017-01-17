@@ -49,7 +49,7 @@ export default class Spinner extends React.Component {
       >
         <div className={styles.inner}>
           {
-            fullscreen ? this.renderSvg() : <SpinnerIcon color="inherit" />
+            (fullscreen || center) ? this.renderSvg() : <SpinnerIcon color="inherit" />
           }
           {
             message && <div className={styles.message}>{message}</div>

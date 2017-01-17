@@ -91,7 +91,7 @@ storiesOf('Loading')
   `,
   () => {
     return (
-      <Spinner fullscreen message="Loading" />
+      <Spinner fullscreen message="Loading items with a long text…" />
     )
   },
   {

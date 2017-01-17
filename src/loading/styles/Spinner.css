@@ -68,7 +68,7 @@
 
   @nest & .message {
     text-align: center;
-    line-height: 2em;
+    line-height: 1.2em;
     display: block;
     font-weight: 300;
   }
