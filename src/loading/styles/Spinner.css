@@ -43,7 +43,7 @@
   }
 }
 
-.fullscreen {
+.center {
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   position: fixed;
@@ -72,6 +72,11 @@
     display: block;
     font-weight: 300;
   }
+}
+
+.fullscreen {
+  composes: center;
+  position: fixed;
 }
 
 .root svg {

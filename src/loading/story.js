@@ -85,6 +85,22 @@ storiesOf('Loading')
 )
 
 .addWithInfo(
+  'Spinner center',
+  `
+    Spinner
+  `,
+  () => {
+    return (
+      <Spinner fullscreen message="Loading" />
+    )
+  },
+  {
+    propTables: [Spinner],
+    role: 'part:@sanity/components/loading/spinner'
+  }
+)
+
+.addWithInfo(
   'App loading screen',
   `
     Used when app is loading. No use of CSSModules.

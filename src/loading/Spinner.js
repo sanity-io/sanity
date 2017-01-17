@@ -6,7 +6,8 @@ export default class Spinner extends React.Component {
   static propTypes = {
     inline: PropTypes.bool,
     message: PropTypes.string,
-    fullscreen: PropTypes.bool
+    fullscreen: PropTypes.bool,
+    center: PropTypes.bool
   }
 
   renderSvg() {
@@ -37,12 +38,13 @@ export default class Spinner extends React.Component {
   }
 
   render() {
-    const {inline, message, fullscreen} = this.props
+    const {inline, message, fullscreen, center} = this.props
     return (
       <div
         className={`
           ${inline ? styles.inline : styles.block}
-          ${fullscreen && styles.fullscreen}
+          ${fullscreen ? styles.fullscreen : ''}
+          ${center ? styles.center : ''}
         `}
       >
         <div className={styles.inner}>
