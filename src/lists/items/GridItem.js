@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/items/grid-style'
+import {StateLink} from 'part:@sanity/base/router'
 
 export default class GridItem extends React.Component {
   static propTypes = {
@@ -22,7 +23,7 @@ export default class GridItem extends React.Component {
   }
 
   render() {
-    const {children, className, selected, highlighted} = this.props
+    const {children, className, selected, highlighted, item} = this.props
 
     const rootStyles = `
       ${styles.root}
@@ -32,9 +33,20 @@ export default class GridItem extends React.Component {
     `
     return (
       <li className={rootStyles}>
-        <a onClick={this.handleClick} className={styles.link}>
-          {children}
-        </a>
+        {
+          item.stateLink && (
+            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink}>
+              {children}
+            </StateLink>
+          )
+        }
+        {
+          !item.stateLink && (
+            <div className={styles.noLink} onClick={this.handleClick}>
+              {children}
+            </div>
+          )
+        }
       </li>
     )
   }

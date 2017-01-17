@@ -1,6 +1,5 @@
 .root {
   background-color: #fff;
-  composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   overflow: hidden;
   width: 100%;

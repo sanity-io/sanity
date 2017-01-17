@@ -18,6 +18,8 @@
 .link {
   display: block;
   width: 100%;
+  color: inherit;
+  text-decoration: inherit;
 
   @nest &:hover {
     color: var(--brand-black);
@@ -28,10 +30,15 @@
     color: var(--brand-white);
     background-color: var(--default-item-active-color);
   }
+
+  @nest .selected & {
+    background-color: var(--default-item-selected-color);
+    color: #fff;
+  }
 }
 
-.selected {
-  background-color: var(--default-item-selected-color);
+.noLink {
+  composes: link;
 }
 
 .sortableHelper {
