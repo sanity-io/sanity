@@ -129,6 +129,29 @@ export default {
           ]
         }
       ]
+    },
+    {
+      title: 'Empty',
+      name: 'empty',
+      type: 'object',
+      description: 'Fill inn information about the author',
+      fields: [
+        {
+          name: 'name',
+          title: 'Title',
+          type: 'string'
+        },
+        {
+          name: 'awards',
+          title: 'Awards',
+          type: 'array',
+          of: [
+            {
+              type: 'string'
+            }
+          ]
+        }
+      ]
     }
   ]
 }

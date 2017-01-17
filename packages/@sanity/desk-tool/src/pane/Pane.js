@@ -82,7 +82,12 @@ export default class Pane extends React.PureComponent {
           onSetSorting={this.props.onSetSorting}
         />
 
-        {loading && <Spinner />}
+        {loading && (
+          <div className={styles.spinner}>
+            <Spinner center message="Loading items…" />
+          </div>
+          )
+        }
 
         <div className={styles.listContainer}>
           {this.renderListView()}

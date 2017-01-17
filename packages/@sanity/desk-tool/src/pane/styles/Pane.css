@@ -7,6 +7,7 @@
   position: relative;
   max-width: 100%;
   width: 100%;
+  min-width: 14rem;
 
   @media (--screen-medium) {
     width: auto;
@@ -75,4 +76,9 @@
   top: 2em;
   right: 0.5em;
   width: 100%;
+}
+
+.spinner {
+  height: 100%;
+  transform: translateY(-30%);
 }

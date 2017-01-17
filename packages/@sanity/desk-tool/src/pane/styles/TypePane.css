@@ -13,7 +13,6 @@
 
   @media (--screen-medium) {
     /*min-width: 7em;*/
-    padding-right: 1em;
     height: 100%;
   }
 }

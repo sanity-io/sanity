@@ -23,7 +23,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "^0.0.6",
+    "@sanity/data-aspects": "^0.0.7",
     "@sanity/form-builder": "^0.1.29",
     "react-click-outside": "^2.2.0"
   },
@@ -31,7 +31,7 @@
     "@sanity/base": "^0.3.17",
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.4.9",
-    "@sanity/components": "^0.0.103",
+    "@sanity/components": "^0.0.107",
     "@sanity/core": "^0.0.40",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",

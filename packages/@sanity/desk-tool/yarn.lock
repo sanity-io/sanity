@@ -145,9 +145,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.103":
-  version "0.0.103"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.103.tgz#138e5c258a079d9fb677f87089dd27097a7ae43d"
+"@sanity/components@^0.0.107":
+  version "0.0.107"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.107.tgz#4803e94c83e3e41e2bd6884ddefe1ea952756846"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -203,9 +203,9 @@
     through2 "^2.0.1"
     uglify-js "^2.7.5"
 
-"@sanity/data-aspects@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.6.tgz#53f1ef2838dd007f1335588af6fc49f2bb6f9d46"
+"@sanity/data-aspects@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@sanity/data-aspects/-/data-aspects-0.0.7.tgz#5106a1f89bcb5fb022e66e3c4194b0130a37b6ce"
   dependencies:
     in-publish "^2.0.0"
     lodash "^4.15.0"
@@ -4084,8 +4084,8 @@ oauth-sign@~0.8.1:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
 object-assign@^4.0.1, object-assign@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.0.tgz#7a3b3d0e98063d43f4c03f2e8ae6cd51a86883a0"
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
 object-inspect@^1.2.1:
   version "1.2.1"
@@ -5215,8 +5215,8 @@ react-sortable-hoc@0.4.5:
     lodash "^4.12.0"
 
 react-sortable-hoc@^0.4.5:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.6.tgz#37bedf0e60cf1d61dae7882d8d59b96ac18677e1"
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.7.tgz#3dbdb2c26a9538947389b3beefd6086f84f44a1f"
   dependencies:
     babel-runtime "^6.11.6"
     invariant "^2.2.1"

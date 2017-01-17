@@ -1,14 +1,20 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  composes: root from "part:@sanity/components/lists/items/default-style";
+}
+
 .item {
-  composes: item from './PaneItem.css';
-  line-height: 2em;
-  height: 2em;
+  composes: root from "part:@sanity/components/lists/items/default-style";
+  composes: item from "./PaneItem.css";
+
   overflow: hidden;
   position: relative;
 }
 
 .link {
+  composes: link from "part:@sanity/components/lists/items/default-style";
+  composes: root from "part:@sanity/components/previews/default-style";
   color: inherit;
   text-decoration: inherit;
   padding-left: var(--medium-padding);
@@ -16,7 +22,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   display: block;
-  margin-right: 2em;
+  padding-right: 2em;
 }
 
 .selected {
@@ -30,8 +36,8 @@
 .createNew {
   padding-right: 0.5rem;
   padding-left: 0.5rem;
+  padding-top: 0.5rem;
   display: block;
-  float: right;
   text-decoration: none;
   vertical-align: middle;
   line-height: inherit;
@@ -43,6 +49,10 @@
   position: absolute;
   top: 0;
   right: 0;
+
+  @nest .item:active & {
+    color: var(--white);
+  }
 
   @nest &:hover {
     font-weight: 400;
