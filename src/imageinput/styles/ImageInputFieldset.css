@@ -156,7 +156,7 @@
   background-color: transparent;
 }
 
-.removeButton {
+.functions {
   position: absolute;
   bottom: var(--medium-padding);
   left: var(--medium-padding);

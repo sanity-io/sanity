@@ -86,33 +86,6 @@ export default class ImageInputFieldset extends React.PureComponent {
                     />
                   )
                 }
-                {
-                  (status != 'error' && status != 'pending') && (
-                    <div>
-                      <ImageSelect
-                        className={styles.imageSelectReplace}
-                        name={fieldName}
-                        onSelect={this.props.onSelect}
-                      >
-                        <div className={styles.uploadInner}>
-                          <div className={styles.uploadIconContainer}>
-                            <UploadIcon className={styles.uploadIcon} />
-                          </div>
-                          <span className={styles.uploadIconText}>Replace image</span>
-                        </div>
-                      </ImageSelect>
-
-                      <Button
-                        className={styles.removeButton}
-                        onClick={this.props.onClear}
-                        icon={TrashIcon}
-                        color="danger"
-                      >
-                          Remove
-                      </Button>
-                    </div>
-                  )
-                }
               </div>
             }
 
@@ -164,6 +137,32 @@ export default class ImageInputFieldset extends React.PureComponent {
                   <ProgressCircle percent={100} completed className={styles.progressComplete} />
                 </div>
               </div>
+            }
+
+            {
+              (status != 'error' && status != 'pending') && hotspotImage && hotspotImage.imageUrl && (
+                <div className={styles.functions}>
+                  <Button
+                    className={styles.removeButton}
+                    onClick={this.props.onClear}
+                    icon={TrashIcon}
+                    color="danger"
+                  >
+                      Remove
+                  </Button>
+                  <Button
+                    icon={UploadIcon}
+                    ripple={false}
+                  >
+                    <ImageSelect
+                      name={fieldName}
+                      onSelect={this.props.onSelect}
+                    >
+                      Replace image
+                    </ImageSelect>
+                  </Button>
+                </div>
+              )
             }
           </div>
           {
