@@ -93,7 +93,7 @@ export default class Pane extends React.PureComponent {
         }
 
         {
-          (!items || items.length == 0) && (
+          items && items.length == 0 && (
             <div className={styles.empty}>
               <h3>Nothing here. Yet…</h3>
               <StateLink
