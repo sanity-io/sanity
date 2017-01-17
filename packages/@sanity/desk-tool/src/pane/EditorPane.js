@@ -208,7 +208,7 @@ export default class EditorPane extends React.PureComponent {
   }
 
   render() {
-    const {value, deleted, loading, spin, progress, validation} = this.state
+    const {value, deleted, loading, spin, validation} = this.state
     const {typeName} = this.props
 
     const titleProp = dataAspects.getItemDisplayField(typeName)
