@@ -3,7 +3,6 @@ import Pane from 'part:@sanity/desk-tool/pane'
 import TypePane from './pane/TypePane'
 import EditorPane from './pane/EditorPane'
 import TypePaneItem from './pane/TypePaneItem.js'
-import DocumentPaneItem from './pane/DocumentPaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
 
 import UrlDocId from './utils/UrlDocId'
@@ -13,6 +12,7 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
 import {previewUtils} from 'part:@sanity/form-builder'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import Preview from 'part:@sanity/base/preview'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -98,16 +98,15 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   renderDocumentPaneItem = (item, i) => {
-    const {selectedType, selectedDocumentId} = this.context.router.state
-    const selected = UrlDocId.encode(item._id) === selectedDocumentId
+    const {selectedType} = this.context.router.state
     const listView = this.getListViewForType(selectedType)
     const schemaType = schema.types.find(type => type.name === selectedType)
+
     return (
-      <DocumentPaneItem
-        document={item}
-        selected={selected}
-        listView={listView}
-        schemaType={schemaType}
+      <Preview
+        value={item}
+        style={listView}
+        typeDef={schemaType}
       />
     )
   }
@@ -115,6 +114,8 @@ export default class SchemaPaneResolver extends React.Component {
   getDocumentsPane(typeName) {
     const type = schema.types.find(t => t.name === typeName)
     const previewConfig = previewUtils.canonicalizePreviewConfig(type)
+
+    const {selectedType} = this.context.router.state
 
     const query = `${schema.name}.${type.name}[limit: 200, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
@@ -130,12 +131,16 @@ export default class SchemaPaneResolver extends React.Component {
               </FullscreenDialog>
             )
           }
+          const items = result && result.documents && result.documents.map(item => {
+            item.stateLink = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
+            return item
+          })
           return (
             <Pane
               contentType="documents"
               type={type}
               loading={loading}
-              items={result ? result.documents : []}
+              items={items}
               renderItem={this.renderDocumentPaneItem}
               onSetListView={this.handleSetListView}
               onSetSorting={this.handleSetSort}

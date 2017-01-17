@@ -5,6 +5,7 @@ import GridList from 'part:@sanity/components/lists/grid'
 import UrlDocId from '../utils/UrlDocId'
 import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
+import {find} from 'lodash'
 
 export default class Pane extends React.PureComponent {
 
@@ -33,31 +34,31 @@ export default class Pane extends React.PureComponent {
     }
   }
 
-  handleSelect = item => {
-    const {router} = this.context
-    const {selectedType} = this.context.router.state
-
-    router.navigate({selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)})
-  }
-
   renderListView() {
     const {items, renderItem} = this.props
+    const {router} = this.context
     const listView = this.props.listView
+    const {selectedDocumentId} = router.state
+
+    const selectedItem = find(items, item => {
+      return UrlDocId.encode(item._id) == selectedDocumentId
+    })
+
 
     switch (listView) { // eslint-disable-line default-case
       case 'media':
-        return <GridList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
+        return <GridList items={items} renderItem={renderItem} selectedItem={selectedItem} />
 
       case 'card':
-        return <GridList items={items} layout="masonry" renderItem={renderItem} onSelect={this.handleSelect} />
+        return <GridList items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} />
 
       case 'detail':
       case 'default':
-        return <DefaultList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
+        return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} />
     }
 
     console.error(new Error(`Invalid list view option: ${listView}`)) // eslint-disable-line no-console
-    return <DefaultList items={items} renderItem={renderItem} onSelect={this.handleSelect} />
+    return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} />
   }
 
   render() {

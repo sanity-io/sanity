@@ -1,21 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  composes: root from "part:@sanity/components/lists/items/default-style";
-}
-
 .item {
   composes: root from "part:@sanity/components/lists/items/default-style";
-  composes: item from "./PaneItem.css";
-
-  overflow: hidden;
   position: relative;
 }
 
 .link {
   composes: link from "part:@sanity/components/lists/items/default-style";
   composes: root from "part:@sanity/components/previews/default-style";
-  color: inherit;
   text-decoration: inherit;
   padding-left: var(--medium-padding);
   max-width: 20em;
@@ -27,10 +19,7 @@
 
 .selected {
   composes: item;
-  color: var(--selected-item-color);
-  &:hover {
-    color: var(--selected-item-color-hover);
-  }
+  composes: selected from "part:@sanity/components/lists/items/default-style";
 }
 
 .createNew {
@@ -61,6 +50,7 @@
   }
 
   @nest .selected & {
+    color: var(--white);
     opacity: 1;
   }
 }
