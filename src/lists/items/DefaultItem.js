@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/items/default-style'
+import {StateLink} from 'part:@sanity/base/router'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
-    onSelect: PropTypes.func.isRequired,
-    item: PropTypes.object,
+    item: PropTypes.object.isRequired,
+    onSelect: PropTypes.func,
     layout: PropTypes.string,
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
@@ -52,24 +53,31 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {selected, highlighted, className, decoration} = this.props
+    const {selected, highlighted, className, decoration, item} = this.props
 
     const rootClasses = `
       ${styles.root}
       ${decoration ? styles[decoration] : ''}
       ${highlighted ? styles.highlighted : ''}
       ${selected ? styles.selected : ''}
-    `
-
-    const linkClasses = `
-      ${styles.link}
       ${className}
     `
     return (
       <li className={rootClasses} ref={this.setElement}>
-        <a className={linkClasses} onClick={this.handleClick}>
-          {this.props.children}
-        </a>
+        {
+          item.stateLink && (
+            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink}>
+              {this.props.children}
+            </StateLink>
+          )
+        }
+        {
+          !item.stateLink && (
+            <div className={styles.noLink} onClick={this.handleClick}>
+              {this.props.children}
+            </div>
+          )
+        }
       </li>
     )
   }

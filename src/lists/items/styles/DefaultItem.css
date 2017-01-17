@@ -18,6 +18,8 @@
 
 .link {
   display: block;
+  color: inherit;
+  text-decoration: inherit;
 
   @nest &:hover {
     background-color: color(var(--gray-base) a(7%));
@@ -27,6 +29,10 @@
     background-color: color(var(--default-item-selected-color) a(100%));
     color: #fff;
   }
+}
+
+.noLink {
+  composes: link;
 }
 
 .selected {
