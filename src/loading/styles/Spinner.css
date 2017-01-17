@@ -46,7 +46,7 @@
 .center {
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  position: fixed;
+  position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
