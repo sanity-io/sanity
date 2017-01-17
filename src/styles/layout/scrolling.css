@@ -2,51 +2,48 @@
 
 .lightScrollbars {
 
-  @nest &:hover {
-    @nest &::-webkit-scrollbar{
-      width: 2px;
-      padding-right: 2px;
-      opacity: 0;
-    }
-  }
-
-  @nest &::-webkit-scrollbar{
-    position: absolute;
-    width: 2px;
-    padding-right: 2px;
-    opacity: 0;
-  }
-
-  @nest &::-webkit-scrollbar-button       {
-    /*background-color: green;*/
-  }
-
-  @nest &::-webkit-scrollbar-track        {
-    background-color: var(--gray-lightest);
-  }
-
-  @nest &::-webkit-scrollbar-track-piece  {
+  @nest &::-webkit-scrollbar {
     background-color: transparent;
+    width: 2px;
   }
 
-  @nest &::-webkit-scrollbar-thumb        {
-    background-color: var(--gray-dark);
+  @nest &::-webkit-scrollbar * {
+     background: transparent;
+   }
+
+  @nest &::-webkit-scrollbar-thumb:window-inactive {
+  	display: none;
   }
-  @nest &:hover  {
-    @nest &::-webkit-scrollbar-thumb        {
-      background-color: var(--gray-base);
+
+  @nest &:hover {
+    @nest &::-webkit-scrollbar {
+      background-color: transparent;
+      width: 10px;
     }
   }
 
-  @nest &::-webkit-scrollbar-corner       {
-    background-color: black;
-    /*@nest &:window-inactive{
-      background-color: red;
-    }*/
+  @nest &::-webkit-scrollbar-track {
+    display: none;
   }
 
-  @nest &::-webkit-resizer                {
-    /*background-color: orange;*/
+  @nest &::-webkit-scrollbar-thumb {
+    background: var(--black);
+  }
+
+  @nest &::-webkit-scrollbar-track-piece {
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar-corner {
+    display: none;
+  }
+
+  @nest &::-webkit-resizer {
+    display: none;
   }
 }
 
@@ -60,8 +57,8 @@
 }
 
 .scrollY {
-  overflow-y: auto;
-  overflow-x: x;
+  overflow-y: overlay;
+  overflow-x: hidden;
 }
 
 /*
