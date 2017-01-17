@@ -107,9 +107,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.17":
-  version "0.3.17"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.17.tgz#76e85678eda47b7aee152b68f790a05158267d33"
+"@sanity/base@^0.3.18":
+  version "0.3.18"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.18.tgz#e84db44abf6ef1ca749e344330a9d88d7fccb1ae"
   dependencies:
     "@sanity/client" "^0.4.9"
     "@sanity/document-store" "^0.2.8"
@@ -145,9 +145,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.107":
-  version "0.0.107"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.107.tgz#4803e94c83e3e41e2bd6884ddefe1ea952756846"
+"@sanity/components@^0.0.108":
+  version "0.0.108"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.108.tgz#cca779d22ba2374cddecad096fd34425ef8def7a"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -5206,17 +5206,9 @@ react-simple-di@^1.2.0:
     babel-runtime "6.x.x"
     hoist-non-react-statics "1.x.x"
 
-react-sortable-hoc@0.4.5:
+react-sortable-hoc@0.4.5, react-sortable-hoc@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.5.tgz#8b60c6a42cfb886771cf28ec586efb0442d003fc"
-  dependencies:
-    babel-runtime "^6.11.6"
-    invariant "^2.2.1"
-    lodash "^4.12.0"
-
-react-sortable-hoc@^0.4.5:
-  version "0.4.7"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.7.tgz#3dbdb2c26a9538947389b3beefd6086f84f44a1f"
   dependencies:
     babel-runtime "^6.11.6"
     invariant "^2.2.1"
@@ -5678,8 +5670,8 @@ source-list-map@^0.1.4, source-list-map@~0.1.7:
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
 
 source-map-support@^0.4.2:
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.9.tgz#45eaa04f067e049d987b27599ed014a37750aaff"
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.10.tgz#d7b19038040a14c0837a18e630a196453952b378"
   dependencies:
     source-map "^0.5.3"
 

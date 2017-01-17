@@ -28,10 +28,10 @@
     "react-click-outside": "^2.2.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.3.17",
+    "@sanity/base": "^0.3.18",
     "@sanity/check": "^0.0.3",
     "@sanity/client": "^0.4.9",
-    "@sanity/components": "^0.0.107",
+    "@sanity/components": "^0.0.108",
     "@sanity/core": "^0.0.40",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
