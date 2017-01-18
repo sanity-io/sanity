@@ -3,6 +3,7 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../previews/Preview'
 import stringPreview from '../../../sanity/preview/stringPreview'
+import schema from 'part:@sanity/base/schema'
 
 export default class Reference extends React.Component {
   static propTypes = {
@@ -85,6 +86,7 @@ export default class Reference extends React.Component {
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
+          items: items,
           hits: items,
           fetching: false,
           refCache: updatedCache
@@ -106,7 +108,7 @@ export default class Reference extends React.Component {
   }
 
   handleSearch = query => {
-    const {searchFn, field} = this.props
+    const {field} = this.props
 
     if (query == '') {
       this.fetchAll()
@@ -127,24 +129,58 @@ export default class Reference extends React.Component {
       fetching: true
     })
 
-    searchFn(query, field)
-      .then(hits => {
-        if (this._currentQuery !== query) {
-          return // ignore
+    // Substring search in all items that is fetched
+
+    const referencedTypes = field.to.map(reference => reference.type)
+
+    const textFields = []
+    schema.types.filter(type => referencedTypes.includes(type.name)).forEach(type => {
+      type.fields.forEach(schemaField => {
+        if (schemaField.type == 'string') {
+          textFields.push(schemaField.name)
         }
-
-        const nextRefCache = hits.reduce((cache, hit) => {
-          cache[hit._id] = hit
-          return cache
-        }, Object.assign({}, this.state.refCache))
-
-        this.setState({
-          fetching: false,
-          hits: hits,
-          refCache: nextRefCache,
-          query: query
-        })
       })
+    })
+
+    const hits = this.state.items.filter(item => {
+
+      let isHit = false
+      textFields.forEach(textField => {
+
+        const re = new RegExp(`\\b${query}`, 'i')
+
+        if (item[textField].match(re)) {
+          isHit = true
+        }
+      })
+      return isHit
+    })
+
+    this.setState({
+      fetching: false,
+      hits: hits,
+      query: query
+    })
+
+    // TODO! Implement when substring search in Gradient™
+    // searchFn(query, field)
+    //   .then(hits => {
+    //     if (this._currentQuery !== query) {
+    //       return // ignore
+    //     }
+    //
+    //     const nextRefCache = hits.reduce((cache, hit) => {
+    //       cache[hit._id] = hit
+    //       return cache
+    //     }, Object.assign({}, this.state.refCache))
+    //
+    //     this.setState({
+    //       fetching: false,
+    //       hits: hits,
+    //       refCache: nextRefCache,
+    //       query: query
+    //     })
+    //   })
   }
 
   renderItem = item => {
