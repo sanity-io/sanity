@@ -107,9 +107,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.18":
-  version "0.3.18"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.18.tgz#e84db44abf6ef1ca749e344330a9d88d7fccb1ae"
+"@sanity/base@^0.3.19":
+  version "0.3.19"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.19.tgz#5b8be40e20272ec23df9bd66615d7a24f5d19072"
   dependencies:
     "@sanity/client" "^0.4.9"
     "@sanity/document-store" "^0.2.8"
@@ -145,9 +145,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.108":
-  version "0.0.108"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.108.tgz#cca779d22ba2374cddecad096fd34425ef8def7a"
+"@sanity/components@^0.0.109":
+  version "0.0.109"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.109.tgz#9e292b8baef59fd9ef63ecb783f2327c999afd22"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -244,9 +244,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.29":
-  version "0.1.29"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.29.tgz#b1f6323485435e4f989e3eed0d5a1644fb6a333a"
+"@sanity/form-builder@^0.1.31":
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.31.tgz#8b7757b962d55826af54abc47a9b2924e89b554f"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.5"
@@ -1513,8 +1513,8 @@ caniuse-api@^1.3.2, caniuse-api@^1.5.2:
     shelljs "^0.7.0"
 
 caniuse-db@^1.0.30000346, caniuse-db@^1.0.30000604:
-  version "1.0.30000611"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000611.tgz#1075d14d9b3cc153caf5e9e35f45565b03304c37"
+  version "1.0.30000613"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000613.tgz#639133b7a5380c1416f9701d23d54d093dd68299"
 
 canvas-to-blob@0.0.0, canvas-to-blob@^0.0.0:
   version "0.0.0"
@@ -1644,8 +1644,8 @@ color-convert@^0.5.3:
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-0.5.3.tgz#bdb6c69ce660fadffe0b0007cc447e1b9f7282bd"
 
 color-convert@^1.3.0:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.8.2.tgz#be868184d7c8631766d54e7078e2672d7c7e3339"
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.0.tgz#1accf97dd739b983bf994d56fec8f95853641b7a"
   dependencies:
     color-name "^1.1.1"
 
@@ -2184,13 +2184,13 @@ encoding@^0.1.11:
   dependencies:
     iconv-lite "~0.4.13"
 
-end-of-stream@1.0.0:
+end-of-stream@1.0.0, end-of-stream@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.0.0.tgz#d4596e702734a93e40e9af864319eabd99ff2f0e"
   dependencies:
     once "~1.3.0"
 
-end-of-stream@^1.0.0, end-of-stream@^1.1.0:
+end-of-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.1.0.tgz#e9353258baa9108965efc41cb0ef8ade2f3cfb07"
   dependencies:
