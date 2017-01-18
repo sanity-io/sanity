@@ -504,10 +504,18 @@
     },
     {
       "name": "part:@sanity/base/trash-icon",
-      "description": "Thin circle icon"
+      "description": "Trash icon"
     },
     {
       "implements": "part:@sanity/base/trash-icon",
+      "path": "components/icons/Trash.js"
+    },
+    {
+      "name": "part:@sanity/base/trash-outline-icon",
+      "description": "Outlined Trash icon"
+    },
+    {
+      "implements": "part:@sanity/base/trash-outline-icon",
       "path": "components/icons/TrashOutline.js"
     },
     {
