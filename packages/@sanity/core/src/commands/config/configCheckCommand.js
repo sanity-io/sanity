@@ -4,5 +4,5 @@ export default {
   name: 'configcheck',
   signature: '',
   description: 'Checks if the required configuration files for plugins exists and are up to date',
-  action: (args, context) => reinitializePluginConfigs(context)
+  action: (args, context) => reinitializePluginConfigs(context, args.extOptions)
 }

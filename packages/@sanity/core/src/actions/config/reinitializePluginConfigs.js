@@ -6,7 +6,7 @@ import normalizePluginName from '../../util/normalizePluginName'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
-export default async function reinitializePluginConfigs(options) {
+export default async function reinitializePluginConfigs(options, flags = {}) {
   const {workDir, output} = options
 
   const localChecksums = await getChecksums(workDir)
@@ -18,7 +18,7 @@ export default async function reinitializePluginConfigs(options) {
   const configPlugins = missingConfigs.map(warnOnDifferingChecksum)
 
   return missingConfigs.length > 0
-    ? await saveNewChecksums(configPlugins)
+    ? saveNewChecksums(configPlugins)
     : Promise.resolve()
 
   function hasLocalConfig(plugin) {
@@ -35,11 +35,18 @@ export default async function reinitializePluginConfigs(options) {
     const dstPath = path.join(workDir, 'config', `${normalizePluginName(plugin.name)}.json`)
     const prtPath = path.relative(workDir, dstPath)
 
-    output.print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
+    if (!flags.quiet) {
+      output.print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
+    }
+
     return fsp.copy(srcPath, dstPath).then(() => plugin)
   }
 
   function warnOnDifferingChecksum(plugin) {
+    if (flags.quiet) {
+      return plugin
+    }
+
     const local = localChecksums[plugin.name]
     if (typeof local !== 'undefined' && local !== plugin.configChecksum) {
       const name = normalizePluginName(plugin.name)
