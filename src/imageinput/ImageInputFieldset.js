@@ -147,18 +147,17 @@ export default class ImageInputFieldset extends React.PureComponent {
                     onClick={this.props.onClear}
                     icon={TrashIcon}
                     color="danger"
+                    title="Remove image"
                   >
-                      Remove
+                    {
+                      !showContent && 'Remove'
+                    }
                   </Button>
-                  <Button
-                    icon={UploadIcon}
-                    ripple={false}
-                  >
-                    <ImageSelect
-                      name={fieldName}
-                      onSelect={this.props.onSelect}
-                    >
-                      Replace image
+                  <Button icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
+                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
+                      {
+                        !showContent && 'Replace'
+                      }
                     </ImageSelect>
                   </Button>
                 </div>

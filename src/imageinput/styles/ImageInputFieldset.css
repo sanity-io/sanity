@@ -158,8 +158,8 @@
 
 .functions {
   position: absolute;
-  bottom: var(--medium-padding);
-  left: var(--medium-padding);
+  bottom: var(--small-padding);
+  right: var(--small-padding);
   font-size: 0.8rem;
   z-index: 1;
 }
@@ -208,5 +208,14 @@
   @nest & svg {
     font-size: 2em;
     width: 100%;
+  }
+}
+
+/* Image select hack */
+.replaceImageButton {
+  @nest .hasContent & {
+    @nest & span {
+      margin-left: 0;
+    }
   }
 }
