@@ -107,9 +107,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.19":
-  version "0.3.19"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.19.tgz#5b8be40e20272ec23df9bd66615d7a24f5d19072"
+"@sanity/base@^0.3.20":
+  version "0.3.20"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.20.tgz#67a83651931f685e3282710be2a022e49acb3082"
   dependencies:
     "@sanity/client" "^0.4.9"
     "@sanity/document-store" "^0.2.8"
@@ -145,9 +145,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/core@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.40.tgz#72d5d2ee9b7c6e5330e74c3b814b8f78f696e4cd"
+"@sanity/core@^0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.41.tgz#552beec5f1db179c1bf8817a45c34b49b9027da1"
   dependencies:
     "@sanity/check" "^0.0.3"
     "@sanity/mutator" "^0.2.5"
@@ -6020,11 +6020,11 @@ qs@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-4.0.0.tgz#c31d9b74ec27df75e543a86c78728ed8d4623607"
 
-qs@6.2.0, qs@^6.1.0:
+qs@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.2.0, qs@~6.3.0:
+qs@^6.1.0, qs@^6.2.0, qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
@@ -6066,13 +6066,13 @@ randomatic@^1.1.3:
     is-number "^2.0.2"
     kind-of "^3.0.2"
 
-range-parser@^1.0.3, range-parser@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
-
-range-parser@~1.0.3:
+range-parser@^1.0.3, range-parser@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.0.3.tgz#6872823535c692e2c2a0103826afd82c2e0ff175"
+
+range-parser@~1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
 rc@~1.1.6:
   version "1.1.6"
