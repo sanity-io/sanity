@@ -107,9 +107,9 @@
     webpack-dev-middleware "^1.6.0"
     webpack-hot-middleware "^2.13.2"
 
-"@sanity/base@^0.3.19":
-  version "0.3.19"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.19.tgz#5b8be40e20272ec23df9bd66615d7a24f5d19072"
+"@sanity/base@^0.3.20":
+  version "0.3.20"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.3.20.tgz#67a83651931f685e3282710be2a022e49acb3082"
   dependencies:
     "@sanity/client" "^0.4.9"
     "@sanity/document-store" "^0.2.8"
@@ -145,9 +145,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.0.109":
-  version "0.0.109"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.109.tgz#9e292b8baef59fd9ef63ecb783f2327c999afd22"
+"@sanity/components@^0.0.110":
+  version "0.0.110"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.0.110.tgz#02c5860afb44ffec72c4013f421e51b07ba77bed"
   dependencies:
     "@sanity/date-input" "^0.0.6"
     "@sanity/imagetool" "^0.2.2"
@@ -173,9 +173,9 @@
     react-sortable-hoc "^0.4.5"
     scroll "^2.0.0"
 
-"@sanity/core@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.40.tgz#72d5d2ee9b7c6e5330e74c3b814b8f78f696e4cd"
+"@sanity/core@^0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@sanity/core/-/core-0.0.41.tgz#552beec5f1db179c1bf8817a45c34b49b9027da1"
   dependencies:
     "@sanity/check" "^0.0.3"
     "@sanity/mutator" "^0.2.5"
@@ -5206,17 +5206,9 @@ react-simple-di@^1.2.0:
     babel-runtime "6.x.x"
     hoist-non-react-statics "1.x.x"
 
-react-sortable-hoc@0.4.5:
+react-sortable-hoc@0.4.5, react-sortable-hoc@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.5.tgz#8b60c6a42cfb886771cf28ec586efb0442d003fc"
-  dependencies:
-    babel-runtime "^6.11.6"
-    invariant "^2.2.1"
-    lodash "^4.12.0"
-
-react-sortable-hoc@^0.4.5:
-  version "0.4.7"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.7.tgz#3dbdb2c26a9538947389b3beefd6086f84f44a1f"
   dependencies:
     babel-runtime "^6.11.6"
     invariant "^2.2.1"

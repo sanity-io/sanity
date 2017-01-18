@@ -15,6 +15,15 @@
   }
 }
 
+.typeTitle {
+  font-size: var(--font-size-small);
+  position: absolute;
+  top: 0;
+  left: var(--large-padding);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
 .header {
   padding-top: 0.5em;
   padding-bottom: 0.5em;

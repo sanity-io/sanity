@@ -210,8 +210,8 @@ export default class EditorPane extends React.PureComponent {
   render() {
     const {value, deleted, loading, spin, validation} = this.state
     const {typeName} = this.props
-
     const titleProp = dataAspects.getItemDisplayField(typeName)
+    const schemaType = schema.types.find(type => type.name === this.props.typeName)
 
     if (loading) {
       return (
@@ -234,6 +234,8 @@ export default class EditorPane extends React.PureComponent {
 
     return (
       <div className={styles.root}>
+
+        <h2 className={styles.typeTitle}>{schemaType.title}</h2>
 
         <div className={styles.header}>
           <h1 className={styles.title}>
