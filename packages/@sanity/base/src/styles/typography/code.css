@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables/typography-style';
+@import 'part:@sanity/base/theme/variables/code-style';
+
+.root {
+  background-color: var(--code-bg);
+  line-height: 17px;
+  font-size: 13px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}

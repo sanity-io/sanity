@@ -1,0 +1,34 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.headingLevel_0 {
+  font-size: var(--font-size-h4);
+  font-weight: 500;
+  color: var(--black);
+}
+
+.headingLevel_1 {
+  font-size: var(--font-size-h4);
+  font-weight: 100;
+  color: var(--black);
+}
+
+.headingLevel_2 {
+  font-size: var(--font-size-base);
+  color: var(--black);
+}
+
+.headingLevel_3 {
+  font-size: var(--font-size-base);
+  color: var(--black);
+}
+
+.headingLevel_4 {
+  font-size: var(--font-size-base);
+  color: var(--black);
+}
+
+.label {
+  font-size: var(--font-size-base);
+  color: var(--black);
+  font-weight: 500;
+}
