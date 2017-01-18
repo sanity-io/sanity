@@ -28,7 +28,10 @@
   }
 
   @nest &::-webkit-scrollbar-thumb {
-    background: var(--gray);
+    background-color: var(--gray);
+    @nest &:hover {
+      background-color: var(--black);
+    }
   }
 
   @nest &::-webkit-scrollbar-track-piece {
