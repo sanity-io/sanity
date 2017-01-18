@@ -1,3 +1,4 @@
+import resolveFrom from 'resolve-from'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
@@ -12,7 +13,7 @@ import {bootstrapSanity} from './bootstrap'
 
 export default async function initSanity(args, context) {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
-  output.print('This utility walks you through creating a Sanity installation.')
+  output.print('FOO This utility walks you through creating a Sanity installation.')
   output.print('Press ^C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
@@ -79,6 +80,13 @@ export default async function initSanity(args, context) {
   } catch (err) {
     throw err
   }
+
+  // Make sure we have the required configs
+  const coreCommands = require(resolveFrom(outputPath, '@sanity/core')).commands
+  const configCheckCmd = coreCommands.find(cmd => cmd.name === 'configcheck')
+  await configCheckCmd.action({extOptions: {quiet: true}}, Object.assign({}, context, {
+    workDir: outputPath
+  }))
 
   // Check if we're currently in the output path, so we can give a better start message
   if (outputPath === process.cwd()) {

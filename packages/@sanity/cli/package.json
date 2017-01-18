@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/client": "^0.4.8",
+    "@sanity/client": "^0.4.9",
     "@sanity/resolver": "^0.0.9",
     "@sanity/util": "^0.0.3",
     "babel-polyfill": "^6.20.0",
@@ -43,7 +43,7 @@
     "configstore": "^2.0.0",
     "debug": "^2.6.0",
     "deep-sort-object": "^1.0.1",
-    "execa": "^0.5.1",
+    "execa": "^0.6.0",
     "fs-promise": "^1.0.0",
     "git-user-info": "^1.0.0",
     "gitconfiglocal": "^2.0.1",
@@ -55,14 +55,14 @@
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
     "opn": "^4.0.2",
-    "ora": "^0.4.0",
+    "ora": "^1.0.0",
     "osenv": "^0.1.4",
     "package-json": "^2.4.0",
     "progrescii": "^0.1.1",
     "promise-props-recursive": "^1.0.0",
     "resolve-from": "^2.0.0",
     "semver-compare": "^1.0.0",
-    "simple-get": "^2.3.0",
+    "simple-get": "^2.4.0",
     "split2": "^2.1.1",
     "thenify": "^3.2.0",
     "update-notifier": "^1.0.3",
@@ -77,10 +77,10 @@
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.13.0",
+    "eslint": "^3.13.1",
     "eslint-config-sanity": "^2.0.1",
     "mocha": "^3.2.0",
     "rimraf": "^2.5.2",
-    "source-map-support": "^0.4.8"
+    "source-map-support": "^0.4.10"
   }
 }
