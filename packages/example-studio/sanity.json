@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "project": {
+    "name": "SanityTest"
+  },
+  "api": {
+    "projectId": "f8i6krhg",
+    "dataset": "playground"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema.js"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "example-studio",
+  "private": "true",
+  "version": "1.0.0",
+  "description": "Just a sample Sanity studio project",
+  "main": "package.json",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "sanity start",
+    "test": "sanity check"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/base": "^0.3.20",
+    "@sanity/components": "^0.0.110",
+    "@sanity/core": "^0.0.42",
+    "@sanity/default-layout": "^0.1.18",
+    "@sanity/default-login": "^0.0.8",
+    "@sanity/desk-tool": "^0.3.43",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {}
+}
