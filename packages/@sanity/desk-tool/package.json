@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.0.7",
-    "@sanity/form-builder": "^0.1.31",
+    "@sanity/form-builder": "^0.1.32",
     "react-click-outside": "^2.2.0"
   },
   "devDependencies": {

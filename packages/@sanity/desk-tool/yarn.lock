@@ -244,9 +244,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.1.31":
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.31.tgz#8b7757b962d55826af54abc47a9b2924e89b554f"
+"@sanity/form-builder@^0.1.32":
+  version "0.1.32"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.1.32.tgz#faf29e2f2264dcce51f32f5a73a8332c7ee9521f"
   dependencies:
     "@sanity/imagetool" "^0.2.2"
     "@sanity/mutator" "^0.2.5"
@@ -2184,13 +2184,13 @@ encoding@^0.1.11:
   dependencies:
     iconv-lite "~0.4.13"
 
-end-of-stream@1.0.0, end-of-stream@^1.0.0:
+end-of-stream@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.0.0.tgz#d4596e702734a93e40e9af864319eabd99ff2f0e"
   dependencies:
     once "~1.3.0"
 
-end-of-stream@^1.1.0:
+end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.1.0.tgz#e9353258baa9108965efc41cb0ef8ade2f3cfb07"
   dependencies:
@@ -5206,9 +5206,17 @@ react-simple-di@^1.2.0:
     babel-runtime "6.x.x"
     hoist-non-react-statics "1.x.x"
 
-react-sortable-hoc@0.4.5, react-sortable-hoc@^0.4.5:
+react-sortable-hoc@0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.5.tgz#8b60c6a42cfb886771cf28ec586efb0442d003fc"
+  dependencies:
+    babel-runtime "^6.11.6"
+    invariant "^2.2.1"
+    lodash "^4.12.0"
+
+react-sortable-hoc@^0.4.5:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.7.tgz#3dbdb2c26a9538947389b3beefd6086f84f44a1f"
   dependencies:
     babel-runtime "^6.11.6"
     invariant "^2.2.1"
