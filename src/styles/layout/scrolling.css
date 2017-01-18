@@ -3,8 +3,9 @@
 .lightScrollbars {
 
   @nest &::-webkit-scrollbar {
-    background-color: transparent;
-    width: 2px;
+    background-color: #fafafa;
+    width: 10px;
+    display: none;
   }
 
   @nest &::-webkit-scrollbar * {
@@ -17,7 +18,7 @@
 
   @nest &:hover {
     @nest &::-webkit-scrollbar {
-      background-color: transparent;
+      display: block;
       width: 10px;
     }
   }
@@ -27,7 +28,7 @@
   }
 
   @nest &::-webkit-scrollbar-thumb {
-    background: var(--black);
+    background: var(--gray);
   }
 
   @nest &::-webkit-scrollbar-track-piece {
