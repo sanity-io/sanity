@@ -29,7 +29,6 @@
       content: "shouldNotReposition";
     }
   }
-
 }
 
 .navigationPanesContainer {
@@ -60,17 +59,12 @@
   }
 }
 
-/*
-:root {
-  @custom-media --max-screen-medium-desk-tool (max-width: 44em);
-}
-*/
-
 .editorContainer {
-  overflow-y: scroll;
   padding: var(--small-padding);
   box-sizing: border-box;
   height: 100%;
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
 
   @media (--screen-medium) {
     width: auto;
@@ -81,13 +75,6 @@
     bottom: 0;
     padding: var(--large-padding);
   }
-
-  /*
-  @media (--max-screen-medium-desk-tool) {
-    min-width: calc(var(--screen-medium-break) - var(--navMinWidth) - var(--large-padding) * 4);
-    max-width: calc(var(--screen-medium-break) - var(--navMinWidth) - var(--large-padding) * 2);
-  }
-  */
 }
 
 .emptyText {
@@ -101,7 +88,5 @@
     transform: translateX(-50%) translateY(-50%);
     font-weight: 300;
     opacity: 0.5;
-
   }
-
 }

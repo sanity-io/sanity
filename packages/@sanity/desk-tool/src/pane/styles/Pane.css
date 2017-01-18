@@ -51,8 +51,8 @@
 }
 
 .listContainer {
-  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-  composes: lightScrollbars from 'part:@sanity/base/theme/layout/scrolling-style';
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   display: block;
   margin: 0;
   padding: 0;
