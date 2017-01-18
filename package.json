@@ -49,9 +49,9 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.3.13",
+    "@sanity/base": "^0.3.19",
     "@sanity/check": "^0.0.3",
-    "@sanity/core": "^0.0.36",
+    "@sanity/core": "^0.0.40",
     "@sanity/storybook": "^0.0.15",
     "@sanity/storybook-only": "^1.0.2",
     "babel-cli": "^6.9.0",
