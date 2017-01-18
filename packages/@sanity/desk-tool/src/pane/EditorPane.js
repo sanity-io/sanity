@@ -216,9 +216,7 @@ export default class EditorPane extends React.PureComponent {
     if (loading) {
       return (
         <div className={styles.root}>
-          <div className={styles.spinner}>
-            <Spinner />
-          </div>
+          <Spinner center message={`Loading ${schemaType.title}…`} />
         </div>
       )
     }
