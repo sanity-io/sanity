@@ -40,10 +40,10 @@
     "slate-insert-block-on-enter": "0.0.2"
   },
   "devDependencies": {
-    "@sanity/base": "^0.3.17",
+    "@sanity/base": "^0.3.19",
     "@sanity/check": "^0.0.3",
     "@sanity/cli": "^0.1.27",
-    "@sanity/components": "^0.0.102",
+    "@sanity/components": "^0.0.109",
     "@sanity/core": "^0.0.38",
     "@sanity/plugin-loader": "^0.0.4",
     "@sanity/server": "^0.0.24",
