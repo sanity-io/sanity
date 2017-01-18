@@ -14,6 +14,7 @@ const ReferenceBrowserWithSearch = ReferenceInput.createBrowser({
 
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search,
+  fetch,
   materializeReferences
 })
 

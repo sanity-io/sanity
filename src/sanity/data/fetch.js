@@ -8,7 +8,6 @@ export function fetchSingle(id) {
 }
 
 export function fetch(field) {
-  console.log('fetch', field)
   const toFieldTypes = field.to.map(toField => toField.type)
   const params = toFieldTypes.reduce((acc, toFieldType, i) => {
     acc[`toFieldType${i}`] = `${schema.name}.${toFieldType}`

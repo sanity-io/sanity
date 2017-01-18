@@ -10,6 +10,7 @@ export default class Reference extends React.Component {
     field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     searchFn: PropTypes.func,
+    fetchFn: PropTypes.func,
     materializeReferences: PropTypes.func,
     onChange: PropTypes.func
   };
@@ -71,8 +72,28 @@ export default class Reference extends React.Component {
     })
   }
 
+  fetchAll() {
+    const {fetchFn, field} = this.props
+
+    fetchFn(field)
+      .then(items => {
+        this._isFetching = false
+
+        const updatedCache = items.reduce((cache, item) => {
+          cache[item._id] = item
+          return cache
+        }, Object.assign({}, this.state.refCache))
+
+        this.setState({
+          hits: items,
+          fetching: false,
+          refCache: updatedCache
+        })
+      })
+  }
+
   handleFocus = () => {
-    //
+    this.fetchAll()
   }
 
   handleChange = item => {
@@ -86,6 +107,11 @@ export default class Reference extends React.Component {
 
   handleSearch = query => {
     const {searchFn, field} = this.props
+
+    if (query == '') {
+      this.fetchAll()
+      return
+    }
 
     if (this._currentQuery === query) {
       return
