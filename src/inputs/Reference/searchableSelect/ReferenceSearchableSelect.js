@@ -149,7 +149,7 @@ export default class Reference extends React.Component {
 
         const re = new RegExp(`\\b${query}`, 'i')
 
-        if (item[textField].match(re)) {
+        if (item[textField] && item[textField].match(re)) {
           isHit = true
         }
       })
