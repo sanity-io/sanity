@@ -28,7 +28,6 @@ export default class TagsTextField extends React.Component {
     this.handleSetFocus = this.handleSetFocus.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.handleBlur = this.handleBlur.bind(this)
-    this.handleKeyUp = this.handleKeyUp.bind(this)
 
     this.state = {
       length: 4,
@@ -46,17 +45,14 @@ export default class TagsTextField extends React.Component {
 
   handleKeyDown(event) {
     const value = this._input.value
-    this.setState({
-      length: value.length > 3 ? value.length : 3
-    })
-  }
-
-  handleKeyUp(event) {
-    // Can not handle Backspace on keyPress
-    const value = this._input.value
     if (event.key == 'Backspace' && value == '') {
       this.removeTag(this.props.tags.length - 1)
     }
+
+    // length is used for styling purpose
+    this.setState({
+      length: value.length > 3 ? value.length : 3
+    })
   }
 
   handleKeyPress(event) {
@@ -137,7 +133,6 @@ export default class TagsTextField extends React.Component {
               style={{width: `${this.state.length * 0.8}em`}}
               onBlur={this.handleBlur}
               onFocus={this.handleFocus}
-              onKeyUp={this.handleKeyUp}
               ref={setInput}
               id={this._inputId}
               autoComplete="off"
