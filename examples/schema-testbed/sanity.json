@@ -10,6 +10,10 @@
     {
       "implements": "part:@sanity/base/root",
       "path": "./components/Main"
+    },
+    {
+      "implements": "part:@sanity/base/schema",
+      "path": "./schemas/index.js"
     }
   ]
 }
