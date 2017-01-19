@@ -1,0 +1,71 @@
+@use postcss-cssnext;
+
+.list {
+  margin: 4rem;
+  overflow: hidden;
+}
+
+.item {
+  float: left;
+  width: 4rem;
+  margin: 1rem;
+}
+
+.iconName {
+  text-align: center;
+  font-size: 0.5rem;
+}
+
+.icon svg {
+  height: 3rem;
+  width: 3rem;
+  margin: 0 auto;
+}
+
+.sanityIcons {
+  max-width: 30em;
+  margin: 1em auto;
+}
+
+.sanityIcon {
+  display: block;
+  border-bottom: 1px solid #ccc;
+  padding-top: 1em;
+}
+
+.title {
+  font-size: 1.5em;
+}
+
+.role {
+  composes: root from 'part:@sanity/base/theme/typography/code-style';
+}
+
+.iconPreview {
+  color: inherit;
+}
+
+.iconPreviewXL {
+  composes: iconPreview;
+  font-size: 4em;
+}
+
+.iconPreviewL {
+  composes: iconPreview;
+  font-size: 3em;
+}
+
+.iconPreviewM {
+  composes: iconPreview;
+  font-size: 2em;
+}
+
+.iconPreviewS {
+  composes: iconPreview;
+  font-size: 1em;
+}
+
+.iconPreviewXS {
+  composes: iconPreview;
+  font-size: 0.5em;
+}

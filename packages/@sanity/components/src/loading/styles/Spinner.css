@@ -1,0 +1,88 @@
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.root {
+  /* root */
+}
+
+.block {
+  composes: root;
+  display: block;
+  text-align: center;
+
+  @nest & svg {
+    height: 1em;
+    width: 1em;
+  }
+
+  @nest & .message {
+    display: block;
+  }
+}
+
+.inline {
+  composes: root;
+  display: inline-block;
+
+  @nest & svg {
+    margin-top: -0.2em;
+    height: 1em;
+    width: 1em;
+  }
+
+  @nest & .message {
+    margin-left: 0.5em;
+    display: inline;
+  }
+}
+
+.center {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  @nest & .inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  @nest & svg {
+    display: inline-block;
+    text-align: center;
+    height: 3em;
+    width: 3em;
+  }
+
+  @nest & .message {
+    text-align: center;
+    line-height: 1.2em;
+    display: block;
+    font-weight: 300;
+  }
+}
+
+.fullscreen {
+  composes: center;
+  position: fixed;
+}
+
+.root svg {
+  transform-origin: center center;
+  animation-name: spin;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}

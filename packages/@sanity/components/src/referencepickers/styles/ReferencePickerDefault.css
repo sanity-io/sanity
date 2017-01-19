@@ -1,0 +1,48 @@
+@use postcss-cssnext;
+
+.root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.inner {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  flex-wrap: no-wrap;
+  align-items: stretch;
+  align-content: stretch;
+}
+
+.functions {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-basis: 3rem;
+}
+
+.listContainer {
+  box-sizing: border-box;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-basis: 100%;
+}
+
+.list {
+  width: 100%;
+}
+
+.toggle {
+  align-self: flex-end;
+  flex-grow: 0;
+}
+
+.search {
+  flex-grow: 1;
+  align-self: flex-start;
+}

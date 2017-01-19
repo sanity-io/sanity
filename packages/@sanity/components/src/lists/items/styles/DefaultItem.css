@@ -1,0 +1,101 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --default-item-selected-color: var(--brand-primary);
+  --default-item-active-color: var(--brand-primary);
+}
+
+.root {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  background-color: transparent;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  user-select: none;
+  cursor: default;
+}
+
+.link {
+  display: block;
+  color: inherit;
+  text-decoration: inherit;
+
+  @nest &:hover {
+    background-color: color(var(--gray-base) a(7%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--default-item-selected-color) a(100%));
+    color: #fff;
+  }
+}
+
+.noLink {
+  composes: link;
+}
+
+.selected {
+  background-color: color(var(--default-item-selected-color) a(80%));
+  color: #fff;
+}
+
+.highlighted {
+  background-color: color(var(--default-item-selected-color) a(30%));
+}
+
+.sortableHelper {
+  background-color: inherit;
+  color: inherit;
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+}
+
+.default {
+  composes: root;
+}
+
+.divider {
+  composes: root;
+  border-bottom: 1px solid #eee;
+}
+
+.zebra-stripes {
+  composes: root;
+
+  @nest &:nth-child(even) {
+    background-color: color(var(--gray-base) a(4%));
+  }
+}
+
+.sortableHelper {
+  display: block;
+  opacity: 0.7;
+}
+
+.dragHandle {
+  float: left;
+  cursor: row-resize;
+  font-size: 1em;
+  height: 100%;
+  line-height: 100%;
+  display: block;
+  opacity: 0.5;
+  width: 1.5em;
+  border: 1px solid transparent;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  @nest .root:hover & {
+    opacity: 0.7;
+  }
+
+  & > * {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    padding: 0.5em;
+    transform: translateY(-50%);
+  }
+}

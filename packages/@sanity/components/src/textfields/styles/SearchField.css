@@ -1,0 +1,32 @@
+.root {
+  display: block;
+  position: relative;
+}
+
+.label {
+  display: block;
+}
+
+.input {
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+}
+
+.inputError {
+  composes: error from 'part:@sanity/base/theme/forms/text-input-style';
+}
+
+.clearButton {
+  composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
+}
+
+.isFocused {
+  border: 2px solid green;
+}
+
+.isDirty {
+  border: 2px solid red;
+}
+
+.is-invalid {
+  composes: isDirty;
+}

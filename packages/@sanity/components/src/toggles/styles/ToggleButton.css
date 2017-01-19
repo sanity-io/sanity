@@ -1,0 +1,14 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.selected {
+  background-color: var(--selected-item-color);
+  color: #fff;
+
+  &:hover {
+    background-color: var(--selected-item-color-hover);
+  }
+}
+
+.unSelected {
+  background-color: transparent;
+}

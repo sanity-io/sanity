@@ -1,0 +1,45 @@
+.root {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  user-select: none;
+}
+
+.list {
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
+}
+
+.sortableList {
+  composes: list;
+}
+
+.scrollable {
+  max-height: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.scrollableList {
+  composes: list;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.item {
+  user-select: none;
+  cursor: default;
+
+  @nest .isSortable & {
+    cursor: row-resize;
+  }
+
+  @nest .isSortable.usesDragHandle & {
+    cursor: default;
+  }
+}

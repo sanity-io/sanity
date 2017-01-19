@@ -1,0 +1,200 @@
+@import 'part:@sanity/base/theme/variables-style';
+@import 'part:@sanity/base/theme/body-style';
+
+.root {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  composes: root from "part:@sanity/components/formfields/default-style";
+
+  & & {
+    /* nested inside itself */
+    margin: 0;
+  }
+}
+
+.inner > .content > .fieldWrapper > * {
+  box-sizing: border-box;
+  lost-column: none;
+
+  @nest &:not(:first-child) {
+    margin-top: var(--medium-padding);
+  }
+
+  @media (--screen-medium) {
+    @nest &:not(:first-child) {
+      margin-top: 0;
+      margin-top: var(--medium-padding);
+    }
+
+    @nest .columns4 & {
+      lost-column: 1/4;
+
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+5) {
+        margin-top: var(--medium-padding);
+      }
+    }
+
+    @nest .columns3 > & {
+      lost-column: 1/3;
+
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+4) {
+        margin-top: var(--medium-padding);
+      }
+    }
+
+    @nest .columns2 > & {
+      lost-column: 1/2;
+
+      @nest &:not(:first-child) {
+        margin-top: 0;
+      }
+
+      @nest &:nth-child(n+3) {
+        margin-top: var(--medium-padding);
+      }
+    }
+  }
+}
+
+.columns1 {
+  composes: root;
+}
+
+.columns2 {
+  composes: root;
+}
+
+.content {
+  padding: var(--medium-padding);
+  background-color: var(--gray-lighter);
+  position: relative;
+  lost-utility: clearfix;
+  display: none;
+
+  @nest &.isOpen {
+    display: block;
+  }
+
+  & & {
+    /* nested inside itself */
+    border: none;
+    padding: 0;
+  }
+
+  @nest .level1 & {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  @nest .level2 & {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  @nest .level3 & {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  @nest .level4 & {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+}
+
+.inner {
+  display: block;
+}
+
+.legend + .content {
+  margin-top: var(--small-padding);
+}
+
+.legend {
+  composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  cursor: default;
+
+  @nest .level1 & {
+    font-size: var(--font-size-h4);
+    text-transform: none;
+  }
+
+  @nest .level2 & {
+    font-size: var(--font-size-h4);
+    text-transform: none;
+  }
+
+  @nest .level3 & {
+    font-size: var(--font-size-h4);
+    text-transform: none;
+  }
+
+  @nest .level4 & {
+    font-size: var(--font-size-h4);
+    text-transform: none;
+  }
+}
+
+.functions {
+  margin-top: 1em;
+}
+
+.arrow {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  margin-right: 0.25em;
+  vertical-align: middle;
+  transition: transform 0.1s linear;
+  transform: rotate(-90deg);
+  margin-top: -0.1em;
+
+  @nest &.isOpen {
+    transform: rotate(0);
+  }
+
+  @nest & svg {
+    position: absolute;
+    transform: scale(1.2);
+  }
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: var(--small-padding);
+  padding-bottom: 0;
+  display: none;
+
+  @nest &.isOpen {
+    display: block;
+  }
+}
+
+.debugNestingLevel {
+  display: none;
+}
