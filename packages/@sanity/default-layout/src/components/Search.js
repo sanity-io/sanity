@@ -140,7 +140,7 @@ class Search extends React.Component {
       return (
         <Preview
           value={item}
-          style="default"
+          style="default" // eslint-disable-line
           typeDef={type}
         />
       )

@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import {StateLink} from 'part:@sanity/base/router'
 
 export default function NotFound() {

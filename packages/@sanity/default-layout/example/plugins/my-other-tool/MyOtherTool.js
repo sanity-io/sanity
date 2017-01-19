@@ -1,3 +1,4 @@
+/* eslint-disable max-len, react/display-name, react/no-multi-comp */
 import {route, StateLink} from 'part:@sanity/base/router'
 import React, {PropTypes} from 'react'
 

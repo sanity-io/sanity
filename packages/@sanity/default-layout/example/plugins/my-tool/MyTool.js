@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name, react/no-multi-comp */
 import {route} from 'part:@sanity/base/router'
 import React from 'react'
 
