@@ -1087,6 +1087,7 @@ test('uploads files', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   getClient().assets.upload('file', fs.createReadStream(fixturePath))
+    .filter(event => event.type === 'response')
     .map(evt => evt.body)
     .subscribe(body => {
       t.equal(body.url, 'https://some.asset.url')
