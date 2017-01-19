@@ -7,3 +7,7 @@ coverage
 
 # Dependency directories
 node_modules
+
+# Built assets
+dist
+
