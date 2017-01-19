@@ -1,4 +1,4 @@
-const calculateStyles = require('../src/calculateStyles')
+import calculateStyles from '../src/calculateStyles'
 require('should')
 
 // Todo: write test for cropping container too
