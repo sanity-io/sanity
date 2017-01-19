@@ -58,14 +58,15 @@ export default class DefaultButton extends React.Component {
 
     const Icon = icon
 
-    const style = `
-      ${(inverted ? styles.inverted : '')}
-      ${kind ? styles[kind] : styles.default}
-      ${color ? styles[`color__${color}`] : ''}
-      ${Icon ? styles.hasIcon : ''}
-      ${className || ''}
-      ${disabled ? styles.disabled : ''}
-      ${this.state.recentlyHovered ? styles.recentlyHovered : styles.notRecentlyHovered}`
+    const style = [
+      inverted && styles.inverted,
+      kind ? styles[kind] : styles.default,
+      color && styles[`color__${color}`],
+      icon && styles.hasIcon,
+      className,
+      disabled && styles.disabled,
+      this.state.recentlyHovered ? styles.recentlyHovered : styles.notRecentlyHovered
+    ].filter(Boolean).join(' ')
 
     return (
       <button
