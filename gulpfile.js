@@ -84,9 +84,13 @@ gulp.task('watch-assets', () => {
     .pipe(gulp.dest(dest))
 })
 
-gulp.task('watch', ['watch-js'], callback => {
+gulp.task('watch', ['watch-js', 'watch-assets'], callback => {
   watch(scripts, {debounceDelay: 200}, () => {
     gulp.start('watch-js')
+  })
+
+  watch(assets, {debounceDelay: 200}, () => {
+    gulp.start('watch-assets')
   })
 })
 
