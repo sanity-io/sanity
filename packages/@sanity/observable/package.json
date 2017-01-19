@@ -1,7 +1,7 @@
 {
   "name": "@sanity/observable",
   "description": "A small-ish RxJS based Observable implementation for Sanity",
-  "version": "1.4.0",
+  "version": "0.99.0",
   "main": "index.js",
   "scripts": {
     "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js test/**/*.test.js"

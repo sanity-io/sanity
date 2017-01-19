@@ -1,6 +1,6 @@
 {
   "name": "@sanity/date-input",
-  "version": "0.0.6",
+  "version": "0.99.0",
   "description": "Date/time input components for Sanity form builder",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
     "react-datepicker": "^0.34.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.0.3",
+    "@sanity/check": "^0.99.0",
     "in-publish": "^2.0.0",
     "rimraf": "^2.5.2",
     "stylelint": "^7.5.0",
