@@ -4,12 +4,7 @@
   "description": "Utilities shared across projects of Sanity",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run clean && npm test && npm run compile",
-    "compile": "babel --source-maps inline --copy-files -d lib/ src/",
-    "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
     "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib",
-    "prepublish": "in-publish && npm run build || not-in-publish",
     "posttest": "eslint ."
   },
   "repository": {
@@ -26,15 +21,11 @@
   },
   "homepage": "https://github.com/sanity-io/util#readme",
   "dependencies": {
-    "fs-promise": "^0.5.0",
-    "in-publish": "^2.0.0"
+    "fs-promise": "^0.5.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.10.1",
-    "babel-eslint": "^7.0.0",
     "babel-preset-es2015-node4": "^2.1.0",
     "babel-preset-stage-2": "^6.13.0",
-    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "eslint": "^3.8.1",

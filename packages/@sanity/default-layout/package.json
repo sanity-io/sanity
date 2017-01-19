@@ -5,12 +5,10 @@
   "main": "lib/default-layout.js",
   "scripts": {
     "start": "cd example && sanity start",
-    "compile": "babel --copy-files -d lib/ src/",
-    "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "test": "eslint .",
-    "clean": "rimraf lib .nyc_output coverage",
-    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish"
+    "clean": "rimraf .nyc_output coverage",
+    "prepublish": "in-publish && sanity-check || not-in-publish"
   },
   "repository": {
     "type": "git",
@@ -36,26 +34,12 @@
     "@sanity/components": "^0.0.89",
     "@sanity/core": "^0.0.34",
     "@sanity/form-builder": "^0.1.19",
-    "babel-cli": "^6.18.0",
-    "babel-eslint": "^7.1.1",
-    "babel-plugin-syntax-class-properties": "^6.13.0",
-    "babel-plugin-transform-class-properties": "^6.19.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.12.2",
-    "eslint-config-sanity": "^2.0.1",
-    "eslint-plugin-react": "^6.7.1",
     "in-publish": "^2.0.0",
     "mocha": "^3.2.0",
     "nyc": "^10.0.0",
     "react": "^15.4.1",
     "rimraf": "^2.5.4"
-  },
-  "peerDependencies": {
-    "react": "^15.4.1",
-    "react-dom": "^15.3.2"
   }
 }

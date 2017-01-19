@@ -7,9 +7,7 @@
     "sanity": "./bin/sanity.js"
   },
   "scripts": {
-    "build": "npm run clean && npm test && npm run compile && npm run package-yarn",
-    "compile": "babel --source-maps inline --copy-files -d lib/ src/",
-    "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
+    "build": "npm test && npm run package-yarn",
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib vendor/yarn",
@@ -70,15 +68,8 @@
     "xdg-basedir": "^2.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.10.1",
-    "babel-eslint": "^7.0.0",
-    "babel-preset-es2015-node4": "^2.1.1",
-    "babel-preset-stage-2": "^6.13.0",
-    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.13.1",
-    "eslint-config-sanity": "^2.0.1",
     "mocha": "^3.2.0",
     "rimraf": "^2.5.2",
     "source-map-support": "^0.4.10"

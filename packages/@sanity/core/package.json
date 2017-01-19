@@ -6,11 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "compile": "babel --source-maps inline --copy-files -d lib/ src/",
-    "compile:watch": "babel --source-maps inline --watch --copy-files -d lib/ src/",
     "test": "mocha --recursive test/**/*.test.js",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
-    "postpublish": "rimraf lib",
     "posttest": "eslint ."
   },
   "keywords": [
@@ -30,7 +26,6 @@
     "fs-promise": "^1.0.0",
     "get-uri": "^2.0.0",
     "got": "^6.7.1",
-    "in-publish": "^2.0.0",
     "linecount": "^1.0.1",
     "lodash": "^4.17.4",
     "path-exists": "^3.0.0",
@@ -46,15 +41,8 @@
     "uglify-js": "^2.7.5"
   },
   "devDependencies": {
-    "babel-cli": "^6.9.0",
-    "babel-eslint": "^7.1.0",
-    "babel-preset-es2015-node4": "^2.1.1",
-    "babel-preset-stage-2": "^6.18.0",
-    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.13.1",
-    "eslint-config-sanity": "^2.0.1",
     "mocha": "^3.1.2"
   },
   "repository": {

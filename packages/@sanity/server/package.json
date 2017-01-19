@@ -4,12 +4,7 @@
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
-    "clean": "rimraf lib",
-    "compile": "babel -d lib/ src/",
-    "compile:watch": "babel -w -d lib/ src/",
     "posttest": "eslint .",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
-    "postpublish": "in-publish && npm run clean || not-in-publish",
     "start": "node bin/sanity-server.js",
     "start-dev": "node bin/sanity-server.js --dev"
   },
@@ -67,19 +62,8 @@
     "webpack-hot-middleware": "^2.15.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-eslint": "^7.1.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "cross-env": "^3.1.4",
-    "eslint": "^3.13.1",
-    "eslint-config-sanity": "^2.0.1",
-    "eslint-plugin-react": "^6.9.0",
-    "rimraf": "^2.5.2"
-  },
-  "peerDependencies": {
-    "@sanity/base": ">=0.0.1",
-    "react": "^15.0.0",
-    "react-dom": "^15.0.0"
+    "cross-env": "^3.1.4"
   }
 }
