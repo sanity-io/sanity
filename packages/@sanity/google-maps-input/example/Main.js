@@ -12,7 +12,7 @@ export default class QuickstartExample extends React.Component {
   }
 
   handleLogClick = event => {
-    console.log(this.state.editorValue)
+    console.log(this.state.editorValue) // eslint-disable-line no-console
   }
 
   render() {
