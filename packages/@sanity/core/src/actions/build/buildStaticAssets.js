@@ -1,5 +1,6 @@
 import fsp from 'fs-promise'
 import path from 'path'
+import rimTheRaf from 'rimraf'
 import thenify from 'thenify'
 import filesize from 'filesize'
 import compressJavascript from './compressJavascript'
@@ -11,12 +12,14 @@ import {
   ReactDOM
 } from '@sanity/server'
 
+const rimraf = thenify(rimTheRaf)
 const absoluteMatch = /^https?:\/\//i
 
 export default async (args, context) => {
-  const {output, workDir} = context
+  const {output, prompt, workDir} = context
   const flags = args.extOptions
-  const outputDir = args.argsWithoutOptions[0] || path.join(workDir, 'dist')
+  const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
+  const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
   const config = getConfig(workDir).get('server')
   const compilationConfig = {
     env: 'production',
@@ -30,8 +33,27 @@ export default async (args, context) => {
 
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = thenify(compiler.run.bind(compiler))
+  let shouldDelete = true
 
-  let spin = output.spinner('Building Sanity...').start()
+  if (outputDir !== defaultOutputDir) {
+    shouldDelete = await prompt.single({
+      type: 'confirm',
+      message: `Do you want to delete the existing directory (${outputDir}) first?`,
+      default: true
+    })
+  }
+
+  let spin
+
+  if (shouldDelete) {
+    const deleteStart = Date.now()
+    spin = output.spinner('Clearing output folder').start()
+    await rimraf(outputDir)
+    spin.text = `Clearing output folder (${Date.now() - deleteStart}ms)`
+    spin.succeed()
+  }
+
+  spin = output.spinner('Building Sanity').start()
 
   const bundle = {}
 
@@ -45,6 +67,9 @@ export default async (args, context) => {
       )
     }
 
+    spin.text = `Building Sanity (${stats.time}ms)`
+    spin.succeed()
+
     // Get hashes for each chunk
     const chunkMap = {}
     stats.chunks.forEach(chunk =>
@@ -56,7 +81,8 @@ export default async (args, context) => {
     bundle.stats = stats
 
     // Build new index document with correct hashes
-    spin.text = 'Building index document'
+    const indexStart = Date.now()
+    spin = output.spinner('Building index document').start()
     const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap}, {
       scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => {
         const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
@@ -75,7 +101,7 @@ export default async (args, context) => {
 
     // Print build output, optionally stats if requested
     bundle.stats.warnings.forEach(output.print)
-    spin.text = `Building Sanity (${bundle.stats.time}ms)`
+    spin.text = `Building index document (${Date.now() - indexStart}ms)`
     spin.succeed()
 
     if (flags.stats) {
@@ -86,7 +112,7 @@ export default async (args, context) => {
     }
 
     // Now compress the JS bundles
-    spin = output.spinner('Compressing Javascript bundles...').start()
+    spin = output.spinner('Minifying Javascript bundles').start()
     const compressStart = Date.now()
     await Promise.all(Object.keys(chunkMap)
       .filter(fileName => path.extname(fileName) === '.js')
@@ -94,7 +120,7 @@ export default async (args, context) => {
       .map(compressJavascript)
     )
 
-    spin.text = `Compressing Javascript bundles (${Date.now() - compressStart}ms)`
+    spin.text = `Minifying Javascript bundles (${Date.now() - compressStart}ms)`
     spin.succeed()
 
     if (flags.profile) {
@@ -103,6 +129,9 @@ export default async (args, context) => {
         JSON.stringify(statistics.toJson('verbose'))
       )
     }
+
+    // Copy static assets (from /static folder) to output dir
+    await fsp.copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
   } catch (err) {
     spin.fail()
     output.error(err)
