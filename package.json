@@ -3,7 +3,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "gulp",
     "clean": "lerna clean",
-    "deploy": "npm run build && lerna run test && lerna deploy",
+    "publish": "npm run build && lerna publish",
     "start": "gulp dev",
     "test": "lerna run test",
     "watch": "gulp watch"
