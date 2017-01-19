@@ -29,7 +29,7 @@ async function uninstallPlugin(plugin, context) {
 
   await removeConfiguration(workDir, fullName, shortName, prompt)
   await removeFromSanityManifest(workDir, shortName)
-  return await yarn(['remove', fullName], context)
+  return yarn(['remove', fullName], context)
 }
 
 async function removeConfiguration(workDir, fullName, shortName, prompt) {
@@ -48,14 +48,13 @@ async function removeConfiguration(workDir, fullName, shortName, prompt) {
   } catch (err) {
     // Destination file does not exist?
     // Predictable, proceed with uninstall
-    return
   }
 }
 
 async function removeFromSanityManifest(workDir, pluginName) {
   const manifest = await readLocalManifest(workDir, 'sanity.json')
   manifest.plugins = without(manifest.plugins || [], pluginName)
-  return await fsp.writeJson(path.join(workDir, 'sanity.json'), manifest, {spaces: 2})
+  return fsp.writeJson(path.join(workDir, 'sanity.json'), manifest, {spaces: 2})
 }
 
 function deleteConfiguration(configPath, userConfirmed) {

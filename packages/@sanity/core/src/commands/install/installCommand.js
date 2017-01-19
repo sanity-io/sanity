@@ -14,11 +14,11 @@ export default {
     const [plugin] = args.argsWithoutOptions
     if (!plugin) {
       const flags = extOptions.offline ? ['--offline'] : []
-      return await yarn(['install'].concat(flags), context)
+      return yarn(['install'].concat(flags), context)
     }
 
     // @todo add support for multiple simultaneous plugins to be installed
-    return await installPlugin(plugin, context)
+    return installPlugin(plugin, context)
   }
 }
 
