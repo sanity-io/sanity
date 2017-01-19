@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "no-sync": 0,
-    "no-unused-expressions": 0,
-    "max-nested-callbacks": 0
-  }
-}
