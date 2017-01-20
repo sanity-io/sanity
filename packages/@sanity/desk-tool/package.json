@@ -29,7 +29,7 @@
     "@sanity/check": "^0.99.0",
     "@sanity/client": "^0.99.0",
     "@sanity/components": "^0.99.2",
-    "@sanity/core": "^0.0.41",
+    "@sanity/core": "^0.99.3",
     "history": "^4.5.0",
     "postcss-cssnext": "^2.9.0",
     "react": "^15.4.1",
