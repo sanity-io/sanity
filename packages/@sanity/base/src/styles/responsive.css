@@ -1,0 +1,19 @@
+:root {
+  --screen-medium-break: 32em;
+  --screen-medium-break: 40em;
+  --screen-large-break: 60em;
+  --screen-xlarge-break: 100em;
+
+  @custom-media --max-screen-medium (max-width: 32em);
+  @custom-media --max-medium (max-width: 32em);
+
+  @custom-media --screen-medium (min-width: 32em);
+  @custom-media --min-medium (min-width: 32em);
+  @custom-media --screen-default (min-width: 40em);
+  @custom-media --min-default (min-width: 40em);
+  @custom-media --screen-large (min-width: 60em);
+  @custom-media --min-large (min-width: 60em);
+  @custom-media --screen-xlarge (min-width: 100em);
+
+  @custom-media --print(print);
+}

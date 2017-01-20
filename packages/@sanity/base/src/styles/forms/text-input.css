@@ -1,0 +1,52 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.textInput {
+  appearance: none;
+  box-shadow: none !important;
+  border: 0;
+  border: var(--input-border-size) solid var(--input-border-color);
+  background-color: var(--input-bg);
+  display: block;
+  width: 100%;
+  outline: none;
+  line-height: var(--input-line-height);
+  height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2);
+  font-size: inherit;
+  box-sizing: border-box;
+  padding: var(--input-padding-horizontal) var(--input-padding-vertical);
+  border-radius: var(--input-border-radius);
+
+  &:hover {
+    border-color: var(--input-border-color-hover);
+  }
+
+  &:focus {
+    border-color: var(--input-border-color-focus);
+  }
+
+  &:active {
+    border-color: var(--input-border-color-active);
+  }
+}
+
+.error {
+  composes: textInput;
+  border-color: var(--brand-danger);
+
+  &:hover {
+    border-color: var(--brand-danger);
+  }
+
+  &:focus {
+    border-color: var(--brand-danger);
+  }
+
+  &:active {
+    border-color: var(--brand-danger);
+  }
+}
+
+.disabled {
+  composes: textInput;
+  background-color: var(--input-bg-disabled);
+}

@@ -1,0 +1,79 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.lightScrollbars {
+
+  @nest &::-webkit-scrollbar {
+    background-color: #fafafa;
+    width: 10px;
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar * {
+     background: transparent;
+   }
+
+  @nest &::-webkit-scrollbar-thumb:window-inactive {
+  	display: none;
+  }
+
+  @nest &:hover {
+    @nest &::-webkit-scrollbar {
+      display: block;
+      width: 10px;
+    }
+  }
+
+  @nest &::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar-thumb {
+    background-color: var(--gray);
+    @nest &:hover {
+      background-color: var(--black);
+    }
+  }
+
+  @nest &::-webkit-scrollbar-track-piece {
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  @nest &::-webkit-scrollbar-corner {
+    display: none;
+  }
+
+  @nest &::-webkit-resizer {
+    display: none;
+  }
+}
+
+.scrollAll {
+  overflow: scroll;
+}
+
+.scrollX {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.scrollY {
+  overflow-y: overlay;
+  overflow-x: hidden;
+}
+
+/*
+:horizontal
+:vertical
+:decrement
+:increment
+:start
+:end
+:double-button
+:single-button
+:no-button
+:corner-present
+:window-inactive*/

@@ -1,0 +1,12 @@
+@import 'part:@sanity/base/theme/variables/gray-colors-style';
+
+:root {
+  --code-color: #c7254e;
+  --code-bg: #f9f2f4;
+  --kbd-color: #fff;
+  --kbd-bg: #333;
+  --pre-bg: #f5f5f5;
+  --pre-color: var(--gray-dark);
+  --pre-border-color: #ccc;
+  --pre-scrollable-max-height: 20em;
+}

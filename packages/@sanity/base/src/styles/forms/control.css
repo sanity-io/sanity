@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables/globals-style';
+
+.root {
+  padding-top: var(--medium-padding);
+  box-sizing: border-box;
+}
+
+.inner {
+  position: relative;
+}
