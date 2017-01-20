@@ -53,10 +53,10 @@
     }
   }
 
-  &:hover {
+  /*&:hover {
     transform: translateX(0) !important;
     opacity: 1;
-  }
+  }*/
 }
 
 .editorContainer {
@@ -65,6 +65,7 @@
   height: 100%;
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  transition: transform 0.12s ease-out, opacity 0.12s linear;
 
   @media (--screen-medium) {
     width: auto;

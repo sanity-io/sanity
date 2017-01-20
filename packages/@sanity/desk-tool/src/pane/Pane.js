@@ -19,7 +19,8 @@ export default class Pane extends React.PureComponent {
     onSetSorting: PropTypes.func,
     listView: PropTypes.string,
     onUpdate: PropTypes.func,
-    type: PropTypes.object
+    type: PropTypes.object,
+    onSelect: PropTypes.func
   }
 
   static defaultProps = {
@@ -36,6 +37,11 @@ export default class Pane extends React.PureComponent {
     }
   }
 
+  handleSelect = item => {
+    this.props.onSelect(item)
+    return false
+  }
+
   renderListView() {
     const {items, renderItem} = this.props
     const {router} = this.context
@@ -49,18 +55,18 @@ export default class Pane extends React.PureComponent {
 
     switch (listView) { // eslint-disable-line default-case
       case 'media':
-        return <GridList items={items} renderItem={renderItem} selectedItem={selectedItem} />
+        return <GridList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
 
       case 'card':
-        return <GridList items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} />
+        return <GridList items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
 
       case 'detail':
       case 'default':
-        return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} />
+        return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
     }
 
     console.error(new Error(`Invalid list view option: ${listView}`)) // eslint-disable-line no-console
-    return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} />
+    return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
   }
 
   render() {
