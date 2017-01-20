@@ -56,6 +56,7 @@ export default class DateInput extends React.PureComponent {
       <FormField labelHtmlFor={inputId} label={field.title}>
         <div className={styles.root}>
           <DatePicker
+            dateFormat="YYYY-MM-DD"
             customInput={input}
             id={inputId}
             locale={getLocale(this.context)}
