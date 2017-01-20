@@ -37,7 +37,8 @@ export default (config = {}) => {
   const cssExtractor = isProd
     && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
 
-  const baseCssLoader = 'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1'
+  const cssLoaderLocation = require.resolve('css-loader')
+  const baseCssLoader = `${cssLoaderLocation}?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1`
   const cssLoader = isProd && !skipMinify
     ? `${baseCssLoader}&minimize`
     : `${baseCssLoader}&sourceMap`
@@ -74,7 +75,7 @@ export default (config = {}) => {
       loaders: [{
         test: /\.jsx?/,
         exclude: modPath => modPath.indexOf('/node_modules/') >= 0,
-        loader: 'babel',
+        loader: require.resolve('babel-loader'),
         query: babelConfig || {
           presets: [
             require.resolve('babel-preset-react'),
@@ -92,7 +93,7 @@ export default (config = {}) => {
       }, {
         test: /\.css(\?|$)/,
         loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
-        loaders: !isProd && ['style-loader', cssLoader, 'postcss-loader']
+        loaders: !isProd && [require.resolve('style-loader'), cssLoader, require.resolve('postcss-loader')]
       }, {
         test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot)$/,
         loader: require.resolve('file-loader'),
