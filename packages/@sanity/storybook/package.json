@@ -1,0 +1,39 @@
+{
+  "name": "@sanity/storybook",
+  "version": "0.0.15",
+  "description": "Sanity wrapper for Kadira's Storybook",
+  "main": "index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "prepublish": "npm run test && sanity-check",
+    "test": "eslint ."
+  },
+  "bin": {
+    "sanity-storybook": "./bin/sanity-storybook.js"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@kadira/react-storybook-addon-info": "^3.3.0",
+    "@kadira/storybook": "^2.32.1",
+    "express": "^4.14.0",
+    "in-publish": "^2.0.0",
+    "normalize.css": "^5.0.0",
+    "react": "^15.3.1",
+    "resolve-from": "^2.0.0"
+  },
+  "devDependencies": {
+    "@sanity/check": "^0.0.3",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-react-hmre": "^1.1.1",
+    "eslint": "^3.8.1",
+    "eslint-config-sanity": "^1.1.3",
+    "eslint-plugin-react": "^6.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/storybook.git"
+  }
+}
