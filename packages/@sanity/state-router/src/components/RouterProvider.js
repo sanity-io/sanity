@@ -21,11 +21,16 @@ export default class RouterProvider extends React.Component {
     return this.props.router.encode(state)
   }
 
+  resolveIntentLink = (intent, params) => {
+    return this.props.router.encode({intent, params})
+  }
+
   getChildContext() {
     const {state} = this.props
     return {
       __internalRouter: {
         resolvePathFromState: this.resolvePathFromState,
+        resolveIntentLink: this.resolveIntentLink,
         navigateUrl: this.navigateUrl
       },
       router: {

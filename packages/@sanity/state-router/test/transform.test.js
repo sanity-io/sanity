@@ -1,19 +1,7 @@
 // @flow
 import test from './_util/test'
 import route from '../src/route'
-function decodeParams(pathsegment) {
-  return pathsegment.split(';')
-    .reduce((params, pair) => {
-      const [key, value] = pair.split('=')
-      params[key] = value
-      return params
-    }, {})
-}
-function encodeParams(params) {
-  return Object.keys(params)
-    .map(key => `${key}=${params[key]}`)
-    .join(';')
-}
+import {decodeParams, encodeParams} from '../src/utils/paramsEncoding'
 
 test('transform config on regular routes', t => {
   const router = route('/some/:section/:settings', {

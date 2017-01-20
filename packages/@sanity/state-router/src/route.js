@@ -4,6 +4,7 @@ import type {Transform, Router, RouteChildren} from './types'
 import parseRoute from './parseRoute'
 import resolveStateFromPath from './resolveStateFromPath'
 import resolvePathFromState from './resolvePathFromState'
+import {decodeParams, encodeParams} from './utils/paramsEncoding'
 
 type NodeOptions = {
   path?: string,
@@ -56,6 +57,24 @@ route.scope = function scope(scopeName: string, ...rest : any[]) : Router {
     ...options,
     scope: scopeName
   })
+}
+
+function normalize(...paths) {
+  return paths
+    .reduce((acc, path) => acc.concat(path.split('/')), [])
+    .filter(Boolean)
+}
+
+route.intents = function intents(base) {
+  const basePath = normalize(base).join('/')
+  return route(`${basePath}/:intent`, [route(':params', {
+    transform: {
+      params: {
+        toState: decodeParams,
+        toPath: encodeParams
+      }
+    }
+  })])
 }
 
 const EMPTY_STATE = {}

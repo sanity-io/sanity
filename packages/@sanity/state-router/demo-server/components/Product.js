@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
+import IntentLink from '../../src/components/IntentLink'
 
 export default class Product extends React.Component {
   static propTypes = {
@@ -15,6 +16,9 @@ export default class Product extends React.Component {
         <p>
           <StateLink state={{id: nextProductId}}>Go to product #{nextProductId}</StateLink>
         </p>
+        <IntentLink intent="open" params={{id: 'foo'}}>
+          Open Foo
+        </IntentLink>
         <p>
           <StateLink toIndex>Up…</StateLink>
         </p>
