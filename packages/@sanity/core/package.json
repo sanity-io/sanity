@@ -17,7 +17,7 @@
     "@sanity/mutator": "^0.99.4",
     "@sanity/resolver": "^0.99.0",
     "@sanity/server": "^0.99.4",
-    "@sanity/storybook": "^0.0.15",
+    "@sanity/storybook": "^0.99.4",
     "@sanity/util": "^0.99.0",
     "batch-stream-operation": "^1.0.1",
     "debug": "^2.6.0",
