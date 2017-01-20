@@ -21,8 +21,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "^0.0.6",
-    "@sanity/imagetool": "^0.2.2",
+    "@sanity/date-input": "^0.99.0",
+    "@sanity/imagetool": "^0.99.0",
     "canvas-to-blob": "^0.0.0",
     "chance": "^1.0.4",
     "classnames": "^2.2.5",
