@@ -1,0 +1,14 @@
+.root {
+  display: block;
+}
+
+.level_0 {
+  composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
+}
+
+.level_1,
+.level_2,
+.level_3,
+.level_4 {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+}

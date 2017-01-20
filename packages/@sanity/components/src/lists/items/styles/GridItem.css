@@ -1,0 +1,48 @@
+@import "part:@sanity/base/theme/variables-style";
+
+:root {
+  --default-item-selected-color: var(--brand-primary);
+  --default-item-active-color: var(--brand-primary);
+  --default-item-background-color: #fff;
+  --default-item-background-color-hover: #f0f0f0;
+}
+
+.root {
+  width: 100%;
+  height: auto;
+  background-color: #fafafa;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.link {
+  display: block;
+  width: 100%;
+  color: inherit;
+  text-decoration: inherit;
+
+  @nest &:hover {
+    color: var(--brand-black);
+    background-color: var(--default-item-background-color-hover);
+  }
+
+  @nest &:active {
+    color: var(--brand-white);
+    background-color: var(--default-item-active-color);
+  }
+
+  @nest .selected & {
+    background-color: var(--default-item-selected-color);
+    color: #fff;
+  }
+}
+
+.noLink {
+  composes: link;
+}
+
+.sortableHelper {
+  display: block;
+  opacity: 0.7;
+  transition: all 0 linear;
+}

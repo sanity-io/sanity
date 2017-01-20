@@ -1,0 +1,98 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  color: inherit;
+  line-height: 1em;
+  height: 1em;
+  position: relative;
+}
+
+.inner {
+  display: block;
+}
+
+.input {
+  border: none;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  background-color: transparent;
+  padding-left: 1.3em;
+  line-height: inherit;
+  font-size: inherit;
+  margin-top: -0.05em;
+}
+
+.listContainer {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  left: 0;
+  height: auto;
+  backdrop-filter: blur(10px);
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+}
+
+.listContainerClosed {
+  display: none;
+}
+
+.label {
+  font-size: inherit;
+  position: absolute;
+  transform: translateY(-14%);
+}
+
+.icon {
+  font-size: 1em;
+}
+
+.spinner {
+  position: absolute;
+  top: -0.1em;
+  right: 0;
+}
+
+.labelText {
+  display: none;
+}
+
+.topItems {
+  background-color: #ccc;
+}
+
+.items {
+  background-color: color(var(--brand-white) a(90%));
+  color: var(--brand-black);
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
+}
+
+.item {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  background-color: transparent;
+  cursor: default;
+
+  @nest &:hover {
+    background-color: var(--gray-light--transparent);
+  }
+}
+
+.topItem {
+  composes: item;
+  background-color: var(--gray-darker-transparent);
+  color: var(--brand-white);
+
+  @nest &:hover {
+    background-color: var(--gray-darkest--transparent);
+  }
+}
+
+.selectedItem {
+  composes: item;
+  background-color: var(--selected-item-color-hover);
+  color: var(--selected-item-color-hover--inverted);
+}
+
+.selectedTopItem {
+  composes: selectedItem;
+}

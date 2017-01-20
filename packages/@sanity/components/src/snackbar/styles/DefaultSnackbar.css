@@ -1,0 +1,91 @@
+@import "part:@sanity/base/theme/variables-style";
+
+@keyframes reveal {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.root {
+  position: fixed;
+  z-index: var(--zindex-modal);
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transition: transform 0.2s linear;
+  animation-name: reveal;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
+}
+
+.inner {
+  width: 100%;
+  height: 4em;
+  line-height: 4em;
+  display: block;
+  position: relative;
+
+  @nest .info & {
+    background-color: color(var(--brand-info) a(90%));
+    color: var(--brand-white);
+  }
+
+  @nest .warning & {
+    background-color: color(var(--state-warning-color) a(90%));
+    color: var(--brand-white);
+  }
+
+  @nest .success & {
+    background-color: color(var(--state-success-color) a(90%));
+    color: var(--brand-white);
+  }
+
+  @nest .error & {
+    background-color: color(var(--brand-danger) a(90%));
+    color: var(--brand-white);
+  }
+
+  @nest .danger & {
+    background-color: color(var(--brand-danger) a(90%));
+    color: var(--brand-white);
+  }
+}
+
+.content {
+  margin: 0 1em;
+  float: left;
+}
+
+.action {
+  float: right;
+}
+
+.info {
+  composes: root;
+}
+
+.warning {
+  composes: root;
+}
+
+.success {
+  composes: root;
+}
+
+.danger,
+.error {
+  composes: root;
+}
+
+.visible {
+  transform: translateY(0);
+}
+
+.hidden {
+  transform: translateY(100%);
+}

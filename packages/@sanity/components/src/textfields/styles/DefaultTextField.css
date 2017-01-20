@@ -1,0 +1,23 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@use postcss-cssnext;
+
+.root {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.error {
+  composes: root;
+}
+
+.label {
+  display: block;
+}
+
+.errorLabel {
+  composes: label;
+  color: var(--brand-danger);
+  font-weight: bold;
+}

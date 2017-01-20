@@ -1,0 +1,52 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: root from 'part:@sanity/components/selects/default-style';
+}
+
+.selectContainer {
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+}
+
+.selectContainer {
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+}
+
+.icon {
+  composes: icon from 'part:@sanity/components/selects/default-style';
+  cursor: default;
+  pointer-events: unset;
+}
+
+.listContainer {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 11em;
+  border: 1px solid var(--input-border-color-focus);
+  box-sizing: border-box;
+  transform: translateY(-1px);
+  background-color: var(--body-bg);
+  z-index: var(--zindex-dropdown);
+}
+
+.listContainerHidden {
+  composes: listContainer;
+  display: none;
+}
+
+.noResultText {
+  text-align: center;
+  padding: 0.5em;
+}
+
+.spinner {
+  position: absolute;
+  top: 0.5em;
+  right: 0.75em;
+}
+
+.clearButton {
+  composes: clearButton from 'part:@sanity/components/textinputs/default-style';
+  right: 1.5em;
+}

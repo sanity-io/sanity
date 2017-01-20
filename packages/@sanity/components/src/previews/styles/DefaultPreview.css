@@ -1,0 +1,64 @@
+.root {
+  display: block;
+  padding: 0.5em;
+  user-select: none;
+  overflow: hidden;
+}
+
+.heading {
+  vertical-align: baseline;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 1em;
+  line-height: 1.5em;
+  color: inherit;
+  font-weight: 500;
+  text-transform: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  margin-top: -0.2em;
+  font-size: 0.8em;
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1em;
+}
+
+.description {
+  padding: 0;
+  margin: 0;
+  font-size: 0.75em;
+}
+
+.media {
+  float: left;
+  height: 2.5em;
+  width: 2.5em;
+  margin-right: 0.5em;
+  overflow: hidden;
+  position: relative;
+
+  @nest & div {
+    position: relative;
+    height: 2.5em;
+    width: 2.5em;
+    overflow: hidden;
+  }
+
+  @nest & img {
+    display: block;
+    object-fit: cover;
+  }
+}

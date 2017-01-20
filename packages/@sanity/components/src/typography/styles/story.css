@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@use postcss-cssnext;
+
+.wrapper {
+  max-width: 40em;
+  padding: 0 1em;
+  margin: 0 auto;
+}

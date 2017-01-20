@@ -1,0 +1,88 @@
+{
+  "name": "@sanity/components",
+  "version": "0.0.110",
+  "description": "Basic UX components",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "clean": "rimraf lib",
+    "compile": "babel src --copy-files --out-dir lib",
+    "stylelint": "stylelint \"src/**/*.css\"",
+    "eslint": "eslint . --quiet",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
+    "postpublish": "rimraf lib",
+    "test": "npm run lint",
+    "start": "cd demo && sanity start -d",
+    "lint": "npm run eslint && npm run stylelint"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "keywords": [
+    "sanity",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "@sanity/date-input": "^0.0.6",
+    "@sanity/imagetool": "^0.2.2",
+    "canvas-to-blob": "^0.0.0",
+    "chance": "^1.0.4",
+    "classnames": "^2.2.5",
+    "dialog-polyfill": "^0.4.3",
+    "ease-component": "^1.0.0",
+    "exif-component": "^1.0.1",
+    "fuse.js": "^2.4.1",
+    "in-publish": "^2.0.0",
+    "lodash": "^4.13.1",
+    "lost": "^7.1.0",
+    "moment": "^2.15.2",
+    "postcss-cssnext": "^2.7.0",
+    "react-addons-css-transition-group": "^15.4.1",
+    "react-addons-shallow-compare": "^15.4.1",
+    "react-click-outside": "^2.1.0",
+    "react-container-query": "^0.8.0",
+    "react-draggable": "^2.2.2",
+    "react-ink": "^5.1.1",
+    "react-portal": "^3.0.0",
+    "react-sortable-hoc": "^0.4.5",
+    "scroll": "^2.0.0"
+  },
+  "devDependencies": {
+    "@sanity/base": "^0.3.20",
+    "@sanity/check": "^0.0.3",
+    "@sanity/core": "^0.0.41",
+    "@sanity/storybook": "^0.0.15",
+    "@sanity/storybook-only": "^1.0.2",
+    "babel-cli": "^6.9.0",
+    "babel-eslint": "^7.1.0",
+    "babel-plugin-lodash": "^3.2.8",
+    "babel-plugin-syntax-class-properties": "^6.8.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
+    "babel-plugin-transform-class-properties": "^6.9.1",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "eslint": "^3.3.0",
+    "eslint-config-sanity": "^1.1.4",
+    "eslint-plugin-react": "^6.6.0",
+    "in-publish": "^2.0.0",
+    "pre-commit": "^1.1.3",
+    "react-styleguidist": "^2.3.1",
+    "rimraf": "^2.5.4",
+    "stylelint": "^7.1.0",
+    "stylelint-config-standard": "^14.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=15.0.0",
+    "react-dom": ">=15.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/components/issues"
+  },
+  "homepage": "https://github.com/sanity-io/components#readme"
+}

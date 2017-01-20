@@ -1,0 +1,236 @@
+@import "part:@sanity/base/theme/variables-style";
+
+@use postcss-cssnext;
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%) scale(0.5);
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+:root {
+  --dialog-padding: var(--small-padding);
+  --dialog-header-height: 3rem;
+  --dialog-functions-height: 3.5rem;
+}
+
+.root {
+  position: fixed;
+  z-index: var(--zindex-modal-background);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--backdrop-background-color);
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
+  backdrop-filter: blur(10px);
+}
+
+.default {
+  composes: root;
+}
+
+.danger {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.success {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.info {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.warning {
+  composes: root;
+  background-color: color(var(--body-bg) a(90%));
+}
+
+.dialog {
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  z-index: var(--zindex-modal);
+  position: absolute;
+  border: 0;
+  padding: 0;
+  animation-name: reveal;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  background-color: var(--body-bg);
+
+  @nest .danger & {
+    background-color: var(--brand-danger);
+    color: var(--brand-danger--text);
+  }
+
+  @nest .success & {
+    background-color: var(--brand-success);
+    color: var(--brand-success--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--brand-warning);
+    color: var(--brand-warning--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--brand-warning);
+    color: var(--brand-warning--text);
+  }
+
+  @media (--screen-medium) {
+    display: block;
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    width: 100%;
+    min-width: 50%;
+    min-height: 30%;
+    max-width: 80%;
+    max-height: 80%;
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+}
+
+.isClosed {
+  display: none;
+}
+
+.isOpen {
+  display: block;
+}
+
+.header {
+  height: var(--dialog-header-height);
+  line-height: var(--dialog-header-height);
+  color: inherit;
+  border-bottom: 1px solid var(--gray-light);
+
+  @nest .danger & {
+    border-bottom: 1px solid var(--brand-danger--text);
+  }
+}
+
+.inner {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.content {
+  box-sizing: border-box;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  overflow-y: auto;
+
+  @nest .hasFunctions & {
+    max-height: calc(100% - var(--dialog-functions-height));
+  }
+
+  @nest .hasHeader & {
+    max-height: calc(100% - var(--dialog-header-height));
+  }
+
+  @nest .hasFunctions.hasHeader & {
+    max-height: calc(100% - var(--dialog-header-height) - var(--dialog-functions-height));
+  }
+}
+
+.title {
+  line-height: inherit;
+  padding: 0 var(--dialog-padding);
+  font-size: var(--font-size-h4);
+  font-weight: 300;
+  margin: 0;
+
+  @media (--screen-medium) {
+    margin-right: 2rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  color: inherit;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  outline: none;
+  cursor: default;
+  transition: transform 0.1s linear;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.8);
+  }
+}
+
+.closeButtonOutside {
+  composes: closeButton;
+  color: inherit;
+  font-size: 3rem;
+  top: -3.5rem;
+  right: -3.5rem;
+}
+
+.functions {
+  font-size: var(--font-size-small);
+  box-sizing: border-box;
+  padding: var(--dialog-padding);
+  background-color: var(--gray-lightest);
+  border-top: 1px solid var(--gray-lighter);
+  height: var(--dialog-functions-height);
+
+  @nest .danger & {
+    background-color: color(var(--white) a(60%));
+  }
+}
+
+.button {
+  float: right;
+}
+
+.button_secondary {
+  float: left;
+}
