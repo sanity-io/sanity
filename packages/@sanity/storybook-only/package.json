@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook-only",
-  "version": "1.0.2",
+  "version": "0.99.4",
   "description": "Make Sanity only show Storybook. Useful for certain plugin demos.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +19,7 @@
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.0.3",
+    "@sanity/check": "^0.99.0",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-preset-es2015": "^6.9.0",
