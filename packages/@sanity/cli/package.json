@@ -68,6 +68,8 @@
     "xdg-basedir": "^2.0.0"
   },
   "devDependencies": {
+    "babel-preset-es2015-node4": "^2.1.1",
+    "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "mocha": "^3.2.0",
