@@ -20,6 +20,10 @@ npm start
 npm run publish
 ```
 
+## Issues?
+
+If you run into build issues, you might want to run `npm run clean`, which will delete all `node_modules` folders, then run a fresh `npm run bootstrap` to install and cross-symlink all modules.
+
 ## Testing
 
 ```
