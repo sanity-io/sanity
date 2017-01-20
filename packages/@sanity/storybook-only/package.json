@@ -1,0 +1,40 @@
+{
+  "name": "@sanity/storybook-only",
+  "version": "1.0.2",
+  "description": "Make Sanity only show Storybook. Useful for certain plugin demos.",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "compile": "babel src --copy-files --out-dir lib",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
+    "postpublish": "rimraf lib",
+    "test": "eslint ."
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "in-publish": "^2.0.0"
+  },
+  "devDependencies": {
+    "@sanity/check": "^0.0.3",
+    "babel-cli": "^6.9.0",
+    "babel-eslint": "^6.0.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "eslint": "^3.4.0",
+    "eslint-config-sanity": "^1.1.3",
+    "eslint-plugin-react": "^6.3.0",
+    "rimraf": "^2.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/storybook-only.git"
+  },
+  "homepage": "https://github.com/sanity-io/storybook-only#readme",
+  "bugs": {
+    "url": "https://github.com/sanity-io/storybook-only/issues"
+  }
+}
