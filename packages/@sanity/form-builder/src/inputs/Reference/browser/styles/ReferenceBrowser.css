@@ -1,0 +1,15 @@
+.root {
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+}
+
+.buttons {
+  float: right;
+}
+
+.preview {
+  float: left;
+}
+
+.typeName {
+  color: gray;
+}

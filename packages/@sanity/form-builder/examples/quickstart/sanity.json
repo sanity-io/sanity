@@ -1,0 +1,15 @@
+{
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components"
+  ],
+  "parts": [
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "./Main"
+    }
+  ]
+}
