@@ -89,7 +89,7 @@ export default (config = {}) => {
         }
       }, {
         test: /\.json$/,
-        loader: 'json'
+        loader: require.resolve('json-loader')
       }, {
         test: /\.css(\?|$)/,
         loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
