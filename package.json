@@ -26,6 +26,7 @@
     "chalk": "^1.1.3",
     "eslint": "^3.13.1",
     "eslint-config-sanity": "^2.0.1",
+    "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.9.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
