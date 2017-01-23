@@ -21,25 +21,25 @@ export default function findMatchingRoutes(node: Node, _state: ?Object) : MatchR
 
   const stateKeys = state ? Object.keys(state) : []
 
-  const consumedKeys = intersection(stateKeys, requiredParams)
-  const missingKeys = difference(requiredParams, consumedKeys)
-  const remainingKeys = difference(stateKeys, consumedKeys)
+  const consumedParams = intersection(stateKeys, requiredParams)
+  const missingParams = difference(requiredParams, consumedParams)
+  const remainingParams = difference(stateKeys, consumedParams)
 
-  if (missingKeys.length > 0) {
-    return createMatchResult([], missingKeys, [])
+  if (missingParams.length > 0) {
+    return createMatchResult([], missingParams, [])
   }
 
-  if (remainingKeys.length === 0) {
+  if (remainingParams.length === 0) {
     return createMatchResult([node], [], [])
   }
 
   const children = (typeof node.children === 'function') ? node.children(state) : node.children
 
-  if (remainingKeys.length > 0 && children.length === 0) {
-    return createMatchResult([], remainingKeys, [])
+  if (remainingParams.length > 0 && children.length === 0) {
+    return createMatchResult([], remainingParams, [])
   }
 
-  const remainingState = pick(state, remainingKeys)
+  const remainingState = pick(state, remainingParams)
 
   let matchingChild : MatchResult = {nodes: [], remaining: [], missing: []}
 
@@ -49,7 +49,7 @@ export default function findMatchingRoutes(node: Node, _state: ?Object) : MatchR
   })
 
   if (matchingChild.nodes.length === 0) {
-    return createMatchResult([], missingKeys, remainingKeys)
+    return createMatchResult([], missingParams, remainingParams)
   }
 
   return createMatchResult([node, ...matchingChild.nodes], matchingChild.missing, matchingChild.remaining)

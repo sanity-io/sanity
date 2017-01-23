@@ -9,8 +9,12 @@ export default function resolvePathFromState(node: Node, state: Object): string 
 
   const match: MatchResult = findMatchingNodes(node, state)
   if (match.remaining.length > 0) {
-    const formatted = match.remaining.map(key => `${key} (=${JSON.stringify(state[key])})`).join(', ')
-    throw new Error(`State key${match.remaining.length == 1 ? '' : 's'} not mapped to url params: ${formatted}`)
+    const remaining = match.remaining
+    throw new Error(
+      `Unable to find matching route for state. Could not map the following state key${
+        remaining.length == 1 ? '' : 's'
+      } to a valid url: ${remaining.join(', ')}`
+    )
   }
 
   if (match.nodes.length === 0) {
