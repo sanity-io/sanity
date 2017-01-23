@@ -1,7 +1,17 @@
 {
+  "extends": [
+    "bengler",
+    "bengler/react"
+  ],
   "env": {
     "node": true
   },
-  "extends": ["bengler", "bengler/react"],
-  "parser": "babel-eslint"
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ],
+  "rules": {
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1
+  }
 }

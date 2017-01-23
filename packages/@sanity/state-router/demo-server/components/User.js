@@ -1,7 +1,10 @@
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
 
-class User extends React.Component {
+export default class User extends React.Component {
+  static propTypes = {
+    id: PropTypes.string
+  }
   render() {
     const {id} = this.props
     const nextUserId = Math.random().toString(32).substring(2)
@@ -18,9 +21,3 @@ class User extends React.Component {
     )
   }
 }
-
-User.propTypes = {
-  id: PropTypes.string
-}
-
-export default User

@@ -55,7 +55,7 @@ const node : Node = {
   ]
 }
 
-const examples : [[Object, MatchResult]] = [
+const examples : [Object, MatchResult][] = [
   [{}, {
     nodes: [], missing: ['bar'], remaining: []
   }],

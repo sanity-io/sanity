@@ -1,41 +1,63 @@
-import React, {PropTypes} from 'react'
+// @flow
+import React, {PropTypes, Element} from 'react'
+import isEmpty from '../utils/isEmpty'
 
-export default class RouteScope extends React.Component {
-  static propTypes = {
-    scope: PropTypes.string,
-    children: PropTypes.node
+import type {RouterProviderContext, NavigateOptions, InternalRouter, ContextRouter} from './types'
+
+type Props = {
+  scope: string,
+  children: Element<*>
+}
+
+function addScope(routerState : Object, scope : string, scopedState : Object) {
+  return scopedState && {
+    ...routerState,
+    [scope]: scopedState
   }
+}
+export default class RouteScope extends React.Component {
+  props: Props
+  context: RouterProviderContext
 
   static childContextTypes = RouteScope.contextTypes = {
     __internalRouter: PropTypes.object,
     router: PropTypes.object
   }
-
-  getChildContext() {
+  getChildContext() : RouterProviderContext {
     const {scope} = this.props
-    const {router, __internalRouter} = this.context
+    const internalRouter: InternalRouter = this.context.__internalRouter
+    const router: ContextRouter = this.context.router
+
     return {
       __internalRouter: {
-        resolvePathFromState: nextState => {
-          const empty = Object.keys(nextState).length === 0
-          return __internalRouter.resolvePathFromState(empty ? {} : addScope(nextState))
-        },
-        resolveIntentLink: __internalRouter.resolveIntentLink,
-        navigateUrl: __internalRouter.navigateUrl
+        resolvePathFromState: this.resolvePathFromState,
+        resolveIntentLink: internalRouter.resolveIntentLink,
+        navigateUrl: internalRouter.navigateUrl
       },
       router: {
-        navigate: (nextState, options) => {
-          router.navigate(addScope(nextState), options)
-        },
+        navigate: this.navigate,
         state: router.state[scope]
       }
     }
-
-    function addScope(nextState) {
-      return nextState && Object.assign({}, router.state, {[scope]: nextState})
-    }
-
   }
+
+  resolvePathFromState = (nextState: Object): string => {
+    const context = this.context
+    const scope = this.props.scope
+
+    const nextStateScoped : Object = isEmpty(nextState)
+      ? {}
+      : addScope(context.router.state, scope, nextState)
+
+    return context.__internalRouter.resolvePathFromState(nextStateScoped)
+  }
+
+  navigate = (nextState: Object, options?: NavigateOptions) : void => {
+    const scope = this.props.scope
+    const router = this.context.router
+    router.navigate(addScope(router.state, scope, nextState), options)
+  }
+
   render() {
     return this.props.children
   }

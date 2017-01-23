@@ -1,15 +1,23 @@
-import React, {PropTypes} from 'react'
-import {StateLink, Link, RouteScope} from '../../src/components'
+// @flow
+import type {ContextRouter} from '../../src/components/types'
+import React from 'react'
+import {StateLink, Link, RouteScope, withRouter} from '../../src/components'
 import Product from './Product'
 import User from './User'
 
-class Main extends React.Component {
+type Props = {
+  router: ContextRouter
+}
+
+export default withRouter(class Main extends React.Component {
+  props: Props
   render() {
-    const {router} = this.context
+    const {router} = this.props
     return (
       <div>
         <h1>Main</h1>
-        <pre>{JSON.stringify(router.state, null, 2)}</pre>
+        <h3>Current router state (global):</h3>
+        <pre><code>{JSON.stringify(router.state, null, 2)}</code></pre>
         {router.state.product && (
           <RouteScope scope="product">
             <Product id={router.state.product.id} />
@@ -23,7 +31,7 @@ class Main extends React.Component {
           <StateLink state={{userId: 'me'}}>Show profile</StateLink>
         </p>
         <p>
-          <StateLink state={{userId: 'me', product: {id: 55}}}>Show both product and profile</StateLink>
+          <StateLink state={{product: {id: 55, userId: 'me'}}}>Show both product and profile</StateLink>
         </p>
         <p>
           <Link href={`/foo/bar/${Math.random().toString(32).substring(2)}`}>Invalid</Link>
@@ -34,16 +42,4 @@ class Main extends React.Component {
       </div>
     )
   }
-}
-
-Main.contextTypes = {
-  router: PropTypes.object
-}
-Main.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string
-  }),
-  onNavigate: PropTypes.func
-}
-
-export default Main
+})

@@ -7,7 +7,10 @@ import createHistory from 'history/createBrowserHistory'
 import NotFound from './components/NotFound'
 
 const router = route('/omg/lol', [
-  route.scope('product', '/products/:id', route('/:detailView')),
+  route.scope('product', '/products/:id', [
+    route('/:detailView'),
+    route('/user/:userId')
+  ]),
   route('/users/:userId', params => {
     if (params.userId === 'me') {
       return route('/:profileSection')

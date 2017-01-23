@@ -24,7 +24,7 @@ function createSegment(segment : string) : ?Segment {
 export default function parseRoute(route: string): Route {
   const [pathname] = route.split('?')
 
-  const segments: [Segment] = pathname
+  const segments: Segment[] = pathname
     .split('/')
     .map(createSegment)
     .filter(Boolean)

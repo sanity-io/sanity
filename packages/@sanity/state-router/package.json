@@ -20,30 +20,32 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.2"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "babel-plugin-syntax-flow": "^6.18.0",
-    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-plugin-transform-flow-comments": "^6.22.0",
     "babelify": "^7.3.0",
-    "browserify": "^13.1.1",
+    "browserify": "^13.3.0",
     "error-capture-middleware": "0.0.2",
-    "eslint-config-bengler": "^2.0.0",
+    "eslint": "^3.14.0",
+    "eslint-config-bengler": "^3.0.1",
+    "eslint-plugin-flowtype": "^2.30.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-react": "^6.7.1",
+    "eslint-plugin-react": "^6.9.0",
     "express": "^4.14.0",
-    "flow-bin": "^0.35.0",
-    "history": "^4.4.0",
+    "flow-bin": "^0.38.0",
+    "history": "^4.5.1",
     "in-publish": "^2.0.0",
     "object-inspect": "^1.2.1",
     "quickreload": "^2.1.2",
-    "react": "^15.4.0",
-    "react-dom": "^15.4.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
     "rimraf": "^2.5.4",
     "staticr": "^4.0.2",
-    "tap": "^8.0.0"
+    "tap": "^9.0.3"
   },
   "repository": {
     "type": "git",

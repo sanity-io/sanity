@@ -1,31 +1,41 @@
-import React, {PropTypes} from 'react'
+// @flow
+import React, {PropTypes, Element} from 'react'
+import type {Router} from '../types'
+import type {RouterProviderContext, NavigateOptions} from './types'
+
+type Props = {
+  onNavigate: () => void,
+  router: Router,
+  state: Object,
+  children: Element<*>
+}
 
 export default class RouterProvider extends React.Component {
-  static propTypes = {
-    onNavigate: PropTypes.func,
-    router: PropTypes.object,
-    state: PropTypes.object,
-    children: PropTypes.node
+  props: Props
+
+  static childContextTypes = {
+    __internalRouter: PropTypes.object,
+    router: PropTypes.object
   }
 
-  navigateUrl = (url, {replace} = {}) => {
+  navigateUrl = (url : string, options : NavigateOptions = {}) : void => {
     const {onNavigate} = this.props
-    onNavigate(url, {replace})
+    onNavigate(url, options)
   }
 
-  navigateState = (nextState, {replace} = {}) => {
-    this.navigateUrl(this.resolvePathFromState(nextState), {replace})
+  navigateState = (nextState : Object, options : NavigateOptions = {}) : void => {
+    this.navigateUrl(this.resolvePathFromState(nextState), options)
   }
 
-  resolvePathFromState = state => {
+  resolvePathFromState = (state : Object) : string => {
     return this.props.router.encode(state)
   }
 
-  resolveIntentLink = (intent, params) => {
+  resolveIntentLink = (intent : string, params : Object) : string => {
     return this.props.router.encode({intent, params})
   }
 
-  getChildContext() {
+  getChildContext() : RouterProviderContext {
     const {state} = this.props
     return {
       __internalRouter: {
@@ -43,8 +53,4 @@ export default class RouterProvider extends React.Component {
   render() {
     return this.props.children
   }
-}
-RouterProvider.childContextTypes = {
-  __internalRouter: PropTypes.object,
-  router: PropTypes.object
 }
