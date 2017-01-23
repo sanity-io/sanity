@@ -7,7 +7,7 @@ Based on a routing schema:
 - A state object can be derived from the current pathname
 - A state object can be used to generate a path name
 
-## Usage
+## API Usage
 
 Define the routes for your application and how they should map to application state
 ```js
@@ -41,6 +41,53 @@ router.encode({page: 'about'})
 
 router.decode('/about')
 // => {page: about}
+
+```
+
+## React usage
+### Setup routes and provider
+
+```jsx harmony
+import {route} from '@sanity/state-router'
+import {RouterProvider, withRouter} from '@sanity/state-router/components'
+
+const router = route('/', [
+  route('/bikes/:bikeId')
+])
+
+const history = createHistory()
+
+function handleNavigate(nextUrl, {replace} = {}) {
+  if (replace) {
+    history.replace(nextUrl)
+  } else {
+    history.push(nextUrl)
+  }
+}
+
+const App = withRouter(function App({router}) {
+  if (router.state.bikeId) {
+    return <BikePage id={router.state.bikeId} />
+  }
+  return (
+    <div>
+      <h1>Welcome</h1>
+      <StateLink state={{bikeId: 22}}>Go to bike 22</StateLink>
+    </div>
+  )
+})
+
+function render(location) {
+  ReactDOM.render((
+    <RouterProvider
+     router={router}
+     onNavigate={handleNavigate}
+     state={router.decode(location.pathname)}>
+      <App />
+    </RouterProvider>
+  ), document.getElementById('container'))
+}
+history.listen(() => render(document.location))
 
 ```
 
