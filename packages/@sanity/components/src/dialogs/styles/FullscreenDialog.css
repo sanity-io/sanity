@@ -23,7 +23,7 @@
 
 .default {
   composes: root;
-  background-color: color(var(--body-bg) a(90%));
+  background-color: color(var(--body-bg) a(95%));
   color: var(--text-color);
 }
 
@@ -83,8 +83,13 @@
   background-color: transparent;
   border: none;
   color: #fff;
+  outline: none;
 
   @nest .default & {
     color: var(--text-color);
+
+    @nest &:hover {
+      color: var(--black);
+    }
   }
 }
