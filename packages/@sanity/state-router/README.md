@@ -186,13 +186,14 @@ An _intent_ is a kind of global route that can be used for dispatching user acti
 ```js
 route.intents(<basePath>)
 ```
+Intent links bypasses scoping, and will always be mapped to the configured `basePath`.
 
-An intent consists of a name, e.g. `open` and a set of parameters, e.g. `{id: 33}` and the easiest way to make a link to an intent is using the `IntentLink` React component:
+An intent consists of a name, e.g. `open` and a set of parameters, e.g. `{id: 'abc33'}` and the easiest way to make a link to an intent is using the `IntentLink` React component:
 
 ```jsx
-<IntentLink intent="open" params={{id: 33}}>Open document</IntentLink>
+<IntentLink intent="open" params={{id: abc33}}>Open document</IntentLink>
 ```
-This will generate an `<a` tag with a href like `/<base path>/open/id=33` depending on where the intent handler is mounted
+This will generate an `<a` tag with a href like `/<base path>/open/id=abc33` depending on where the intent handler is mounted
 
 State router comes with a built in intent-route parser that decodes an intent route to route state.
 
@@ -203,6 +204,17 @@ const router = route('/', [
   route.intents('/intents') // <-- sets up intent routes at the /intents base path
 ])
 ```
+
+Decoding the url `/intents/open/id=abc33` will produce the following state:
+
+```js
+{
+  intent: 'open',
+  params: {id: 'abc33'}
+}
+```
+
+It is now up to your application logic to translate this intent into an action, and redirect accordingly.
 
 ## 404s
 
