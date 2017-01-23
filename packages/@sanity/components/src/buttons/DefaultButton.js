@@ -78,7 +78,7 @@ export default class DefaultButton extends React.Component {
       >
         <div className={styles.inner}>
           {
-            loading && <Spinner />
+            loading && <span className={styles.spinner}><Spinner inline /></span>
           }
           {
             Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
