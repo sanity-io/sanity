@@ -286,6 +286,7 @@ export default class EditorPane extends React.PureComponent {
         {referringDocuments && (
           <ReferringDocumentsHelper
             documents={referringDocuments}
+            currentValue={value}
             onCancel={this.handleCancelDeleteRequest}
           />
         )}

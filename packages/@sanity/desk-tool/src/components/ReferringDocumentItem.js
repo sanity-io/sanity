@@ -1,30 +1,22 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview'
 
-function ReferringDocumentItem(props) {
-  const doc = props.document
+function ReferringDocumentItem(item) {
 
-  // @todo fix?
-  const docUrlId = doc._id.replace('/', '.')
-  const typeName = doc._type.replace(/^.+\./, '')
+  const docUrlId = item._id.replace('/', '.')
+  const typeName = item._type.replace(/^.+\./, '')
   const typeDef = schema.types.find(type => type.name === typeName)
 
-  // @todo fix link
-  return (
-    <li>
-      <a href={`/desk/${typeName}/edit/${docUrlId}`} target="_blank" rel="noopener noreferrer">
-        <Preview value={doc} typeDef={typeDef} />
-      </a>
-    </li>
-  )
-}
+  item.stateLink = {
+    selectedType: typeName,
+    action: 'edit',
+    selectedDocumentId: docUrlId
+  }
 
-ReferringDocumentItem.propTypes = {
-  document: PropTypes.shape({
-    _id: PropTypes.string,
-    _type: PropTypes.string
-  })
+  return (
+    <Preview value={item} typeDef={typeDef} />
+  )
 }
 
 export default ReferringDocumentItem
