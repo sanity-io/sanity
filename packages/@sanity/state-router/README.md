@@ -180,6 +180,30 @@ router.decode('/apps/pokemon/stats/bulbasaur')
 }
 ```
 
+## Intents
+
+An _intent_ is a kind of global route that can be used for dispatching user actions. The intent route can be mounted with 
+```js
+route.intents(<basePath>)
+```
+
+An intent consists of a name, e.g. `open` and a set of parameters, e.g. `{id: 33}` and the easiest way to make a link to an intent is using the `IntentLink` React component:
+
+```jsx
+<IntentLink intent="open" params={{id: 33}}>Open document</IntentLink>
+```
+This will generate an `<a` tag with a href like `/<base path>/open/id=33` depending on where the intent handler is mounted
+
+State router comes with a built in intent-route parser that decodes an intent route to route state.
+
+Full example:
+```
+const router = route('/', [
+  route('/users/:username'),
+  route.intents('/intents') // <-- sets up intent routes at the /intents base path
+])
+```
+
 ## 404s
 
 To check whether a path name matches, you can use the isNotFound method on the returned router instance:
