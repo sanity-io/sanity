@@ -16,7 +16,8 @@ export default class Product extends React.Component {
         <p>
           <StateLink state={{id: nextProductId}}>Go to product #{nextProductId}</StateLink>
         </p>
-        <IntentLink intent="open" params={{id: 'foo'}}>
+        This is an intentlink:
+        <IntentLink intent="open" params={{type: 'product', id: 'foo'}}>
           Open Foo
         </IntentLink>
         <p>

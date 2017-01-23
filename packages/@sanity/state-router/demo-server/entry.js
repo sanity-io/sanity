@@ -29,10 +29,10 @@ function handleNavigate(nextUrl, {replace} = {}) {
   }
 }
 
-function render(location) {
+function render(state, pathname) {
   ReactDOM.render((
-    <RouterProvider router={router} onNavigate={handleNavigate} state={router.decode(location.pathname)}>
-      {router.isNotFound(location.pathname) ? <NotFound pathname={location.pathname} /> : <Main />}
+    <RouterProvider router={router} onNavigate={handleNavigate} state={state}>
+      {router.isNotFound(pathname) ? <NotFound pathname={pathname} /> : <Main />}
     </RouterProvider>
   ), document.getElementById('main'))
 }
@@ -44,6 +44,28 @@ if (router.isRoot(location.pathname)) {
   }
 }
 
-render(document.location)
-history.listen(() => render(document.location))
+const intentHandlers = []
+intentHandlers.push({
+  canHandle: (intent, params) => intent === 'open' && params.type === 'product',
+  resolveRedirectState(intent, params) {
+    return {product: {id: params.id}}
+  }
+})
 
+function checkPath() {
+  const pathname = document.location.pathname
+  const state = router.decode(pathname)
+  if (state && state.intent) {
+    // get intent redirect url
+    const handler = intentHandlers.find(candidate => candidate.canHandle(state.intent, state.params))
+    if (handler) {
+      handleNavigate(router.encode(handler.resolveRedirectState(state.intent, state.params)), {replace: true})
+      return
+    }
+    console.log('No intent handler for intent "%s" with params %o', state.intent, state.params)
+  }
+  render(state, pathname)
+}
+
+checkPath()
+history.listen(checkPath)
