@@ -47,7 +47,7 @@ router.decode('/about')
 ## React usage
 ### Setup routes and provider
 
-```jsx harmony
+```jsx
 import {route} from '@sanity/state-router'
 import {RouterProvider, withRouter} from '@sanity/state-router/components'
 
