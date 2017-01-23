@@ -13,7 +13,6 @@ import styles from './styles/SchemaPaneResolver.css'
 import {previewUtils} from 'part:@sanity/form-builder'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Preview from 'part:@sanity/base/preview'
-// import {debounce} from 'lodash'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -54,7 +53,6 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   navTranslateX = 0
-  navDidPopOut = false
   navMouseover = false
   navIsClosing = false
 
@@ -199,19 +197,26 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   setNavTranslateX = x => {
-    console.log('setNavTranslateX', x)
     if (x === 0) {
-      this.navigationElement.style.transform = 'translateX(0)'
+      this.setState({
+        navIsMinimized: false
+      })
     } else {
-      this.navigationElement.style.transform = `translateX(${x}px)`
+      this.setState({
+        navIsMinimized: true
+      })
+    }
+    this.navigationElement.style.transform = `translateX(${x}px)`
+    this.setEditorTranslateX(x)
+  }
+
+  setEditorTranslateX = x => {
+    this.editorPaneElement.style.transform = `translateX(${x + this.navWidth - this.navVisibleWidth}px)`
+
+    if (!this.state.navIsMinimized) {
+      this.editorPaneElement.style.transform = `translateX(${0}px)`
     }
 
-    // this.editorPaneElement.style.transform = 'translateX(0)'
-    const navWidth = this.navigationElement.offsetWidth
-    if (x === 0) {
-      this.editorPaneElement.style.transform = `translateX(${this.navVisibleWidth}px)`
-    }
-    this.editorPaneElement.style.transform = `translateX(${x + navWidth - this.navVisibleWidth}px)`
   }
 
   resetNavTranslateX = () => {
@@ -222,7 +227,9 @@ export default class SchemaPaneResolver extends React.Component {
 
   handleResize = debounceRAF(() => {
 
-    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement || this.state.navDidPopOut) {
+    console.log('resize')
+
+    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement) {
       return
     }
 
@@ -239,8 +246,8 @@ export default class SchemaPaneResolver extends React.Component {
       return
     }
 
-
-    const navWidth = this.navigationElement.offsetWidth
+    this.navWidth = this.navigationElement.offsetWidth
+    const navWidth = this.navWidth
     const editorPaneWidth = this.editorPaneElement.offsetWidth
     const containerWidth = this.containerElement.offsetWidth
 
@@ -258,6 +265,7 @@ export default class SchemaPaneResolver extends React.Component {
       // Move navigation out of the screen to make room for the editor
       const translateX = containerWidth - editorPaneMinWidth - navWidth
       this.navTranslateX = translateX
+      // this.setNavTranslateX(this.navTranslateX)
       // Resize the editor
       const newEditorWidth = containerWidth - translateX - navWidth
       this.editorPaneElement.style.width = `${newEditorWidth}px`
@@ -267,70 +275,52 @@ export default class SchemaPaneResolver extends React.Component {
       } else {
         this.navTranslateX = (navWidth - this.padding) * -1
       }
-      this.setNavTranslateX(this.navTranslateX)
-
     }
   })
 
   handlePanesMouseEnter = event => {
-    // this.mouseOverInterval = setTimeout(() => {
-    //   this.navMouseover = true
-    //   this.navDidPopOut = true
-    //   if (!this.navIsClosing) {
-    //     this.setNavTranslateX(0)
-    //   }
-    // }, 1000)
+    this.navInitialEdgePosition = this.navigationElement.offsetWidth + this.navTranslateX
   }
 
   handlePanesMouseLeave = event => {
-    console.log('mouseLeave')
     // clearTimeout(this.mouseOverInterval)
     this.navMouseover = false
-    this.navDidPopOut = false
     this.navIsClosing = false
     // reset to old translateX
     this.setNavTranslateX(this.navTranslateX)
   }
 
+  handlePanesClick = event => {
+    this.setNavTranslateX(0)
+    this.setState({
+      navIsMinimized: false
+    })
+  }
+
   handlePanesMouseMove = event => {
-    if (this.navIsClosing) {
+
+    if (!this.state.navIsMinimized) {
       return
     }
-    if (this.navDidPopOut) {
-      this.setNavTranslateX(0)
-      clearTimeout(this.mouseOverInterval)
-      return
-    }
-    const oldTranslateX = this.navTranslateX
+
+    const travel = (this.navInitialEdgePosition - event.clientX) / this.navInitialEdgePosition
+
     const width = this.navigationElement.offsetWidth
-    const clientX = event.clientX
-    this.navVisibleWidth = width + oldTranslateX // TranslateX is negative
-    const translateX = (this.navVisibleWidth) + oldTranslateX - clientX
+    this.navVisibleWidth = width + this.navTranslateX
 
-    if (translateX >= 0) {
-      return
-    }
-
-    if (clientX < 0) {
-      return
-    }
-
-    if (clientX < (this.padding || 20)) {
-      this.setNavTranslateX(this.navTranslateX)
-      this.navDidPopOut = true
-    } else {
-      this.setNavTranslateX(translateX)
+    if (travel < 0.3) {
+      const travelInverted = 1 - (travel * travel)
+      this.setNavTranslateX(this.navTranslateX * travelInverted)
     }
   }
 
   handleUpdate = () => {
-    this.handleResize()
+    // this.handleResize()
   }
 
   render() {
     const {router} = this.context
     const {selectedType, selectedDocumentId} = router.state
-    console.log('render', this.navTranslateX)
 
     const typesPane = (
       <TypePane
@@ -345,8 +335,11 @@ export default class SchemaPaneResolver extends React.Component {
     return (
       <div className={styles.container} ref={this.setContainerElement}>
         <div
-          className={styles.navigationPanesContainer}
+          className={`
+            ${this.state.navIsMinimized ? styles.navigationPanesContainerMinimized : styles.navigationPanesContainer}
+          `}
           ref={this.setNavigationElement}
+          onClick={this.handlePanesClick}
           onMouseEnter={this.handlePanesMouseEnter}
           onMouseMove={this.handlePanesMouseMove}
           onMouseLeave={this.handlePanesMouseLeave}
