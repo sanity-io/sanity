@@ -1,0 +1,25 @@
+@use postcss-cssnext;
+
+.heading1 {
+  composes: heading1 from "part:@sanity/base/theme/typography/headings-style";
+}
+
+.heading2 {
+  composes: heading2 from "part:@sanity/base/theme/typography/headings-style";
+}
+
+.heading3 {
+  composes: heading3 from "part:@sanity/base/theme/typography/headings-style";
+}
+
+.heading4 {
+  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+}
+
+.heading5 {
+  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+}
+
+.heading6 {
+  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+}

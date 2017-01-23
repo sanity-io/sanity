@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  overflow: hidden;
+}
+
+.functions {
+  float: right;
+}

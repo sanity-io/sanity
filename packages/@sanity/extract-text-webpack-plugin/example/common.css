@@ -1,0 +1,5 @@
+@import url(http://this.should.be/in/c);
+body {
+	height: 100%;
+	correct: c;
+}

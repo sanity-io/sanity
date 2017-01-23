@@ -1,0 +1,53 @@
+.root {
+  font-size: 0.8em;
+  margin-bottom: 0.5em;
+  @nest &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+.dividerLeft {
+  border-left: 1px solid #ccc;
+}
+
+.dividerRight {
+  border-right: 1px solid #ccc;
+}
+
+.insertContainer {
+  float: right;
+
+}
+
+.textFormatContainer {
+  float: left;
+  padding-left: 0.5em;
+}
+
+.listFormatContainer {
+  composes: dividerLeft;
+  float: left;
+  padding-left: 0.5em;
+}
+
+.blockFormatContainer {
+  float: left;
+  min-width: 10em;
+  padding-right: 0.5em;
+}
+
+.linkContainer {
+  composes: dividerRight;
+  composes: dividerLeft;
+  float: left;
+}
+
+.fullscreenButtonContainer {
+  float: right;
+  composes: dividerLeft;
+  @nest & svg {
+    transform: scale(1.5);
+  }
+}

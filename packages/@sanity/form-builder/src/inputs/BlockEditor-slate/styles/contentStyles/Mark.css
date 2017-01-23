@@ -1,0 +1,26 @@
+@use postcss-cssnext;
+
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+.code {
+  font-family: monospace;
+  background-color: #eee;
+}

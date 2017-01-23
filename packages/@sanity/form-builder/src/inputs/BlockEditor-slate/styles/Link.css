@@ -1,0 +1,6 @@
+@use postcss-cssnext;
+
+.root {
+  color: blue;
+  text-decoration: underline;
+}

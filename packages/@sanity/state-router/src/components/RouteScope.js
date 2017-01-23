@@ -20,6 +20,7 @@ export default class RouteScope extends React.Component {
           const empty = Object.keys(nextState).length === 0
           return __internalRouter.resolvePathFromState(empty ? {} : addScope(nextState))
         },
+        resolveIntentLink: __internalRouter.resolveIntentLink,
         navigateUrl: __internalRouter.navigateUrl
       },
       router: {

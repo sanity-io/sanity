@@ -12,7 +12,8 @@ const router = route('/omg/lol', [
     if (params.userId === 'me') {
       return route('/:profileSection')
     }
-  })
+  }),
+  route.intents('/intents2')
 ])
 
 const history = createHistory()

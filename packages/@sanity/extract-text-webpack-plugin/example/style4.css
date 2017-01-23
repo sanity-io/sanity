@@ -1,0 +1,6 @@
+@import "base.css";
+.secondary {
+	order: 0;
+	color: url(image.png);
+	correct: b;
+}

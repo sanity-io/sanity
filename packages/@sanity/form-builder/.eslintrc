@@ -1,0 +1,25 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "sanity",
+    "sanity/react",
+    "sanity/import"
+  ],
+  "settings": {
+    "import/ignore": ["\\.css$", "node_modules", ".*:.*"]
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "import/no-unresolved": ["error", {
+      "ignore": [".*:.*"]
+    }],
+    "import/no-extraneous-dependencies": "off",
+    "sort-imports": [1, {
+      "ignoreCase": true,
+      "ignoreMemberSort": true,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }]
+  }
+}

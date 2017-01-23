@@ -1,0 +1,13 @@
+.root {
+  position: relative;
+}
+
+.debug {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.5rem;
+  color: #ccc;
+  width: 30em;
+  display: none;
+}
