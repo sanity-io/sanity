@@ -86,7 +86,6 @@ export default class Pane extends React.PureComponent {
         `}
       >
         <PaneMenuContainer
-          styles={styles}
           onSetListView={this.props.onSetListView}
           onSetSorting={this.props.onSetSorting}
         />
