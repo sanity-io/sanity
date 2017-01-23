@@ -70,7 +70,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   componentDidUpdate() {
-    // this.handleResize()
+    //this.handleResize()
     this.checkRedirect()
   }
 
@@ -214,8 +214,6 @@ export default class SchemaPaneResolver extends React.Component {
 
   handleResize = debounceRAF(() => {
 
-    console.log('resize')
-
     if (!this.navigationElement || !this.editorPaneElement || !this.containerElement) {
       return
     }
@@ -314,6 +312,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   handleUpdate = () => {
+    // console.log('update')
     // this.handleResize()
   }
 
