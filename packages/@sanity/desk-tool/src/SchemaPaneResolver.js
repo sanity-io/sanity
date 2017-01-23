@@ -49,12 +49,12 @@ export default class SchemaPaneResolver extends React.Component {
 
   state = {
     listViewSettings: readListViewSettings(),
-    sorting: '_updatedAt desc'
+    sorting: '_updatedAt desc',
+    navTranslateX: 0,
+    editorWidth: '100%',
+    editorTranslateX: 0,
+    navIsMinimized: false
   }
-
-  navTranslateX = 0
-  navMouseover = false
-  navIsClosing = false
 
   componentDidMount() {
     this.handleResize()
@@ -70,7 +70,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   componentDidUpdate() {
-    this.handleResize()
+    // this.handleResize()
     this.checkRedirect()
   }
 
@@ -197,33 +197,20 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   setNavTranslateX = x => {
-    if (x === 0) {
-      this.setState({
-        navIsMinimized: false
-      })
-    } else {
-      this.setState({
-        navIsMinimized: true
-      })
-    }
-    this.navigationElement.style.transform = `translateX(${x}px)`
+    this.setState({
+      navTranslateX: x
+    })
     this.setEditorTranslateX(x)
   }
 
   setEditorTranslateX = x => {
-    this.editorPaneElement.style.transform = `translateX(${x + this.navWidth - this.navVisibleWidth}px)`
-
     if (!this.state.navIsMinimized) {
-      this.editorPaneElement.style.transform = `translateX(${0}px)`
-    }
-
-  }
-
-  resetNavTranslateX = () => {
-    if (this.navTranslateX) {
-      this.setNavTranslateX(this.navTranslateX)
+      this.setState({
+        editorTranslateX: 0
+      })
     }
   }
+
 
   handleResize = debounceRAF(() => {
 
@@ -236,20 +223,24 @@ export default class SchemaPaneResolver extends React.Component {
     // Uses the css the determine if it should reposition with an Media Query
     const computedStyle = window.getComputedStyle(this.containerElement, '::before')
     const contentValue = computedStyle.getPropertyValue('content')
-    const shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
+    this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
-    if (!shouldReposition) {
+    if (!this.shouldReposition) {
       // reset to default and don't do more
-      this.navTranslateX = 0
-      this.setNavTranslateX(0)
-      this.editorPaneElement.style.width = '100%'
+      this.setState({
+        navTranslateX: 0,
+        editorWidth: '100%'
+      })
       return
     }
 
-    this.navWidth = this.navigationElement.offsetWidth
-    const navWidth = this.navWidth
-    const editorPaneWidth = this.editorPaneElement.offsetWidth
-    const containerWidth = this.containerElement.offsetWidth
+    this.setState({
+      navWidth: this.navigationElement.offsetWidth,
+      editorPaneWidth: this.editorPaneElement.offsetWidth,
+      containerWidth: this.containerElement.offsetWidth
+    })
+
+    const {navWidth, editorPaneWidth, containerWidth} = this.state
 
     // Needs to be on resize because minWidth and fontSize changes when resizing font
     this.padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 3
@@ -257,60 +248,68 @@ export default class SchemaPaneResolver extends React.Component {
 
     if (containerWidth >= (navWidth + editorPaneMinWidth)) {
       // Enough space. Show all
-      this.navTranslateX = 0
-      this.setNavTranslateX(0)
-      this.editorPaneElement.style.width = `${containerWidth - navWidth}px`
+      this.setState({
+        navTranslateX: 0,
+        navIsMinimized: false,
+        editorWidth: `${containerWidth - navWidth}px`
+      })
     } else if (containerWidth < (editorPaneWidth + navWidth)) {
-      // Needs more space
-      // Move navigation out of the screen to make room for the editor
       const translateX = containerWidth - editorPaneMinWidth - navWidth
-      this.navTranslateX = translateX
-      // this.setNavTranslateX(this.navTranslateX)
-      // Resize the editor
-      const newEditorWidth = containerWidth - translateX - navWidth
-      this.editorPaneElement.style.width = `${newEditorWidth}px`
-
+      this.setState({
+        navTranslateX: translateX,
+        navIsMinimized: true,
+        editorWidth: `${containerWidth - translateX - navWidth}px`
+      })
       if ((translateX * -1) <= navWidth - this.padding) {
-        this.navTranslateX = translateX
+        // this.setNavTranslateX(translateX)
       } else {
-        this.navTranslateX = (navWidth - this.padding) * -1
+        this.setState({
+          navTranslateX: (navWidth - this.padding) * -1
+        })
       }
     }
   })
 
   handlePanesMouseEnter = event => {
-    this.navInitialEdgePosition = this.navigationElement.offsetWidth + this.navTranslateX
+    const {navTranslateX, navWidth} = this.state
+    this.setState({
+      oldNavTranslateX: navTranslateX,
+      navInitialEdgePosition: navWidth + navTranslateX
+    })
   }
 
   handlePanesMouseLeave = event => {
-    // clearTimeout(this.mouseOverInterval)
-    this.navMouseover = false
-    this.navIsClosing = false
-    // reset to old translateX
-    this.setNavTranslateX(this.navTranslateX)
+    this.setState({
+      navTranslateX: this.state.oldNavTranslateX,
+      editorTranslateX: 0,
+      navIsMinimized: true
+    })
   }
 
   handlePanesClick = event => {
-    this.setNavTranslateX(0)
+    const {navWidth, oldNavTranslateX} = this.state
+    const navVisibleWidth = navWidth + oldNavTranslateX
     this.setState({
+      navTranslateX: 0,
+      editorTranslateX: navWidth - navVisibleWidth,
       navIsMinimized: false
     })
   }
 
   handlePanesMouseMove = event => {
+    if (this.state.navIsMinimized) {
+      const {oldNavTranslateX, navInitialEdgePosition, navWidth} = this.state
+      const travel = (navInitialEdgePosition - event.clientX) / navInitialEdgePosition
 
-    if (!this.state.navIsMinimized) {
-      return
-    }
-
-    const travel = (this.navInitialEdgePosition - event.clientX) / this.navInitialEdgePosition
-
-    const width = this.navigationElement.offsetWidth
-    this.navVisibleWidth = width + this.navTranslateX
-
-    if (travel < 0.3) {
-      const travelInverted = 1 - (travel * travel)
-      this.setNavTranslateX(this.navTranslateX * travelInverted)
+      if (travel < 0.3) {
+        const travelInverted = 1 - travel
+        const newNavTranslateX = oldNavTranslateX * travelInverted
+        const navVisibleWidth = navWidth + newNavTranslateX
+        this.setState({
+          navTranslateX: newNavTranslateX,
+          editorTranslateX: navVisibleWidth - oldNavTranslateX - navWidth
+        })
+      }
     }
   }
 
@@ -321,6 +320,7 @@ export default class SchemaPaneResolver extends React.Component {
   render() {
     const {router} = this.context
     const {selectedType, selectedDocumentId} = router.state
+    const {navTranslateX, editorTranslateX, editorWidth} = this.state
 
     const typesPane = (
       <TypePane
@@ -343,11 +343,22 @@ export default class SchemaPaneResolver extends React.Component {
           onMouseEnter={this.handlePanesMouseEnter}
           onMouseMove={this.handlePanesMouseMove}
           onMouseLeave={this.handlePanesMouseLeave}
+          style={{
+            transform: `translateX(${navTranslateX}px)`
+          }}
         >
           {typesPane}
           {documentsPane}
         </div>
-        <div className={styles.editorContainer} ref={this.setEditorPaneElement} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
+        <div
+          className={styles.editorContainer}
+          ref={this.setEditorPaneElement}
+          id="Sanity_Default_DeskTool_Editor_ScrollContainer"
+          style={{
+            width: editorWidth,
+            transform: `translateX(${editorTranslateX}px)`
+          }}
+        >
           {
             selectedType && selectedDocumentId && (
               <EditorPane
