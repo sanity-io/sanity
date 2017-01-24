@@ -297,11 +297,10 @@ export default class SchemaPaneResolver extends React.Component {
   handlePanesMouseMove = event => {
     if (this.state.navIsMinimized) {
       const {oldNavTranslateX, navInitialEdgePosition, navWidth} = this.state
-      const travel = (navInitialEdgePosition - event.clientX) / navInitialEdgePosition
+      const travel = (event.clientX - navInitialEdgePosition) * -1
 
-      if (travel < 0.3) {
-        const travelInverted = 1 - travel
-        const newNavTranslateX = oldNavTranslateX * travelInverted
+      if (travel < 20) {
+        const newNavTranslateX = oldNavTranslateX + travel
         const navVisibleWidth = navWidth + newNavTranslateX
         this.setState({
           navTranslateX: newNavTranslateX,
