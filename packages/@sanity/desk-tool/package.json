@@ -21,6 +21,7 @@
   "dependencies": {
     "@sanity/data-aspects": "^0.99.0",
     "@sanity/form-builder": "^0.99.5",
+    "@sanity/mutator": "^0.99.4",
     "in-publish": "^2.0.0",
     "react-click-outside": "^2.2.0"
   },
@@ -33,8 +34,8 @@
     "history": "^4.5.0",
     "postcss-cssnext": "^2.9.0",
     "react": "^15.4.1",
-    "react-dom": "^15.4.1",
     "react-click-outside": "^2.2.0",
+    "react-dom": "^15.4.1",
     "rimraf": "^2.5.4"
   },
   "repository": {
