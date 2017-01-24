@@ -20,6 +20,10 @@ function createInitialState() {
   }
 }
 
+function keysEqual(object, otherObject, filterKeys = Object.keys(object)) {
+  return filterKeys.every(key => object[key] === otherObject[key])
+}
+
 export default class QueryContainer extends React.Component {
 
   static propTypes = {
@@ -116,6 +120,10 @@ export default class QueryContainer extends React.Component {
       this.setState(createInitialState())
       this.subscribe(nextProps.query, nextProps.params)
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return keysEqual(this.props, nextProps, ['query', 'params']) || keysEqual(this.state, nextState)
   }
 
   renderDeprecated() {
