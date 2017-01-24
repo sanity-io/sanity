@@ -53,7 +53,8 @@ export default class SchemaPaneResolver extends React.Component {
     navTranslateX: 0,
     editorWidth: '100%',
     editorTranslateX: 0,
-    navIsMinimized: false
+    navIsMinimized: false,
+    navIsHovered: false
   }
 
   componentDidMount() {
@@ -141,6 +142,10 @@ export default class SchemaPaneResolver extends React.Component {
               </FullscreenDialog>
             )
           }
+          // Hack
+          // Panes needs to be resized after the content is loaded
+          // Look at this later
+          this.handleResize()
           const items = result && result.documents && result.documents.map(item => {
             item.stateLink = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
             return item
@@ -156,7 +161,6 @@ export default class SchemaPaneResolver extends React.Component {
               onSetListView={this.handleSetListView}
               onSetSorting={this.handleSetSort}
               listView={this.getListViewForType(type.name)}
-              onUpdate={this.handleUpdate}
             />
           )
         }}
@@ -214,7 +218,7 @@ export default class SchemaPaneResolver extends React.Component {
 
   handleResize = debounceRAF(() => {
 
-    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement) {
+    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement || this.state.navIsHovered) {
       return
     }
 
@@ -272,7 +276,8 @@ export default class SchemaPaneResolver extends React.Component {
     const {navTranslateX, navWidth} = this.state
     this.setState({
       oldNavTranslateX: navTranslateX,
-      navInitialEdgePosition: navWidth + navTranslateX
+      navInitialEdgePosition: navWidth + navTranslateX,
+      navIsHovered: true
     })
   }
 
@@ -280,7 +285,8 @@ export default class SchemaPaneResolver extends React.Component {
     this.setState({
       navTranslateX: this.state.oldNavTranslateX,
       editorTranslateX: 0,
-      navIsMinimized: true
+      navIsMinimized: true,
+      navIsHovered: false
     })
   }
 
@@ -300,7 +306,8 @@ export default class SchemaPaneResolver extends React.Component {
       const travel = (event.clientX - navInitialEdgePosition) * -1
 
       if (travel < 20) {
-        const newNavTranslateX = oldNavTranslateX + travel
+        const x = 20
+        const newNavTranslateX = oldNavTranslateX + x
         const navVisibleWidth = navWidth + newNavTranslateX
         this.setState({
           navTranslateX: newNavTranslateX,
@@ -308,11 +315,6 @@ export default class SchemaPaneResolver extends React.Component {
         })
       }
     }
-  }
-
-  handleUpdate = () => {
-    // console.log('update')
-    // this.handleResize()
   }
 
   render() {
@@ -324,7 +326,6 @@ export default class SchemaPaneResolver extends React.Component {
       <TypePane
         items={TYPE_ITEMS}
         renderItem={this.renderTypePaneItem}
-        onUpdate={this.handleUpdate}
       />
     )
 

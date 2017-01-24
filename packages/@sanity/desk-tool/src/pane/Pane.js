@@ -18,7 +18,6 @@ export default class Pane extends React.PureComponent {
     onSetListView: PropTypes.func,
     onSetSorting: PropTypes.func,
     listView: PropTypes.string,
-    onUpdate: PropTypes.func,
     type: PropTypes.object,
     onSelect: PropTypes.func
   }
@@ -29,12 +28,6 @@ export default class Pane extends React.PureComponent {
 
   static contextTypes = {
     router: PropTypes.object
-  }
-
-  componentDidUpdate() {
-    if (this.props.onUpdate) {
-      this.props.onUpdate()
-    }
   }
 
   handleSelect = item => {
