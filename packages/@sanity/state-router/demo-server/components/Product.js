@@ -1,3 +1,4 @@
+// @flow
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
 import IntentLink from '../../src/components/IntentLink'

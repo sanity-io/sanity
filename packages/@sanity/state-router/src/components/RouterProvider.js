@@ -3,15 +3,13 @@ import React, {PropTypes, Element} from 'react'
 import type {Router} from '../types'
 import type {RouterProviderContext, NavigateOptions} from './types'
 
-type Props = {
-  onNavigate: () => void,
-  router: Router,
-  state: Object,
-  children: Element<*>
-}
-
 export default class RouterProvider extends React.Component {
-  props: Props
+  props: {
+    onNavigate: (nextPath: string) => void,
+    router: Router,
+    state: Object,
+    children?: Element<*>
+  }
 
   static childContextTypes = {
     __internalRouter: PropTypes.object,
@@ -31,7 +29,7 @@ export default class RouterProvider extends React.Component {
     return this.props.router.encode(state)
   }
 
-  resolveIntentLink = (intent : string, params : Object) : string => {
+  resolveIntentLink = (intent : string, params? : Object) : string => {
     return this.props.router.encode({intent, params})
   }
 

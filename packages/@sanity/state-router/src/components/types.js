@@ -6,7 +6,7 @@ export type NavigateOptions = {
 
 export type InternalRouter = {
   resolvePathFromState: (nextState : Object) => string,
-  resolveIntentLink: (intent : string, params : Object) => string,
+  resolveIntentLink: (intent : string, params? : Object) => string,
   navigateUrl: (url : string, options? : NavigateOptions) => void
 }
 

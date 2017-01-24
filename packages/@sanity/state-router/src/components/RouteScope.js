@@ -4,11 +4,6 @@ import isEmpty from '../utils/isEmpty'
 
 import type {RouterProviderContext, NavigateOptions, InternalRouter, ContextRouter} from './types'
 
-type Props = {
-  scope: string,
-  children: Element<*>
-}
-
 function addScope(routerState : Object, scope : string, scopedState : Object) {
   return scopedState && {
     ...routerState,
@@ -16,7 +11,10 @@ function addScope(routerState : Object, scope : string, scopedState : Object) {
   }
 }
 export default class RouteScope extends React.Component {
-  props: Props
+  props: {
+    scope: string,
+    children: Element<*>
+  }
   context: RouterProviderContext
 
   static childContextTypes = RouteScope.contextTypes = {

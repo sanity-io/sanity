@@ -27,7 +27,11 @@ export type Node = {
 
 export type Router = Node & {
   encode: (state : Object) => string,
-  decode: (path : string) => ?Object
+  decode: (path : string) => ?Object,
+  isNotFound: (path : string) => boolean,
+  getBasePath: () => string,
+  getRedirectBase: (pathname : string) => ?string,
+  isRoot: (path : string) => boolean
 }
 export type MatchResult = {
   nodes: Node[],

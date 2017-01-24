@@ -2,13 +2,11 @@
 import test from './_util/test'
 import route from '../src/route'
 
-function mock(obj, method, mockFn) {
-  const original = obj[method]
-  // $FlowIgnore
-  obj[method] = mockFn
+function mock(obj : Object, methodName : string, mockFn : Function) {
+  const original = obj[methodName]
+  obj[methodName] = mockFn
   return function restore() {
-    // $FlowIgnore
-    obj[method] = original
+    obj[methodName] = original
   }
 }
 

@@ -6,7 +6,7 @@ import type {RouterProviderContext} from './types'
 
 type Props = {
   intent: string,
-  params: Object
+  params?: Object
 }
 
 export default class IntentLink extends React.Component {

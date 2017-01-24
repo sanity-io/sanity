@@ -6,12 +6,11 @@ import type {RouterProviderContext} from './types'
 
 const EMPTY_STATE = {}
 
-type Props = {
-  state: string,
-  toIndex: boolean
-}
 export default class StateLink extends React.Component {
-  props: Props
+  props: {
+    state?: Object,
+    toIndex?: boolean
+  }
   context: RouterProviderContext
 
   static defaultProps = {

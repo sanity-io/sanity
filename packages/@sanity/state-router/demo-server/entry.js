@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Main from './components/Main'
@@ -5,8 +6,9 @@ import route from '../src/route'
 import RouterProvider from '../src/components/RouterProvider'
 import createHistory from 'history/createBrowserHistory'
 import NotFound from './components/NotFound'
+import type {Router} from '../src/types'
 
-const router = route('/omg/lol', [
+const router : Router = route('/omg/lol', [
   route.scope('product', '/products/:id', [
     route('/:detailView'),
     route('/user/:userId')
@@ -64,7 +66,7 @@ function checkPath() {
     }
     console.log('No intent handler for intent "%s" with params %o', state.intent, state.params)
   }
-  render(state, pathname)
+  render(state || {}, pathname)
 }
 
 checkPath()

@@ -11,15 +11,14 @@ function isModifiedEvent(event : SyntheticMouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 }
 
-type Props = {
-  replace: boolean,
-  onClick: (event : SyntheticMouseEvent) => void,
-  href: string,
-  target: string
-}
-
 export default class Link extends React.Component {
-  props: Props
+  props: {
+    replace?: boolean,
+    onClick?: (event : SyntheticMouseEvent) => void,
+    href: string,
+    target?: string
+  }
+
   context: RouterProviderContext
 
   static defaultProps = {

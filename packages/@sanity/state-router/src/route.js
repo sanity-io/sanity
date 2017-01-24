@@ -108,11 +108,11 @@ function createNode(options : NodeOptions) : Router {
       return resolveStateFromPath(this, _path)
     },
     isRoot: isRoot,
-    getBasePath(): boolean {
-      return this.encode(EMPTY_STATE)
-    },
     isNotFound(pathname: string): boolean {
       return this.decode(pathname) === null
+    },
+    getBasePath(): string {
+      return this.encode(EMPTY_STATE)
     },
     getRedirectBase(pathname : string) : ?string {
       if (isRoot(pathname)) {
