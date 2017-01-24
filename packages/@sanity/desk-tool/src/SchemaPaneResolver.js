@@ -54,7 +54,8 @@ export default class SchemaPaneResolver extends React.Component {
     editorWidth: '100%',
     editorTranslateX: 0,
     navIsMinimized: false,
-    navIsHovered: false
+    navIsHovered: false,
+    navIsClicked: false
   }
 
   componentDidMount() {
@@ -296,7 +297,8 @@ export default class SchemaPaneResolver extends React.Component {
     this.setState({
       navTranslateX: 0,
       editorTranslateX: navWidth - navVisibleWidth,
-      navIsMinimized: false
+      navIsMinimized: false,
+      navIsClicked: true
     })
   }
 
@@ -320,7 +322,7 @@ export default class SchemaPaneResolver extends React.Component {
   render() {
     const {router} = this.context
     const {selectedType, selectedDocumentId} = router.state
-    const {navTranslateX, editorTranslateX, editorWidth} = this.state
+    const {navTranslateX, editorTranslateX, editorWidth, navIsMinimized, navIsClicked} = this.state
 
     const typesPane = (
       <TypePane
@@ -335,7 +337,8 @@ export default class SchemaPaneResolver extends React.Component {
       <div className={styles.container} ref={this.setContainerElement}>
         <div
           className={`
-            ${this.state.navIsMinimized ? styles.navigationPanesContainerMinimized : styles.navigationPanesContainer}
+            ${navIsMinimized ? styles.navigationPanesContainerIsMinimized : styles.navigationPanesContainer}
+            ${navIsClicked ? styles.navigationPanesContainerIsClicked : ''}
           `}
           ref={this.setNavigationElement}
           onClick={this.handlePanesClick}
