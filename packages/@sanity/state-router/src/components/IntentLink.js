@@ -18,7 +18,12 @@ export default class IntentLink extends React.Component {
   }
 
   render() {
-    const {intent, params} = this.props
+    const {intent, params, children} = this.props
+
+    // @todo Temporary hack
+    if (intent === 'edit' && params.type) {
+      return <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`}>{children}</Link>
+    }
 
     const url = this.context.__internalRouter.resolveIntentLink(intent, params)
     const rest = omit(this.props, 'intent', 'params')
