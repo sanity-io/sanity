@@ -34,14 +34,18 @@ export default class Obj extends React.PureComponent {
   };
 
   handleFieldChange = (event, fieldName) => {
-    const {onChange} = this.props
+    const {onChange, isRoot, type} = this.props
 
-    const patches = arrify(event.patch).map(patch => {
+    const setIfMissingPatch = isRoot ? [] : [{
+      type: 'setIfMissing',
+      value: type.name === 'object' ? {} : {_type: type.name}
+    }]
+    const patches = setIfMissingPatch.concat(arrify(event.patch).map(patch => {
       return {
         ...patch,
         path: [fieldName, ...(patch.path || [])]
       }
-    })
+    }))
     onChange({patch: patches})
   }
 
