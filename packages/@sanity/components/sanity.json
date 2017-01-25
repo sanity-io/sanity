@@ -98,6 +98,14 @@
       "description": "Checkbox toggle style"
     },
     {
+      "name": "part:@sanity/components/radiobutton/default",
+      "description": "Radiobutton"
+    },
+    {
+      "name": "part:@sanity/components/radiobutton/default-style",
+      "description": "Radiobutton style"
+    },
+    {
       "name": "part:@sanity/components/toggles/buttons",
       "description": "Toggle buttons"
     },
@@ -161,6 +169,14 @@
     {
       "name": "part:@sanity/components/selects/default-style",
       "description": "Standard select field styling"
+    },
+    {
+      "name": "part:@sanity/components/selects/radio",
+      "description": "Radio select fieldset"
+    },
+    {
+      "name": "part:@sanity/components/selects/radio-style",
+      "description": "Radio select field styling"
     },
     {
       "name": "part:@sanity/components/selects/searchable",
@@ -339,35 +355,36 @@
       "path": "loading/Spinner.js"
     },
     {
-      "implements":  "part:@sanity/components/progress/bar",
+      "implements": "part:@sanity/components/progress/bar",
       "path": "progress/ProgressBar.js"
     },
     {
-      "implements":  "part:@sanity/components/progress/circle",
+      "implements": "part:@sanity/components/progress/circle",
       "path": "progress/ProgressCircle.js"
     },
     {
-      "implements":  "part:@sanity/components/buttons/fab",
+      "implements": "part:@sanity/components/buttons/fab",
       "path": "buttons/Fab.js"
     },
     {
-      "implements":  "part:@sanity/components/buttons/dropdown",
+      "implements": "part:@sanity/components/buttons/dropdown",
       "path": "buttons/DropDownButton.js"
     },
-
-
-
     {
-      "implements":  "part:@sanity/components/toggles/switch",
+      "implements": "part:@sanity/components/toggles/switch",
       "path": "toggles/Switch.js"
     },
     {
-      "implements":  "part:@sanity/components/toggles/checkbox",
+      "implements": "part:@sanity/components/toggles/checkbox",
       "path": "toggles/Checkbox.js"
     },
     {
-      "implements":  "part:@sanity/components/toggles/buttons",
+      "implements": "part:@sanity/components/toggles/buttons",
       "path": "toggles/Buttons.js"
+    },
+    {
+      "implements": "part:@sanity/components/radiobutton/default",
+      "path": "radiobutton/RadioButtonDefault.js"
     },
     {
       "implements":  "part:@sanity/components/toggles/button",
@@ -408,6 +425,14 @@
     {
       "implements": "part:@sanity/components/selects/default-style",
       "path": "selects/styles/DefaultSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/radio",
+      "path": "selects/RadioSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/selects/radio-style",
+      "path": "selects/styles/RadioSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/searchable",
@@ -536,6 +561,10 @@
     {
       "implements": "part:@sanity/components/toggles/checkbox-style",
       "path": "toggles/styles/Checkbox.css"
+    },
+    {
+      "implements": "part:@sanity/components/radiobutton/default-style",
+      "path": "radiobutton/styles/RadioButtonDefault.css"
     },
     {
       "implements": "part:@sanity/components/toggles/buttons-style",
