@@ -1,7 +1,6 @@
 import path from 'path'
 import chalk from 'chalk'
 import thenify from 'thenify'
-import storyBook from '@sanity/storybook/server'
 import {getProdServer, getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
 import isProduction from '../../util/isProduction'
@@ -72,24 +71,7 @@ export default async (args, context) => {
     }
 
     output.print(chalk.green(`Server listening on http://${httpHost}:${httpPort}`))
-    if (httpServers.length > 1) {
-      output.print(chalk.green(`Storybook listening on ${httpServers[1]}`))
-    }
   })
-
-  const storyConfig = sanityConfig.get('storybook')
-  if (storyConfig) {
-    const plugins = sanityConfig.get('plugins') || []
-    if (plugins.indexOf('@sanity/storybook') === -1) {
-      throw new Error(
-        '`@sanity/storybook` is missing from `plugins` array. '
-        + 'Either add it as a dependency and plugin, or remove the '
-        + '`storybook` section of your projects `sanity.json`.'
-      )
-    }
-
-    listeners.push(storyBook(storyConfig))
-  }
 
   await reinitializePluginConfigs({workDir, output})
 
