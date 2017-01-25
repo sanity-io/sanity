@@ -2,8 +2,10 @@ import React, {PropTypes} from 'react'
 import GlobalSearch from 'part:@sanity/components/globalsearch/default'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
-import {union} from 'lodash'
 import Preview from 'part:@sanity/base/preview?'
+import locationStore from 'part:@sanity/base/location'
+import {IntentLink} from 'part:@sanity/base/router'
+import {union} from 'lodash'
 
 const typeNames = schema.types.map(schemaType => schemaType.name)
 
@@ -108,18 +110,13 @@ class Search extends React.Component {
   }
 
   handleGoToItem = item => {
-    // TODO Hack for assuming desktool until we have a path resolver
+    // @TODO Hack for assuming desktool until we have a path resolver
     const type = item._type.split('.')[1]
     const id = item._id.split('/').join('.')
-    const {router} = this.context
-    router.navigate({
-      Desk: {
-        action: 'edit',
-        selectedType: type,
-        selectedDocumentId: id
-      },
-      tool: 'Desk'
-    })
+    const url = ['/desk', type, 'edit', id].join('/')
+
+    locationStore.actions.navigate(url, {replace: false})
+
     this.setState({
       isOpen: false
     })
@@ -138,11 +135,13 @@ class Search extends React.Component {
 
     if (type && Preview && schema) {
       return (
-        <Preview
-          value={item}
-          style="default" // eslint-disable-line
-          typeDef={type}
-        />
+        <IntentLink intent="edit" params={{id: item._id, type: typeName}}>
+          <Preview
+            value={item}
+            style="default" // eslint-disable-line
+            typeDef={type}
+          />
+        </IntentLink>
       )
     }
     return null
