@@ -17,7 +17,8 @@ export default class DefaultTextInput extends React.Component {
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
     id: PropTypes.string.isRequired,
-    hasFocus: PropTypes.bool
+    hasFocus: PropTypes.bool,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -63,16 +64,22 @@ export default class DefaultTextInput extends React.Component {
     if (this.props.selected) {
       this.selectInput()
     }
+    if (this.props.focus) {
+      this._input.focus()
+    }
   }
 
   componentDidUpdate() {
     if (this.props.selected) {
       this.selectInput()
     }
+    if (this.props.focus) {
+      this._input.focus()
+    }
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, type, hasFocus, level, ...rest} = omit(this.props, 'onClear')
+    const {value, placeholder, error, showClearButton, id, type, hasFocus, level, ...rest} = omit(this.props, 'onClear', 'focus')
 
     const rootClass = error ? styles.error : styles.root
     const levelClass = `styles[level_${level}]`

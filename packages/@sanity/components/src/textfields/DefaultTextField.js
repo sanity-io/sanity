@@ -20,7 +20,8 @@ export default class DefaultTextField extends React.Component {
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
     className: PropTypes.string,
-    description: PropTypes.string
+    description: PropTypes.string,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -64,7 +65,7 @@ export default class DefaultTextField extends React.Component {
   }
 
   render() {
-    const {label, placeholder, error, showClearButton, type, className, level, description} = this.props
+    const {label, placeholder, error, showClearButton, type, className, level, description, focus} = this.props
 
     const rootClass = `${error ? styles.error : styles.root} ${className}`
     return (
@@ -81,6 +82,7 @@ export default class DefaultTextField extends React.Component {
           onFocus={this.handleFocus}
           onClear={this.handleClear}
           showClearButton={showClearButton}
+          focus={focus}
         />
       </FormField>
     )
