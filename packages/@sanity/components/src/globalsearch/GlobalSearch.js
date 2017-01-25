@@ -179,6 +179,7 @@ class GlobalSearch extends React.Component {
   }
 
   handleChange = item => {
+    this.setState({selectedItem: null})
     this.props.onChange(item)
   }
 
