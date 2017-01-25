@@ -6,6 +6,7 @@ import DefaultButton from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
 import schemaTypePrefix from '../utils/schemaTypePrefix'
 import schema from 'part:@sanity/base/schema'
+import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import dataAspects from '../utils/dataAspects'
 import {throttle} from 'lodash'
 
@@ -169,10 +170,12 @@ export default class EditorPane extends React.PureComponent {
       value: nextValue
     })
   }
+
   handleIncomingDelete(event) {
     const {router} = this.context
     router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
+
   commit = throttle(() => {
     this.setState({spin: true, progress: null})
     this.document.commit().subscribe({
@@ -189,15 +192,36 @@ export default class EditorPane extends React.PureComponent {
   }, 1000, {leading: true, trailing: true})
 
   handleChange = event => {
-    this.document
-      .patch(event.patches)
+    this.document.patch(event.patches)
     this.commit()
   }
 
+  handleReferenceResult = event => {
+    if (event.documents.length === 0) {
+      this.handleDelete()
+    } else {
+      this.setState({referringDocuments: event.documents, deleteInProgress: false})
+    }
+  }
+
   handleDelete = () => {
-    this.setState({progress: {kind: 'info', message: 'Deleting…'}})
+    this.setState({progress: {kind: 'info', message: 'Deleting…'}, deleteInProgress: false})
     this.document.delete()
     this.commit()
+  }
+
+  handleRequestDelete = () => {
+    this.setState({progress: {kind: 'info', message: 'Checking references…'}, deleteInProgress: true})
+    const refSubscription = documentStore.query('*[references($docId), limit: 100]', {docId: this.props.documentId}).subscribe({
+      next: this.handleReferenceResult,
+      error: this.handleReferenceError
+    })
+
+    this.subscriptions.push(refSubscription)
+  }
+
+  handleCancelDeleteRequest = () => {
+    this.setState({progress: null, referringDocuments: null})
   }
 
   handleRestore = () => {
@@ -208,7 +232,7 @@ export default class EditorPane extends React.PureComponent {
   }
 
   render() {
-    const {value, deleted, loading, spin, validation} = this.state
+    const {value, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
     const {typeName} = this.props
     const titleProp = dataAspects.getItemDisplayField(typeName)
     const schemaType = schema.types.find(type => type.name === this.props.typeName)
@@ -253,11 +277,19 @@ export default class EditorPane extends React.PureComponent {
           />
 
           <div className={styles.deleteContainer}>
-            <DefaultButton onClick={this.handleDelete} color="danger">
+            <DefaultButton onClick={this.handleRequestDelete} color="danger" loading={deleteInProgress}>
               <strong>Delete</strong> {value.getAttribute(titleProp).serialize()}
             </DefaultButton>
           </div>
         </form>
+
+        {referringDocuments && (
+          <ReferringDocumentsHelper
+            documents={referringDocuments}
+            currentValue={value}
+            onCancel={this.handleCancelDeleteRequest}
+          />
+        )}
       </div>
     )
   }

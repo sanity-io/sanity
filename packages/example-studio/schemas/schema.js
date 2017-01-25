@@ -85,6 +85,7 @@ export default createSchema({
         },
         {
           name: 'content',
+          title: 'Content tags',
           type: 'array',
           title: 'Content tags',
           of: [
@@ -103,6 +104,15 @@ export default createSchema({
               type: 'author'
             }
           ],
+          required: true
+        },
+        {
+          name: 'authorRef',
+          title: 'Author reference',
+          type: 'reference',
+          to: {
+            type: 'author'
+          },
           required: true
         }
       ]

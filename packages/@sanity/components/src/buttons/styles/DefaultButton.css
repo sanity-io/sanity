@@ -259,6 +259,10 @@
   composes: noBorder;
 }
 
+.spinner {
+  margin-right: 0.5em;
+}
+
 .hasIcon {
   /* empty */
 }
