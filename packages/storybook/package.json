@@ -9,11 +9,9 @@
   "scripts": {
     "start": "start-storybook -p 9001 -c ."
   },
-  "devDependencies": {
-    "@kadira/react-storybook-addon-info": "^3.3.0",
-    "@kadira/storybook": "^2.35.3"
-  },
   "dependencies": {
+    "@kadira/react-storybook-addon-info": "^3.3.0",
+    "@kadira/storybook": "^2.35.3",
     "@sanity/base": "^0.99.9",
     "@sanity/components": "^0.99.9",
     "@sanity/default-layout": "^0.99.9",

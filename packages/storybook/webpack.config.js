@@ -23,6 +23,9 @@ module.exports = (storyWpConfig, configType) => {
 
   return Object.assign({}, sanityWpConfig, storyWpConfig, {
     plugins: [].concat(storyWpConfig.plugins, sanityWpConfig.plugins || []),
+    resolve: Object.assign({}, storyWpConfig.resolve, sanityWpConfig.resolve, {
+      alias: Object.assign({}, storyWpConfig.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
+    }), 
     module: Object.assign({}, storyWpConfig.module, sanityWpConfig.module, {
       loaders: [].concat(storyWpConfig.module.loaders, sanityWpConfig.module.loaders)
     })
