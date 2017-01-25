@@ -8,6 +8,7 @@ export default class DefaultListItem extends React.Component {
     children: PropTypes.node.isRequired,
     item: PropTypes.object.isRequired,
     onSelect: PropTypes.func,
+    onOpen: PropTypes.func,
     layout: PropTypes.string,
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
@@ -26,6 +27,10 @@ export default class DefaultListItem extends React.Component {
 
   handleClick = event => {
     this.props.onSelect(this.props.item)
+  }
+
+  handleDoubleClick = event => {
+    this.props.onOpen(this.props.item)
   }
 
   componentDidMount() {
@@ -66,14 +71,14 @@ export default class DefaultListItem extends React.Component {
       <li className={rootClasses} ref={this.setElement}>
         {
           item.stateLink && (
-            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink}>
+            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink} onDoubleClick={this.handleDoubleClick}>
               {this.props.children}
             </StateLink>
           )
         }
         {
           !item.stateLink && (
-            <div className={styles.noLink} onClick={this.handleClick}>
+            <div className={styles.noLink} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
               {this.props.children}
             </div>
           )

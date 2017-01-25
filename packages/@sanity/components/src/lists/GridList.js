@@ -46,6 +46,7 @@ class GridList extends React.Component {
       })
     ),
     onSelect: PropTypes.func,
+    onOpen: PropTypes.func,
     selectable: PropTypes.bool,
     loading: PropTypes.bool,
     className: PropTypes.string,
@@ -68,6 +69,7 @@ class GridList extends React.Component {
 
   static defaultProps = {
     onSelect() {},
+    onOpen() {},
     renderItem(item, i) {
       return (
         <MediaPreview item={item} />
@@ -85,7 +87,8 @@ class GridList extends React.Component {
       highlightedItem,
       sortable,
       useDragHandle,
-      onSelect
+      onSelect,
+      onOpen
     } = this.props
 
     return (
@@ -95,6 +98,7 @@ class GridList extends React.Component {
         key={`item-${index}`}
         item={item}
         onSelect={onSelect}
+        onOpen={onOpen}
         selected={item == selectedItem}
         highlighted={item == highlightedItem}
         decoration={decoration}

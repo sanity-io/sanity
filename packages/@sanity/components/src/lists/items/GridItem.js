@@ -7,7 +7,8 @@ export default class GridItem extends React.Component {
     className: PropTypes.string,
     item: PropTypes.object,
     children: PropTypes.node.isRequired,
-    onSelect: PropTypes.func.isRequired,
+    onSelect: PropTypes.func,
+    onOpen: PropTypes.func,
     layout: PropTypes.string,
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
@@ -16,10 +17,15 @@ export default class GridItem extends React.Component {
 
   static defaultProps = {
     onSelect() {},
+    onOpen() {}
   }
 
   handleClick = () => {
     this.props.onSelect(this.props.item)
+  }
+
+  handleDoubleClick = event => {
+    this.props.onOpen(this.props.item)
   }
 
   render() {
@@ -35,14 +41,14 @@ export default class GridItem extends React.Component {
       <li className={rootStyles}>
         {
           item.stateLink && (
-            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink}>
+            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink} onDoubleClick={this.handleDoubleClick}>
               {children}
             </StateLink>
           )
         }
         {
           !item.stateLink && (
-            <div className={styles.noLink} onClick={this.handleClick}>
+            <div className={styles.noLink} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
               {children}
             </div>
           )

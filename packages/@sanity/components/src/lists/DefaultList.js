@@ -44,6 +44,7 @@ export default class DefaultList extends React.Component {
       })
     ),
     onSelect: PropTypes.func,
+    onOpen: PropTypes.func,
     onSortStart: PropTypes.func,
     onSortMove: PropTypes.func,
     onSortEnd: PropTypes.func,
@@ -63,6 +64,7 @@ export default class DefaultList extends React.Component {
 
   static defaultProps = {
     onSelect() {},
+    onOpen() {},
     sortable: false,
     renderItem(item, i) {
       return (
@@ -103,7 +105,8 @@ export default class DefaultList extends React.Component {
       selectedItem,
       highlightedItem,
       sortable,
-      useDragHandle
+      useDragHandle,
+      onOpen
     } = this.props
 
     return (
@@ -113,6 +116,7 @@ export default class DefaultList extends React.Component {
         key={`item-${index}`}
         item={item}
         onSelect={this.handleSelect}
+        onOpen={onOpen}
         selected={item == selectedItem}
         highlighted={item == highlightedItem}
         decoration={decoration}
