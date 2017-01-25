@@ -3,7 +3,7 @@ import {get} from 'lodash'
 import through2 from 'through2'
 import promiseEach from 'promise-each-concurrency'
 import {extractWithPath} from '@sanity/mutator'
-import getStreamForUri from '../../../util/getStreamForUri'
+import getBufferForUri from '../../../util/getBufferForUri'
 import debug from '../../../debug'
 
 const assetKey = '_sanityAsset'
@@ -54,8 +54,8 @@ export default options => {
 
     // If it doesn't exist, we want to upload it
     debug('Uploading %s with URL %s', item.asset.type, item.asset.url)
-    const stream = await getStreamForUri(item.asset.url)
-    const asset = await (client.assets.upload(item.asset.type, stream, {label}).toPromise())
+    const buffer = await getBufferForUri(item.asset.url)
+    const asset = await (client.assets.upload(item.asset.type, buffer, {label}).toPromise())
     return asset.document._id
   }
 }
