@@ -24,6 +24,49 @@ export default createSchema({
           type: 'boolean'
         },
         {
+          name: 'select',
+          title: 'Select',
+          type: 'string',
+          options: {
+            list: [
+              {
+                title: 'One (1)',
+                value: 'one'
+              },
+              {
+                title: 'Two (2)',
+                value: 'two'
+              },
+              {
+                title: 'Three (3)',
+                value: 'three'
+              }
+            ]
+          }
+        },
+        {
+          name: 'radioSelect',
+          title: 'Select (layout: radio)',
+          type: 'string',
+          options: {
+            layout: 'radio',
+            list: [
+              {
+                title: 'One (1)',
+                value: 'one'
+              },
+              {
+                title: 'Two (2)',
+                value: 'two'
+              },
+              {
+                title: 'Three (3)',
+                value: 'three'
+              }
+            ]
+          }
+        },
+        {
           name: 'lead',
           title: 'Lead',
           type: 'text',

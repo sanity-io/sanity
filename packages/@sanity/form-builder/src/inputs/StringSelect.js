@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import Select from 'part:@sanity/components/selects/default'
+import RadioSelect from 'part:@sanity/components/selects/radio'
 
 export default class StringSelect extends React.Component {
   static displayName = 'StringSelect';
@@ -9,7 +10,7 @@ export default class StringSelect extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     level: PropTypes.number.isRequired,
-    value: PropTypes.string,
+    value: PropTypes.object,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
@@ -37,7 +38,7 @@ export default class StringSelect extends React.Component {
   }
 
   handleChange(item) {
-    this.props.onChange({patch: {type: 'set', value: item.title}})
+    this.props.onChange({patch: {type: 'set', value: item}})
   }
 
   handleFocus(event) {
@@ -53,13 +54,26 @@ export default class StringSelect extends React.Component {
   render() {
     const {value, field, focus, level} = this.props
 
-    const items = field.options.list.map(item => {
-      return {title: item}
-    })
+    // Support array of string if not objects
+    const items = field.options.list
 
     const currentItem = items.find(item => {
-      return item.title == value
+      return item == value
     })
+
+    if (field.options.layout == 'radio') {
+      return (
+        <RadioSelect
+          name={field.name}
+          legend={field.title}
+          level={level}
+          items={items}
+          onChange={this.handleChange}
+          value={currentItem || items[0]}
+          direction={field.options.direction || 'vertical'}
+        />
+      )
+    }
 
     return (
       <Select

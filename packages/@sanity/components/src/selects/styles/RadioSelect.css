@@ -1,0 +1,22 @@
+.root {
+  display: block;
+}
+
+.vertical {
+  composes: root;
+}
+
+.horizontal {
+  composes: root;
+}
+
+.container {
+  display: block;
+}
+
+.item {
+  @nest .horizontal & {
+    margin-right: 1rem;
+    float: left;
+  }
+}

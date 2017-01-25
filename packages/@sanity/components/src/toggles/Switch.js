@@ -16,20 +16,41 @@ export default class Switch extends React.Component {
   constructor(...args) {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
+    this.state = {
+      isFocused: false
+    }
   }
 
   handleChange(event) {
     this.props.onChange(event)
   }
 
+  handleFocus = () => {
+    this.setState({
+      isFocused: true
+    })
+  }
+  handleBlur = () => {
+    this.setState({
+      isFocused: false
+    })
+  }
+
   render() {
     const {disabled, checked} = this.props
-    const rootStyle = disabled ? styles.disabled : styles.enabled
-    const checkedStyle = checked ? styles.checked : styles.unchecked
+    const {isFocused} = this.state
 
     return (
-      <label className={`${rootStyle} ${checkedStyle}`}>
-        <div className={styles.track} />
+      <label
+        className={`
+          ${disabled ? styles.disabled : styles.enabled}
+          ${checked ? styles.checked : styles.unchecked}
+          ${isFocused ? styles.focused : ''}
+        `}
+      >
+        <div className={styles.track}>
+          <div className={styles.focusHelper} />
+        </div>
         <div className={`${checked ? styles.thumbChecked : styles.thumb}`} />
         <input
           className={styles.input}
@@ -37,9 +58,13 @@ export default class Switch extends React.Component {
           checked={checked}
           onChange={this.handleChange}
           readOnly={disabled}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
         />
-        <div className={styles.label}>{this.props.label}</div>
-        <div className={styles.focusHelper} />
+        <div className={styles.label}>
+          {this.props.label}
+        </div>
+
       </label>
     )
   }
