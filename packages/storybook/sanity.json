@@ -18,7 +18,18 @@
   "parts": [
     {
       "name": "part:@sanity/storybook",
+      "description": "Sanity wrapped version of Kadira's React Storybook",
       "path": "./index.js"
+    },
+    {
+      "name": "part:@sanity/storybook/decorators/center",
+      "description": "Center decorator for storybook",
+      "path": "addons/Center.js"
+    },
+    {
+      "name": "part:@sanity/storybook/addons/role",
+      "description": "Role addons for storybook",
+      "path": "addons/Role.js"
     },
     {
       "name": "part:@sanity/base/schema",
