@@ -1,6 +1,6 @@
 {
   "name": "@sanity/google-maps-input",
-  "version": "0.99.7",
+  "version": "0.99.8",
   "description": "Sanity plugin providing input handlers for geo-related input types using Google Maps",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,9 +21,9 @@
     "@sanity/base": "^0.99.7",
     "@sanity/check": "^0.99.0",
     "@sanity/cli": "^0.99.7",
-    "@sanity/components": "^0.99.7",
+    "@sanity/components": "^0.99.8",
     "@sanity/core": "^0.99.7",
-    "@sanity/form-builder": "^0.99.7",
+    "@sanity/form-builder": "^0.99.8",
     "lodash.keyby": "^4.6.0"
   },
   "repository": {
