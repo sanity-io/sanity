@@ -78,7 +78,7 @@ export default class EditItemPopOver extends React.Component {
     const padding = 30
     const margin = 0
 
-    let newScrollTop = 0
+    let newScrollTop = scrollTop
 
     // Scroll container when there is no space
     if (containerOffsetHeight < (rootRects.top + modalRects.height)) {
