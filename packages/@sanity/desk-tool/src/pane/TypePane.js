@@ -5,20 +5,12 @@ export default class Pane extends React.Component {
 
   static propTypes = {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-    renderItem: PropTypes.func,
-    onUpdate: PropTypes.func
+    renderItem: PropTypes.func
   }
 
-  static defaultProps = {
-    onUpdate() {}
-  }
 
   static contextTypes = {
     router: PropTypes.object
-  }
-
-  componentDidUpdate() {
-    this.props.onUpdate()
   }
 
   render() {
@@ -31,6 +23,7 @@ export default class Pane extends React.Component {
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
+        <div className={styles.top} />
         <ul className={styles.listContainer}>
           {
             items.map((item, i) => {

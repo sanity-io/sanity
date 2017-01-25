@@ -43,6 +43,7 @@ export default createSchema({
         {
           name: 'content',
           type: 'array',
+          title: 'Content tags',
           of: [
             {
               title: 'String',

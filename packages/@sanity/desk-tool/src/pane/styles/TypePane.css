@@ -40,3 +40,7 @@
 .item {
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
 }
+
+.top {
+  composes: menuContainer from './Pane.css';
+}

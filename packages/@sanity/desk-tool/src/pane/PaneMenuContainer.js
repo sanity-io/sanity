@@ -3,15 +3,10 @@ import PaneMenu from './PaneMenu.js'
 import IconHamburger from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import clickOutsideEnhancer from 'react-click-outside'
+import styles from './styles/Pane.css'
 
 class PaneMenuContainer extends React.PureComponent {
   static propTypes = {
-    styles: PropTypes.shape({
-      menuContainer: PropTypes.string,
-      menuButton: PropTypes.string,
-      menu: PropTypes.string
-    }),
-
     onSetListView: PropTypes.func,
     onSetSorting: PropTypes.func
   }
@@ -51,7 +46,6 @@ class PaneMenuContainer extends React.PureComponent {
 
   render() {
     const {menuOpened} = this.state
-    const {styles} = this.props
     return (
       <div className={styles.menuContainer}>
         <div className={styles.menuButton}>

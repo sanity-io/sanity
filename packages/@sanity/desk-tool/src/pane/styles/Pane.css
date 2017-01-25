@@ -12,20 +12,6 @@
   @media (--screen-medium) {
     width: auto;
     max-width: 25em;
-    &:before {
-      content: '';
-      background-color: color(var(--body-bg) a(95%));
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      width: 100%;
-      height: 2.5rem;
-
-      @supports (backdrop-filter: blur(2px)) {
-        background-color: color(var(--body-bg) a(50%));
-        backdrop-filter: blur(5px)
-      }
-    }
   }
 }
 
@@ -41,12 +27,12 @@
 }
 
 .view--card {
-  width: 70rem;
+  width: 50rem;
   max-width: 80vw;
 }
 
 .view--media {
-  width: 70rem;
+  width: 50rem;
   max-width: 80vw;
 }
 
@@ -59,7 +45,6 @@
   width: 100%;
   max-height: calc(100% - 3rem);
   box-sizing: border-box;
-  padding-top: 3em;
 }
 
 .menuButton {
@@ -93,4 +78,13 @@
 
 .emptyCreateNew {
   color: var(--link-color);
+}
+
+.menuContainer {
+  height: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee
 }
