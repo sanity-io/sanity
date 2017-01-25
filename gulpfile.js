@@ -115,3 +115,25 @@ gulp.task('dev', ['watch-js', 'watch-assets'], cb => {
   proc.stdout.pipe(process.stdout)
   proc.stderr.pipe(process.stderr)
 })
+
+gulp.task('storybook', ['watch-js', 'watch-assets'], () => {
+  watch(scripts, {debounceDelay: 200}, () => {
+    gulp.start('watch-js')
+  })
+
+  watch(assets, {debounceDelay: 200}, () => {
+    gulp.start('watch-assets')
+  })
+  
+  const projectPath = path.join(__dirname, 'packages', 'storybook')
+  const npmPath = path.join(projectPath, 'node_modules', '.bin')
+  const proc = childProcess.spawn('npm', ['start'], {
+    cwd: projectPath,
+    env: Object.assign({}, process.env, {
+      PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
+    })
+  })
+
+  proc.stdout.pipe(process.stdout)
+  proc.stderr.pipe(process.stderr)
+})
