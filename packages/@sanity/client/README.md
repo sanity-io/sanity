@@ -1,6 +1,6 @@
 # Sanity client
 
-[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)[![Coverage Status](https://img.shields.io/coveralls/sanity-io/client/master.svg?style=flat-square)](https://coveralls.io/github/sanity-io/client)[![Dependency status](https://img.shields.io/david/sanity-io/client.svg?style=flat-square)](https://david-dm.org/sanity-io/client)
+[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)[![Build Status](http://img.shields.io/travis/sanity-io/client/master.svg?style=flat-square)](https://travis-ci.org/sanity-io/client)[![Coverage Status](https://img.shields.io/coveralls/sanity-io/client/master.svg?style=flat-square)](https://coveralls.io/github/sanity-io/client)
 
 Javascript client for Sanity. Works in browsers (IE9+) and node.js.
 
