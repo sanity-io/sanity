@@ -215,8 +215,8 @@ class GlobalSearch extends React.Component {
                   topItems && topItems.length > 0 && topItems.map((item, i) => {
                     return (
                       <li
-                        onClick={this.handleItemClick.bind(null, item)}
                         key={`topitem${i}`}
+                        onClick={this.handleItemClick.bind(null, item)}
                         className={selectedItem === item ? styles.selectedTopItem : styles.topItem}
                       >
                         {renderItem(item, {isTopItem: true})}
@@ -228,8 +228,8 @@ class GlobalSearch extends React.Component {
                   items && items.length > 0 && items.map((item, i) => {
                     return (
                       <li
+                        key={item._id}
                         onClick={this.handleItemClick.bind(null, item)}
-                        key={`topitem${i}`}
                         className={selectedItem === item ? styles.selectedItem : styles.item}
                       >
                         {renderItem(item)}
