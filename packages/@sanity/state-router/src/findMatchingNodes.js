@@ -33,7 +33,7 @@ export default function findMatchingRoutes(node: Node, _state: ?Object) : MatchR
     return createMatchResult([node], [], [])
   }
 
-  const children = (typeof node.children === 'function') ? node.children(state) : node.children
+  const children = ((typeof node.children === 'function') ? node.children(state) : node.children) || []
 
   if (remainingParams.length > 0 && children.length === 0) {
     return createMatchResult([], remainingParams, [])
