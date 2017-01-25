@@ -72,7 +72,6 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   componentDidUpdate() {
-    //this.handleResize()
     this.checkRedirect()
   }
 
@@ -89,11 +88,6 @@ export default class SchemaPaneResolver extends React.Component {
         }, {replace: true})
       })
     }
-  }
-
-  handleItemSelect = item => {
-    // this.navIsClosing = true
-    // this.resetNavTranslateX()
   }
 
   renderTypePaneItem = item => {
@@ -157,7 +151,6 @@ export default class SchemaPaneResolver extends React.Component {
               type={type}
               loading={loading}
               items={items}
-              onSelect={this.handleItemSelect}
               renderItem={this.renderDocumentPaneItem}
               onSetListView={this.handleSetListView}
               onSetSorting={this.handleSetSort}
@@ -200,22 +193,6 @@ export default class SchemaPaneResolver extends React.Component {
   setEditorPaneElement = element => {
     this.editorPaneElement = element
   }
-
-  setNavTranslateX = x => {
-    this.setState({
-      navTranslateX: x
-    })
-    this.setEditorTranslateX(x)
-  }
-
-  setEditorTranslateX = x => {
-    if (!this.state.navIsMinimized) {
-      this.setState({
-        editorTranslateX: 0
-      })
-    }
-  }
-
 
   handleResize = debounceRAF(() => {
 
@@ -303,19 +280,21 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   handlePanesMouseMove = event => {
-    if (this.state.navIsMinimized) {
-      const {oldNavTranslateX, navInitialEdgePosition, navWidth} = this.state
-      const travel = (event.clientX - navInitialEdgePosition) * -1
+    if (!this.state.navIsMinimized) {
+      return
+    }
 
-      if (travel < 20) {
-        const x = 20
-        const newNavTranslateX = oldNavTranslateX + x
-        const navVisibleWidth = navWidth + newNavTranslateX
-        this.setState({
-          navTranslateX: newNavTranslateX,
-          editorTranslateX: navVisibleWidth - oldNavTranslateX - navWidth
-        })
-      }
+    const {oldNavTranslateX, navInitialEdgePosition, navWidth} = this.state
+    const travel = (event.clientX - navInitialEdgePosition) * -1
+
+    if (travel < 20) {
+      const x = 20
+      const newNavTranslateX = oldNavTranslateX + x
+      const navVisibleWidth = navWidth + newNavTranslateX
+      this.setState({
+        navTranslateX: newNavTranslateX,
+        editorTranslateX: navVisibleWidth - oldNavTranslateX - navWidth
+      })
     }
   }
 

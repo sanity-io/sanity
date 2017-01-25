@@ -23,7 +23,8 @@ export default class Pane extends React.PureComponent {
   }
 
   static defaultProps = {
-    listView: 'default'
+    listView: 'default',
+    onSelect() {}
   }
 
   static contextTypes = {
