@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.99.5",
+  "version": "0.99.6",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@sanity/date-input": "^0.99.4",
-    "@sanity/imagetool": "^0.99.4",
+    "@sanity/imagetool": "^0.99.6",
     "canvas-to-blob": "^0.0.0",
     "chance": "^1.0.4",
     "classnames": "^2.2.5",
@@ -46,7 +46,7 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.99.4",
+    "@sanity/base": "^0.99.6",
     "@sanity/check": "^0.99.0",
     "@sanity/core": "^0.99.5",
     "@sanity/storybook": "^0.99.5",
