@@ -170,7 +170,7 @@ export default class Portal extends React.Component {
 
 Portal.propTypes = {
   children: React.PropTypes.element.isRequired,
-  scrollContainer: React.PropTypes.object.isRequired,
+  scrollContainer: React.PropTypes.object,
   className: React.PropTypes.string,
   openByClickOn: React.PropTypes.element,
   closeOnEsc: React.PropTypes.bool,

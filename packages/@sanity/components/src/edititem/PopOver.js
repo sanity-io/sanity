@@ -35,48 +35,40 @@ export default class EditItemPopOver extends React.Component {
 
   constructor(props) {
     super()
-    this.handleClose = this.handleClose.bind(this)
-    this.repositionElement = this.repositionElement.bind(this)
     this.handleResize = debounce(this.handleResize.bind(this), 17) // 60fps
-    this.resetPosition = this.resetPosition.bind(this)
     this.scrollOptions = {
       duration: 250,
       ease: ease.easeInOutQuart
     }
     this.state = {
       scrollContainer: null,
-      rootOffsetTop: 0
+      rootOffsetTop: 0,
+      modalTranslateY: 0,
+      fullHeight: false
     }
   }
 
-  handleClose() {
+  handleClose = () => {
     const {scrollContainer} = this.state
     if (scrollContainer) {
-      scroll.top(scrollContainer, this.initialScrollTop, this.scrollOptions)
+      scroll.top(scrollContainer, this.initialScrollTop, this.scrollOptions, () => {
+        scrollContainer.style.paddingBottom = '0'
+      })
     }
     this.props.onClose()
-  }
-
-  handleMouseDown(event) {
-    event.stopPropagation()
   }
 
   repositionElement() {
     const {scrollContainer} = this.state
     const {rootRects} = this.state
-    const rootElement = this._rootElement
     const portalModalElement = this._portalModalElement
 
-    if (!rootElement || !portalModalElement || !rootRects) {
+    if (!portalModalElement || !rootRects) {
       return
     }
 
-    const portalModalRects = portalModalElement.getBoundingClientRect()
     const scrollTop = scrollContainer.scrollTop
-    const width = portalModalRects.width
-    const height = portalModalRects.height
-    const left = rootRects.left
-    const top = rootRects.top
+    const modalRects = this._portalModalElement.getBoundingClientRect()
 
     // we can use window since we don't support horizontal scrolling
     // and the backdrop is fixed
@@ -84,37 +76,37 @@ export default class EditItemPopOver extends React.Component {
     const containerOffsetHeight = scrollContainer.offsetHeight
 
     const padding = 30
-
     const margin = 0
 
+    let newScrollTop = 0
+
     // Scroll container when there is no space
-    if ((containerOffsetHeight) < (top + height)) {
-      let newScrollTop = (containerOffsetHeight - top - height - scrollTop - padding) * -1
-
-      // If element is to big for screen, scroll top only top of the element
-      if (height > containerOffsetHeight) {
-        newScrollTop = top + scrollTop - (padding * 3)
-      }
-
-      scroll.top(scrollContainer, newScrollTop, this.scrollOptions)
+    if (containerOffsetHeight < (rootRects.top + modalRects.height)) {
+      newScrollTop = (containerOffsetHeight - rootRects.top - modalRects.height - scrollTop - padding) * -1
     }
 
     // Need more bottom space
-    if (scrollContainer.scrollHeight < (scrollTop + top + height)) {
-      const extraPaddingBottom = Math.abs(scrollContainer.scrollHeight - scrollTop - height - top)
+    if (scrollContainer.scrollHeight < (scrollTop + rootRects.top + modalRects.height)) {
+      const extraPaddingBottom = Math.abs(scrollContainer.scrollHeight - scrollTop - modalRects.height - rootRects.top)
       scrollContainer.style.paddingBottom = `${extraPaddingBottom}px`
-      let newScrollTop = (containerOffsetHeight - top - height - scrollTop) * -1
-
-      // If element is to big for screen, scroll top only top of the element
-      if (height > containerOffsetHeight) {
-        newScrollTop = top + scrollTop - (padding * 3)
-      }
-      scroll.top(scrollContainer, newScrollTop, this.scrollOptions)
+      newScrollTop = (containerOffsetHeight - rootRects.top - modalRects.height - scrollTop) * -1
     }
 
+    // If element is to big for screen, scroll top only top of the element
+    if (modalRects.height >= containerOffsetHeight) {
+      newScrollTop = rootRects.top + scrollTop - padding
+    }
+
+    this.setState({
+      modalTranslateY: scrollTop - newScrollTop,
+      fullHeight: modalRects.height >= containerOffsetHeight
+    })
+
+    scroll.top(scrollContainer, newScrollTop, this.scrollOptions)
+
     // Reposition horizon
-    if ((width + left - margin + padding) > windowWidth) {
-      const diff = windowWidth - width - padding - left + margin
+    if ((modalRects.width + modalRects.left - margin + padding) > windowWidth) {
+      const diff = windowWidth - modalRects.width - padding - modalRects.left + margin
       portalModalElement.style.marginLeft = `${diff}px`
       this._arrowElement.style.transform = `translateX(${diff * -1}px)`
     } else {
@@ -144,6 +136,9 @@ export default class EditItemPopOver extends React.Component {
   componentDidMount() {
     const {scrollContainerId, scrollContainer} = this.props
 
+    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('keydown', this.handleKeyDown)
+
     // Sets a scrollContainer with ID
     if (scrollContainerId) {
       this.setState({
@@ -160,11 +155,6 @@ export default class EditItemPopOver extends React.Component {
   }
 
   componentWillUnmount() {
-    const {scrollContainer} = this.state
-
-    if (scrollContainer && this.initialScrollTop) {
-      scroll.top(scrollContainer, this.initialScrollTop, this.scrollOptions)
-    }
     window.removeEventListener('resize', this.handleResize)
     window.removeEventListener('keydown', this.handleKeyDown)
   }
@@ -172,9 +162,8 @@ export default class EditItemPopOver extends React.Component {
   setRootElement = element => {
     this._rootElement = element
     if (element) {
-      const rootRects = element.getBoundingClientRect()
       this.setState({
-        rootRects: rootRects
+        rootRects: element.getBoundingClientRect()
       })
     }
   }
@@ -217,24 +206,13 @@ export default class EditItemPopOver extends React.Component {
   renderPortal = (scrollContainer, rootRects) => {
     const {title, children, className, isCreatingNewItem, actions, fullWidth} = this.props
     const {top, left} = rootRects
-
+    const {fullHeight, modalTranslateY} = this.state
 
     this.initialScrollTop = scrollContainer.scrollTop
-
-    window.addEventListener('resize', this.handleResize)
-    window.addEventListener('keydown', this.handleKeyDown)
-
-    const scrollContainerTop = scrollContainer.getBoundingClientRect().top
-
-
-    const modalTop = top + this.initialScrollTop - scrollContainerTop
-    const modalLeft = left - scrollContainer.offsetLeft
-
 
     return (
       <Portal
         isOpen
-        scrollContainer={scrollContainer}
         onOpen={this.handleResize}
         className={styles.portal}
       >
@@ -252,12 +230,13 @@ export default class EditItemPopOver extends React.Component {
         >
           <div className={styles.overlay} onClick={this.handleBackdropClick} />
           <div
-            className={styles.portalModal}
+            className={fullHeight ? styles.portalModalFullHeight : styles.portalModal}
             ref={this.setPortalModalElement}
             style={{
               position: 'absolute',
-              top: `${modalTop}px`,
-              left: `${modalLeft}px`
+              top: `${top}px`,
+              left: `${left}px`,
+              transform: `translateY(${modalTranslateY}px)`
             }}
           >
 

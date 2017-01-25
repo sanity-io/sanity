@@ -52,6 +52,9 @@
   position: absolute;
   top: 0;
   left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .inner {
@@ -109,7 +112,7 @@
   position: relative;
   min-width: 30em;
   max-width: 80vw;
-  transform: translateX(-2em);
+  transition: transform 0.25s cubic-bezier(0.77, 0, 0.175, 1);
 
   @nest .fullWidth & {
     min-width: 100%;
@@ -130,6 +133,14 @@
     padding: 0;
     overflow: scroll;
   }
+}
+
+.portalModalFullHeight {
+  composes: portalModal;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  overflow-y: scroll;
 }
 
 .close {
