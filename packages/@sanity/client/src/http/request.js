@@ -1,5 +1,6 @@
 /* eslint-disable no-empty-function, no-process-env */
 const getIt = require('get-it')
+const assign = require('object-assign')
 const createErrorClass = require('create-error-class')
 const observable = require('get-it/lib/middleware/observable')
 const retry = require('get-it/lib/middleware/retry')
@@ -84,7 +85,7 @@ if (process.env.BROWSERIFY_ENV !== 'build') {
 const request = getIt(middleware)
 
 function httpRequest(options, requester = request) {
-  const obs = requester(options)
+  const obs = requester(assign({maxRedirects: 0}, options))
   obs.toPromise = () => new Promise((resolve, reject) => {
     obs.filter(ev => ev.type === 'response').subscribe(
       res => resolve(res.body),
