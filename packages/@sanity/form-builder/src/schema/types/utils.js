@@ -10,20 +10,6 @@ export function ifNotUniqueProp(array, property, notUniqueFn) {
   })
 }
 
-export function resolveJSONRepresentationOfSchemaType(schema, typeName) {
-  if (typeName in primitives) {
-    return typeName
-  }
-  if (typeName in bundled) {
-    return bundled[typeName].primitive
-  }
-  const typeType = schema.getType(typeName)
-  if (!typeType) {
-    throw new Error(`Unable to resolve JSON type for ${typeName}`)
-  }
-  return resolveJSONRepresentationOfSchemaType(schema, typeType.type)
-}
-
 const toString = Object.prototype.toString
 // Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 

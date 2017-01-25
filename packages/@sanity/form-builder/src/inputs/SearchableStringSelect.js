@@ -6,7 +6,7 @@ import {find} from 'lodash'
 export default class SearchableStringSelect extends React.Component {
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     focus: PropTypes.bool,
@@ -46,9 +46,9 @@ export default class SearchableStringSelect extends React.Component {
   }
 
   render() {
-    const {value, field, focus, level} = this.props
+    const {value, type, focus, level} = this.props
 
-    const items = field.options.list.map(item => {
+    const items = type.options.list.map(item => {
       return {title: item}
     })
 
@@ -58,10 +58,10 @@ export default class SearchableStringSelect extends React.Component {
 
     return (
       <SearchableSelect
-        label={field.title}
+        label={type.title}
         level={level}
-        placeholder={field.placeholder}
-        description={field.description}
+        placeholder={type.placeholder}
+        description={type.description}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}

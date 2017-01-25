@@ -235,7 +235,7 @@ export default class EditorPane extends React.PureComponent {
     const {value, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
     const {typeName} = this.props
     const titleProp = dataAspects.getItemDisplayField(typeName)
-    const schemaType = schema.types.find(type => type.name === this.props.typeName)
+    const schemaType = schema.get(this.props.typeName)
 
     if (loading) {
       return (

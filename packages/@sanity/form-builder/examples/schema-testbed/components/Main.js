@@ -1,15 +1,8 @@
 import React from 'react'
 import {Router, Route} from 'react-enroute'
 import SelectType from './SelectType'
-import Debug from 'debug'
 import SchemaForm from './SchemaForm'
 import styles from './styles/Main.css'
-
-Debug.disable('*')
-// Debug.enable('slate*')
-if (process.env.DEBUG) {
-  // Debug.enable('slate:*')
-}
 
 export default function Main() {
   return (

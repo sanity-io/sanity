@@ -23,16 +23,16 @@ const BASIC_MARKS = {
 
 export default function createProseMirrorSchema(context) {
 
-  const {field, createBlockValue} = context
+  const {type, createBlockValue} = context
 
   const formBuilderManagedNodes = {}
 
-  field.of
+  type.of
     .filter(fieldDef => !(fieldDef.type in BASIC_NODES))
     .forEach(fieldDef => {
 
       const BlockType = createFormBuilderBlockTypeForField({
-        field: fieldDef,
+        type: fieldDef,
         createBlockValue: createBlockValue.bind(null, fieldDef),
         parentComponent: context.parentComponent
       })

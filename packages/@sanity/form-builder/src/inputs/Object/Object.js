@@ -12,7 +12,6 @@ export default class Obj extends React.PureComponent {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
     focus: PropTypes.bool,
@@ -57,7 +56,7 @@ export default class Obj extends React.PureComponent {
     const {value, focus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getAttribute(field.name)
+    const fieldValue = value && value.getAttribute(field.name)
 
     return (
       <RenderField
@@ -94,7 +93,7 @@ export default class Obj extends React.PureComponent {
   }
 
   render() {
-    const {isRoot, field, type, level} = this.props
+    const {isRoot, type, level} = this.props
 
     const renderedFields = type.fieldsets.map((fieldset, i) => {
       return fieldset.single
@@ -106,14 +105,14 @@ export default class Obj extends React.PureComponent {
       return <div>{renderedFields}</div>
     }
 
-    const columns = field.options && field.options.columns
-    const collapsable = field.options && field.options.collapsable
+    const columns = type.options && type.options.columns
+    const collapsable = type.options && type.options.collapsable
 
     return (
       <Fieldset
         level={level}
-        legend={field.title}
-        description={field.description}
+        legend={type.title}
+        description={type.description}
         columns={columns}
         collapsable={collapsable}
       >

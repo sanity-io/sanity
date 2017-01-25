@@ -30,7 +30,7 @@ const ASPECT_RATIOS = [
 
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
-    field: PropTypes.shape({
+    type: PropTypes.shape({
       fields: PropTypes.array
     }),
     value: PropTypes.object,
@@ -101,8 +101,8 @@ export default class ImageInput extends React.PureComponent {
   }
 
   hasField(fieldName) {
-    if (this.props.field && this.props.field.fields) {
-      return this.props.field.fields.find(field => field.name === fieldName)
+    if (this.props.type && this.props.type.fields) {
+      return this.props.type.fields.find(type => type.name === fieldName)
     }
     return false
   }
@@ -111,7 +111,7 @@ export default class ImageInput extends React.PureComponent {
     return {
       type: 'setIfMissing',
       value: {
-        _type: this.props.value.context.field.type,
+        _type: this.props.value.context.type.type,
         asset: {_type: 'reference'}
       }
     }
@@ -203,7 +203,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   renderFields(fields) {
-    return fields.map(field => this.renderField(field))
+    return fields.map(type => this.renderField(type))
   }
 
   handleImageToolChange = newValue => {
@@ -266,8 +266,8 @@ export default class ImageInput extends React.PureComponent {
     )
   }
   renderAdvancedEdit(fields) {
-    const grouped = groupBy(fields, field => {
-      if (field.name === 'hotspot' || field.name === 'crop') {
+    const grouped = groupBy(fields, type => {
+      if (type.name === 'hotspot' || type.name === 'crop') {
         return 'imagetool'
       }
       return 'other'
@@ -281,17 +281,17 @@ export default class ImageInput extends React.PureComponent {
     )
   }
 
-  renderField(field) {
+  renderField(type) {
     const {value, validation, level} = this.props
-    const fieldValidation = validation && validation.fields[field.name]
+    const fieldValidation = validation && validation.fields[type.name]
 
-    const fieldValue = value.getAttribute(field.name)
+    const fieldValue = value.getAttribute(type.name)
 
     return (
       <RenderField
-        key={field.name}
-        fieldName={field.name}
-        field={field}
+        key={type.name}
+        fieldName={type.name}
+        type={type}
         value={fieldValue}
         onChange={this.handleFieldChange}
         onEnter={this.handleFieldEnter}
@@ -303,7 +303,7 @@ export default class ImageInput extends React.PureComponent {
 
   render() {
     const {status, progress, isAdvancedEditOpen} = this.state
-    const {field, level, value} = omit(this.props,
+    const {type, level, value} = omit(this.props,
       'uploadFn',
       'materializeReferenceFn',
       'onChange',
@@ -311,7 +311,7 @@ export default class ImageInput extends React.PureComponent {
       'validation',
       'focus'
     )
-    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(field.fields, fieldDef => {
+    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, fieldDef => {
       if (fieldDef.name === 'asset') {
         return 'asset'
       }
@@ -328,7 +328,7 @@ export default class ImageInput extends React.PureComponent {
     return (
       <ImageInputFieldset
         status={status}
-        legend={field.title}
+        legend={type.title}
         level={level}
         percent={progress && progress.percent}
         onSelect={this.handleSelect}

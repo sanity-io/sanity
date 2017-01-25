@@ -43,14 +43,14 @@ export default {
         {
           name: 'lead',
           title: 'Lead',
-          type: 'text',
+          type: 'string',
           format: 'html',
           required: true
         },
         {
           name: 'email',
           title: 'Email',
-          type: 'email'
+          type: 'string'
         },
         {
           name: 'location',

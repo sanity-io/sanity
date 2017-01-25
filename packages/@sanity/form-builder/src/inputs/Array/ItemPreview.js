@@ -15,7 +15,7 @@ export default class ItemPreview extends React.Component {
   }
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     onEdit: PropTypes.func,
     onRemove: PropTypes.func
@@ -48,12 +48,12 @@ export default class ItemPreview extends React.Component {
     event.stopPropagation()
   }
 
-  getFieldType(field) {
-    return getFieldType(this.context.formBuilder.schema, field)
+  getFieldType(type) {
+    return getFieldType(this.context.formBuilder.schema, type)
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
     return (
       <div className={styles.root} onClick={this.handleEdit}>
         <div className={styles.functions}>
@@ -67,7 +67,7 @@ export default class ItemPreview extends React.Component {
           />
         </div>
         <div className={styles.content}>
-          <Preview style="default" value={value.serialize()} field={field} />
+          <Preview style="default" value={value.serialize()} type={type} />
         </div>
       </div>
     )

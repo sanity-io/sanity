@@ -6,7 +6,7 @@ function ReferringDocumentItem(item) {
 
   const docUrlId = item._id.replace('/', '.')
   const typeName = item._type.replace(/^.+\./, '')
-  const typeDef = schema.types.find(type => type.name === typeName)
+  const type = schema.get(typeName)
 
   item.stateLink = {
     selectedType: typeName,
@@ -15,7 +15,7 @@ function ReferringDocumentItem(item) {
   }
 
   return (
-    <Preview value={item} typeDef={typeDef} />
+    <Preview value={item} type={type} />
   )
 }
 

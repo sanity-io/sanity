@@ -18,7 +18,7 @@ const getLocale = context => {
 export default class DateInput extends React.PureComponent {
   static propTypes = {
     value: PropTypes.string,
-    field: PropTypes.shape({
+    type: PropTypes.shape({
       title: PropTypes.string.isRequired
     }),
     onChange: PropTypes.func
@@ -49,11 +49,11 @@ export default class DateInput extends React.PureComponent {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
     const inputId = uniqueId('FormBuilderText')
     const input = <KeyboardLessInput />
     return (
-      <FormField labelHtmlFor={inputId} label={field.title}>
+      <FormField labelHtmlFor={inputId} label={type.title}>
         <div className={styles.root}>
           <DatePicker
             dateFormat="YYYY-MM-DD"

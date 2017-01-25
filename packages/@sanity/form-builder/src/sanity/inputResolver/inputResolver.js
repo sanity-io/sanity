@@ -32,22 +32,21 @@ const bundledTypes = {
 }
 const coreTypes = Object.assign({}, primitiveTypes, bundledTypes)
 
-export default function inputResolver(field, fieldType) {
-  if (field.component || fieldType.component) {
-    return field.component || fieldType.component
+export default function inputResolver(type) {
+  if (type.component) {
+    return type.component
   }
-  const inputRole = coreTypes[field.type] || coreTypes[fieldType.name]
-  if (field.editor === 'slate') {
+  if (type.editor === 'slate') {
     return SlateBlockEditor
   }
-  if (field.type === 'reference') {
-    return resolveReference(field)
+  if (type.name === 'reference') {
+    return resolveReference(type)
   }
-  if (field.type === 'image') {
+  if (type.name === 'image') {
     return Image
   }
-  if (field.type === 'file') {
+  if (type.name === 'file') {
     return File
   }
-  return field.editor || inputRole
+  return type.editor || coreTypes[type.name]
 }

@@ -5,17 +5,17 @@ export default class Preview extends React.Component {
   static propTypes = {
     style: PropTypes.string,
     value: PropTypes.object,
-    typeDef: PropTypes.object
+    type: PropTypes.object.isRequired
   };
 
   render() {
 
-    const {typeDef, value, style} = this.props
+    const {type, value, style} = this.props
 
-    const PreviewComponent = resolvePreview(typeDef)
+    const PreviewComponent = resolvePreview(type)
 
     if (PreviewComponent) {
-      return <PreviewComponent field={typeDef} value={value} style={style} />
+      return <PreviewComponent type={type} value={value} style={style} />
     }
     return <div>No preview for {JSON.stringify(value)}</div>
   }

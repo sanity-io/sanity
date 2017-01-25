@@ -34,8 +34,8 @@ const slateFieldComponentMapping = {
   listItem: ListItem
 }
 
-export default function prepareSlateShema(field) {
-  const groupedFields = Object.assign({slate: [], formBuilder: []}, groupBy(field.of, ofField => {
+export default function prepareSlateShema(type) {
+  const groupedFields = Object.assign({slate: [], formBuilder: []}, groupBy(type.of, ofField => {
     if (SLATE_MANAGED_NODE_TYPES.includes(ofField.type)) {
       return 'slate'
     }

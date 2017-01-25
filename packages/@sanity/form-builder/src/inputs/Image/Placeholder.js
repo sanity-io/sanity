@@ -10,8 +10,8 @@ const CODE_SNIPPET = `
   })
   const FormBuilder = createFormBuilder({
     schema: mySchema,
-    resolveInputComponent(field, type) {
-      if (field.type === 'image') {
+    resolveInputComponent(type, type) {
+      if (type.type === 'image') {
         return MyImageInput
       }
   },
@@ -22,7 +22,7 @@ const CODE_SNIPPET = `
 export default function Placeholder() {
   return (
     <div>
-      You have a field of type image, but not configured how to upload images.
+      You have a type of type image, but not configured how to upload images.
       Please create a image input component and make sure it is resolved as the input for image types.
       <pre>
         <code>

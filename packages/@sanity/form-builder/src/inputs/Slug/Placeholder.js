@@ -15,8 +15,8 @@ const CODE_SNIPPET = `
   })
   const FormBuilder = createFormBuilder({
     schema: mySchema,
-    resolveInputComponent(field, type) {
-      if (field.type === 'slug') {
+    resolveInputComponent(type, type) {
+      if (type.type === 'slug') {
         return MySlugInput
       }
   },
@@ -28,7 +28,7 @@ export default function Placeholder() {
   return (
     <div>
       <p>
-        You have a field of type slug, but not configured a function
+        You have a type of type slug, but not configured a function
         to validate that the slug is not already in use.
         Please create a slug input component and make sure it is resolved as the input for slug types.
       </p>

@@ -5,7 +5,8 @@ import Inspector from './Inspector'
 import {save, restore} from '../lib/persist'
 
 import sourceSchemas from '../schemas'
-import {createFormBuilder, Schema} from '../../../src'
+import {Schema} from '@sanity/schema'
+import {createFormBuilder} from '../../../src'
 import {parseParams, preventDefault} from '../lib/utils'
 
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
@@ -37,35 +38,36 @@ function logPatch(patch) {
     patch.value
   )
 }
-
+console.log(schema)
 const FormBuilder = schema && createFormBuilder({
   schema: schema,
-  resolveInputComponent(field, fieldType) {
-    if (field.component || fieldType.component) {
-      return field.component || fieldType.component
+  resolveInputComponent(type) {
+    if (type.component) {
+      return type.component
     }
-    if (field.type === 'latlon') {
+    if (type.name === 'latlon') {
       return MyCustomLatLonInput
     }
-    if (field.type === 'array' && field.editor === 'slate') {
-      return BlockEditorSlate
+    // debugger
+    // if (type.isTypeOf('array') && type.get('options').editor === 'slate') {
+    //   return BlockEditorSlate
+    // }
+    if (type.name === 'reference') {
+      return resolveReferenceInput(type)
     }
-    if (field.type === 'reference') {
-      return resolveReferenceInput(field)
-    }
-    if (field.type === 'image') {
+    if (type.name === 'image') {
       return MyCustomImageInput
     }
-    if (field.type === 'file') {
+    if (type.name === 'file') {
       return MyCustomFileInput
     }
-    if (field.type === 'slug') {
+    if (type.name === 'slug') {
       return MyCustomSlugInput
     }
     return undefined // signal to use default
   },
-  resolvePreviewComponent(field, fieldType) {
-    if (field.type === 'reference') {
+  resolvePreviewComponent(type) {
+    if (type.name === 'reference') {
       return MyCustomReferencePreview
     }
     return undefined // signal to use default

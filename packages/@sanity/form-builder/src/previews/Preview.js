@@ -6,7 +6,7 @@ export default class Preview extends React.Component {
   static propTypes = {
     style: PropTypes.string,
     value: PropTypes.object,
-    field: PropTypes.object.isRequired
+    type: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -14,15 +14,12 @@ export default class Preview extends React.Component {
   };
 
   render() {
-    const {field, value, style} = this.props
+    const {type, value, style} = this.props
 
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field)
-
-    // hack: pick the field/type previewTypeDef that has a preview config
-    const previewTypeDef = (field.options || {}).preview ? field : getFieldType(this.context.formBuilder.schema, field)
+    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type)
 
     if (PreviewComponent) {
-      return <PreviewComponent field={previewTypeDef} value={value} style={style} />
+      return <PreviewComponent type={type} value={value} style={style} />
     }
     return <div>No preview for {JSON.stringify(value)}</div>
   }

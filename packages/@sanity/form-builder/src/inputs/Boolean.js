@@ -6,7 +6,7 @@ export default class Bool extends React.Component {
   static displayName = 'Boolean';
 
   static propTypes = {
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     level: PropTypes.number.isRequired,
     value: PropTypes.bool,
     onChange: PropTypes.func
@@ -31,9 +31,9 @@ export default class Bool extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
     return (
-      <Switch onChange={this.handleChange} checked={!!value} label={field.title} description={field.description} />
+      <Switch onChange={this.handleChange} checked={!!value} label={type.title} description={type.description} />
     )
   }
 }

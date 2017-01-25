@@ -6,7 +6,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 export default class ArrayOfStrings extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     value: PropTypes.arrayOf(PropTypes.string),
     level: PropTypes.number,
     onChange: PropTypes.func,
@@ -39,13 +39,13 @@ export default class ArrayOfStrings extends React.Component {
   }
 
   render() {
-    const {field, value, level} = this.props
+    const {type, value, level} = this.props
 
     return (
       <TagInput
-        label={field.title}
+        label={type.title}
         level={level}
-        description={field.description}
+        description={type.description}
         tags={value || []}
         onRemoveTag={this.handleRemoveItem}
         onAddTag={this.handleAddString}

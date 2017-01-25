@@ -11,7 +11,7 @@ import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     fetchFn: PropTypes.func,
     onChange: PropTypes.func
@@ -100,7 +100,7 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   fetch() {
-    const {fetchFn, field} = this.props
+    const {fetchFn, type} = this.props
     if (this._isFetching === true) {
       return
     }
@@ -109,7 +109,7 @@ export default class ReferenceBrowser extends React.Component {
 
     this.setState({fetching: true})
 
-    fetchFn(field)
+    fetchFn(type)
       .then(items => {
         this._isFetching = false
 
@@ -127,12 +127,12 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   renderItem = item => {
-    const showItemType = this.props.field.to.length > 1
-    const field = this.getItemFieldForType(item._type)
+    const showItemType = this.props.type.to.length > 1
+    const type = this.getItemFieldForType(item._type)
     return (
       <div>
         <Preview
-          field={field}
+          type={type}
           value={item}
         />
         {showItemType && <span className={styles.typeName}>{item._type}</span>}
@@ -142,8 +142,8 @@ export default class ReferenceBrowser extends React.Component {
 
   renderDialog() {
     const {fetching, items, dialogSelectedItem} = this.state
-    const {field, value} = this.props
-    const toTypes = field.to.map(toField => toField.type)
+    const {type, value} = this.props
+    const toTypes = type.to.map(toField => toField.type)
     const actions = [
       dialogSelectedItem && {index: 'set', title: 'Change'},
       {index: 'cancel', title: 'Cancel'}
@@ -176,7 +176,7 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   renderValue() {
-    const {value, field} = this.props
+    const {value, type} = this.props
 
     const renderButtons = () => {
       if (value.isEmpty()) {
@@ -198,7 +198,7 @@ export default class ReferenceBrowser extends React.Component {
         <div className={styles.preview}>
           {!value.isEmpty() && (
             <Preview
-              field={field}
+              type={type}
               value={value.serialize()}
               style="inline"
             />

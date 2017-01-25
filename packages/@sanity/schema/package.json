@@ -1,0 +1,35 @@
+{
+  "name": "@sanity/schema",
+  "version": "0.99.10",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "babel src --copy-files --out-dir lib",
+    "compile:watch": "npm run compile -- --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "6.0.52",
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-lodash": "^3.2.11",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
+    "babel-plugin-transform-class-properties": "^6.22.0",
+    "babel-plugin-transform-flow-comments": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.20.2",
+    "babel-preset-es2015": "^6.18.0",
+    "eslint": "^3.14.0",
+    "eslint-config-sanity": "^2.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "interop-require": "^1.0.0",
+    "recursive-readdir": "^2.1.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}

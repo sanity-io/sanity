@@ -9,7 +9,7 @@ export default class ReferencePreview extends React.Component {
   }
   static propTypes = {
     materializeReference: PropTypes.func.isRequired,
-    field: PropTypes.object.isRequired,
+    type: PropTypes.object.isRequired,
     value: PropTypes.shape({
       _ref: PropTypes.string
     }).isRequired,
@@ -36,31 +36,30 @@ export default class ReferencePreview extends React.Component {
       .then(doc => this.setState({materialized: doc, loading: false}))
   }
 
-  materializeRefOfType(ref, refTypeName) {
+  materializeRefOfType(ref, type) {
     const {materializeReference} = this.props
-    const schema = this.context.formBuilder.schema
-    const refType = schema.getType(refTypeName)
-
-    const previewConfig = previewUtils.canonicalizePreviewConfig(refType)
-
-    return materializeReference(ref, previewConfig.fields)
+    return materializeReference(ref, type.options.preview.fields)
   }
   materialize(value) {
-    const {materializeReference, field} = this.props
+    const {materializeReference, type} = this.props
 
-    if (field.to.length > 1) {
-      // Todo:We need to know the ref type *before* fetching in order to be able to build the fields
-      // selection part of the query
+    if (type.to.length > 1) {
+      // Todo: We need to know the ref type *before* fetching in order to
+      // be able to build the selection part of the query
       // THIS NEEDS TO BE FIXED. Possibly by storing the type in a `_refType` property on the reference entry itself
       return materializeReference(value._ref, ['_type'])
-        .then(doc => this.materializeRefOfType(value._ref, doc._type))
+        .then(doc => doc._type)
+        .then(typeName => {
+          const ofType = type.of.find(memberType => memberType.name === typeName)
+          return this.materializeRefOfType(value._ref, ofType)
+        })
     }
-    return this.materializeRefOfType(value._ref, field.to[0].type)
+    return this.materializeRefOfType(value._ref, type.to[0])
   }
 
   render() {
     const {materialized, loading} = this.state
-    const {value, style, field} = this.props
+    const {value, style, type} = this.props
     if (!value._ref) {
       return <div />
     }
@@ -68,12 +67,12 @@ export default class ReferencePreview extends React.Component {
       return <div>Loading…</div>
     }
 
-    const refField = field.to.find(toField => toField.type === materialized._type)
+    const refType = type.to.find(toType => toType.type.name === materialized._type)
     return (
       <Preview
         style={style}
         value={materialized}
-        field={refField}
+        type={refType}
       />
     )
   }

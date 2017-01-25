@@ -43,7 +43,7 @@ export default class FileInput extends React.PureComponent {
     return {
       type: 'setIfMissing',
       value: {
-        _type: this.props.value.context.field.type,
+        _type: this.props.value.context.type.type,
         asset: {}
       }
     }
@@ -106,7 +106,7 @@ export default class FileInput extends React.PureComponent {
   render() {
     // TODO: Render additional fields
     const {status, progress, uploadingFile} = this.state
-    const {field, level, value, fieldName, ...rest} = omit(this.props,
+    const {type, level, value, fieldName, ...rest} = omit(this.props,
       'upload',
       'onChange',
       'onEnter',
@@ -115,7 +115,7 @@ export default class FileInput extends React.PureComponent {
     )
     const inputId = uniqueId('FormBuilderText')
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
         {status && <h2>{status}</h2>}
         {uploadingFile && <b>Uploading {uploadingFile.name}</b>}
         {progress && <pre>{JSON.stringify(progress)}</pre>}

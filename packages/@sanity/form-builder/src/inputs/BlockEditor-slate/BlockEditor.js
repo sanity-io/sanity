@@ -32,7 +32,7 @@ export default class BlockEditor extends React.Component {
   static valueContainer = SlateValueContainer
 
   static propTypes = {
-    field: PropTypes.any,
+    type: PropTypes.any,
     level: PropTypes.number,
     value: PropTypes.instanceOf(SlateValueContainer),
     validation: PropTypes.shape({
@@ -52,14 +52,14 @@ export default class BlockEditor extends React.Component {
   constructor(props, context) {
     super(props, context)
 
-    const slateSchema = prepareSlateSchema(this.props.field)
+    const slateSchema = prepareSlateSchema(this.props.type)
     this.slateSchema = slateSchema.schema
     this.groupedFields = slateSchema.fields
     this.slatePlugins = [
       InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
       OnPasteHtml(),
       FormBuilderNodeOnDrop(),
-      FormBuilderNodeOnPaste(this.context.formBuilder, this.props.field.of),
+      FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
       ListItemOnEnterKey(),
       TextBlockOnEnterKey()
@@ -71,11 +71,10 @@ export default class BlockEditor extends React.Component {
   }
 
   handleInsertBlock = item => {
-    const {value, onChange, field} = this.props
+    const {value, onChange, type} = this.props
 
-    const type = item.type
-    const ofField = field.of.find(it => it.type === type)
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofField)
+    const ofType = type.of.find(memberType => memberType.type === type)
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofType)
 
     const nextState = value.state
       .transform()
@@ -105,11 +104,11 @@ export default class BlockEditor extends React.Component {
   handleOnClickListFormattingButton = (event, listStyle, active) => {
     const {value, onChange} = this.props
     const {state} = value
-    const field = this.groupedFields.slate
+    const type = this.groupedFields.slate
       .find(sfield => SLATE_LIST_BLOCKS.includes(sfield.type) && sfield.listStyle === listStyle)
     const setBlock = {
-      type: field.type,
-      data: pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      type: type.type,
+      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
     }
     let transform = state.transform()
     SLATE_LIST_BLOCKS.forEach(type => {
@@ -133,13 +132,13 @@ export default class BlockEditor extends React.Component {
 
 
   handleSelectBlockFormatting = selectedValue => {
-    const {field} = selectedValue
+    const {type} = selectedValue
     const {value, onChange} = this.props
     const {state} = value
     const {selection, startBlock, endBlock} = state
     const block = {
-      type: field.type,
-      data: pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      type: type.type,
+      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
     }
     let transform = state.transform()
 
@@ -237,11 +236,11 @@ export default class BlockEditor extends React.Component {
     return value.state.marks.some(mark => mark.type == type)
   }
 
-  hasBlock(field) {
+  hasBlock(type) {
     const {value} = this.props
-    return value.state.blocks.some(node => node.type === field.type
+    return value.state.blocks.some(node => node.type === type.type
         && isEqual(
-          pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
+          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
           pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
         )
     )
@@ -258,15 +257,15 @@ export default class BlockEditor extends React.Component {
     return state.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
   }
 
-  hasParentBlock(field) {
+  hasParentBlock(type) {
     const {value} = this.props
     const {state} = value
     const {document} = state
     return state.blocks.some(node => {
       const parent = document.getParent(node.key)
-      return parent && parent.data && parent.type === field.type
+      return parent && parent.data && parent.type === type.type
         && isEqual(
-          pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
+          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
           pick(parent.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
         )
     })
@@ -285,7 +284,7 @@ export default class BlockEditor extends React.Component {
     if (!anchorBlock) {
       return []
     }
-    const marksField = this.groupedFields.slate.find(field => field.type === anchorBlock)
+    const marksField = this.groupedFields.slate.find(type => type.type === anchorBlock)
     if (!marksField || !marksField.marks) {
       return []
     }
@@ -299,16 +298,16 @@ export default class BlockEditor extends React.Component {
 
 
   getListFormats() {
-    if (!this.groupedFields.slate.filter(field => SLATE_LIST_BLOCKS.includes(field.type)).length) {
+    if (!this.groupedFields.slate.filter(type => SLATE_LIST_BLOCKS.includes(type.type)).length) {
       return []
     }
     return this.groupedFields.slate
-      .filter(field => SLATE_LIST_BLOCKS.includes(field.type))
-      .map((field, index) => {
+      .filter(type => SLATE_LIST_BLOCKS.includes(type.type))
+      .map((type, index) => {
         return {
-          type: field.listStyle,
-          title: field.title,
-          active: this.hasParentBlock(field)
+          type: type.listStyle,
+          title: type.title,
+          active: this.hasParentBlock(type)
         }
       })
   }
@@ -318,20 +317,20 @@ export default class BlockEditor extends React.Component {
       return []
     }
     const items = this.groupedFields.slate
-      .filter(field => SLATE_TEXT_BLOCKS.includes(field.type))
-      .map((field, index) => {
+      .filter(type => SLATE_TEXT_BLOCKS.includes(type.type))
+      .map((type, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[field.type](
+          preview: this.slateSchema.nodes[type.type](
             Object.assign(
               {isPreview: true},
-              {children: <span>{field.title}</span>},
-              pick(field, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+              {children: <span>{type.title}</span>},
+              pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
             )
           ),
-          field: field,
-          title: ` ${field.title}`,
-          active: this.hasBlock(field)
+          type: type,
+          title: ` ${type.title}`,
+          active: this.hasBlock(type)
         }
       })
     let value = items.filter(item => item.active)
@@ -339,7 +338,7 @@ export default class BlockEditor extends React.Component {
       value = [{
         key: 'blockFormat-none',
         preview: null,
-        field: null,
+        type: null,
         title: 'No style',
         active: true
       }]
@@ -380,7 +379,7 @@ export default class BlockEditor extends React.Component {
   }
 
   render() {
-    const {validation, value, field, level} = this.props
+    const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
     const inputId = uniqueId('FormBuilderText')
     const activeLink = this.getActiveLink()
@@ -388,7 +387,7 @@ export default class BlockEditor extends React.Component {
       || !!activeLink
 
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
         <div
           className={`
             ${hasError ? styles.error : styles.root}

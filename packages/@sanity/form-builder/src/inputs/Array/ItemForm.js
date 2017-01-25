@@ -1,11 +1,10 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from '../../schema/getFieldType'
 
 export default class ItemForm extends React.Component {
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
     focus: PropTypes.bool,
@@ -32,24 +31,18 @@ export default class ItemForm extends React.Component {
     onEnter(value)
   }
 
-  resolveInputComponent(field, fieldType) {
-    return this.context.formBuilder.resolveInputComponent(field, fieldType)
-  }
-
-  getFieldType(field) {
-    return getFieldType(this.context.formBuilder.schema, field)
+  resolveInputComponent(type, fieldType) {
+    return this.context.formBuilder.resolveInputComponent(type, fieldType)
   }
 
   render() {
-    const {value, field, focus, level} = this.props
+    const {value, type, focus, level} = this.props
 
-    const fieldType = this.getFieldType(field)
-
-    const InputComponent = this.context.formBuilder.resolveInputComponent(field, fieldType)
+    const InputComponent = this.context.formBuilder.resolveInputComponent(type)
     if (!InputComponent) {
       return (
-        <div>No input component found for field of type "{field.type}"
-          <pre>{JSON.stringify(field, null, 2)}</pre>
+        <div>No input component found item of type {JSON.stringify(type.type.name)}
+          <pre>{JSON.stringify(type, null, 2)}</pre>
         </div>
       )
     }
@@ -59,8 +52,7 @@ export default class ItemForm extends React.Component {
     return (
       <InputComponent
         value={passSerialized ? value.serialize() : value}
-        field={field}
-        type={fieldType}
+        type={type}
         level={level}
         focus={focus}
         onEnter={this.handleEnter}

@@ -32,26 +32,29 @@ const typeNameToInputMap = {
   slug: Slug
 }
 
-function isArrayOfStrings(fieldOrType) {
-  return fieldOrType.type == 'array' && fieldOrType.of.every(field => field.type === 'string')
+function isArrayOfStrings(type) {
+  return type.name === 'array' && type.of.every(ofType => ofType.name === 'string')
+}
+function isList(type) {
+  return type.options && type.options.list
 }
 
-function resolveInputComponent(field, schemaType) {
+function isSearchable(type) {
+  return type.options.searchable
+}
 
+function resolveInputComponent(type) {
   // Special component for array of strings
-  if (isArrayOfStrings(field) || isArrayOfStrings(schemaType)) {
+  if (isArrayOfStrings(type)) {
     return ArrayOfStrings
   }
 
   // String input with a select
-  if (field.type == 'string' && field.options && field.options.list && !field.options.searchable) {
-    return StringSelect
-  }
-  if (field.type == 'string' && field.options && field.options.list && field.options.searchable) {
-    return SearchableStringSelect
+  if (type.name === 'string' && isList(type)) {
+    return isSearchable(type) ? SearchableStringSelect : StringSelect
   }
 
-  return typeNameToInputMap[field.type] || typeNameToInputMap[schemaType.type]
+  return typeNameToInputMap[type.name]
 }
 
 export default {

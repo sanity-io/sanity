@@ -72,24 +72,24 @@ export default {
           name: 'lead',
           title: 'Lead',
           description: 'Lead is a metal and a chemical element',
-          type: 'text',
+          type: 'string',
           format: 'html'
         },
         {
-          name: 'check-one',
+          name: 'checkOne',
           title: 'Check one?',
           type: 'boolean',
           fieldset: 'checkboxes'
         },
         {
-          name: 'check-two',
+          name: 'checkTwo',
           title: 'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
           description: 'Description',
           type: 'boolean',
           fieldset: 'checkboxes'
         },
         {
-          name: 'check-three',
+          name: 'checkThree',
           title: 'Check three?',
           description: 'Description',
           type: 'boolean',
@@ -108,7 +108,7 @@ export default {
           ]
         },
         {
-          name: 'standalone-check',
+          name: 'standaloneCheck',
           title: 'Standalone checkbox',
           description: 'Description',
           type: 'boolean'

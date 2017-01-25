@@ -25,7 +25,7 @@ export default class SlugInput extends React.Component {
   static passDocument = true;
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.shape({
       slug: PropTypes.string,
@@ -87,9 +87,9 @@ export default class SlugInput extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {checkValidityFn} = this.props
-    const {document, field, value} = nextProps
-    const fromSource = document.getAttribute(field.source).get()
-    const slug = slugify(fromSource || '', field.maxLength)
+    const {document, type, value} = nextProps
+    const fromSource = document.getAttribute(type.source).get()
+    const slug = slugify(fromSource || '', type.maxLength)
     if (value.auto && value.slug !== slug) {
       const newVal = {slug: slug, auto: value.auto}
       if (checkValidityFn) {
@@ -124,11 +124,11 @@ export default class SlugInput extends React.Component {
   }
 
   render() {
-    const {value, field, validation, level} = this.props
+    const {value, type, validation, level} = this.props
     const {validationError, nonAutoSlug} = this.state
     const formFieldProps = {
-      label: field.title,
-      description: field.description,
+      label: type.title,
+      description: type.description,
       validation: validation,
       level: level
     }
@@ -157,7 +157,7 @@ export default class SlugInput extends React.Component {
         {validationError}
         <DefaultTextInput
           id={inputId}
-          placeholder={field.placeholder}
+          placeholder={type.placeholder}
           onChange={this.handleChange}
           value={nonAutoSlug || value.slug}
         />

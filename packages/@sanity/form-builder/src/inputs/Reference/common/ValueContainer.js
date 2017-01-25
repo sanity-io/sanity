@@ -24,7 +24,7 @@ export default class ReferenceContainer {
   }
 
   validate() {
-    const messages = this.context.field.required && this.value === undefined && [{
+    const messages = this.context.type.required && this.value === undefined && [{
       id: 'errors.fieldIsRequired',
       type: 'error',
       message: 'Field is required'

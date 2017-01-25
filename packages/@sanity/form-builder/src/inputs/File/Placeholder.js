@@ -10,8 +10,8 @@ const CODE_SNIPPET = `
   })
   const FormBuilder = createFormBuilder({
     schema: mySchema,
-    resolveInputComponent(field, type) {
-      if (field.type === 'file') {
+    resolveInputComponent(type, type) {
+      if (type.type === 'file') {
         return MyFileInput
       }
   },
@@ -22,7 +22,7 @@ const CODE_SNIPPET = `
 export default function Placeholder() {
   return (
     <div>
-      You have a field of type file, but not configured how to upload files.
+      You have a type of type file, but not configured how to upload files.
       Please create a file input component and make sure it is resolved as the input for file types.
       <pre>
         <code>

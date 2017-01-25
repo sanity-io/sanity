@@ -1,14 +1,9 @@
-import Geopoint from './types/Geopoint'
-
-const extendTypes = (result, schema) =>
-  Object.assign(result, {
-    name: schema.name || result.name,
-    types: result.types.concat(schema.types || [])
+import geopoint from './types/geopoint'
+import Schema from '@sanity/schema'
+export default schemaDef => {
+  return Schema.compile({
+    name: schemaDef.name,
+    types: [geopoint, ...schemaDef.types]
   })
+}
 
-const createSchema = (...schemas) =>
-  schemas.reduce(extendTypes, {
-    types: [].concat(Geopoint)
-  })
-
-export default createSchema

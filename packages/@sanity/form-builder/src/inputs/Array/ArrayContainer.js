@@ -1,5 +1,4 @@
-import {createFieldValue} from '../../state/FormBuilderState'
-import {getFieldType} from '../../schema/getFieldType'
+import {createMemberValue} from '../../state/FormBuilderState'
 import {resolveJSType} from '../../schema/types/utils'
 import assert from 'assert'
 
@@ -8,14 +7,14 @@ function resolveItemType(item) {
 }
 
 function wrapItemValue(item, context) {
-  const itemType = resolveItemType(item)
-  const fieldType = getFieldType(context.schema, context.field)
+  const itemTypeName = resolveItemType(item)
+  const fieldType = context.type
 
   // find type in of
-  const fieldDef = fieldType.of.find(ofType => ofType.type === itemType)
+  const itemType = fieldType.of.find(ofType => ofType.name === itemTypeName)
 
-  return createFieldValue(item, {
-    field: fieldDef,
+  return createMemberValue(item, {
+    type: itemType,
     schema: context.schema,
     resolveInputComponent: context.resolveInputComponent
   })
@@ -55,14 +54,14 @@ export default class ArrayContainer {
   }
 
   validate() {
-    const {field} = this.context
+    const {type} = this.context
 
     const result = {
       messages: [],
       items: []
     }
 
-    if (field.required && this.value.length === 0) {
+    if (type.required && this.value.length === 0) {
       result.messages.push({
         id: 'errors.fieldIsRequired',
         type: 'error',

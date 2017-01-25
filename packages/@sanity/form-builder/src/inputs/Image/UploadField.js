@@ -5,7 +5,7 @@ import {uniqueId} from 'lodash'
 export default class FileInput extends React.PureComponent {
 
   static propTypes = {
-    field: PropTypes.shape({}).isRequired,
+    type: PropTypes.shape({}).isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
@@ -22,13 +22,13 @@ export default class FileInput extends React.PureComponent {
   }
 
   render() {
-    const {field, level} = this.props
+    const {type, level} = this.props
     const inputId = uniqueId('FormBuilderFileInput')
     return (
-      <FormField label={field.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
         <File
           id={inputId}
-          placeholder={field.placeholder}
+          placeholder={type.placeholder}
           onChange={this.handleChange}
         />
       </FormField>

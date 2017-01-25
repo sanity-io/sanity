@@ -7,7 +7,7 @@ import {uniqueId} from 'lodash'
 export default class Text extends React.PureComponent {
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
@@ -36,14 +36,14 @@ export default class Text extends React.PureComponent {
   }
 
   render() {
-    const {value, field, level} = this.props
+    const {value, type, level} = this.props
     return (
-      <FormField label={field.title} labelHtmlFor={this.inputId} level={level} description={field.description}>
+      <FormField label={type.title} labelHtmlFor={this.inputId} level={level} description={type.description}>
         <TextArea
           id={this.inputId}
-          placeholder={field.placeholder}
+          placeholder={type.placeholder}
           onChange={this.handleChange}
-          rows={field.rows}
+          rows={type.rows}
           value={value}
         />
       </FormField>

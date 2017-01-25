@@ -7,7 +7,7 @@ export default class Str extends React.Component {
   static displayName = 'String';
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     validation: PropTypes.shape({
@@ -62,15 +62,15 @@ export default class Str extends React.Component {
   }
 
   render() {
-    const {value, field, validation, focus, level} = this.props
+    const {value, type, validation, focus, level} = this.props
 
     return (
       <DefaultTextField
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         level={level}
         validation={validation}
-        placeholder={field.placeholder}
+        placeholder={type.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}

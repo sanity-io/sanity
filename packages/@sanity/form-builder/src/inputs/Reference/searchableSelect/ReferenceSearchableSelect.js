@@ -3,12 +3,11 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../previews/Preview'
 import stringPreview from '../../../sanity/preview/stringPreview'
-import schema from 'part:@sanity/base/schema'
+import {flatten} from 'lodash'
 
 export default class Reference extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
     value: PropTypes.object,
     searchFn: PropTypes.func,
     fetchFn: PropTypes.func,
@@ -68,15 +67,13 @@ export default class Reference extends React.Component {
 
   getItemFieldForType(typeName) {
     const {type} = this.props
-    return type.to.find(ofType => {
-      return ofType.type === typeName
-    })
+    return type.to.find(ofType => ofType.type.name === typeName)
   }
 
   fetchAll() {
-    const {fetchFn, field} = this.props
+    const {fetchFn, type} = this.props
 
-    fetchFn(field)
+    fetchFn(type)
       .then(items => {
         this._isFetching = false
 
@@ -108,7 +105,7 @@ export default class Reference extends React.Component {
   }
 
   handleSearch = query => {
-    const {field} = this.props
+    const {type} = this.props
 
     if (query == '') {
       this.fetchAll()
@@ -131,19 +128,13 @@ export default class Reference extends React.Component {
 
     // Substring search in all items that is fetched
 
-    const referencedTypes = field.to.map(reference => reference.type)
-
-    const textFields = []
-    schema.types.filter(type => referencedTypes.includes(type.name)).forEach(type => {
-      type.fields.forEach(schemaField => {
-        if (schemaField.type == 'string') {
-          textFields.push(schemaField.name)
-        }
-      })
-    })
+    const textFields = flatten(type.to.map(toType => {
+      return toType.fields
+        .filter(field => field.type.name === 'string')
+        .map(field => field.name)
+    }))
 
     const hits = this.state.items.filter(item => {
-
       let isHit = false
       textFields.forEach(textField => {
 
@@ -163,7 +154,7 @@ export default class Reference extends React.Component {
     })
 
     // TODO! Implement when substring search in Gradient™
-    // searchFn(query, field)
+    // searchFn(query, type)
     //   .then(hits => {
     //     if (this._currentQuery !== query) {
     //       return // ignore
@@ -184,10 +175,10 @@ export default class Reference extends React.Component {
   }
 
   renderItem = item => {
-    const field = this.getItemFieldForType(item._type)
+    const type = this.getItemFieldForType(item._type)
     return (
       <Preview
-        field={field}
+        type={type}
         value={item}
         style="default"
       />
@@ -195,18 +186,17 @@ export default class Reference extends React.Component {
   }
 
   valueToString = value => {
-    const field = this.getItemFieldForType(value._type)
-    const type = field.type === 'object' ? field : this.context.formBuilder.schema.getType(field.type)
+    const type = this.getItemFieldForType(value._type)
     return value ? stringPreview(value, type) : ''
   }
 
   render() {
-    const {field} = this.props
+    const {type} = this.props
     const {materializedValue, fetching, hits} = this.state
     return (
       <SearchableSelect
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         placeholder="Type to search…"
         onBlur={this.handleBlur}
         onFocus={this.handleFocus}

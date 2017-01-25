@@ -1,22 +1,13 @@
 import PrimitiveValueContainer from './PrimitiveValueContainer'
-import {getFieldType} from '../schema/getFieldType'
-import inspect from 'object-inspect'
+export function createMemberValue(value, context) {
 
-export function createFieldValue(value, context) {
-
-  const {schema, field, resolveInputComponent} = context
-
-  if (!field) {
-    throw new Error(`Missing field for value ${inspect(value)}`)
-  }
-
-  const fieldType = getFieldType(schema, field)
+  const {type, resolveInputComponent} = context
 
   let ResolvedInput
   try {
-    ResolvedInput = resolveInputComponent(field, fieldType)
+    ResolvedInput = resolveInputComponent(type)
   } catch (error) {
-    error.message = `Got error while resolving input component for field "${field.name}" of type ${fieldType.name}: ${error.message}.`
+    error.message = `Got error while resolving input component for type "${type.name}": ${error.message}.`
     throw error
   }
 
@@ -25,11 +16,6 @@ export function createFieldValue(value, context) {
   return ResolvedContainer.deserialize(value, context)
 }
 
-export function createFormBuilderState(value, {type, schema, resolveInputComponent}) {
-  const context = {
-    schema: schema,
-    field: {type: type.name},
-    resolveInputComponent: resolveInputComponent
-  }
-  return createFieldValue(value, context)
+export function createFormBuilderState(value, context) {
+  return createMemberValue(value, context)
 }

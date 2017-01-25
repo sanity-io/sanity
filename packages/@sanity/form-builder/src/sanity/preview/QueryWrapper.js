@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import {fetchQuery} from '../data/fetch'
 import equals from 'shallow-equals'
 
-export default class QueryWrapper extends React.Component {
+export default class QueryWrapper extends React.PureComponent {
 
   static propTypes = {
     query: PropTypes.string.isRequired,
