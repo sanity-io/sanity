@@ -1,0 +1,28 @@
+{
+  "name": "storybook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "config.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "start-storybook -p 9001 -c ."
+  },
+  "devDependencies": {
+    "@kadira/react-storybook-addon-info": "^3.3.0",
+    "@kadira/storybook": "^2.35.3"
+  },
+  "dependencies": {
+    "@sanity/base": "^0.99.9",
+    "@sanity/components": "^0.99.9",
+    "@sanity/default-layout": "^0.99.9",
+    "@sanity/default-login": "^0.99.0",
+    "@sanity/desk-tool": "^0.99.9",
+    "@sanity/google-maps-input": "^0.99.9",
+    "@sanity/server": "^0.99.5",
+    "normalize.css": "^5.0.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  }
+}

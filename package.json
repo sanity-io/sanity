@@ -6,6 +6,7 @@
     "clean": "lerna clean",
     "publish": "npm run build && lerna publish",
     "start": "gulp dev",
+    "storybook": "cd packages/storybook && npm start",
     "test": "lerna run test",
     "updated": "lerna updated",
     "watch": "gulp watch"

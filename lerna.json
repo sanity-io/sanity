@@ -2,7 +2,8 @@
   "lerna": "2.0.0-beta.32",
   "packages": [
     "packages/@sanity/*",
-    "packages/example-studio"
+    "packages/example-studio",
+    "packages/storybook"
   ],
   "version": "0.99.9"
 }
