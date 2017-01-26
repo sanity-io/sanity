@@ -23,8 +23,8 @@ const ReferenceSelect = ReferenceInput.createSelect({
   materializeReferences
 })
 
-export default function resolveReference(field) {
-  const fieldOptions = field.options || {}
+export default function resolveReference(type) {
+  const fieldOptions = type.options || {}
   if (fieldOptions.inputType === 'select') {
     return fieldOptions.searchable
       ? ReferenceSearchableSelect

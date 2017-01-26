@@ -7,7 +7,7 @@ import locationStore from 'part:@sanity/base/location'
 import {IntentLink} from 'part:@sanity/base/router'
 import {union} from 'lodash'
 
-const typeNames = schema.types.map(schemaType => schemaType.name)
+const typeNames = schema.getTypeNames()
 
 class Search extends React.Component {
 
@@ -51,7 +51,7 @@ class Search extends React.Component {
     })
 
     // Get all fields that we want to search in (text and string)
-    schema.types.forEach(type => {
+    typeNames.forEach(type => {
       if (type.fields) {
         type.fields.forEach(field => {
           if (field.type == 'text' || field.type == 'string') {
@@ -131,7 +131,7 @@ class Search extends React.Component {
 
   renderItem = (item, options) => {
     const typeName = item._type.split('.')[1]
-    const type = schema && schema.types.find(t => t.name === typeName)
+    const type = schema && typeNames.find(t => t.name === typeName)
 
     if (type && Preview && schema) {
       return (

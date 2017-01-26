@@ -13,8 +13,8 @@ const CODE_SNIPPET = `
   })
   const FormBuilder = createFormBuilder({
     schema: mySchema,
-    resolveInputComponent(field, type) {
-      if (field.type === 'reference') {
+    resolveInputComponent(type, type) {
+      if (type.type === 'reference') {
         return MyReferenceInput
       }
   },
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `
 export default function PlaceholderReferenceInput() {
   return (
     <div>
-      You have a field of type reference, but not configured how to look up references.
+      You have a type of type reference, but not configured how to look up references.
       Please create a Reference input and make sure it is resolved as the input for reference types.
       <pre>
         <code>

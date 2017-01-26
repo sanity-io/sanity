@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import {FormBuilderInner} from './FormBuilderInner'
-import {createFormBuilderState, createFieldValue} from './state/FormBuilderState'
+import {createFormBuilderState, createMemberValue} from './state/FormBuilderState'
 import defaultConfig from './defaultConfig'
 import Schema from './Schema'
 
@@ -14,18 +14,34 @@ function withDefaultFallback(fn, defaultFn) {
   }
 }
 
+const noop = () => {}
 export default function createFormBuilder(config = {}) {
   const {schema} = config
-  const resolveInputComponent = withDefaultFallback(config.resolveInputComponent, defaultConfig.resolveInputComponent)
+
+  const providedInputResolver = config.resolveInputComponent || noop
+  const defaultResolve = defaultConfig.resolveInputComponent
+
+  function resolveInputComponent(type) {
+    let itType = type
+    while (itType) {
+      const resolved = providedInputResolver(itType) || defaultResolve(itType)
+      if (resolved) {
+        return resolved
+      }
+      itType = itType.type && schema.get(itType.type.name)
+    }
+    return undefined
+  }
+
   const resolvePreviewComponent = withDefaultFallback(config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
 
   if (!schema) {
     throw new TypeError('You must provide a schema to createFormBuilder(...)')
   }
 
-  function _createFieldValue(value, field) {
-    return createFieldValue(value, {
-      field: field,
+  function _createFieldValue(value, type) {
+    return createMemberValue(value, {
+      type: type,
       schema: schema,
       resolveInputComponent: resolveInputComponent,
       resolvePreviewComponent: resolvePreviewComponent
@@ -38,7 +54,7 @@ export default function createFormBuilder(config = {}) {
     }
 
     return createFormBuilderState(value, {
-      type: schema.getType(typeName), // todo: support primitives!
+      type: schema.get(typeName),
       schema: schema,
       resolveInputComponent: resolveInputComponent,
       resolvePreviewComponent: resolvePreviewComponent

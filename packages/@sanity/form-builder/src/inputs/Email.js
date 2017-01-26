@@ -9,12 +9,12 @@ export default class Email extends React.Component {
   }
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func,
     focus: PropTypes.bool
-  }
+  };
 
   static defaultProps = {
     value: '',
@@ -33,14 +33,14 @@ export default class Email extends React.Component {
   }
 
   render() {
-    const {field, value, level, focus} = this.props
+    const {type, value, level, focus} = this.props
     return (
       <DefaultTextField
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         type="email"
         level={level}
-        placeholder={field.placeholder}
+        placeholder={type.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}

@@ -6,7 +6,7 @@ export default class ReferenceSelect extends React.Component {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     fetchAllFn: PropTypes.func,
     materializeReferences: PropTypes.func,
@@ -47,7 +47,7 @@ export default class ReferenceSelect extends React.Component {
   }
 
   fetch = () => {
-    const {fetchAllFn, field} = this.props
+    const {fetchAllFn, type} = this.props
     if (this._isFetching === true) {
       return
     }
@@ -56,7 +56,7 @@ export default class ReferenceSelect extends React.Component {
 
     this.setState({fetching: true})
 
-    fetchAllFn(field)
+    fetchAllFn(type)
       .then(items => {
         this._isFetching = false
         const preparedItems = items.map(item => this.createValueFromItem(item))
@@ -92,7 +92,7 @@ export default class ReferenceSelect extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
     const {items} = this.state
 
     const selectItems = items.map((item, i) => {
@@ -106,8 +106,8 @@ export default class ReferenceSelect extends React.Component {
 
     return (
       <Select
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         onChange={this.handleChange}
         onFocus={this.handleFocus}
         items={selectItems}

@@ -1,7 +1,6 @@
 import config from 'config:@sanity/data-aspects'
-import bundledTypes from 'part:@sanity/base/bundled-types'
 import {startCase} from 'lodash'
-const bundledTypeNames = bundledTypes.types.map(baseType => baseType.name)
+const bundledTypeNames = ['geopoint']
 
 
 class DataAspectsResolver {
@@ -20,22 +19,26 @@ class DataAspectsResolver {
   }
 
   getType(typeName) {
-    return this.schema.types.find(currType => currType.name === typeName)
+    return this.schema.get(typeName)
   }
 
   getInferredTypes() {
-    let defaultTypes = this.schema.types || []
-    defaultTypes = defaultTypes.filter(type => {
+    let defaultTypes = this.schema.getTypeNames() || []
+    defaultTypes = defaultTypes.filter(typeName => {
       // Exclude types which come bundled with Sanity
-      return !bundledTypeNames.includes(type.name)
+      return !bundledTypeNames.includes(typeName)
     })
     if (this.config.hiddenTypes) {
       // Exclude types which are explicitly named in hiddenTypes
-      defaultTypes = defaultTypes.filter(type => {
-        return !config.hiddenTypes.includes(type.name)
+      defaultTypes = defaultTypes.filter(typeName => {
+        return !config.hiddenTypes.includes(typeName)
       })
     }
-    return defaultTypes
+    return defaultTypes.filter(typeName => {
+      const schemaType = this.getType(typeName)
+      return schemaType.type !== null // this is the test for whether it is an toplevel type // todo: provide a better test
+        && schemaType.type.name === 'object'
+    })
   }
 
   fallbackItemDisplayField(typeName) {

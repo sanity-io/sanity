@@ -6,7 +6,7 @@ export default class Num extends React.Component {
   static displayName = 'Number';
 
   static propTypes = {
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     level: PropTypes.number.isRequired,
     value: PropTypes.number,
     onChange: PropTypes.func,
@@ -33,14 +33,14 @@ export default class Num extends React.Component {
   }
 
   render() {
-    const {value, field, focus, level} = this.props
+    const {value, type, focus, level} = this.props
     return (
       <DefaultTextField
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         type="number"
         level={level}
-        placeholder={field.placeholder || 'Must be a number'}
+        placeholder={type.placeholder || 'Must be a number'}
         onChange={this.handleChange}
         value={typeof value === 'undefined' ? value : String(value)}
         focus={focus}

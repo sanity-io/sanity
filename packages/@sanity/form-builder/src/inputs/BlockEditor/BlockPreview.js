@@ -7,7 +7,7 @@ import styles from './styles/BlockPreview.css'
 
 export default class PreviewWrapper extends React.Component {
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any
   };
 
@@ -19,24 +19,24 @@ export default class PreviewWrapper extends React.Component {
     return !equals(nextProps, this.props)
   }
 
-  getFieldType(field) {
-    return getFieldType(this.context.formBuilder.schema, field)
+  getFieldType(type) {
+    return getFieldType(this.context.formBuilder.schema, type)
   }
 
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
 
-    const fieldType = this.getFieldType(field)
+    const fieldType = this.getFieldType(type)
 
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(field, fieldType)
+    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type, fieldType)
 
     return (
       <div className={styles.root}>
         <PreviewComponent
           style="default"
           value={value.serialize()}
-          field={fieldType}
+          type={fieldType}
           schema={this.context.formBuilder.schema}
         />
       </div>

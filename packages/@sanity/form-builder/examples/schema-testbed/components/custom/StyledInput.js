@@ -26,11 +26,11 @@ function fromInput(Component) {
 }
 
 export default fromInput(props => {
-  const {value, onChange, field} = props
-  const {style = {}} = field.options
+  const {value, onChange, type} = props
+  const {style = {}} = type.options
   return (
     <div>
-      <h2>{field.title}</h2>
+      <h2>{type.title}</h2>
       <input type="text" style={style} value={value} onChange={onChange} />
     </div>
   )

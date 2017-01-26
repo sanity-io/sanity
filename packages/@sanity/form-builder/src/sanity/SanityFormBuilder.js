@@ -7,18 +7,13 @@ import arrify from 'arrify'
 import toGradientPatch from './utils/toGradientPatch'
 import React, {PropTypes} from 'react'
 
-import {
-  createFormBuilder,
-  Schema
-} from '../index'
+import {createFormBuilder} from '../index'
 
-
-const compiledSchema = Schema.compile(schema)
 
 export const previewUtils = _previewUtils // must be a better way, no?
 
 const FormBuilder = createFormBuilder({
-  schema: compiledSchema,
+  schema: schema,
   resolveInputComponent: inputResolver,
   resolvePreviewComponent: previewResolver,
   resolveValidationComponent: () => ValidationList

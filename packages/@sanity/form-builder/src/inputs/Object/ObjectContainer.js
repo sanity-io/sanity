@@ -1,4 +1,4 @@
-import {createFieldValue} from '../../state/FormBuilderState'
+import {createMemberValue} from '../../state/FormBuilderState'
 import {getFieldType} from '../../schema/getFieldType'
 import hasOwn from '../../utils/hasOwn'
 import {ImmutableAccessor} from '@sanity/mutator'
@@ -6,9 +6,8 @@ import {ImmutableAccessor} from '@sanity/mutator'
 export default class ObjectContainer {
 
   static deserialize(serialized = {}, context) {
-    const {field, schema, resolveInputComponent} = context
-    const type = getFieldType(schema, field)
-    const deserialized = {_type: field.type}
+    const {type, schema, resolveInputComponent} = context
+    const deserialized = {_type: type.type}
 
     if (serialized) {
       if (hasOwn(serialized, '_id')) {
@@ -20,8 +19,8 @@ export default class ObjectContainer {
     }
 
     type.fields.forEach(fieldDef => {
-      deserialized[fieldDef.name] = createFieldValue(serialized[fieldDef.name], {
-        field: fieldDef,
+      deserialized[fieldDef.name] = createMemberValue(serialized[fieldDef.name], {
+        type: fieldDef.type,
         schema,
         resolveInputComponent
       })
@@ -35,16 +34,14 @@ export default class ObjectContainer {
   }
 
   _getFieldDefForFieldName(fieldName) {
-    const {field, schema} = this.context
-
-    const type = getFieldType(schema, field)
+    const {type} = this.context
     return type.fields.find(fieldDef => fieldDef.name === fieldName)
   }
 
   validate() {
-    const {field, schema} = this.context
+    const {type} = this.context
 
-    if (field.required && this.value === undefined) {
+    if (type.required && this.value === undefined) {
       return {
         messages: [{
           id: 'errors.fieldIsRequired',
@@ -54,7 +51,6 @@ export default class ObjectContainer {
       }
     }
 
-    const type = getFieldType(schema, field)
     const fieldValidation = {}
 
     type.fields.forEach(typeField => {
@@ -72,8 +68,7 @@ export default class ObjectContainer {
   }
 
   serialize() {
-    const {field, schema} = this.context
-    const type = getFieldType(schema, field)
+    const {type} = this.context
 
     const serialized = type.fields.reduce((acc, typeField) => {
       const serializedFieldValue = this.value[typeField.name].serialize()
@@ -92,7 +87,7 @@ export default class ObjectContainer {
     }
 
     return Object.keys(serialized).length
-      ? Object.assign({_type: field.type}, serialized)
+      ? Object.assign({_type: type.name}, serialized)
       : undefined
   }
 
@@ -132,8 +127,8 @@ export default class ObjectContainer {
     }
     const fieldDef = this._getFieldDefForFieldName(key)
     const nextValue = Object.assign({}, this.value, {
-      [key]: createFieldValue(value, {
-        field: fieldDef,
+      [key]: createMemberValue(value, {
+        type: fieldDef.type,
         schema: this.context.schema,
         resolveInputComponent: this.context.resolveInputComponent
       })
@@ -158,7 +153,7 @@ export default class ObjectContainer {
 
   attributeKeys() {
     return ['_key'].concat(
-      getFieldType(this.context.schema, this.context.field).fields.map(field => field.name)
+      getFieldType(this.context.schema, this.context.type).fields.map(type => type.name)
     )
   }
 
@@ -171,8 +166,7 @@ export default class ObjectContainer {
   }
 
   isEmpty() {
-    const {field, schema} = this.context
-    const type = getFieldType(schema, field)
+    const {type} = this.context
 
     return type.fields.every(typeField => this.getAttribute(typeField.name).isEmpty())
   }

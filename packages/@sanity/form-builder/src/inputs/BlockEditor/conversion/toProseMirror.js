@@ -1,4 +1,4 @@
-import {createFieldValue} from '../../../state/FormBuilderState'
+import {createMemberValue} from '../../../state/FormBuilderState'
 // Converts a persisted array to a prosemirror compatible json document
 
 const TRANSFORMS = {
@@ -56,9 +56,9 @@ export default function toProseMirror(array, context) {
         return convertPMType(item)
       }
 
-      const itemField = context.field.of.find(ofType => ofType.type === item._type)
-      const value = createFieldValue(item, {
-        field: itemField,
+      const itemField = context.type.of.find(ofType => ofType.type === item._type)
+      const value = createMemberValue(item, {
+        type: itemField,
         schema: context.schema,
         resolveInputComponent: context.resolveInputComponent
       })

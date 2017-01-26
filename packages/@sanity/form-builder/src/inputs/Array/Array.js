@@ -14,15 +14,13 @@ import styles from './styles/Array.css'
 import arrify from 'arrify'
 import randomKey from './randomKey'
 import {get} from 'lodash'
-import {resolveJSONRepresentationOfSchemaType} from '../../schema/types/utils'
 
-function createProtoValue(schema, field) {
-  const jsonType = resolveJSONRepresentationOfSchemaType(schema, field.type)
-  if (jsonType !== 'object') {
-    throw new Error(`Invalid item type: "${field.type}". Default array input can only contain objects (for now)`)
+function createProtoValue(schema, type) {
+  if (type.jsonType !== 'object') {
+    throw new Error(`Invalid item type: "${type.type}". Default array input can only contain objects (for now)`)
   }
   return {
-    _type: field.type,
+    _type: type.name,
     _key: randomKey(12)
   }
 }
@@ -33,7 +31,6 @@ export default class Arr extends React.Component {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    field: FormBuilderPropTypes.field,
     value: PropTypes.instanceOf(ArrayContainer),
     level: PropTypes.number,
     onChange: PropTypes.func
@@ -119,7 +116,7 @@ export default class Arr extends React.Component {
 
   handleDropDownAction = menuItem => {
     const {value} = this.props
-    const item = createProtoValue(value.context.schema, menuItem.field)
+    const item = createProtoValue(value.context.schema, menuItem.type)
     this.setState({editItemKey: item._key})
     this.append(item)
   }
@@ -127,17 +124,17 @@ export default class Arr extends React.Component {
   renderSelectType() {
     const {type} = this.props
 
-    const items = type.of.map((field, i) => {
+    const items = type.of.map((memberDef, i) => {
       return {
-        title: field.title || field.type,
+        title: memberDef.title || memberDef.type.name,
         index: `action${i}`,
-        field: field
+        type: memberDef
       }
     })
 
     return (
       <DropDownButton items={items} color="primary" onAction={this.handleDropDownAction}>
-        New {this.props.field.title}
+        New {this.props.type.title}
       </DropDownButton>
     )
   }
@@ -203,13 +200,13 @@ export default class Arr extends React.Component {
   }
 
   renderEditItemForm(item) {
-    const itemField = this.getItemField(item)
+    const itemField = this.getMemberType(item)
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
           focus
           itemKey={item.key || this.props.value.indexOf(item)}
-          field={itemField}
+          type={itemField}
           level={this.props.level + 1}
           value={item}
           onChange={this.handleItemChange}
@@ -228,19 +225,19 @@ export default class Arr extends React.Component {
     : value.byKey(editItemKey)
   }
 
-  getItemField(item) {
+  getMemberType(item) {
     const {type} = this.props
-    return type.of.find(ofType => ofType.type === item.context.field.type)
+    return type.of.find(member => member === item.context.type)
   }
 
   renderItem = (item, index) => {
     const {type} = this.props
-    const itemField = this.getItemField(item)
+    const itemField = this.getMemberType(item)
     if (!itemField) {
       return (
         <div>
-          <p>Invalid type: <pre>{JSON.stringify(item.context.field.type)}</pre></p>
-          <p>Only allowed types are: <pre>{JSON.stringify(type.of)}</pre></p>
+          <p>Invalid type: <pre>{JSON.stringify(item.context.type.name)}</pre></p>
+          <p>Only allowed types are: <pre>{JSON.stringify(type.of.map(ofType => ofType.name))}</pre></p>
         </div>
       )
     }
@@ -248,7 +245,7 @@ export default class Arr extends React.Component {
     return (
       <div>
         <ItemPreview
-          field={itemField}
+          type={itemField}
           value={item}
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
@@ -283,10 +280,10 @@ export default class Arr extends React.Component {
   }
 
   render() {
-    const {field, level, value} = this.props
+    const {type, level, value} = this.props
 
     return (
-      <Fieldset legend={field.title} description={field.description} level={level}>
+      <Fieldset legend={type.title} description={type.description} level={level}>
         <div className={styles.root}>
           {
             value.value && value.value.length > 0 && (

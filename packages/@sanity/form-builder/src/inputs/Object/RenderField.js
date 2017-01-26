@@ -2,7 +2,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {getFieldType} from '../../schema/getFieldType'
 import React, {PropTypes} from 'react'
 
-// This component renders a single field in an object type. It emits onChange events telling the owner about the name of the field
+// This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
 export default class RenderField extends React.Component {
 
@@ -43,25 +43,25 @@ export default class RenderField extends React.Component {
     onEnter(event, fieldName)
   }
 
-  resolveInputComponent(field, fieldType) {
-    return this.context.formBuilder.resolveInputComponent(field, fieldType)
+  resolveInputComponent(type, fieldType) {
+    return this.context.formBuilder.resolveInputComponent(type, fieldType)
   }
 
-  getFieldType(field) {
-    return getFieldType(this.context.formBuilder.schema, field)
+  getFieldType(type) {
+    return getFieldType(this.context.formBuilder.schema, type)
   }
 
   render() {
     const {value, field, fieldName, level, validation, focus} = this.props
 
-    const fieldType = this.getFieldType(field)
-
-    const FieldInput = this.context.formBuilder.resolveInputComponent(field, fieldType)
+    const FieldInput = this.context.formBuilder.resolveInputComponent(field.type)
 
     if (!FieldInput) {
+      debugger
       return (
-        <div>Field input not found for field of type "{field.type}"
-          <pre>{JSON.stringify(field, null, 2)}</pre>
+        <div>
+          Field input not found for field of type {JSON.stringify(field.type.name)}
+          <pre>{JSON.stringify(field.type, null, 2)}</pre>
         </div>
       )
     }
@@ -75,8 +75,7 @@ export default class RenderField extends React.Component {
         fieldName={fieldName}
         level={level}
         value={passValue}
-        field={field}
-        type={fieldType}
+        type={field.type}
         validation={validation}
         onChange={this.handleChange}
         onEnter={this.handleEnter}

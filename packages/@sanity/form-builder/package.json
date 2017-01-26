@@ -22,6 +22,7 @@
   "dependencies": {
     "@sanity/imagetool": "^0.99.10",
     "@sanity/mutator": "^0.99.4",
+    "@sanity/schema": "^0.99.10",
     "arrify": "^1.0.1",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.6.0",
@@ -32,6 +33,7 @@
     "is-empty": "^1.0.0",
     "lodash": "^4.17.4",
     "object-inspect": "^1.2.1",
+    "promise-props": "^1.0.0",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.10.1",
     "react-sortable-hoc": "0.4.5",

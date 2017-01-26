@@ -4,7 +4,7 @@ import DefaultTextField from 'part:@sanity/components/textfields/default'
 
 export default class Url extends React.Component {
   static propTypes = {
-    field: FormBuilderPropTypes.field,
+    type: FormBuilderPropTypes.type,
     value: PropTypes.string,
     onChange: PropTypes.func,
     focus: PropTypes.bool
@@ -27,13 +27,13 @@ export default class Url extends React.Component {
   }
 
   render() {
-    const {value, field, focus} = this.props
+    const {value, type, focus} = this.props
     return (
       <DefaultTextField
-        label={field.title}
-        description={field.description}
+        label={type.title}
+        description={type.description}
         type="url"
-        placeholder={field.placeholder}
+        placeholder={type.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}

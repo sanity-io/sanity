@@ -8,9 +8,9 @@ export default class StringSelect extends React.Component {
   static displayName = 'StringSelect';
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
-    value: PropTypes.object,
+    value: PropTypes.string,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
@@ -52,37 +52,37 @@ export default class StringSelect extends React.Component {
   }
 
   render() {
-    const {value, field, focus, level} = this.props
+    const {value, type, focus, level} = this.props
 
     // Support array of string if not objects
-    const items = field.options.list
+    const items = type.options.list
 
     const currentItem = items.find(item => {
       return item == value
     })
 
-    if (field.options.layout == 'radio') {
+    if (type.options.layout == 'radio') {
       return (
         <RadioSelect
-          name={field.name}
-          legend={field.title}
+          name={type.name}
+          legend={type.title}
           level={level}
           items={items}
           onChange={this.handleChange}
           value={currentItem || items[0]}
-          direction={field.options.direction || 'vertical'}
+          direction={type.options.direction || 'vertical'}
         />
       )
     }
 
     return (
       <Select
-        label={field.title}
+        label={type.title}
         level={level}
         type="text"
         value={currentItem || items[0]}
-        placeholder={field.placeholder}
-        description={field.description}
+        placeholder={type.placeholder}
+        description={type.description}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}

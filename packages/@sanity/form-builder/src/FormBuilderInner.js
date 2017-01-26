@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import {getFieldType} from './schema/getFieldType'
 
 export class FormBuilderInner extends React.Component {
   static propTypes = {
@@ -21,27 +20,25 @@ export class FormBuilderInner extends React.Component {
     return this.context.formBuilder.resolveInputComponent(field, type)
   }
 
-  resolvePreviewComponent(field, type) {
-    return this.context.formBuilder.resolvePreviewComponent(field, type)
+  resolvePreviewComponent(type) {
+    return this.context.formBuilder.resolvePreviewComponent(type)
   }
 
   render() {
     const {onChange, value, validation} = this.props
 
-    const field = value.context.field
-    const schemaType = getFieldType(this.context.formBuilder.schema, field)
+    const type = value.context.type
 
-    const FieldInput = this.resolveInputComponent(field, schemaType)
+    const FieldInput = this.resolveInputComponent(type)
     if (!FieldInput) {
-      return <div>No field input resolved for field {JSON.stringify(field)}</div>
+      return <div>No input resolved for type {JSON.stringify(type.name)}</div>
     }
 
     const passSerialized = value && value.constructor.passSerialized
 
     return (
       <FieldInput
-        field={field}
-        type={schemaType}
+        type={type}
         onChange={onChange}
         validation={validation}
         value={passSerialized ? value.serialize() : value}

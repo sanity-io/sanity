@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import ProseMirrorValueContainer from './ProseMirrorValueContainer'
 import {ProseMirror} from 'prosemirror'
 import EditBlock from './EditBlock'
-import {createFieldValue} from '../../state/FormBuilderState'
+import {createMemberValue} from '../../state/FormBuilderState'
 import createProseMirrorSchema from './createProseMirrorSchema'
 import styles from './styles/BlockEditor.css'
 
@@ -11,7 +11,6 @@ export default class BlockEditor extends React.Component {
 
   static propTypes = {
     type: PropTypes.any,
-    field: PropTypes.any,
     value: PropTypes.instanceOf(ProseMirrorValueContainer),
     validation: PropTypes.shape({
       errors: PropTypes.array
@@ -45,14 +44,14 @@ export default class BlockEditor extends React.Component {
 
     const {jsonValue} = this.props.value
 
-    const createBlockValue = (field, value) => createFieldValue(value, {
-      field: field,
+    const createBlockValue = (type, value) => createMemberValue(value, {
+      type: type,
       schema: this.context.schema,
       resolveInputComponent: this.context.resolveInputComponent
     })
 
     this.pmSchema = createProseMirrorSchema({
-      field: this.props.field,
+      type: this.props.type,
       onChange: this.handleItemChange,
       createBlockValue: createBlockValue,
       parentComponent: this
@@ -108,10 +107,10 @@ export default class BlockEditor extends React.Component {
   }
 
   renderInsertMenu() {
-    const {field} = this.props
+    const {type} = this.props
     return (
       <div>
-        {field.of.map(ofField => {
+        {type.of.map(ofField => {
           return (
             <button
               key={ofField.type}
@@ -154,7 +153,7 @@ export default class BlockEditor extends React.Component {
     return (
       <EditBlock
         value={edit.value}
-        field={edit.value.context.field}
+        type={edit.value.context.type}
         onChange={this.handleBlockChange}
         onClose={this.handleEditDone}
         onEnter={this.handleEditDone}

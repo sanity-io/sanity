@@ -94,7 +94,7 @@ export default function createFormBuilderPreviewNode(ofField) {
 
     handleDragStart = event => {
       // Cancel event if not dragging the containerelement itself,
-      // so we can't drag single elements (like image preview, texts etc) out of the field itself
+      // so we can't drag single elements (like image preview, texts etc) out of the type itself
       if (event.target !== this._containerElement) {
         event.preventDefault()
         this.setState({isDragging: false})
@@ -166,7 +166,7 @@ export default function createFormBuilderPreviewNode(ofField) {
     renderPreview() {
       return (
         <ItemPreview
-          field={ofField}
+          type={ofField}
           value={this.getValue()}
         />
       )
@@ -177,7 +177,7 @@ export default function createFormBuilderPreviewNode(ofField) {
         <div onClick={stopPropagation}>
           <ItemForm
             onDrop={this.handleCancelEvent}
-            field={ofField}
+            type={ofField}
             level={0}
             value={this.getValue()}
             onChange={this.handleChange}

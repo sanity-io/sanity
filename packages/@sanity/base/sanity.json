@@ -30,11 +30,6 @@
       "description": "A function that resolves a preview component for a given type"
     },
     {
-      "name": "part:@sanity/base/bundled-types",
-      "description": "Commonly used data types which are bundled with Sanity for the sake of convenience.",
-      "path": "schema/baseSchema.js"
-    },
-    {
       "name": "part:@sanity/base/component",
       "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },

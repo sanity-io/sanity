@@ -8,7 +8,7 @@ export default class Telephone extends React.Component {
   }
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func
   };

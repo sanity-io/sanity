@@ -28,10 +28,10 @@ function debounceRAF(fn) {
   }
 }
 
-const TYPE_ITEMS = dataAspects.getInferredTypes().map(type => ({
-  key: type.name,
-  name: type.name,
-  title: dataAspects.getDisplayName(type.name)
+const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
+  key: typeName,
+  name: typeName,
+  title: dataAspects.getDisplayName(typeName)
 }))
 
 function readListViewSettings() {
@@ -106,20 +106,20 @@ export default class SchemaPaneResolver extends React.Component {
   renderDocumentPaneItem = (item, i) => {
     const {selectedType} = this.context.router.state
     const listView = this.getListViewForType(selectedType)
-    const schemaType = schema.types.find(type => type.name === selectedType)
+    const type = schema.get(selectedType)
 
     return (
       <Preview
         value={item}
         style={listView}
-        typeDef={schemaType}
+        type={type}
       />
     )
   }
 
   getDocumentsPane(typeName) {
-    const type = schema.types.find(t => t.name === typeName)
-    const previewConfig = previewUtils.canonicalizePreviewConfig(type)
+    const type = schema.get(typeName)
+    const previewConfig = type.options.preview
 
     const {selectedType} = this.context.router.state
 

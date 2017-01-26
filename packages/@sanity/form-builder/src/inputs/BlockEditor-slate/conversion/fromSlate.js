@@ -18,13 +18,13 @@ export const SERIALIZE = {
       return SERIALIZE.listBlock(block, block.nodes, context)
     }
 
-    const validTypeNames = context.field.of.map(ofType => ofType.type)
+    const validTypeNames = context.type.of.map(ofType => ofType.type)
     assert(
       validTypeNames.includes(block.type),
       `Expected block type (${block.type}) to be one of ${validTypeNames.join(', ')}`
     )
 
-    // We now have a block that is a form builder field
+    // We now have a block that is a form builder type
     const value = block.data.get('value')
     return {
       _type: block.type,

@@ -6,6 +6,7 @@ export default createSchema({
     {
       name: 'blogpost',
       type: 'object',
+      title: 'Blogpost',
       fields: [
         {
           name: 'title',
@@ -120,6 +121,7 @@ export default createSchema({
     {
       name: 'author',
       type: 'object',
+      title: 'Author',
       fields: [
         {
           name: 'name',

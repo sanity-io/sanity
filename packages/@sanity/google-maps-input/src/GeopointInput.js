@@ -19,7 +19,7 @@ class GeopointInput extends React.Component {
       lat: PropTypes.number,
       lng: PropTypes.number
     }),
-    field: PropTypes.shape({
+    type: PropTypes.shape({
       title: PropTypes.string.isRequired
     })
   };
@@ -66,7 +66,7 @@ class GeopointInput extends React.Component {
   }
 
   render() {
-    const {value, field} = this.props
+    const {value, type} = this.props
 
     if (!config || !config.apiKey) {
       return (
@@ -86,7 +86,7 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <Fieldset legend={field.title} descriptions={field.description} className={styles.root}>
+      <Fieldset legend={type.title} descriptions={type.description} className={styles.root}>
         {value && <div>
           <img className={styles.previewImage} src={this.getStaticImageUrl(value)} />
         </div>}

@@ -13,7 +13,7 @@ export default class EntityForm extends React.Component {
   }
 
   static propTypes = {
-    field: FormBuilderPropTypes.field.isRequired,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
     focus: PropTypes.bool,
@@ -41,24 +41,24 @@ export default class EntityForm extends React.Component {
     onEnter()
   }
 
-  resolveInputComponent(field, fieldType) {
-    return this.context.formBuilder.resolveInputComponent(field, fieldType)
+  resolveInputComponent(type, fieldType) {
+    return this.context.formBuilder.resolveInputComponent(type, fieldType)
   }
 
-  getFieldType(field) {
-    return getFieldType(this.context.formBuilder.schema, field)
+  getFieldType(type) {
+    return getFieldType(this.context.formBuilder.schema, type)
   }
 
   render() {
-    const {value, field, focus, level, onClose} = this.props
+    const {value, type, focus, level, onClose} = this.props
 
-    const fieldType = this.getFieldType(field)
+    const fieldType = this.getFieldType(type)
 
-    const InputComponent = this.context.resolveInputComponent(field, fieldType)
+    const InputComponent = this.context.resolveInputComponent(type, fieldType)
     if (!InputComponent) {
       return (
-        <div>No input component found for field of type "{field.type}"
-          <pre>{JSON.stringify(field, null, 2)}</pre>
+        <div>No input component found for type of type "{type.type}"
+          <pre>{JSON.stringify(type, null, 2)}</pre>
         </div>
       )
     }
@@ -69,7 +69,7 @@ export default class EntityForm extends React.Component {
       <div className={styles.root}>
         <InputComponent
           value={passSerialized ? value.serialize() : value}
-          field={field}
+          type={type}
           type={fieldType}
           level={level}
           focus={focus}
