@@ -54,9 +54,40 @@ storiesOf('Toggles')
   },
   {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
 )
-
 .addWithInfo(
   'Checkbox',
+  '',
+  () => {
+    return (
+      <Checkbox label="This is a checked checkbox" onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
+    )
+  },
+  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
+)
+
+.addWithInfo(
+  'Checkbox checked',
+  '',
+  () => {
+    return (
+      <Checkbox label="This is a checked checkbox" checked onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
+    )
+  },
+  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
+)
+
+.addWithInfo(
+  'Checkbox disabled',
+  '',
+  () => {
+    return (
+      <Checkbox label="This is a checked checkbox" disabled onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
+    )
+  },
+  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
+)
+.addWithInfo(
+  'Checkboxes',
   '',
   () => {
     return (

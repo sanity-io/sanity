@@ -8,7 +8,7 @@
   --checkbox-color: var(--brand-primary);
   --checkbox-button-size: 1rem;
   --checkbox-top-offset: 0;
-  --checkbox-focus-color: magenta;
+  --checkbox-focus-color: color(var(--black) a(10%));
   --checkbox-label-font-size: 1em;
   --checkbox-padding: 0.25em;
 }
@@ -71,14 +71,6 @@
   @nest .isChecked & {
     border: 2px solid var(--checkbox-color);
   }
-
-  /*
-  fieldset[disabled] .mdl-checkbox &,
-  .mdl-checkbox.is-disabled & {
-    border: 2px solid $checkbox-disabled-color;
-    cursor: auto;
-  }
-  */
 }
 
 .focusHelper {
@@ -92,12 +84,12 @@
   border-radius: 50%;
   background-color: transparent;
 
-  @nest .focused & {
+  @nest .isFocused & {
     box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) rgba(0, 0, 0, 0.1);
     background-color: rgba(0, 0, 0, 0.1);
   }
 
-  @nest .focused.checked & {
+  @nest .isFocused.isChecked & {
     box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) var(--checkbox-focus-color);
     background-color: var(--checkbox-focus-color);
   }
@@ -105,10 +97,10 @@
 
 .tickOutline {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+  top: calc(var(--checkbox-button-size) * 0.1);
+  left: calc(var(--checkbox-button-size) * 0.1);
+  height: calc(var(--checkbox-button-size) * 0.5);
+  width: calc(var(--checkbox-button-size) * 0.5);
 
   /* mask: url("#{$checkbox-image-path}/tick-mask.svg?embed"); */
   background: transparent;
