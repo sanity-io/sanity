@@ -1,8 +1,9 @@
 const path = require('path')
 const Module = require('module')
 const interopRequire = require('interop-require')
-const resolver = require('@sanity/resolver')
 const cssHook = require('css-modules-require-hook')
+const resolver = require('@sanity/resolver')
+const reduceConfig = require('@sanity/util').reduceConfig
 
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveParts = resolver.resolveParts
@@ -61,9 +62,13 @@ function registerLoader(options) {
     const configMatch = request.match(configMatcher)
     if (configMatch) {
       const configFor = configMatch[1]
-      return configFor === 'sanity'
-        ? path.join(options.basePath, 'sanity.json')
-        : path.join(configPath, `${configFor}.json`)
+      if (configFor === 'sanity') {
+        const sanityConfig = require(path.join(options.basePath, 'sanity.json'))
+        require.cache[request] = getModule(request, reduceConfig(sanityConfig))
+        return request
+      }
+
+      return path.join(configPath, `${configFor}.json`)
     }
 
     // Should we load all the implementations or just a single one

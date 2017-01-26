@@ -71,6 +71,7 @@ test('should be able to load sanity instance config', t => {
 
   const config = require('config:sanity')
   t.deepEqual(config.locale.supportedLanguages, ['en-US', 'no-NB'])
+  t.deepEqual(config.fromEnv, true)
 })
 
 test('should be able to load config for a plugin', t => {

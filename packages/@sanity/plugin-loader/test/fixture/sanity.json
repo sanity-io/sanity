@@ -4,6 +4,12 @@
     "better-date"
   ],
 
+  "env": {
+    "development": {
+      "fromEnv": true
+    }
+  },
+
   "parts": [
     {
       "name": "part:base/bar",

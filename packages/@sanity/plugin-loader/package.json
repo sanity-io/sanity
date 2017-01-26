@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@sanity/resolver": "^0.99.0",
+    "@sanity/util": "^0.99.0",
     "css-modules-require-hook": "^4.0.5",
     "interop-require": "^1.0.0"
   }
