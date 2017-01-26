@@ -817,6 +817,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "globalsearch/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "radiobutton/story.js"
     }
 
   ]

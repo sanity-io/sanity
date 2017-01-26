@@ -7,6 +7,7 @@ import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import CustomSelect from 'part:@sanity/components/selects/custom'
 import {range} from 'lodash'
 import StyleSelect from 'part:@sanity/components/selects/style'
+import RadioSelect from 'part:@sanity/components/selects/radio'
 
 import Fuse from 'fuse.js'
 
@@ -523,5 +524,43 @@ storiesOf('Selects')
   {
     propTables: [SearchableSelect],
     role: 'part:@sanity/components/selects/searchable'
+  }
+)
+
+.addWithInfo(
+  'Radiobuttons',
+  `
+    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+  `,
+  () => {
+
+    const value = items[0]
+
+    return (
+      <RadioSelect items={items} value={value} onChange={action('onChange')} legend="Radio button select" />
+    )
+  },
+  {
+    propTables: [RadioSelect],
+    role: 'part:@sanity/components/selects/radio'
+  }
+)
+
+.addWithInfo(
+  'Radiobuttons vertical',
+  `
+    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+  `,
+  () => {
+
+    const value = items[0]
+
+    return (
+      <RadioSelect items={items} value={value} onChange={action('onChange')} direction="vertical" legend="Vertical" />
+    )
+  },
+  {
+    propTables: [RadioSelect],
+    role: 'part:@sanity/components/selects/radio'
   }
 )
