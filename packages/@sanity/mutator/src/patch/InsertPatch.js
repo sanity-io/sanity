@@ -29,13 +29,21 @@ export default class InsertPatch {
         result = result.insertItemsAt(pos + 1, this.items)
         break
       }
+      case 'replace': {
+        // TODO: Properly implement ranges in compliance with Gradient
+        // This will only properly support single contiguous ranges
+        const indicies = targetsToIndicies(targets, accessor)
+        console.log(result)
+        result = result.unsetIndices(indicies)
+        result = result.insertItemsAt(indicies[0], this.items)
+        break
+      }
       default: {
         throw new Error(`Unsupported location atm: ${this.location}`)
       }
     }
     return result
   }
-
 }
 
 function minIndex(targets, accessor) : number {

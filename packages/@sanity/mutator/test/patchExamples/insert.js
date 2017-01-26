@@ -63,5 +63,21 @@ export default [
     after: {
       addresses: [{address: 'Mogata 24'}, {address: '123 Banana Rd.'}]
     }
+  },
+
+  {
+    name: 'Replace items in array',
+    before: {
+      scores: [1, 2, 3, 4, 5]
+    },
+    patch: {
+      insert: {
+        replace: 'scores[1:4]',
+        items: ["hello", "man"]
+      }
+    },
+    after: {
+      scores: [1, "hello", "man", 5]
+    }
   }
 ]

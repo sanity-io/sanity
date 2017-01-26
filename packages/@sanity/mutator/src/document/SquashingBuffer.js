@@ -20,7 +20,7 @@ export default class SquashingBuffer {
   PRESTAGE : Object
   // setOperations contain the latest set operation by path. If the set-operations are updating strings to new
   // strings, they are rewritten as diffMatchPatch operations, any new set operations on the same paths overwrites
-  // any older set operations. Only set-operations assigning plain values gets optimized like this.
+  // any older set operations. Only set-operations assigning plain values to plain values gets optimized like this.
   setOperations : Object
   staged : Array<any>
 
@@ -63,7 +63,7 @@ export default class SquashingBuffer {
   }
 
   addOperation(op : Operation) {
-    // Is this a set patch, and only a set patch?
+    // Is this a set patch, and only a set patch, and does it apply to the document at hand?
     if (op.patch && op.patch.set && op.patch.id == this.PRESTAGE._id && Object.keys(op.patch).length == 2) {
       // console.log("Attempting to apply optimised set patch")
       const setPatch = op.patch.set

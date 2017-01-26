@@ -1,3 +1,6 @@
+import {Expression} from '../jsonpath/Expression'
+
+
 export function targetsToIndicies(targets, accessor) {
   const result = []
   targets.forEach(target => {
@@ -5,5 +8,5 @@ export function targetsToIndicies(targets, accessor) {
       result.push(...target.toIndicies(accessor))
     }
   })
-  return result
+  return result.sort()
 }
