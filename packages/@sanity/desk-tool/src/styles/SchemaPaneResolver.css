@@ -103,17 +103,16 @@
     height: 100%;
     width: 100%;
     opacity: 0.7;
-    transition: background-color 0.15s linear, opacity 0.15s linear;
+    transition: background-color 0.1s linear, opacity 0.1s linear;
   }
   @nest &:hover {
     @nest &::before {
-      background-color: color(var(--black) lightness(+90%));
-      opacity: 0.7;
+      opacity: 0.6;
     }
   }
   @nest &:active {
     @nest &::before {
-      background-color: color(var(--black) lightness(+60%));
+      background-color: color(var(--black) lightness(+80%));
       opacity: 0.6;
     }
   }
