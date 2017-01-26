@@ -1,6 +1,6 @@
 import {test} from 'tap'
 import {createFormBuilderState} from '../../src/state/FormBuilderState'
-import Schema from '../../src/Schema'
+import Schema from '@sanity/schema'
 import schemaDef from './blocks-schema'
 import ObjectContainer from '../../src/inputs/Object/ObjectContainer'
 import ArrayContainer from '../../src/inputs/Array/ArrayContainer'

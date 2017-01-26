@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import {FormBuilderInner} from './FormBuilderInner'
 import {createFormBuilderState, createMemberValue} from './state/FormBuilderState'
 import defaultConfig from './defaultConfig'
-import Schema from './Schema'
+import Schema from '@sanity/schema'
 
 function withDefaultFallback(fn, defaultFn) {
   if (!fn) {

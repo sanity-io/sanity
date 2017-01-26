@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFormBuilder, Schema} from '../../src'
+import {createFormBuilder} from '../../src'
+import {Schema} from '@sanity/schema'
 
 const schema = Schema.compile({
   name: 'simple',

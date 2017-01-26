@@ -1,5 +1,5 @@
 import {createMemberValue} from '../../state/FormBuilderState'
-import {resolveJSType} from '../../schema/types/utils'
+import {resolveJSType} from '../../utils/resolveJSType'
 import assert from 'assert'
 
 function resolveItemType(item) {

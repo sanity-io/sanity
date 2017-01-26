@@ -11,7 +11,6 @@ import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     fetchFn: PropTypes.func,
     onChange: PropTypes.func

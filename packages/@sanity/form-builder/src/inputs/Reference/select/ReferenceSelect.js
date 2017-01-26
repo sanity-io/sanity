@@ -6,7 +6,6 @@ export default class ReferenceSelect extends React.Component {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     fetchAllFn: PropTypes.func,
     materializeReferences: PropTypes.func,

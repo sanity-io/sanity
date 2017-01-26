@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from '../../schema/getFieldType'
 import styles from './styles/ItemPreview.css'
 import Preview from '../../previews/Preview'
 import Button from 'part:@sanity/components/buttons/default'
@@ -46,10 +45,6 @@ export default class ItemPreview extends React.Component {
   }
   handleMouseDown(event) {
     event.stopPropagation()
-  }
-
-  getFieldType(type) {
-    return getFieldType(this.context.formBuilder.schema, type)
   }
 
   render() {

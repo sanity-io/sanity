@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import {getFieldType} from '../schema/getFieldType'
 
 export default class Preview extends React.Component {
 

@@ -1,5 +1,4 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import {getFieldType} from '../../schema/getFieldType'
 import React, {PropTypes} from 'react'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
@@ -47,17 +46,12 @@ export default class RenderField extends React.Component {
     return this.context.formBuilder.resolveInputComponent(type, fieldType)
   }
 
-  getFieldType(type) {
-    return getFieldType(this.context.formBuilder.schema, type)
-  }
-
   render() {
     const {value, field, fieldName, level, validation, focus} = this.props
 
     const FieldInput = this.context.formBuilder.resolveInputComponent(field.type)
 
     if (!FieldInput) {
-      debugger
       return (
         <div>
           Field input not found for field of type {JSON.stringify(field.type.name)}

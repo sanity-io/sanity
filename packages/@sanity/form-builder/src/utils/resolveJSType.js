@@ -1,15 +1,3 @@
-import primitives from './primitives'
-import bundled from './bundled'
-import {uniqWith} from 'lodash'
-
-export function ifNotUniqueProp(array, property, notUniqueFn) {
-  uniqWith(array, (item, otherItem) => {
-    if (item[property] === otherItem[property]) {
-      notUniqueFn(item, otherItem)
-    }
-  })
-}
-
 const toString = Object.prototype.toString
 // Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 

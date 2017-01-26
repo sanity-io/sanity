@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import {getFieldType} from '../../schema/getFieldType'
 import Preview from '../../previews/Preview'
 
 
@@ -18,10 +17,6 @@ export default class ItemPreview extends React.Component {
 
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps, this.props)
-  }
-
-  getFieldType(type) {
-    return getFieldType(this.context.formBuilder.schema, type)
   }
 
   render() {

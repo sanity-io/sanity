@@ -10,7 +10,10 @@ export default class StringSelect extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
-    value: PropTypes.string,
+    value: PropTypes.shape({
+      value: PropTypes.string,
+      title: PropTypes.string
+    }),
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,

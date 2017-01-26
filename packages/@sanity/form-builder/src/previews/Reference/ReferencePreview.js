@@ -1,4 +1,3 @@
-import * as previewUtils from '../../sanity/preview/utils'
 import React, {PropTypes} from 'react'
 import Preview from '../../previews/Preview'
 

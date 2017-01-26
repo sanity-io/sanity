@@ -7,17 +7,18 @@ function lazy(fn) {
 
 const field = PropTypes.shape({
   name: PropTypes.string,
-  title: PropTypes.string,
-  description: PropTypes.string,
-  placeholder: PropTypes.string,
-  type: PropTypes.string,
-  to: lazy(() => PropTypes.arrayOf(field)),
-  of: lazy(() => PropTypes.arrayOf(field))
+  type: type
 })
 
 const type = PropTypes.shape({
-  fields: PropTypes.arrayOf(field),
-  isPrimitive: PropTypes.bool
+  name: PropTypes.string,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  placeholder: PropTypes.string,
+  type: lazy(() => type),
+  to: lazy(() => PropTypes.arrayOf(type)),
+  fields: lazy(() => PropTypes.arrayOf(field)),
+  of: lazy(() => PropTypes.arrayOf(type))
 })
 
 const validation = {
@@ -31,12 +32,12 @@ const validation = {
 
 const schema = PropTypes.shape({
   name: PropTypes.string,
-  fields: PropTypes.arrayOf(field)
+  fields: PropTypes.arrayOf(type)
 })
 
 export default {
   type,
-  schema,
   field,
+  schema,
   validation
 }

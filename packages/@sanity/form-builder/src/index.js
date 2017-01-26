@@ -8,7 +8,6 @@ import * as ReferencePreview from './previews/Reference'
 
 export {defaultInputs}
 
-export {default as Schema} from './Schema'
 export {default as defaultConfig} from './defaultConfig'
 export {default as createFormBuilder} from './createFormBuilder'
 

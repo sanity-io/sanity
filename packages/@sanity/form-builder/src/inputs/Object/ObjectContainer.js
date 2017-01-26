@@ -1,5 +1,4 @@
 import {createMemberValue} from '../../state/FormBuilderState'
-import {getFieldType} from '../../schema/getFieldType'
 import hasOwn from '../../utils/hasOwn'
 import {ImmutableAccessor} from '@sanity/mutator'
 
@@ -152,9 +151,7 @@ export default class ObjectContainer {
   }
 
   attributeKeys() {
-    return ['_key'].concat(
-      getFieldType(this.context.schema, this.context.type).fields.map(type => type.name)
-    )
+    return ['_key'].concat(this.context.type.fields.map(type => type.name))
   }
 
   set(nextValue) {
