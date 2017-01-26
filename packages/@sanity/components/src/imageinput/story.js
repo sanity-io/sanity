@@ -5,8 +5,17 @@ import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import buttonStyles from 'part:@sanity/components/buttons/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import UploadIcon from 'part:@sanity/base/upload-icon'
+import Dialog from 'part:@sanity/components/dialogs/default'
 
 const imageUrl = `https://unsplash.it/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
+
+const renderEdit = () => {
+  return (
+    <Dialog title="Edit image" isOpen onClose={action('close')}>
+      Edit stuff here
+    </Dialog>
+  )
+}
 
 storiesOf('Image input')
 .addWithInfo(
@@ -330,6 +339,30 @@ storiesOf('Image input Fieldset')
         onSelect={action('Select image')}
         status="complete"
         hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
+      >
+        <h2>Content goes here</h2>
+      </ImageInput>
+    )
+  },
+  {
+    propTables: [ImageInput],
+    role: 'part:@sanity/components/imageinput/fieldset'
+  }
+)
+
+.addWithInfo(
+  'With edit button',
+  `
+    Image input for uploading images.
+  `,
+  () => {
+    return (
+      <ImageInput
+        legend="Image input fieldset"
+        onSelect={action('Select image')}
+        status="complete"
+        hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
+        onEdit={action('onEdit')}
       >
         <h2>Content goes here</h2>
       </ImageInput>

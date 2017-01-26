@@ -9,6 +9,7 @@ import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import EditIcon from 'part:@sanity/base/edit-icon'
 import Button from 'part:@sanity/components/buttons/default'
 
 const HotspotImage = createImageLoader(_HotspotImage, image => {
@@ -33,13 +34,14 @@ export default class ImageInputFieldset extends React.PureComponent {
     onSelect: PropTypes.func,
     onCancel: PropTypes.func,
     onClear: PropTypes.func,
+    onEdit: PropTypes.func,
     hotspotImage: PropTypes.shape({
       hotspot: PropTypes.object,
       crop: PropTypes.object,
       imageUrl: PropTypes.string
     }),
     children: PropTypes.node,
-    showContent: PropTypes.bool
+    showContent: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -56,8 +58,7 @@ export default class ImageInputFieldset extends React.PureComponent {
   }
 
   render() {
-
-    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, children} = this.props
+    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, onEdit, children} = this.props
     let {showContent} = this.props
 
     if (!children) {
@@ -142,6 +143,22 @@ export default class ImageInputFieldset extends React.PureComponent {
             {
               (status != 'error' && status != 'pending') && hotspotImage && hotspotImage.imageUrl && (
                 <div className={styles.functions}>
+                  <Button icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
+                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
+                      {
+                        !showContent && 'Replace'
+                      }
+                    </ImageSelect>
+                  </Button>
+                  {
+                    onEdit && (
+                      <Button icon={EditIcon} className={styles.replaceImageButton} title="Edit image" onClick={onEdit}>
+                        {
+                          !showContent && 'Edit'
+                        }
+                      </Button>
+                    )
+                  }
                   <Button
                     className={styles.removeButton}
                     onClick={this.props.onClear}
@@ -152,13 +169,6 @@ export default class ImageInputFieldset extends React.PureComponent {
                     {
                       !showContent && 'Remove'
                     }
-                  </Button>
-                  <Button icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
-                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
-                      {
-                        !showContent && 'Replace'
-                      }
-                    </ImageSelect>
                   </Button>
                 </div>
               )
