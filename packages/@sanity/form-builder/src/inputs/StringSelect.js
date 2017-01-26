@@ -64,13 +64,13 @@ export default class StringSelect extends React.Component {
     if (type.options.layout == 'radio') {
       return (
         <RadioSelect
-          name={field.name}
-          legend={field.title}
+          name={type.name}
+          legend={type.title}
           level={level}
           items={items}
           onChange={this.handleChange}
           value={currentItem || items[0]}
-          direction={field.options.direction || 'vertical'}
+          direction={type.options.direction || 'vertical'}
         />
       )
     }
