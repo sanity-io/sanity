@@ -6,15 +6,15 @@ import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {uniqueId, debounce} from 'lodash'
 
-function slugify(text, maxLength) {
-  return text.toString().toLowerCase()
+
+// Fallback slugify function if not defined in factory function
+// or in the type definition's options
+function defaultSlugify(type, text) {
+  return 'banan' + (text || '').toString().toLowerCase()
     .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/æ/g, 'ae')
-    .replace(/ø/g, 'oe')
-    .replace(/å/g, 'aa')
     .replace(/[^\w-]+/g, '')       // Remove all non-word chars
     .replace(/--+/g, '-')         // Replace multiple - with single -
-    .substring(0, maxLength)
+    .substring(0, type.options.maxLength)
 }
 
 function tryPromise(fn) {
@@ -35,6 +35,7 @@ export default class SlugInput extends React.Component {
       messages: PropTypes.array
     }),
     checkValidityFn: PropTypes.func,
+    slugifyFn: PropTypes.func,
     document: PropTypes.object.isRequired,
     onChange: PropTypes.func
   };
@@ -66,16 +67,16 @@ export default class SlugInput extends React.Component {
   }
 
   updateValueWithUniquenessCheck(value) {
-    const {checkValidityFn} = this.props
+    const {type, checkValidityFn} = this.props
     this.setState({validationError: null})
 
-    return tryPromise(() => checkValidityFn(value.slug))
+    return tryPromise(() => checkValidityFn(type, value.slug))
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
           return
         }
-        this.setState({validationError: validationError})
+        this.setState({validationError: validationError.toString()})
         this.updateValue({slug: undefined, auto: false})
       })
       .catch(err => {
@@ -85,11 +86,22 @@ export default class SlugInput extends React.Component {
       })
   }
 
+  slugify(text) {
+    const {type, slugifyFn} = this.props
+    if (type.options.slugifyFn) {
+      return type.options.slugifyFn(type, text)
+    }
+    if (slugifyFn) {
+      return this.props.slugifyFn(type, text)
+    }
+    return defaultSlugify(type, text)
+  }
+
   componentWillReceiveProps(nextProps) {
     const {checkValidityFn} = this.props
     const {document, type, value} = nextProps
-    const fromSource = document.getAttribute(type.source).get()
-    const slug = slugify(fromSource || '', type.maxLength)
+    const fromSource = document.getAttribute(type.options.source).get()
+    const slug = this.slugify(fromSource)
     if (value.auto && value.slug !== slug) {
       const newVal = {slug: slug, auto: value.auto}
       if (checkValidityFn) {
@@ -102,7 +114,7 @@ export default class SlugInput extends React.Component {
 
   handleChange = event => {
     const {checkValidityFn, value} = this.props
-    const slug = event.target.value ? slugify(event.target.value) : undefined
+    const slug = event.target.value ? this.slugify(event.target.value) : undefined
     this.setState({nonAutoSlug: slug})
     const newVal = {slug: slug, auto: value.auto}
     if (checkValidityFn) {

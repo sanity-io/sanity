@@ -1,10 +1,10 @@
 import React from 'react'
-// Todo: make this nicer
+
 const CODE_SNIPPET = `
   // ...
   import {SlugInput} from '@sanity/form-builder'
   const MySlugInput = createSlugInput({
-    validate(slug) {
+    validate(type, slug) {
       // If not valid, resolve with a message why.
       if (slug === 'foobar') {
         return Promise.resolve('foobar is already taken')
@@ -15,8 +15,8 @@ const CODE_SNIPPET = `
   })
   const FormBuilder = createFormBuilder({
     schema: mySchema,
-    resolveInputComponent(type, type) {
-      if (type.type === 'slug') {
+    resolveInputComponent(type) {
+      if (type.name === 'slug') {
         return MySlugInput
       }
   },

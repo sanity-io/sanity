@@ -6,12 +6,14 @@ import geopoint from 'part:@sanity/form-builder/input/geopoint?'
 import number from 'part:@sanity/form-builder/input/number?'
 import object from 'part:@sanity/form-builder/input/object?'
 import reference from 'part:@sanity/form-builder/input/reference?'
+import slug from 'part:@sanity/form-builder/input/slug?'
 import string from 'part:@sanity/form-builder/input/string?'
 import text from 'part:@sanity/form-builder/input/text?'
 import url from 'part:@sanity/form-builder/input/url?'
 import SlateBlockEditor from '../../inputs/BlockEditor-slate'
 
 import resolveReference from './resolveReference'
+import Slug from '../inputs/Slug'
 import Image from '../inputs/Image'
 import File from '../inputs/File'
 
@@ -22,6 +24,7 @@ const primitiveTypes = {
   number,
   object,
   reference: reference,
+  slug: slug,
   string
 }
 const bundledTypes = {
@@ -41,6 +44,9 @@ export default function inputResolver(type) {
   }
   if (type.name === 'reference') {
     return resolveReference(type)
+  }
+  if (type.name === 'slug') {
+    return Slug
   }
   if (type.name === 'image') {
     return Image
