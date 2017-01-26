@@ -618,6 +618,10 @@
       "path": "components/icons/Search.js"
     },
     {
+      "implements": "part:@sanity/base/edit-icon",
+      "path": "components/icons/Edit.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
