@@ -9,7 +9,7 @@ type Props = {
   params?: Object
 }
 
-export default class IntentLink extends React.Component {
+export default class IntentLink extends React.PureComponent {
   props: Props;
   context: RouterProviderContext
 

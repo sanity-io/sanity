@@ -6,7 +6,7 @@ import type {RouterProviderContext} from './types'
 
 const EMPTY_STATE = {}
 
-export default class StateLink extends React.Component {
+export default class StateLink extends React.PureComponent {
   props: {
     state?: Object,
     toIndex?: boolean

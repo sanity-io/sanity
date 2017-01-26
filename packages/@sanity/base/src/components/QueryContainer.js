@@ -123,7 +123,7 @@ export default class QueryContainer extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return keysEqual(this.props, nextProps, ['query', 'params']) || keysEqual(this.state, nextState)
+    return !keysEqual(this.props, nextProps, ['query', 'params']) || !keysEqual(this.state, nextState)
   }
 
   renderDeprecated() {

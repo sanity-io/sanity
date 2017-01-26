@@ -11,7 +11,7 @@ function isModifiedEvent(event : SyntheticMouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 }
 
-export default class Link extends React.Component {
+export default class Link extends React.PureComponent {
   props: {
     replace?: boolean,
     onClick?: (event : SyntheticMouseEvent) => void,
