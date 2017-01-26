@@ -301,6 +301,12 @@ export default class ImageInput extends React.PureComponent {
     )
   }
 
+  handleOpenAdvancedEdit = () => {
+    this.setState({
+      isAdvancedEditOpen: true
+    })
+  }
+
   render() {
     const {status, progress, isAdvancedEditOpen} = this.state
     const {type, level, value} = omit(this.props,
@@ -334,6 +340,7 @@ export default class ImageInput extends React.PureComponent {
         onSelect={this.handleSelect}
         onCancel={this.handleCancel}
         onClear={this.handleClearValue}
+        onEdit={this.handleOpenAdvancedEdit}
         showContent={fieldGroups.highlighted.length > 0}
         hotspotImage={{
           hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
