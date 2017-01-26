@@ -84,8 +84,6 @@
 
   @nest &.navigationPanesContainerIsClicked {
     @nest &::before {
-      background-color: color(red a(40%));
-      animation-name: click-hint;
     }
   }
 
@@ -97,27 +95,26 @@
 
 .navigationPanesContainerIsMinimized {
   composes: navigationPanesContainer;
+  @nest &::before {
+    content: '';
+    position: absolute;
+    z-index: 100;
+    background-color: var(--white);
+    height: 100%;
+    width: 100%;
+    opacity: 0.7;
+    transition: background-color 0.15s linear, opacity 0.15s linear;
+  }
   @nest &:hover {
     @nest &::before {
-      content: '';
-      position: absolute;
-      z-index: 100;
-      background-color: color(var(--white) a(40%));
-      height: 100%;
-      width: 100%;
-      opacity: 0;
-      animation-name: fade-in;
-      animation-duration: 0.1s;
-      animation-iteration-count: 1;
-      animation-fill-mode: forwards;
-      transition: background-color 0.15s linear, opacity 0.15s linear;
+      background-color: color(var(--black) lightness(+90%));
+      opacity: 0.7;
     }
   }
   @nest &:active {
     @nest &::before {
-      animation-name: none;
-      background-color: color(var(--black) a(80%)) !important;
-      opacity: 1;
+      background-color: color(var(--black) lightness(+60%));
+      opacity: 0.6;
     }
   }
 }

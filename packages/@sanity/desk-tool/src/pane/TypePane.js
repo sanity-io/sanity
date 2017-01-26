@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePane.css'
 
-export default class Pane extends React.Component {
+export default class Pane extends React.PureComponent {
 
   static propTypes = {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types

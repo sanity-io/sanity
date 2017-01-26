@@ -58,6 +58,9 @@ export default class SchemaPaneResolver extends React.Component {
     navIsClicked: false
   }
 
+  hasBeenResized = false
+  oldNavTranslateX = 0
+
   componentDidMount() {
     this.handleResize()
     window.addEventListener('resize', this.handleResize, false)
@@ -73,6 +76,12 @@ export default class SchemaPaneResolver extends React.Component {
 
   componentDidUpdate() {
     this.checkRedirect()
+    // Hack
+    // Panes needs to be resized after the content is loaded
+    // Look at this later
+    if (!this.hasBeenResized) {
+      this.handleResize()
+    }
   }
 
   checkRedirect() {
@@ -123,7 +132,7 @@ export default class SchemaPaneResolver extends React.Component {
 
     const {selectedType} = this.context.router.state
 
-    const query = `${schema.name}.${type.name}[limit: 200, order: ${this.state.sorting}] {${
+    const query = `${schema.name}.${type.name}[limit: 50, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
     }}`
 
@@ -137,10 +146,14 @@ export default class SchemaPaneResolver extends React.Component {
               </FullscreenDialog>
             )
           }
+
           // Hack
           // Panes needs to be resized after the content is loaded
           // Look at this later
-          this.handleResize()
+          if (!this.hasBeenResized) {
+            this.handleResize()
+          }
+
           const items = result && result.documents && result.documents.map(item => {
             item.stateLink = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
             return item
@@ -194,12 +207,24 @@ export default class SchemaPaneResolver extends React.Component {
     this.editorPaneElement = element
   }
 
+  canReposition = () => {
+    const {selectedType, selectedDocumentId} = this.context.router.state
+    return !!(this.navigationElement && this.editorPaneElement && this.containerElement && selectedType && selectedDocumentId)
+  }
+
+  resetPosition = () => {
+    this.setState({
+      navTranslateX: 0,
+      editorWidth: '100%'
+    })
+  }
+
   handleResize = debounceRAF(() => {
 
-    if (!this.navigationElement || !this.editorPaneElement || !this.containerElement || this.state.navIsHovered) {
+    if (!this.canReposition()) {
+      this.resetPosition()
       return
     }
-
     // Uses the css the determine if it should reposition with an Media Query
     const computedStyle = window.getComputedStyle(this.containerElement, '::before')
     const contentValue = computedStyle.getPropertyValue('content')
@@ -207,61 +232,62 @@ export default class SchemaPaneResolver extends React.Component {
 
     if (!this.shouldReposition) {
       // reset to default and don't do more
-      this.setState({
-        navTranslateX: 0,
-        editorWidth: '100%'
-      })
+      this.resetPosition()
       return
     }
 
-    this.setState({
-      navWidth: this.navigationElement.offsetWidth,
-      editorPaneWidth: this.editorPaneElement.offsetWidth,
-      containerWidth: this.containerElement.offsetWidth
-    })
+    if (this.state.navIsHovered) {
+      return
+    }
 
-    const {navWidth, editorPaneWidth, containerWidth} = this.state
+    this.navWidth = this.navigationElement.offsetWidth
+    const editorPaneWidth = this.editorPaneElement.offsetWidth
+    const containerWidth = this.containerElement.offsetWidth
+    let navTranslateX = 0
+    let navIsMinimized = false
+    let editorWidth = `${containerWidth - this.navWidth}px`
 
     // Needs to be on resize because minWidth and fontSize changes when resizing font
     this.padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 3
     const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
-    if (containerWidth >= (navWidth + editorPaneMinWidth)) {
-      // Enough space. Show all
-      this.setState({
-        navTranslateX: 0,
-        navIsMinimized: false,
-        editorWidth: `${containerWidth - navWidth}px`
-      })
-    } else if (containerWidth < (editorPaneWidth + navWidth)) {
-      const translateX = containerWidth - editorPaneMinWidth - navWidth
-      this.setState({
-        navTranslateX: translateX,
-        navIsMinimized: true,
-        editorWidth: `${containerWidth - translateX - navWidth}px`
-      })
-      if ((translateX * -1) <= navWidth - this.padding) {
+    if (containerWidth < (editorPaneWidth + this.navWidth)) {
+      navTranslateX = containerWidth - editorPaneMinWidth - this.navWidth
+      navIsMinimized = true
+      editorWidth = `${containerWidth - navTranslateX - this.navWidth}px`
+
+      if ((navTranslateX * -1) <= this.navWidth - this.padding) {
         // this.setNavTranslateX(translateX)
       } else {
-        this.setState({
-          navTranslateX: (navWidth - this.padding) * -1
-        })
+        navTranslateX = (this.navWidth - this.padding) * -1
       }
     }
+    this.setState({
+      navTranslateX: navTranslateX,
+      navIsMinimized: navIsMinimized,
+      editorWidth: editorWidth
+    })
   })
 
   handlePanesMouseEnter = event => {
-    const {navTranslateX, navWidth} = this.state
+    const {navTranslateX} = this.state
+    this.oldNavTranslateX = navTranslateX
+    if (!this.canReposition()) {
+      this.resetPosition()
+      return
+    }
+
+    const x = 20
     this.setState({
-      oldNavTranslateX: navTranslateX,
-      navInitialEdgePosition: navWidth + navTranslateX,
+      navTranslateX: navTranslateX + x,
+      editorTranslateX: x,
       navIsHovered: true
     })
   }
 
   handlePanesMouseLeave = event => {
     this.setState({
-      navTranslateX: this.state.oldNavTranslateX,
+      navTranslateX: this.oldNavTranslateX,
       editorTranslateX: 0,
       navIsMinimized: true,
       navIsHovered: false
@@ -269,7 +295,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   handlePanesClick = event => {
-    const {navWidth, oldNavTranslateX} = this.state
+    const {navWidth, oldNavTranslateX} = this
     const navVisibleWidth = navWidth + oldNavTranslateX
     this.setState({
       navTranslateX: 0,
@@ -277,25 +303,6 @@ export default class SchemaPaneResolver extends React.Component {
       navIsMinimized: false,
       navIsClicked: true
     })
-  }
-
-  handlePanesMouseMove = event => {
-    if (!this.state.navIsMinimized) {
-      return
-    }
-
-    const {oldNavTranslateX, navInitialEdgePosition, navWidth} = this.state
-    const travel = (event.clientX - navInitialEdgePosition) * -1
-
-    if (travel < 20) {
-      const x = 20
-      const newNavTranslateX = oldNavTranslateX + x
-      const navVisibleWidth = navWidth + newNavTranslateX
-      this.setState({
-        navTranslateX: newNavTranslateX,
-        editorTranslateX: navVisibleWidth - oldNavTranslateX - navWidth
-      })
-    }
   }
 
   render() {
@@ -322,7 +329,6 @@ export default class SchemaPaneResolver extends React.Component {
           ref={this.setNavigationElement}
           onClick={this.handlePanesClick}
           onMouseEnter={this.handlePanesMouseEnter}
-          onMouseMove={this.handlePanesMouseMove}
           onMouseLeave={this.handlePanesMouseLeave}
           style={{
             transform: `translateX(${navTranslateX}px)`
