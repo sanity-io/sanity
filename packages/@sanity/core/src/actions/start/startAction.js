@@ -23,7 +23,6 @@ export default async (args, context) => {
   const httpHost = flags.host === 'all' ? '0.0.0.0' : (flags.host || hostname)
   const httpPort = flags.port || port
   const compiler = server.locals.compiler
-  const listeners = [thenify(server.listen.bind(server))(httpPort, httpHost)]
   const configSpinner = output.spinner('Checking configuration files...')
 
   // "invalid" doesn't mean the bundle is invalid, but that it is *invalidated*,
@@ -35,9 +34,8 @@ export default async (args, context) => {
   })
 
   // Once the server(s) are listening, show a compiling spinner
-  let httpServers = []
   try {
-    httpServers = await Promise.all(listeners)
+    await thenify(server.listen.bind(server))(httpPort, httpHost)
   } catch (err) {
     gracefulDeath(httpHost, config, err)
   }
