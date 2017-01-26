@@ -22,7 +22,7 @@
   "dependencies": {
     "@sanity/imagetool": "^0.99.10",
     "@sanity/mutator": "^0.99.4",
-    "@sanity/schema": "^0.99.3",
+    "@sanity/schema": "^0.99.10",
     "arrify": "^1.0.1",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.6.0",
