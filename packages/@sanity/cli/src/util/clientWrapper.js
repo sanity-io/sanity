@@ -11,8 +11,9 @@ const defaults = {
   requireProject: true
 }
 
-export default function clientWrapper(manifest, path) {
+export default function clientWrapper(manifest, configPath) {
   return function (opts = {}) {
+    const staging = process.env.SANITY_STAGING
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const userApiConf = userConfig.get('api')
@@ -24,13 +25,17 @@ export default function clientWrapper(manifest, path) {
       api || {}
     )
 
+    if (staging) {
+      apiConfig.apiHost = 'https://api.sanity.work'
+    }
+
     if (requireUser && !token) {
       throw new Error('You must login first - run "sanity login"')
     }
 
     if (requireProject && !apiConfig.projectId) {
       throw new Error(
-        `"${path}" does not contain a project identifier ("api.projectId"), `
+        `"${configPath}" does not contain a project identifier ("api.projectId"), `
         + 'which is required for the Sanity CLI to communicate with the Sanity API'
       )
     }
