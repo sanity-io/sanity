@@ -31,6 +31,10 @@ export default class Link extends React.PureComponent {
 
   handleClick = (event : SyntheticMouseEvent) : void => {
 
+    if (event.isDefaultPrevented()) {
+      return
+    }
+
     const {onClick, href, target, replace} = this.props
 
     if (onClick) {

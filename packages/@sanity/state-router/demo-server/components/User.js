@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
+import SomeChild from './SomeChild'
 
 export default class User extends React.Component {
   static propTypes = {
@@ -12,7 +13,9 @@ export default class User extends React.Component {
       <div>
         <h1>Showing a lot of information about user #{id}</h1>
         <p>
-          <StateLink state={{userId: nextUserId}}>Go to product #{nextUserId}</StateLink>
+          <StateLink state={{userId: nextUserId}}>
+            <SomeChild />
+          </StateLink>
         </p>
         <p>
           <StateLink state={{userId: 'me'}}>Show profile</StateLink>
