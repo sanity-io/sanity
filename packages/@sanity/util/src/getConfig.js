@@ -2,6 +2,7 @@ import path from 'path'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
 import {loadJsonSync} from './safeJson'
+import reduceConfig from './reduceConfig'
 
 const defaults = {
   server: {
@@ -18,7 +19,10 @@ const configContainer = values => ({
 
 const getConfig = rootDir => {
   const localConfig = rootDir && loadJsonSync(path.join(rootDir, 'sanity.json'))
-  const config = localConfig ? merge({}, defaults, localConfig) : defaults
+  const config = reduceConfig(
+    localConfig ? merge({}, defaults, localConfig) : defaults,
+    process.env.NODE_ENV || 'development' // eslint-disable-line no-process-env
+  )
 
   return configContainer(config)
 }
