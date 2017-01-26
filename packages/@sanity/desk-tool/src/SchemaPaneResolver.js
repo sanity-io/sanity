@@ -119,7 +119,7 @@ export default class SchemaPaneResolver extends React.Component {
 
   getDocumentsPane(typeName) {
     const type = schema.get(typeName)
-    const previewConfig = previewUtils.canonicalizePreviewConfig(type)
+    const previewConfig = type.options.preview
 
     const {selectedType} = this.context.router.state
 
