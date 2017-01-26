@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.99.10",
+  "version": "0.100.0",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "@sanity/imagetool": "^0.99.10",
     "@sanity/mutator": "^0.99.4",
-    "@sanity/schema": "^0.99.10",
+    "@sanity/schema": "^0.100.0",
     "arrify": "^1.0.1",
     "canvas-to-blob": "0.0.0",
     "debug": "^2.6.0",
@@ -42,10 +42,10 @@
     "slate-insert-block-on-enter": "0.0.2"
   },
   "devDependencies": {
-    "@sanity/base": "^0.99.10",
+    "@sanity/base": "^0.100.0",
     "@sanity/check": "^0.99.0",
     "@sanity/cli": "^0.99.7",
-    "@sanity/components": "^0.99.10",
+    "@sanity/components": "^0.100.0",
     "@sanity/core": "^0.99.10",
     "@sanity/plugin-loader": "^0.99.0",
     "@sanity/server": "^0.99.5",
