@@ -67,10 +67,14 @@ export default class SlugInput extends React.Component {
   }
 
   updateValueWithUniquenessCheck(value) {
+    if (!value.slug) {
+      this.updateValue(value)
+      return
+    }
     const {type, checkValidityFn} = this.props
     this.setState({validationError: null})
 
-    return tryPromise(() => checkValidityFn(type, value.slug))
+    tryPromise(() => checkValidityFn(type, value.slug))
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
@@ -87,6 +91,9 @@ export default class SlugInput extends React.Component {
   }
 
   slugify(text) {
+    if (!text) {
+      return text
+    }
     const {type, slugifyFn} = this.props
     if (type.options.slugifyFn) {
       return type.options.slugifyFn(type, text)
