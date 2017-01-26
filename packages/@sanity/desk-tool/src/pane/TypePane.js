@@ -23,7 +23,6 @@ export default class Pane extends React.PureComponent {
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
-        <div className={styles.top} />
         <ul className={styles.listContainer}>
           {
             items.map((item, i) => {

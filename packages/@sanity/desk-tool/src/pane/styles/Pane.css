@@ -8,6 +8,7 @@
   max-width: 100%;
   width: 100%;
   min-width: 14rem;
+  padding-left: var(--medium-padding);
 
   @media (--screen-medium) {
     width: auto;
@@ -80,11 +81,14 @@
   color: var(--link-color);
 }
 
-.menuContainer {
+.heading {
+  line-height: 3rem;
+}
+
+.top {
   height: 3rem;
   width: 100%;
   box-sizing: border-box;
-  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  background-color: #eee
+  margin-bottom: var(--medium-padding);
 }

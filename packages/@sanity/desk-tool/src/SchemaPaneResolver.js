@@ -215,22 +215,25 @@ export default class SchemaPaneResolver extends React.Component {
   resetPosition = () => {
     this.setState({
       navTranslateX: 0,
-      editorWidth: '100%'
+      editorWidth: '100%',
+      navIsMinimized: false
     })
   }
 
   handleResize = debounceRAF(() => {
+    // Uses the css the determine if it should reposition with an Media Query
+    // check if the window has resized
 
-    if (!this.canReposition()) {
-      this.resetPosition()
+    if (this.initialWindowWidth === window.innerWidth) {
       return
     }
-    // Uses the css the determine if it should reposition with an Media Query
+
     const computedStyle = window.getComputedStyle(this.containerElement, '::before')
     const contentValue = computedStyle.getPropertyValue('content')
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
-    if (!this.shouldReposition) {
+
+    if (!this.shouldReposition && !this.canReposition()) {
       // reset to default and don't do more
       this.resetPosition()
       return
@@ -263,7 +266,7 @@ export default class SchemaPaneResolver extends React.Component {
       }
     }
     this.setState({
-      navTranslateX: navTranslateX,
+      navTranslateX: Math.min(navTranslateX, 0),
       navIsMinimized: navIsMinimized,
       editorWidth: editorWidth
     })
@@ -272,22 +275,29 @@ export default class SchemaPaneResolver extends React.Component {
   handlePanesMouseEnter = event => {
     const {navTranslateX} = this.state
     this.oldNavTranslateX = navTranslateX
-    if (!this.canReposition()) {
-      this.resetPosition()
+
+    if (!this.state.navIsMinimized) {
+      return
+    }
+
+    if (!this.canReposition() && !this.shouldReposition && navTranslateX == 0) {
+      //this.resetPosition()
       return
     }
 
     const x = 20
+
     this.setState({
-      navTranslateX: navTranslateX + x,
+      navTranslateX: Math.min(navTranslateX + x, x),
       editorTranslateX: x,
       navIsHovered: true
     })
+
   }
 
   handlePanesMouseLeave = event => {
     this.setState({
-      navTranslateX: this.oldNavTranslateX,
+      navTranslateX: Math.min(this.oldNavTranslateX, 0),
       editorTranslateX: 0,
       navIsMinimized: true,
       navIsHovered: false

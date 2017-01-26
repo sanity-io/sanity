@@ -79,10 +79,15 @@ export default class Pane extends React.PureComponent {
           ${styles[`view--${listView}`]}
         `}
       >
-        <PaneMenuContainer
-          onSetListView={this.props.onSetListView}
-          onSetSorting={this.props.onSetSorting}
-        />
+        <div className={styles.top}>
+          <div className={styles.heading}>
+            {type.title}
+          </div>
+          <PaneMenuContainer
+            onSetListView={this.props.onSetListView}
+            onSetSorting={this.props.onSetSorting}
+          />
+        </div>
 
         {loading && (
           <div className={styles.spinner}>
