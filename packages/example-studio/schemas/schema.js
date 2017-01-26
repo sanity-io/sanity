@@ -6,9 +6,12 @@ import createSchema from 'part:@sanity/base/schema-creator'
 // schema definition for that slug field
 function slugifyWithPrefix(prefix) {
   return function(type, slug) {
-    return slug ? `${prefix}-` + slug.toString().toLowerCase()
+    return slug ? `${prefix}-` + slug.toString()
+      .replace(`${prefix.toLowerCase()}-`, '')
+      .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
       .replace(/--+/g, '-')
       .substring(0, type.options.maxLength) : ''
   }
