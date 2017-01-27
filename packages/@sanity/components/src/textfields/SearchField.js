@@ -5,34 +5,33 @@ import {uniqueId} from 'lodash'
 export default class SearchFieldField extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
     value: PropTypes.string,
-    error: PropTypes.bool,
+
+    onChange: PropTypes.func,
     onKeyPress: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
+
     placeholder: PropTypes.string,
-    focus: PropTypes.func
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
     value: '',
     onKeyPress() {},
-    onChange() {}
+    onChange() {},
+    onFocus() {},
+    onBlur() {}
   }
 
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.state = {
-      value: this.props.value
-    }
   }
 
   handleChange(event) {
     const value = event.target.value
-    this.setState({
-      value: value
-    })
     this.props.onChange(value)
   }
 
@@ -45,8 +44,16 @@ export default class SearchFieldField extends React.Component {
   }
 
   render() {
-    const {label, placeholder} = this.props
-    const {value} = this.state
+    const {
+      label,
+      placeholder,
+      value,
+      focus,
+      onChange,
+      onFocus,
+      onBlur,
+      onKeyPress
+    } = this.props
 
     return (
       <div className={styles.root}>
@@ -59,11 +66,13 @@ export default class SearchFieldField extends React.Component {
           className={styles.input}
           id={this._inputId}
           type="search"
-          onChange={this.handleChange}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
           value={value}
           placeholder={placeholder}
-          onKeyPress={this.handleKeyPress}
-          onFocus={this.handleFocus}
+          onKeyPress={onKeyPress}
+          focus={focus}
         />
       </div>
     )

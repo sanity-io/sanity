@@ -7,14 +7,12 @@ export default class RadioButton extends React.Component {
     label: PropTypes.string.isRequired,
     item: PropTypes.object.isRequired,
     onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    name: PropTypes.string
-  }
-
-  state = {
-    isFocused: false,
-    justChanged: false
+    name: PropTypes.string,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -27,29 +25,10 @@ export default class RadioButton extends React.Component {
 
   handleChange = () => {
     this.props.onChange(this.props.item)
-    this.setState({
-      justChanged: true
-    })
   }
-
-  handleFocus = () => {
-    this.setState({
-      isFocused: true,
-      justChanged: false
-    })
-  }
-
-  handleBlur = () => {
-    this.setState({
-      isFocused: false,
-      justChanged: false
-    })
-  }
-
 
   render() {
-    const {disabled, checked, label, name} = this.props
-    const {isFocused} = this.state
+    const {disabled, checked, label, name, onFocus, onBlur, focus} = this.props
 
     return (
       <label
@@ -57,7 +36,7 @@ export default class RadioButton extends React.Component {
         ${styles.root}
         ${disabled ? styles.isDisabled : styles.isEnabled}
         ${checked ? styles.isChecked : styles.unChecked}
-        ${isFocused ? styles.isFocused : ''}
+        ${focus ? styles.isFocused : ''}
 
         `}
       >
@@ -68,17 +47,16 @@ export default class RadioButton extends React.Component {
           checked={checked}
           id={this._inputId}
           name={name}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focus={focus}
+          disabled={disabled}
         />
         <div className={styles.label} htmlFor={this._inputId}>{label}</div>
-
         <div className={styles.circleOutline}>
           <div className={styles.tickOutline} />
         </div>
-
         <div className={styles.focusHelper} />
-
         <div className={styles.tickHelper} />
       </label>
     )

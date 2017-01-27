@@ -34,9 +34,9 @@ export default class DefaultFormField extends React.Component {
       <div
         className={`
           ${inline ? styles.inline : styles.block}
-          ${styles[levelClass]}
+          ${styles[levelClass] || ''}
           ${wrapped ? styles.wrapped : ''}
-          ${className}`
+          ${className || ''}`
         }
       >
         <div className={styles.inner}>

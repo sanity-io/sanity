@@ -12,10 +12,8 @@
   composes: selectContainer from 'part:@sanity/components/selects/default-style';
 }
 
-.icon {
+.arrow {
   composes: icon from 'part:@sanity/components/selects/default-style';
-  cursor: default;
-  pointer-events: unset;
 }
 
 .listContainer {
