@@ -134,7 +134,6 @@ export default class TagsTextField extends React.Component {
               style={{width: `${this.state.length * 0.8}em`}}
               onBlur={this.handleBlur}
               onFocus={this.handleFocus}
-              focus={hasFocus}
               ref={setInput}
               id={this._inputId}
               autoComplete="off"

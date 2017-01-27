@@ -49,7 +49,6 @@ export default class RadioButton extends React.Component {
           name={name}
           onFocus={onFocus}
           onBlur={onBlur}
-          focus={focus}
           disabled={disabled}
         />
         <div className={styles.label} htmlFor={this._inputId}>{label}</div>
