@@ -9,6 +9,7 @@ import _HotspotImage from '@sanity/imagetool/HotspotImage'
 import createImageLoader from './common/createImageLoader'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
+import arrify from 'arrify'
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -31,6 +32,7 @@ const ASPECT_RATIOS = [
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
     type: PropTypes.shape({
+      name: PropTypes.string.isRequired,
       fields: PropTypes.array
     }),
     value: PropTypes.object,
@@ -110,8 +112,9 @@ export default class ImageInput extends React.PureComponent {
   createSetIfMissingPatch() {
     return {
       type: 'setIfMissing',
+      path: [],
       value: {
-        _type: this.props.value.context.type.type,
+        _type: this.props.type.name,
         asset: {_type: 'reference'}
       }
     }
@@ -177,17 +180,19 @@ export default class ImageInput extends React.PureComponent {
     })
   }
 
-  handleFieldChange = (event, fieldName) => {
+  handleFieldChange = (event, field) => {
+
     const {onChange} = this.props
 
-    const patch = [
-      this.createSetIfMissingPatch(),
-      {
-        ...event.patch,
-        path: [fieldName, ...(event.patch.path || [])]
+    const setIfMissingPatch = this.createSetIfMissingPatch()
+
+    const patches = [setIfMissingPatch].concat(arrify(event.patch).map(patch => {
+      return {
+        ...patch,
+        path: [field.name, ...(patch.path || [])]
       }
-    ]
-    onChange({patch})
+    }))
+    onChange({patch: patches})
   }
 
   handleFieldEnter = (event, fieldName) => {
@@ -320,7 +325,8 @@ export default class ImageInput extends React.PureComponent {
       if (field.name === 'asset') {
         return 'asset'
       }
-      if (field.options && field.options.isHighlighted) {
+      const options = field.type.options || {}
+      if (options.isHighlighted) {
         return 'highlighted'
       }
       return 'other'
