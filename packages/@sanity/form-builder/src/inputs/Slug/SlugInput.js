@@ -41,12 +41,12 @@ export default class SlugInput extends React.Component {
   };
 
   static defaultProps = {
-    value: {slug: undefined, auto: true},
+    value: {current: undefined, auto: true},
     onChange() {},
     onEnter() {}
   };
 
-  state = {validationError: null, nonAutoSlug: ''}
+  state = {validationError: null, nonAutoSlug: '', loading: false}
 
   constructor(props) {
     super(props)
@@ -57,6 +57,7 @@ export default class SlugInput extends React.Component {
   }
 
   updateValue(value) {
+    this.setState({loading: false})
     this.props.onChange({
       patch: {
         type: value ? 'set' : 'unset',
@@ -67,26 +68,32 @@ export default class SlugInput extends React.Component {
   }
 
   updateValueWithUniquenessCheck(value) {
-    if (!value.current) {
-      this.updateValue(value)
-      return
-    }
-    const {type, checkValidityFn} = this.props
-    this.setState({validationError: null})
-
-    tryPromise(() => checkValidityFn(type, value.current))
+    const {type, checkValidityFn, document} = this.props
+    const docId = document.getAttribute('_id').get()
+    return tryPromise(() => {
+      if (!value.current) {
+        this.updateValue(value)
+        return Promise.resolve(null)
+      }
+      return checkValidityFn(type, value.current, docId)
+    })
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
           return
         }
+        const proposedNewCurrent = `${value.current}-1`
         this.setState({validationError: validationError.toString()})
-        this.updateValue({slug: undefined, auto: false})
+        this.updateValue({current: proposedNewCurrent, auto: false})
       })
       .catch(err => {
         console.error(err) // eslint-disable-line no-console
-        this.setState({validationError: 'Got javascript error trying to validate the slug. See console for more info.'})
-        this.updateValue({slug: undefined, auto: false})
+        this.setState({
+          loading: false,
+          validationError: 'Got javascript error trying to validate the slug. '
+            + 'See javascript console for more info.'
+        })
+        this.updateValue({current: value.current, auto: false})
       })
   }
 
@@ -121,10 +128,11 @@ export default class SlugInput extends React.Component {
 
   handleChange = event => {
     const {checkValidityFn, value} = this.props
-    const slug = event.target.value ? this.slugify(event.target.value) : undefined
-    this.setState({nonAutoSlug: slug})
-    const newVal = {slug: slug, auto: value.auto}
+    const current = event.target.value ? this.slugify(event.target.value) : undefined
+    this.setState({nonAutoSlug: current})
+    const newVal = {current: current, auto: value.auto}
     if (checkValidityFn) {
+      this.setState({loading: true, validationError: null})
       this.updateValueWithUniquenessCheck(newVal)
       return
     }
@@ -134,7 +142,7 @@ export default class SlugInput extends React.Component {
   handleChangeButtonClick = event => {
     const {value} = this.props
     this.setState({nonAutoSlug: this.state.validationError ? '' : value.current})
-    this.updateValue({slug: undefined, auto: false})
+    this.updateValue({current: value.current, auto: false})
   }
 
   handleAutoButtonClicked = event => {
@@ -144,7 +152,7 @@ export default class SlugInput extends React.Component {
 
   render() {
     const {value, type, validation, level} = this.props
-    const {validationError, nonAutoSlug} = this.state
+    const {loading, validationError, nonAutoSlug} = this.state
     const formFieldProps = {
       label: type.title,
       description: type.description,
@@ -174,6 +182,7 @@ export default class SlugInput extends React.Component {
     return (
       <DefaultFormField {...formFieldProps}>
         {validationError}
+        { loading ? 'Loading' : ''}
         <DefaultTextInput
           id={inputId}
           placeholder={type.placeholder}

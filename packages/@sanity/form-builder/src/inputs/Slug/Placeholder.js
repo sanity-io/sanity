@@ -4,10 +4,10 @@ const CODE_SNIPPET = `
   // ...
   import {SlugInput} from '@sanity/form-builder'
   const MySlugInput = createSlugInput({
-    validate(type, slug) {
+    validate(type, slug, myDocId) {
       // If not valid, resolve with a message why.
-      if (slug === 'foobar') {
-        return Promise.resolve('foobar is already taken')
+      if (slug === 'foobar' && myDocId !== 'foo/bar') {
+        return Promise.resolve('foobar is already used as a slug in another document')
       }
       // If it is valid, resolve with nothing
       return Promise.resolve()
