@@ -12,7 +12,6 @@ function slugifyWithPrefix(prefix) {
       .replace(/\s+/g, '-')
       .replace(/[^\w-]+/g, '')
       .replace(/--+/g, '-')
-      .replace(/--+/g, '-')
       .substring(0, type.options.maxLength)
   }
 }
