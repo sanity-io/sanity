@@ -1,13 +1,22 @@
 import client from 'part:@sanity/base/client'
 import {SlugInput} from '../../index'
 
-function validateSlug(type, slug) {
-  return client.fetch(`*[${type.name}.slug == $slug]`, {slug: slug}).then(results => {
-    if (results[0]) {
-      return `There is already a document (${results[0]._id}) in the dataset with this slug.`
-    }
-    return null
-  })
+function validateSlug(type, slug, myDocId) {
+  let query
+  if (myDocId) {
+    query = `*[${type.name}.current == $slug && _id != $id]`
+  } else {
+    query = `*[${type.name}.current == $slug`
+  }
+  return client.fetch(query, {slug: slug, id: myDocId})
+    .then(results => {
+      if (results[0]) {
+        const foundDocId = results[0]._id
+        return `There is already a document (${foundDocId}) `
+          + `in the dataset with the slug '${slug}'.`
+      }
+      return null
+    })
 }
 
 // Default slugify for Sanity
