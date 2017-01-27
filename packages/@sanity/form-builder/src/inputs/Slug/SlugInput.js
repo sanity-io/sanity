@@ -21,6 +21,8 @@ function tryPromise(fn) {
   return Promise.resolve().then(() => fn())
 }
 
+const vanillaState = {validationError: null, nonAutoSlug: '', loading: false}
+
 export default class SlugInput extends React.Component {
   static passDocument = true;
 
@@ -46,7 +48,7 @@ export default class SlugInput extends React.Component {
     onEnter() {}
   };
 
-  state = {validationError: null, nonAutoSlug: '', loading: false}
+  state = vanillaState
 
   constructor(props) {
     super(props)
@@ -115,6 +117,14 @@ export default class SlugInput extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {checkValidityFn} = this.props
     const {document, type, value} = nextProps
+
+    // Reset state if document is changed
+    const oldDocId = this.props.document.getAttribute('_id').get()
+    const newDocId = document.getAttribute('_id').get()
+    if (oldDocId != newDocId) {
+      this.setState(vanillaState)
+    }
+
     const fromSource = document.getAttribute(type.options.source).get()
     const newCurrent = this.slugify(fromSource)
     if (value.auto && value.current !== newCurrent) {
