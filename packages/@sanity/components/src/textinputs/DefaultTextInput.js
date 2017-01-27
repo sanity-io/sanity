@@ -5,10 +5,10 @@ import {omit} from 'lodash'
 
 export default class DefaultTextInput extends React.Component {
   static propTypes = {
+    type: PropTypes.string,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onKeyPress: PropTypes.func,
-    type: PropTypes.string,
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
@@ -17,7 +17,6 @@ export default class DefaultTextInput extends React.Component {
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
     id: PropTypes.string.isRequired,
-    hasFocus: PropTypes.bool,
     focus: PropTypes.bool
   }
 
@@ -33,14 +32,6 @@ export default class DefaultTextInput extends React.Component {
 
   handleKeyPress = event => {
     this.props.onKeyPress(event)
-  }
-
-  handleFocus = event => {
-    this.props.onFocus(event)
-  }
-
-  handleBlur = event => {
-    this.props.onBlur(event)
   }
 
   selectInput = event => {
@@ -61,25 +52,36 @@ export default class DefaultTextInput extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.selected) {
+    const {selected, focus} = this.props
+    if (focus && selected) {
       this.selectInput()
-    }
-    if (this.props.focus) {
-      this._input.focus()
     }
   }
 
   componentDidUpdate() {
-    if (this.props.selected) {
+    const {selected, focus} = this.props
+    if (focus && selected) {
       this.selectInput()
-    }
-    if (this.props.focus) {
-      this._input.focus()
     }
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, type, hasFocus, level, ...rest} = omit(this.props, 'onClear', 'focus')
+    const {
+      value,
+      placeholder,
+      error,
+      showClearButton,
+      id,
+      type,
+      level,
+      onChange,
+      onKeyPress,
+      onFocus,
+      onBlur,
+      focus,
+      disabled,
+      ...rest
+    } = omit(this.props, 'onClear')
 
     const rootClass = error ? styles.error : styles.root
     const levelClass = `styles[level_${level}]`
@@ -90,19 +92,21 @@ export default class DefaultTextInput extends React.Component {
           {...rest}
           className={`
             ${error ? styles.inputError : styles.input}
-            ${showClearButton && styles.hasClearButton}
-            ${hasFocus && styles.hasFocus}
-            ${level && levelClass}
+            ${showClearButton ? styles.hasClearButton : ''}
+            ${focus ? styles.hasFocus : ''}
+            ${level ? levelClass : ''}
+            ${disabled ? styles.disabled : ''}
           `}
           id={id}
           type={type}
           value={value}
           placeholder={placeholder}
-          onChange={this.handleChange}
-          onKeyPress={this.handleKeyPress}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          onFocus={onFocus}
+          onBlur={onBlur}
           autoComplete="off"
+          disabled={disabled}
           ref={this.setInputElement}
         />
         {

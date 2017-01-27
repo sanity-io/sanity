@@ -30,3 +30,7 @@
 .isFocused {
   border: 2px solid green;
 }
+
+.disabled {
+  opacity: 0.5;
+}
