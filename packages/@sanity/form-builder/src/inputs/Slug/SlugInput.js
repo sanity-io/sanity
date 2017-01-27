@@ -83,8 +83,9 @@ export default class SlugInput extends React.Component {
           return
         }
         const proposedNewCurrent = `${value.current}-1`
+        const newVal = {current: proposedNewCurrent, auto: false}
         this.setState({validationError: validationError.toString()})
-        this.updateValue({current: proposedNewCurrent, auto: false})
+        this.updateValueWithUniquenessCheck(newVal)
       })
       .catch(err => {
         console.error(err) // eslint-disable-line no-console
