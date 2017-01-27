@@ -10,7 +10,7 @@ import {uniqueId, debounce} from 'lodash'
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
 function defaultSlugify(type, text) {
-  return 'banan' + (text || '').toString().toLowerCase()
+  return (text || '').toString().toLowerCase()
     .replace(/\s+/g, '-')           // Replace spaces with -
     .replace(/[^\w-]+/g, '')       // Remove all non-word chars
     .replace(/--+/g, '-')         // Replace multiple - with single -
@@ -28,7 +28,7 @@ export default class SlugInput extends React.Component {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.shape({
-      slug: PropTypes.string,
+      current: PropTypes.string,
       auto: PropTypes.bool
     }),
     validation: PropTypes.shape({
@@ -67,14 +67,14 @@ export default class SlugInput extends React.Component {
   }
 
   updateValueWithUniquenessCheck(value) {
-    if (!value.slug) {
+    if (!value.current) {
       this.updateValue(value)
       return
     }
     const {type, checkValidityFn} = this.props
     this.setState({validationError: null})
 
-    tryPromise(() => checkValidityFn(type, value.slug))
+    tryPromise(() => checkValidityFn(type, value.current))
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
@@ -108,9 +108,9 @@ export default class SlugInput extends React.Component {
     const {checkValidityFn} = this.props
     const {document, type, value} = nextProps
     const fromSource = document.getAttribute(type.options.source).get()
-    const slug = this.slugify(fromSource)
-    if (value.auto && value.slug !== slug) {
-      const newVal = {slug: slug, auto: value.auto}
+    const newCurrent = this.slugify(fromSource)
+    if (value.auto && value.current !== newCurrent) {
+      const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
         this.updateValueWithUniquenessCheck(newVal)
         return
@@ -133,13 +133,13 @@ export default class SlugInput extends React.Component {
 
   handleChangeButtonClick = event => {
     const {value} = this.props
-    this.setState({nonAutoSlug: this.state.validationError ? '' : value.slug})
+    this.setState({nonAutoSlug: this.state.validationError ? '' : value.current})
     this.updateValue({slug: undefined, auto: false})
   }
 
   handleAutoButtonClicked = event => {
     const {value} = this.props
-    this.updateValue({slug: value.slug, auto: true})
+    this.updateValue({slug: value.current, auto: true})
   }
 
   render() {
@@ -160,7 +160,7 @@ export default class SlugInput extends React.Component {
           )}
           { !validationError && (
             <p>
-              {value.slug || 'N/A'}
+              {value.current || 'N/A'}
             </p>
           )}
           <DefaultButton onClick={this.handleChangeButtonClick}>
@@ -178,7 +178,7 @@ export default class SlugInput extends React.Component {
           id={inputId}
           placeholder={type.placeholder}
           onChange={this.handleChange}
-          value={nonAutoSlug || value.slug}
+          value={nonAutoSlug || value.current}
         />
         <InInputButton onClick={this.handleAutoButtonClicked}>
           Auto
