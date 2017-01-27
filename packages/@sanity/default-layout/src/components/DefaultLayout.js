@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {RouteScope} from 'part:@sanity/base/router'
+import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import styles from './styles/DefaultLayout.css'
@@ -7,13 +7,19 @@ import RenderTool from './RenderTool'
 import DesktopNavigation from './DesktopNavigation'
 import MobileNavigation from './MobileNavigation'
 
-class DefaultLayout extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object,
+export default withRouterHOC(class DefaultLayout extends React.Component {
+  static propTypes = {
+    router: PropTypes.shape({
+      state: PropTypes.object,
+      navigate: PropTypes.func
+    }),
+    tools: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string
+    }))
   }
 
   maybeRedirectToFirstTool() {
-    const {router} = this.context
+    const {router} = this.props
     if (!router.state.tool && this.props.tools.length > 0) {
       router.navigate({tool: this.props.tools[0].name}, {replace: true})
     }
@@ -28,8 +34,7 @@ class DefaultLayout extends React.Component {
   }
 
   render() {
-    const {router} = this.context
-    const {tools} = this.props
+    const {tools, router} = this.props
     return (
       <div className={styles.defaultLayout}>
 
@@ -55,12 +60,4 @@ class DefaultLayout extends React.Component {
       </div>
     )
   }
-}
-
-DefaultLayout.propTypes = {
-  tools: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string
-  }))
-}
-
-export default DefaultLayout
+})

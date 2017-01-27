@@ -1,10 +1,9 @@
 // @flow
 import React, {PropTypes, Element} from 'react'
 import isEmpty from '../utils/isEmpty'
-import {map} from './valueChannel'
 import assignLazyGetter from './assignLazyGetter'
 
-import type {RouterProviderContext, NavigateOptions, InternalRouter, ContextRouter} from './types'
+import type {RouterProviderContext, NavigateOptions, InternalRouter} from './types'
 
 function addScope(routerState : Object, scope : string, scopedState : Object) {
   return scopedState && {
@@ -20,7 +19,6 @@ type Props = {
 
 export default class RouteScope extends React.Component {
   props: Props
-  context: RouterProviderContext
   __internalRouter: InternalRouter
 
   static childContextTypes = RouteScope.contextTypes = {
@@ -31,52 +29,64 @@ export default class RouteScope extends React.Component {
   constructor(props : Props, context : RouterProviderContext) {
     super()
     const parentInternalRouter = context.__internalRouter
+
     this.__internalRouter = {
+      ...parentInternalRouter,
       resolvePathFromState: this.resolvePathFromState,
       navigate: this.navigate,
-      resolveIntentLink: parentInternalRouter.resolveIntentLink,
-      navigateUrl: parentInternalRouter.navigateUrl,
-      channel: map(parentInternalRouter.channel, state => state[props.scope])
+      getState: this.getScopedState
     }
   }
 
   getChildContext() : RouterProviderContext {
-    const {scope} = this.props
 
-    const router: ContextRouter = this.context.router
-
-    const childContext = {
-      __internalRouter: this.__internalRouter
-    }
-
-    // todo: just return childContext, remove this eventually
-    return assignLazyGetter(childContext, 'router', () => {
+    let warn = () => {
       // eslint-disable-next-line no-console
       console.error(new Error(
         'Reading "router" from context is deprecated. Use the WithRouter enhancer/HOC, or the <WithRouter> component instead.'
       ))
-      return {
-        navigate: this.navigate,
-        state: router.state[scope]
-      }
+      warn = () => {}
+    }
+    const deprecatedChildRouter = {}
+    assignLazyGetter(deprecatedChildRouter, 'state', () => {
+      warn()
+      return this.getScopedState()
     })
+    assignLazyGetter(deprecatedChildRouter, 'navigate', () => {
+      warn()
+      this.getScopedState()
+    })
+
+    // todo: just return childContext with __internalRouter, remove the deprecatedChidlRouter eventually
+    const childContext = {
+      __internalRouter: this.__internalRouter,
+      router: deprecatedChildRouter
+    }
+
+    return childContext
+  }
+
+  getScopedState = () => {
+    const {scope} = this.props
+    const parentInternalRouter = this.context.__internalRouter
+    return parentInternalRouter.getState()[scope]
   }
 
   resolvePathFromState = (nextState: Object): string => {
-    const context = this.context
+    const parentInternalRouter = this.context.__internalRouter
     const scope = this.props.scope
 
     const nextStateScoped : Object = isEmpty(nextState)
       ? {}
-      : addScope(context.router.state, scope, nextState)
+      : addScope(parentInternalRouter.getState(), scope, nextState)
 
-    return context.__internalRouter.resolvePathFromState(nextStateScoped)
+    return parentInternalRouter.resolvePathFromState(nextStateScoped)
   }
 
   navigate = (nextState: Object, options?: NavigateOptions) : void => {
-    const scope = this.props.scope
-    const router = this.context.router
-    router.navigate(addScope(router.state, scope, nextState), options)
+    const parentInternalRouter = this.context.__internalRouter
+    const nextScopedState = addScope(parentInternalRouter.getState(), this.props.scope, nextState)
+    parentInternalRouter.navigate(nextScopedState, options)
   }
 
   render() {

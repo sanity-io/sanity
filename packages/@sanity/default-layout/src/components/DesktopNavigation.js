@@ -1,25 +1,31 @@
 import React, {PropTypes} from 'react'
 import LoginStatus from './LoginStatus'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
+import {WithRouter} from 'part:@sanity/base/router'
 import styles from './styles/DesktopNavigation.css'
 import CompanyBranding from './CompanyBranding'
 import Search from './Search'
 
-class DesktopNavigation extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object,
+export default class DesktopNavigation extends React.Component {
+  static propTypes = {
+    tools: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string
+    }))
   }
+
   render() {
-    const {router} = this.context
     return (
       <div className={styles.root}>
         <CompanyBranding />
-        <ToolSwitcher
-          tools={this.props.tools}
-          activeToolName={router.state.tool}
-          className={styles.toolSwitcher}
-        />
-
+        <WithRouter>
+          {router => (
+            <ToolSwitcher
+              tools={this.props.tools}
+              activeToolName={router.state.tool}
+              className={styles.toolSwitcher}
+            />
+          )}
+        </WithRouter>
         <LoginStatus className={styles.loginStatus} />
         <div className={styles.searchContainer}>
           <Search />
@@ -28,11 +34,3 @@ class DesktopNavigation extends React.Component {
     )
   }
 }
-
-DesktopNavigation.propTypes = {
-  tools: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string
-  }))
-}
-
-export default DesktopNavigation

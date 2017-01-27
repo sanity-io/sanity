@@ -17,6 +17,7 @@ export type InternalRouter = {
   resolveIntentLink: (intent : string, params? : Object) => string,
   navigateUrl: (url : string, options? : NavigateOptions) => void,
   navigate: (nextState : RouterState, options? : NavigateOptions) => void,
+  getState: () => RouterState,
   channel: Channel<RouterState>
 }
 

@@ -18,12 +18,17 @@ export default function withRouter(ComposedComponent: ReactClass<{}>) : ReactCla
       __internalRouter: PropTypes.object
     }
 
-    state = {routerState: null}
+    constructor(props, context) {
+      super()
+      const __internalRouter = context.__internalRouter
+      this.state = {routerState: __internalRouter.getState()}
+    }
+
 
     componentWillMount() {
       const __internalRouter = this.context.__internalRouter
-      this.unsubscribe = __internalRouter.channel.subscribe(state => {
-        this.setState({routerState: state})
+      this.unsubscribe = __internalRouter.channel.subscribe(() => {
+        this.setState({routerState: __internalRouter.getState()})
       })
     }
 

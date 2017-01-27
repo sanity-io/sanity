@@ -29,10 +29,6 @@ class Search extends React.Component {
     }
   }
 
-  static contextTypes = {
-    router: PropTypes.object
-  }
-
   componentDidMount() {
     this.getTopItems()
   }

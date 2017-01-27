@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/menus/default-style'
 import Ink from 'react-ink'
-import {StateLink} from 'part:@sanity/base/router'
+import {withRouter, StateLink} from 'part:@sanity/base/router'
 
 import enhanceWithClickOutside from 'react-click-outside'
 
@@ -14,6 +14,9 @@ class StateMenu extends React.Component {
     className: PropTypes.string,
     onClickOutside: PropTypes.func,
     onClose: PropTypes.func,
+    router: PropTypes.shape({
+      navigate: PropTypes.func
+    }),
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -31,17 +34,8 @@ class StateMenu extends React.Component {
     onClickOutside() {},
     onClose() {}
   }
-
-  static contextTypes = {
-    router: PropTypes.object
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      selectedItem: null
-    }
+  state = {
+    selectedItem: null
   }
 
   handleClickOutside = () => {
@@ -78,7 +72,7 @@ class StateMenu extends React.Component {
     }
 
     if (event.key == 'Enter' && this.props.opened && this.state.selectedItem) {
-      const {router} = this.context
+      const {router} = this.props // todo: this should not be here
       router.navigate(selectedItem.linkState)
     }
 
@@ -118,4 +112,4 @@ class StateMenu extends React.Component {
   }
 }
 
-export default enhanceWithClickOutside(StateMenu)
+export default withRouter(enhanceWithClickOutside(StateMenu))

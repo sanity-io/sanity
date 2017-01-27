@@ -6,12 +6,14 @@ import CompanyBranding from './CompanyBranding'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Search from './Search'
+import {WithRouter} from 'part:@sanity/base/router'
 
-class MobileNavigation extends React.Component {
-  static contextTypes = {
-    router: PropTypes.object,
+export default class MobileNavigation extends React.Component {
+  static propTypes = {
+    tools: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string
+    }))
   }
-
   state = {
     isOpen: false
   }
@@ -35,7 +37,6 @@ class MobileNavigation extends React.Component {
   }
 
   render() {
-    const {router} = this.context
     const {isOpen} = this.state
     const {tools} = this.props
     return (
@@ -54,22 +55,18 @@ class MobileNavigation extends React.Component {
             <Search onSelect={this.handleClose} />
           </div>
           <LoginStatus className={styles.loginStatus} />
-          <ToolSwitcher
-            tools={tools}
-            activeToolName={router.state.tool}
-            className={styles.toolSwitcher}
-            onClick={this.handleClose}
-          />
+          <WithRouter>
+            {router => (
+              <ToolSwitcher
+                tools={tools}
+                activeToolName={router.state.tool}
+                className={styles.toolSwitcher}
+                onClick={this.handleClose}
+              />
+            )}
+          </WithRouter>
         </div>
       </div>
     )
   }
 }
-
-MobileNavigation.propTypes = {
-  tools: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string
-  }))
-}
-
-export default MobileNavigation
