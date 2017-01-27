@@ -121,7 +121,7 @@ export default class SlugInput extends React.Component {
     // Reset state if document is changed
     const oldDocId = this.props.document.getAttribute('_id').get()
     const newDocId = document.getAttribute('_id').get()
-    if (oldDocId != newDocId) {
+    if (oldDocId !== newDocId) {
       this.setState(vanillaState)
     }
 
