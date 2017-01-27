@@ -103,10 +103,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   hasField(fieldName) {
-    if (this.props.type && this.props.type.fields) {
-      return this.props.type.fields.find(type => type.name === fieldName)
-    }
-    return false
+    return this.props.type.fields.find(field => field.name === fieldName)
   }
 
   createSetIfMissingPatch() {
@@ -213,18 +210,22 @@ export default class ImageInput extends React.PureComponent {
 
   handleImageToolChange = newValue => {
     const {onChange} = this.props
-    onChange({
-      patch: [
-        this.createSetIfMissingPatch(),
-        {
-          type: 'merge',
-          value: {
-            crop: newValue.crop,
-            hotspot: newValue.hotspot
-          }
-        }
-      ]
-    })
+    // @todo: fix
+    // eslint-disable-next-line no-console
+    return console.log('image tool is disabled for now. Please check back later')
+    // onChange({
+    //   patch: [
+    //     this.createSetIfMissingPatch(),
+    //     {
+    //       type: 'set',
+    //       path: ['crop'],
+    //       value: {
+    //         crop: newValue.crop,
+    //         hotspot: newValue.hotspot
+    //       }
+    //     }
+    //   ]
+    // })
   }
 
   getImageUrl() {

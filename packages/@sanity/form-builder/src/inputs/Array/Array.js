@@ -200,7 +200,7 @@ export default class Arr extends React.Component {
   }
 
   renderEditItemForm(item) {
-    const itemField = this.getMemberType(item)
+    const itemField = this.getItemType(item)
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
         <ItemForm
@@ -225,15 +225,15 @@ export default class Arr extends React.Component {
     : value.byKey(editItemKey)
   }
 
-  getMemberType(item) {
+  getItemType(item) {
     const {type} = this.props
     return type.of.find(member => member === item.context.type)
   }
 
   renderItem = (item, index) => {
     const {type} = this.props
-    const itemField = this.getMemberType(item)
-    if (!itemField) {
+    const itemType = this.getItemType(item)
+    if (!itemType) {
       return (
         <div>
           <p>Invalid type: <pre>{JSON.stringify(item.context.type.name)}</pre></p>
@@ -245,7 +245,7 @@ export default class Arr extends React.Component {
     return (
       <div>
         <ItemPreview
-          type={itemField}
+          type={itemType}
           value={item}
           onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
