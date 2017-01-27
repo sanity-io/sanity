@@ -7,7 +7,6 @@ export default class RenderField extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    fieldName: PropTypes.string.isRequired,
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
@@ -26,28 +25,18 @@ export default class RenderField extends React.Component {
     formBuilder: PropTypes.object
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleEnter = this.handleEnter.bind(this)
+  handleChange = event => {
+    const {field, onChange} = this.props
+    onChange(event, field)
   }
 
-  handleChange(event) {
-    const {fieldName, onChange} = this.props
-    onChange(event, fieldName)
-  }
-
-  handleEnter(event) {
-    const {fieldName, onEnter} = this.props
-    onEnter(event, fieldName)
-  }
-
-  resolveInputComponent(type, fieldType) {
-    return this.context.formBuilder.resolveInputComponent(type, fieldType)
+  handleEnter = event => {
+    const {field, onEnter} = this.props
+    onEnter(event, field)
   }
 
   render() {
-    const {value, field, fieldName, level, validation, focus} = this.props
+    const {value, field, level, validation, focus} = this.props
 
     const FieldInput = this.context.formBuilder.resolveInputComponent(field.type)
 
@@ -55,7 +44,6 @@ export default class RenderField extends React.Component {
       return (
         <div>
           Field input not found for field of type {JSON.stringify(field.type.name)}
-          <pre>{JSON.stringify(field.type, null, 2)}</pre>
         </div>
       )
     }
@@ -66,7 +54,6 @@ export default class RenderField extends React.Component {
 
     return (
       <FieldInput
-        fieldName={fieldName}
         level={level}
         value={passValue}
         type={field.type}

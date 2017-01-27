@@ -203,7 +203,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   renderFields(fields) {
-    return fields.map(type => this.renderField(type))
+    return fields.map(field => this.renderField(field))
   }
 
   handleImageToolChange = newValue => {
@@ -266,8 +266,8 @@ export default class ImageInput extends React.PureComponent {
     )
   }
   renderAdvancedEdit(fields) {
-    const grouped = groupBy(fields, type => {
-      if (type.name === 'hotspot' || type.name === 'crop') {
+    const grouped = groupBy(fields, field => {
+      if (field.name === 'hotspot' || field.name === 'crop') {
         return 'imagetool'
       }
       return 'other'
@@ -281,17 +281,16 @@ export default class ImageInput extends React.PureComponent {
     )
   }
 
-  renderField(type) {
+  renderField(field) {
     const {value, validation, level} = this.props
-    const fieldValidation = validation && validation.fields[type.name]
+    const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getAttribute(type.name)
+    const fieldValue = value.getAttribute(field.name)
 
     return (
       <RenderField
-        key={type.name}
-        fieldName={type.name}
-        type={type}
+        key={field.name}
+        field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
         onEnter={this.handleFieldEnter}
@@ -317,11 +316,11 @@ export default class ImageInput extends React.PureComponent {
       'validation',
       'focus'
     )
-    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, fieldDef => {
-      if (fieldDef.name === 'asset') {
+    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
+      if (field.name === 'asset') {
         return 'asset'
       }
-      if (fieldDef.options && fieldDef.options.isHighlighted) {
+      if (field.options && field.options.isHighlighted) {
         return 'highlighted'
       }
       return 'other'
@@ -331,6 +330,8 @@ export default class ImageInput extends React.PureComponent {
 
     const isImageToolEnabled = this.isImageToolEnabled()
 
+    const hasAdvancedFields = fieldGroups.other.length > 0
+    const onEdit = hasAdvancedFields ? this.handleOpenAdvancedEdit : null
     return (
       <ImageInputFieldset
         status={status}
@@ -340,7 +341,7 @@ export default class ImageInput extends React.PureComponent {
         onSelect={this.handleSelect}
         onCancel={this.handleCancel}
         onClear={this.handleClearValue}
-        onEdit={this.handleOpenAdvancedEdit}
+        onEdit={onEdit}
         showContent={fieldGroups.highlighted.length > 0}
         hotspotImage={{
           hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,

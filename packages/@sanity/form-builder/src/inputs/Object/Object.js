@@ -5,7 +5,7 @@ import ObjectContainer from './ObjectContainer'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import arrify from 'arrify'
 
-export default class Obj extends React.PureComponent {
+export default class ObjectInput extends React.PureComponent {
   static displayName = 'Object'
 
   static valueContainer = ObjectContainer;
@@ -32,7 +32,7 @@ export default class Obj extends React.PureComponent {
     formBuilder: PropTypes.object
   };
 
-  handleFieldChange = (event, fieldName) => {
+  handleFieldChange = (event, field) => {
     const {onChange, isRoot, type} = this.props
 
     const setIfMissingPatch = isRoot ? [] : [{
@@ -42,14 +42,14 @@ export default class Obj extends React.PureComponent {
     const patches = setIfMissingPatch.concat(arrify(event.patch).map(patch => {
       return {
         ...patch,
-        path: [fieldName, ...(patch.path || [])]
+        path: [field.name, ...(patch.path || [])]
       }
     }))
     onChange({patch: patches})
   }
 
-  handleFieldEnter = (event, fieldName) => {
-    this.props.onEnter(fieldName)
+  handleFieldEnter = (event, field) => {
+    this.props.onEnter(field)
   }
 
   renderField(field, level, index) {
@@ -62,7 +62,6 @@ export default class Obj extends React.PureComponent {
       <RenderField
         key={field.name}
         focus={focus && index === 0}
-        fieldName={field.name}
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
