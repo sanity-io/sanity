@@ -9,6 +9,7 @@ import schema from 'part:@sanity/base/schema'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import dataAspects from '../utils/dataAspects'
 import {throttle} from 'lodash'
+import {withRouterHOC} from 'part:@sanity/base/router'
 
 import styles from './styles/EditorPane.css'
 import {Patcher} from '@sanity/mutator'
@@ -36,14 +37,13 @@ function getInitialState() {
 }
 
 
-export default class EditorPane extends React.PureComponent {
-  static contextTypes = {
-    router: PropTypes.object
-  };
-
+export default withRouterHOC(class EditorPane extends React.PureComponent {
   static propTypes = {
     documentId: PropTypes.string,
-    typeName: PropTypes.string
+    typeName: PropTypes.string,
+    router: PropTypes.shape({
+      state: PropTypes.object
+    })
   };
 
   subscriptions = [];
@@ -172,7 +172,7 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleIncomingDelete(event) {
-    const {router} = this.context
+    const {router} = this.props
     router.navigate(omit(router.state, 'action', 'selectedDocumentId'), {replace: true})
   }
 
@@ -293,4 +293,4 @@ export default class EditorPane extends React.PureComponent {
       </div>
     )
   }
-}
+})

@@ -20,7 +20,8 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "nano-pubsub": "^1.0.1"
   },
   "devDependencies": {
     "babel-plugin-syntax-flow": "^6.18.0",

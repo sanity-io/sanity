@@ -6,9 +6,9 @@ import UrlDocId from '../utils/UrlDocId'
 import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
 import {find} from 'lodash'
-import {StateLink} from 'part:@sanity/base/router'
+import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 
-export default class Pane extends React.PureComponent {
+export default withRouterHOC(class Pane extends React.PureComponent {
 
   static propTypes = {
     loading: PropTypes.bool,
@@ -19,16 +19,15 @@ export default class Pane extends React.PureComponent {
     onSetSorting: PropTypes.func,
     listView: PropTypes.string,
     type: PropTypes.object,
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    router: PropTypes.shape({
+      state: PropTypes.object
+    })
   }
 
   static defaultProps = {
     listView: 'default',
     onSelect() {}
-  }
-
-  static contextTypes = {
-    router: PropTypes.object
   }
 
   handleSelect = item => {
@@ -37,8 +36,7 @@ export default class Pane extends React.PureComponent {
   }
 
   renderListView() {
-    const {items, renderItem} = this.props
-    const {router} = this.context
+    const {items, renderItem, router} = this.props
     const listView = this.props.listView
     const {selectedDocumentId} = router.state
 
@@ -64,9 +62,8 @@ export default class Pane extends React.PureComponent {
   }
 
   render() {
-    const {loading, listView, items, type} = this.props
+    const {loading, listView, items, type, router} = this.props
 
-    const {router} = this.context
     const {selectedType, action, selectedDocumentId} = router.state
 
     const isActive = selectedType && !action && !selectedDocumentId
@@ -117,4 +114,4 @@ export default class Pane extends React.PureComponent {
       </div>
     )
   }
-}
+})

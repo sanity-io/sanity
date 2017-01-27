@@ -1,22 +1,19 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePane.css'
+import {withRouterHOC} from 'part:@sanity/base/router'
 
-export default class Pane extends React.PureComponent {
+export default withRouterHOC(class Pane extends React.PureComponent {
 
   static propTypes = {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-    renderItem: PropTypes.func
-  }
-
-
-  static contextTypes = {
-    router: PropTypes.object
+    renderItem: PropTypes.func,
+    router: PropTypes.shape({
+      state: PropTypes.object
+    })
   }
 
   render() {
-    const {items, renderItem} = this.props
-
-    const {router} = this.context
+    const {items, renderItem, router} = this.props
     const {selectedType, action, selectedDocumentId} = router.state
 
     const isActive = !selectedType && !action && !selectedDocumentId
@@ -37,4 +34,4 @@ export default class Pane extends React.PureComponent {
       </div>
     )
   }
-}
+})

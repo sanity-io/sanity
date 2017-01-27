@@ -1,16 +1,16 @@
 // @flow
-import React, {PropTypes} from 'react'
+import React, {PropTypes, Element} from 'react'
 import omit from 'lodash/omit'
 import Link from './Link'
 import type {RouterProviderContext} from './types'
 
-type Props = {
-  intent: string,
-  params?: Object
-}
-
 export default class IntentLink extends React.PureComponent {
-  props: Props;
+  props: {
+    intent: string,
+    params?: Object,
+    children: Element<*>
+  };
+
   context: RouterProviderContext
 
   static contextTypes = {

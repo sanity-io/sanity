@@ -8,10 +8,10 @@ export default class SomeChild extends React.Component {
   }
   render() {
     return (
-      <div>
+      <span>
         Hello #{this.state.random}
         <button onClick={this.handleClick}>Click to update state of child</button>
-      </div>
+      </span>
     )
   }
 }

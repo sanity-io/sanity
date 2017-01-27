@@ -2,6 +2,8 @@
 import React, {PropTypes} from 'react'
 import StateLink from '../../src/components/StateLink'
 import IntentLink from '../../src/components/IntentLink'
+import WithRouter from '../../src/components/WithRouter'
+import NeverUpdate from './NeverUpdate'
 
 export default class Product extends React.Component {
   static propTypes = {
@@ -21,9 +23,13 @@ export default class Product extends React.Component {
         <IntentLink intent="open" params={{type: 'product', id: 'foo'}}>
           Open Foo
         </IntentLink>
+        <WithRouter>{router => <pre>{JSON.stringify(router.state)}</pre>}</WithRouter>
         <p>
           <StateLink toIndex>Up…</StateLink>
         </p>
+        <div>
+          <NeverUpdate />
+        </div>
       </div>
     )
   }

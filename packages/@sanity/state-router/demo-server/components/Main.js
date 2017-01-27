@@ -1,7 +1,7 @@
 // @flow
 import type {ContextRouter} from '../../src/components/types'
 import React from 'react'
-import {StateLink, Link, RouteScope, withRouter} from '../../src/components'
+import {StateLink, Link, RouteScope, withRouterHOC} from '../../src/components'
 import Product from './Product'
 import User from './User'
 
@@ -9,7 +9,7 @@ type Props = {
   router: ContextRouter
 }
 
-export default withRouter((props: Props) => {
+export default withRouterHOC((props: Props) => {
   const {router} = props
   return (
     <div>
@@ -18,10 +18,10 @@ export default withRouter((props: Props) => {
       <pre><code>{JSON.stringify(router.state, null, 2)}</code></pre>
       {router.state.product && (
         <RouteScope scope="product">
-          <Product id={router.state.product.id}/>
+          <Product id={router.state.product.id} />
         </RouteScope>
       )}
-      {router.state.userId && <User id={router.state.userId}/>}
+      {router.state.userId && <User id={router.state.userId} />}
       <p>
         <StateLink state={{product: {id: 55}}}>Go to product #55</StateLink>
       </p>

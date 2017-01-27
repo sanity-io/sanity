@@ -4,10 +4,20 @@ export type NavigateOptions = {
   replace?: boolean
 }
 
+type Channel<T> = () => {
+  subscribe: (T) => () => void,
+  get(): T,
+  publish(T): void
+}
+
+export type RouterState = Object
+
 export type InternalRouter = {
-  resolvePathFromState: (nextState : Object) => string,
+  resolvePathFromState: (nextState : RouterState) => string,
   resolveIntentLink: (intent : string, params? : Object) => string,
-  navigateUrl: (url : string, options? : NavigateOptions) => void
+  navigateUrl: (url : string, options? : NavigateOptions) => void,
+  navigate: (nextState : RouterState, options? : NavigateOptions) => void,
+  channel: Channel<RouterState>
 }
 
 export type ContextRouter = {

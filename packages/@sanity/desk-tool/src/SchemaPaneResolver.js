@@ -13,6 +13,7 @@ import styles from './styles/SchemaPaneResolver.css'
 import {previewUtils} from 'part:@sanity/form-builder'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Preview from 'part:@sanity/base/preview'
+import {withRouterHOC} from 'part:@sanity/base/router'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -41,10 +42,11 @@ function writeListViewSettings(settings) {
   window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
 }
 
-export default class SchemaPaneResolver extends React.Component {
-
-  static contextTypes = {
-    router: PropTypes.object
+export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
+  static propTypes = {
+    router: PropTypes.shape({
+      state: PropTypes.object
+    })
   }
 
   state = {
@@ -85,7 +87,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   checkRedirect() {
-    const {router} = this.context
+    const {router} = this.props
 
     if (router.state.action === 'create' && !router.state.selectedDocumentId) {
       const selectedType = router.state.selectedType
@@ -100,7 +102,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   renderTypePaneItem = item => {
-    const {selectedType} = this.context.router.state
+    const {selectedType} = this.props.router.state
     const selected = item.name === selectedType
     return (
       <TypePaneItem
@@ -113,7 +115,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   renderDocumentPaneItem = (item, i) => {
-    const {selectedType} = this.context.router.state
+    const {selectedType} = this.props.router.state
     const listView = this.getListViewForType(selectedType)
     const type = schema.get(selectedType)
 
@@ -130,7 +132,7 @@ export default class SchemaPaneResolver extends React.Component {
     const type = schema.get(typeName)
     const previewConfig = type.options.preview
 
-    const {selectedType} = this.context.router.state
+    const {selectedType} = this.props.router.state
 
     const query = `${schema.name}.${type.name}[limit: 50, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
@@ -177,7 +179,7 @@ export default class SchemaPaneResolver extends React.Component {
 
 
   handleSetListView = listView => {
-    const {selectedType} = this.context.router.state
+    const {selectedType} = this.props.router.state
     const nextSettings = Object.assign(readListViewSettings(), {
       [selectedType]: listView
     })
@@ -208,7 +210,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   canReposition = () => {
-    const {selectedType, selectedDocumentId} = this.context.router.state
+    const {selectedType, selectedDocumentId} = this.props.router.state
     return !!(this.navigationElement && this.editorPaneElement && this.containerElement && selectedType && selectedDocumentId)
   }
 
@@ -316,7 +318,7 @@ export default class SchemaPaneResolver extends React.Component {
   }
 
   render() {
-    const {router} = this.context
+    const {router} = this.props
     const {selectedType, selectedDocumentId} = router.state
     const {navTranslateX, editorTranslateX, editorWidth, navIsMinimized, navIsClicked} = this.state
 
@@ -374,4 +376,4 @@ export default class SchemaPaneResolver extends React.Component {
       </div>
     )
   }
-}
+})
