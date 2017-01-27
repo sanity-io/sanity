@@ -13,12 +13,17 @@
   font-size: 1em;
   padding-left: var(--small-padding);
   white-space: nowrap;
+  font-weight: 300;
   float: left;
 }
 
 .projectNameHidden {
   composes: projectName;
   display: none;
+}
+
+.link {
+  composes: noLink from "part:@sanity/base/theme/layout/helpers";
 }
 
 .companyLogoContainer {
