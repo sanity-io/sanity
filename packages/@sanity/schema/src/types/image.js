@@ -1,6 +1,7 @@
 import {pick, omit} from 'lodash'
 import {lazyGetter} from './utils'
 import guessPreviewConfig from '../preview/guessPreviewConfig'
+import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -15,79 +16,39 @@ const OVERRIDABLE_FIELDS = [
 const IMAGE_CORE = {
   name: 'image',
   type: 'object',
-  jsonType: 'object',
-  fields: [
-    {
-      name: 'asset',
-      type: 'reference',
-      to: [{type: 'imageAsset'}]
-    }
-  ]
+  jsonType: 'object'
 }
 
-export const HOTSPOT_FIELD = {
-  name: 'hotspot',
-  type: 'object',
-  fields: [
-    {
-      name: 'x',
-      type: 'number'
-    },
-    {
-      name: 'y',
-      type: 'number'
-    },
-    {
-      name: 'height',
-      type: 'number'
-    },
-    {
-      name: 'width',
-      type: 'number'
-    }
-  ]
-}
-
-export const CROP_FIELD = {
-  name: 'crop',
-  type: 'object',
-  fields: [
-    {
-      name: 'top',
-      type: 'number'
-    },
-    {
-      name: 'bottom',
-      type: 'number'
-    },
-    {
-      name: 'left',
-      type: 'number'
-    },
-    {
-      name: 'right',
-      type: 'number'
-    }
-  ]
-}
+const DEFAULT_OPTIONS = {}
 
 export const ImageType = {
   get() {
     return IMAGE_CORE
   },
   extend(subTypeDef, extendMember) {
-    const options = {...(subTypeDef.options || {})}
+    const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
+
+    const fields = (subTypeDef.fields || []).concat([
+      options.hotspot && HOTSPOT_FIELD,
+      options.hotspot && CROP_FIELD,
+      ASSET_FIELD
+    ])
+      .filter(Boolean)
+
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
-      options: options,
-      fields: IMAGE_CORE.fields.concat(subTypeDef.fields || []).map(fieldDef => {
+      options: options
+    })
+
+    lazyGetter(parsed, 'fields', () => {
+      return fields.map(fieldDef => {
+        const {name, ...type} = fieldDef
         return {
-          name: fieldDef.name,
-          type: extendMember(omit(fieldDef, 'name'))
+          name: name,
+          type: extendMember(type)
         }
       })
     })
-
     lazyGetter(options, 'preview', () => {
       return (subTypeDef.options || {}).preview || guessPreviewConfig(parsed.fields)
     })

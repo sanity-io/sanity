@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick, omit} from 'lodash'
 import assert from 'assert'
 import arrify from 'arrify'
 import {lazyGetter} from './utils'
@@ -45,6 +45,7 @@ export const ReferenceType = {
     }
   }
 }
+
 const CustomRef = ReferenceType.extend({
   name: 'customRef',
   title: 'Custom ref',
