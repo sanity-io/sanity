@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {throttle} from 'lodash'
+import {throttle, union} from 'lodash'
 import store from 'part:@sanity/base/datastore/document'
 
 function deprecatedCheck(props, propName, componentName, ...rest) {
@@ -20,8 +20,15 @@ function createInitialState() {
   }
 }
 
-function keysEqual(object, otherObject, filterKeys = Object.keys(object)) {
-  return filterKeys.every(key => object[key] === otherObject[key])
+function keysEqual(object, otherObject, excludeKeys = []) {
+  const objectKeys = Object.keys(object).filter(key => !excludeKeys.includes(key))
+  const otherObjectKeys = Object.keys(otherObject).filter(key => !excludeKeys.includes(key))
+
+  if (objectKeys.length !== otherObjectKeys.length) {
+    return false
+  }
+
+  return union(objectKeys, otherObjectKeys).every(key => object[key] === otherObject[key])
 }
 
 export default class QueryContainer extends React.Component {
@@ -123,7 +130,7 @@ export default class QueryContainer extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !keysEqual(this.props, nextProps, ['query', 'params']) || !keysEqual(this.state, nextState)
+    return !keysEqual(this.props, nextProps, ['children']) || !keysEqual(this.state, nextState)
   }
 
   renderDeprecated() {
@@ -131,13 +138,13 @@ export default class QueryContainer extends React.Component {
   }
 
   render() {
-    const {children, mapFn} = this.props
+    const {children, mapFn, ...rest} = this.props
     if (React.isValidElement(children)) {
       return this.renderDeprecated()
     }
     if (!children || typeof children !== 'function') {
       return <div>Invalid usage of QueryContainer. Expected a function as its only child</div>
     }
-    return children(mapFn(this.state))
+    return children({...rest, ...mapFn(this.state)})
   }
 }
