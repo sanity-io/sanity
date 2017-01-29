@@ -9,7 +9,18 @@
 
 .textarea {
   composes: root from 'part:@sanity/base/theme/forms/textarea-style';
+  position: relative;
   width: 100%;
+  z-index: 2;
+}
+
+.focusHelper {
+  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
+  background-color: transparent;
+
+  @nest .hasFocus & {
+    background-color: var(--focus-color);
+  }
 }
 
 .clearButton {

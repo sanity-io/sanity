@@ -14,7 +14,8 @@ export default class DefaultTextArea extends React.Component {
     placeholder: PropTypes.string,
     showClearButton: PropTypes.bool,
     rows: PropTypes.number,
-    id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -28,58 +29,37 @@ export default class DefaultTextArea extends React.Component {
     onBlur() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleClear = this.handleClear.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-  }
-
-  handleChange(event) {
-    this.props.onChange(event)
-  }
-
-  handleKeyPress(event) {
-    this.props.onKeyPress(event)
-  }
-
-  handleFocus(event) {
-    this.props.onFocus(event)
-  }
-
-  handleBlur(event) {
-    this.props.onBlur(event)
-  }
-
-  handleClear(event) {
+  handleClear = event => {
     this.props.onClear(event)
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, rows} = this.props
-
-    const rootClass = error ? styles.error : styles.root
+    const {value, placeholder, error, showClearButton, id, rows, onKeyPress, onChange, onFocus, onBlur, focus} = this.props
 
     return (
-      <div className={rootClass}>
+      <div
+        className={`
+          ${error ? styles.error : styles.root}
+          ${focus ? styles.hasFocus : ''}
+        `}
+      >
         <textarea
           className={`
             ${styles.textarea}
             ${error ? styles.inputError : styles.input}
-            ${showClearButton && styles.hasClearButton}
+            ${showClearButton ? styles.hasClearButton : ''}
           `}
           rows={rows}
           id={id}
           value={value}
           placeholder={placeholder}
-          onChange={this.handleChange}
-          onKeyPress={this.handleKeyPress}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          onFocus={onFocus}
+          onBlur={onBlur}
           autoComplete="off"
         />
+        <div className={styles.focusHelper} />
         {
           showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
         }
