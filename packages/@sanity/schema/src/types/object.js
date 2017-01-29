@@ -14,6 +14,7 @@ const OBJECT_CORE = {
 
 function warnIfOldPreviewFormat(type, preview) {
   if (preview && Array.isArray(preview.fields)) {
+    // eslint-disable-next-line no-console
     console.warn(
 `Heads up! Preview fields must now be an object on the format:
   {property1: 'some.dot.path', property2: 'some.dot.path2'}.
@@ -21,7 +22,16 @@ Please check the type definition for "${type.name}" in your schema.
 The encountered preview fields was: ${JSON.stringify(preview.fields)}
 `)
   }
-  return preview
+}
+
+function warnIfPreviewOnOptions(type) {
+  if (type.options && type.options.preview) {
+    // eslint-disable-next-line no-console
+    console.warn(
+`Heads up! The preview config is no longer defined on "options", but instead on the type/field itself.
+Please move {options: {preview: ...}} to {..., preview: ...} on the type/field definition of "${type.name}".
+`)
+  }
 }
 
 export const ObjectType = {
@@ -46,8 +56,11 @@ export const ObjectType = {
       return createFieldsets(subTypeDef, parsed.fields)
     })
 
-    lazyGetter(options, 'preview', () => {
-      return warnIfOldPreviewFormat(parsed, (subTypeDef.options || {}).preview) || guessPreviewConfig(parsed.fields)
+    lazyGetter(parsed, 'preview', () => {
+      warnIfPreviewOnOptions(subTypeDef)
+      const preview = subTypeDef.preview || (subTypeDef.options || {}).preview
+      warnIfOldPreviewFormat(preview)
+      return preview || guessPreviewConfig(parsed.fields)
     })
 
     return subtype(parsed)

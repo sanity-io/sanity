@@ -49,8 +49,9 @@ export const ImageType = {
         }
       })
     })
-    lazyGetter(options, 'preview', () => {
-      return (subTypeDef.options || {}).preview || guessPreviewConfig(parsed.fields)
+
+    lazyGetter(parsed, 'preview', () => {
+      return (subTypeDef.preview || (subTypeDef.options || {}).preview) || guessPreviewConfig(parsed.fields)
     })
 
     return subtype(parsed)
