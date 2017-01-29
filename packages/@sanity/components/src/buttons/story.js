@@ -1,13 +1,14 @@
 import React from 'react'
 
-import styles from './styles/story.css'
-
 import Button from 'part:@sanity/components/buttons/default'
 import Fab from 'part:@sanity/components/buttons/fab'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import DefaultFormField from 'part:@sanity/components/formfields/default'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
+import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
 storiesOf('Buttons')
   .addWithInfo(
@@ -236,65 +237,37 @@ storiesOf('Buttons')
     },
     {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
   )
-
-
   .addWithInfo(
     'InInput',
     'Buttons that are inside an input field',
     () => {
       return (
         <div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              This is the input
-              <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+          <DefaultFormField label="Default">
+            <div className={InInputStyles.wrapper}>
+              <DefaultTextInput />
+              <div className={InInputStyles.container}>
+                <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
+              </div>
             </div>
-          </div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              This is the with danger button
-              <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+          </DefaultFormField>
+          <DefaultFormField label="This is the with danger button">
+            <div className={InInputStyles.wrapper}>
+              <DefaultTextInput />
+              <div className={InInputStyles.container}>
+                <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
+              </div>
             </div>
-          </div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              More buttons
-              <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
-              <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+          </DefaultFormField>
+          <DefaultFormField label="More buttons">
+            <div className={InInputStyles.wrapper}>
+              <DefaultTextInput />
+              <div className={InInputStyles.container}>
+                <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
+                <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
+              </div>
             </div>
-          </div>
-        </div>
-
-      )
-    },
-    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
-  )
-
-  .addWithInfo(
-    'Button group',
-    'Buttons that are inside an input field',
-    () => {
-      return (
-        <div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              This is the input
-              <InInputButton onAction={action('Clicked item')}>browse</InInputButton>
-            </div>
-          </div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              This is the with danger button
-              <InInputButton onAction={action('Clicked item')} kind="danger">delete</InInputButton>
-            </div>
-          </div>
-          <div className={styles.inputContainer}>
-            <div className={styles.input}>
-              More buttons
-              <InInputButton onAction={action('Clicked item')} kind="danger">Delete</InInputButton>
-              <InInputButton onAction={action('Clicked item')}>Change</InInputButton>
-            </div>
-          </div>
+          </DefaultFormField>
         </div>
 
       )

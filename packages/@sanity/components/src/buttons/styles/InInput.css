@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 .root {
   display: block;
   position: relative;
@@ -64,4 +62,15 @@
 
 .save {
   composes: root;
+}
+
+.container {
+  position: absolute;
+  top: var(--extra-small-padding);
+  right: calc(var(--extra-small-padding) * 2 + var(--input-border-size));
+  z-index: 1;
+}
+
+.wrapper {
+  position: relative;
 }
