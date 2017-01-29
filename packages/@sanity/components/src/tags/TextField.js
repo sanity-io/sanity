@@ -108,36 +108,39 @@ export default class TagsTextField extends React.Component {
         labelHtmlFor={this._inputId}
         description={description}
       >
-        <div className={`${styles.inner}`}>
-          <div className={styles.content} onClick={this.handleSetFocus}>
-            <ul className={styles.tags}>
-              {
-                tags && tags.map((tag, i) => {
-                  return (
-                    <li key={i} className={styles.tag}>
-                      {tag}
-                      <a
-                        onClick={this.removeTag.bind(this, i)} // eslint-disable-line react/jsx-no-bind
-                        className={styles.clearTag}
-                      >
-                        ×
-                      </a>
-                    </li>
-                  )
-                })
-              }
-            </ul>
-            <input
-              className={styles.input}
-              onKeyDown={this.handleKeyDown}
-              onKeyPress={this.handleKeyPress}
-              style={{width: `${this.state.length * 0.8}em`}}
-              onBlur={this.handleBlur}
-              onFocus={this.handleFocus}
-              ref={setInput}
-              id={this._inputId}
-              autoComplete="off"
-            />
+        <div className={styles.wrapper}>
+          <div className={`${styles.inner}`}>
+            <div className={styles.content} onClick={this.handleSetFocus}>
+              <ul className={styles.tags}>
+                {
+                  tags && tags.map((tag, i) => {
+                    return (
+                      <li key={i} className={styles.tag}>
+                        {tag}
+                        <a
+                          onClick={this.removeTag.bind(this, i)} // eslint-disable-line react/jsx-no-bind
+                          className={styles.clearTag}
+                        >
+                          ×
+                        </a>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              <input
+                className={styles.input}
+                onKeyDown={this.handleKeyDown}
+                onKeyPress={this.handleKeyPress}
+                style={{width: `${this.state.length * 0.8}em`}}
+                onBlur={this.handleBlur}
+                onFocus={this.handleFocus}
+                ref={setInput}
+                id={this._inputId}
+                autoComplete="off"
+              />
+            </div>
+            <div className={styles.focusHelper} />
           </div>
         </div>
       </DefaultFormField>

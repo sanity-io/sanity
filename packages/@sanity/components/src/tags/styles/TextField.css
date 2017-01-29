@@ -45,6 +45,7 @@
 
 .inner {
   line-height: 1em;
+
 }
 
 .content {
@@ -73,9 +74,23 @@
   margin-top: 0.2em;
   transform: translateY(0.15em);
   padding-left: 0.1em;
+  z-index: 1;
 
   &:focus {
     outline: none;
+  }
+}
+
+.wrapper {
+  position: relative;
+}
+
+.focusHelper {
+  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
+  background-color: transparent;
+
+  @nest .hasFocus & {
+    background-color: var(--focus-color);
   }
 }
 
