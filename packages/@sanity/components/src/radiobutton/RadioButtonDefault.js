@@ -23,12 +23,26 @@ export default class RadioButton extends React.Component {
     this._inputId = uniqueId('RadioSelect')
   }
 
+  handleMouseUp = event => {
+    this.handleBlur()
+  }
+
   handleChange = () => {
     this.props.onChange(this.props.item)
   }
 
+  handleFocus = () => {
+    this.props.onFocus(this.props.item)
+  }
+
+  handleBlur = () => {
+    window.setTimeout(() => {
+      this.props.onBlur(this.props.item)
+    }, 0.001)
+  }
+
   render() {
-    const {disabled, checked, label, name, onFocus, onBlur, focus} = this.props
+    const {disabled, checked, label, name, focus} = this.props
 
     return (
       <label
@@ -39,6 +53,7 @@ export default class RadioButton extends React.Component {
         ${focus ? styles.isFocused : ''}
 
         `}
+        onMouseUp={this.handleMouseUp}
       >
         <input
           className={styles.input}
@@ -47,8 +62,8 @@ export default class RadioButton extends React.Component {
           checked={checked}
           id={this._inputId}
           name={name}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
           disabled={disabled}
         />
         <div className={styles.label} htmlFor={this._inputId}>{label}</div>

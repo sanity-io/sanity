@@ -37,12 +37,16 @@ export default class RadioSelect extends React.Component {
     this.props.onChange(item)
   }
 
-  handleFocus = event => {
-    console.log('focus', event)
+  handleFocus = item => {
+    this.setState({
+      focusedItem: item
+    })
   }
 
-  handleBlur = event => {
-    console.log('blur', event)
+  handleBlur = () => {
+    this.setState({
+      focusedItem: null
+    })
   }
 
   render() {
@@ -68,7 +72,7 @@ export default class RadioSelect extends React.Component {
                     label={item.title}
                     item={item}
                     onChange={this.handleRadioChange}
-                    checked={value === items[i]}
+                    checked={value === item}
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
                     focus={focusedItem == item}

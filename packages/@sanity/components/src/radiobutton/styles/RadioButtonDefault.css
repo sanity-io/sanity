@@ -85,6 +85,10 @@
   @nest .isFocused & {
     background-color: rgba(0, 0, 0, 0.2);
   }
+
+  @nest .root:active & {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
 }
 
 .tickOutline {

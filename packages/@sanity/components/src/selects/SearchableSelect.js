@@ -91,8 +91,6 @@ export default class SearchableSelect extends React.Component {
 
   handleChange = item => {
     const {onChange, valueToString} = this.props
-    console.log('valueToString', valueToString(item))
-    console.log('handleChange', item)
 
     this.setState({
       inputValue: item ? valueToString(item) : null,
