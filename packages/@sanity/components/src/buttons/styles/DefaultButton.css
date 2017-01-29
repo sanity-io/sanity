@@ -142,7 +142,7 @@
     color: var(--brand-danger);
 
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-danger) a(2%));
+      background-color: color(var(--brand-danger) a(10%));
       color: var(--brand-danger);
       border-color: var(--brand-danger);
     }
@@ -153,7 +153,12 @@
     background-color: transparent;
     color: var(--brand-danger);
 
-    @nest &:hover, &:focus {
+    @nest &:hover {
+      background-color: color(var(--brand-danger) a(10%));
+      border-color: var(--brand-danger);
+    }
+
+    @nest &:focus {
       background-color: color(var(--brand-danger) a(10%));
       border-color: var(--brand-danger);
     }
@@ -168,6 +173,7 @@
     }
 
     @nest &:focus {
+      background-color: color(var(--brand-danger) a(10%));
       border-color: var(--brand-danger);
     }
   }
@@ -186,7 +192,7 @@
     color: var(--brand-success);
 
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-success) a(2%));
+      background-color: color(var(--brand-success) a(10%));
       color: var(--brand-success);
       border-color: var(--brand-success);
     }
