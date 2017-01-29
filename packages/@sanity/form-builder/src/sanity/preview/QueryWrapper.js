@@ -36,7 +36,7 @@ export default class QueryWrapper extends React.PureComponent {
     fetchQuery(query, params)
       .then(result => {
         this.setState({result: result, loading: false})
-    }, error => {
+      }, error => {
         this.setState({error: error, loading: false})
       })
   }
