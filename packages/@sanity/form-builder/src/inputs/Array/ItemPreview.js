@@ -9,14 +9,12 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 export default class ItemPreview extends React.Component {
   constructor(props, context) {
     super(props, context)
-    this.handleEdit = this.handleEdit.bind(this)
     this.handleRemove = this.handleRemove.bind(this)
   }
 
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
-    onEdit: PropTypes.func,
     onRemove: PropTypes.func
   };
 
@@ -26,11 +24,6 @@ export default class ItemPreview extends React.Component {
 
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps, this.props)
-  }
-
-  handleEdit() {
-    const {value, onEdit} = this.props
-    onEdit(value)
   }
 
   toggleEdit() {
@@ -50,7 +43,7 @@ export default class ItemPreview extends React.Component {
   render() {
     const {value, type} = this.props
     return (
-      <div className={styles.root} onClick={this.handleEdit}>
+      <div className={styles.root}>
         <div className={styles.functions}>
           <Button
             kind="simple"
