@@ -9,8 +9,8 @@ import DragBarsIcon from 'part:@sanity/base/bars-icon'
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
 
-const SortableItem = SortableElement(({value, index, renderListItem, props}) => {
-  return renderListItem(value, props, index)
+const SortableItem = SortableElement(({renderListItem, value}) => {
+  return renderListItem(value, value.index)
 })
 
 const SortableList = SortableContainer(({sortableItems, renderListItem, className, ref}) => {
@@ -18,6 +18,7 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, classNam
     <ul className={`${styles.sortableList} ${className}`} ref={ref}>
       {
         sortableItems.map((value, index) => {
+          value.index = index
           return (
             <SortableItem
               key={`sortableItem-${index}`}
@@ -53,6 +54,7 @@ export default class DefaultList extends React.Component {
     selectable: PropTypes.bool,
     selectedItem: PropTypes.object,
     highlightedItem: PropTypes.object,
+    focusedItem: PropTypes.object,
     loading: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
@@ -97,7 +99,6 @@ export default class DefaultList extends React.Component {
   }
 
   renderListItem = (item, index) => {
-
     const {
       ListItemContainer = ListItem,
       renderItem,
@@ -106,18 +107,20 @@ export default class DefaultList extends React.Component {
       highlightedItem,
       sortable,
       useDragHandle,
-      onOpen
+      onOpen,
+      focusedItem
     } = this.props
 
     return (
       <ListItemContainer
         className={styles.item}
-        index={item.index}
+        index={index}
         key={`item-${index}`}
         item={item}
         onSelect={this.handleSelect}
         onOpen={onOpen}
         selected={item == selectedItem}
+        focus={focusedItem == item}
         highlighted={item == highlightedItem}
         decoration={decoration}
         scrollIntoView={this.scrollElementIntoViewIfNeeded}
@@ -155,7 +158,11 @@ export default class DefaultList extends React.Component {
         {
           !sortable && <ul className={scrollable ? styles.scrollableList : styles.list} ref={this.setListElement}>
             {
-              items && items.map(this.renderListItem)
+              items && items.map((item, index) => {
+                return (
+                  this.renderListItem(item, index)
+                )
+              })
             }
           </ul>
         }

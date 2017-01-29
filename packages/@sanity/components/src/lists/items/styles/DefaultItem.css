@@ -20,9 +20,15 @@
   display: block;
   color: inherit;
   text-decoration: inherit;
+  outline: none;
 
   @nest &:hover {
     background-color: color(var(--gray-base) a(7%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--gray-base) a(10%));
+    outline: none;
   }
 
   @nest &:active {

@@ -7,6 +7,7 @@ export default class DefaultListItem extends React.Component {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
     item: PropTypes.object.isRequired,
+    focus: PropTypes.bool,
     onSelect: PropTypes.func,
     onOpen: PropTypes.func,
     layout: PropTypes.string,
@@ -41,8 +42,18 @@ export default class DefaultListItem extends React.Component {
     this.ensureVisible()
   }
 
+  componentWillUpdate(nextProps) {
+    if (nextProps.focus && !this.props.focus) {
+      this._focusableElement.focus()
+    }
+  }
+
   setElement = element => {
     this._element = element
+  }
+
+  setFocusableElement = element => {
+    this._focusableElement = element
   }
 
   ensureVisible() {
@@ -57,9 +68,14 @@ export default class DefaultListItem extends React.Component {
     }
   }
 
+  handleKeyPress = event => {
+    if (event.key == 'Enter') {
+      this.props.onSelect(this.props.item)
+    }
+  }
+
   render() {
     const {selected, highlighted, className, decoration, item} = this.props
-
     const rootClasses = `
       ${styles.root}
       ${decoration ? styles[decoration] : ''}
@@ -71,14 +87,28 @@ export default class DefaultListItem extends React.Component {
       <li className={rootClasses} ref={this.setElement}>
         {
           item.stateLink && (
-            <StateLink className={styles.link} onClick={this.handleClick} state={item.stateLink} onDoubleClick={this.handleDoubleClick}>
+            <StateLink
+              tabIndex="0"
+              className={styles.link}
+              onClick={this.handleClick}
+              state={item.stateLink}
+              onDoubleClick={this.handleDoubleClick}
+              ref={this.setFocusableElement}
+            >
               {this.props.children}
             </StateLink>
           )
         }
         {
           !item.stateLink && (
-            <div className={styles.noLink} onClick={this.handleClick} onDoubleClick={this.handleDoubleClick}>
+            <div
+              tabIndex="0"
+              className={styles.noLink}
+              onClick={this.handleClick}
+              onDoubleClick={this.handleDoubleClick}
+              onKeyPress={this.handleKeyPress}
+              ref={this.setFocusableElement}
+            >
               {this.props.children}
             </div>
           )
