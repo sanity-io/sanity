@@ -24,7 +24,7 @@ export default class ItemPreview extends React.Component {
 
     return (
       <Preview
-        style="default"
+        view="default"
         value={value.serialize()}
         type={type}
       />

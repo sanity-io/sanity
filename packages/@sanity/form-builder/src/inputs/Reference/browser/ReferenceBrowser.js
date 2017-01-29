@@ -199,7 +199,7 @@ export default class ReferenceBrowser extends React.Component {
             <Preview
               type={type}
               value={value.serialize()}
-              style="inline"
+              view="inline"
             />
           )}
         </div>

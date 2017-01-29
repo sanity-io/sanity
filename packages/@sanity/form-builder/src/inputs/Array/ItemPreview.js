@@ -62,7 +62,7 @@ export default class ItemPreview extends React.Component {
           />
         </div>
         <div className={styles.content}>
-          <Preview style="default" value={value.serialize()} type={type} />
+          <Preview view="default" value={value.serialize()} type={type} />
         </div>
       </div>
     )

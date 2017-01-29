@@ -134,7 +134,7 @@ class Search extends React.Component {
         <IntentLink intent="edit" params={{id: item._id, type: typeName}}>
           <Preview
             value={item}
-            style="default" // eslint-disable-line
+            view="default"
             typeDef={type}
           />
         </IntentLink>

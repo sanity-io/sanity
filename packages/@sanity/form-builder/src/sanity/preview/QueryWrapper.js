@@ -6,7 +6,8 @@ export default class QueryWrapper extends React.PureComponent {
 
   static propTypes = {
     query: PropTypes.string.isRequired,
-    params: PropTypes.object
+    params: PropTypes.object,
+    children: PropTypes.func.isRequired
   };
 
   state = {

@@ -180,7 +180,7 @@ export default class Reference extends React.Component {
       <Preview
         type={type}
         value={item}
-        style="default"
+        view="default"
       />
     )
   }
