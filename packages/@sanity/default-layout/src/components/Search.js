@@ -5,9 +5,7 @@ import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import locationStore from 'part:@sanity/base/location'
 import {IntentLink} from 'part:@sanity/base/router'
-import {union} from 'lodash'
-
-const typeNames = schema.getTypeNames()
+import {union, flatten} from 'lodash'
 
 class Search extends React.Component {
 
@@ -35,29 +33,28 @@ class Search extends React.Component {
 
   handleSearch = q => {
     const params = {}
-    const searchableFields = []
 
     if (!client) {
       console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
       return
     }
 
+    // Get all fields that we want to search in (text and string)
+    const searchableFields = flatten(
+      schema.getTypeNames()
+        .map(typeName => schema.get(typeName))
+        .filter(type => type.type && type.type.name === 'object')
+        .map(type => type.fields
+            .filter(field => field.type.jsonType === 'string')
+            .map(field => field.name)
+          )
+        )
+
+    const query = `* [(${union(searchableFields).join(', ')}) match "${q}", limit: 10]`
+
     this.setState({
       isSearching: true
     })
-
-    // Get all fields that we want to search in (text and string)
-    typeNames.forEach(type => {
-      if (type.fields) {
-        type.fields.forEach(field => {
-          if (field.type == 'text' || field.type == 'string') {
-            searchableFields.push(field.name)
-          }
-        })
-      }
-    })
-
-    const query = `* [(${union(searchableFields).join(', ')}) match "${q}", limit: 10]`
 
     client.fetch(query, params)
       .then(response => {
@@ -75,17 +72,13 @@ class Search extends React.Component {
 
   getTopItems = () => {
     // We use 3 last edited items until we have logic for most used etc.
-    const fullTypeNames = []
 
     // TODO hack until gradient supports 'schemaName.*'
-    typeNames.forEach(type => {
-      fullTypeNames.push(`${schema.name}.${type}`)
-    })
+    const prefixedTypeNames = schema.getTypeNames().map(type => `${schema.name}.${type}`)
 
-    const query = `(${fullTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
-    const params = {}
+    const query = `(${prefixedTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
 
-    client.fetch(query, params)
+    client.fetch(query, {})
       .then(response => {
         this.setState({
           topItems: response
@@ -126,21 +119,16 @@ class Search extends React.Component {
   }
 
   renderItem = (item, options) => {
-    const typeName = item._type.split('.')[1]
-    const type = schema && typeNames.find(t => t.name === typeName)
-
-    if (type && Preview && schema) {
-      return (
-        <IntentLink intent="edit" params={{id: item._id, type: typeName}}>
-          <Preview
-            value={item}
-            view="default"
-            typeDef={type}
-          />
-        </IntentLink>
-      )
-    }
-    return null
+    const type = schema.get(item._type.split('.')[1])
+    return (
+      <IntentLink intent="edit" params={{id: item._id, type: type.name}}>
+        <Preview
+          value={item}
+          view="default"
+          type={type}
+        />
+      </IntentLink>
+    )
   }
 
   render() {
