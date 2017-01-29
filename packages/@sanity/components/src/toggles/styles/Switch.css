@@ -36,7 +36,7 @@
   --switch-disabled-track-color: var(--brand-danger);
   --switch-track-color: #ccc;
   --switch-off-track-color: #ccc;
-  --switch-on-track-color: color(var(--brand-primary) alpha(40%));
+  --switch-on-track-color: var(--focus-color);
   --switch-faded-color: rgba(0, 0, 0, 0.1);
 
   /* Helper */

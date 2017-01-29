@@ -34,6 +34,12 @@ export default class DefaultTextInput extends React.Component {
     this.props.onKeyPress(event)
   }
 
+  componentWillUpdate(nextProps) {
+    if (nextProps.focus) {
+      this._input.focus()
+    }
+  }
+
   selectInput = event => {
     // Triggers only when the input is focused
     this._input.setSelectionRange(0, this.props.value.length)
@@ -53,6 +59,10 @@ export default class DefaultTextInput extends React.Component {
 
   componentDidMount() {
     const {selected, focus} = this.props
+    if (focus) {
+      this._input.focus()
+    }
+
     if (focus && selected) {
       this.selectInput()
     }
@@ -83,19 +93,24 @@ export default class DefaultTextInput extends React.Component {
       ...rest
     } = omit(this.props, 'onClear')
 
-    const rootClass = error ? styles.error : styles.root
     const levelClass = `styles[level_${level}]`
 
     return (
-      <div className={rootClass}>
+      <div
+        className={`
+          ${error ? styles.error : styles.root}
+          ${showClearButton ? styles.hasClearButton : ''}
+          ${focus ? styles.hasFocus : styles.hasNoFocus}
+          ${level ? levelClass : ''}
+          ${disabled ? styles.disabled : ''}
+      `}
+      >
+
         <input
           {...rest}
           className={`
+            ${styles.input}
             ${error ? styles.inputError : styles.input}
-            ${showClearButton ? styles.hasClearButton : ''}
-            ${focus ? styles.hasFocus : ''}
-            ${level ? levelClass : ''}
-            ${disabled ? styles.disabled : ''}
           `}
           id={id}
           type={type}
@@ -109,6 +124,7 @@ export default class DefaultTextInput extends React.Component {
           disabled={disabled}
           ref={this.setInputElement}
         />
+        <div className={styles.focusHelper} />
         {
           showClearButton && (
             <button className={styles.clearButton} onClick={this.handleClear}>

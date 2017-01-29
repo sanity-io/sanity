@@ -12,6 +12,7 @@ export default class DefaultTextField extends React.Component {
     type: PropTypes.string,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     onClear: PropTypes.func,
     onKeyPress: PropTypes.func,
     value: PropTypes.string,
@@ -55,6 +56,7 @@ export default class DefaultTextField extends React.Component {
       onChange,
       onKeyPress,
       onFocus,
+      onBlur,
       value
     } = this.props
 
@@ -76,6 +78,7 @@ export default class DefaultTextField extends React.Component {
           placeholder={placeholder}
           onKeyPress={onKeyPress}
           onFocus={onFocus}
+          onBlur={onBlur}
           onClear={this.handleClear}
           showClearButton={showClearButton}
           focus={focus}
