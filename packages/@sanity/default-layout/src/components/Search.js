@@ -7,6 +7,14 @@ import locationStore from 'part:@sanity/base/location'
 import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 
+function unprefixTypeName(typeName) {
+  return typeName.split('.')[1]
+}
+
+function prefixTypeName(typeName) {
+  return `${schema.name}.${typeName}`
+}
+
 class Search extends React.Component {
 
   static propTypes = {
@@ -57,11 +65,12 @@ class Search extends React.Component {
     })
 
     client.fetch(query, params)
-      .then(response => {
+      .then(hits => {
         this.setState({
           isSearching: false,
           isOpen: true,
-          items: response
+          // we need this filtering because the search my return documents of types not in schema
+          items: hits.filter(hit => schema.has(unprefixTypeName(hit._type)))
         })
       })
 
@@ -74,7 +83,7 @@ class Search extends React.Component {
     // We use 3 last edited items until we have logic for most used etc.
 
     // TODO hack until gradient supports 'schemaName.*'
-    const prefixedTypeNames = schema.getTypeNames().map(type => `${schema.name}.${type}`)
+    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName)
 
     const query = `(${prefixedTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
 
@@ -100,9 +109,9 @@ class Search extends React.Component {
 
   handleGoToItem = item => {
     // @TODO Hack for assuming desktool until we have a path resolver
-    const type = item._type.split('.')[1]
+    const unprefixedType = unprefixTypeName(item._type)
     const id = item._id.split('/').join('.')
-    const url = ['/desk', type, 'edit', id].join('/')
+    const url = ['/desk', unprefixedType, 'edit', id].join('/')
 
     locationStore.actions.navigate(url, {replace: false})
 
@@ -119,7 +128,7 @@ class Search extends React.Component {
   }
 
   renderItem = (item, options) => {
-    const type = schema.get(item._type.split('.')[1])
+    const type = schema.get(unprefixTypeName(item._type))
     return (
       <IntentLink intent="edit" params={{id: item._id, type: type.name}}>
         <Preview
