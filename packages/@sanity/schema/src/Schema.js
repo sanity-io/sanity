@@ -51,6 +51,9 @@ export default class Schema {
   get(name) {
     return this._registry[name].get()
   }
+  has(name) {
+    return name in this._registry
+  }
   getTypeNames() {
     return Object.keys(this._registry)
   }
