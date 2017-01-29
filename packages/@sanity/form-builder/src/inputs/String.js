@@ -3,7 +3,7 @@ import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
 
-export default class Str extends React.Component {
+export default class Str extends React.PureComponent {
   static displayName = 'String';
 
   static propTypes = {
@@ -22,29 +22,14 @@ export default class Str extends React.Component {
     value: '',
     onChange() {},
     onEnter() {}
-  };
-
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.setInputElement = this.setInputElement.bind(this)
   }
 
-  setInputElement(element) {
-    this.inputElement = element
+  state = {
+    hasFocus: this.props.focus
   }
 
-  componentDidMount() {
-    // if (this.props.focus) {
-    //   this.focus()
-    // }
-  }
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
-  }
 
-  handleChange(event) {
+  handleChange = event => {
     const value = event.target.value || undefined
     this.props.onChange({
       patch: {
@@ -55,14 +40,27 @@ export default class Str extends React.Component {
     })
   }
 
-  handleKeyPress(event) {
+  handleFocus = () => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      hasFocus: false
+    })
+  }
+
+  handleKeyPress = event => {
     if (event.key === 'Enter') {
       this.props.onEnter()
     }
   }
 
   render() {
-    const {value, type, validation, focus, level} = this.props
+    const {value, type, validation, level} = this.props
+    const {hasFocus} = this.state
 
     return (
       <DefaultTextField
@@ -74,8 +72,9 @@ export default class Str extends React.Component {
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}
-        focus={focus}
-        ref={this.setInputElement}
+        focus={hasFocus}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
       />
     )
   }

@@ -1,10 +1,9 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import equals from 'shallow-equals'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 
-export default class StringSelect extends React.Component {
+export default class StringSelect extends React.PureComponent {
   static displayName = 'StringSelect';
 
   static propTypes = {
@@ -24,28 +23,35 @@ export default class StringSelect extends React.Component {
     onChange() {},
     onEnter() {},
     onFocus() {}
-  };
+  }
 
   constructor(props, context) {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.setInputElement = this.setInputElement.bind(this)
+    this.state = {
+      hasFocus: this.props.focus
+    }
   }
 
   setInputElement(element) {
     this.inputElement = element
   }
 
-  shouldComponentUpdate(nextProps) {
-    return !equals(this.props, nextProps)
-  }
-
   handleChange(item) {
     this.props.onChange({patch: {type: 'set', value: item}})
   }
 
-  handleFocus(event) {
-    // Handle focus here
+  handleFocus = () => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      hasFocus: false
+    })
   }
 
   handleKeyPress(event) {
@@ -55,7 +61,7 @@ export default class StringSelect extends React.Component {
   }
 
   render() {
-    const {value, type, focus, level} = this.props
+    const {value, type, level} = this.props
 
     // Support array of string if not objects
     const items = type.options.list
@@ -89,8 +95,9 @@ export default class StringSelect extends React.Component {
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         items={items}
-        focus={focus}
+        focus={this.state.hasFocus}
         ref={this.setInputElement}
       />
     )

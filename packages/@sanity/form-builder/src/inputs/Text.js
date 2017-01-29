@@ -22,6 +22,21 @@ export default class Text extends React.PureComponent {
     super(props, context)
     this.handleChange = this.handleChange.bind(this)
     this.inputId = uniqueId('FormBuilderText')
+    this.state = {
+      hasFocus: false
+    }
+  }
+
+  handleFocus = () => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      hasFocus: false
+    })
   }
 
   handleChange(event) {
@@ -37,12 +52,16 @@ export default class Text extends React.PureComponent {
 
   render() {
     const {value, type, level} = this.props
+    const {hasFocus} = this.state
     return (
       <FormField label={type.title} labelHtmlFor={this.inputId} level={level} description={type.description}>
         <TextArea
           id={this.inputId}
           placeholder={type.placeholder}
           onChange={this.handleChange}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          focus={hasFocus}
           rows={type.rows}
           value={value}
         />

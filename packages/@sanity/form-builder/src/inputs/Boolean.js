@@ -16,8 +16,11 @@ export default class Bool extends React.Component {
     onChange() {}
   }
 
-  state = {
-    hasFocus: false
+  constructor() {
+    super()
+    this.state = {
+      hasFocus: false
+    }
   }
 
   handleChange = event => {
@@ -30,14 +33,12 @@ export default class Bool extends React.Component {
   }
 
   handleFocus = event => {
-    console.log('handleFocus')
     this.setState({
       hasFocus: true
     })
   }
 
   handleBlur = event => {
-    console.log('handleBlur')
     this.setState({
       hasFocus: false
     })
