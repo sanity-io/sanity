@@ -69,12 +69,8 @@
       "description": "Input component for the core url type"
     },
     {
-      "implements": "part:@sanity/form-builder/input-resolver",
-      "path": "sanity/inputResolver/inputResolver.js"
-    },
-    {
-      "implements": "part:@sanity/base/preview-resolver",
-      "path": "sanity/preview/previewResolver.js"
+      "name": "part:@sanity/form-builder/input/slug",
+      "description": "Input component for the slug type"
     },
     {
       "implements": "part:@sanity/form-builder/validation-list",

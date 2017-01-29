@@ -1,20 +1,15 @@
 import {ReferenceInput} from '../../index'
 import {materializeReferences, search, fetch} from '../data/fetch'
+import {once} from 'lodash'
 
 const ReferenceBrowser = ReferenceInput.createBrowser({
   fetch,
   materializeReferences
 })
 
-const ReferenceBrowserWithSearch = ReferenceInput.createBrowser({
-  search,
-  fetch,
-  materializeReferences
-})
-
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search,
-  fetch,
+  stringifyValue: value => value.title,
   materializeReferences
 })
 
@@ -23,18 +18,22 @@ const ReferenceSelect = ReferenceInput.createSelect({
   materializeReferences
 })
 
+// eslint-disable-next-line no-console
+const warnNoSearchYet = once(() => console.warn('Reference browser does not yet support search'))
+
 export default function resolveReference(type) {
-  const fieldOptions = type.options || {}
-  if (fieldOptions.inputType === 'select') {
-    return fieldOptions.searchable
+  const options = type.options || {}
+  if (options.inputType === 'select') {
+    return options.searchable
       ? ReferenceSearchableSelect
       : ReferenceSelect
   }
 
-  if (fieldOptions.inputType === 'browser') {
-    return fieldOptions.searchable
-      ? ReferenceBrowserWithSearch
-      : ReferenceBrowser
+  if (options.inputType === 'browser') {
+    if (options.searchable) {
+      warnNoSearchYet()
+    }
+    return ReferenceBrowser
   }
 
   return ReferenceSearchableSelect

@@ -11,6 +11,7 @@ export function prepareValue(value, previewConfig) {
   if (!value) {
     return value
   }
+
   // todo: validation
   if (!previewConfig) {
     return value

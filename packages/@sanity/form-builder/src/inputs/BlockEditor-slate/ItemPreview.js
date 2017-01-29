@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
-import Preview from '../../previews/Preview'
+import Preview from '../../Preview'
 
 
 export default class ItemPreview extends React.Component {

@@ -14,9 +14,9 @@ export default class Preview extends React.Component {
 
     const PreviewComponent = resolvePreview(type)
 
-    if (PreviewComponent) {
-      return <PreviewComponent type={type} value={value} style={style} />
+    if (!PreviewComponent) {
+      return <div>No preview for {JSON.stringify(value)}</div>
     }
-    return <div>No preview for {JSON.stringify(value)}</div>
+    return <PreviewComponent type={type} value={value} style={style} />
   }
 }

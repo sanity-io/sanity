@@ -1,4 +1,4 @@
-import createSelector from '../../previews/createSelector'
+import createSelector from './createSelector'
 import React, {PropTypes} from 'react'
 
 const select = createSelector((id, fields) => {
@@ -9,13 +9,14 @@ const select = createSelector((id, fields) => {
 const pass = v => v
 
 export default class PreviewMaterializer extends React.PureComponent {
-
   static propTypes = {
     value: PropTypes.any.isRequired,
-    config: PropTypes.shape({
-      fields: PropTypes.object.isRequired,
-      prepare: PropTypes.func
-    }).isRequired,
+    type: PropTypes.shape({
+      preview: PropTypes.shape({
+        fields: PropTypes.object.isRequired,
+        prepare: PropTypes.func
+      }).isRequired
+    }),
     children: PropTypes.func
   };
 
@@ -26,24 +27,26 @@ export default class PreviewMaterializer extends React.PureComponent {
   }
 
   componentWillMount() {
-    this.materialize(this.props.value, this.props.config)
+    const {type, value} = this.props
+    this.materialize(value, type)
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
-      this.materialize(nextProps.value, nextProps.config)
+      this.materialize(nextProps.value, nextProps.type)
     }
   }
 
-  materialize(value, config) {
-    select(value, config.fields)
+  materialize(value, type) {
+    select(value, type.preview.fields)
       .then(res => {
         this.setState({result: res})
       })
   }
+
   render() {
     const {result, loading, error} = this.state
-    const {config} = this.props
+    const {type} = this.props
     if (loading) {
       return <div>Loading…</div>
     }
@@ -53,7 +56,7 @@ export default class PreviewMaterializer extends React.PureComponent {
     if (!result) {
       return <div />
     }
-    const prepare = config.prepare || pass
+    const prepare = type.preview.prepare || pass
     return this.props.children(prepare(result))
   }
 }

@@ -1,58 +1,52 @@
-import array from 'part:@sanity/form-builder/input/array?'
-import boolean from 'part:@sanity/form-builder/input/boolean?'
-import date from 'part:@sanity/form-builder/input/date?'
-import email from 'part:@sanity/form-builder/input/email?'
-import geopoint from 'part:@sanity/form-builder/input/geopoint?'
-import number from 'part:@sanity/form-builder/input/number?'
-import object from 'part:@sanity/form-builder/input/object?'
-import reference from 'part:@sanity/form-builder/input/reference?'
-import slug from 'part:@sanity/form-builder/input/slug?'
-import string from 'part:@sanity/form-builder/input/string?'
-import text from 'part:@sanity/form-builder/input/text?'
-import url from 'part:@sanity/form-builder/input/url?'
-import SlateBlockEditor from '../../inputs/BlockEditor-slate'
+import customResolver from 'part:@sanity/form-builder/input-resolver?'
+
+import ArrayInput from 'part:@sanity/form-builder/input/array?'
+import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
+import DateInput from 'part:@sanity/form-builder/input/date?'
+import EmailInput from 'part:@sanity/form-builder/input/email?'
+import GeoPointInput from 'part:@sanity/form-builder/input/geopoint?'
+import NumberInput from 'part:@sanity/form-builder/input/number?'
+import ObjectInput from 'part:@sanity/form-builder/input/object?'
+import ReferenceInput from 'part:@sanity/form-builder/input/reference?'
+import StringInput from 'part:@sanity/form-builder/input/string?'
+import TextInput from 'part:@sanity/form-builder/input/text?'
+import UrlInput from 'part:@sanity/form-builder/input/url?'
+import SlugInput from '../inputs/Slug'
+import FileInput from '../inputs/File'
+import ImageInput from '../inputs/Image'
 
 import resolveReference from './resolveReference'
-import Slug from '../inputs/Slug'
-import Image from '../inputs/Image'
-import File from '../inputs/File'
 
-const primitiveTypes = {
-  array,
-  boolean,
-  date,
-  number,
-  object,
-  reference: reference,
-  slug: slug,
-  string
+const typeInputMap = {
+  array: ArrayInput,
+  object: ObjectInput,
+  boolean: BooleanInput,
+  number: NumberInput,
+  string: StringInput,
+  text: TextInput,
+  reference: ReferenceInput,
+  date: DateInput,
+  email: EmailInput,
+  file: FileInput,
+  image: ImageInput,
+  slug: SlugInput,
+  geopoint: GeoPointInput,
+  url: UrlInput
 }
-const bundledTypes = {
-  email,
-  geopoint,
-  text,
-  url
-}
-const coreTypes = Object.assign({}, primitiveTypes, bundledTypes)
 
 export default function inputResolver(type) {
-  if (type.component) {
-    return type.component
+  const custom = customResolver && customResolver(type)
+  if (custom) {
+    return custom
   }
-  if (type.editor === 'slate') {
-    return SlateBlockEditor
+
+  if (type.inputComponent) {
+    return type.inputComponent
   }
+
   if (type.name === 'reference') {
     return resolveReference(type)
   }
-  if (type.name === 'slug') {
-    return Slug
-  }
-  if (type.name === 'image') {
-    return Image
-  }
-  if (type.name === 'file') {
-    return File
-  }
-  return type.editor || coreTypes[type.name]
+
+  return typeInputMap[type.name]
 }

@@ -14,8 +14,8 @@ import {
 } from './defaultInputComponents'
 
 import ArrayOfStrings from './inputs/Array/ArrayOfStrings'
-import StringSelect from './inputs/StringSelect'
 import SearchableStringSelect from './inputs/SearchableStringSelect'
+import StringSelect from './inputs/StringSelect'
 
 const typeNameToInputMap = {
   object: ObjectInput,
@@ -57,7 +57,11 @@ function resolveInputComponent(type) {
   return typeNameToInputMap[type.name]
 }
 
+function resolvePreviewComponent(type) {
+  // leave empty for now
+}
+
 export default {
   resolveInputComponent: resolveInputComponent,
-  resolvePreviewComponent: () => {}
+  resolvePreviewComponent: resolvePreviewComponent
 }

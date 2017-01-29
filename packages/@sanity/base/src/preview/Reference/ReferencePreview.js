@@ -1,18 +1,15 @@
 import React, {PropTypes} from 'react'
-import Preview from '../../previews/Preview'
+import previewResolver from '../previewResolver'
 
+// Todo: move this out of here eventually
 export default class ReferencePreview extends React.Component {
-
-  static contextTypes = {
-    formBuilder: PropTypes.object
-  }
   static propTypes = {
     materializeReference: PropTypes.func.isRequired,
     type: PropTypes.object.isRequired,
     value: PropTypes.shape({
       _ref: PropTypes.string
     }).isRequired,
-    style: PropTypes.string,
+    view: PropTypes.string,
   };
 
   state = {
@@ -23,6 +20,7 @@ export default class ReferencePreview extends React.Component {
   componentWillMount() {
     this.setMaterializedFrom(this.props.value)
   }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
       this.setMaterializedFrom(nextProps.value)
@@ -37,8 +35,9 @@ export default class ReferencePreview extends React.Component {
 
   materializeRefOfType(ref, type) {
     const {materializeReference} = this.props
-    return materializeReference(ref, type.options.preview.fields)
+    return materializeReference(ref, type.preview.fields)
   }
+
   materialize(value) {
     const {materializeReference, type} = this.props
 
@@ -58,7 +57,7 @@ export default class ReferencePreview extends React.Component {
 
   render() {
     const {materialized, loading} = this.state
-    const {value, style, type} = this.props
+    const {value, view, type} = this.props
     if (!value._ref) {
       return <div />
     }
@@ -67,9 +66,10 @@ export default class ReferencePreview extends React.Component {
     }
 
     const refType = type.to.find(toType => toType.type.name === materialized._type)
+    const ResolvedPreview = previewResolver(refType)
     return (
-      <Preview
-        style={style}
+      <ResolvedPreview
+        view={view}
         value={materialized}
         type={refType}
       />

@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import styles from './styles/ItemPreview.css'
-import Preview from '../../previews/Preview'
+import Preview from '../../Preview'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 

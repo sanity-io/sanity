@@ -35,6 +35,7 @@
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.1",
     "postcss-cssnext": "^2.9.0",
+    "promise-props": "^1.0.0",
     "react-icons": "^2.2.3",
     "react-intl": "^2.2.2"
   },

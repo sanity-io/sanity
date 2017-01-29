@@ -1,16 +1,12 @@
 import schema from 'part:@sanity/base/schema'
-import inputResolver from 'part:@sanity/form-builder/input-resolver'
-import previewResolver from 'part:@sanity/base/preview-resolver'
+import inputResolver from './inputResolver/inputResolver'
+import {resolver as previewResolver} from 'part:@sanity/base/preview'
 import ValidationList from 'part:@sanity/form-builder/validation-list'
-import * as _previewUtils from './preview/utils'
 import arrify from 'arrify'
 import toGradientPatch from './utils/toGradientPatch'
 import React, {PropTypes} from 'react'
 
 import {createFormBuilder} from '../index'
-
-
-export const previewUtils = _previewUtils // must be a better way, no?
 
 const FormBuilder = createFormBuilder({
   schema: schema,

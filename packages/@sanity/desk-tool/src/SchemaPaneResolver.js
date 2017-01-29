@@ -10,9 +10,8 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
-import {previewUtils} from 'part:@sanity/form-builder'
+import Preview, {utils as previewUtils} from 'part:@sanity/base/preview'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Preview from 'part:@sanity/base/preview'
 import {withRouterHOC} from 'part:@sanity/base/router'
 
 // Debounce function on requestAnimationFrame
@@ -114,7 +113,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     )
   }
 
-  renderDocumentPaneItem = (item, i) => {
+  renderDocumentPaneItem = item => {
     const {selectedType} = this.props.router.state
     const listView = this.getListViewForType(selectedType)
     const type = schema.get(selectedType)
@@ -129,18 +128,16 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   getDocumentsPane(typeName) {
-    const type = schema.get(typeName)
-    const previewConfig = type.options.preview
+    const schemaType = schema.get(typeName)
+    const previewConfig = schemaType.preview
 
-    const {selectedType} = this.props.router.state
-
-    const query = `${schema.name}.${type.name}[limit: 50, order: ${this.state.sorting}] {${
+    const query = `${schema.name}.${schemaType.name}[limit: 50, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
     }}`
 
     return (
-      <QueryContainer query={query}>
-        {({result, loading, error}) => {
+      <QueryContainer query={query} type={schemaType}>
+        {({result, loading, error, type}) => {
           if (error) {
             return (
               <FullscreenDialog kind="danger" title="An error occurred while loading items" isOpen>
@@ -157,7 +154,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           }
 
           const items = result && result.documents && result.documents.map(item => {
-            item.stateLink = {selectedType, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
+            item.stateLink = {selectedType: type.name, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
             return item
           })
           return (

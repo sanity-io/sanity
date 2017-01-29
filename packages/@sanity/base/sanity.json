@@ -531,7 +531,7 @@
     },
     {
       "implements": "part:@sanity/base/preview",
-      "path": "components/Preview.js"
+      "path": "preview/index.js"
     },
     {
       "implements": "part:@sanity/base/th-list-icon",

@@ -31,10 +31,9 @@ export default class SanityPreviewComponent extends React.Component {
       ? previewComponentMap[view]
       : previewComponentMap.default
 
-    const previewConfig = type.options.preview
     return (
-      <PreviewMaterializer value={value} config={previewConfig}>
-        {v => <PreviewComponent item={v} />}
+      <PreviewMaterializer type={type} value={value}>
+        {materialized => <PreviewComponent item={materialized} />}
       </PreviewMaterializer>
     )
   }

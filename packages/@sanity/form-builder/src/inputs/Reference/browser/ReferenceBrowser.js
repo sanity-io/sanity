@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import {bindAll} from 'lodash'
-import Preview from '../../../previews/Preview'
+import Preview from '../../../Preview'
 import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line
 import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
