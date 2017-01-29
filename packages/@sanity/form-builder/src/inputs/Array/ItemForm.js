@@ -1,15 +1,13 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import equals from 'shallow-equals'
 
-export default class ItemForm extends React.Component {
+export default class ItemForm extends React.PureComponent {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
-    onRemove: PropTypes.func,
     onEnter: PropTypes.func
   };
 
@@ -17,16 +15,12 @@ export default class ItemForm extends React.Component {
     formBuilder: PropTypes.object
   };
 
-  shouldComponentUpdate(nextProps) {
-    return !equals(nextProps, this.props)
-  }
-
   handleChange = event => {
     const {value, onChange} = this.props
     onChange(event, value)
   }
 
-  handleEnter() {
+  handleEnter = () => {
     const {value, onEnter} = this.props
     onEnter(value)
   }
