@@ -4,6 +4,10 @@ import {SlugInput} from '../../index'
 import slugify from 'slugify'
 slugify.extend({'☃': 'snowman'})
 slugify.extend({'✅': 'check'})
+slugify.extend({'☺': 'smiling'})
+slugify.extend({'☹': 'unhappy'})
+slugify.extend({'☕': 'coffee'})
+slugify.extend({'✌': 'victory'})
 
 // Default slugify for Sanity
 export function sanitySlugify(type, slug) {

@@ -21,6 +21,26 @@ function tryPromise(fn) {
   return Promise.resolve().then(() => fn())
 }
 
+const makeCancelable = promise => {
+  let hasCanceled_ = false
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(val => {
+      return hasCanceled_ ? reject({isCanceled: true}) : resolve(val)
+    })
+    promise.catch(error => {
+      return hasCanceled_ ? reject({isCanceled: true}) : reject(error)
+    })
+  })
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true
+    }
+  }
+}
+
 const vanillaState = {
   validationError: null,
   inputText: undefined,
@@ -76,7 +96,7 @@ export default class SlugInput extends React.Component {
   updateValueWithUniquenessCheck(value) {
     const {type, checkValidityFn, document} = this.props
     const docId = document.getAttribute('_id').get()
-    return tryPromise(() => {
+    return makeCancelable(tryPromise(() => {
       if (!value.current) {
         this.updateValue(value)
         this.setState({loading: false, validationError: null})
@@ -84,7 +104,7 @@ export default class SlugInput extends React.Component {
       }
       this.setState({loading: true, validationError: null})
       return checkValidityFn(type, value.current, docId)
-    })
+    })).promise
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
@@ -133,15 +153,21 @@ export default class SlugInput extends React.Component {
     // Reset state if document is changed
     const oldDocId = this.props.document.getAttribute('_id').get()
     const newDocId = document.getAttribute('_id').get()
+
     if (oldDocId !== newDocId) {
       this.setState(vanillaState)
     }
     let newCurrent
     if (value.auto) {
-      const fromSource = document.getAttribute(type.options.source).get()
-      newCurrent = this.slugify(fromSource)
+      const newFromSource = document.getAttribute(type.options.source).get()
+      newCurrent = this.slugify(newFromSource)
     }
-    if (newCurrent && value.current !== newCurrent) {
+    if (!value.auto) {
+      newCurrent = this.slugify(value.current)
+    }
+
+    if (newCurrent
+        && (value.current !== newCurrent || value.auto !== this.props.value.auto)) {
       const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
         this.updateValueWithUniquenessCheck(newVal)
