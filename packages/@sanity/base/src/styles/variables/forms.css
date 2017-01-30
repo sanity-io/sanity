@@ -23,6 +23,7 @@
   --input-border-color-hover: var(--gray-darker);
   --input-border-color-focus: var(--brand-primary);
   --input-border-color-active: var(--brand-primary);
+  --focus-color: color(var(--brand-primary) alpha(40%));
 
   --input-color-placeholder: var(--gray-lighter);
   --form-group-margin-bottom: 1em;

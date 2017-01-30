@@ -42,7 +42,6 @@ export class FormBuilderInner extends React.Component {
         onChange={onChange}
         validation={validation}
         value={passSerialized ? value.serialize() : value}
-        focus
         isRoot
       />
     )

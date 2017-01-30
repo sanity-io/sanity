@@ -19,6 +19,7 @@ export default class SearchableSelect extends React.Component {
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func,
     items: PropTypes.array,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -61,7 +62,8 @@ export default class SearchableSelect extends React.Component {
       this.setState({
         inputValue: nextProps.valueToString(nextProps.value),
         isInputSelected: true,
-        isOpen: false
+        isOpen: false,
+        hasFocus: nextProps.focus
       })
     }
   }
@@ -71,35 +73,30 @@ export default class SearchableSelect extends React.Component {
       hasFocus: true,
       isInputSelected: true
     })
-
-    this.open()
     this.props.onFocus(event)
   }
 
   handleBlur = event => {
     const {valueToString, value} = this.props
-    const {isOpen} = this.state
 
-    this.setState({
-      inputValue: value ? valueToString(value) : null,
-    })
-
-    // MouseDown on the list triggers blur
-    if (!isOpen) {
+    if (!this.state.isOpen) {
       this.setState({
+        inputValue: value ? valueToString(value) : null,
         hasFocus: false
       })
       this.close()
+      this.props.onBlur(event)
     }
-    this.props.onBlur(event)
   }
 
   handleChange = item => {
     const {onChange, valueToString} = this.props
+
     this.setState({
       inputValue: item ? valueToString(item) : null,
       hasFocus: false
     })
+
     onChange(item)
     this.close()
   }
@@ -144,7 +141,7 @@ export default class SearchableSelect extends React.Component {
     return (
       <StatelessSearchableSelect
         {...this.props}
-        hasFocus={hasFocus}
+        focus={hasFocus}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         onHighlightIndexChange={this.handleHighlightIndexChange}

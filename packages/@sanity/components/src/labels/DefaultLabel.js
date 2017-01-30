@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/labels/default-style'
 
-export default class DefaultLabel extends React.Component {
+export default class DefaultLabel extends React.PureComponent {
   static propTypes = {
     htmlFor: PropTypes.string.isRequired,
     className: PropTypes.string,

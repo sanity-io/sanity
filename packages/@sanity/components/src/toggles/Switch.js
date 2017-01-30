@@ -5,61 +5,57 @@ export default class Switch extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     checked: PropTypes.bool,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
     onChange() {}
   }
 
-  constructor(...args) {
-    super(...args)
-    this.handleChange = this.handleChange.bind(this)
-    this.state = {
-      isFocused: false
-    }
+  setInputElement = element => {
+    this._inputElement = element
   }
 
-  handleChange(event) {
-    this.props.onChange(event)
+  handleMouseUp = event => {
+    this.handleBlur()
   }
 
-  handleFocus = () => {
-    this.setState({
-      isFocused: true
-    })
-  }
-  handleBlur = () => {
-    this.setState({
-      isFocused: false
-    })
+  handleBlur = event => {
+    window.setTimeout(() => {
+      this.props.onBlur()
+    }, 0.001)
   }
 
   render() {
-    const {disabled, checked} = this.props
-    const {isFocused} = this.state
+    const {disabled, checked, onChange, onFocus, focus} = this.props
 
     return (
       <label
         className={`
           ${disabled ? styles.disabled : styles.enabled}
-          ${checked ? styles.checked : styles.unchecked}
-          ${isFocused ? styles.focused : ''}
+          ${checked ? styles.isChecked : styles.unchecked}
+          ${focus ? styles.hasFocus : ''}
         `}
+        onMouseUp={this.handleMouseUp}
       >
-        <div className={styles.track}>
+        <div className={styles.track} />
+
+
+        <div className={`${checked ? styles.thumbChecked : styles.thumb}`}>
           <div className={styles.focusHelper} />
         </div>
-        <div className={`${checked ? styles.thumbChecked : styles.thumb}`} />
         <input
           className={styles.input}
           type="checkbox"
           checked={checked}
-          onChange={this.handleChange}
           readOnly={disabled}
-          onFocus={this.handleFocus}
+          onFocus={onFocus}
           onBlur={this.handleBlur}
+          onChange={onChange}
         />
         <div className={styles.label}>
           {this.props.label}

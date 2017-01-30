@@ -17,7 +17,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     description: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.any,
-    hasFocus: PropTypes.bool,
+    focus: PropTypes.bool,
 
     inputValue: PropTypes.string,
     onInputChange: PropTypes.func,
@@ -49,7 +49,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     onClose: noop,
     onInputChange: noop,
     hasError: false,
-    hasFocus: false,
+    focus: false,
     isLoading: false,
     renderItem: item => item,
     items: []
@@ -68,14 +68,16 @@ class StatelessSearchableSelect extends React.PureComponent {
   }
 
   handleSelect = item => {
+    console.log('handleSelect', item)
     this.props.onChange(item)
   }
 
   handleArrowClick = () => {
-    const {isOpen, onOpen, onClose} = this.props
+    const {isOpen, onOpen, onClose, onFocus} = this.props
     if (isOpen) {
       onClose()
     } else {
+      onFocus()
       onOpen()
     }
   }
@@ -123,7 +125,6 @@ class StatelessSearchableSelect extends React.PureComponent {
   render() {
     const {
       label,
-      hasError,
       onClear,
       placeholder,
       isLoading,
@@ -131,16 +132,15 @@ class StatelessSearchableSelect extends React.PureComponent {
       description,
       items,
       renderItem,
-      hasFocus,
+      focus,
       isOpen,
       highlightIndex,
       isInputSelected,
       inputValue
     } = this.props
-
     return (
       <DefaultFormField
-        className={`${styles.root} ${hasFocus && styles.focused} ${hasError && styles.error}`}
+        className={styles.root}
         description={description}
         labelHtmlFor={this._inputId}
         label={label}
@@ -157,7 +157,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             onBlur={this.handleInputBlur}
             value={inputValue || ''}
             selected={isInputSelected}
-            hasFocus={hasFocus}
+            focus={focus}
           />
           {
             onClear && (
@@ -168,7 +168,7 @@ class StatelessSearchableSelect extends React.PureComponent {
           }
           {isLoading && <div className={styles.spinner}><Spinner /></div>}
           {!isLoading && (
-            <div className={styles.icon} onClick={this.handleArrowClick}>
+            <div className={styles.arrow} onClick={this.handleArrowClick}>
               <FaAngleDown color="inherit" />
             </div>
           )}

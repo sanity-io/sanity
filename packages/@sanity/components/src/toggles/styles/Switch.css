@@ -1,7 +1,15 @@
 @import "part:@sanity/base/theme/variables-style";
 @import "part:@sanity/base/theme/animation-style";
 
-@use postcss-cssnext;
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
 
 :root {
   --switch-color: var(--brand-primary);
@@ -25,14 +33,15 @@
   --switch-track-top: 0.35rem;
   --switch-track-height: 0.6rem;
   --switch-track-length: 2rem;
-  --switch-disabled-track-color: red;
+  --switch-disabled-track-color: var(--brand-danger);
   --switch-track-color: #ccc;
   --switch-off-track-color: #ccc;
-  --switch-on-track-color: color(var(--brand-primary) alpha(40%));
+  --switch-on-track-color: var(--focus-color);
   --switch-faded-color: rgba(0, 0, 0, 0.1);
 
   /* Helper */
-  --switch-helper-size: 4rem;
+  --switch-helper-size: 3rem;
+  --switch-helper-color: color(var(--brand-primary) alpha(20%));
 }
 
 .root {
@@ -69,6 +78,18 @@
   opacity: 0.5;
 }
 
+.isChecked {
+  display: block;
+}
+
+.unChecked {
+  display: block;
+}
+
+.hasFocus {
+  display: block;
+}
+
 .thumb {
   background: var(--switch-off-thumb-color);
   position: absolute;
@@ -77,7 +98,7 @@
   height: var(--switch-thumb-size);
   width: var(--switch-thumb-size);
   border-radius: 50%;
-  cursor: pointer;
+  cursor: default;
   composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
   composes: animation-default from "part:@sanity/base/theme/animation-style";
   transition-property: left;
@@ -99,22 +120,24 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  display: inline-block;
+  display: block;
   box-sizing: border-box;
   width: var(--switch-helper-size);
   height: var(--switch-helper-size);
   border-radius: 50%;
   background-color: transparent;
+  transform: translate(-50%, -50%) scale(0.5);
+  transition: background-color 0.1s  linear, transform 0.15s linear;
 
-  @nest .focused & {
+  @nest .hasFocus & {
     /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) rgba(0, 0, 0, 0.1); */
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--switch-helper-color);
+    transform: translate(-50%, -50%) scale(1);
   }
 
-  @nest .checked & {
-    /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) $switch-faded-color; */
-    /* background-color: var(--switch-faded-color); */
+  @nest .root:active & {
+    background-color: var(--switch-helper-color);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -162,6 +185,6 @@
 
   @nest .disabled & {
     background: var(--switch-disabled-track-color);
-    cursor: auto;
+    cursor: default;
   }
 }

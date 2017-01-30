@@ -34,20 +34,21 @@ export default class Arr extends React.Component {
     value: PropTypes.instanceOf(ArrayContainer),
     level: PropTypes.number,
     onChange: PropTypes.func
-  };
+  }
 
   static defaultProps = {
     onChange() {}
-  };
+  }
 
   static contextTypes = {
     formBuilder: PropTypes.object
-  };
+  }
 
   state = {
     addItemField: null,
-    editItemKey: null
-  };
+    editItemKey: null,
+    lastEditedItem: null
+  }
 
   handleAddBtnClick = () => {
     const {type, value} = this.props
@@ -111,7 +112,10 @@ export default class Arr extends React.Component {
     if (itemValue.isEmpty()) {
       this.handleRemoveItem(itemValue)
     }
-    this.setState({editItemKey: null})
+    this.setState({
+      editItemKey: null,
+      lastEditedItem: itemValue
+    })
   }
 
   handleDropDownAction = menuItem => {
@@ -168,7 +172,10 @@ export default class Arr extends React.Component {
   }
 
   handleItemEdit = item => {
-    this.setState({editItemKey: item.key || this.props.value.indexOf(item)})
+    this.setState({
+      editItem: item,
+      editItemKey: item.key || this.props.value.indexOf(item)
+    })
   }
 
   handleMove = event => {
@@ -178,7 +185,7 @@ export default class Arr extends React.Component {
     if (event.oldIndex === event.newIndex || item.key === refItem.key) {
       return
     }
-    console.log('from %d => %d', event.oldIndex, event.newIndex, event)
+    // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
     this.props.onChange({
       patch: [
         {
@@ -247,7 +254,6 @@ export default class Arr extends React.Component {
         <ItemPreview
           type={itemType}
           value={item}
-          onEdit={this.handleItemEdit}
           onRemove={this.handleRemoveItem}
         />
         <div className={styles.popupAnchor}>
@@ -267,14 +273,14 @@ export default class Arr extends React.Component {
 
     return (
       <DefaultList
-        lockAxis="y"
-        distance={5}
-        onSortEnd={this.handleMove}
-        renderItem={this.renderItem}
         items={value.value}
-        useDragHandle
+        renderItem={this.renderItem}
+        onSelect={this.handleItemEdit}
         sortable={sortable}
+        onSortEnd={this.handleMove}
+        useDragHandle
         decoration="divider"
+        focusedItem={this.state.lastEditedItem}
       />
     )
   }

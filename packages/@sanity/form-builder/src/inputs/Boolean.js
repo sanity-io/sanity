@@ -10,18 +10,20 @@ export default class Bool extends React.Component {
     type: FormBuilderPropTypes.type,
     value: PropTypes.bool,
     onChange: PropTypes.func
-  };
+  }
 
   static defaultProps = {
     onChange() {}
-  };
-
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
   }
 
-  handleChange(event) {
+  constructor() {
+    super()
+    this.state = {
+      hasFocus: false
+    }
+  }
+
+  handleChange = event => {
     this.props.onChange({
       patch: {
         type: 'set',
@@ -30,17 +32,46 @@ export default class Bool extends React.Component {
     })
   }
 
+  handleFocus = event => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = event => {
+    this.setState({
+      hasFocus: false
+    })
+  }
+
   render() {
     const {value, type} = this.props
+    const {hasFocus} = this.state
 
     if (type.options && type.options.layout == 'checkbox') {
       return (
-        <Checkbox onChange={this.handleChange} checked={!!value} label={type.title} description={type.description} />
+        <Checkbox
+          onChange={this.handleChange}
+          checked={!!value}
+          label={type.title}
+          description={type.description}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          focus={hasFocus}
+        />
       )
     }
 
     return (
-      <Switch onChange={this.handleChange} checked={!!value} label={type.title} description={type.description} />
+      <Switch
+        onChange={this.handleChange}
+        checked={!!value}
+        label={type.title}
+        description={type.description}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        focus={hasFocus}
+      />
     )
   }
 }

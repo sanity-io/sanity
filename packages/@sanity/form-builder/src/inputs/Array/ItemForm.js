@@ -9,11 +9,11 @@ export default class ItemForm extends React.PureComponent {
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func
-  };
+  }
 
   static contextTypes = {
     formBuilder: PropTypes.object
-  };
+  }
 
   handleChange = event => {
     const {value, onChange} = this.props

@@ -8,11 +8,8 @@ export default class Checkbox extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     checked: PropTypes.bool,
-    disabled: PropTypes.bool
-  }
-
-  state = {
-    isFocused: false
+    disabled: PropTypes.bool,
+    focus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -21,23 +18,8 @@ export default class Checkbox extends React.Component {
     onBlur() {}
   }
 
-  handleFocus = () => {
-    this.setState({
-      isFocused: true
-    })
-    this.props.onFocus()
-  }
-
-  handleBlur = () => {
-    this.setState({
-      isFocused: false
-    })
-    this.props.onBlur()
-  }
-
   render() {
-    const {disabled, checked} = this.props
-    const {isFocused} = this.state
+    const {disabled, checked, onChange, onFocus, onBlur, focus} = this.props
 
     return (
       <label
@@ -45,16 +27,16 @@ export default class Checkbox extends React.Component {
           ${styles.root}
           ${disabled ? styles.isDisabled : styles.isEnabled}
           ${checked ? styles.isChecked : styles.unChecked}
-          ${isFocused ? styles.isFocused : ''}
+          ${focus ? styles.isFocused : ''}
         `}
       >
         <input
           className={styles.input}
           type="checkbox"
-          onChange={this.props.onChange}
-          checked={this.props.checked}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onChange={onChange}
+          checked={checked}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         <div className={styles.label}>{this.props.label}</div>
 

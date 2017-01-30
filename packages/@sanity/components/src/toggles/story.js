@@ -29,7 +29,7 @@ storiesOf('Toggles')
   '',
   () => {
     return (
-      <Switch onChange={action('change')} label="Switch is off" />
+      <Switch onChange={action('change')} label="Switch is off" onFocus={action('onFocus')} onBlur={action('onBlur')} />
     )
   },
   {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
@@ -39,7 +39,7 @@ storiesOf('Toggles')
   '',
   () => {
     return (
-      <Switch checked label="Switch is on" onChange={linkTo('Switch (off)')} />
+      <Switch checked label="Switch is on" onChange={linkTo('Switch (off)')} onFocus={action('onFocus')} onBlur={action('onBlur')} />
     )
   },
   {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}

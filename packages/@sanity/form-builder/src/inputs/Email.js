@@ -2,26 +2,43 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
 
-export default class Email extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
+export default class Email extends React.PureComponent {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func,
     focus: PropTypes.bool
-  };
+  }
 
   static defaultProps = {
     value: '',
     onChange() {}
-  };
+  }
 
-  handleChange(event) {
+  state = {
+    hasFocus: this.props.focus
+  }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.focus != this.props.focus) {
+      this.handleFocus()
+    }
+  }
+
+  handleFocus = () => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      hasFocus: false
+    })
+  }
+
+  handleChange = event => {
     const value = event.target.value || undefined
     this.props.onChange({
       patch: {
@@ -33,7 +50,8 @@ export default class Email extends React.Component {
   }
 
   render() {
-    const {type, value, level, focus} = this.props
+    const {type, value, level} = this.props
+    const {hasFocus} = this.state
     return (
       <DefaultTextField
         label={type.title}
@@ -43,8 +61,10 @@ export default class Email extends React.Component {
         placeholder={type.placeholder}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         value={value}
-        focus={focus}
+        focus={hasFocus}
         ref={this.setInputElement}
       />
     )

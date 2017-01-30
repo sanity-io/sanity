@@ -17,10 +17,7 @@
   position: relative;
   overflow: hidden;
   margin-right: 1.5em;
-}
-
-.focused {
-  /* focused */
+  z-index: 2;
 }
 
 .selectContainer {
@@ -31,8 +28,17 @@
     color: var(--input-border-color-focus);
   }
 
-  @nest .focused & {
+  @nest .hasFocus & {
     color: var(--input-border-color-focus);
+  }
+}
+
+.focusHelper {
+  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
+  background-color: transparent;
+
+  @nest .hasFocus & {
+    background-color: var(--focus-color);
   }
 }
 
@@ -43,9 +49,9 @@
   right: 0.2em;
   transform: translateY(-50%);
   font-size: 1.2em;
-  pointer-events: none;
   color: inherit;
-  cursor: pointer;
+  cursor: default;
+  z-index: 2;
 
   @nest & svg {
     color: inherit;

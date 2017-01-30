@@ -15,6 +15,7 @@ export default class DefaultSelect extends React.Component {
     hasFocus: PropTypes.bool,
     showClearButton: PropTypes.bool,
     level: PropTypes.number,
+    focus: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -25,41 +26,17 @@ export default class DefaultSelect extends React.Component {
   static defaultProps = {
     onChange() {},
     onBlur() {},
-    onFocus() {}
+    onFocus() {},
+    focus: false
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.hasFocus != this.props.hasFocus) {
-      this.handleFocus()
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.focus != this.props.focus) {
+  //     this.props.onFocus()
+  //   }
+  // }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-    this.state = {
-      hasFocus: false
-    }
-  }
-
-  handleFocus() {
-    this.setState({
-      hasFocus: true
-    })
-    this.props.onFocus()
-  }
-
-  handleBlur() {
-    this.setState({
-      hasFocus: false
-    })
-    this.props.onBlur()
-  }
-
-  handleChange(event) {
-    console.log('handleChange', this.props.items[event.target.value])
+  handleChange = event => {
     this.props.onChange(this.props.items[event.target.value])
   }
 
@@ -68,20 +45,25 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {label, error, items, value, level} = this.props
-    const {hasFocus} = this.state
-
-    const rootClass = error ? styles.error : styles.root
+    const {label, error, items, value, level, onFocus, onBlur, focus} = this.props
 
     return (
-      <FormField className={`${rootClass} ${hasFocus && styles.focused}`} label={label} labelHtmlFor={this._inputId || ''} level={level}>
+      <FormField
+        className={`
+          ${error ? styles.error : styles.root}
+          ${focus ? styles.hasFocus : ''}`
+        }
+        label={label}
+        labelHtmlFor={this._inputId || ''}
+        level={level}
+      >
         <div className={styles.selectContainer}>
           <select
             className={styles.select}
             id={this._inputId}
             onChange={this.handleChange}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
+            onFocus={onFocus}
+            onBlur={onBlur}
             value={items.indexOf(value)}
             autoComplete="off"
           >
@@ -93,6 +75,7 @@ export default class DefaultSelect extends React.Component {
               })
             }
           </select>
+          <div className={styles.focusHelper} />
           <div className={styles.icon}>
             <FaAngleDown color="inherit" />
           </div>

@@ -96,9 +96,13 @@ export default class Reference extends React.Component {
   handleChange = item => {
     const patch = {
       type: 'set',
-      path: ['_ref'],
-      value: item._id
+      value: {
+        _type: 'reference',
+        _ref: item._id
+      }
     }
+
+    console.log('Do patch!', patch)
     this.props.onChange({patch: patch})
   }
 

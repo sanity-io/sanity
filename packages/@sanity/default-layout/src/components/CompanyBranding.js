@@ -9,7 +9,7 @@ class CompanyBranding extends React.Component {
     const projectName = (config.project && config.project.name) || ''
     return (
       <div className={styles.root}>
-        <StateLink toIndex className={styles.companyBranding} title={projectName}>
+        <StateLink toIndex className={styles.link} title={projectName}>
           <h1 className={CompanyLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
           {
             CompanyLogo && (

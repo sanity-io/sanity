@@ -4,8 +4,18 @@
   position: relative;
 }
 
+.error {
+
+}
+
 .input {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  position: relative;
+  z-index: 1;
+
+  @nest .disabled & {
+    background-color: transparent;
+  }
 }
 
 .inputError {
@@ -14,6 +24,15 @@
 
 .hasClearButton {
   padding-right: 2em;
+}
+
+.focusHelper {
+  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
+  background-color: transparent;
+
+  @nest .hasFocus & {
+    background-color: var(--focus-color);
+  }
 }
 
 .clearButton {
@@ -27,6 +46,6 @@
   }
 }
 
-.isFocused {
-  border: 2px solid green;
+.disabled {
+  opacity: 0.4;
 }

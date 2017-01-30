@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
-import DefaultButton from 'part:@sanity/components/buttons/default'
+import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {uniqueId, debounce} from 'lodash'
-
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
@@ -171,38 +171,40 @@ export default class SlugInput extends React.Component {
       level: level
     }
 
-    if (value.auto) {
-      return (
-        <DefaultFormField {...formFieldProps}>
-          { validationError && (
-            <p>{validationError}</p>
-          )}
-          { !validationError && (
-            <p>
-              {value.current || 'N/A'}
-            </p>
-          )}
-          <DefaultButton onClick={this.handleChangeButtonClick}>
-            Change
-          </DefaultButton>
-        </DefaultFormField>
-      )
-    }
-
     const inputId = uniqueId('FormBuilderSlug')
     return (
       <DefaultFormField {...formFieldProps}>
-        {validationError}
-        { loading ? 'Loading' : ''}
-        <DefaultTextInput
-          id={inputId}
-          placeholder={type.placeholder}
-          onChange={this.handleChange}
-          value={nonAutoSlug || value.current}
-        />
-        <InInputButton onClick={this.handleAutoButtonClicked}>
-          Auto
-        </InInputButton>
+        { validationError && (
+          <p>{validationError}</p>
+        )}
+        <div className={InInputStyles.wrapper}>
+          <DefaultTextInput
+            id={inputId}
+            disabled={value.auto}
+            placeholder={type.placeholder}
+            onChange={this.handleChange}
+            value={nonAutoSlug || value.current}
+          />
+          <div className={InInputStyles.container}>
+            { loading && (
+              <Spinner inline message="Loading…" />
+            )}
+            {
+              value.auto && (
+                <InInputButton onClick={this.handleChangeButtonClick}>
+                  Edit
+                </InInputButton>
+              )
+            }
+            {
+              !value.auto && (
+                <InInputButton onClick={this.handleAutoButtonClicked}>
+                  Auto
+                </InInputButton>
+              )
+            }
+          </div>
+        </div>
       </DefaultFormField>
     )
   }
