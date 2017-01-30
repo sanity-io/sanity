@@ -121,6 +121,9 @@ export default class SlugInput extends React.Component {
         return this.updateValueWithUniquenessCheck(newVal)
       })
       .catch(err => {
+        if (err.isCanceled) {
+          return null
+        }
         console.error(err) // eslint-disable-line no-console
         this.setState({
           loading: false,
