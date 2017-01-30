@@ -19,7 +19,7 @@ export default class SanityFormBuilder extends React.PureComponent {
   static createEmpty = FormBuilder.createEmpty;
   static deserialize = FormBuilder.deserialize;
   static propTypes = {
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
   }
   handleChange = event => {
     const {onChange} = this.props

@@ -12,9 +12,5 @@ export default function previewResolver(type) {
   //   return type.previewComponent
   // }
 
-  if (type.name === 'reference') {
-    return Reference
-  }
-
   return SanityPreview
 }

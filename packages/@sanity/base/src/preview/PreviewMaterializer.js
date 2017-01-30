@@ -1,10 +1,5 @@
-import createSelector from './createSelector'
 import React, {PropTypes} from 'react'
-
-const select = createSelector((id, fields) => {
-  console.log('fetch doc with id %s', id, fields)
-  return Promise.resolve()
-})
+import select from './select'
 
 const pass = v => v
 
@@ -38,6 +33,7 @@ export default class PreviewMaterializer extends React.PureComponent {
   }
 
   materialize(value, type) {
+
     select(value, type.preview.fields)
       .then(res => {
         this.setState({result: res})

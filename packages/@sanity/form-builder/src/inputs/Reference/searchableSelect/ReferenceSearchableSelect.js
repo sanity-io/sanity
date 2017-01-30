@@ -2,14 +2,14 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../Preview'
+import {uniq} from 'lodash'
 
 export default class Reference extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     searchFn: PropTypes.func,
-    stringifyValue: PropTypes.func,
-    materializeReferences: PropTypes.func,
+    selectFn: PropTypes.func,
     onChange: PropTypes.func
   };
 
@@ -29,16 +29,13 @@ export default class Reference extends React.Component {
   }
 
   materializeValue(value) {
-    const {materializeReferences} = this.props
-
     if (value.isEmpty()) {
       return
     }
 
-    materializeReferences([value.refId])
-      .then(materializedRefs => {
-        return materializedRefs[0]
-      })
+    const toType = this.getMemberFieldForType()
+    // todo: needs type here again
+    select(value.refId)
       .then(materializedValue => {
         const {refCache} = this.state
         this.setState({
@@ -63,7 +60,7 @@ export default class Reference extends React.Component {
     }
   }
 
-  getItemFieldForType(typeName) {
+  getMemberFieldForType(typeName) {
     const {type} = this.props
     return type.to.find(ofType => ofType.type.name === typeName)
   }
@@ -149,7 +146,7 @@ export default class Reference extends React.Component {
   }
 
   renderItem = item => {
-    const type = this.getItemFieldForType(item._type)
+    const type = this.getMemberFieldForType(item._type)
     return (
       <Preview
         type={type}
@@ -180,7 +177,7 @@ export default class Reference extends React.Component {
         valueToString={this.valueToString}
         renderItem={this.renderItem}
         loading={fetching}
-        items={[materializedValue].concat(hits).filter(Boolean)}
+        items={uniq([materializedValue].concat(hits)).filter(Boolean)}
       />
     )
   }

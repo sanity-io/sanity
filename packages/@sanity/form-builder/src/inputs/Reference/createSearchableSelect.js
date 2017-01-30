@@ -2,7 +2,7 @@ import React from 'react'
 import ReferenceSearchableSelect from './searchableSelect/ReferenceSearchableSelect'
 import ValueContainer from './common/ValueContainer'
 
-export default function createSearchableSelect({search, materializeReferences, stringifyValue}) {
+export default function createSearchableSelect({select, search}) {
 
   // ReferenceInput.propTypes = ReferenceAutocomplete.propTypes
   ReferenceInput.valueContainer = ValueContainer
@@ -13,8 +13,7 @@ export default function createSearchableSelect({search, materializeReferences, s
     return (
       <ReferenceSearchableSelect
         searchFn={search}
-        stringifyValue={stringifyValue}
-        materializeReferences={materializeReferences}
+        selectFn={select}
         {...props}
       />
     )

@@ -1,6 +1,7 @@
 import {ReferenceInput} from '../../index'
-import {materializeReferences, search, fetch} from '../data/fetch'
+import {materializeReferences, referenceSearch, fetch} from '../data/fetch'
 import {once} from 'lodash'
+import {select} from 'part:@sanity/base/preview'
 
 const ReferenceBrowser = ReferenceInput.createBrowser({
   fetch,
@@ -8,9 +9,8 @@ const ReferenceBrowser = ReferenceInput.createBrowser({
 })
 
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
-  search,
-  stringifyValue: value => value.title,
-  materializeReferences
+  search: referenceSearch,
+  select: select
 })
 
 const ReferenceSelect = ReferenceInput.createSelect({

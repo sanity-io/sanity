@@ -1,4 +1,5 @@
 import client from 'part:@sanity/base/client'
+// import {utils as previewUtils} from 'part:@sanity/base/preview'
 import {unprefixType} from '../utils/unprefixType'
 import schema from 'part:@sanity/base/schema'
 import {uniq, flatten, compact} from 'lodash'
@@ -30,32 +31,24 @@ export function materializeReference(id) {
   return materializeReferences([id]).then(res => res[0])
 }
 
-export function fetchQuery(query, params) {
-  return client.fetch(query, params)
-}
-
 function quote(str) {
   return `"${str}"`
 }
 
-export function search(textTerm, type) {
-  const refTypes = type.to.map(toField => `${schema.name}.${toField.type}`).map(quote)
+export function referenceSearch(textTerm, type) {
 
-  const textFields = compact(flatten(
-    refTypes.map(refType =>
+  const textFields = uniq(compact(flatten(
+    type.to.map(refType =>
       refType.fields.map(field =>
         (field.type.name == 'string' ? field.name : null)
       )
     )
-  ))
+  )))
 
-  let constraints = `[${refTypes.join(', ')}] include _type`
-
-  const terms = textTerm.split(/\s+/)
-
-  constraints = `${constraints} && (${uniq(textFields).join(', ')}) match (${terms.map(term => `"${term}"`).join(', ')})`
-
-  const query = `*[${constraints}]`
+  const typeFilter = type.to.map(toField => `${schema.name}.${toField.type.name}`).map(quote)
+  const terms = textTerm.split(/\s+/).map(quote)
+  const constraints = `[${typeFilter.join(', ')}] include _type && (${textFields.join(', ')}) match (${terms.join(',')})`
+  const query = `*[${constraints}]` // todo: see if its possible to use selection from previews here
 
   return client.fetch(query)
     .then(response => response.map(unprefixType))

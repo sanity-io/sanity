@@ -5,7 +5,7 @@ import createSchema from 'part:@sanity/base/schema-creator'
 // makes a slug-string and prefixes it with something from the
 // schema and then calls the default slugify function.
 function slugifyWithPrefix(prefix) {
-  return function(type, slug, slugify) {
+  return function (type, slug, slugify) {
     let newSlug = slug
     if (slug.substring(0, prefix.length) === `${prefix}`) {
       newSlug = slug.substring(prefix.length, slug.length)
@@ -58,7 +58,23 @@ export default createSchema({
           of: [
             {
               title: 'Image',
-              type: 'image'
+              type: 'image',
+              preview: {
+                fields: {
+                  imageUrl: 'asset.url',
+                  title: 'asset.project'
+                }
+              },
+              fields: [
+                {
+                  name: 'caption',
+                  type: 'string',
+                  title: 'Caption',
+                  options: {
+                    isHighlighted: true
+                  }
+                }
+              ]
             }
           ]
         },

@@ -2,10 +2,6 @@ import props from 'promise-props'
 
 export default function createSelector(fetchWithSelection) {
   function get(subject, path) {
-    if (typeof path === 'string') {
-      return get(subject, path.split('.'))
-    }
-
     if (Array.isArray(path)) {
       const [head, ...tail] = path
       const nextSubject = subject[head]
@@ -30,16 +26,9 @@ export default function createSelector(fetchWithSelection) {
   }
 
   return function select(value, selection) {
-    if (typeof selection === 'string') {
-      return get(value, selection)
-    }
-    if (Array.isArray(selection)) {
-      return Promise.all(selection.map(s => get(value, s)))
-    }
-
     const keys = Object.keys(selection)
     return props(keys.reduce((acc, key) => {
-      acc[key] = select(value, selection[key])
+      acc[key] = get(value, selection[key].split('.'))
       return acc
     }, {}))
   }
