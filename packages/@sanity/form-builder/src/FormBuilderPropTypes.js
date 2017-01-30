@@ -5,12 +5,14 @@ function lazy(fn) {
   return (...args) => (cachedFn || (cachedFn = fn()))(...args)
 }
 
+let type
+
 const field = PropTypes.shape({
   name: PropTypes.string,
-  type: type
+  type: lazy(() => type)
 })
 
-const type = PropTypes.shape({
+type = PropTypes.shape({
   name: PropTypes.string,
   title: PropTypes.string,
   description: PropTypes.string,
