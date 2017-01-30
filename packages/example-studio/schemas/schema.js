@@ -2,16 +2,15 @@ import createSchema from 'part:@sanity/base/schema-creator'
 
 
 // Example of a custom slugify function that
-// makes a slug-string and prefixes it with something in the
-// schema definition for that slug field
+// makes a slug-string and prefixes it with something from the
+// schema and then calls the default slugify function.
 function slugifyWithPrefix(prefix) {
-  return function(type, slug) {
-    return `${prefix}-` + slug.toString()
-      .replace(`${prefix.toLowerCase()}-`, '')
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/--+/g, '-')
+  return function(type, slug, slugify) {
+    let newSlug = slug
+    if (slug.substring(0, prefix.length) === `${prefix}`) {
+      newSlug = slug.substring(prefix.length, slug.length)
+    }
+    return slugify(type, `${prefix}-${newSlug}`)
       .substring(0, type.options.maxLength)
   }
 }
@@ -33,12 +32,13 @@ export default createSchema({
         {
           name: 'slug',
           title: 'Slug',
+          description: 'The unique identifier for the blogpost in links and urls',
           type: 'slug',
           required: true,
           options: {
             source: 'title',
             maxLength: 64,
-            slugifyFn: slugifyWithPrefix('blogpost')
+            slugifyFn: slugifyWithPrefix('creepy')
           }
         },
         {

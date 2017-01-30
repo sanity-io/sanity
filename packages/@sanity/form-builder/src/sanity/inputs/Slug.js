@@ -1,7 +1,16 @@
 import client from 'part:@sanity/base/client'
 import {SlugInput} from '../../index'
 
-function validateSlug(type, slug, myDocId) {
+import slugify from 'slugify'
+slugify.extend({'☃': 'snowman'})
+slugify.extend({'✅': 'check'})
+
+// Default slugify for Sanity
+export function sanitySlugify(type, slug) {
+  return slug ? slugify(slug).toLowerCase() : undefined
+}
+
+export function validateSlug(type, slug, myDocId) {
   let query
   if (myDocId) {
     query = `*[${type.name}.current == $slug && _id != $id]`
@@ -19,13 +28,4 @@ function validateSlug(type, slug, myDocId) {
     })
 }
 
-// Default slugify for Sanity
-function slugify(type, slug) {
-  return slug.toString().toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w-]+/g, '')       // Remove all non-word chars
-    .replace(/--+/g, '-')         // Replace multiple - with single -
-    .substring(0, type.options.maxLength)
-}
-
-export default SlugInput.create({validate: validateSlug, slugify: slugify})
+export default SlugInput.create({validate: validateSlug, slugify: sanitySlugify})

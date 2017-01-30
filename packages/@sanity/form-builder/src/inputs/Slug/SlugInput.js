@@ -21,7 +21,11 @@ function tryPromise(fn) {
   return Promise.resolve().then(() => fn())
 }
 
-const vanillaState = {validationError: null, nonAutoSlug: '', loading: false}
+const vanillaState = {
+  validationError: null,
+  inputText: undefined,
+  loading: false
+}
 
 export default class SlugInput extends React.Component {
   static passDocument = true;
@@ -75,19 +79,26 @@ export default class SlugInput extends React.Component {
     return tryPromise(() => {
       if (!value.current) {
         this.updateValue(value)
-        return Promise.resolve(null)
+        this.setState({loading: false, validationError: null})
+        return Promise.resolve()
       }
+      this.setState({loading: true, validationError: null})
       return checkValidityFn(type, value.current, docId)
     })
       .then(validationError => {
         if (!validationError) {
           this.updateValue(value)
-          return
+          this.setState({loading: false, validationError: null})
+          return Promise.resolve()
         }
         const proposedNewCurrent = `${value.current}-1`
         const newVal = {current: proposedNewCurrent, auto: false}
-        this.setState({validationError: validationError.toString()})
-        this.updateValueWithUniquenessCheck(newVal)
+        this.setState({
+          loading: false,
+          inputText: proposedNewCurrent,
+          validationError: validationError.toString()
+        })
+        return this.updateValueWithUniquenessCheck(newVal)
       })
       .catch(err => {
         console.error(err) // eslint-disable-line no-console
@@ -97,6 +108,7 @@ export default class SlugInput extends React.Component {
             + 'See javascript console for more info.'
         })
         this.updateValue({current: value.current, auto: false})
+        return Promise.resolve()
       })
   }
 
@@ -106,7 +118,7 @@ export default class SlugInput extends React.Component {
     }
     const {type, slugifyFn} = this.props
     if (type.options.slugifyFn) {
-      return type.options.slugifyFn(type, text)
+      return type.options.slugifyFn(type, text, slugifyFn)
     }
     if (slugifyFn) {
       return this.props.slugifyFn(type, text)
@@ -124,13 +136,16 @@ export default class SlugInput extends React.Component {
     if (oldDocId !== newDocId) {
       this.setState(vanillaState)
     }
-
-    const fromSource = document.getAttribute(type.options.source).get()
-    const newCurrent = this.slugify(fromSource)
-    if (value.auto && value.current !== newCurrent) {
+    let newCurrent
+    if (value.auto) {
+      const fromSource = document.getAttribute(type.options.source).get()
+      newCurrent = this.slugify(fromSource)
+    }
+    if (newCurrent && value.current !== newCurrent) {
       const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
         this.updateValueWithUniquenessCheck(newVal)
+        this.setState({inputText: newCurrent})
         return
       }
       this.updateValue(newVal)
@@ -139,11 +154,12 @@ export default class SlugInput extends React.Component {
 
   handleChange = event => {
     const {checkValidityFn, value} = this.props
-    const current = event.target.value ? this.slugify(event.target.value) : undefined
-    this.setState({nonAutoSlug: current})
-    const newVal = {current: current, auto: value.auto}
+    const newCurrent = event.target.value
+      ? this.slugify(event.target.value.toString())
+      : undefined
+    this.setState({inputText: newCurrent})
+    const newVal = {current: newCurrent, auto: value.auto}
     if (checkValidityFn) {
-      this.setState({loading: true, validationError: null})
       this.updateValueWithUniquenessCheck(newVal)
       return
     }
@@ -152,18 +168,18 @@ export default class SlugInput extends React.Component {
 
   handleChangeButtonClick = event => {
     const {value} = this.props
-    this.setState({nonAutoSlug: this.state.validationError ? '' : value.current})
+    this.setState({inputText: this.state.validationError ? undefined : value.current})
     this.updateValue({current: value.current, auto: false})
   }
 
   handleAutoButtonClicked = event => {
     const {value} = this.props
-    this.updateValue({slug: value.current, auto: true})
+    this.updateValue({current: value.current, auto: true})
   }
 
   render() {
     const {value, type, validation, level} = this.props
-    const {loading, validationError, nonAutoSlug} = this.state
+    const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
       description: type.description,
@@ -183,7 +199,7 @@ export default class SlugInput extends React.Component {
             disabled={value.auto}
             placeholder={type.placeholder}
             onChange={this.handleChange}
-            value={nonAutoSlug || value.current}
+            value={inputText || value.current}
           />
           <div className={InInputStyles.container}>
             { loading && (
