@@ -119,7 +119,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     return (
       <Preview
         value={item}
-        style={listView}
+        view={listView}
         type={type}
       />
     )

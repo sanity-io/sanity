@@ -38,7 +38,7 @@ export default class DefaultList extends React.Component {
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
-        index: PropTypes.string,
+        index: PropTypes.number,
         content: PropTypes.node,
         extraContent: PropTypes.node,
         icon: PropTypes.node
