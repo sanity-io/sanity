@@ -62,7 +62,7 @@ export default createSchema({
               preview: {
                 fields: {
                   imageUrl: 'asset.url',
-                  title: 'asset.project'
+                  title: 'caption'
                 }
               },
               fields: [
