@@ -1,4 +1,4 @@
-import {pick, keyBy} from 'lodash'
+import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import guessPreviewConfig from '../preview/guessPreviewConfig'
 
@@ -7,7 +7,6 @@ const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 
 
 const OBJECT_CORE = {
   name: 'object',
-  title: 'Object',
   type: null,
   jsonType: 'object'
 }
@@ -42,6 +41,7 @@ export const ObjectType = {
     const options = {...(subTypeDef.options || {})}
     const parsed = Object.assign(pick(OBJECT_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: OBJECT_CORE,
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
       fields: subTypeDef.fields.map(fieldDef => {
         const {name, ...rest} = fieldDef
@@ -74,7 +74,10 @@ export const ObjectType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            title: extensionDef.title || subTypeDef.title,
+            type: parent
+          })
           return subtype(current)
         }
       }

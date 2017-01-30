@@ -1,4 +1,4 @@
-import {pick, omit} from 'lodash'
+import {pick} from 'lodash'
 import {lazyGetter} from './utils'
 import guessPreviewConfig from '../preview/guessPreviewConfig'
 import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
@@ -15,7 +15,7 @@ const OVERRIDABLE_FIELDS = [
 
 const IMAGE_CORE = {
   name: 'image',
-  type: 'object',
+  type: null,
   jsonType: 'object'
 }
 
