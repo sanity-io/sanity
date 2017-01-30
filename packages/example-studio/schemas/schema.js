@@ -57,7 +57,7 @@ export default createSchema({
           type: 'array',
           options: {
             view: 'grid',
-            sortable: false
+            sortable: true
           },
           of: [
             {

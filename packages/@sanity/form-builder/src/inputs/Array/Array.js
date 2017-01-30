@@ -271,7 +271,17 @@ export default class Arr extends React.Component {
     const sortable = get(type, 'options.sortable') !== false
 
     if (type.options && type.options.view == 'grid') {
-      return <GridList renderItem={this.renderItem} items={value.value} />
+      return (
+        <GridList
+          renderItem={this.renderItem}
+          items={value.value}
+          onSelect={this.handleItemEdit}
+          onSortEnd={this.handleMove}
+          focusedItem={this.state.lastEditedItem}
+          sortable={sortable}
+          useDragHandle
+        />
+      )
     }
 
     return (

@@ -44,7 +44,7 @@ export default class ItemPreview extends React.Component {
   render() {
     const {value, type, view} = this.props
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} ${styles[view]}`}>
         <div className={styles.functions}>
           <Button
             kind="simple"

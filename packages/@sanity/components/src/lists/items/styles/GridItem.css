@@ -46,3 +46,10 @@
   opacity: 0.7;
   transition: all 0 linear;
 }
+
+.dragHandle {
+  position: absolute;
+  top: var(--small-padding);
+  left: var(--small-padding);
+  z-index: 2;
+}

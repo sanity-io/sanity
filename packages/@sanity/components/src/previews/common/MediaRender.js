@@ -65,7 +65,13 @@ export default class MediaRender extends React.Component {
     } else if (media) {
       return <div className={styles.media}>{media}</div>
     } else { // eslint-disable-line
-      return <div>No media</div>
+      return (
+        <div className={styles.root}>
+          <div className={styles.noMedia}>
+            <div className={styles.noMediaText}>No media</div>
+          </div>
+        </div>
+      )
     }
   }
 }
