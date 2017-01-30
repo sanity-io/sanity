@@ -144,11 +144,10 @@ export default class ImageInputFieldset extends React.PureComponent {
               (status != 'error' && status != 'pending') && hotspotImage && hotspotImage.imageUrl && (
                 <div className={styles.functions}>
                   <Button icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
-                    <ImageSelect name={fieldName} onSelect={this.props.onSelect}>
-                      {
-                        !showContent && 'Replace'
-                      }
-                    </ImageSelect>
+                    {
+                      showContent ? '' : 'Replace'
+                    }
+                    <ImageSelect name={fieldName} onSelect={this.props.onSelect} className={styles.replaceImageSelect} />
                   </Button>
                   {
                     onEdit && (
