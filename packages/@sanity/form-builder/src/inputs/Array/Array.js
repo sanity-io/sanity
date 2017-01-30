@@ -279,7 +279,6 @@ export default class Arr extends React.Component {
           onSortEnd={this.handleMove}
           focusedItem={this.state.lastEditedItem}
           sortable={sortable}
-          useDragHandle
         />
       )
     }
