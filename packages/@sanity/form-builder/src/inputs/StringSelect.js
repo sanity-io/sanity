@@ -36,14 +36,11 @@ export default class StringSelect extends React.PureComponent {
   }
 
   handleChange(item) {
-    console.log('CHANGE', item)
     if (typeof (item) === 'object') {
-      console.log('object', item.value)
       this.props.onChange({patch: {type: 'set', value: item.value}})
     }
 
     if (typeof (item) === 'string') {
-      console.log('string', item)
       this.props.onChange({patch: {type: 'set', value: item}})
     }
   }
