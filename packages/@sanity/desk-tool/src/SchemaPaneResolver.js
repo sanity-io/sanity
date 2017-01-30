@@ -80,9 +80,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     // Hack
     // Panes needs to be resized after the content is loaded
     // Look at this later
-    if (!this.hasBeenResized) {
-      this.handleResize()
-    }
+    this.handleResize()
   }
 
   checkRedirect() {
@@ -215,24 +213,25 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.setState({
       navTranslateX: 0,
       editorWidth: '100%',
-      navIsMinimized: false
+      navIsMinimized: false,
+      editorTranslateX: 0
     })
   }
 
   handleResize = debounceRAF(() => {
+    // Todo optimize later so that we dont resize when we dont need to
+    // if (this.initialWindowWidth === window.innerWidth) {
+    //   return
+    // }
+
     // Uses the css the determine if it should reposition with an Media Query
     // check if the window has resized
-
-    if (this.initialWindowWidth === window.innerWidth) {
-      return
-    }
-
     const computedStyle = window.getComputedStyle(this.containerElement, '::before')
     const contentValue = computedStyle.getPropertyValue('content')
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
 
-    if (!this.shouldReposition && !this.canReposition()) {
+    if (!this.shouldReposition || !this.canReposition()) {
       // reset to default and don't do more
       this.resetPosition()
       return
@@ -275,12 +274,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const {navTranslateX} = this.state
     this.oldNavTranslateX = navTranslateX
 
-    if (!this.state.navIsMinimized) {
+    if (!this.state.navIsMinimized || !this.shouldReposition) {
       return
     }
 
-    if (!this.canReposition() && !this.shouldReposition && navTranslateX == 0) {
-      //this.resetPosition()
+    if (!this.canReposition() || !this.shouldReposition || navTranslateX == 0) {
+      this.resetPosition()
       return
     }
 
@@ -295,23 +294,27 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   handlePanesMouseLeave = event => {
-    this.setState({
-      navTranslateX: Math.min(this.oldNavTranslateX, 0),
-      editorTranslateX: 0,
-      navIsMinimized: true,
-      navIsHovered: false
-    })
+    if (this.shouldReposition) {
+      this.setState({
+        navTranslateX: Math.min(this.oldNavTranslateX, 0),
+        editorTranslateX: 0,
+        navIsMinimized: true,
+        navIsHovered: false
+      })
+    }
   }
 
   handlePanesClick = event => {
     const {navWidth, oldNavTranslateX} = this
     const navVisibleWidth = navWidth + oldNavTranslateX
-    this.setState({
-      navTranslateX: 0,
-      editorTranslateX: navWidth - navVisibleWidth,
-      navIsMinimized: false,
-      navIsClicked: true
-    })
+    if (this.shouldReposition) {
+      this.setState({
+        navTranslateX: 0,
+        editorTranslateX: navWidth - navVisibleWidth,
+        navIsMinimized: false,
+        navIsClicked: true
+      })
+    }
   }
 
   render() {
