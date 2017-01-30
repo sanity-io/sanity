@@ -9,10 +9,7 @@ export default class StringSelect extends React.PureComponent {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
-    value: PropTypes.shape({
-      value: PropTypes.string,
-      title: PropTypes.string
-    }),
+    value: PropTypes.string,
     focus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
@@ -39,7 +36,16 @@ export default class StringSelect extends React.PureComponent {
   }
 
   handleChange(item) {
-    this.props.onChange({patch: {type: 'set', value: item}})
+    console.log('CHANGE', item)
+    if (typeof (item) === 'object') {
+      console.log('object', item.value)
+      this.props.onChange({patch: {type: 'set', value: item.value}})
+    }
+
+    if (typeof (item) === 'string') {
+      console.log('string', item)
+      this.props.onChange({patch: {type: 'set', value: item}})
+    }
   }
 
   handleFocus = () => {
@@ -64,10 +70,19 @@ export default class StringSelect extends React.PureComponent {
     const {value, type, level} = this.props
 
     // Support array of string if not objects
-    const items = type.options.list
+    let items = type.options.list
+
+    if (typeof (items[0]) === 'string') {
+      items = items.map(item => {
+        return {
+          title: item,
+          value: item
+        }
+      })
+    }
 
     const currentItem = items.find(item => {
-      return item == value
+      return item.value == value
     })
 
     if (type.options.layout == 'radio') {

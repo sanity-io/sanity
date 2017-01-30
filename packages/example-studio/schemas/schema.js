@@ -52,8 +52,20 @@ export default createSchema({
           type: 'boolean'
         },
         {
+          name: 'imageGallery',
+          title: 'Image gallery',
+          type: 'array',
+          of: [
+            {
+              title: 'Image',
+              type: 'image'
+            }
+          ]
+        },
+
+        {
           name: 'select',
-          title: 'Select',
+          title: 'Select string',
           type: 'string',
           options: {
             list: [
@@ -70,6 +82,15 @@ export default createSchema({
                 value: 'three'
               }
             ]
+          }
+        },
+        {
+          name: 'selectObjectOfString',
+          title: 'Select string in object',
+          description: '',
+          type: 'string',
+          options: {
+            list: ['one', 'two', 'three']
           }
         },
         {
