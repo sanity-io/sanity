@@ -4,7 +4,7 @@ import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import {uniqueId, debounce} from 'lodash'
+import {isEqual, uniqueId, debounce} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 // Fallback slugify function if not defined in factory function
@@ -156,21 +156,20 @@ export default class SlugInput extends React.Component {
     // Reset state if document is changed
     const oldDocId = this.props.document.getAttribute('_id').get()
     const newDocId = document.getAttribute('_id').get()
-
     if (oldDocId !== newDocId) {
       this.setState(vanillaState)
+      return
     }
+
+    // If slug is set to auto and the source field has changed,
+    // verify and set the new slug if it is different from the current one
     let newCurrent
     if (value.auto) {
       const newFromSource = document.getAttribute(type.options.source).get()
       newCurrent = this.slugify(newFromSource)
     }
-    if (!value.auto) {
-      newCurrent = this.slugify(value.current)
-    }
 
-    if (newCurrent
-        && (value.current !== newCurrent || value.auto !== this.props.value.auto)) {
+    if (newCurrent && newCurrent !== value.current) {
       const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
         this.updateValueWithUniquenessCheck(newVal)
