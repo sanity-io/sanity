@@ -81,13 +81,17 @@
   height: calc(var(--radio-button-size) * 1.5);
   border-radius: 50%;
   background-color: transparent;
+  transform: scale(0.5);
+  transition: background-color 0.1s  linear, transform 0.15s linear;
 
   @nest .isFocused & {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--focus-color);
+    transform: scale(1);
   }
 
   @nest .root:active & {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--focus-color);
+    transform: scale(1);
   }
 }
 
@@ -105,7 +109,6 @@
   border-radius: 50%;
 
   @nest .isChecked & {
-    /* background: $radio-color url("#{$radio-image-path}/tick.svg?embed"); */
     background-color: var(--radio-color);
     transform: scale(0.7);
   }
