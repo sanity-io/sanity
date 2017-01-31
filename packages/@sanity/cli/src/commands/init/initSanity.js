@@ -13,7 +13,7 @@ import {bootstrapSanity} from './bootstrap'
 
 export default async function initSanity(args, context) {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
-  output.print('FOO This utility walks you through creating a Sanity installation.')
+  output.print('This utility walks you through creating a Sanity installation.')
   output.print('Press ^C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
