@@ -15,9 +15,9 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
     contentType: PropTypes.oneOf(['types', 'documents']),
-    onSetListView: PropTypes.func,
+    onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func,
-    listView: PropTypes.string,
+    listLayout: PropTypes.string,
     type: PropTypes.object,
     onSelect: PropTypes.func,
     router: PropTypes.shape({
@@ -26,7 +26,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
   }
 
   static defaultProps = {
-    listView: 'default',
+    listLayout: 'default',
     onSelect() {}
   }
 
@@ -37,7 +37,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
   renderListView() {
     const {items, renderItem, router} = this.props
-    const listView = this.props.listView
+    const listLayout = this.props.listLayout
     const {selectedDocumentId} = router.state
 
     const selectedItem = find(items, item => {
@@ -45,7 +45,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     })
 
 
-    switch (listView) { // eslint-disable-line default-case
+    switch (listLayout) { // eslint-disable-line default-case
       case 'media':
         return <GridList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
 
@@ -57,12 +57,12 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
     }
 
-    console.error(new Error(`Invalid list view option: ${listView}`)) // eslint-disable-line no-console
+    console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
     return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
   }
 
   render() {
-    const {loading, listView, items, type, router} = this.props
+    const {loading, listLayout, items, type, router} = this.props
 
     const {selectedType, action, selectedDocumentId} = router.state
 
@@ -73,7 +73,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         className={`
           ${isActive ? styles.isActive : styles.isInactive}
           ${styles[`contentType--${this.props.contentType}`]}
-          ${styles[`view--${listView}`]}
+          ${styles[`list-layout--${listLayout}`]}
         `}
       >
         <div className={styles.top}>
@@ -81,7 +81,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
             {type.title}
           </div>
           <PaneMenuContainer
-            onSetListView={this.props.onSetListView}
+            onSetListLayout={this.props.onSetListLayout}
             onSetSorting={this.props.onSetSorting}
           />
         </div>

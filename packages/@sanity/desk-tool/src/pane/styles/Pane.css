@@ -27,12 +27,12 @@
   }
 }
 
-.view--card {
+.list-layout--card {
   width: 50rem;
   max-width: 80vw;
 }
 
-.view--media {
+.list-layout--media {
   width: 50rem;
   max-width: 80vw;
 }

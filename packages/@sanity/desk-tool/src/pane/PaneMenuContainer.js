@@ -7,7 +7,7 @@ import styles from './styles/Pane.css'
 
 class PaneMenuContainer extends React.PureComponent {
   static propTypes = {
-    onSetListView: PropTypes.func,
+    onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func
   }
 
@@ -33,8 +33,8 @@ class PaneMenuContainer extends React.PureComponent {
   }
 
   handleMenuAction = item => {
-    if (item.action === 'setListView') {
-      this.props.onSetListView(item.key)
+    if (item.action === 'setListLayout') {
+      this.props.onSetListLayout(item.key)
     }
 
     if (item.action === 'setSorting') {

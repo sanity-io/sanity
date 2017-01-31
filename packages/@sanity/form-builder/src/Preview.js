@@ -3,7 +3,7 @@ import React, {PropTypes} from 'react'
 export default class Preview extends React.Component {
 
   static propTypes = {
-    view: PropTypes.string,
+    layout: PropTypes.string,
     value: PropTypes.object,
     type: PropTypes.object.isRequired
   };
@@ -13,12 +13,12 @@ export default class Preview extends React.Component {
   };
 
   render() {
-    const {type, value, view} = this.props
+    const {type, value, layout} = this.props
 
     const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type)
 
     if (PreviewComponent) {
-      return <PreviewComponent type={type} value={value} view={view} />
+      return <PreviewComponent type={type} value={value} layout={layout} />
     }
     return <div>No preview for {JSON.stringify(value)}</div>
   }

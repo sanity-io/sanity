@@ -32,27 +32,27 @@ const menuItems = [
   {
     title: 'List',
     icon: IconList,
-    action: 'setListView',
+    action: 'setListLayout',
     key: 'default',
     divider: true
   },
   {
     title: 'Details',
     icon: IconDetails,
-    action: 'setListView',
+    action: 'setListLayout',
     key: 'detail'
   },
   {
     title: 'Thumbnails',
     icon: IconThumbnails,
-    action: 'setListView',
+    action: 'setListLayout',
     key: 'media'
 
   },
   {
     title: 'Cards',
     icon: IconThumbnails,
-    action: 'setListView',
+    action: 'setListLayout',
     key: 'card'
 
   },
