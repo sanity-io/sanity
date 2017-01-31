@@ -17,7 +17,8 @@ class GlobalSearch extends React.Component {
     placeholder: PropTypes.string,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    listContainerClassName: PropTypes.string
   }
 
   static defaultProps = {
@@ -121,7 +122,7 @@ class GlobalSearch extends React.Component {
     const allItems = topItems.concat(items)
 
     // select first
-    if (!selectedItem) {
+    if (!selectedItem && topItems) {
       this.setState({
         selectedItem: topItems && topItems[0]
       })
@@ -129,9 +130,17 @@ class GlobalSearch extends React.Component {
 
     const currentIndex = allItems.indexOf(selectedItem)
 
+
     if (selectedItem && currentIndex > 0) {
       this.setState({
         selectedItem: allItems[currentIndex - 1]
+      })
+    }
+
+    // select last
+    if (!selectedItem && currentIndex < 0) {
+      this.setState({
+        selectedItem: allItems[allItems.length - 1]
       })
     }
   }
@@ -184,7 +193,7 @@ class GlobalSearch extends React.Component {
   }
 
   render() {
-    const {topItems, items, isOpen, label, placeholder, isSearching, renderItem} = this.props
+    const {topItems, items, isOpen, label, placeholder, isSearching, renderItem, listContainerClassName} = this.props
     const {selectedItem} = this.state
     return (
       <div className={styles.root}>
@@ -209,7 +218,7 @@ class GlobalSearch extends React.Component {
         </div>
         {
           ((topItems && topItems.length > 0) || (items && items.length > 0)) && (
-            <div className={isOpen ? styles.listContainer : styles.listContainerClosed}>
+            <div className={isOpen ? `${styles.listContainer} ${listContainerClassName || ''}` : styles.listContainerClosed}>
               <ul className={styles.items}>
                 {
                   topItems && topItems.length > 0 && topItems.map((item, i) => {

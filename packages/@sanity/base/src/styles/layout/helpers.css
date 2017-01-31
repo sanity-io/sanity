@@ -11,7 +11,7 @@
   padding: 0;
 }
 
-.noLink {
+.noLink, .resetLink {
   color: inherit;
   text-decoration: none;
 

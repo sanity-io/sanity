@@ -1,0 +1,8 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.listContainer {
+    margin-left: calc(var(--medium-padding) * -1);
+    margin-top: var(--medium-padding);
+    margin-right: calc(var(--medium-padding) * -2);
+    min-width: 100%;
+}

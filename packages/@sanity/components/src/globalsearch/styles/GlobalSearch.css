@@ -67,6 +67,15 @@
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
+.link {
+  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  display: block;
+
+  &:active {
+    background-color: var(--selected-item-color-hover);
+  }
+}
+
 .item {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
