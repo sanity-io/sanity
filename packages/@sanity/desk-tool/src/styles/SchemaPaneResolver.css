@@ -22,17 +22,6 @@
   }
 }
 
-@keyframes click-hint {
-  0% {
-    background-color: color(red a(40%));
-    opacity: 0
-  }
-  100% {
-    background-color: color(red a(50%));
-    opacity: 1;
-  }
-}
-
 .container {
   height: 100%;
   width: 100%;
@@ -45,30 +34,27 @@
   bottom: 0;
 
   @nest &::before {
-    content: "shouldReposition";
+    content: "shouldNotReposition";
     display: none;
   }
 
   @media (--screen-medium) {
     box-shadow: 2px 2px 5px var(--gray-light) inset;
-  }
-
-  @media (--max-screen-medium) {
     @nest &::before {
-      content: "shouldNotReposition";
+      content: "shouldReposition";
     }
   }
 }
 
 .navigationPanesContainer {
   width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: var(--zindex-pane);
 
   @media (--screen-medium) {
+    z-index: var(--zindex-pane);
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
     width: auto;
     min-width: var(--navMinWidth);
     background-color: rgba(255,255,255,0.95);
@@ -86,11 +72,6 @@
     @nest &::before {
     }
   }
-
-  /*&:hover {
-    transform: translateX(0) !important;
-    opacity: 1;
-  }*/
 }
 
 .navigationPanesContainerIsMinimized {
@@ -122,20 +103,24 @@
 
 .editorContainer {
   padding: var(--small-padding);
+  max-width: 100%;
   box-sizing: border-box;
   height: 100%;
+  width: 100%;
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   transition: transform 0.12s ease-out, opacity 0.12s linear;
 
+
   @media (--screen-medium) {
     width: auto;
-    min-width: var(--screen-medium-break);
+    min-width: 32em;
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     padding: var(--large-padding);
+    margin-left: 0;
   }
 }
 
