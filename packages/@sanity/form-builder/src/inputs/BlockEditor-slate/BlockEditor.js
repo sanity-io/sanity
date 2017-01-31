@@ -76,16 +76,26 @@ export default class BlockEditor extends React.Component {
     const ofType = type.of.find(memberType => memberType.type === type)
     const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofType)
 
-    const nextState = value.state
-      .transform()
-      .insertBlock({
+    let transform = value.state.transform()
+
+    if (ofType.options && ofType.options.inline) {
+      transform = transform.insertInline({
         type: type,
         isVoid: true,
         data: {
           value: addItemValue
         }
       })
-      .apply()
+    } else {
+      transform = transform.insertBlock({
+        type: type,
+        isVoid: true,
+        data: {
+          value: addItemValue
+        }
+      })
+    }
+    const nextState = transform.apply()
 
     onChange({patch: createLocalStatePatch(nextState)})
   }
