@@ -16,7 +16,7 @@ export default class ItemPreview extends React.Component {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     onRemove: PropTypes.func,
-    view: PropTypes.oneOf('media', 'default')
+    view: PropTypes.oneOf(['media', 'default'])
   };
 
   static contextTypes = {
