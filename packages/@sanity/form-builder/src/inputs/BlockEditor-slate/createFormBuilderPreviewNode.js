@@ -6,11 +6,13 @@ import OffsetKey from 'slate/lib/utils/offset-key'
 import Selection from 'slate/lib/models/selection'
 import ItemForm from './ItemForm'
 import ItemPreview from './ItemPreview'
-import styles from './styles/BlockPreview.css'
+import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import blockStyles from './styles/BlockPreview.css'
+import inlineStyles from './styles/InlinePreview.css'
 
-const stopPropagation = event => event.stopPropagation()
 
 export default function createFormBuilderPreviewNode(ofField) {
+
   return class PreviewNode extends React.Component {
     static propTypes = {
       node: PropTypes.object,
@@ -24,7 +26,7 @@ export default function createFormBuilderPreviewNode(ofField) {
       this._containerElement = null
       this._dropTarget = null
       this._editorNode = null
-      this.state = {isDragging: false, isFocused: false}
+      this.state = {isDragging: false, isFocused: false, isEditing: false}
     }
 
     componentDidMount() {
@@ -93,13 +95,6 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     handleDragStart = event => {
-      // Cancel event if not dragging the containerelement itself,
-      // so we can't drag single elements (like image preview, texts etc) out of the type itself
-      if (event.target !== this._containerElement) {
-        event.preventDefault()
-        this.setState({isDragging: false})
-        return
-      }
       if (IS_FIREFOX) {
         // Firefox needs this in able for dragging to work
         event.dataTransfer.setData('text/plain', '')
@@ -163,6 +158,10 @@ export default function createFormBuilderPreviewNode(ofField) {
       return this.props.node.data.get('value')
     }
 
+    handleClose = () => {
+      this.setState({isEditing: false})
+    }
+
     renderPreview() {
       return (
         <ItemPreview
@@ -173,8 +172,12 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     renderInput() {
-      return this.state.isFocused && !this.state.isDragging ? (
-        <div onClick={stopPropagation}>
+      return this.state.isEditing && !this.state.isDragging ? (
+        <EditItemPopOver
+          scrollContainerId={this.props.editor.props.formBuilderInputId}
+          title={this.props.node.title}
+          onClose={this.handleClose}
+        >
           <ItemForm
             onDrop={this.handleCancelEvent}
             type={ofField}
@@ -182,7 +185,7 @@ export default function createFormBuilderPreviewNode(ofField) {
             value={this.getValue()}
             onChange={this.handleChange}
           />
-        </div>
+        </EditItemPopOver>
       ) : null
     }
 
@@ -191,10 +194,19 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     render() {
+      let styles
+      let NodeTag = 'div'
+      if (ofField.options && ofField.options.inline) {
+        styles = inlineStyles
+        NodeTag = 'span'
+      } else {
+        styles = blockStyles
+      }
+
       const className = this.state.isFocused ? styles.active : styles.root
 
       return (
-        <div
+        <NodeTag
           {...this.props.attributes}
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
@@ -206,9 +218,14 @@ export default function createFormBuilderPreviewNode(ofField) {
           ref={this.refContainerElement}
           className={className}
         >
-          {this.renderPreview()}
-          {this.renderInput()}
-        </div>
+          <span className={styles.previewContainer} onClick={this.handleToggleEdit}>
+            {this.renderPreview()}
+          </span>
+
+          <div className={styles.inputContainer}>
+            {this.renderInput()}
+          </div>
+        </NodeTag>
       )
     }
   }

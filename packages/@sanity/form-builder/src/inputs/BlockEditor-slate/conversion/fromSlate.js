@@ -75,6 +75,18 @@ export const SERIALIZE = {
   },
 
   inline(inline, context = {}) {
+    const validTypeNames = context.type.of.map(ofType => ofType.type)
+
+    // Is it a formbuilder inline field?
+    if (validTypeNames.includes(inline.type)) {
+      const value = inline.data.get('value')
+      return {
+        _type: inline.type,
+        key: inline.key,
+        ...value.toJSON()
+      }
+    }
+    // Regular slate inline node
     return Object.assign(
       {
         key: inline.key,

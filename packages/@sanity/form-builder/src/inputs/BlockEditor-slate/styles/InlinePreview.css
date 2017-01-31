@@ -1,0 +1,16 @@
+.root {
+  /* User select must be forced when the elements are draggable, or they will visible as selected */
+  user-select: all;
+  cursor: move;
+  @nest &:hover {
+
+  }
+}
+.active {
+  composes: root;
+  border-color: #9d261d;
+}
+
+.previewContainer {
+  display: inline-block;
+}
