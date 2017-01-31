@@ -34,12 +34,8 @@ class GlobalSearch extends React.Component {
     items: []
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      selectedItem: null
-    }
+  state = {
+    selectedItem: null
   }
 
   componentDidMount() {
@@ -55,10 +51,6 @@ class GlobalSearch extends React.Component {
 
   handleClickOutside = () => {
     this.props.onClose()
-  }
-
-  onSearch = query => {
-    this.props.onSearch()
   }
 
   setFocus = () => {
