@@ -20,7 +20,7 @@ export default class PreviewWrapper extends React.PureComponent {
     return (
       <div className={styles.root}>
         <PreviewComponent
-          view="default"
+          layout="default"
           value={value.serialize()}
           type={type}
           schema={this.context.formBuilder.schema}

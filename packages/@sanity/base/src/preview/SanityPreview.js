@@ -19,16 +19,16 @@ const previewComponentMap = {
 export default class SanityPreviewComponent extends React.Component {
 
   static propTypes = {
-    view: PropTypes.oneOf(Object.keys(previewComponentMap)),
+    layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
     type: PropTypes.object.isRequired
   };
 
   render() {
-    const {view, value, type} = this.props
+    const {layout, value, type} = this.props
 
-    const PreviewComponent = previewComponentMap.hasOwnProperty(view)
-      ? previewComponentMap[view]
+    const PreviewComponent = previewComponentMap.hasOwnProperty(layout)
+      ? previewComponentMap[layout]
       : previewComponentMap.default
 
     return (

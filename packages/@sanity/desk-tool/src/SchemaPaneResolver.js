@@ -34,11 +34,11 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   title: dataAspects.getDisplayName(typeName)
 }))
 
-function readListViewSettings() {
-  return JSON.parse(window.localStorage.getItem('desk-tool.listview-settings') || '{}')
+function readListLayoutSettings() {
+  return JSON.parse(window.localStorage.getItem('desk-tool.listlayout-settings') || '{}')
 }
-function writeListViewSettings(settings) {
-  window.localStorage.setItem('desk-tool.listview-settings', JSON.stringify(settings))
+function writeListLayoutSettings(settings) {
+  window.localStorage.setItem('desk-tool.listlayout-settings', JSON.stringify(settings))
 }
 
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
@@ -49,7 +49,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   state = {
-    listViewSettings: readListViewSettings(),
+    listLayoutSettings: readListLayoutSettings(),
     sorting: '_updatedAt desc',
     navTranslateX: 0,
     editorWidth: '100%',
@@ -113,13 +113,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   renderDocumentPaneItem = item => {
     const {selectedType} = this.props.router.state
-    const listView = this.getListViewForType(selectedType)
+    const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
 
     return (
       <Preview
         value={item}
-        view={listView}
+        layout={listLayout}
         type={type}
       />
     )
@@ -129,13 +129,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const schemaType = schema.get(typeName)
     const previewConfig = schemaType.preview
 
-    const query = `${schema.name}.${schemaType.name}[limit: 50, order: ${this.state.sorting}] {${
+    const query = `${schema.name}.${schemaType.name}[limit: 200, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
     }}`
 
     return (
-      <QueryContainer query={query} type={schemaType} listView={this.getListViewForType(schemaType.name)}>
-        {({result, loading, error, type, listView}) => {
+      <QueryContainer query={query} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
+        {({result, loading, error, type, listLayout}) => {
           if (error) {
             return (
               <FullscreenDialog kind="danger" title="An error occurred while loading items" isOpen>
@@ -162,9 +162,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               loading={loading}
               items={items}
               renderItem={this.renderDocumentPaneItem}
-              onSetListView={this.handleSetListView}
+              onSetListLayout={this.handleSetListLayout}
               onSetSorting={this.handleSetSort}
-              listView={listView}
+              listLayout={listLayout}
             />
           )
         }}
@@ -173,17 +173,17 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
 
-  handleSetListView = listView => {
+  handleSetListLayout = listLayout => {
     const {selectedType} = this.props.router.state
-    const nextSettings = Object.assign(readListViewSettings(), {
-      [selectedType]: listView
+    const nextSettings = Object.assign(readListLayoutSettings(), {
+      [selectedType]: listLayout
     })
-    writeListViewSettings(nextSettings)
-    this.setState({listViewSettings: nextSettings})
+    writeListLayoutSettings(nextSettings)
+    this.setState({listLayoutSettings: nextSettings})
   }
 
-  getListViewForType(type) {
-    return this.state.listViewSettings[type] || 'default'
+  getListLayoutForType(type) {
+    return this.state.listLayoutSettings[type] || 'default'
   }
 
   handleSetSort = sorting => {

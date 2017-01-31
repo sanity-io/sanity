@@ -56,7 +56,7 @@ export default createSchema({
           title: 'Image gallery',
           type: 'array',
           options: {
-            view: 'grid',
+            layout: 'grid',
             sortable: true
           },
           of: [
