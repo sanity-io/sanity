@@ -1,7 +1,10 @@
 import {ReferenceInput} from '../../index'
+import client from 'part:@sanity/base/client'
+
 import {materializeReferences, referenceSearch, fetch} from '../data/fetch'
 import {once} from 'lodash'
 import {select} from 'part:@sanity/base/preview'
+import {unprefixType} from '../utils/unprefixType'
 
 const ReferenceBrowser = ReferenceInput.createBrowser({
   fetch,
@@ -10,6 +13,8 @@ const ReferenceBrowser = ReferenceInput.createBrowser({
 
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search: referenceSearch,
+  _tempResolveRefType: id => client.fetch('*[_id==$id] {_type}', {id})
+    .then(res => unprefixType(res[0])._type),
   select: select
 })
 

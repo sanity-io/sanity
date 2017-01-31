@@ -25,6 +25,7 @@ export default function createSelector(fetchWithSelection) {
     return subject[path]
   }
 
+  // Todo: introduce type here, traverse breadth first
   return function select(value, selection) {
     const keys = Object.keys(selection)
     return props(keys.reduce((acc, key) => {

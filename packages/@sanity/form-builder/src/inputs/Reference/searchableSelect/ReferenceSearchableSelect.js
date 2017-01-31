@@ -8,13 +8,15 @@ export default class Reference extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
+    _tempResolveRefType: PropTypes.func,
     searchFn: PropTypes.func,
     selectFn: PropTypes.func,
     onChange: PropTypes.func
   };
 
   static defaultProps = {
-    onChange() {}
+    onChange() {
+    }
   }
 
   static contextTypes = {
@@ -29,21 +31,27 @@ export default class Reference extends React.Component {
   }
 
   materializeValue(value) {
+    const {selectFn, _tempResolveRefType} = this.props
     if (value.isEmpty()) {
       return
     }
 
-    const toType = this.getMemberFieldForType()
-    // todo: needs type here again
-    select(value.refId)
-      .then(materializedValue => {
-        const {refCache} = this.state
-        this.setState({
-          materializedValue: materializedValue,
-          refCache: Object.assign({}, refCache, {
-            [materializedValue._id]: materializedValue
+    const serialized = value.serialize()
+    _tempResolveRefType(serialized._ref)
+      .then(typeName => this.getMemberFieldForType(typeName))
+      .then(toType => {
+        debugger
+        return selectFn(serialized, toType.preview)
+          .then(materializedValue => {
+            debugger
+            const {refCache} = this.state
+            this.setState({
+              materializedValue: materializedValue,
+              refCache: Object.assign({}, refCache, {
+                [materializedValue._id]: materializedValue
+              })
+            })
           })
-        })
       })
   }
 
