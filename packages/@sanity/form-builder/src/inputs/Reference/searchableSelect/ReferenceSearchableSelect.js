@@ -40,10 +40,8 @@ export default class Reference extends React.Component {
     _tempResolveRefType(serialized._ref)
       .then(typeName => this.getMemberFieldForType(typeName))
       .then(toType => {
-        debugger
         return selectFn(serialized, toType.preview)
           .then(materializedValue => {
-            debugger
             const {refCache} = this.state
             this.setState({
               materializedValue: materializedValue,
