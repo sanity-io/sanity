@@ -134,8 +134,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     }}`
 
     return (
-      <QueryContainer query={query} type={schemaType}>
-        {({result, loading, error, type}) => {
+      <QueryContainer query={query} type={schemaType} listView={this.getListViewForType(schemaType.name)}>
+        {({result, loading, error, type, listView}) => {
           if (error) {
             return (
               <FullscreenDialog kind="danger" title="An error occurred while loading items" isOpen>
@@ -164,7 +164,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               renderItem={this.renderDocumentPaneItem}
               onSetListView={this.handleSetListView}
               onSetSorting={this.handleSetSort}
-              listView={this.getListViewForType(type.name)}
+              listView={listView}
             />
           )
         }}
