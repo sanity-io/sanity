@@ -213,9 +213,19 @@
 
 /* Image select hack */
 .replaceImageButton {
+  position: relative;
+
   @nest .hasContent & {
     @nest & span {
       margin-left: 0;
     }
   }
+}
+
+.replaceImageSelect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
 }

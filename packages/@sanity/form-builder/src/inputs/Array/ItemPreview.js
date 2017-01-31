@@ -15,7 +15,8 @@ export default class ItemPreview extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
-    onRemove: PropTypes.func
+    onRemove: PropTypes.func,
+    view: PropTypes.oneOf('media', 'default')
   };
 
   static contextTypes = {
@@ -41,9 +42,9 @@ export default class ItemPreview extends React.Component {
   }
 
   render() {
-    const {value, type} = this.props
+    const {value, type, view} = this.props
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} ${styles[view]}`}>
         <div className={styles.functions}>
           <Button
             kind="simple"
@@ -55,7 +56,7 @@ export default class ItemPreview extends React.Component {
           />
         </div>
         <div className={styles.content}>
-          <Preview view="default" value={value.serialize()} type={type} />
+          <Preview view={view} value={value.serialize()} type={type} />
         </div>
       </div>
     )

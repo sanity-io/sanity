@@ -55,6 +55,10 @@ export default createSchema({
           name: 'imageGallery',
           title: 'Image gallery',
           type: 'array',
+          options: {
+            view: 'grid',
+            sortable: true
+          },
           of: [
             {
               title: 'Image',

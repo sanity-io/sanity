@@ -172,7 +172,7 @@ class GridList extends React.Component {
                     className={scrollable ? styles.scrollableList : styles.list}
                     helperClass={itemStyles.sortableHelper}
                     transitionDuration={100}
-                    distance={0}
+                    distance={1}
                     axis="xy"
                     useDragHandle={useDragHandle}
                     renderListItem={this.renderListItem}

@@ -249,11 +249,14 @@ export default class Arr extends React.Component {
       )
     }
 
+    const view = type.options && type.options.view == 'grid' ? 'media' : 'default'
+
     return (
       <div>
         <ItemPreview
           type={itemType}
           value={item}
+          view={view}
           onRemove={this.handleRemoveItem}
         />
         <div className={styles.popupAnchor}>
@@ -265,11 +268,20 @@ export default class Arr extends React.Component {
 
   renderList() {
     const {value, type} = this.props
-    if (type.options && type.options.view == 'grid') {
-      return <GridList renderItem={this.renderItem} items={value.value} />
-    }
-
     const sortable = get(type, 'options.sortable') !== false
+
+    if (type.options && type.options.view == 'grid') {
+      return (
+        <GridList
+          renderItem={this.renderItem}
+          items={value.value}
+          onSelect={this.handleItemEdit}
+          onSortEnd={this.handleMove}
+          focusedItem={this.state.lastEditedItem}
+          sortable={sortable}
+        />
+      )
+    }
 
     return (
       <DefaultList

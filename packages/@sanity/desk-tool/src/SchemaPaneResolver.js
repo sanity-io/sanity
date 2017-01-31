@@ -119,7 +119,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     return (
       <Preview
         value={item}
-        style={listView}
+        view={listView}
         type={type}
       />
     )
@@ -230,17 +230,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const contentValue = computedStyle.getPropertyValue('content')
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
-
-    if (!this.shouldReposition || !this.canReposition()) {
-      // reset to default and don't do more
-      this.resetPosition()
-      return
+    if (!this.shouldReposition || this.state.navIsHovered) {
+      return false
     }
 
-    if (this.state.navIsHovered) {
-      return
-    }
-
+    // Setup
     this.navWidth = this.navigationElement.offsetWidth
     const editorPaneWidth = this.editorPaneElement.offsetWidth
     const containerWidth = this.containerElement.offsetWidth
@@ -248,26 +242,27 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     let navIsMinimized = false
     let editorWidth = `${containerWidth - this.navWidth}px`
 
-    // Needs to be on resize because minWidth and fontSize changes when resizing font
+    // Setting dimensions based on font-size.
     this.padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 3
     const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
-    if (containerWidth < (editorPaneWidth + this.navWidth)) {
-      navTranslateX = containerWidth - editorPaneMinWidth - this.navWidth
+    const diff = editorPaneWidth - this.navWidth
+
+    // Check if we need to push the navbar outside view
+    if (diff < 0) {
+      navTranslateX = Math.min(containerWidth - editorPaneMinWidth - this.navWidth, 0)
       navIsMinimized = true
       editorWidth = `${containerWidth - navTranslateX - this.navWidth}px`
-
-      if ((navTranslateX * -1) <= this.navWidth - this.padding) {
-        // this.setNavTranslateX(translateX)
-      } else {
-        navTranslateX = (this.navWidth - this.padding) * -1
-      }
     }
+
+    // Set states that triggers re-render
     this.setState({
-      navTranslateX: Math.min(navTranslateX, 0),
+      navTranslateX: navTranslateX,
       navIsMinimized: navIsMinimized,
       editorWidth: editorWidth
     })
+
+    return false
   })
 
   handlePanesMouseEnter = event => {
@@ -286,7 +281,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const x = 20
 
     this.setState({
-      navTranslateX: Math.min(navTranslateX + x, x),
+      navTranslateX: navTranslateX + x,
       editorTranslateX: x,
       navIsHovered: true
     })
@@ -298,7 +293,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
       this.setState({
         navTranslateX: Math.min(this.oldNavTranslateX, 0),
         editorTranslateX: 0,
-        navIsMinimized: true,
         navIsHovered: false
       })
     }

@@ -17,15 +17,12 @@
 
 .typeTitle {
   font-size: var(--font-size-small);
-  position: absolute;
-  top: 0;
-  left: var(--large-padding);
+  margin: 0;
   font-weight: 400;
   text-transform: uppercase;
 }
 
 .header {
-  padding-top: 0.5em;
   padding-bottom: 0.5em;
   position: relative;
   border-bottom: 1px solid #ccc;
@@ -33,10 +30,13 @@
 }
 
 .title {
-  font-size: 2em;
+  font-size: var(--font-size-h4);
   font-weight: 100;
   margin: 0;
   padding: 0;
+  @media (--screen-medium) {
+    font-size: var(--font-size-h2);
+  }
 }
 
 .spinner {
