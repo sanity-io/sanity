@@ -129,7 +129,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const schemaType = schema.get(typeName)
     const previewConfig = schemaType.preview
 
-    const query = `${schema.name}.${schemaType.name}[limit: 50, order: ${this.state.sorting}] {${
+    const query = `${schema.name}.${schemaType.name}[limit: 200, order: ${this.state.sorting}] {${
       previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
     }}`
 

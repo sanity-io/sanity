@@ -27,6 +27,10 @@
   }
 }
 
+.list-layout--default {
+  display: block;
+}
+
 .list-layout--card {
   width: 50rem;
   max-width: 80vw;

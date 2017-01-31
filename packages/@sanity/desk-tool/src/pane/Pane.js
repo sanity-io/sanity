@@ -14,7 +14,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     loading: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
-    contentType: PropTypes.oneOf(['types', 'documents']),
     onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func,
     listLayout: PropTypes.string,
@@ -36,8 +35,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
   }
 
   renderListView() {
-    const {items, renderItem, router} = this.props
-    const listLayout = this.props.listLayout
+    const {items, renderItem, router, listLayout} = this.props
     const {selectedDocumentId} = router.state
 
     const selectedItem = find(items, item => {
@@ -62,7 +60,15 @@ export default withRouterHOC(class Pane extends React.PureComponent {
   }
 
   render() {
-    const {loading, listLayout, items, type, router} = this.props
+    const {
+      loading,
+      listLayout,
+      items,
+      type,
+      router,
+      onSetListLayout,
+      onSetSorting
+    } = this.props
 
     const {selectedType, action, selectedDocumentId} = router.state
 
@@ -72,7 +78,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
       <div
         className={`
           ${isActive ? styles.isActive : styles.isInactive}
-          ${styles[`contentType--${this.props.contentType}`]}
           ${styles[`list-layout--${listLayout}`]}
         `}
       >
@@ -81,8 +86,8 @@ export default withRouterHOC(class Pane extends React.PureComponent {
             {type.title}
           </div>
           <PaneMenuContainer
-            onSetListLayout={this.props.onSetListLayout}
-            onSetSorting={this.props.onSetSorting}
+            onSetListLayout={onSetListLayout}
+            onSetSorting={onSetSorting}
           />
         </div>
 
