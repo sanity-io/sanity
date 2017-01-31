@@ -8,7 +8,8 @@ export default class IntentLink extends React.PureComponent {
   props: {
     intent: string,
     params?: Object,
-    children: Element<*>
+    children: Element<*>,
+    className: string
   };
 
   context: RouterProviderContext
@@ -18,15 +19,15 @@ export default class IntentLink extends React.PureComponent {
   }
 
   render() {
-    const {intent, params, children} = this.props
+    const {intent, params, children, className} = this.props
 
     // @todo Temporary hack
     if (intent === 'edit' && params.type) {
-      return <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`}>{children}</Link>
+      return <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`} className={className}>{children}</Link>
     }
 
     const url = this.context.__internalRouter.resolveIntentLink(intent, params)
     const rest = omit(this.props, 'intent', 'params')
-    return <Link href={url} {...rest} />
+    return <Link href={url} className={className} {...rest} />
   }
 }

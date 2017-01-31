@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react'
 import GlobalSearch from 'part:@sanity/components/globalsearch/default'
+import globalSearchStyles from 'part:@sanity/components/globalsearch/default-style'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import locationStore from 'part:@sanity/base/location'
 import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
+import styles from './styles/Search.css'
 
 function unprefixTypeName(typeName) {
   return typeName.split('.')[1]
@@ -130,7 +132,7 @@ class Search extends React.Component {
   renderItem = (item, options) => {
     const type = schema.get(unprefixTypeName(item._type))
     return (
-      <IntentLink intent="edit" params={{id: item._id, type: type.name}}>
+      <IntentLink intent="edit" params={{id: item._id, type: type.name}} className={globalSearchStyles.link}>
         <Preview
           value={item}
           layout="default"
@@ -158,9 +160,9 @@ class Search extends React.Component {
           onClose={this.handleClose}
           isOpen={this.state.isOpen}
           label="Search"
-          topItems={this.state.topItems}
-          items={this.state.items}
+          items={(this.state.items.length > 0 && this.state.items) || this.state.topItems}
           placeholder="Search…"
+          listContainerClassName={styles.listContainer}
         />
       </div>
     )
