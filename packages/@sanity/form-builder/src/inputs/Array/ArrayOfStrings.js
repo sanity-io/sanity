@@ -2,6 +2,20 @@
 import React, {PropTypes} from 'react'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import DefaultList from 'part:@sanity/components/lists/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {get} from 'lodash'
+import styles from './styles/ArrayOfStrings.css'
+import Button from 'part:@sanity/components/buttons/default'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+
+function reinsert(arr, from, to) {
+  const _arr = arr.slice(0)
+  const val = _arr[from]
+  _arr.splice(from, 1)
+  _arr.splice(to, 0, val)
+  return _arr
+}
 
 export default class ArrayOfStrings extends React.PureComponent {
   static propTypes = {
@@ -54,19 +68,104 @@ export default class ArrayOfStrings extends React.PureComponent {
     })
   }
 
+  handleAddBtnClick = () => {
+    this.handleAddString('')
+  }
+
+  handleInputChange = event => {
+    const {value, onChange} = this.props
+    const i = event.target.getAttribute('data-key')
+
+    const nextValue = value.slice()
+    nextValue[i] = event.target.value
+
+    onChange({
+      patch: {
+        type: 'set', value: nextValue
+      }
+    })
+  }
+
+  handleMove = event => {
+    const {value, onChange} = this.props
+    const {oldIndex, newIndex} = event
+    onChange({
+      patch: {
+        type: 'set', value: reinsert(value, oldIndex, newIndex)
+      }
+    })
+  }
+
+  renderItem = item => {
+    return (
+      <div className={styles.item}>
+        <DefaultTextInput
+          value={item.value}
+          className={styles.input}
+          onChange={this.handleInputChange}
+          onFocus={this.handleInputFocus}
+          data-key={item.key}
+        />
+      </div>
+    )
+  }
+
+  renderList(value) {
+    const {type} = this.props
+    const sortable = get(type, 'options.sortable') !== false
+    const items = value.map((item, i) => {
+      return {title: item, value: item, key: i}
+    })
+
+    return (
+      <DefaultList
+        items={items}
+        renderItem={this.renderItem}
+        onSelect={this.handleItemEdit}
+        sortable={sortable}
+        onSortEnd={this.handleMove}
+        useDragHandle
+        decoration="divider"
+        focusedItem={this.state.lastEditedItem}
+      />
+    )
+  }
+
   render() {
     const {type, value, level, description} = this.props
     const {hasFocus} = this.state
+
+    if (get(type, 'options.layout') === 'tags') {
+      return (
+        <TagInput
+          label={type.title}
+          level={level}
+          description={description}
+          tags={value || []}
+          onRemoveTag={this.handleRemoveItem}
+          onAddTag={this.handleAddString}
+          focus={hasFocus}
+        />
+      )
+    }
+
     return (
-      <TagInput
-        label={type.title}
-        level={level}
-        description={description}
-        tags={value || []}
-        onRemoveTag={this.handleRemoveItem}
-        onAddTag={this.handleAddString}
-        focus={hasFocus}
-      />
+      <Fieldset legend={type.title} description={type.description} level={level}>
+        <div className={styles.root}>
+          {
+            value && value.length > 0 && (
+              <div className={styles.list}>
+                {this.renderList(value)}
+              </div>
+            )
+          }
+          <div className={styles.functions}>
+            <Button onClick={this.handleAddBtnClick} className={styles.addButton} color="primary">
+              Add
+            </Button>
+          </div>
+        </div>
+      </Fieldset>
     )
   }
 }

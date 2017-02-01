@@ -42,6 +42,26 @@ export default createSchema({
           }
         },
         {
+          name: 'tags',
+          title: 'tags',
+          type: 'array',
+          options: {
+            layout: 'tags'
+          },
+          of: [
+            {type: 'string'}
+          ]
+        },
+        {
+          name: 'arrayOfStrings',
+          title: 'Array of strings',
+          type: 'array',
+          of: [
+            {type: 'string'}
+          ]
+        },
+
+        {
           name: 'priority',
           title: 'Priority',
           type: 'number'

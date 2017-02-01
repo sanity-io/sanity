@@ -1,0 +1,17 @@
+.root {
+  display: block;
+}
+
+.item {
+  margin-left: 2rem;
+
+  @nest & input {
+    background-color: transparent;
+    border: none;
+
+    @nest &:focus {
+      background-color: #fff;
+    }
+  }
+
+}
