@@ -4,7 +4,7 @@ import TagInput from 'part:@sanity/components/tags/textfield'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import DefaultList from 'part:@sanity/components/lists/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {get} from 'lodash'
+import {get, uniqueId} from 'lodash'
 import styles from './styles/ArrayOfStrings.css'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
@@ -97,14 +97,17 @@ export default class ArrayOfStrings extends React.PureComponent {
   }
 
   renderItem = item => {
+    const id = uniqueId('ArrayStringInput')
     return (
       <div className={styles.item}>
+        <label className={styles.inputLabel} htmlFor={id}>Value</label>
         <DefaultTextInput
           value={item.value}
           className={styles.input}
           onChange={this.handleInputChange}
           onFocus={this.handleInputFocus}
           data-key={item.key}
+          id={id}
         />
       </div>
     )
