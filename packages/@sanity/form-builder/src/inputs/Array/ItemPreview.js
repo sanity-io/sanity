@@ -48,6 +48,7 @@ export default class ItemPreview extends React.Component {
         <div className={styles.functions}>
           <Button
             kind="simple"
+            className={styles.deleteButton}
             color="danger"
             icon={TrashIcon}
             title="Delete"

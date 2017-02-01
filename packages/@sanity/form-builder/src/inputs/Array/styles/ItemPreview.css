@@ -4,6 +4,11 @@
   overflow: hidden;
 }
 
+.deleteButton {
+  font-size: 0.9em;
+  margin-right: 0;
+}
+
 .functions {
   float: right;
 
