@@ -9,7 +9,8 @@ export default class Checkbox extends React.Component {
     onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    focus: PropTypes.bool
+    focus: PropTypes.bool,
+    value: PropTypes.string
   }
 
   static defaultProps = {
@@ -19,7 +20,7 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const {disabled, checked, onChange, onFocus, onBlur, focus} = this.props
+    const {disabled, checked, onChange, onFocus, onBlur, focus, value} = this.props
 
     return (
       <label
@@ -33,6 +34,7 @@ export default class Checkbox extends React.Component {
         <input
           className={styles.input}
           type="checkbox"
+          value={value}
           onChange={onChange}
           checked={checked}
           onFocus={onFocus}
