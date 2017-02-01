@@ -57,13 +57,6 @@ export default class SearchableSelect extends React.Component {
         searchResult: this.props.items
       })
     }
-    // if (nextProps.value != this.props.value) {
-    //   this.setState({
-    //     inputValue: nextProps.valueAsString,
-    //     isInputSelected: true,
-    //     hasFocus: nextProps.focus
-    //   })
-    // }
 
     if (nextProps.valueAsString != this.props.valueAsString) {
       this.setState({
