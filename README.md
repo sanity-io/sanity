@@ -1,8 +1,12 @@
-# sanity
+# Sanity
 
-Sanity is a CMS a construction kit. This repository contains many of the core Sanity frontend modules, and uses [Lerna](https://lernajs.io/) to manage cross-dependencies, publishing and to simplify workflows.
+Sanity is a CMS a construction kit with a rich data model and real-time collaboration.
 
-** Note: ** Unless you want to modify/contribute to the core Sanity components, you're probably better off checking out the [Sanity documentation](http://sanity.io/docs/) that explain how to get started using our hosted backend.
+This repository contains the core Sanity front-end modules. It uses [Lerna](https://lernajs.io/) to manage cross-dependencies, publishing and to simplify workflows.
+
+** Note: ** Sanity is pre-release software with daily releases. APIs are still in flux.
+
+Unless you want to modify/contribute to the core Sanity components, you're probably better off having a look at the [Sanity documentation](http://sanity.io/docs/) that explains how to quickly get started using our hosted backend.
 
 ## Installing
 
