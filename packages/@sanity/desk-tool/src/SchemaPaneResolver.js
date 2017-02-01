@@ -128,7 +128,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   getDocumentsPane(typeName) {
     const schemaType = schema.get(typeName)
 
-    const query = `${schema.name}.${schemaType.name}[limit: 200, order: ${this.state.sorting}] {_id, _type}`
+    const query = `${schema.name}.${schemaType.name}[limit: 2000, order: ${this.state.sorting}] {_id, _type}`
 
     return (
       <QueryContainer query={query} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
