@@ -16,6 +16,7 @@ import {
 import ArrayOfStrings from './inputs/Array/ArrayOfStrings'
 import SearchableStringSelect from './inputs/SearchableStringSelect'
 import StringSelect from './inputs/StringSelect'
+import ArrayOfStringsSelect from './inputs/Array/ArrayOfStringsSelect'
 
 const typeNameToInputMap = {
   object: ObjectInput,
@@ -35,6 +36,11 @@ const typeNameToInputMap = {
 function isArrayOfStrings(type) {
   return type.name === 'array' && type.of.every(ofType => ofType.name === 'string')
 }
+
+function hasListInOptions(type) {
+  return type.options && type.options.list
+}
+
 function isList(type) {
   return type.options && type.options.list
 }
@@ -44,6 +50,12 @@ function isSearchable(type) {
 }
 
 function resolveInputComponent(type) {
+
+  // Schema provides predefines list
+  if (hasListInOptions(type) && isArrayOfStrings(type)) {
+    return ArrayOfStringsSelect
+  }
+
   // Special component for array of strings
   if (isArrayOfStrings(type)) {
     return ArrayOfStrings

@@ -23,6 +23,24 @@ export default createSchema({
       type: 'object',
       title: 'Blogpost',
       fields: [
+
+        {
+          name: 'selectMultipleStrings',
+          title: 'Select multiple strings',
+          type: 'array',
+          options: {
+            direction: 'vertical',
+            list: [
+              {title: 'Red', value: 'red'},
+              {title: 'Green', value: 'green'},
+              {title: 'Blue', value: 'blue'},
+              {title: 'Black', value: 'black'},
+            ]
+          },
+          of: [{
+            type: 'string'
+          }]
+        },
         {
           name: 'title',
           title: 'Title',
@@ -102,7 +120,6 @@ export default createSchema({
             }
           ]
         },
-
         {
           name: 'select',
           title: 'Select string',
