@@ -3,7 +3,7 @@ import {groupBy} from 'lodash'
 import createPreviewNode from '../createFormBuilderPreviewNode'
 import mapToObject from './mapToObject'
 import Header from '../preview/Header'
-import Paragraph from '../preview/Paragraph'
+import Default from '../preview/Default'
 import List from '../preview/List'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
@@ -13,7 +13,7 @@ import {SLATE_MANAGED_NODE_TYPES} from '../constants'
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
 const slateTypeComponentMapping = {
-  paragraph: Paragraph,
+  default: Default,
   header(props) {
     // eslint-disable-next-line react/prop-types
     const level = props.children[0] && props.children[0].props.parent.data.get('level')
@@ -35,14 +35,16 @@ const slateTypeComponentMapping = {
 }
 
 export default function prepareSlateShema(type) {
+
   const groupedTypes = Object.assign({slate: [], formBuilder: []}, groupBy(type.of, ofType => {
     if (SLATE_MANAGED_NODE_TYPES.includes(ofType.style)) {
       return 'slate'
     }
     return 'formBuilder'
   }))
-  const paragraphField = (groupedTypes.slate || []).find(ofType => ofType.style === 'paragraph')
-  const allowedMarks = paragraphField && (paragraphField.marks || [])
+  const defaultField = (groupedTypes.slate || [])
+    .find(ofType => ofType.style === 'default')
+  const allowedMarks = defaultField && (defaultField.marks || [])
 
   const schema = {
     nodes: Object.assign(
