@@ -1,9 +1,8 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.100.4",
+  "version": "0.100.5",
   "description": "Just a sample Sanity studio project",
-  "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
@@ -14,17 +13,12 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/base": "^0.100.4",
-    "@sanity/components": "^0.100.4",
+    "@sanity/base": "^0.100.5",
+    "@sanity/components": "^0.100.5",
     "@sanity/core": "^0.100.3",
-<<<<<<< HEAD
-    "@sanity/default-layout": "^0.100.3",
-=======
-    "@sanity/date-input": "^0.100.0",
-    "@sanity/default-layout": "^0.100.4",
->>>>>>> 5fc245e9... v0.100.4
+    "@sanity/default-layout": "^0.100.5",
     "@sanity/default-login": "^0.99.0",
-    "@sanity/desk-tool": "^0.100.4",
+    "@sanity/desk-tool": "^0.100.5",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
