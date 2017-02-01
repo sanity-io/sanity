@@ -2,7 +2,7 @@ import client from 'part:@sanity/base/client'
 import {set} from 'lodash'
 
 export default function fetchWithPaths(id, paths) {
-  const labeledFields = paths.map((selection, i) => `"_f_${i}": ${selection}`)
+  const labeledFields = paths.map((path, i) => `"_f_${i}": ${path.join('.')}`)
   return client.fetch(`*[_id==$id]{_id,_type,${labeledFields.join(',')}}`, {id})
     .then(result => result[0])
     .then(result => {
