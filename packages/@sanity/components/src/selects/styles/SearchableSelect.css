@@ -42,6 +42,7 @@
   position: absolute;
   top: 0.5em;
   right: 0.75em;
+  z-index: 2;
 }
 
 .clearButton {

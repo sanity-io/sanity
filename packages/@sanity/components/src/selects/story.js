@@ -124,7 +124,7 @@ class SearchableTest extends React.Component {
   }
 
   handleSearch = query => {
-    console.log('query', query) // eslint-disable-line
+    console.log('query2', query) // eslint-disable-line
     const result = this.fuse.search(query)
     this.setState({
       loading: true
@@ -147,7 +147,7 @@ class SearchableTest extends React.Component {
         onChange={this.handleChange}
         onFocus={this.handleFocus}
         onOpen={action('onOpen')}
-        loading={this.state.loading}
+        isLoading={this.state.loading}
         items={this.state.searchResult}
         value={this.state.value}
         renderItem={this.renderItem}
@@ -339,7 +339,7 @@ storiesOf('Selects')
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onOpen={action('onOpen')}
-        loading
+        isLoading
         items={[]}
         renderItem={renderItem}
         renderValue={renderValue}

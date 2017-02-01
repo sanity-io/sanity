@@ -176,7 +176,10 @@ class StatelessSearchableSelect extends React.PureComponent {
 
         <div className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}>
           {
-            items.length == 0 && <p className={styles.noResultText}>No results</p>
+            items.length == 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+          }
+          {
+            items.length == 0 && isLoading && <Spinner message="Loading items…" center />
           }
           <DefaultList
             items={items}

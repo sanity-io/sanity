@@ -91,7 +91,6 @@ export default class SearchableSelect extends React.Component {
 
   handleChange = item => {
     const {onChange, valueToString} = this.props
-
     this.setState({
       inputValue: item ? valueToString(item) : null,
       hasFocus: false
@@ -126,7 +125,8 @@ export default class SearchableSelect extends React.Component {
   handleInputChange = inputValue => {
     this.setState({
       inputValue: inputValue,
-      isInputSelected: false
+      isInputSelected: false,
+      isOpen: true
     })
     this.props.onSearch(inputValue)
   }
@@ -137,7 +137,6 @@ export default class SearchableSelect extends React.Component {
 
   render() {
     const {hasFocus, isOpen, highlightIndex, isInputSelected, inputValue} = this.state
-
     return (
       <StatelessSearchableSelect
         {...this.props}
