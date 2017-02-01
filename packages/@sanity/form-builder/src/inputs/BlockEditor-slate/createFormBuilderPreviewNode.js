@@ -7,8 +7,9 @@ import ItemPreview from './ItemPreview'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import blockStyles from './styles/BlockPreview.css'
 import inlineStyles from './styles/InlinePreview.css'
+import {IS_FIREFOX} from 'slate/lib/constants/environment'
 
-export default function createFormBuilderPreviewNode(ofField) {
+export default function createFormBuilderPreviewNode(ofType) {
 
   return class PreviewNode extends React.Component {
     static propTypes = {
@@ -22,7 +23,7 @@ export default function createFormBuilderPreviewNode(ofField) {
       super(props)
       this._dropTarget = null
       this._editorNode = null
-      this._isInline = ofField.options && ofField.options.inline
+      this._isInline = ofType.options && ofType.options.inline
       this.state = {isFocused: false, isEditing: false}
     }
 
@@ -60,13 +61,13 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     // Remove the drop target if we leave the editors nodes
+    // Remove the drop target if we leave the editors nodes
     handleDragLeave = event => {
       event.stopPropagation()
       if (event.target === this._editorNode) {
         this._dropTarget = null
       }
     }
-
 
     handleDragOverOtherNode = event => {
       const targetDOMNode = event.target
@@ -92,11 +93,10 @@ export default function createFormBuilderPreviewNode(ofField) {
         range.setStart(event.rangeParent, event.rangeOffset)
       }
 
-      const rangeOffset = range.startOffse
-      const rangeLength = range.startContainer.wholeText
-        ? range.startContainer.wholeText.rangeLength
-        : 0
+      const rangeOffset = range.startOffset
+      const rangeLength = range.startContainer.wholeText ? range.startContainer.wholeText.length : 0
       const rangeIsAtStart = rangeOffset < rangeLength / 2
+
       const offsetKey = OffsetKey.findKey(targetDOMNode, 0)
       const {key} = offsetKey
 
@@ -118,6 +118,7 @@ export default function createFormBuilderPreviewNode(ofField) {
 
     handleChange = event => {
       const {node, editor} = this.props
+      console.log(node.data.get('value'))
       const next = editor.getState()
         .transform()
         .setNodeByKey(node.key, {
@@ -130,17 +131,14 @@ export default function createFormBuilderPreviewNode(ofField) {
 
     applyDropTargetInline(transform, target) {
       const {node} = this.props
+
       let next = transform
+
       if (target.isAtStart) {
         next = next.collapseToStartOf(target.node)
       } else {
-        next = this.applyDropTargetBlock(next, target)
+        next = next.collapseToEndOf(target.node)
       }
-      // Move cursor and apply
-      next = next.collapseToEndOf(node)
-        .focus()
-        .apply()
-
       return next
         .moveToOffsets(target.offset)
         .insertInline(node)
@@ -158,6 +156,14 @@ export default function createFormBuilderPreviewNode(ofField) {
     }
 
     handleDragStart = event => {
+      if (IS_FIREFOX) {
+        // Firefox needs this in able for dragging to work
+        event.dataTransfer.setData('text/plain', '')
+        // When focus bug for Firefox in Slate is fixed (https://github.com/ianstormtaylor/slate/issues/297)
+        // this should be tried, so that caret is moved only in start or end of node through the handleDrag function
+        // like in Chrome and Safari.
+        // event.dataTransfer.setData('application/x-moz-node', null)
+      }
       event.dataTransfer.effectAllowed = 'none'
       event.dataTransfer.setData('text/plain', '')
     }
@@ -170,7 +176,9 @@ export default function createFormBuilderPreviewNode(ofField) {
       if (!target || target.node === node) {
         return
       }
+
       let next = state.transform().removeNodeByKey(node.key)
+
       if (this._isInline) {
         next = this.applyDropTargetInline(next, target)
       } else {
@@ -178,10 +186,10 @@ export default function createFormBuilderPreviewNode(ofField) {
       }
 
       // Move cursor and apply
-
       next = next.collapseToEndOf(node)
         .focus()
         .apply()
+
 
       editor.onChange(next)
       this._dropTarget = null
@@ -195,6 +203,10 @@ export default function createFormBuilderPreviewNode(ofField) {
       return this.props.node.data.get('value')
     }
 
+    handleToggleEdit = () => {
+      this.setState({isEditing: true})
+    }
+
     handleClose = () => {
       this.setState({isEditing: false})
     }
@@ -202,7 +214,7 @@ export default function createFormBuilderPreviewNode(ofField) {
     renderPreview() {
       return (
         <ItemPreview
-          type={ofField}
+          type={ofType}
           value={this.getValue()}
         />
       )
@@ -217,7 +229,7 @@ export default function createFormBuilderPreviewNode(ofField) {
         >
           <ItemForm
             onDrop={this.handleCancelEvent}
-            type={ofField}
+            type={ofType}
             level={0}
             value={this.getValue()}
             onChange={this.handleChange}
@@ -229,7 +241,7 @@ export default function createFormBuilderPreviewNode(ofField) {
     render() {
       let styles
       let NodeTag = 'div'
-      if (ofField.options && ofField.options.inline) {
+      if (ofType.options && ofType.options.inline) {
         styles = inlineStyles
         NodeTag = 'span'
       } else {
@@ -247,6 +259,7 @@ export default function createFormBuilderPreviewNode(ofField) {
           className={className}
         >
           <span className={styles.previewContainer} onClick={this.handleToggleEdit}>
+            [PREVIEW]
             {this.renderPreview()}
           </span>
 
