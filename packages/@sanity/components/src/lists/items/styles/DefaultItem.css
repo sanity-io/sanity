@@ -48,6 +48,10 @@
 
 .highlighted {
   background-color: color(var(--default-item-selected-color) a(30%));
+
+  @nest &.selected {
+    background-color: color(var(--default-item-selected-color) a(90%));
+  }
 }
 
 .sortableHelper {

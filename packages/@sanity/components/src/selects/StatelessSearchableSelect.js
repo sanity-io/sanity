@@ -68,7 +68,6 @@ class StatelessSearchableSelect extends React.PureComponent {
   }
 
   handleSelect = item => {
-    console.log('handleSelect', item)
     this.props.onChange(item)
   }
 
@@ -138,6 +137,7 @@ class StatelessSearchableSelect extends React.PureComponent {
       isInputSelected,
       inputValue
     } = this.props
+
     return (
       <DefaultFormField
         className={styles.root}

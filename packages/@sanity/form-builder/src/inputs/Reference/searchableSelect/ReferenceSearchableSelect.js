@@ -147,6 +147,11 @@ export default class ReferenceSearchableSelect extends React.Component {
   render() {
     const {type} = this.props
     const {materializedValue, fetching, hits} = this.state
+
+    const value = hits.find(item => {
+      return item._id === this.props.value.value._ref
+    })
+
     return (
       <SearchableSelect
         label={type.title}
@@ -156,7 +161,8 @@ export default class ReferenceSearchableSelect extends React.Component {
         onFocus={this.handleFocus}
         onSearch={this.handleSearch}
         onChange={this.handleChange}
-        value={materializedValue}
+        value={value || this.props.value}
+        valueAsString={materializedValue}
         renderItem={this.renderItem}
         loading={fetching}
         items={hits}
