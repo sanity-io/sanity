@@ -24,7 +24,7 @@ export const DESERIALIZE = {
       nodes: Block.createList(para.children.map(child => {
         return Block.create({
           type: 'listItem',
-          nodes: Block.createList(child.children.map((childChild) => {
+          nodes: Block.createList(child.children.map(childChild => {
             return DESERIALIZE.node(childChild, context)
           }))
         })
@@ -87,13 +87,16 @@ export const DESERIALIZE = {
     // find type in type definition's `of` property
     const fieldDef = context.type.of.find(ofType => ofType.type === node._type)
 
+    const BlockOrInline = fieldDef.options && fieldDef.options.inline
+      ? Inline : Block
+
     const value = createMemberValue(node, {
       type: fieldDef,
       schema: context.schema,
       resolveInputComponent: context.resolveInputComponent
     })
 
-    return Block.create({
+    return BlockOrInline.create({
       data: {value: value},
       key: node.key,
       type: node._type,

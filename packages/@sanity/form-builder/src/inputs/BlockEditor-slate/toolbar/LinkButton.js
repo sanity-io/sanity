@@ -54,7 +54,7 @@ export default class LinkButton extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{position: 'relative'}}>
         <ToggleButton
           onClick={this.handleToggleButtonClick}
           selected={!!this.props.activeLink}
