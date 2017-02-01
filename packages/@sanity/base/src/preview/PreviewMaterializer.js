@@ -1,7 +1,5 @@
 import React, {PropTypes} from 'react'
-import select from './select'
-
-const pass = v => v
+import materializeForPreview from './materializeForPreview'
 
 export default class PreviewMaterializer extends React.PureComponent {
   static propTypes = {
@@ -33,8 +31,7 @@ export default class PreviewMaterializer extends React.PureComponent {
   }
 
   materialize(value, type) {
-
-    select(value, type.preview.fields)
+    materializeForPreview(value, type)
       .then(res => {
         this.setState({result: res})
       })
@@ -42,7 +39,6 @@ export default class PreviewMaterializer extends React.PureComponent {
 
   render() {
     const {result, loading, error} = this.state
-    const {type} = this.props
     if (loading) {
       return <div>Loading…</div>
     }
@@ -52,7 +48,6 @@ export default class PreviewMaterializer extends React.PureComponent {
     if (!result) {
       return <div />
     }
-    const prepare = type.preview.prepare || pass
-    return this.props.children(prepare(result))
+    return this.props.children(result)
   }
 }

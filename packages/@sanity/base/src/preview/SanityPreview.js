@@ -16,7 +16,7 @@ const previewComponentMap = {
   inline: PreviewComponentInline
 }
 
-export default class SanityPreviewComponent extends React.Component {
+export default class SanityPreview extends React.Component {
 
   static propTypes = {
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),

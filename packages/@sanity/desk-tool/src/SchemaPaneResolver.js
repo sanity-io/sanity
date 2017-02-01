@@ -10,7 +10,7 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
-import Preview, {utils as previewUtils} from 'part:@sanity/base/preview'
+import Preview from 'part:@sanity/base/preview'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import {withRouterHOC} from 'part:@sanity/base/router'
 
@@ -127,11 +127,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   getDocumentsPane(typeName) {
     const schemaType = schema.get(typeName)
-    const previewConfig = schemaType.preview
 
-    const query = `${schema.name}.${schemaType.name}[limit: 200, order: ${this.state.sorting}] {${
-      previewUtils.stringifyGradientQuerySelection(previewConfig.fields)
-    }}`
+    const query = `${schema.name}.${schemaType.name}[limit: 200, order: ${this.state.sorting}] {_id, _type}`
 
     return (
       <QueryContainer query={query} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>

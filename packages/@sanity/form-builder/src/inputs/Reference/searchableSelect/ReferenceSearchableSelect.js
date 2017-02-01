@@ -2,15 +2,13 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../Preview'
-import {uniq} from 'lodash'
 
-export default class Reference extends React.Component {
+export default class ReferenceSearchableSelect extends React.Component {
   static propTypes = {
-    type: FormBuilderPropTypes.type,
+    type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.object,
-    _tempResolveRefType: PropTypes.func,
     searchFn: PropTypes.func,
-    selectFn: PropTypes.func,
+    valueToString: PropTypes.func,
     onChange: PropTypes.func
   };
 
@@ -31,33 +29,19 @@ export default class Reference extends React.Component {
   }
 
   materializeValue(value) {
-    const {selectFn, _tempResolveRefType} = this.props
+    const {valueToString, type} = this.props
     if (value.isEmpty()) {
       return
     }
-
     const serialized = value.serialize()
-    _tempResolveRefType(serialized._ref)
-      .then(typeName => this.getMemberFieldForType(typeName))
-      .then(toType => {
-        return selectFn(serialized, toType.preview)
-          .then(materializedValue => {
-            const {refCache} = this.state
-            this.setState({
-              materializedValue: materializedValue,
-              refCache: Object.assign({}, refCache, {
-                [materializedValue._id]: materializedValue
-              })
-            })
-          })
+    valueToString(serialized, type)
+      .then(materializedValue => {
+        this.setState({materializedValue})
       })
   }
 
   componentDidMount() {
-    const {value} = this.props
-    if (value) {
-      this.materializeValue(value)
-    }
+    this.materializeValue(this.props.value)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,8 +88,6 @@ export default class Reference extends React.Component {
         _ref: item._id
       }
     }
-
-    console.log('Do patch!', patch)
     this.props.onChange({patch: patch})
   }
 
@@ -162,11 +144,6 @@ export default class Reference extends React.Component {
     )
   }
 
-  valueToString = value => {
-    const {stringifyValue} = this.props
-    return value ? stringifyValue(value) : ''
-  }
-
   render() {
     const {type} = this.props
     const {materializedValue, fetching, hits} = this.state
@@ -180,10 +157,9 @@ export default class Reference extends React.Component {
         onSearch={this.handleSearch}
         onChange={this.handleChange}
         value={materializedValue}
-        valueToString={this.valueToString}
         renderItem={this.renderItem}
         loading={fetching}
-        items={uniq([materializedValue].concat(hits)).filter(Boolean)}
+        items={hits}
       />
     )
   }

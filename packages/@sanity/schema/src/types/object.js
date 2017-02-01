@@ -11,16 +11,24 @@ const OBJECT_CORE = {
   jsonType: 'object'
 }
 
-function warnIfOldPreviewFormat(type, preview) {
-  if (preview && Array.isArray(preview.fields)) {
-    // eslint-disable-next-line no-console
-    console.warn(
-`Heads up! Preview fields must now be an object on the format:
-  {property1: 'some.dot.path', property2: 'some.dot.path2'}.
-Please check the type definition for "${type.name}" in your schema.
-The encountered preview fields was: ${JSON.stringify(preview.fields)}
-`)
+function parseFields(fields) {
+  return fields.reduce((acc, field) => {
+    acc[field] = field
+    return acc
+  }, {})
+}
+function parsePreview(preview) {
+  if (!preview) {
+    return preview
   }
+  if (Array.isArray(preview.fields)) {
+    return {
+      ...preview,
+      fields: parseFields(preview.fields)
+    }
+
+  }
+  return preview
 }
 
 function warnIfPreviewOnOptions(type) {
@@ -58,8 +66,7 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'preview', () => {
       warnIfPreviewOnOptions(subTypeDef)
-      const preview = subTypeDef.preview || (subTypeDef.options || {}).preview
-      warnIfOldPreviewFormat(preview)
+      const preview = parsePreview(subTypeDef.preview || (subTypeDef.options || {}).preview)
       return preview || guessPreviewConfig(parsed.fields)
     })
 

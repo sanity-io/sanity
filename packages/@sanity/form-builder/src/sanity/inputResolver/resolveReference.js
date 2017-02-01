@@ -1,21 +1,28 @@
 import {ReferenceInput} from '../../index'
-import client from 'part:@sanity/base/client'
 
 import {materializeReferences, referenceSearch, fetch} from '../data/fetch'
 import {once} from 'lodash'
-import {select} from 'part:@sanity/base/preview'
-import {unprefixType} from '../utils/unprefixType'
+import {materializeForPreview, resolveRefType} from 'part:@sanity/base/preview'
+
 
 const ReferenceBrowser = ReferenceInput.createBrowser({
   fetch,
   materializeReferences
 })
 
+export function materializeReference(id) {
+  return materializeReferences([id]).then(res => res[0])
+}
+
+function valueToString(value, type) {
+  return resolveRefType(value, type)
+    .then(refType => materializeForPreview(value, refType))
+    .then(res => res.title)
+}
+
 const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
   search: referenceSearch,
-  _tempResolveRefType: id => client.fetch('*[_id==$id] {_type}', {id})
-    .then(res => unprefixType(res[0])._type),
-  select: select
+  valueToString: valueToString
 })
 
 const ReferenceSelect = ReferenceInput.createSelect({
