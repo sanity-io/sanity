@@ -2,7 +2,12 @@
 import {pick} from 'lodash'
 import {Raw, Block, Document, State, Character, Mark, Text, Inline} from 'slate'
 import {createMemberValue} from '../../../state/FormBuilderState'
-import {SLATE_TEXT_BLOCKS, SLATE_LIST_BLOCKS, SLATE_DEFAULT_NODE, SLATE_BLOCK_FORMATTING_OPTION_KEYS} from '../constants'
+import {
+  SLATE_TEXT_BLOCKS,
+  SLATE_LIST_BLOCKS,
+  SLATE_DEFAULT_NODE,
+  SLATE_BLOCK_FORMATTING_OPTION_KEYS
+} from '../constants'
 
 export const DESERIALIZE = {
   textBlock(para, context = {}) {
