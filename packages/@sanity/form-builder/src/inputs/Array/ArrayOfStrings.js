@@ -9,12 +9,12 @@ import styles from './styles/ArrayOfStrings.css'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 
-function reinsert(arr, from, to) {
-  const _arr = arr.slice(0)
-  const val = _arr[from]
-  _arr.splice(from, 1)
-  _arr.splice(to, 0, val)
-  return _arr
+function move(arr, from, to) {
+  const copy = arr.slice()
+  const val = copy[from]
+  copy.splice(from, 1)
+  copy.splice(to, 0, val)
+  return copy
 }
 
 export default class ArrayOfStrings extends React.PureComponent {
@@ -91,7 +91,7 @@ export default class ArrayOfStrings extends React.PureComponent {
     const {oldIndex, newIndex} = event
     onChange({
       patch: {
-        type: 'set', value: reinsert(value, oldIndex, newIndex)
+        type: 'set', value: move(value, oldIndex, newIndex)
       }
     })
   }
