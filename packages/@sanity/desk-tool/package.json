@@ -22,6 +22,7 @@
     "@sanity/data-aspects": "^0.100.0",
     "@sanity/form-builder": "^0.100.7",
     "@sanity/mutator": "^0.100.3",
+    "element-resize-detector": "^1.1.10",
     "in-publish": "^2.0.0",
     "react-click-outside": "^2.2.0"
   },

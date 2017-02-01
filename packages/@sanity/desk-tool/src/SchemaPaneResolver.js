@@ -13,6 +13,7 @@ import styles from './styles/SchemaPaneResolver.css'
 import Preview from 'part:@sanity/base/preview'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -69,9 +70,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, false)
+    this.erd.uninstall()
   }
 
   componentWillMount() {
+    this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
     this.checkRedirect()
   }
 
@@ -195,6 +198,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   setNavigationElement = element => {
     this.navigationElement = element
+    this.erd.listenTo(this.navigationElement, el => {
+      this.handleResize()
+    })
   }
 
   setEditorPaneElement = element => {
