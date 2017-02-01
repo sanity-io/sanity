@@ -3,9 +3,9 @@ import {pick} from 'lodash'
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
 
 const NUMBER_CORE = {
-  name: 'string',
+  name: 'number',
   type: null,
-  jsonType: 'string'
+  jsonType: 'number'
 }
 
 export const NumberType = {
