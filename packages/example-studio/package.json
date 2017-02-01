@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.100.5",
+  "version": "0.100.6",
   "description": "Just a sample Sanity studio project",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "@sanity/core": "^0.100.3",
     "@sanity/default-layout": "^0.100.5",
     "@sanity/default-login": "^0.99.0",
-    "@sanity/desk-tool": "^0.100.5",
+    "@sanity/desk-tool": "^0.100.6",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
