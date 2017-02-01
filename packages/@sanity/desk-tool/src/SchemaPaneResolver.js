@@ -249,10 +249,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 3
     const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
 
-    const diff = editorPaneWidth - this.navWidth
+    const diff = containerWidth - editorPaneWidth - this.navWidth
 
     // Check if we need to push the navbar outside view
-    if (diff < 0) {
+    if (diff <= 0) {
       navTranslateX = Math.min(containerWidth - editorPaneMinWidth - this.navWidth, 0)
       navIsMinimized = true
       editorWidth = `${containerWidth - navTranslateX - this.navWidth}px`
