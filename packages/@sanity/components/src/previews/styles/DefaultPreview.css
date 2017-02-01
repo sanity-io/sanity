@@ -3,6 +3,8 @@
   padding: 0.5em;
   user-select: none;
   overflow: hidden;
+  height: 1.5em;
+  position: relative;
 }
 
 .heading {
@@ -21,6 +23,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: absolute;
+  width: calc(100% - 1em);
 }
 
 .subtitle {
