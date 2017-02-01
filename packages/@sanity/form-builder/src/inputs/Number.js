@@ -42,7 +42,7 @@ export default class Num extends React.Component {
         level={level}
         placeholder={type.placeholder || 'Must be a number'}
         onChange={this.handleChange}
-        value={typeof value === 'undefined' ? value : String(value)}
+        value={typeof value === 'undefined' ? value : Number(value)}
         focus={focus}
       />
     )

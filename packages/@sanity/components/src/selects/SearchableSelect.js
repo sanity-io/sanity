@@ -13,7 +13,7 @@ export default class SearchableSelect extends React.Component {
     onClose: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.object,
-    valueToString: PropTypes.func,
+    valueAsString: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
@@ -29,7 +29,6 @@ export default class SearchableSelect extends React.Component {
     onBlur() {},
     onFocus() {},
     onSearch() {},
-    valueToString: value => value,
     onOpen() {},
     onClose() {}
   }
@@ -37,9 +36,9 @@ export default class SearchableSelect extends React.Component {
 
   constructor(props) {
     super()
-    const {value, valueToString} = props
+    const {valueAsString} = props
     this.state = {
-      inputValue: value ? valueToString(value) : null,
+      inputValue: valueAsString || '',
       hasFocus: false,
       isOpen: false,
       highlightIndex: -1,
@@ -58,12 +57,10 @@ export default class SearchableSelect extends React.Component {
         searchResult: this.props.items
       })
     }
-    if (nextProps.value != this.props.value) {
+
+    if (nextProps.valueAsString != this.props.valueAsString) {
       this.setState({
-        inputValue: nextProps.valueToString(nextProps.value),
-        isInputSelected: true,
-        isOpen: false,
-        hasFocus: nextProps.focus
+        inputValue: nextProps.valueAsString
       })
     }
   }
@@ -77,11 +74,8 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleBlur = event => {
-    const {valueToString, value} = this.props
-
     if (!this.state.isOpen) {
       this.setState({
-        inputValue: value ? valueToString(value) : null,
         hasFocus: false
       })
       this.close()
@@ -90,12 +84,10 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleChange = item => {
-    const {onChange, valueToString} = this.props
+    const {onChange} = this.props
     this.setState({
-      inputValue: item ? valueToString(item) : null,
-      hasFocus: false
+      isInputSelected: true,
     })
-
     onChange(item)
     this.close()
   }
