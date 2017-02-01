@@ -15,7 +15,7 @@ export default class DefaultTextField extends React.Component {
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     onKeyPress: PropTypes.func,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     error: PropTypes.bool,
     level: PropTypes.number,
     placeholder: PropTypes.string,

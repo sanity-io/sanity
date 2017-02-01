@@ -11,7 +11,7 @@ export default class DefaultTextInput extends React.Component {
     onKeyPress: PropTypes.func,
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     selected: PropTypes.bool,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
