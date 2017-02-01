@@ -12,7 +12,7 @@ import {SLATE_MANAGED_NODE_TYPES} from '../constants'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
-const slateFieldComponentMapping = {
+const slateTypeComponentMapping = {
   paragraph: Paragraph,
   header(props) {
     // eslint-disable-next-line react/prop-types
@@ -35,27 +35,26 @@ const slateFieldComponentMapping = {
 }
 
 export default function prepareSlateShema(type) {
-  const groupedFields = Object.assign({slate: [], formBuilder: []}, groupBy(type.of, ofField => {
-    if (SLATE_MANAGED_NODE_TYPES.includes(ofField.type)) {
+  const groupedTypes = Object.assign({slate: [], formBuilder: []}, groupBy(type.of, ofType => {
+    if (SLATE_MANAGED_NODE_TYPES.includes(ofType.style)) {
       return 'slate'
     }
     return 'formBuilder'
   }))
-
-  const paragraphField = (groupedFields.slate || []).find(ofField => ofField.type === 'paragraph')
+  const paragraphField = (groupedTypes.slate || []).find(ofType => ofType.style === 'paragraph')
   const allowedMarks = paragraphField && (paragraphField.marks || [])
 
   const schema = {
     nodes: Object.assign(
-        mapToObject(groupedFields.formBuilder || [], ofField => {
-          return [ofField.type, createPreviewNode(ofField)]
+        mapToObject(groupedTypes.formBuilder || [], ofType => {
+          return [ofType.name, createPreviewNode(ofType)]
         }),
-        mapToObject(groupedFields.slate || [], slateField => {
-          const klass = slateFieldComponentMapping[slateField.type]
+        mapToObject(groupedTypes.slate || [], slateType => {
+          const klass = slateTypeComponentMapping[slateType.style]
           if (klass) {
-            return [slateField.type, klass]
+            return [slateType.style, klass]
           }
-          throw new Error(`Do not know how to make a slate node for ${slateField.type}`)
+          throw new Error(`Do not know how to make a slate node for ${slateType.style}`)
         })
     ),
     marks: mapToObject(allowedMarks, mark => {
@@ -63,7 +62,7 @@ export default function prepareSlateShema(type) {
     })
   }
   return {
-    fields: groupedFields,
+    types: groupedTypes,
     schema: schema
   }
 }

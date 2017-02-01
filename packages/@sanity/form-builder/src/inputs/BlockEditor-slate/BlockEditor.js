@@ -54,7 +54,7 @@ export default class BlockEditor extends React.Component {
 
     const slateSchema = prepareSlateSchema(this.props.type)
     this.slateSchema = slateSchema.schema
-    this.groupedFields = slateSchema.fields
+    this.groupedTypes = slateSchema.types
     this.slatePlugins = [
       InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
       OnPasteHtml(),
@@ -73,14 +73,12 @@ export default class BlockEditor extends React.Component {
   handleInsertBlock = item => {
     const {value, onChange, type} = this.props
 
-    const ofType = type.of.find(memberType => memberType.type === type)
+    const ofType = type.of.find(memberType => memberType.type.name === item.type.name)
     const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofType)
-
     let transform = value.state.transform()
-
     if (ofType.options && ofType.options.inline) {
       transform = transform.insertInline({
-        type: type,
+        type: item.type.name,
         isVoid: true,
         data: {
           value: addItemValue
@@ -88,7 +86,7 @@ export default class BlockEditor extends React.Component {
       })
     } else {
       transform = transform.insertBlock({
-        type: type,
+        type: item.type.name,
         isVoid: true,
         data: {
           value: addItemValue
@@ -114,15 +112,15 @@ export default class BlockEditor extends React.Component {
   handleOnClickListFormattingButton = (event, listStyle, active) => {
     const {value, onChange} = this.props
     const {state} = value
-    const type = this.groupedFields.slate
+    const type = this.groupedTypes.slate
       .find(sfield => SLATE_LIST_BLOCKS.includes(sfield.type) && sfield.listStyle === listStyle)
     const setBlock = {
-      type: type.type,
+      type: type.style,
       data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
     }
     let transform = state.transform()
-    SLATE_LIST_BLOCKS.forEach(type => {
-      transform = transform.unwrapBlock(type)
+    SLATE_LIST_BLOCKS.forEach(_type => {
+      transform = transform.unwrapBlock(_type)
     })
     if (active) {
       if (setBlock.type === SLATE_DEFAULT_NODE) {
@@ -147,14 +145,14 @@ export default class BlockEditor extends React.Component {
     const {state} = value
     const {selection, startBlock, endBlock} = state
     const block = {
-      type: type.type,
+      type: type.style,
       data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
     }
     let transform = state.transform()
 
     if (this.isWithinList()) {
-      SLATE_LIST_BLOCKS.forEach(type => {
-        transform = transform.unwrapBlock(type)
+      SLATE_LIST_BLOCKS.forEach(_type => {
+        transform = transform.unwrapBlock(_type)
       })
       transform = transform
         .setBlock(block)
@@ -206,7 +204,6 @@ export default class BlockEditor extends React.Component {
   }
 
   handleOnClickLinkButton = (href, target, text) => {
-
     const {value, onChange} = this.props
     const {state} = value
     let transform = state.transform()
@@ -248,7 +245,7 @@ export default class BlockEditor extends React.Component {
 
   hasBlock(type) {
     const {value} = this.props
-    return value.state.blocks.some(node => node.type === type.type
+    return value.state.blocks.some(node => node.type === type.style
         && isEqual(
           pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
           pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
@@ -273,7 +270,7 @@ export default class BlockEditor extends React.Component {
     const {document} = state
     return state.blocks.some(node => {
       const parent = document.getParent(node.key)
-      return parent && parent.data && parent.type === type.type
+      return parent && parent.data && parent.type === type.style
         && isEqual(
           pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
           pick(parent.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
@@ -294,7 +291,7 @@ export default class BlockEditor extends React.Component {
     if (!anchorBlock) {
       return []
     }
-    const marksField = this.groupedFields.slate.find(type => type.type === anchorBlock)
+    const marksField = this.groupedTypes.slate.find(type => type.style === anchorBlock)
     if (!marksField || !marksField.marks) {
       return []
     }
@@ -308,11 +305,11 @@ export default class BlockEditor extends React.Component {
 
 
   getListFormats() {
-    if (!this.groupedFields.slate.filter(type => SLATE_LIST_BLOCKS.includes(type.type)).length) {
+    if (!this.groupedTypes.slate.filter(type => SLATE_LIST_BLOCKS.includes(type.style)).length) {
       return []
     }
-    return this.groupedFields.slate
-      .filter(type => SLATE_LIST_BLOCKS.includes(type.type))
+    return this.groupedTypes.slate
+      .filter(type => SLATE_LIST_BLOCKS.includes(type.style))
       .map((type, index) => {
         return {
           type: type.listStyle,
@@ -323,15 +320,15 @@ export default class BlockEditor extends React.Component {
   }
 
   getTextFormats() {
-    if (!this.groupedFields.slate.length) {
+    if (!this.groupedTypes.slate.length) {
       return []
     }
-    const items = this.groupedFields.slate
-      .filter(type => SLATE_TEXT_BLOCKS.includes(type.type))
+    const items = this.groupedTypes.slate
+      .filter(type => SLATE_TEXT_BLOCKS.includes(type.style))
       .map((type, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[type.type](
+          preview: this.slateSchema.nodes[type.style](
             Object.assign(
               {isPreview: true},
               {children: <span>{type.title}</span>},
@@ -407,7 +404,7 @@ export default class BlockEditor extends React.Component {
           <Toolbar
             className={styles.toolbar}
             onInsertBlock={this.handleInsertBlock}
-            insertBlocks={this.groupedFields.formBuilder || []}
+            insertBlocks={this.groupedTypes.formBuilder || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
@@ -420,7 +417,7 @@ export default class BlockEditor extends React.Component {
             showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
-          <div className={styles.inputContainer}>
+          <div className={styles.inputContainer} id={inputId}>
             <Editor
               className={styles.input}
               onChange={this.handleEditorChange}
