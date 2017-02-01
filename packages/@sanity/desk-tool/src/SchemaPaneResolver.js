@@ -242,7 +242,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const editorPaneWidth = this.editorPaneElement.offsetWidth
     const containerWidth = this.containerElement.offsetWidth
     let navTranslateX = 0
-    let navIsMinimized = false
     let editorWidth = `${containerWidth - this.navWidth}px`
 
     // Setting dimensions based on font-size.
@@ -254,14 +253,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     // Check if we need to push the navbar outside view
     if (diff <= 0) {
       navTranslateX = Math.min(containerWidth - editorPaneMinWidth - this.navWidth, 0)
-      navIsMinimized = true
       editorWidth = `${containerWidth - navTranslateX - this.navWidth}px`
     }
 
     // Set states that triggers re-render
     this.setState({
       navTranslateX: navTranslateX,
-      navIsMinimized: navIsMinimized,
+      navIsMinimized: navTranslateX < 0,
       editorWidth: editorWidth
     })
 
