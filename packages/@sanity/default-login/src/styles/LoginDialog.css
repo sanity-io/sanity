@@ -3,6 +3,7 @@
 
 .root {
   display: block;
+  text-align: center;
 }
 
 .headline {
@@ -13,25 +14,31 @@
 }
 
 .sanityStudioLogo {
-  position: absolute;
-  top: 2rem;
-  left: 50%;
-  transform: translatex(-50%);
-  width: 10em;
-  height: 1em;
+
+  width: 8rem;
+  margin: 4rem auto;
+
   @media (--screen-medium) {
+    margin: 0;
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translatex(-50%);
+    width: 10em;
+    height: 1em;
     top: 10vh;
   }
 }
 
 .branding {
-  position: absolute;
-  top: 5rem;
-  left: 50%;
-  transform: translatex(-50%);
-  text-align: center;
+  margin-bottom: 4rem;
   @media (--screen-medium) {
+    margin: 0;
     top: 20vh;
+    position: absolute;
+    left: 50%;
+    transform: translatex(-50%);
+    text-align: center;
   }
 }
 
@@ -63,10 +70,12 @@
 }
 
 .inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
+  @media (--screen-medium) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
 }
 
 .provider {
@@ -84,7 +93,7 @@
   padding: 1em;
   outline: none !important;
   cursor: pointer;
-  
+
   &:hover {
     background-color: #eee;
   }
@@ -101,7 +110,12 @@
 
 .providerLogo {
   @nest & svg {
-    height: 7em;
+
+    height: 4em;
     width: auto;
+    @media (--screen-medium) {
+      height: 7em;
+    }
+
   }
 }
