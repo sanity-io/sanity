@@ -7,10 +7,10 @@ function onKeyDown(event, data, state, editor) {
 
   switch (data.key) {
     case 'b':
-      mark = 'bold'
+      mark = 'strong'
       break
     case 'i':
-      mark = 'italic'
+      mark = 'em'
       break
     case 'u':
       mark = 'underline'

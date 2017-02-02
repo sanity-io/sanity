@@ -18,7 +18,7 @@ export const SERIALIZE = {
       return SERIALIZE.listBlock(block, block.nodes, context)
     }
 
-    const validTypeNames = context.type.of.map(ofType => ofType.type)
+    const validTypeNames = context.type.of.map(ofType => ofType.name)
     assert(
       validTypeNames.includes(block.type),
       `Expected block type (${block.type}) to be one of ${validTypeNames.join(', ')}`
@@ -55,7 +55,7 @@ export const SERIALIZE = {
 
   range(range, context = {}) {
     return {
-      kind: 'range',
+      _type: 'span',
       text: range.text,
       marks: range.marks
         .toArray()
@@ -64,18 +64,14 @@ export const SERIALIZE = {
   },
 
   text(text, context = {}) {
-    return {
-      key: text.key,
-      _type: 'text',
-      ranges: text
-        .getRanges()
-        .toArray()
-        .map(range => SERIALIZE.range(range, context))
-    }
+    return text
+      .getRanges()
+      .toArray()
+      .map(range => SERIALIZE.range(range, context))
   },
 
   inline(inline, context = {}) {
-    const validTypeNames = context.type.of.map(ofType => ofType.type)
+    const validTypeNames = context.type.of.map(ofType => ofType.name)
 
     // Is it a formbuilder inline field?
     if (validTypeNames.includes(inline.type)) {
@@ -109,13 +105,11 @@ export const SERIALIZE = {
     return Object.assign(
       {
         key: block.key,
-        _type: block.type,
-        children: nodes
+        _type: 'block',
+        spans: nodes
           .toArray()
           .map(node => SERIALIZE.node(node, context))
-
-      },
-      pick(block.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      }
     )
   },
 
