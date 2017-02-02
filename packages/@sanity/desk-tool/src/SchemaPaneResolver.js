@@ -237,7 +237,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
     if (!this.shouldReposition || this.state.navIsHovered) {
-      this.resetPosition()
       return false
     }
 
