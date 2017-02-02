@@ -23,9 +23,9 @@ export default class TextFormatToolbar extends React.Component {
 
   getIcon(type) {
     switch (type) {
-      case 'bold':
+      case 'strong':
         return FormatBoldIcon
-      case 'italic':
+      case 'em':
         return FormatItalicIcon
       case 'underline':
         return FormatUnderlinedIcon

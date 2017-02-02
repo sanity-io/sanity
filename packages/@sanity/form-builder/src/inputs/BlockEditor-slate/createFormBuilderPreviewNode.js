@@ -118,7 +118,6 @@ export default function createFormBuilderPreviewNode(ofType) {
 
     handleChange = event => {
       const {node, editor} = this.props
-      console.log(node.data.get('value'))
       const next = editor.getState()
         .transform()
         .setNodeByKey(node.key, {
@@ -131,7 +130,6 @@ export default function createFormBuilderPreviewNode(ofType) {
 
     applyDropTargetInline(transform, target) {
       const {node} = this.props
-
       let next = transform
 
       if (target.isAtStart) {

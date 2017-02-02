@@ -19,11 +19,11 @@ import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
   SLATE_BLOCK_FORMATTING_OPTION_KEYS,
-  SLATE_LIST_BLOCKS,
+  SLATE_LIST_BLOCK_TYPE,
   SLATE_LIST_ITEM_TYPE,
-  SLATE_DEFAULT_NODE,
   SLATE_TEXT_BLOCKS,
-  SLATE_LINK_TYPE
+  SLATE_LINK_TYPE,
+  TYPE_COMPARISON_PROPS
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
@@ -56,13 +56,23 @@ export default class BlockEditor extends React.Component {
     this.slateSchema = slateSchema.schema
     this.groupedTypes = slateSchema.types
     this.slatePlugins = [
-      InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
+      InsertBlockOnEnter(
+        Object.assign(
+          {},
+          this.slateSchema.normalBlock,
+          {nodes: [{kind: 'text', text: '', ranges: []}]}
+        )
+      ),
       OnPasteHtml(),
       FormBuilderNodeOnDrop(),
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
-      ListItemOnEnterKey(),
-      TextBlockOnEnterKey()
+      ListItemOnEnterKey(
+        this.slateSchema.normalBlock,
+        SLATE_LIST_BLOCK_TYPE,
+        SLATE_LIST_ITEM_TYPE
+      ),
+      TextBlockOnEnterKey(this.slateSchema.normalBlock)
     ]
 
     this.state = {
@@ -70,28 +80,21 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-  handleInsertBlock = item => {
-    const {value, onChange, type} = this.props
-
-    const ofType = type.of.find(memberType => memberType.type.name === item.type.name)
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofType)
+  handleInsertBlockorInline = item => {
+    const {value, onChange} = this.props
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, item)
+    const props = {
+      type: item.type.name,
+      isVoid: true,
+      data: {
+        value: addItemValue
+      }
+    }
     let transform = value.state.transform()
-    if (ofType.options && ofType.options.inline) {
-      transform = transform.insertInline({
-        type: item.type.name,
-        isVoid: true,
-        data: {
-          value: addItemValue
-        }
-      })
+    if (item.options && item.options.inline) {
+      transform = transform.insertInline(props)
     } else {
-      transform = transform.insertBlock({
-        type: item.type.name,
-        isVoid: true,
-        data: {
-          value: addItemValue
-        }
-      })
+      transform = transform.insertBlock(props)
     }
     const nextState = transform.apply()
 
@@ -113,26 +116,23 @@ export default class BlockEditor extends React.Component {
     const {value, onChange} = this.props
     const {state} = value
     const type = this.groupedTypes.slate
-      .find(sfield => SLATE_LIST_BLOCKS.includes(sfield.type) && sfield.listStyle === listStyle)
+      .find(sType => sType.listItem === listStyle)
     const setBlock = {
-      type: type.style,
-      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      type: SLATE_LIST_BLOCK_TYPE,
+      data: {type: type}
     }
     let transform = state.transform()
-    SLATE_LIST_BLOCKS.forEach(_type => {
-      transform = transform.unwrapBlock(_type)
-    })
+
     if (active) {
-      if (setBlock.type === SLATE_DEFAULT_NODE) {
-        transform.setBlock(setBlock)
-      } else {
-        transform = transform
-          .setBlock(SLATE_LIST_ITEM_TYPE)
-          .wrapBlock(setBlock)
-      }
-    } else {
       transform = transform
-        .setBlock(SLATE_DEFAULT_NODE)
+        .setBlock(SLATE_LIST_ITEM_TYPE)
+        .wrapBlock(setBlock)
+    } else {
+      // TODO: there is a bug here if the list item is empty
+      // Then in will be unwrapped into an listItem and not a normal node
+      transform = transform
+        .setBlock(this.slateSchema.normalBlock)
+        .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
     }
     const nextState = transform.apply()
     onChange({patch: createLocalStatePatch(nextState)})
@@ -146,15 +146,12 @@ export default class BlockEditor extends React.Component {
     const {selection, startBlock, endBlock} = state
     const block = {
       type: type.style,
-      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      data: {type: type}
     }
     let transform = state.transform()
 
     if (this.isWithinList()) {
-      SLATE_LIST_BLOCKS.forEach(_type => {
-        transform = transform.unwrapBlock(_type)
-      })
-      transform = transform
+      transform = transform.unwrapBlock(SLATE_LIST_BLOCK_TYPE)
         .setBlock(block)
       const nextState = transform.apply()
       onChange({patch: createLocalStatePatch(nextState)})
@@ -268,12 +265,12 @@ export default class BlockEditor extends React.Component {
     const {value} = this.props
     const {state} = value
     const {document} = state
-    return state.blocks.some(node => {
-      const parent = document.getParent(node.key)
-      return parent && parent.data && parent.type === type.style
+    return state.blocks.some(block => {
+      const parent = document.getParent(block.key)
+      return parent && parent.data
         && isEqual(
-          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
-          pick(parent.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+          pick(parent.data.get('type'), TYPE_COMPARISON_PROPS),
+          pick(type, TYPE_COMPARISON_PROPS)
         )
     })
   }
@@ -304,27 +301,26 @@ export default class BlockEditor extends React.Component {
   }
 
 
-  getListFormats() {
-    if (!this.groupedTypes.slate.filter(type => SLATE_LIST_BLOCKS.includes(type.style)).length) {
-      return []
-    }
-    return this.groupedTypes.slate
-      .filter(type => SLATE_LIST_BLOCKS.includes(type.style))
+  getListTypes() {
+    return (this.groupedTypes.slate)
+      .filter(type => type.listItem)
       .map((type, index) => {
         return {
-          type: type.listStyle,
+          type: type.listItem,
           title: type.title,
           active: this.hasParentBlock(type)
         }
       })
   }
 
-  getTextFormats() {
+  getStyles() {
     if (!this.groupedTypes.slate.length) {
       return []
     }
     const items = this.groupedTypes.slate
-      .filter(type => SLATE_TEXT_BLOCKS.includes(type.style))
+      .filter(type => {
+        return type.style
+      })
       .map((type, index) => {
         return {
           key: `blockFormat-${index}`,
@@ -403,15 +399,15 @@ export default class BlockEditor extends React.Component {
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlock}
+            onInsertBlock={this.handleInsertBlockorInline}
             insertBlocks={this.groupedTypes.formBuilder || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
             onListButtonClick={this.handleOnClickListFormattingButton}
             onFormatSelectChange={this.handleSelectBlockFormatting}
-            listFormats={this.getListFormats()}
-            textFormats={this.getTextFormats()}
+            listFormats={this.getListTypes()}
+            textFormats={this.getStyles()}
             onLinkButtonClick={this.handleOnClickLinkButton}
             activeLink={activeLink}
             showLinkButton={showLinkButton}
