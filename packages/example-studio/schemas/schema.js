@@ -22,6 +22,9 @@ export default createSchema({
       name: 'blogpost',
       type: 'object',
       title: 'Blogpost',
+      preview: {
+          fields: {title: 'title', subtitle: 'lead'}
+        },
       fields: [
 
         {

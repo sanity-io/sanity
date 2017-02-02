@@ -13,6 +13,7 @@
 }
 
 .title {
+  position: absolute;
   font-size: 1em;
   line-height: 1.5em;
   color: inherit;
@@ -23,8 +24,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: absolute;
   width: calc(100% - 1em);
+
+  @nest .hasSubtitle & {
+    top: 0.25em;
+  }
 }
 
 .subtitle {
@@ -32,12 +36,15 @@
   margin: 0;
   padding: 0;
   margin-top: -0.2em;
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-weight: 300;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1em;
+  width: calc(100% - 1em);
+  position: absolute;
+  top: 2.5em;
 }
 
 .description {

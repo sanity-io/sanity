@@ -35,7 +35,12 @@ export default class DefaultPreview extends React.Component {
     }
 
     return (
-      <div className={`${styles.root}`}>
+      <div
+        className={`
+          ${styles.root}
+          ${item.subtitle ? styles.hasSubtitle : ''}
+        `}
+      >
         {
           (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
             <MediaRender item={item} />
