@@ -9,12 +9,17 @@
   composes: link from "part:@sanity/components/lists/items/default-style";
   composes: root from "part:@sanity/components/previews/default-style";
   text-decoration: inherit;
-  padding-left: var(--medium-padding);
-  max-width: 20em;
   white-space: nowrap;
   text-overflow: ellipsis;
   display: block;
   padding-right: 2em;
+  padding-left: var(--small-padding);
+  max-width: 100%;
+
+  @media (--screen-medium) {
+    padding-left: var(--medium-padding);
+    max-width: 20em;
+  }
 }
 
 .selected {

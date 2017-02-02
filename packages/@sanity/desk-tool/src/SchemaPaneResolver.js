@@ -70,7 +70,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, false)
-    this.erd.uninstall()
+    this.erd.removeAllListeners(this.navigationElement)
+    // this.erd.uninstall(this.navigationElement)
   }
 
   componentWillMount() {
@@ -198,9 +199,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   setNavigationElement = element => {
     this.navigationElement = element
-    this.erd.listenTo(this.navigationElement, el => {
-      this.handleResize()
-    })
+    if (this.navigationElement) {
+      this.erd.listenTo(this.navigationElement, el => {
+        this.handleResize()
+      })
+    }
   }
 
   setEditorPaneElement = element => {
@@ -234,6 +237,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
     if (!this.shouldReposition || this.state.navIsHovered) {
+      this.resetPosition()
       return false
     }
 
