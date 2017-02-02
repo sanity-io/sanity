@@ -29,8 +29,11 @@
   width: 100%;
   left: 0;
   height: auto;
-  backdrop-filter: blur(10px);
-  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+
+  @media (--screen-medium) {
+    backdrop-filter: blur(10px);
+    composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+  }
 }
 
 .listContainerClosed {
