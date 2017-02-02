@@ -23,15 +23,7 @@
 }
 
 .container {
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  position: absolute;
-  box-sizing: border-box;
-  background-color: var(--gray-lightest);
-  bottom: 0;
+
 
   @nest &::before {
     content: "shouldNotReposition";
@@ -39,6 +31,15 @@
   }
 
   @media (--screen-medium) {
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    box-sizing: border-box;
+    background-color: var(--gray-lightest);
+    bottom: 0;
     box-shadow: 2px 2px 5px var(--gray-light) inset;
     @nest &::before {
       content: "shouldReposition";
@@ -76,25 +77,28 @@
 
 .navigationPanesContainerIsMinimized {
   composes: navigationPanesContainer;
-  @nest &::before {
-    content: '';
-    position: absolute;
-    z-index: 100;
-    background-color: var(--white);
-    height: 100%;
-    width: 100%;
-    opacity: 0.7;
-    transition: background-color 0.1s linear, opacity 0.1s linear;
-  }
-  @nest &:hover {
+
+  @media (--screen-medium) {
     @nest &::before {
-      opacity: 0.6;
+      content: '';
+      position: absolute;
+      z-index: 100;
+      background-color: var(--white);
+      height: 100%;
+      width: 100%;
+      opacity: 0.7;
+      transition: background-color 0.1s linear, opacity 0.1s linear;
     }
-  }
-  @nest &:active {
-    @nest &::before {
-      background-color: color(var(--black) lightness(+80%));
-      opacity: 0.6;
+    @nest &:hover {
+      @nest &::before {
+        opacity: 0.6;
+      }
+    }
+    @nest &:active {
+      @nest &::before {
+        background-color: color(var(--black) lightness(+80%));
+        opacity: 0.6;
+      }
     }
   }
 }
@@ -105,14 +109,13 @@
   padding: var(--small-padding);
   max-width: 100%;
   box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-  transition: transform 0.12s ease-out, opacity 0.12s linear;
-
 
   @media (--screen-medium) {
+    height: 100%;
+    width: 100%;
+    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+    transition: transform 0.12s ease-out, opacity 0.12s linear;
     width: auto;
     min-width: 32em;
     position: absolute;

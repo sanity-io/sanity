@@ -43,14 +43,17 @@
 }
 
 .listContainer {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   display: block;
   margin: 0;
   padding: 0;
   width: 100%;
-  max-height: calc(100% - 3rem);
   box-sizing: border-box;
+
+  @media (--screen-medium) {
+    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+    max-height: calc(100% - 3rem);
+  }
 }
 
 .menuButton {
