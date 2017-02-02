@@ -1,12 +1,12 @@
 import React, {PropTypes} from 'react'
-import styles from '../styles/contentStyles/Default.css'
+import styles from '../styles/contentStyles/Normal.css'
 
-function Default(props) {
+function Normal(props) {
   return <p className={styles.root}>{props.children}</p>
 }
 
-Default.propTypes = {
+Normal.propTypes = {
   children: PropTypes.node
 }
 
-export default Default
+export default Normal
