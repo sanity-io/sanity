@@ -49,12 +49,23 @@
 
 .portal {
   z-index: var(--zindex-popover);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--backdrop-background-color);
+
+  @media (--screen-medium) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: transparent;
+  }
 }
 
 .inner {
@@ -91,6 +102,10 @@
   left: 2em;
   z-index: 2;
 
+  @media (--max-screen-medium) {
+    display: none;
+  }
+
   @nest &:before {
     content: "";
     z-index: 3;
@@ -121,17 +136,18 @@
   }
 
   @media (--max-screen-medium) {
-    position: fixed;
+    position: fixed !important;
     box-sizing: border-box;
     z-index: 500;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    padding: 0;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+    height: calc(100vh - 1rem) !important;
+    width: calc(100vw - 1rem) !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: scroll;
+    min-width: 0;
+    max-width: 100vw;
   }
 }
 
@@ -148,12 +164,13 @@
   top: 0.15em;
   right: 0;
   border: 0;
-  background: none;
+  background: transparent;
   font-size: 1.5em;
   cursor: pointer;
   color: #fff;
   outline: none;
   z-index: 2;
+  padding-right: 0.25em;
 
   @media (--screen-medium) {
     color: var(--text-color);

@@ -4,8 +4,12 @@
 
   @nest &::-webkit-scrollbar {
     background-color: #fafafa;
-    width: 10px;
+    width: 3px;
     display: none;
+
+    @media (--screen-medium) {
+      width: 10px;
+    }
   }
 
   @nest &::-webkit-scrollbar * {
@@ -19,7 +23,10 @@
   @nest &:hover {
     @nest &::-webkit-scrollbar {
       display: block;
-      width: 10px;
+      width: 3px;
+      @media (--screen-medium) {
+        width: 10px;
+      }
     }
   }
 
