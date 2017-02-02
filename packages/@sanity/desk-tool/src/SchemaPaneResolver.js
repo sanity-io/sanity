@@ -62,6 +62,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   hasBeenResized = false
   oldNavTranslateX = 0
+  lastNavOffsetWidth = 0
 
   componentDidMount() {
     this.handleResize()
@@ -201,7 +202,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.navigationElement = element
     if (this.navigationElement) {
       this.erd.listenTo(this.navigationElement, el => {
-        this.handleResize()
+        if (el.offsetWidth != this.lastNavOffsetWidth) {
+          this.lastNavOffsetWidth = el.offsetWidth
+          this.handleResize()
+        }
       })
     }
   }
@@ -230,6 +234,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     //   return
     // }
 
+    const {selectedType, selectedDocumentId} = this.props.router.state
+    if (!selectedDocumentId || !selectedType) {
+      this.resetPosition()
+      return
+    }
+
     // Uses the css the determine if it should reposition with an Media Query
     // check if the window has resized
     const computedStyle = window.getComputedStyle(this.containerElement, '::before')
@@ -237,7 +247,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
 
     if (!this.shouldReposition || this.state.navIsHovered) {
-      return false
+      return
     }
 
     // Setup
