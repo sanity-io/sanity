@@ -7,6 +7,12 @@
 .deleteButton {
   font-size: 0.9em;
   margin-right: 0;
+  box-sizing: border-box;
+
+  @nest .media & {
+    padding: var(--small-padding);
+    background-color: color(var(--black) a(50%));
+  }
 }
 
 .functions {
