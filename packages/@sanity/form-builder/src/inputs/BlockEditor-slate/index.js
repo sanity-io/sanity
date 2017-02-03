@@ -8,7 +8,7 @@ const newState = State.create({
     nodes: Block.createList([
       Raw.deserializeNode({
         kind: 'block',
-        type: 'default',
+        type: 'normal',
         nodes: [
           {kind: 'text', text: '', ranges: []}
         ]
