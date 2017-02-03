@@ -19,7 +19,8 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
   }
 
   state = {
-    hasFocus: this.props.focus
+    hasFocus: this.props.focus,
+    focusedItem: null
   }
 
   handleRemoveItem = index => {
@@ -54,6 +55,18 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
     })
   }
 
+  handleFocus = item => {
+    this.setState({
+      focusedItem: item
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      focusedItem: null
+    })
+  }
+
   render() {
     const {type, value, level} = this.props
 
@@ -79,9 +92,13 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
                   <Checkbox
                     label={item.title}
                     value={item.value}
+                    item={item}
                     onChange={this.handleChange}
                     data-key={item.value}
                     checked={checked}
+                    onFocus={this.handleFocus}
+                    onBlur={this.handleBlur}
+                    focus={this.state.focusedItem === item}
                   />
                 </div>
               )

@@ -75,23 +75,25 @@
 
 .focusHelper {
   position: absolute;
-  top: var(--checkbox-top-offset);
-  left: 0;
+  top: calc(var(--checkbox-button-size) * -0.25);
+  left: calc(var(--checkbox-button-size) * -0.25);
   display: inline-block;
   box-sizing: border-box;
-  width: var(--checkbox-button-size);
-  height: var(--checkbox-button-size);
-  border-radius: 50%;
+  width: calc(var(--checkbox-button-size) * 1.5);
+  height: calc(var(--checkbox-button-size) * 1.5);
+  border-radius: 10%;
   background-color: transparent;
+  transform: scale(0.5);
+  transition: background-color 0.1s  linear, transform 0.15s linear;
 
-  @nest .isFocused & {
-    box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) rgba(0, 0, 0, 0.1);
-    background-color: rgba(0, 0, 0, 0.1);
+  @nest .hasFocus & {
+    background-color: var(--focus-color);
+    transform: scale(1);
   }
 
-  @nest .isFocused.isChecked & {
-    box-shadow: 0 0 0 calc(var(--checkbox-button-size) / 2) var(--checkbox-focus-color);
-    background-color: var(--checkbox-focus-color);
+  @nest .root:active & {
+    background-color: var(--focus-color);
+    transform: scale(1);
   }
 }
 
