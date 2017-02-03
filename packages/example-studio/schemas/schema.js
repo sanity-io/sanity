@@ -1,5 +1,5 @@
 import createSchema from 'part:@sanity/base/schema-creator'
-
+import {SlateInput} from '@sanity/form-builder'
 
 // Example of a custom slugify function that
 // makes a slug-string and prefixes it with something from the
@@ -14,6 +14,20 @@ function slugifyWithPrefix(prefix) {
       .substring(0, type.options.maxLength)
   }
 }
+
+const headerMarks = [
+  'strong',
+  'em'
+]
+
+const defaultMarks = [
+  'strong',
+  'em',
+  'underline',
+  'overline',
+  'line-through',
+  'code'
+]
 
 export default createSchema({
   name: 'example-blog',
@@ -108,6 +122,61 @@ export default createSchema({
           name: 'checked',
           title: 'Checked',
           type: 'boolean'
+        },
+       {
+          name: 'body',
+          type: 'array',
+          title: 'Blocks',
+          inputComponent: SlateInput,
+          of: [
+            {
+              title: 'Normal',
+              type: 'block',
+              default: true,
+              marks: defaultMarks
+            },
+            {
+              title: 'Heading 1',
+              type: 'block',
+              style: 'h1',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 2',
+              type: 'block',
+              style: 'h2',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 3',
+              type: 'block',
+              style: 'h3',
+              marks: headerMarks
+            },
+            {
+              title: 'Bullet list',
+              type: 'block',
+              listItem: 'bullet',
+              marks: defaultMarks
+            },
+            {
+              title: 'Numbered list',
+              type: 'block',
+              listItem: 'number',
+              marks: defaultMarks
+            },
+            {
+              title: 'Author',
+              type: 'author',
+            },
+            {
+              title: 'Inline string',
+              type: 'string',
+              options: {
+                inline: true
+              }
+            }
+          ]
         },
         {
           name: 'imageGallery',
