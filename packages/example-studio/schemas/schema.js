@@ -51,6 +51,14 @@ export default createSchema({
           required: true
         },
         {
+          name: 'mainImage',
+          title: 'Main image',
+          type: 'image',
+          options: {
+            hotspot: true
+          }
+        },
+        {
           name: 'slug',
           title: 'Slug',
           description: 'The unique identifier for the blogpost in links and urls',
