@@ -8,12 +8,12 @@
     "dataset": "playground"
   },
   "plugins": [
+    "vision",
     "@sanity/base",
     "@sanity/components",
     "@sanity/default-layout",
     "@sanity/default-login",
-    "@sanity/desk-tool",
-    "vision"
+    "@sanity/desk-tool"
   ],
   "parts": [
     {
