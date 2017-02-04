@@ -7,8 +7,9 @@ import FormBuilder from 'part:@sanity/form-builder'
 import schemaTypePrefix from '../utils/schemaTypePrefix'
 import schema from 'part:@sanity/base/schema'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
+import InspectView from '../components/InspectView'
 import dataAspects from '../utils/dataAspects'
-import {throttle} from 'lodash'
+import {throttle, omit} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 
 import styles from './styles/EditorPane.css'
@@ -16,15 +17,12 @@ import {Patcher} from '@sanity/mutator'
 
 const preventDefault = ev => ev.preventDefault()
 
-function omit(source, ...keys) {
-  return Object.keys(source)
-    .reduce((target, key) => {
-      if (keys.includes(key)) {
-        return target
-      }
-      target[key] = source[key]
-      return target
-    }, {})
+// Want a nicer api for listen/ulinsten
+function listen(target, eventType, callback, useCapture = false) {
+  target.addEventListener(eventType, callback, useCapture)
+  return function unlisten() {
+    target.removeEventListener(eventType, callback, useCapture)
+  }
 }
 
 function getInitialState() {
@@ -32,6 +30,7 @@ function getInitialState() {
     loading: true,
     spin: false,
     deleted: null,
+    inspect: false,
     progress: {kind: 'info', message: 'Loading'}
   }
 }
@@ -125,10 +124,21 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
   componentDidMount() {
     this.setupSubscriptions(this.props)
+    this.unlistenForKey = listen(window, 'keypress', event => {
+      const shouldToggle = event.ctrlKey
+        && event.charCode === 9
+        && !event.shiftKey
+        && !event.altKey
+
+      if (shouldToggle) {
+        this.setState({inspect: !this.state.inspect})
+      }
+    })
   }
 
   componentWillUnmount() {
     this.tearDownSubscriptions()
+    this.unlistenForKey()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -232,7 +242,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
   }
 
   render() {
-    const {value, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
+    const {value, inspect, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
     const {typeName} = this.props
     const titleProp = dataAspects.getItemDisplayField(typeName)
     const schemaType = schema.get(this.props.typeName)
@@ -288,6 +298,12 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
             documents={referringDocuments}
             currentValue={value}
             onCancel={this.handleCancelDeleteRequest}
+          />
+        )}
+        {inspect && (
+          <InspectView
+            value={value.serialize()}
+            onClose={() => this.setState({inspect: false})}
           />
         )}
       </div>

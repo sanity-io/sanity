@@ -23,8 +23,10 @@
     "@sanity/form-builder": "^0.100.9",
     "@sanity/mutator": "^0.100.3",
     "element-resize-detector": "^1.1.10",
+    "hashlru": "^1.0.6",
     "in-publish": "^2.0.0",
-    "react-click-outside": "^2.2.0"
+    "react-click-outside": "^2.2.0",
+    "react-json-inspector": "^7.0.0"
   },
   "devDependencies": {
     "@sanity/base": "^0.100.8",
