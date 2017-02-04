@@ -1,7 +1,15 @@
+import {ImmutableAccessor} from '@sanity/mutator'
 import {createMemberValue} from '../../state/FormBuilderState'
 import hasOwn from '../../utils/hasOwn'
-import {ImmutableAccessor} from '@sanity/mutator'
 
+function hasKeys(object) {
+  for (const key in object) {
+    if (object.hasOwnProperty(key)) {
+      return true
+    }
+  }
+  return false
+}
 export default class ObjectContainer {
 
   static deserialize(serialized = {}, context) {
@@ -69,13 +77,7 @@ export default class ObjectContainer {
   serialize() {
     const {type} = this.context
 
-    const serialized = type.fields.reduce((acc, typeField) => {
-      const serializedFieldValue = this.value[typeField.name].serialize()
-      if (serializedFieldValue !== undefined) {
-        acc[typeField.name] = serializedFieldValue
-      }
-      return acc
-    }, {})
+    const serialized = type.name === 'object' ? {} : {_type: type.name}
 
     if (hasOwn(this.value, '_id')) {
       serialized._id = this.value._id
@@ -85,9 +87,14 @@ export default class ObjectContainer {
       serialized._key = this.value._key
     }
 
-    return Object.keys(serialized).length
-      ? Object.assign({_type: type.name}, serialized)
-      : undefined
+    type.fields.forEach(typeField => {
+      const serializedFieldValue = this.value[typeField.name].serialize()
+      if (serializedFieldValue !== undefined) {
+        serialized[typeField.name] = serializedFieldValue
+      }
+    })
+
+    return hasKeys(serialized) ? serialized : undefined
   }
 
   get key() {
