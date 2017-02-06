@@ -16,12 +16,12 @@ function getCropAspect(crop, srcAspect) {
 
 export default class HotspotImage extends React.PureComponent {
   static propTypes = {
-    src: React.PropTypes.string.isRequired,
+    src: PropTypes.string.isRequired,
     srcAspectRatio: PropTypes.number.isRequired,
-    srcSet: React.PropTypes.string,
-    hotspot: React.PropTypes.object.isRequired,
-    crop: React.PropTypes.object.isRequired,
-    width: React.PropTypes.number,
+    srcSet: PropTypes.string,
+    hotspot: PropTypes.object.isRequired,
+    crop: PropTypes.object.isRequired,
+    width: PropTypes.number,
     aspectRatio: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.oneOf(['auto', 'none']),
@@ -30,6 +30,7 @@ export default class HotspotImage extends React.PureComponent {
     alignY: PropTypes.oneOf(['center', 'top', 'bottom']),
     className: PropTypes.string,
     style: PropTypes.object,
+    alt: PropTypes.string,
     onError: PropTypes.func,
     onLoad: PropTypes.func
   }
@@ -116,6 +117,7 @@ export default class HotspotImage extends React.PureComponent {
       alignY,
       className,
       style,
+      alt,
       onError,
       onLoad
     } = this.props
@@ -140,6 +142,7 @@ export default class HotspotImage extends React.PureComponent {
             <img
               ref={this.setImageElement}
               src={src}
+              alt={alt}
               srcSet={srcSet}
               onLoad={onLoad}
               onError={onError}
