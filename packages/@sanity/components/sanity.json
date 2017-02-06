@@ -54,6 +54,18 @@
       "description": "Abstract Image selector. Replaces <Input type=file />"
     },
     {
+      "name": "part:@sanity/components/fileinput/default",
+      "description": "<Input type=file />"
+    },
+    {
+      "name": "part:@sanity/components/fileinput/dropzone",
+      "description": "Abstract Image selector. Replaces <Input type=file />"
+    },
+    {
+      "name": "part:@sanity/components/fileinput/dropzone-style",
+      "description": "Styling for fileinput dropzone"
+    },
+    {
       "name": "part:@sanity/components/imageinput/default-style",
       "description": "Image input fieldset styling"
     },
@@ -535,8 +547,21 @@
       "path": "imageinput/ImageInputFieldset.js"
     },
     {
+      "implements": "part:@sanity/components/fileinput/default",
+      "path": "fileinput/common/FileInput.js"
+    },
+
+    {
       "implements": "part:@sanity/components/imageinput/image-select",
       "path": "imageinput/common/ImageSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/fileinput/dropzone",
+      "path": "fileinput/DropZone.js"
+    },
+    {
+      "implements": "part:@sanity/components/fileinput/dropzone-style",
+      "path": "fileinput/styles/DropZone.css"
     },
     {
       "implements": "part:@sanity/components/imageinput/fieldset-style",
@@ -821,6 +846,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "radiobutton/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "fileinput/story.js"
     }
 
   ]

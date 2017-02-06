@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import FileSelect from '../../fileinput/common/FileSelect'
+import FileInput from 'part:@sanity/components/fileinput/default'
 import readExif from '../utils/readExif'
 import rotateImage from '../utils/rotateImage'
 import continueWhen from '../utils/continueWhen'
@@ -42,7 +42,7 @@ export default class ImageInput extends React.PureComponent {
 
   render() {
     return (
-      <FileSelect
+      <FileInput
         {...this.props}
         className={`${styles.root} ${this.props.className}`}
         onSelect={this.handleSelect}
