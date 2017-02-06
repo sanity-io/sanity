@@ -127,8 +127,8 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
     this.unlistenForKey = listen(window, 'keypress', event => {
       const shouldToggle = event.ctrlKey
         && event.charCode === 9
+        && event.altKey
         && !event.shiftKey
-        && !event.altKey
 
       if (shouldToggle) {
         this.setState({inspect: !this.state.inspect})
