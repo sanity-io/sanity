@@ -51,13 +51,11 @@ export default class BlockEditor extends React.Component {
     this.slateSchema = slateSchema.schema
     this.groupedTypes = slateSchema.types
     this.slatePlugins = [
-      InsertBlockOnEnter(
-        Object.assign(
-          {},
-          this.slateSchema.normalBlock,
-          {nodes: [{kind: 'text', text: '', ranges: []}]}
-        )
-      ),
+      InsertBlockOnEnter({
+        type: this.slateSchema.normalBlock.type,
+        kind: 'block',
+        nodes: [{kind: 'text', text: '', ranges: []}]
+      }),
       OnPasteHtml(),
       FormBuilderNodeOnDrop(),
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
@@ -67,7 +65,7 @@ export default class BlockEditor extends React.Component {
         SLATE_LIST_BLOCK_TYPE,
         SLATE_LIST_ITEM_TYPE
       ),
-      TextBlockOnEnterKey(this.slateSchema.normalBlock)
+      TextBlockOnEnterKey(this.slateSchema.normalBlock.type)
     ]
 
     this.state = {
@@ -254,7 +252,6 @@ export default class BlockEditor extends React.Component {
 
 
   hasParentBlock(type) {
-    return false
     const {value} = this.props
     return value.blocks.some(block => {
       const parent = value.get('document').getParent(block.key)
@@ -344,7 +341,6 @@ export default class BlockEditor extends React.Component {
   }
 
   getActiveLink() {
-    return null
     const {value} = this.props
     if (!value.inlines) {
       return null
