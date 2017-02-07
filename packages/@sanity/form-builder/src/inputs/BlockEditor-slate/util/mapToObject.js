@@ -1,6 +1,6 @@
-export default function mapToObject(array, iterator) {
+export default function mapToObject(array, producer) {
   return array.reduce((acc, el, i) => {
-    const [key, value] = iterator(el, i, acc)
+    const [key, value] = producer(el, i, acc)
     acc[key] = value
     return acc
   }, {})

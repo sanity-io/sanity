@@ -3,8 +3,8 @@ import getWindow from 'get-window'
 import ReactDOM from 'react-dom'
 import OffsetKey from 'slate/lib/utils/offset-key'
 import ItemForm from './ItemForm'
-import ItemPreview from './ItemPreview'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Preview from '../../Preview'
 import blockStyles from './styles/BlockPreview.css'
 import inlineStyles from './styles/InlinePreview.css'
 import {IS_FIREFOX} from 'slate/lib/constants/environment'
@@ -211,7 +211,7 @@ export default function createFormBuilderPreviewNode(ofType) {
 
     renderPreview() {
       return (
-        <ItemPreview
+        <Preview
           type={ofType}
           value={this.getValue()}
         />
@@ -257,7 +257,6 @@ export default function createFormBuilderPreviewNode(ofType) {
           className={className}
         >
           <span className={styles.previewContainer} onClick={this.handleToggleEdit}>
-            [PREVIEW]
             {this.renderPreview()}
           </span>
 
