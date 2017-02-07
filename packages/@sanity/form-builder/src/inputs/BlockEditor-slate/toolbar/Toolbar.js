@@ -40,12 +40,7 @@ export default class Toolbar extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.marks !== nextProps.marks
-      || this.props.fullscreen !== nextProps.fullscreen
-    ) {
-      return true
-    }
-    return false
+    return (this.props.marks !== nextProps.marks || this.props.fullscreen !== nextProps.fullscreen)
   }
 
   render() {
