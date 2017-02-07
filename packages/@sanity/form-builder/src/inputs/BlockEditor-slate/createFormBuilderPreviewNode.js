@@ -121,7 +121,7 @@ export default function createFormBuilderPreviewNode(ofType) {
       const next = editor.getState()
         .transform()
         .setNodeByKey(node.key, {
-          data: {value: node.data.get('value').patch(event.patch)}
+          data: {value: node.data.get('value')}
         })
         .apply()
 
