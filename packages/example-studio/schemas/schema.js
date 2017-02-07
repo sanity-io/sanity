@@ -179,6 +179,61 @@ export default createSchema({
           ]
         },
         {
+          name: 'body',
+          type: 'array',
+          title: 'Blocks',
+          inputComponent: SlateInput,
+          of: [
+            {
+              title: 'Normal',
+              type: 'block',
+              default: true,
+              marks: defaultMarks
+            },
+            {
+              title: 'Heading 1',
+              type: 'block',
+              style: 'h1',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 2',
+              type: 'block',
+              style: 'h2',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 3',
+              type: 'block',
+              style: 'h3',
+              marks: headerMarks
+            },
+            {
+              title: 'Bullet list',
+              type: 'block',
+              listItem: 'bullet',
+              marks: defaultMarks
+            },
+            {
+              title: 'Numbered list',
+              type: 'block',
+              listItem: 'number',
+              marks: defaultMarks
+            },
+            {
+              title: 'Author',
+              type: 'author',
+            },
+            {
+              title: 'Inline string',
+              type: 'string',
+              options: {
+                inline: true
+              }
+            }
+          ]
+        },
+        {
           name: 'imageGallery',
           title: 'Image gallery',
           type: 'array',
@@ -331,6 +386,85 @@ export default createSchema({
               type: 'string'
             }
           ]
+        }
+      ]
+    },
+    {
+      name: 'slateBlocksTest',
+      type: 'object',
+      title: 'Slate blocks test',
+      fields: [
+        {
+          name: 'name',
+          title: 'Title',
+          type: 'string'
+        },
+        {
+          name: 'content',
+          title: 'Content',
+          type: 'array',
+          inputComponent: SlateInput,
+          of: [
+            {
+              title: 'Normal',
+              type: 'block',
+              default: true,
+              marks: defaultMarks
+            },
+            {
+              title: 'Heading 1',
+              type: 'block',
+              style: 'h1',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 2',
+              type: 'block',
+              style: 'h2',
+              marks: headerMarks
+            },
+            {
+              title: 'Heading 3',
+              type: 'block',
+              style: 'h3',
+              marks: headerMarks
+            },
+            {
+              title: 'Bullet list',
+              type: 'block',
+              listItem: 'bullet',
+              marks: defaultMarks
+            },
+            {
+              title: 'Numbered list',
+              type: 'block',
+              listItem: 'number',
+              marks: defaultMarks
+            },
+            {
+              title: 'Author',
+              type: 'author',
+            },
+            {
+              title: 'Inline string',
+              type: 'string',
+              options: {
+                inline: true
+              }
+            }
+          ]
+          // of: [
+          //   {
+          //     type: 'block',
+          //     styles: [
+          //       {name: 'h1', title: 'Heading 1'},
+          //       {name: 'h2', title: 'Heading 2'},
+          //       {name: 'h3', title: 'Heading 3'},
+          //       {name: 'h4', title: 'Heading 4'},
+          //       {name: 'h5', title: 'Heading 5'}
+          //     ]
+          //   }
+          // ]
         }
       ]
     }
