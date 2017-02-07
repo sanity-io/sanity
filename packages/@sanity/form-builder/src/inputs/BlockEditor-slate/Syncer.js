@@ -2,7 +2,9 @@ import React, {PropTypes} from 'react'
 import {Raw} from 'slate'
 import BlockEditor from './BlockEditor'
 import {throttle} from 'lodash'
-const EMPTY_CONTENT = [{kind: 'block', type: 'paragraph', nodes: []}]
+import {SLATE_NORMAL_BLOCK_TYPE} from './constants'
+
+const EMPTY_CONTENT = [{kind: 'block', type: SLATE_NORMAL_BLOCK_TYPE, nodes: []}]
 
 export default class Syncer extends React.PureComponent {
   static propTypes = {
