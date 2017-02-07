@@ -2,7 +2,6 @@ import assert from 'assert'
 import {
   SLATE_LIST_ITEM_TYPE,
   SLATE_TEXT_BLOCKS,
-  SLATE_LIST_BLOCKS,
   SLATE_BLOCK_FORMATTING_OPTION_KEYS
 } from '../constants'
 
@@ -13,10 +12,10 @@ export const SERIALIZE = {
     if (SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE).includes(block.type)) {
       return SERIALIZE.textBlock(block, block.nodes, context)
     }
-
-    if (SLATE_LIST_BLOCKS.includes(block.type)) {
-      return SERIALIZE.listBlock(block, block.nodes, context)
-    }
+    //
+    // if (SLATE_LIST_BLOCKS.includes(block.type)) {
+    //   return SERIALIZE.listBlock(block, block.nodes, context)
+    // }
 
     const validTypeNames = context.type.of.map(ofType => ofType.name)
     assert(

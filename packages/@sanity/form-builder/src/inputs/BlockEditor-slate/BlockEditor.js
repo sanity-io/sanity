@@ -1,14 +1,11 @@
 import React, {PropTypes} from 'react'
-import {Editor} from 'slate'
+import {Editor, State} from 'slate'
 import {pick, isEqual, uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import prepareSlateSchema from './util/prepareSlateSchema'
-import createLocalStatePatch from './util/createLocalStatePatch'
 import styles from './styles/BlockEditor.css'
-
-import SlateValueContainer from './SlateValueContainer'
 
 import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
 import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
@@ -29,12 +26,10 @@ import {
 import Toolbar from './toolbar/Toolbar'
 
 export default class BlockEditor extends React.Component {
-  static valueContainer = SlateValueContainer
-
   static propTypes = {
     type: PropTypes.any,
     level: PropTypes.number,
-    value: PropTypes.instanceOf(SlateValueContainer),
+    value: PropTypes.instanceOf(State),
     validation: PropTypes.shape({
       errors: PropTypes.array
     }),
@@ -90,7 +85,7 @@ export default class BlockEditor extends React.Component {
         value: addItemValue
       }
     }
-    let transform = value.state.transform()
+    let transform = value.transform()
     if (item.options && item.options.inline) {
       transform = transform.insertInline(props)
     } else {
@@ -98,30 +93,29 @@ export default class BlockEditor extends React.Component {
     }
     const nextState = transform.apply()
 
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
   handleOnClickMarkButton = (event, type) => {
     event.preventDefault()
     const {value, onChange} = this.props
-    const nextState = value.state
+    const nextState = value
       .transform()
       .toggleMark(type)
       .apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
 
   handleOnClickListFormattingButton = (event, listStyle, active) => {
     const {value, onChange} = this.props
-    const {state} = value
     const type = this.groupedTypes.slate
       .find(sType => sType.listItem === listStyle)
     const setBlock = {
       type: SLATE_LIST_BLOCK_TYPE,
       data: {type: type}
     }
-    let transform = state.transform()
+    let transform = value.transform()
 
     if (active) {
       transform = transform
@@ -135,26 +129,25 @@ export default class BlockEditor extends React.Component {
         .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
     }
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
 
   handleSelectBlockFormatting = selectedValue => {
     const {type} = selectedValue
     const {value, onChange} = this.props
-    const {state} = value
-    const {selection, startBlock, endBlock} = state
+    const {selection, startBlock, endBlock} = value
     const block = {
       type: type.style,
       data: {type: type}
     }
-    let transform = state.transform()
+    let transform = value.transform()
 
     if (this.isWithinList()) {
       transform = transform.unwrapBlock(SLATE_LIST_BLOCK_TYPE)
         .setBlock(block)
       const nextState = transform.apply()
-      onChange({patch: createLocalStatePatch(nextState)})
+      onChange(nextState)
       return
     }
 
@@ -197,20 +190,19 @@ export default class BlockEditor extends React.Component {
     transform
       .setBlock(block)
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
   handleOnClickLinkButton = (href, target, text) => {
     const {value, onChange} = this.props
-    const {state} = value
-    let transform = state.transform()
+    let transform = value.transform()
 
     if (!href) {
       transform = transform
        .unwrapInline(SLATE_LINK_TYPE)
        .focus()
     } else if (href) {
-      if (state.isExpanded) {
+      if (value.isExpanded) {
         transform = transform
           .unwrapInline(SLATE_LINK_TYPE)
           .wrapInline({
@@ -219,7 +211,7 @@ export default class BlockEditor extends React.Component {
           })
           .focus()
       } else {
-        const linkNode = value.state.inlines
+        const linkNode = value.inlines
           .find(inline => inline.type === SLATE_LINK_TYPE)
         transform = transform
           .focus()
@@ -232,17 +224,17 @@ export default class BlockEditor extends React.Component {
       }
     }
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
   hasMark(type) {
     const {value} = this.props
-    return value.state.marks.some(mark => mark.type == type)
+    return value.marks.some(mark => mark.type == type)
   }
 
   hasBlock(type) {
     const {value} = this.props
-    return value.state.blocks.some(node => node.type === type.style
+    return value.blocks.some(node => node.type === type.style
         && isEqual(
           pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
           pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
@@ -252,21 +244,20 @@ export default class BlockEditor extends React.Component {
 
   hasLinks() {
     const {value} = this.props
-    return value.state.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
+    return value.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
   }
 
   isWithinList() {
     const {value} = this.props
-    const {state} = value
-    return state.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
+    return value.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
   }
 
+
   hasParentBlock(type) {
+    return false
     const {value} = this.props
-    const {state} = value
-    const {document} = state
-    return state.blocks.some(block => {
-      const parent = document.getParent(block.key)
+    return value.blocks.some(block => {
+      const parent = value.get('document').getParent(block.key)
       return parent && parent.data
         && isEqual(
           pick(parent.data.get('type'), TYPE_COMPARISON_PROPS),
@@ -277,12 +268,12 @@ export default class BlockEditor extends React.Component {
 
   getActiveMarks() {
     const {value} = this.props
-    if (!value.state.blocks) {
+    if (!value.blocks) {
       return []
     }
-    const anchorBlock = value.state.blocks
+    const anchorBlock = value.blocks
       .filter(node => SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE)
-        .includes(node.type) && value.state.selection.hasAnchorIn(node)
+        .includes(node.type) && value.selection.hasAnchorIn(node)
       )
       .map(node => node.type).toArray()[0]
     if (!anchorBlock) {
@@ -353,12 +344,13 @@ export default class BlockEditor extends React.Component {
   }
 
   getActiveLink() {
+    return null
     const {value} = this.props
-    if (!value.state.inlines) {
+    if (!value.inlines) {
       return null
     }
     if (this.hasLinks()) {
-      const linkNode = value.state.inlines
+      const linkNode = value.inlines
         .find(inline => inline.type === SLATE_LINK_TYPE)
       if (linkNode) {
         return {
@@ -378,7 +370,7 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorChange = nextState => {
-    this.props.onChange({patch: createLocalStatePatch(nextState)})
+    this.props.onChange(nextState)
   }
 
   render() {
@@ -386,7 +378,7 @@ export default class BlockEditor extends React.Component {
     const hasError = validation && validation.messages && validation.messages.length > 0
     const inputId = uniqueId('FormBuilderText')
     const activeLink = this.getActiveLink()
-    const showLinkButton = (value.state.selection && value.state.selection.isExpanded)
+    const showLinkButton = (value.selection && value.selection.isExpanded)
       || !!activeLink
 
     return (
@@ -418,7 +410,7 @@ export default class BlockEditor extends React.Component {
               className={styles.input}
               onChange={this.handleEditorChange}
               placeholder=""
-              state={value.state}
+              state={value}
               plugins={this.slatePlugins}
               schema={this.slateSchema}
             />
