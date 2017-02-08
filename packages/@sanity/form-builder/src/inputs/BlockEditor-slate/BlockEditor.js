@@ -123,8 +123,6 @@ export default class BlockEditor extends React.Component {
         .setBlock(SLATE_LIST_ITEM_TYPE)
         .wrapBlock(setBlock)
     } else {
-      // TODO: there is a bug here if the list item is empty
-      // Then in will be unwrapped into an listItem and not a normal node
       transform = transform
         .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
         .setBlock(SLATE_NORMAL_BLOCK_TYPE)
