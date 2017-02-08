@@ -1,8 +1,5 @@
-// @flow
 
-import type {ObjectType, SchemaDef} from '../../src/defs/SchemaDef'
-
-const CUSTOMER: ObjectType = {
+const CUSTOMER = {
   name: 'customer',
   type: 'object',
   fields: [
@@ -14,7 +11,7 @@ const CUSTOMER: ObjectType = {
   ]
 }
 
-const PERSON: ObjectType = {
+const PERSON = {
   name: 'person',
   type: 'object',
   title: 'Person',
@@ -57,7 +54,7 @@ const PERSON: ObjectType = {
   ]
 }
 
-const ADDRESS: ObjectType = {
+const ADDRESS = {
   name: 'address',
   type: 'object',
   fields: [
@@ -65,7 +62,7 @@ const ADDRESS: ObjectType = {
     {name: 'street', type: 'string'}
   ]
 }
-const RELATION: ObjectType = {
+const RELATION = {
   name: 'relation',
   type: 'object',
   fields: [
@@ -88,7 +85,7 @@ const RELATION: ObjectType = {
   ]
 }
 
-const def: SchemaDef = {
+export default {
   name: 'test',
   types: [
     PERSON,
@@ -97,5 +94,3 @@ const def: SchemaDef = {
     RELATION
   ]
 }
-
-export default def
