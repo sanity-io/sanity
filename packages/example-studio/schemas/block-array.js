@@ -1,3 +1,5 @@
+import {SlateInput} from '@sanity/form-builder'
+
 export default [
   {
     name: 'lowLevelBlocksTest',
@@ -12,6 +14,7 @@ export default [
         name: 'content',
         title: 'Content',
         type: 'array',
+        inputComponent: SlateInput,
         of: [
           {
             type: 'block',
@@ -61,7 +64,7 @@ export default [
         type: 'string',
         options: {
           list: [
-            {title: 'Normal'},
+            {title: 'Normal', value: undefined},
             {title: 'H1', value: 'h1'},
             {title: 'H2', value: 'h2'},
             {title: 'H3', value: 'h3'},
@@ -77,8 +80,7 @@ export default [
           list: [
             {title: 'None', value: ''},
             {title: 'Bullet', value: 'bullet'},
-            {title: 'Ordered', value: 'ordered'},
-            {title: 'Decimal', value: 'decimal'}
+            {title: 'Numbered', value: 'number'}
           ]
         }
       },

@@ -135,12 +135,11 @@ export default class BlockEditor extends React.Component {
 
 
   handleSelectBlockFormatting = selectedValue => {
-    const {type} = selectedValue
+    const typeDef = selectedValue.type
     const {value, onChange} = this.props
     const {selection, startBlock, endBlock} = value
     const block = {
-      type: type.style,
-      data: {type: type}
+      type: typeDef.type
     }
     let transform = value.transform()
 
@@ -228,14 +227,14 @@ export default class BlockEditor extends React.Component {
     onChange(nextState)
   }
 
-  hasMark(type) {
+  hasMark(markName) {
     const {value} = this.props
-    return value.marks.some(mark => mark.type == type)
+    return value.marks.some(mark => mark.type == markName)
   }
 
   hasBlock(type) {
     const {value} = this.props
-    return value.blocks.some(block => block.type === type.style)
+    return value.blocks.some(block => block.type === type)
   }
 
   hasLinks() {
@@ -263,34 +262,13 @@ export default class BlockEditor extends React.Component {
   }
 
   getActiveMarks() {
-    const {value} = this.props
-    if (!value.blocks) {
-      return []
-    }
-    const anchorBlock = value.blocks
-      .filter(node => SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE)
-        .includes(node.type) && value.selection.hasAnchorIn(node)
-      )
-      .map(node => node.type).toArray()[0]
-    if (!anchorBlock) {
-      return []
-    }
-    let marksField = this.groupedTypes.slate.find(type => type.style === anchorBlock)
-    // listItem will get marks from the normal type
-    if (anchorBlock === 'listItem') {
-      marksField = this.groupedTypes.slate.find(type => type.style === SLATE_NORMAL_BLOCK_TYPE)
-    }
-    if (!marksField || !marksField.marks) {
-      return []
-    }
-    return marksField.marks.map(mark => {
+    return Object.keys(this.slateSchema.marks).map(mark => {
       return {
         type: mark,
         active: this.hasMark(mark)
       }
     })
   }
-
 
   getListTypes() {
     return (this.groupedTypes.slate)
@@ -309,19 +287,17 @@ export default class BlockEditor extends React.Component {
       return []
     }
     const items = this.groupedTypes.slate
-      .filter(type => {
-        return type.style
-      })
-      .map((type, index) => {
+      .filter(typeDef => SLATE_TEXT_BLOCKS.includes(typeDef.type))
+      .map((typeDef, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[type.style]({
+          preview: this.slateSchema.nodes[typeDef.type]({
             isPreview: true,
-            children: <span>{type.title}</span>
+            children: <span>{typeDef.title}</span>
           }),
-          type: type,
-          title: ` ${type.title}`,
-          active: this.hasBlock(type)
+          type: typeDef,
+          title: ` ${typeDef.title}`,
+          active: this.hasBlock(typeDef.type)
         }
       })
     let value = items.filter(item => item.active)

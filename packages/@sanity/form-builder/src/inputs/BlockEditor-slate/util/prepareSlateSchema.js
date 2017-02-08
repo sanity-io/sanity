@@ -53,19 +53,44 @@ const slateTypeComponentMapping = {
 }
 
 export default function prepareSlateShema(type) {
+  const blockType = type.of.find(ofType => ofType.name === 'block')
+  if (!blockType) {
+    throw new Error("'block' type is not defined in the schema (required).")
+  }
 
-  const normalType = type.of.find(ofType => ofType.default)
-  normalType.style = normalType.style || SLATE_NORMAL_BLOCK_TYPE
+  const styleField = blockType.fields.find(btField => btField.name === 'style')
+  if (!styleField) {
+    throw new Error("A field with name 'style' is not defined in the block type (required).")
+  }
 
-  const groupedTypes = Object.assign({slate: [], formBuilder: []}, groupBy(type.of, ofType => {
-    if (ofType.default || ofType.listItem
-        || SLATE_MANAGED_NODE_TYPES.includes(ofType.style)) {
-      return 'slate'
-    }
-    return 'formBuilder'
-  }))
+  const listField = blockType.fields.find(btField => btField.name === 'list')
 
-  const allowedMarks = normalType && (normalType.marks || [])
+  const textStyles = styleField.type.options.list
+
+  let listTypes = []
+  if (listField) {
+    listTypes = listField.type.options.list.filter(item => item.value)
+      .map(listType => {
+        return {type: 'list', listItem: listType.value}
+      })
+  }
+
+  const groupedTypes = {
+    slate: textStyles.map(style => {
+      return {
+        type: style.value || SLATE_NORMAL_BLOCK_TYPE,
+        title: style.title
+      }
+    }).concat(listTypes),
+    formBuilder: type.of.filter(ofType => ofType.name !== 'block')
+  }
+
+  const allowedMarks = blockType.fields.find(btField => btField.name === 'spans')
+    .type.of.find(of => of.name === 'span')
+    .fields.find(field => field.name === 'marks')
+    .type
+    .options
+    .list.map(mark => mark.value)
 
   const schema = {
     nodes: Object.assign(
@@ -73,10 +98,8 @@ export default function prepareSlateShema(type) {
           return [ofType.name, createPreviewNode(ofType)]
         }),
         mapToObject(groupedTypes.slate || [], slateType => {
-          if (slateType.listItem) {
-            return [SLATE_LIST_BLOCK_TYPE, slateTypeComponentMapping[SLATE_LIST_BLOCK_TYPE]]
-          } else if (slateTypeComponentMapping[slateType.style]) {
-            return [slateType.style, slateTypeComponentMapping[slateType.style]]
+          if (slateTypeComponentMapping[slateType.type]) {
+            return [slateType.type, slateTypeComponentMapping[slateType.type]]
           }
           throw new Error(`Do not know how to make a slate type for ${JSON.stringify(slateType)}`)
         })
