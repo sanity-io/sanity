@@ -68,11 +68,6 @@ export default function prepareSlateShema(type) {
   const allowedMarks = normalType && (normalType.marks || [])
 
   const schema = {
-    normalBlock: {
-      type: normalType.style,
-      isVoid: false,
-      data: {type: normalType.type}
-    },
     nodes: Object.assign(
         mapToObject(groupedTypes.formBuilder || [], ofType => {
           return [ofType.name, createPreviewNode(ofType)]
