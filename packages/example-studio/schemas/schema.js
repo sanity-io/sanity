@@ -1,5 +1,6 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import {SlateInput} from '@sanity/form-builder'
+import blockArray from './block-array'
 
 // Example of a custom slugify function that
 // makes a slug-string and prefixes it with something from the
@@ -32,6 +33,7 @@ const defaultMarks = [
 export default createSchema({
   name: 'example-blog',
   types: [
+    ...blockArray,
     {
       name: 'blogpost',
       type: 'object',

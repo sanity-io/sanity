@@ -1,0 +1,16 @@
+@use postcss-cssnext;
+
+.root {
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  border: 1px #aaa solid;
+  box-shadow: 10px 10px 5px 0px rgba(217,217,217,1);
+
+}
+
+.inner {
+
+}
