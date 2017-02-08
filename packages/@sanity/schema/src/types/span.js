@@ -8,6 +8,7 @@
 
 
 
+
 import {pick} from 'lodash'
 
 const OVERRIDABLE_FIELDS = [
@@ -23,16 +24,14 @@ const OVERRIDABLE_FIELDS = [
   'options'
 ]
 
-const BLOCK_CORE = {
-  name: 'block',
+const SPAN_CORE = {
+  name: 'span',
   title: 'Block',
   type: null,
-  style: null,
-  marks: [],
+  styles: [],
   spans: [],
-  default: false,
-  listItem: null,
-  intendation: null,
+  lists: true,
+  intendation: true,
   jsonType: 'object'
 }
 
