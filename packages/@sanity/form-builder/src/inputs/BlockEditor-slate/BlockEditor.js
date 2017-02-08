@@ -15,7 +15,7 @@ import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
 import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
-  SLATE_BLOCK_FORMATTING_OPTION_KEYS,
+  SLATE_NORMAL_BLOCK_TYPE,
   SLATE_LIST_BLOCK_TYPE,
   SLATE_LIST_ITEM_TYPE,
   SLATE_TEXT_BLOCKS,
@@ -54,7 +54,7 @@ export default class BlockEditor extends React.Component {
     this.groupedTypes = slateSchema.types
     this.slatePlugins = [
       InsertBlockOnEnter({
-        type: this.slateSchema.normalBlock.type,
+        type: SLATE_NORMAL_BLOCK_TYPE,
         kind: 'block',
         nodes: [{kind: 'text', text: '', ranges: []}]
       }),
@@ -63,11 +63,11 @@ export default class BlockEditor extends React.Component {
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
       ListItemOnEnterKey(
-        this.slateSchema.normalBlock,
+        SLATE_NORMAL_BLOCK_TYPE,
         SLATE_LIST_BLOCK_TYPE,
         SLATE_LIST_ITEM_TYPE
       ),
-      TextBlockOnEnterKey(this.slateSchema.normalBlock.type)
+      TextBlockOnEnterKey(SLATE_NORMAL_BLOCK_TYPE)
     ]
 
     this.state = {
@@ -119,14 +119,15 @@ export default class BlockEditor extends React.Component {
 
     if (active) {
       transform = transform
+        .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
         .setBlock(SLATE_LIST_ITEM_TYPE)
         .wrapBlock(setBlock)
     } else {
       // TODO: there is a bug here if the list item is empty
       // Then in will be unwrapped into an listItem and not a normal node
       transform = transform
-        .setBlock(this.slateSchema.normalBlock)
         .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
+        .setBlock(SLATE_NORMAL_BLOCK_TYPE)
     }
     const nextState = transform.apply()
     onChange(nextState)
@@ -234,12 +235,7 @@ export default class BlockEditor extends React.Component {
 
   hasBlock(type) {
     const {value} = this.props
-    return value.blocks.some(node => node.type === type.style
-        && isEqual(
-          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
-          pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-        )
-    )
+    return value.blocks.some(block => block.type === type.style)
   }
 
   hasLinks() {
@@ -257,9 +253,10 @@ export default class BlockEditor extends React.Component {
     const {value} = this.props
     return value.blocks.some(block => {
       const parent = value.get('document').getParent(block.key)
-      return parent && parent.data
+      const parentDataType = parent && parent.data ? parent.data.get('type') : null
+      return parentDataType
         && isEqual(
-          pick(parent.data.get('type'), TYPE_COMPARISON_PROPS),
+          pick(parentDataType, TYPE_COMPARISON_PROPS),
           pick(type, TYPE_COMPARISON_PROPS)
         )
     })
@@ -278,7 +275,11 @@ export default class BlockEditor extends React.Component {
     if (!anchorBlock) {
       return []
     }
-    const marksField = this.groupedTypes.slate.find(type => type.style === anchorBlock)
+    let marksField = this.groupedTypes.slate.find(type => type.style === anchorBlock)
+    // listItem will get marks from the normal type
+    if (anchorBlock === 'listItem') {
+      marksField = this.groupedTypes.slate.find(type => type.style === SLATE_NORMAL_BLOCK_TYPE)
+    }
     if (!marksField || !marksField.marks) {
       return []
     }
@@ -314,13 +315,10 @@ export default class BlockEditor extends React.Component {
       .map((type, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[type.style](
-            Object.assign(
-              {isPreview: true},
-              {children: <span>{type.title}</span>},
-              pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-            )
-          ),
+          preview: this.slateSchema.nodes[type.style]({
+            isPreview: true,
+            children: <span>{type.title}</span>
+          }),
           type: type,
           title: ` ${type.title}`,
           active: this.hasBlock(type)

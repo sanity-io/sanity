@@ -21,7 +21,6 @@ export const SLATE_TEXT_BLOCKS = [
   'h6'
 ]
 export const SLATE_LIST_BLOCK_TYPE = 'list'
-export const SLATE_BLOCK_FORMATTING_OPTION_KEYS = ['level', 'listStyle', 'href', 'target']
-export const TYPE_COMPARISON_PROPS = ['name', 'title', 'type', 'style', 'marks', 'listItem', 'default']
+export const TYPE_COMPARISON_PROPS = ['name', 'style', 'listItem']
 export const SLATE_LIST_ITEM_TYPE = 'listItem'
 export const SLATE_LINK_TYPE = 'link'

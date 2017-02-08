@@ -1,6 +1,4 @@
 .root {
-  /* User select must be forced when the elements are draggable, or they will visible as selected */
-  user-select: all;
   cursor: move;
   position: relative;
   lost-utility: clearfix;
@@ -12,6 +10,8 @@
 
 .previewContainer {
   display: block;
+  /* User select must be forced when the elements are draggable, or they will visible as selected */
+  user-select: all;
 }
 
 .inputContainer {
@@ -23,4 +23,5 @@
 
 .active {
   composes: root;
+  border: 1px solid #ccc;
 }
