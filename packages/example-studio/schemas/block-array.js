@@ -1,6 +1,6 @@
 export default [
   {
-    name: 'document',
+    name: 'lowLevelBlocksTest',
     type: 'object',
     fields: [
       {
