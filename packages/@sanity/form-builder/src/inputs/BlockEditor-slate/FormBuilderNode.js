@@ -63,7 +63,6 @@ export default class PreviewNode extends React.Component {
   }
 
   // Remove the drop target if we leave the editors nodes
-  // Remove the drop target if we leave the editors nodes
   handleDragLeave = event => {
     event.stopPropagation()
     if (event.target === this._editorNode) {
