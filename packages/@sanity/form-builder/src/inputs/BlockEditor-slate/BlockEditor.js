@@ -75,7 +75,7 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-  handleInsertBlockorInline = item => {
+  handleInsert = item => {
     const {value, onChange} = this.props
     const addItemValue = this.context.formBuilder.createFieldValue(undefined, item)
     const props = {
@@ -360,7 +360,7 @@ export default class BlockEditor extends React.Component {
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlockorInline}
+            onInsertBlock={this.handleInsert}
             insertBlocks={this.groupedTypes.formBuilder || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
