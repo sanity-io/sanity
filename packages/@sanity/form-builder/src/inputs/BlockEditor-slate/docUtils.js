@@ -5,8 +5,6 @@ import {Mark, Text, Character} from 'slate'
 import {TextSpanAccessor} from './accessors'
 import {sanityMarksToSlate} from './conversion'
 
-
-
 // Given marks extracts the embedded special mark that tells us which span index that char
 // is in according to the document structure in Sanity
 function extractSpanIndexFromMarks(marks) {

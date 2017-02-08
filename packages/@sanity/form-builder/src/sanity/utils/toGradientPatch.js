@@ -2,7 +2,7 @@ import {arrayToJSONMatchPath} from '@sanity/mutator'
 import assert from 'assert'
 
 export default function toGradientPatch(patch) {
-  const matchPath = arrayToJSONMatchPath(patch.path)
+  const matchPath = arrayToJSONMatchPath(patch.path || [])
   if (patch.type === 'insert') {
     const {position, items} = patch
     return {
@@ -20,9 +20,14 @@ export default function toGradientPatch(patch) {
   }
 
   assert(patch.type, `Missing patch type in patch ${JSON.stringify(patch)}`)
-  return {
-    [patch.type]: {
-      [matchPath]: patch.value
+  if (matchPath) {
+    return {
+      [patch.type]: {
+        [matchPath]: patch.value
+      }
     }
+  }
+  return {
+    [patch.type]: patch.value
   }
 }

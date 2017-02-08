@@ -8,7 +8,6 @@ import SlateInput from './inputs/BlockEditor-slate'
 export {defaultInputs}
 
 export {default as defaultConfig} from './defaultConfig'
-export {default as SlateInput} from './inputs/BlockEditor-slate'
 export {default as createFormBuilder} from './createFormBuilder'
 
 // Input component factories
