@@ -44,6 +44,8 @@ export default class BlockEditor extends React.Component {
     formBuilder: PropTypes.object
   }
 
+  _inputId = uniqueId('SlateBlockEditor')
+
   constructor(props, context) {
     super(props, context)
 
@@ -372,13 +374,12 @@ export default class BlockEditor extends React.Component {
   render() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const inputId = uniqueId('FormBuilderText')
     const activeLink = this.getActiveLink()
     const showLinkButton = (value.selection && value.selection.isExpanded)
       || !!activeLink
 
     return (
-      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
         <div
           className={`
             ${hasError ? styles.error : styles.root}
@@ -401,7 +402,7 @@ export default class BlockEditor extends React.Component {
             showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
-          <div className={styles.inputContainer} id={inputId}>
+          <div className={styles.inputContainer} id={this._inputId}>
             <Editor
               className={styles.input}
               onChange={this.handleEditorChange}
