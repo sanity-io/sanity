@@ -27,7 +27,8 @@ export default class Syncer extends React.PureComponent {
   }
 
   emitSet = throttle(() => {
-    const {onChange} = this.props
+    // const {onChange} = this.props
+    const onChange = console.log
     const {value} = this.state
     onChange({
       patch: {
