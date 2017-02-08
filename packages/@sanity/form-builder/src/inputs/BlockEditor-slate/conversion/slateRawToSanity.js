@@ -1,48 +1,5 @@
 // Converts a persisted array to a slate compatible json document
-import {get, flatten, omit, isUndefined} from 'lodash'
-import {createMemberValue} from '../../../state/FormBuilderState'
-
-
-function toRawBlock(block, context) {
-  const {spans, ...rest} = block
-  return {
-    kind: 'block',
-    type: 'block',
-    data: rest,
-    nodes: [
-      {
-        kind: 'text',
-        ranges: spans.map(span => {
-          return {
-            kind: 'range',
-            text: span.text,
-            marks: (span.marks || []).map(mark => ({
-              kind: 'mark',
-              type: mark
-            }))
-          }
-        })
-      }
-    ]
-  }
-}
-
-function toRawCustom(node, context) {
-  return {
-    kind: 'block',
-    type: context.type.name,
-    isVoid: true,
-    data: {value: createMemberValue(node, context)},
-    nodes: []
-  }
-}
-
-function toRawNode(node, context) {
-  if (context.type.name === 'block') {
-    return toRawBlock(node, context)
-  }
-  return toRawCustom(node, context)
-}
+import {get, flatten} from 'lodash'
 
 function toSanityBlock(block) {
   if (block.type === 'block') {
@@ -63,7 +20,6 @@ function toSanityBlock(block) {
       }))
     }
   }
-  debugger
   return block.data.value
 }
 
