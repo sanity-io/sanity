@@ -43,7 +43,9 @@ function toRawNode(node, context) {
 }
 
 function toRawNodes(nodes, context) {
-  return nodes.map(node => {
+  return nodes
+    .filter(Boolean) // this is a temporary guard against null values, @todo: remove
+    .map(node => {
     const memberType = context.type.of.find(ofType => ofType.name === node._type)
     return toRawNode(node, {
       ...context,
