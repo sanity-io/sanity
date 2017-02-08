@@ -42,7 +42,7 @@ function consecutiveSpansToSlateText(textspans) {
 }
 
 // Converts a sanity block text paragraph to slate form
-function sanityParagrapthToSlateRaw(input) {
+function sanityParagraphToSlateRaw(input) {
   const output = {
     kind: 'block',
     type: 'paragraph',
@@ -66,7 +66,7 @@ function sanityParagrapthToSlateRaw(input) {
 export function sanityBlockNodeToSlateRaw(input) {
   switch (input._type) {
     case 'paragraph':
-      return sanityParagrapthToSlateRaw(input)
+      return sanityParagraphToSlateRaw(input)
     default:
       throw new Error(`Unknown block text block type ${input._type}`)
   }
