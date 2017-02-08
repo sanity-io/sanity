@@ -1,0 +1,11 @@
+@use postcss-cssnext;
+
+.root {
+
+}
+
+.preview {
+  list-style-type: disc;
+  display: list-item;
+  margin-left: 1.1em;
+}
