@@ -19,9 +19,7 @@ import {
   SLATE_NORMAL_BLOCK_TYPE,
   SLATE_LIST_BLOCK_TYPE,
   SLATE_LIST_ITEM_TYPE,
-  SLATE_TEXT_BLOCKS,
   SLATE_LINK_TYPE,
-  TYPE_COMPARISON_PROPS
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
@@ -66,9 +64,7 @@ export default class BlockEditor extends React.Component {
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
       ListItemOnEnterKey(
-        SLATE_NORMAL_BLOCK_TYPE,
-        SLATE_LIST_BLOCK_TYPE,
-        SLATE_LIST_ITEM_TYPE
+        SLATE_DEFAULT_STYLE
       ),
       TextBlockOnEnterKey(SLATE_NORMAL_BLOCK_TYPE)
     ]
@@ -116,24 +112,17 @@ export default class BlockEditor extends React.Component {
       type: 'contentBlock',
       data: {style: SLATE_DEFAULT_STYLE}
     }
-    const listBlock = {
-      type: 'contentBlock',
-      data: {listItem: listStyle}
-    }
     const listItemBlock = {
       type: 'contentBlock',
-      data: {isListItem: true}
+      data: {listItem: listStyle}
     }
     let transform = value.transform()
 
     if (active) {
       transform = transform
-        .unwrapBlock('contentBlock', {listItem: listStyle}) // TODO do for all list styles
         .setBlock(listItemBlock)
-        .wrapBlock(listBlock)
     } else {
       transform = transform
-        .unwrapBlock('contentBlock', {listItem: listStyle})
         .setBlock(normalBlock)
     }
     const nextState = transform.apply()
@@ -256,28 +245,13 @@ export default class BlockEditor extends React.Component {
 
   isWithinList() {
     const {value} = this.props
-    return value.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
+    return value.blocks.some(block => block.data.get('listItem'))
   }
 
-  hasParentList(listItem) {
+  hasListItem(listItem) {
     const {value} = this.props
     return value.blocks.some(block => {
-      const parent = value.get('document').getParent(block.key)
-      const parentListItem = parent && parent.data ? parent.data.get('listItem') : null
-      return parentListItem === listItem
-    })
-  }
-
-  hasParentBlock(type) {
-    const {value} = this.props
-    return value.blocks.some(block => {
-      const parent = value.get('document').getParent(block.key)
-      const parentDataType = parent && parent.data ? parent.data.get('type') : null
-      return parentDataType
-        && isEqual(
-          pick(parentDataType, TYPE_COMPARISON_PROPS),
-          pick(type, TYPE_COMPARISON_PROPS)
-        )
+      return block.data.get('listItem') === listItem
     })
   }
 
@@ -296,7 +270,7 @@ export default class BlockEditor extends React.Component {
         return {
           type: item.value,
           title: item.title,
-          active: this.hasParentList(item.value)
+          active: this.hasListItem(item.value)
         }
       })
   }
