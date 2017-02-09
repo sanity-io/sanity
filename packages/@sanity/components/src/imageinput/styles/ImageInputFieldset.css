@@ -34,7 +34,7 @@
   position: relative;
   transition: background-color 0.1s linear;
   user-select: none;
-  max-height: 10rem;
+  max-height: 18rem;
   overflow: hidden;
   background-color: #eee;
   background-image:
@@ -47,6 +47,7 @@
 
   @media (--screen-medium) {
     min-height: 12rem;
+    max-height: 27rem;
     flex-basis: 30%;
     height: auto;
 
