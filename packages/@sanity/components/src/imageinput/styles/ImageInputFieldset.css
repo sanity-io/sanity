@@ -32,7 +32,6 @@
 .imageWrapper {
   min-height: 10rem;
   position: relative;
-  color: #fff;
   transition: background-color 0.1s linear;
   user-select: none;
   max-height: 10rem;
@@ -131,24 +130,10 @@
   left: 0;
   height: 100%;
   width: 100%;
-  color: var(--gray-lighter);
   cursor: default;
-  transition: transform 0.1s linear;
   z-index: 1;
   user-select: none;
-  background-color: #333;
 
-  @nest & span {
-    cursor: default;
-  }
-
-  @nest &:hover {
-    transform: scale(1.05);
-  }
-
-  @nest &:active {
-    color: #fff;
-  }
 }
 
 .imageSelectReplace {
@@ -220,6 +205,15 @@
       margin-left: 0;
     }
   }
+}
+
+.ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .replaceImageSelect {

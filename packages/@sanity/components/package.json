@@ -23,6 +23,7 @@
   "dependencies": {
     "@sanity/date-input": "^0.100.0",
     "@sanity/imagetool": "^0.100.12",
+    "attr-accept": "^1.1.0",
     "canvas-to-blob": "^0.0.0",
     "chance": "^1.0.4",
     "classnames": "^2.2.5",

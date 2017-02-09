@@ -38,7 +38,70 @@ storiesOf('File Input')
           transform: 'translate(50%, 50%)'
         }}
       >
-        <DropZone onSelect={action('onSelect')} />
+        <DropZone
+          onDrop={action('onDrop')}
+          multiple={false}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [DropZone],
+    role: 'part:@sanity/components/fileinput/dropzone'
+  }
+)
+
+
+.addWithInfo(
+  'Drop zone (ghost)',
+  `
+    Drop zone
+  `,
+  () => {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          width: '50vw',
+          height: '50vh',
+          transform: 'translate(50%, 50%)'
+        }}
+      >
+        <DropZone
+          onDrop={action('onDrop')}
+          multiple={false}
+          ghost
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [DropZone],
+    role: 'part:@sanity/components/fileinput/dropzone'
+  }
+)
+
+
+.addWithInfo(
+  'Drop zone (only png)',
+  `
+    Drop zone
+  `,
+  () => {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          width: '50vw',
+          height: '50vh',
+          transform: 'translate(50%, 50%)'
+        }}
+      >
+        <DropZone
+          onDrop={action('onDrop')}
+          multiple={false}
+          accept="image/png"
+        />
       </div>
     )
   },

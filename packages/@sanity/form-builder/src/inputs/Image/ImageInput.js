@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {omit, groupBy} from 'lodash'
+import {omit, groupBy, get} from 'lodash'
 import RenderField from '../Object/RenderField'
 import ObjectValueContainer from '../Object/ObjectContainer'
 import Button from 'part:@sanity/components/buttons/default'
@@ -71,6 +71,8 @@ export default class ImageInput extends React.PureComponent {
   }
 
   upload(image) {
+
+    console.log('trying to upload', image)
     this.cancel()
     this.setState({uploadingImage: image})
 
@@ -337,6 +339,8 @@ export default class ImageInput extends React.PureComponent {
 
     const isImageToolEnabled = this.isImageToolEnabled()
 
+    const accept = get(type, 'options.accept')
+
     const hasAdvancedFields = fieldGroups.other.length > 0
     const onEdit = hasAdvancedFields ? this.handleOpenAdvancedEdit : null
     return (
@@ -350,6 +354,8 @@ export default class ImageInput extends React.PureComponent {
         onClear={this.handleClearValue}
         onEdit={onEdit}
         showContent={fieldGroups.highlighted.length > 0}
+        multiple={false}
+        accept={accept || 'image/*'}
         hotspotImage={{
           hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
           crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,

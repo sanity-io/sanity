@@ -98,6 +98,7 @@ storiesOf('Image input Fieldset')
         legend="Image input fieldset"
         onSelect={action('Select image')}
         status="ready"
+        multiple={false}
       >
         <h2>Content goes here</h2>
       </ImageInput>
