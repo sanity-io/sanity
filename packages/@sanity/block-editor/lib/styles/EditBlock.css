@@ -1,4 +1,6 @@
-/*.root {
+@use postcss-cssnext;
+
+.root {
   width: 100%;
   padding: 10px;
   background-color: white;
@@ -11,4 +13,4 @@
 
 .inner {
 
-}*/
+}

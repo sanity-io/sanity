@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
 export const insertBlockShape = PropTypes.shape({
-  type: PropTypes.string,
+  type: PropTypes.object,
   title: PropTypes.string
 })
 

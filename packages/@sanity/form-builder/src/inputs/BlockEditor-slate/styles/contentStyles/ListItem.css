@@ -1,11 +1,24 @@
-@use postcss-cssnext;
-
 .root {
-
-}
-
-.preview {
-  list-style-type: disc;
   display: list-item;
   margin-left: 1.1em;
+  margin-bottom: 0.5em;
+}
+
+.bullet {
+  composes: root;
+  list-style-type: disc;
+}
+
+.number {
+  composes: root;
+  list-style-type: none;
+  counter-increment: listItem;
+  @nest &:before {
+    content: counter(listItem) ". ";
+  }
+}
+
+.roman {
+  composes: root;
+  list-style-type: upper-roman;
 }

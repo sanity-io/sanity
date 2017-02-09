@@ -1,13 +1,27 @@
-@use postcss-cssnext;
-
 .root {
-  padding: 2px;
-  border: 1px #aaa solid;
-  box-shadow: 1px 1px 5px 0px rgba(217,217,217,1);
+  cursor: move;
+  position: relative;
+  lost-utility: clearfix;
+
+  @nest &:hover {
+    background-color: #efefef;
+  }
+}
+
+.previewContainer {
+  display: block;
   /* User select must be forced when the elements are draggable, or they will visible as selected */
   user-select: all;
 }
+
+.inputContainer {
+  position: absolute;
+  top: calc(50% + 0.5em);
+
+  left: 3rem;
+}
+
 .active {
   composes: root;
-  border-color: #9d261d;
+  border: 1px solid #ccc;
 }
