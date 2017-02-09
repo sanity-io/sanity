@@ -46,15 +46,15 @@ function toRawNodes(nodes, context) {
   return nodes
     .filter(Boolean) // this is a temporary guard against null values, @todo: remove
     .map(node => {
-    const memberType = context.type.of.find(ofType => ofType.name === node._type)
-    return toRawNode(node, {
-      ...context,
-      type: memberType
+      const memberType = context.type.of.find(ofType => ofType.name === node._type)
+      return toRawNode(node, {
+        ...context,
+        type: memberType
+      })
     })
-  })
 }
 
-const EMPTY_NODE = {kind: 'block', type: 'paragraph', nodes: []}
+const EMPTY_NODE = {kind: 'block', type: 'contentBlock', data: {style: 'normal'}, nodes: []}
 export default function sanityToSlateRaw(array, context) {
   return {
     kind: 'state',
