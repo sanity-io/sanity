@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import './styles/JSONInspector.css'
 import styles from './styles/InspectView.css'
 import JSONInspector from 'react-json-inspector'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
 
@@ -54,8 +54,9 @@ function toggleExpanded(event) {
 
 export default function InspectView(props) {
   return (
-    <FullscreenDialog
+    <DefaultDialog
       isOpen
+      showHeader
       title={`Inspecting ${props.value._id}`}
       className={styles.dialog}
       onClose={props.onClose}
@@ -65,7 +66,7 @@ export default function InspectView(props) {
         onClick={toggleExpanded}
         data={props.value}
       />
-    </FullscreenDialog>
+    </DefaultDialog>
   )
 }
 
