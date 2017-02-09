@@ -16,6 +16,10 @@
   @nest &:before {
     content: counter(listItem) ". ";
   }
+
+  @nest & + :not(.number) {
+    counter-reset: listItem
+  }
 }
 
 .roman {
