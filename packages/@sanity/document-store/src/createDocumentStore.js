@@ -24,7 +24,12 @@ function defer() {
 function createBufferedDocument(documentId, server) {
   const events = pubsub()
   let _bufferedDocument = null
-  const whenBufferedDocumentReady = defer()
+  let whenBufferedDocumentReady = defer()
+
+  function reset() {
+    _bufferedDocument = null
+    whenBufferedDocumentReady = defer()
+  }
 
   function withBufferedDocument(fn) {
     if (_bufferedDocument) {
@@ -35,43 +40,54 @@ function createBufferedDocument(documentId, server) {
   }
 
   // todo refcount/dispose
-  const subscription = server.byId(documentId)
-    .subscribe(event => {
+  const subscription = server.byId(documentId).subscribe({
+    next: event => {
       if (event.type === 'snapshot') {
-        assert(_bufferedDocument === null, 'Expected bufferedDocument to be null when receiving snapshot')
-        _bufferedDocument = new BufferedDocument(event.document)
-
-        _bufferedDocument.onRebase = edge => {
-          events.publish({type: 'rebase', document: edge})
-        }
-
-        _bufferedDocument.onMutation = ({mutation, remote}) => {
-          events.publish({
-            type: 'mutate',
-            document: _bufferedDocument.LOCAL,
-            mutations: mutation.mutations,
-            origin: remote ? 'remote' : 'local'
-          })
-        }
-
-        _bufferedDocument.commitHandler = opts => {
-          const payload = opts.mutation.params
-
-          // TODO:
-          // right now the BufferedDocument just commits fire-and-forget-ish
-          // We should be able to handle failures and retry here
-
-          return server.mutate(omit(payload, 'resultRev'))
-            .subscribe({
-              next: opts.success,
-              error: opts.failure
-            })
-        }
-        whenBufferedDocumentReady.resolve()
+        onSnapshot(event)
+      } else if (event.type === 'mutation') {
+        onMutation(new Mutation(event))
       } else {
-        _bufferedDocument.arrive(new Mutation(event))
+        console.warn('Ignoring unknown event type %s', event.type)
       }
-    })
+    },
+    error: reset
+  })
+
+  function onSnapshot(event) {
+    _bufferedDocument = new BufferedDocument(event.document)
+
+    _bufferedDocument.onRebase = edge => {
+      events.publish({type: 'rebase', document: edge})
+    }
+
+    _bufferedDocument.onMutation = ({mutation, remote}) => {
+      events.publish({
+        type: 'mutate',
+        document: _bufferedDocument.LOCAL,
+        mutations: mutation.mutations,
+        origin: remote ? 'remote' : 'local'
+      })
+    }
+
+    _bufferedDocument.commitHandler = opts => {
+      const payload = opts.mutation.params
+
+      // TODO:
+      // right now the BufferedDocument just commits fire-and-forget-ish
+      // We should be able to handle failures and retry here
+
+      return server.mutate(omit(payload, 'resultRev'))
+        .subscribe({
+          next: opts.success,
+          error: opts.failure
+        })
+    }
+    whenBufferedDocumentReady.resolve()
+  }
+
+  function onMutation(event) {
+    _bufferedDocument.arrive(new Mutation(event))
+  }
 
   return {
     events: new Observable(observer => {
