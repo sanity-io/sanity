@@ -19,7 +19,7 @@ storiesOf('Menus')
         }}
       >
         <Menu
-          onAction={action('Clicked item')}
+          onAction={action('onAction')}
           onClose={action('onClose')}
           onClickOutside={action('Clicked outside')}
           items={[
@@ -90,9 +90,9 @@ storiesOf('Menus')
         }}
       >
         <Menu
-          onAction={action('Clicked item')}
+          onAction={action('onAction')}
           onClose={action('onClose')}
-          onClickOutside={action('Clicked outside')}
+          onClickOutside={action('onClickOutside')}
           items={items}
           opened
         />

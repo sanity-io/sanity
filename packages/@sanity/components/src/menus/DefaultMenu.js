@@ -34,7 +34,7 @@ class DefaultMenu extends React.Component {
     super(props)
 
     this.state = {
-      selectedItem: null
+      focusedItem: null
     }
   }
 
@@ -61,13 +61,13 @@ class DefaultMenu extends React.Component {
 
     if (event.key == 'ArrowDown' && this.props.opened && currentIndex < items.length - 1) {
       this.setState({
-        selectedItem: this.props.items[currentIndex + 1]
+        focusedItem: this.props.items[currentIndex + 1]
       })
     }
 
     if (event.key == 'ArrowUp' && this.props.opened && currentIndex > 0) {
       this.setState({
-        selectedItem: this.props.items[currentIndex - 1]
+        focusedItem: this.props.items[currentIndex - 1]
       })
     }
 
@@ -82,8 +82,22 @@ class DefaultMenu extends React.Component {
     this.props.onAction(this.props.items[actionId])
   }
 
+  handleFocus = event => {
+    const index = event.target.getAttribute('data-action-id')
+    this.setState({
+      focusedItem: this.props.items[index]
+    })
+  }
+
+  handleKeyPress = event => {
+    const index = event.target.getAttribute('data-action-id')
+    if (event.key === 'Enter') {
+      this.props.onAction(this.props.items[index])
+    }
+  }
+
   render() {
-    const {selectedItem} = this.state
+    const {focusedItem} = this.state
     const {items, origin, ripple, fullWidth, className} = this.props
     const originStyle = styles[`origin__${origin}`]
 
@@ -97,7 +111,7 @@ class DefaultMenu extends React.Component {
                 <li
                   key={i}
                   className={`
-                    ${item === selectedItem ? styles.selectedItem : styles.item}
+                    ${item === focusedItem ? styles.focusedItem : styles.item}
                     ${styles.item}
                     ${item.divider && styles.divider}
                   `}
@@ -106,6 +120,9 @@ class DefaultMenu extends React.Component {
                     onClick={this.handleItemClick}
                     data-action-id={i}
                     className={styles.link}
+                    onFocus={this.handleFocus}
+                    tabIndex="0"
+                    onKeyPress={this.handleKeyPress}
                   >
                     {
                       Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>

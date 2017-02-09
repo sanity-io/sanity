@@ -27,7 +27,7 @@
   white-space: nowrap;
 }
 
-.selectedItem {
+.focusedItem {
   composes: item;
 }
 
@@ -43,12 +43,13 @@
   cursor: default;
   text-decoration: none;
   color: inherit;
+  outline: none;
 
-  &:hover {
+  @nest .focusedItem & {
     background-color: #eee;
   }
 
-  @nest .selectedItem & {
+  @nest &:hover {
     background-color: #eee;
   }
 }
