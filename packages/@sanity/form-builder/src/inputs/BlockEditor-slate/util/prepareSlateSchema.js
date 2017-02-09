@@ -69,7 +69,7 @@ export default function prepareSlateShema(type) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
 
-  const textStyles = styleField.type.options.list
+  const textStyles = styleField.type.options.list.filter(style => style.value)
   if (!textStyles || textStyles.length === 0) {
     throw new Error('The style fields need at least one style '
       + "defined. I.e: {title: 'Normal', value: 'normal'}.")
