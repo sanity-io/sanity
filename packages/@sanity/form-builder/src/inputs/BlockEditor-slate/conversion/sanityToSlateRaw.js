@@ -60,7 +60,7 @@ export default function sanityToSlateRaw(array, context) {
     kind: 'state',
     document: {
       kind: 'document',
-      nodes: array ? toRawNodes(array, context) : [EMPTY_NODE]
+      nodes: (array && array.length > 0) ? toRawNodes(array, context) : [EMPTY_NODE]
     }
   }
 }
