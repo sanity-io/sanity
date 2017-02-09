@@ -59,6 +59,15 @@ export default createSchema({
           }
         },
         {
+          name: 'pngImage',
+          title: 'PNG image',
+          type: 'image',
+          options: {
+            hotspot: true,
+            accept: 'image/png'
+          }
+        },
+        {
           name: 'slug',
           title: 'Slug',
           description: 'The unique identifier for the blogpost in links and urls',

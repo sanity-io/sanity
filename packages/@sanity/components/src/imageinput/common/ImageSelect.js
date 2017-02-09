@@ -4,13 +4,15 @@ import readExif from '../utils/readExif'
 import rotateImage from '../utils/rotateImage'
 import continueWhen from '../utils/continueWhen'
 import styles from './styles/ImageSelect.css'
+import DropZone from 'part:@sanity/components/fileinput/dropzone'
 
 // todo: investigate if we can use web workers to do the heavy work on the images here
 
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
     onSelect: PropTypes.func.isRequired,
-    className: PropTypes.string
+    className: PropTypes.string,
+    dropzone: PropTypes.bool
   }
   handleSelect = files => {
     this.processingFiles = files
@@ -41,6 +43,12 @@ export default class ImageInput extends React.PureComponent {
   }
 
   render() {
+    const {dropzone} = this.props
+    if (dropzone) {
+      return (
+        <DropZone {...this.props} onDrop={this.handleSelect} />
+      )
+    }
     return (
       <FileInput
         {...this.props}

@@ -42,6 +42,8 @@ export default class ImageInputFieldset extends React.PureComponent {
     }),
     children: PropTypes.node,
     showContent: PropTypes.bool,
+    multiple: PropTypes.bool,
+    accept: PropTypes.string
   }
 
   static defaultProps = {
@@ -75,6 +77,21 @@ export default class ImageInputFieldset extends React.PureComponent {
             `}
           >
             {
+              (status != 'error' && status != 'pending') && hotspotImage && hotspotImage.imageUrl && (
+                <div className={styles.ghost}>
+                  <ImageSelect
+                    className={styles.imageSelect}
+                    name={fieldName}
+                    onSelect={this.props.onSelect}
+                    dropzone
+                    multiple={this.props.multiple}
+                    accept={this.props.accept}
+                    ghost
+                  />
+                </div>
+              )
+            }
+            {
               ((hotspotImage && hotspotImage.imageUrl))
               && <div className={status === 'complete' || status === 'ready' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
                 {
@@ -99,14 +116,10 @@ export default class ImageInputFieldset extends React.PureComponent {
                   className={styles.imageSelect}
                   name={fieldName}
                   onSelect={this.props.onSelect}
-                >
-                  <div className={styles.uploadInner}>
-                    <div className={styles.uploadIconContainer}>
-                      <UploadIcon className={styles.uploadIcon} />
-                    </div>
-                    <span className={styles.uploadIconText}>Upload image</span>
-                  </div>
-                </ImageSelect>
+                  dropzone
+                  multiple={this.props.multiple}
+                  accept={this.props.accept}
+                />
               )
             }
             {
