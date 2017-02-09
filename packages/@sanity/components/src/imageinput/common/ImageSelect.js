@@ -43,15 +43,15 @@ export default class ImageInput extends React.PureComponent {
   }
 
   render() {
-    const {dropzone} = this.props
+    const {dropzone, ...rest} = this.props
     if (dropzone) {
       return (
-        <DropZone {...this.props} onDrop={this.handleSelect} />
+        <DropZone {...rest} onDrop={this.handleSelect} />
       )
     }
     return (
       <FileInput
-        {...this.props}
+        {...rest}
         className={`${styles.root} ${this.props.className}`}
         onSelect={this.handleSelect}
       />

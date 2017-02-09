@@ -18,14 +18,19 @@ export default class Dropzone extends React.PureComponent {
   }
 
   state = {
-    hasUnAcceptedFiles: false
+    hasUnAcceptedFiles: false,
+    toManyFiles: false
   }
 
   handleDragOver = event => {
 
     const {accept} = this.props
 
-    if (!accept) {
+    // Todo handle image/*
+    if (!accept || accept == 'image/*') {
+      this.setState({
+        hasUnAcceptedFiles: false
+      })
       return
     }
 
@@ -34,8 +39,14 @@ export default class Dropzone extends React.PureComponent {
     const mimeTypes = this.props.accept.split(',') || []
 
     if (items) {
+      if (items.length > 1 && !this.props.multiple) {
+        this.setState({
+          toManyFiles: true
+        })
+        return
+      }
+
       for (let i = 0; i < items.length; i++) {
-        // Todo: support image/* etc.
         this.setState({
           hasUnAcceptedFiles: !includes(mimeTypes, items[i].type)
         })
@@ -43,49 +54,59 @@ export default class Dropzone extends React.PureComponent {
     }
   }
 
-  handleDragEnd = event => {
+  resetErrorState = () => {
     this.setState({
-      hasUnAcceptedFiles: false
+      hasUnAcceptedFiles: false,
+      toManyFiles: false
     })
+  }
+
+  handleDragEnd = event => {
+    this.resetErrorState()
   }
 
 
   render() {
 
-    const {className, multiple, icon, ghost, accept} = this.props
-    const {hasUnAcceptedFiles} = this.state
+    const {className, multiple, icon, ghost, accept, ...rest} = this.props
+    const {hasUnAcceptedFiles, toManyFiles} = this.state
 
     const Icon = icon
 
     return (
       <DropZone
-        {...this.props}
+        {...rest}
         className={`
           ${className ? className : ''}
           ${ghost ? styles.ghost : styles.dropZone}
-          ${hasUnAcceptedFiles ? styles.hasUnAcceptedFiles : ''}
+          ${(hasUnAcceptedFiles || toManyFiles) ? styles.hasError : ''}
         `}
         activeClassName={`${ghost ? styles.activeGhost : styles.activeDropZone}`}
         onDragOver={this.handleDragOver}
         onDragEnd={this.handleDragEnd}
         onDragExit={this.handleDragEnd}
         onDragLeave={this.handleDragEnd}
+        onMouseOver={this.handleDragEnd}
       >
         <div className={styles.inner}>
+          {
+            hasUnAcceptedFiles && !toManyFiles && (
+              <p className={styles.errorText}>
+                Accepted file formats: {accept}
+              </p>
+            )
+          }
+          {
+            toManyFiles && (
+              <p className={styles.errorText}>
+                Only one image allowed
+              </p>
+            )
+          }
           <div className={styles.passiveText}>
             <div className={styles.iconContainer}>
               {Icon && <Icon />}
             </div>
-            {
-              hasUnAcceptedFiles && (
-                <p className={styles.errorText}>
-                  Accepted file formats
-                  <pre>
-                    {accept}
-                  </pre>
-                </p>
-              )
-            }
             {
               !hasUnAcceptedFiles && (
                 <div>
