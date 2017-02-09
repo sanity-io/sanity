@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import ReactDOM from 'react-dom'
 import {Editor, State, Data} from 'slate'
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -127,6 +128,7 @@ export default class BlockEditor extends React.Component {
     }
     const nextState = transform.apply()
     onChange(nextState)
+    this.refreshCSS()
   }
 
 
@@ -179,6 +181,7 @@ export default class BlockEditor extends React.Component {
       .setBlock(block)
     const nextState = transform.apply()
     onChange(nextState)
+    this.refreshCSS()
   }
 
   handleOnClickLinkButton = (href, target, text) => {
@@ -335,6 +338,21 @@ export default class BlockEditor extends React.Component {
     this.props.onChange(nextState)
   }
 
+  refEditor = editor => {
+    this.editor = editor
+  }
+
+  // Hack to force the browser to reapply CSS rules
+  // This is needed to make ::before and ::after CSS rules work properly
+  // under certain conditions (like the list counters for number lists)
+  // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
+  refreshCSS() {
+    const editorDOMNode = ReactDOM.findDOMNode(this.editor)
+    editorDOMNode.style.display = 'none'
+    editorDOMNode.offsetHeight
+    editorDOMNode.style = ''
+  }
+
   render() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
@@ -368,6 +386,7 @@ export default class BlockEditor extends React.Component {
           />
           <div className={styles.inputContainer} id={this._inputId}>
             <Editor
+              ref={this.refEditor}
               className={styles.input}
               onChange={this.handleEditorChange}
               placeholder=""
