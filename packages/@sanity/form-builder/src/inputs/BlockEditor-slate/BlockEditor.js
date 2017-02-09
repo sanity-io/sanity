@@ -16,7 +16,6 @@ import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
   SLATE_DEFAULT_STYLE,
-  SLATE_NORMAL_BLOCK_TYPE,
   SLATE_LIST_BLOCK_TYPE,
   SLATE_LINK_TYPE,
 } from './constants'
@@ -68,7 +67,7 @@ export default class BlockEditor extends React.Component {
       ListItemOnEnterKey(
         SLATE_DEFAULT_STYLE
       ),
-      TextBlockOnEnterKey(SLATE_NORMAL_BLOCK_TYPE)
+      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
     ]
 
     this.state = {
