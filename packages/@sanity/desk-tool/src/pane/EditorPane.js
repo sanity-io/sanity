@@ -244,7 +244,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
   render() {
     const {value, inspect, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
-    const {typeName} = this.props
+    const {typeName, documentId} = this.props
     const titleProp = dataAspects.getItemDisplayField(typeName)
     const schemaType = schema.get(this.props.typeName)
 
@@ -290,6 +290,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         </div>
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_FormBuilder_ScrollContainer">
           <FormBuilder
+            key={documentId}
             value={value}
             validation={validation}
             onChange={this.handleChange}
