@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {Editor, State} from 'slate'
+import {Editor, State, Data} from 'slate'
 import {pick, isEqual, uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
@@ -15,6 +15,7 @@ import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
 import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
+  SLATE_DEFAULT_STYLE,
   SLATE_NORMAL_BLOCK_TYPE,
   SLATE_LIST_BLOCK_TYPE,
   SLATE_LIST_ITEM_TYPE,
@@ -50,6 +51,8 @@ export default class BlockEditor extends React.Component {
     super(props, context)
 
     const slateSchema = prepareSlateSchema(this.props.type)
+    this.textStyles = slateSchema.textStyles
+    this.listItems = slateSchema.listItems
     this.slateSchema = slateSchema.schema
     this.groupedTypes = slateSchema.types
     this.slatePlugins = [
@@ -109,23 +112,29 @@ export default class BlockEditor extends React.Component {
 
   handleOnClickListFormattingButton = (event, listStyle, active) => {
     const {value, onChange} = this.props
-    const type = this.groupedTypes.slate
-      .find(sType => sType.listItem === listStyle)
-    const setBlock = {
-      type: SLATE_LIST_BLOCK_TYPE,
-      data: {type: type}
+    const normalBlock = {
+      type: 'contentBlock',
+      data: {style: SLATE_DEFAULT_STYLE}
+    }
+    const listBlock = {
+      type: 'contentBlock',
+      data: {listItem: listStyle}
+    }
+    const listItemBlock = {
+      type: 'contentBlock',
+      data: {isListItem: true}
     }
     let transform = value.transform()
 
     if (active) {
       transform = transform
-        .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
-        .setBlock(SLATE_LIST_ITEM_TYPE)
-        .wrapBlock(setBlock)
+        .unwrapBlock('contentBlock', {listItem: listStyle}) // TODO do for all list styles
+        .setBlock(listItemBlock)
+        .wrapBlock(listBlock)
     } else {
       transform = transform
-        .unwrapBlock(SLATE_LIST_BLOCK_TYPE)
-        .setBlock(SLATE_NORMAL_BLOCK_TYPE)
+        .unwrapBlock('contentBlock', {listItem: listStyle})
+        .setBlock(normalBlock)
     }
     const nextState = transform.apply()
     onChange(nextState)
@@ -235,6 +244,11 @@ export default class BlockEditor extends React.Component {
     return value.blocks.some(block => block.type === type)
   }
 
+  hasStyle(styleName) {
+    const {value} = this.props
+    return value.blocks.some(block => block.data.get('style') === styleName)
+  }
+
   hasLinks() {
     const {value} = this.props
     return value.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
@@ -245,6 +259,14 @@ export default class BlockEditor extends React.Component {
     return value.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
   }
 
+  hasParentList(listItem) {
+    const {value} = this.props
+    return value.blocks.some(block => {
+      const parent = value.get('document').getParent(block.key)
+      const parentListItem = parent && parent.data ? parent.data.get('listItem') : null
+      return parentListItem === listItem
+    })
+  }
 
   hasParentBlock(type) {
     const {value} = this.props
@@ -269,33 +291,37 @@ export default class BlockEditor extends React.Component {
   }
 
   getListTypes() {
-    return (this.groupedTypes.slate)
-      .filter(type => type.listItem)
-      .map((type, index) => {
+    return (this.listItems)
+      .map((item, index) => {
         return {
-          type: type.listItem,
-          title: type.title,
-          active: this.hasParentBlock(type)
+          type: item.value,
+          title: item.title,
+          active: this.hasParentList(item.value)
         }
       })
   }
 
   getStyles() {
-    if (!this.groupedTypes.slate.length) {
-      return []
+    function Preview(props) {
+      return <span>{props.children}</span>
     }
-    const items = this.groupedTypes.slate
-      .filter(typeDef => SLATE_TEXT_BLOCKS.includes(typeDef.type))
-      .map((typeDef, index) => {
+    const items = this.textStyles
+      .map((style, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[typeDef.type]({
-            isPreview: true,
-            children: <span>{typeDef.title}</span>
+          style: style,
+          preview: this.slateSchema.nodes.contentBlock({
+            children: [
+              <Preview
+                key={style.value}
+                parent={{data: Data.create({style: style.value})}}
+              >
+                {style.title}
+              </Preview>
+            ]
           }),
-          type: typeDef,
-          title: ` ${typeDef.title}`,
-          active: this.hasBlock(typeDef.type)
+          title: ` ${style.title}`,
+          active: this.hasStyle(style.value)
         }
       })
     let value = items.filter(item => item.active)

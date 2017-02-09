@@ -5,7 +5,7 @@ function toRawBlock(block, context) {
   const {spans, ...rest} = block
   return {
     kind: 'block',
-    type: 'block',
+    type: 'contentBlock',
     data: rest,
     nodes: [
       {

@@ -11,6 +11,7 @@ export const SLATE_MANAGED_NODE_TYPES = [
   'link'
 ]
 export const SLATE_NORMAL_BLOCK_TYPE = 'normal'
+export const SLATE_DEFAULT_STYLE = 'normal'
 export const SLATE_TEXT_BLOCKS = [
   'normal',
   'h1',
