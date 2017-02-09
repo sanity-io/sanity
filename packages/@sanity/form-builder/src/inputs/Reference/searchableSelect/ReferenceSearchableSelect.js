@@ -3,6 +3,16 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../Preview'
 
+
+const getInitialState = () => {
+  return {
+    fetching: false,
+    query: null,
+    hits: [],
+    materializedValue: null
+  }
+}
+
 export default class ReferenceSearchableSelect extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
@@ -21,12 +31,8 @@ export default class ReferenceSearchableSelect extends React.Component {
     formBuilder: PropTypes.object
   }
 
-  state = {
-    fetching: false,
-    query: null,
-    hits: [],
-    materializedValue: null
-  }
+  state = getInitialState()
+
 
   materializeValue(value) {
     const {valueToString, type} = this.props
@@ -46,6 +52,7 @@ export default class ReferenceSearchableSelect extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value != this.props.value) {
+      this.setState(getInitialState())
       this.materializeValue(nextProps.value)
     }
   }
@@ -144,6 +151,13 @@ export default class ReferenceSearchableSelect extends React.Component {
     )
   }
 
+  handleClear = item => {
+    const patch = {
+      type: 'unset'
+    }
+    this.props.onChange({patch: patch})
+  }
+
   render() {
     const {type} = this.props
     const {materializedValue, fetching, hits} = this.state
@@ -161,6 +175,7 @@ export default class ReferenceSearchableSelect extends React.Component {
         onFocus={this.handleFocus}
         onSearch={this.handleSearch}
         onChange={this.handleChange}
+        onClear={this.handleClear}
         value={value || this.props.value}
         valueAsString={materializedValue}
         renderItem={this.renderItem}
