@@ -132,21 +132,14 @@ export default class BlockEditor extends React.Component {
 
 
   handleSelectBlockFormatting = selectedValue => {
-    const typeDef = selectedValue.type
+    console.log(selectedValue)
     const {value, onChange} = this.props
     const {selection, startBlock, endBlock} = value
     const block = {
-      type: typeDef.type
+      type: 'contentBlock',
+      data: {style: selectedValue.style.value}
     }
     let transform = value.transform()
-
-    if (this.isWithinList()) {
-      transform = transform.unwrapBlock(SLATE_LIST_BLOCK_TYPE)
-        .setBlock(block)
-      const nextState = transform.apply()
-      onChange(nextState)
-      return
-    }
 
     // If a single block is selected partially, split block conditionally (selection in start, middle or end of text)
     if (startBlock === endBlock
