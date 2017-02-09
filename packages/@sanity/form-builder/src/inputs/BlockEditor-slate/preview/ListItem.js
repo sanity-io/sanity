@@ -8,11 +8,12 @@ function ListItem(props) {
   if (!listStyles.includes(listStyle)) {
     throw new Error(`Don't know how to handle listStyle '${listStyle}'. Expected one of '${listStyles.join("', '")}'`)
   }
-  return <li className={styles[listStyle]}>{props.children}</li>
+  return <li style={props.counterCss} className={styles[listStyle]}>{props.children}</li>
 }
 
 ListItem.propTypes = {
   listStyle: PropTypes.oneOf(listStyles),
+  counterCss: PropTypes.object,
   children: PropTypes.node
 }
 
