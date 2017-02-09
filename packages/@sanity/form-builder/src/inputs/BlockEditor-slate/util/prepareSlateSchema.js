@@ -69,7 +69,8 @@ export default function prepareSlateShema(type) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
 
-  const textStyles = styleField.type.options.list.filter(style => style.value)
+  const textStyles = styleField.type.options.list
+    && styleField.type.options.list.filter(style => style.value)
   if (!textStyles || textStyles.length === 0) {
     throw new Error('The style fields need at least one style '
       + "defined. I.e: {title: 'Normal', value: 'normal'}.")
@@ -78,7 +79,8 @@ export default function prepareSlateShema(type) {
   const listField = blockType.fields.find(btField => btField.name === 'list')
   let listItems = []
   if (listField) {
-    listItems = listField.type.options.list.filter(listStyle => listStyle.value)
+    listItems = listField.type.options.list
+      && listField.type.options.list.filter(listStyle => listStyle.value)
   }
 
   const groupedTypes = {
