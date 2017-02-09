@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import DropZone from 'react-dropzone'
 import {get} from 'lodash'
-
+import accepts from 'attr-accept'
 import styles from 'part:@sanity/components/fileinput/dropzone-style'
 
 export default class Dropzone extends React.PureComponent {
@@ -26,8 +26,7 @@ export default class Dropzone extends React.PureComponent {
 
     const {accept} = this.props
 
-    // Todo handle image/*
-    if (!accept || accept == 'image/*') {
+    if (!accept) {
       this.setState({
         acceptsSelectedFiles: true
       })
@@ -35,8 +34,6 @@ export default class Dropzone extends React.PureComponent {
     }
 
     const items = get(event, 'nativeEvent.dataTransfer.items')
-
-    const mimeTypes = this.props.accept.split(',') || []
 
     if (items) {
       if (items.length > 1 && !this.props.multiple) {
@@ -46,11 +43,9 @@ export default class Dropzone extends React.PureComponent {
         return
       }
 
-      for (let i = 0; i < items.length; i++) {
-        this.setState({
-          acceptsSelectedFiles: mimeTypes.includes(items[i].type)
-        })
-      }
+      this.setState({
+        acceptsSelectedFiles: Array.from(items).every(item => accepts(item, accept))
+      })
     }
   }
 
