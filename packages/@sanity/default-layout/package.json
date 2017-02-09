@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "0.100.15",
+  "version": "0.100.16",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "@sanity/cli": "^0.100.4",
     "@sanity/components": "^0.100.15",
     "@sanity/core": "^0.100.3",
-    "@sanity/form-builder": "^0.100.15",
+    "@sanity/form-builder": "^0.100.16",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "in-publish": "^2.0.0",
