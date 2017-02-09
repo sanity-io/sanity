@@ -39,14 +39,12 @@ const slateTypeComponentMapping = {
   listItem(props) {  // eslint-disable-line react/no-multi-comp
     // eslint-disable-next-line react/prop-types
     const listStyle = props.children[0] && props.children[0].props.parent.data.get('listItem')
-    const css = {}
     // eslint-disable-next-line react/prop-types
     const {node, parent} = props
     const previousBlock = parent.getPreviousBlock(node.key)
-    if (previousBlock && previousBlock.data.get('listItem') !== listStyle) {
-      css.counterReset = 'listItem 0'
-    }
-    return <ListItem counterCss={css} listStyle={listStyle} {...props} />
+    const isFirstItem = !previousBlock
+      || (previousBlock && previousBlock.data.get('listItem') !== listStyle)
+    return <ListItem isFirstItem={isFirstItem} listStyle={listStyle} {...props} />
   }
 }
 
