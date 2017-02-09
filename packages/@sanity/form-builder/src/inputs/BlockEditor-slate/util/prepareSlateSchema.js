@@ -1,6 +1,6 @@
 import React from 'react'
 import {groupBy} from 'lodash'
-import createPreviewNode from '../createFormBuilderPreviewNode'
+import createFormBuilderPreviewNode from '../createFormBuilderPreviewNode'
 import mapToObject from './mapToObject'
 import Header from '../preview/Header'
 import Normal from '../preview/Normal'
@@ -9,6 +9,7 @@ import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
 import Link from '../preview/Link'
 import {
+  SLATE_DEFAULT_STYLE,
   SLATE_MANAGED_NODE_TYPES,
   SLATE_LIST_BLOCK_TYPE,
   SLATE_NORMAL_BLOCK_TYPE,
@@ -46,10 +47,28 @@ const slateTypeComponentMapping = {
   },
   list(props) { // eslint-disable-line react/no-multi-comp
     // eslint-disable-next-line react/prop-types
-    const listStyle = props.children[0] && props.children[0].props.parent.data.get('type').listItem
+    const listStyle = props.children[0] && props.children[0].props.parent.data.get('listItem')
     return <List listStyle={listStyle} {...props} />
   },
   listItem: ListItem
+}
+
+function createSlatePreviewNode(props) {
+  let component = null
+  const style = props.children[0] && props.children[0].props.parent.data.get('style')
+  const isListItem = props.children[0] && props.children[0].props.parent.data.get('isListItem')
+  const list = props.children[0] && props.children[0].props.parent.data.get('listItem')
+  if (isListItem) {
+    component = slateTypeComponentMapping.listItem
+  } else if (list) {
+    component = slateTypeComponentMapping.list
+  } else {
+    component = slateTypeComponentMapping[style]
+  }
+  if (!component) {
+    throw new Error(`No mapping for style '${style}' exists.`)
+  }
+  return component(props)
 }
 
 export default function prepareSlateShema(type) {
@@ -63,25 +82,22 @@ export default function prepareSlateShema(type) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
 
-  const listField = blockType.fields.find(btField => btField.name === 'list')
-
   const textStyles = styleField.type.options.list
+  if (!textStyles || textStyles.length === 0) {
+    throw new Error("The style fields need at least one style "
+      + "defined. I.e: {title: 'Normal', value: 'normal'}.")
+  }
 
-  let listTypes = []
+  const listField = blockType.fields.find(btField => btField.name === 'list')
+  let listItems = []
   if (listField) {
-    listTypes = listField.type.options.list.filter(item => item.value)
-      .map(listType => {
-        return {type: 'list', listItem: listType.value}
-      })
+    listItems = listField.type.options.list
   }
 
   const groupedTypes = {
-    slate: textStyles.map(style => {
-      return {
-        type: style.value || SLATE_NORMAL_BLOCK_TYPE,
-        title: style.title
-      }
-    }).concat(listTypes),
+    slate: [{
+      type: 'contentBlock'
+    }],
     formBuilder: type.of.filter(ofType => ofType.name !== 'block')
   }
 
@@ -95,14 +111,9 @@ export default function prepareSlateShema(type) {
   const schema = {
     nodes: Object.assign(
         mapToObject(groupedTypes.formBuilder || [], ofType => {
-          return [ofType.name, createPreviewNode(ofType)]
+          return [ofType.name, createFormBuilderPreviewNode(ofType)]
         }),
-        mapToObject(groupedTypes.slate || [], slateType => {
-          if (slateTypeComponentMapping[slateType.type]) {
-            return [slateType.type, slateTypeComponentMapping[slateType.type]]
-          }
-          throw new Error(`Do not know how to make a slate type for ${JSON.stringify(slateType)}`)
-        })
+        {contentBlock: createSlatePreviewNode}
     ),
     marks: mapToObject(allowedMarks, mark => {
       return [mark, Mark]
@@ -113,6 +124,8 @@ export default function prepareSlateShema(type) {
     schema.nodes[SLATE_LIST_ITEM_TYPE] = slateTypeComponentMapping.listItem
   }
   return {
+    listItems: listItems,
+    textStyles: textStyles,
     types: groupedTypes,
     schema: schema
   }
