@@ -18,7 +18,6 @@ import {
   SLATE_DEFAULT_STYLE,
   SLATE_NORMAL_BLOCK_TYPE,
   SLATE_LIST_BLOCK_TYPE,
-  SLATE_LIST_ITEM_TYPE,
   SLATE_LINK_TYPE,
 } from './constants'
 
@@ -55,8 +54,11 @@ export default class BlockEditor extends React.Component {
     this.groupedTypes = slateSchema.types
     this.slatePlugins = [
       InsertBlockOnEnter({
-        type: SLATE_NORMAL_BLOCK_TYPE,
+        type: 'contentBlock',
         kind: 'block',
+        data: {
+          style: SLATE_DEFAULT_STYLE
+        },
         nodes: [{kind: 'text', text: '', ranges: []}]
       }),
       OnPasteHtml(),
