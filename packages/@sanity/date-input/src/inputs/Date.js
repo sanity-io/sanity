@@ -21,12 +21,14 @@ export default class DateInput extends React.PureComponent {
     type: PropTypes.shape({
       title: PropTypes.string.isRequired
     }),
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    level: PropTypes.number
   };
 
   static contextTypes = {
     resolveInputComponent: PropTypes.func,
     schema: PropTypes.object,
+    level: 0,
     intl: PropTypes.shape({
       locale: PropTypes.string
     })
@@ -49,11 +51,11 @@ export default class DateInput extends React.PureComponent {
   }
 
   render() {
-    const {value, type} = this.props
+    const {value, type, level} = this.props
     const inputId = uniqueId('FormBuilderText')
     const input = <KeyboardLessInput />
     return (
-      <FormField labelHtmlFor={inputId} label={type.title}>
+      <FormField labelHtmlFor={inputId} label={type.title} level={level}>
         <div className={styles.root}>
           <DatePicker
             dateFormat="YYYY-MM-DD"
