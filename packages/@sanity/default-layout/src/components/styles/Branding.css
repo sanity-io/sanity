@@ -26,7 +26,7 @@
   composes: noLink from "part:@sanity/base/theme/layout/helpers";
 }
 
-.companyLogoContainer {
+.brandLogoContainer {
   float: left;
   z-index: 10;
   cursor: pointer;

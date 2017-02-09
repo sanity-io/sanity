@@ -52,7 +52,7 @@
   display: none;
 }
 
-.companyLogoContainer {
+.brandLogoContainer {
   height: 3em;
   max-width: 70vw;
   @nest & svg {

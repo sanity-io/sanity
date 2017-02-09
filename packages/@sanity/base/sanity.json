@@ -426,8 +426,8 @@
       "description": "Black SanityStudio logo"
     },
     {
-      "name": "part:@sanity/base/company-logo",
-      "description": "Logo for the company"
+      "name": "part:@sanity/base/brand-logo",
+      "description": "Logo for the branding"
     },
     {
       "name": "part:@sanity/base/upload-icon",

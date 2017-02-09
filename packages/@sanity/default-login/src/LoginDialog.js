@@ -7,7 +7,7 @@ import cancelWrap from './cancelWrap'
 import styles from './styles/LoginDialog.css'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import config from 'config:sanity'
-import CompanyLogo from 'part:@sanity/base/company-logo?'
+import BrandLogo from 'part:@sanity/base/brand-logo?'
 
 const projectName = (config.project && config.project.name) || ''
 
@@ -69,9 +69,9 @@ export default class LoginDialog extends React.Component {
         </div>
 
         <div className={styles.branding}>
-          <h1 className={CompanyLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
+          <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
           {
-            CompanyLogo && <div className={styles.companyLogoContainer}><CompanyLogo projectName={projectName} /></div>
+            BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
           }
         </div>
 

@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import LoginStatus from './LoginStatus'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import styles from './styles/MobileNavigation.css'
-import CompanyBranding from './CompanyBranding'
+import Branding from './Branding'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Search from './Search'
@@ -41,7 +41,7 @@ export default class MobileNavigation extends React.Component {
     const {tools} = this.props
     return (
       <div className={styles.root}>
-        <CompanyBranding />
+        <Branding />
         <Button
           kind="simple"
           className={styles.hamburgerButton}
