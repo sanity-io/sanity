@@ -2,7 +2,7 @@
 import {get, flatten} from 'lodash'
 
 function toSanityBlock(block) {
-  if (block.type === 'block') {
+  if (block.type === 'contentBlock') {
     return {
       ...block.data,
       _type: 'block',
