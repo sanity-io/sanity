@@ -2,14 +2,15 @@
 
 .root {
   display: block;
-  float: left;
   height: 100%;
   position: relative;
   max-width: 100%;
   width: 100%;
-  min-width: 14rem;
+
 
   @media (--screen-medium) {
+    min-width: 14rem;
+    float: left;
     width: auto;
     padding-left: var(--medium-padding);
     max-width: 25em;

@@ -10,19 +10,23 @@
 }
 
 .defaultLayout {
-  max-width: 100%;
-  width: 100vw;
-  overflow-x: hidden;
+  @media (--screen-medium) {
+    max-width: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+  }
 }
 
 .toolContainer {
   margin-top: var(--header-height);
   position: relative;
-  width: 100vw;
-  height: calc(100vh - var(--header-height));
-  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
 
   @media (--screen-medium) {
+    width: 100vw;
+    height: calc(100vh - var(--header-height));
+    box-sizing: border-box;
     overflow: auto;
     overflow-x: hidden;
   }
