@@ -7,7 +7,6 @@ export const blockFormatShape = PropTypes.shape({
   active: PropTypes.bool,
   title: PropTypes.string,
   preview: PropTypes.node,
-  type: PropTypes.object
 })
 
 export default class BlockFormat extends React.Component {
