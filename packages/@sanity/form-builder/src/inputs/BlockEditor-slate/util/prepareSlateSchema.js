@@ -78,7 +78,7 @@ export default function prepareSlateShema(type) {
   const listField = blockType.fields.find(btField => btField.name === 'list')
   let listItems = []
   if (listField) {
-    listItems = listField.type.options.list
+    listItems = listField.type.options.list.filter(listStyle => listStyle.value)
   }
 
   const groupedTypes = {
