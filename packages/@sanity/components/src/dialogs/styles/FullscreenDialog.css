@@ -8,7 +8,6 @@
   right: 0;
   z-index: var(--zindex-modal-background);
   backdrop-filter: blur(3px);
-  overflow-y: auto;
 }
 
 .heading {
