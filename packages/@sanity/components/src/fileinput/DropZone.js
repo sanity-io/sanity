@@ -18,7 +18,7 @@ export default class Dropzone extends React.PureComponent {
   }
 
   state = {
-    hasUnAcceptedFiles: false,
+    acceptsSelectedFiles: true,
     tooManyFiles: false
   }
 
@@ -29,7 +29,7 @@ export default class Dropzone extends React.PureComponent {
     // Todo handle image/*
     if (!accept || accept == 'image/*') {
       this.setState({
-        hasUnAcceptedFiles: false
+        acceptsSelectedFiles: true
       })
       return
     }
@@ -48,7 +48,7 @@ export default class Dropzone extends React.PureComponent {
 
       for (let i = 0; i < items.length; i++) {
         this.setState({
-          hasUnAcceptedFiles: !mimeTypes.includes(items[i].type)
+          acceptsSelectedFiles: mimeTypes.includes(items[i].type)
         })
       }
     }
@@ -56,7 +56,7 @@ export default class Dropzone extends React.PureComponent {
 
   resetErrorState = () => {
     this.setState({
-      hasUnAcceptedFiles: false,
+      acceptsSelectedFiles: true,
       tooManyFiles: false
     })
   }
@@ -69,7 +69,7 @@ export default class Dropzone extends React.PureComponent {
   render() {
 
     const {className, multiple, icon, ghost, accept, ...rest} = this.props
-    const {hasUnAcceptedFiles, tooManyFiles} = this.state
+    const {acceptsSelectedFiles, tooManyFiles} = this.state
 
     const Icon = icon
 
@@ -79,7 +79,7 @@ export default class Dropzone extends React.PureComponent {
         className={`
           ${className ? className : ''}
           ${ghost ? styles.ghost : styles.dropZone}
-          ${(hasUnAcceptedFiles || tooManyFiles) ? styles.hasError : ''}
+          ${(!acceptsSelectedFiles || tooManyFiles) ? styles.hasError : ''}
         `}
         activeClassName={`${ghost ? styles.activeGhost : styles.activeDropZone}`}
         onDragOver={this.handleDragOver}
@@ -90,7 +90,7 @@ export default class Dropzone extends React.PureComponent {
       >
         <div className={styles.inner}>
           {
-            hasUnAcceptedFiles && !tooManyFiles && (
+            !acceptsSelectedFiles && !tooManyFiles && (
               <p className={styles.errorText}>
                 Accepted file formats: {accept}
               </p>
@@ -108,7 +108,7 @@ export default class Dropzone extends React.PureComponent {
               {Icon && <Icon />}
             </div>
             {
-              !hasUnAcceptedFiles && (
+              acceptsSelectedFiles && (
                 <div>
                   <p className={styles.strong}>
                     {
@@ -130,7 +130,7 @@ export default class Dropzone extends React.PureComponent {
               {Icon && <Icon />}
             </div>
             {
-              !hasUnAcceptedFiles && (
+              acceptsSelectedFiles && (
                 <p className={styles.strong}>
                   {
                     multiple ? <span>Drop files…</span> : <span>Drop file…</span>
