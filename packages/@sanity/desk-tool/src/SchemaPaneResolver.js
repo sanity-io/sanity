@@ -42,6 +42,10 @@ function writeListLayoutSettings(settings) {
   window.localStorage.setItem('desk-tool.listlayout-settings', JSON.stringify(settings))
 }
 
+function isCreate(routerState) {
+  return routerState.action === 'create' && !routerState.selectedDocumentId
+}
+
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
   static propTypes = {
     router: PropTypes.shape({
@@ -77,30 +81,35 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   componentWillMount() {
     this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
-    this.checkRedirect()
+    const {router} = this.props
+    if (isCreate(router.state)) {
+      this.doCreate(router)
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!isCreate(this.props.router.state) && isCreate(nextProps.router.state)) {
+      this.doCreate(nextProps.router)
+    }
   }
 
   componentDidUpdate() {
-    this.checkRedirect()
     // Hack
     // Panes needs to be resized after the content is loaded
     // Look at this later
     this.handleResize()
   }
 
-  checkRedirect() {
-    const {router} = this.props
-
-    if (router.state.action === 'create' && !router.state.selectedDocumentId) {
-      const selectedType = router.state.selectedType
-      documentStore.create({_type: `${schema.name}.${selectedType}`}).subscribe(document => {
+  doCreate(router) {
+    const {selectedType} = router.state
+    documentStore.create({_type: `${schema.name}.${selectedType}`})
+      .subscribe(document => {
         router.navigate({
           action: 'edit',
           selectedType: selectedType,
           selectedDocumentId: UrlDocId.encode(document._id)
         }, {replace: true})
       })
-    }
   }
 
   renderTypePaneItem = item => {
