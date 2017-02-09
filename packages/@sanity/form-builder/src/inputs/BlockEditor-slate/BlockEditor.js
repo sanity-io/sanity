@@ -16,7 +16,6 @@ import OnPasteHtml from './plugins/OnPasteHtml'
 
 import {
   SLATE_DEFAULT_STYLE,
-  SLATE_LIST_BLOCK_TYPE,
   SLATE_LINK_TYPE,
 } from './constants'
 
@@ -132,7 +131,6 @@ export default class BlockEditor extends React.Component {
 
 
   handleSelectBlockFormatting = selectedValue => {
-    console.log(selectedValue)
     const {value, onChange} = this.props
     const {selection, startBlock, endBlock} = value
     const block = {
