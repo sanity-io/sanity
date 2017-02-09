@@ -5,6 +5,7 @@ import rotateImage from '../utils/rotateImage'
 import continueWhen from '../utils/continueWhen'
 import styles from './styles/ImageSelect.css'
 import DropZone from 'part:@sanity/components/fileinput/dropzone'
+import UploadIcon from 'part:@sanity/base/upload-icon'
 
 // todo: investigate if we can use web workers to do the heavy work on the images here
 
@@ -46,7 +47,7 @@ export default class ImageInput extends React.PureComponent {
     const {dropzone, ...rest} = this.props
     if (dropzone) {
       return (
-        <DropZone {...rest} onDrop={this.handleSelect} />
+        <DropZone {...rest} onDrop={this.handleSelect} icon={UploadIcon} />
       )
     }
     return (
