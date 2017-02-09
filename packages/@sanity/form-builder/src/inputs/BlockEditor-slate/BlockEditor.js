@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import {Editor, State, Data} from 'slate'
-import {pick, isEqual, uniqueId} from 'lodash'
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 

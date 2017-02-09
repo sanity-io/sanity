@@ -11,7 +11,11 @@
 
 .number {
   composes: root;
-  list-style-type: decimal;
+  list-style-type: none;
+  counter-increment: listItem;
+  @nest &:before {
+    content: counter(listItem) ". ";
+  }
 }
 
 .roman {
