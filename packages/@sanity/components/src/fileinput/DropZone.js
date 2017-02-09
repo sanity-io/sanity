@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import DropZone from 'react-dropzone'
-import {get, includes} from 'lodash'
+import {get} from 'lodash'
 
 import styles from 'part:@sanity/components/fileinput/dropzone-style'
 
@@ -19,7 +19,7 @@ export default class Dropzone extends React.PureComponent {
 
   state = {
     hasUnAcceptedFiles: false,
-    toManyFiles: false
+    tooManyFiles: false
   }
 
   handleDragOver = event => {
@@ -41,14 +41,14 @@ export default class Dropzone extends React.PureComponent {
     if (items) {
       if (items.length > 1 && !this.props.multiple) {
         this.setState({
-          toManyFiles: true
+          tooManyFiles: true
         })
         return
       }
 
       for (let i = 0; i < items.length; i++) {
         this.setState({
-          hasUnAcceptedFiles: !includes(mimeTypes, items[i].type)
+          hasUnAcceptedFiles: !mimeTypes.includes(items[i].type)
         })
       }
     }
@@ -57,7 +57,7 @@ export default class Dropzone extends React.PureComponent {
   resetErrorState = () => {
     this.setState({
       hasUnAcceptedFiles: false,
-      toManyFiles: false
+      tooManyFiles: false
     })
   }
 
@@ -69,7 +69,7 @@ export default class Dropzone extends React.PureComponent {
   render() {
 
     const {className, multiple, icon, ghost, accept, ...rest} = this.props
-    const {hasUnAcceptedFiles, toManyFiles} = this.state
+    const {hasUnAcceptedFiles, tooManyFiles} = this.state
 
     const Icon = icon
 
@@ -79,7 +79,7 @@ export default class Dropzone extends React.PureComponent {
         className={`
           ${className ? className : ''}
           ${ghost ? styles.ghost : styles.dropZone}
-          ${(hasUnAcceptedFiles || toManyFiles) ? styles.hasError : ''}
+          ${(hasUnAcceptedFiles || tooManyFiles) ? styles.hasError : ''}
         `}
         activeClassName={`${ghost ? styles.activeGhost : styles.activeDropZone}`}
         onDragOver={this.handleDragOver}
@@ -90,14 +90,14 @@ export default class Dropzone extends React.PureComponent {
       >
         <div className={styles.inner}>
           {
-            hasUnAcceptedFiles && !toManyFiles && (
+            hasUnAcceptedFiles && !tooManyFiles && (
               <p className={styles.errorText}>
                 Accepted file formats: {accept}
               </p>
             )
           }
           {
-            toManyFiles && (
+            tooManyFiles && (
               <p className={styles.errorText}>
                 Only one image allowed
               </p>
