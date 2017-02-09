@@ -15,7 +15,7 @@ export default class Url extends React.Component {
     onChange() {}
   };
 
-  handleChange(event) {
+  handleChange = event => {
     const value = event.target.value || undefined
     this.props.onChange({
       patch: {
