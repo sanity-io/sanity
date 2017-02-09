@@ -33,13 +33,18 @@ export default [
     ]
   },
   {
-    name: 'h1',
-    title: 'header1',
+    name: 'address',
     type: 'object',
     fields: [
       {
-        name: 'marks',
-        type: 'array',
+        name: 'street',
+        type: 'string',
+        title: 'Street'
+      },
+      {
+        name: 'zip',
+        type: 'string',
+        title: 'Zip'
       }
     ]
   },
@@ -135,6 +140,18 @@ export default [
     ]
   },
   {
+    name: 'mark',
+    type: 'object',
+    title: 'Mark',
+    fields: [
+      {
+        name: 'type',
+        title: 'Type',
+        type: 'string'
+      }
+    ]
+  },
+  {
     name: 'link',
     type: 'object',
     fields: [
@@ -153,34 +170,6 @@ export default [
             title: 'Text'
           }
         ]
-      }
-    ]
-  },
-  {
-    name: 'mark',
-    type: 'object',
-    title: 'Mark',
-    fields: [
-      {
-        name: 'type',
-        title: 'Type',
-        type: 'string'
-      }
-    ]
-  },
-  {
-    name: 'address',
-    type: 'object',
-    fields: [
-      {
-        name: 'street',
-        type: 'string',
-        title: 'Street'
-      },
-      {
-        name: 'zip',
-        type: 'string',
-        title: 'Zip'
       }
     ]
   }
