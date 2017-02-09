@@ -4,10 +4,6 @@
   margin-bottom: 0.5em;
 }
 
-.resetListCounter {
-  counter-reset: listItem
-}
-
 .bullet {
   composes: root;
   list-style-type: disc;
@@ -19,6 +15,10 @@
   counter-increment: listItem;
   @nest &:before {
     content: counter(listItem) ". ";
+  }
+
+  @nest & + :not(.number) {
+    counter-reset: listItem
   }
 }
 
