@@ -25,8 +25,17 @@ export default [
             title: 'Address'
           },
           {
+            preview: {
+              fields: {
+                imageUrl: 'asset.url',
+                title: 'caption'
+              }
+            },
             type: 'image',
-            title: 'Image'
+            title: 'Image',
+            fields: [
+              {name: 'caption', type: 'string', title: 'Caption', options: {isHighlighted: true}}
+            ]
           }
         ],
       }
