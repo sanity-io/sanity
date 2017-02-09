@@ -3,6 +3,7 @@ import './styles/JSONInspector.css'
 import styles from './styles/InspectView.css'
 import JSONInspector from 'react-json-inspector'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
 
@@ -52,22 +53,82 @@ function toggleExpanded(event) {
   lru.set(path, !current)
 }
 
-export default function InspectView(props) {
-  return (
-    <DefaultDialog
-      isOpen
-      showHeader
-      title={`Inspecting ${props.value._id}`}
-      className={styles.dialog}
-      onClose={props.onClose}
-    >
-      <JSONInspector
-        isExpanded={isExpanded}
-        onClick={toggleExpanded}
-        data={props.value}
-      />
-    </DefaultDialog>
-  )
+function selectElement(element) {
+  const sel = window.getSelection()
+  sel.removeAllRanges()
+  const range = document.createRange()
+  range.selectNodeContents(element)
+  sel.addRange(range)
+}
+
+function select(event) {
+  selectElement(event.currentTarget)
+}
+
+function maybeSelectAll(event) {
+  const selectAll = (event.keyCode === 65 && (event.metaKey || event.ctrlKey))
+  if (!selectAll) {
+    return
+  }
+  event.preventDefault()
+  selectElement(event.currentTarget)
+}
+
+const VIEW_MODE_PARSED = 'parsed'
+const VIEW_MODE_RAW = 'raw'
+const VIEW_MODES = [
+  {title: 'Parsed', value: VIEW_MODE_PARSED},
+  {title: 'Raw', value: VIEW_MODE_RAW}
+]
+
+export default class InspectView extends React.PureComponent {
+  state = {
+    view: VIEW_MODE_PARSED
+  }
+
+  toggleItems = VIEW_MODES.map(mode => ({
+    ...mode,
+    action: () => {
+      this.setState({view: mode.value})
+    }
+  }))
+
+  render() {
+    const {value, onClose} = this.props
+    const {view} = this.state
+    return (
+      <DefaultDialog
+        isOpen
+        showHeader
+        title={`Inspecting ${value._id}`}
+        className={styles.dialog}
+        onClose={onClose}
+      >
+        <div className={styles.content}>
+          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+            <ToggleButtons
+              items={this.toggleItems} />
+          </div>
+          {view === 'parsed' && <JSONInspector
+            isExpanded={isExpanded}
+            onClick={toggleExpanded}
+            data={value}
+          />}
+          {view === 'raw' && (
+            <pre
+              className={styles.raw}
+              tabIndex={0}
+              onKeyDown={maybeSelectAll}
+              onDoubleClick={select}
+              onFocus={select}
+            >
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          )}
+        </div>
+      </DefaultDialog>
+    )
+  }
 }
 
 InspectView.propTypes = {

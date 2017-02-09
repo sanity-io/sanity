@@ -1,3 +1,12 @@
 .dialog {
-  background: whitesmoke;
+  background: #fefefe;
+}
+
+.content {
+  padding: 1rem;
+}
+
+.raw {
+  font: 14px/1.4 Consolas, monospace;
+  outline-color: #2097ac;
 }
