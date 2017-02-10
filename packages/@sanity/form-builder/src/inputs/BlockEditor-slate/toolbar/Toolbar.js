@@ -66,17 +66,19 @@ export default class Toolbar extends React.Component {
           <BlockFormat value={textFormats.value} items={textFormats.items} onSelect={onFormatSelectChange} />
         </div>
 
-        {marks && marks.length > 0 && (
-          <div className={styles.textFormatContainer}>
-            <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
-          </div>
-        )}
+        <div className={styles.formatButtons}>
+          {marks && marks.length > 0 && (
+            <div className={styles.textFormatContainer}>
+              <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
+            </div>
+          )}
 
-        {listFormats && listFormats.length > 0 && (
-          <div className={styles.listFormatContainer}>
-            <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
-          </div>
-        )}
+          {listFormats && listFormats.length > 0 && (
+            <div className={styles.listFormatContainer}>
+              <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
+            </div>
+          )}
+        </div>
 
         {
           showLinkButton && (

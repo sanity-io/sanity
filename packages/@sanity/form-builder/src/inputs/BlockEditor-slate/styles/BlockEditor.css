@@ -14,7 +14,7 @@
 }
 
 .blockDragMarker {
-  background-color: rgba(32, 151, 172, 0.8);
+  background-color: var(--brand-color);
   width: 100%;
   height: 2px;
   position: absolute;
@@ -31,13 +31,19 @@
   background-color: var(--input-bg);
 
   @nest .fullscreen & {
-    max-height: none;
-    height: 90vh;
     width: 90%;
     max-width: 50em;
     margin: 3em auto;
     box-shadow: 0 0 0.8rem -0.2rem rgba(0, 0, 0, 0.2);
-    overflow: scroll;
+    height: auto;
+    overflow: hidden;
+    max-height: none;
+    border: none;
+
+    @media (--screen-medium) {
+      overflow: scroll;
+      height: 90vh;
+    }
   }
 }
 
@@ -98,9 +104,14 @@
   top: 0;
   left: 0;
   z-index: var(--zindex-fullscreen-edit);
-  overflow: hidden;
   background-color: var(--blockEditorFullscreenBackground);
   padding-bottom: 5rem;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+
+  @media (--screen-medium) {
+    overflow: hidden;
+  }
 }
 
 .textFormattingToolbar {

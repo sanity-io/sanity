@@ -1,6 +1,12 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .root {
-  font-size: 0.8em;
+  font-size: 0.6rem;
   margin-bottom: 0.5em;
+
+  @media (--screen-medium) {
+    font-size: 0.8rem;
+  }
 
   @nest &:after {
     content: "";
@@ -33,9 +39,15 @@
 }
 
 .blockFormatContainer {
+  max-width: 5em;
   float: left;
-  min-width: 10em;
+  min-width: 4em;
   padding-right: 0.5em;
+
+  @media (--screen-medium) {
+    max-width: none;
+    min-width: 8em;
+  }
 }
 
 .linkContainer {
@@ -44,9 +56,14 @@
   float: left;
 }
 
+.formatButtons {
+  display: block;
+}
+
 .fullscreenButtonContainer {
   float: right;
   composes: dividerLeft;
+
   @nest & svg {
     transform: scale(1.5);
   }
