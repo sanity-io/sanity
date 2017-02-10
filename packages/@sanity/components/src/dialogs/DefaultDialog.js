@@ -88,12 +88,13 @@ export default class DefaultDialog extends React.Component {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader, kind, onClose} = this.props
+    const {title, actions, isOpen, showHeader, kind, onClose, className} = this.props
     const classNames = `
       ${styles[kind]}
       ${isOpen ? styles.isOpen : styles.isClosed}
       ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
+      ${className}
     `
 
     return (
