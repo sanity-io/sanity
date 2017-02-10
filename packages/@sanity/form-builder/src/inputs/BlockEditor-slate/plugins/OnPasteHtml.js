@@ -82,29 +82,6 @@ const RULES = [
   },
   {
     deserialize(el, next) {
-      if (el.tagName === 'ul') {
-        return next(el.children)
-      }
-      return null
-    }
-  },
-  // {
-  //   deserialize(el, next) {
-  //     if (el.tagName === 'ol') {
-  //       return {
-  //         kind: 'block',
-  //         type: 'list',
-  //         data: {
-  //           listStyle: 'number'
-  //         },
-  //         nodes: next(el.children)
-  //       }
-  //     }
-  //     return null
-  //   }
-  // },
-  {
-    deserialize(el, next) {
       if (el.tagName === 'li') {
         const listItem = resolveListItem(el.parentNode.name)
         return {
