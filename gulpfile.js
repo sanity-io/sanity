@@ -105,7 +105,7 @@ gulp.task('dev', ['watch-js', 'watch-assets'], cb => {
 
   const projectPath = path.join(__dirname, 'packages', 'example-studio')
   const npmPath = path.join(projectPath, 'node_modules', '.bin')
-  const proc = childProcess.spawn('sanity', ['start'], {
+  const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
     cwd: projectPath,
     env: Object.assign({}, process.env, {
       PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
