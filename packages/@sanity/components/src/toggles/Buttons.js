@@ -2,36 +2,24 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/toggles/buttons-style'
 import Button from 'part:@sanity/components/buttons/default'
 
+const ITEM_SHAPE = {
+  icon: PropTypes.node,
+  title: PropTypes.string,
+}
 export default class ToggleButtons extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
-    value: PropTypes.object,
+    value: PropTypes.shape(ITEM_SHAPE),
     items: PropTypes.arrayOf(
-      PropTypes.shape({
-        icon: PropTypes.node,
-        title: PropTypes.string,
-      })
+      PropTypes.shape(ITEM_SHAPE)
     )
   }
 
-  constructor(context, props) {
-    super(context, props)
-
-    this.handleClick = this.handleClick.bind(this)
-
-    this.state = {
-      selected: 0
-    }
-  }
-
   handleClick = event => {
-    const {onChange} = this.props
-    onChange(this._buttonElement.props.item)
-  }
-
-  setButtonElement = element => {
-    this._buttonElement = element
+    const {onChange, items} = this.props
+    const index = Number(event.currentTarget.getAttribute('data-index'))
+    onChange(items[index])
   }
 
   render() {
@@ -47,15 +35,12 @@ export default class ToggleButtons extends React.Component {
           items.map((item, i) => {
             return (
               <Button
-                className={`
-                  ${item == value ? styles.selectedButton : styles.button}
-                `}
+                className={item == value ? styles.selectedButton : styles.button}
                 kind="simple"
                 key={item.key}
                 icon={item.icon}
-                item={item}
                 onClick={this.handleClick}
-                ref={this.setButtonElement}
+                data-index={i}
               >
                 {item.title}
               </Button>
