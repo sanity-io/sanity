@@ -3,6 +3,7 @@ import {SlateInput} from '@sanity/form-builder'
 export default [
   {
     name: 'lowLevelBlocksTest',
+    title: 'Blocks test',
     type: 'object',
     fields: [
       {

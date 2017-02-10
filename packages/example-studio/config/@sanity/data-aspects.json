@@ -1,4 +1,4 @@
 {
-  "hiddenTypes": [],
+  "hiddenTypes": ["block", "span", "mark", "link", "address"],
   "listOptions": {}
 }
