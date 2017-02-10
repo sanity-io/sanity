@@ -49,7 +49,7 @@ export default class Schema {
     return this._original.name
   }
   get(name) {
-    return this._registry[name].get()
+    return this._registry[name] && this._registry[name].get()
   }
   has(name) {
     return name in this._registry

@@ -139,8 +139,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     )
   }
 
-  getDocumentsPane(typeName) {
-    const schemaType = schema.get(typeName)
+  getDocumentsPane(schemaType) {
 
     const query = `${schema.name}.${schemaType.name}[limit: 2000, order: ${this.state.sorting}] {_id, _type}`
 
@@ -193,8 +192,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.setState({listLayoutSettings: nextSettings})
   }
 
-  getListLayoutForType(type) {
-    return this.state.listLayoutSettings[type] || 'default'
+  getListLayoutForType(schemaType) {
+    return this.state.listLayoutSettings[schemaType.name] || 'default'
   }
 
   handleSetSort = sorting => {
@@ -346,7 +345,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
       />
     )
 
-    const documentsPane = selectedType && this.getDocumentsPane(selectedType)
+    const schemaType = schema.get(router.state.selectedType)
+
+    const documentsPane = schemaType ? this.getDocumentsPane(schemaType) : schemaType
 
     return (
       <div className={styles.container} ref={this.setContainerElement}>
@@ -376,18 +377,23 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           }}
         >
           {
-            selectedType && selectedDocumentId && (
+            schemaType && selectedDocumentId && (
               <EditorPane
                 documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
-                typeName={selectedType}
+                typeName={schemaType.name}
               />
             )
           }
-          {
-            !selectedType && (
-              <h2 className={styles.emptyText}>Select a type to begin…</h2>
-            )
-          }
+          {selectedType && !schemaType && (
+            <h2 className={styles.emptyText}>
+              Could not find any type
+               named <strong><em>{selectedType}</em></strong> in
+               schema <strong><em>{schema.name}</em></strong>…
+            </h2>
+          )}
+          {!selectedType && (
+            <h2 className={styles.emptyText}>Select a type to begin…</h2>
+          )}
           <div>&nbsp;</div>
         </div>
       </div>
