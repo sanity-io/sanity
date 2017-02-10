@@ -24,6 +24,13 @@
   }
 }
 
+.blockDragMarker {
+  background-color: rgba(32, 151, 172, 0.8);
+  width: 100%;
+  height: 2px;
+  position: absolute;
+}
+
 .inputContainer {
   overflow: auto;
   overflow-x: visible !important;

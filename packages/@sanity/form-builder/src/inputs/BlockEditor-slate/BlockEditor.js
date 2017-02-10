@@ -342,6 +342,10 @@ export default class BlockEditor extends React.Component {
     this.editor = editor
   }
 
+  refBlockDragMarker = marker => {
+    this.blockDragMarker = marker
+  }
+
   // Hack to force the browser to reapply CSS rules
   // This is needed to make ::before and ::after CSS rules work properly
   // under certain conditions (like the list counters for number lists)
@@ -351,6 +355,24 @@ export default class BlockEditor extends React.Component {
     editorDOMNode.style.display = 'none'
     editorDOMNode.offsetHeight
     editorDOMNode.style = ''
+  }
+
+  showBlockDragMarker(pos, node) {
+    this.blockDragMarker.style.display = 'block'
+    const editorDOMNode = ReactDOM.findDOMNode(this.editor)
+    const editorRect = editorDOMNode.getBoundingClientRect()
+    const elemRect = node.getBoundingClientRect()
+    const topPos = elemRect.top - editorRect.top
+    const bottomPos = topPos + (elemRect.bottom - elemRect.top)
+    if (pos == 'after') {
+      this.blockDragMarker.style.top = `${parseInt(bottomPos, 0)}px`
+    } else {
+      this.blockDragMarker.style.top = `${parseInt(topPos, 0)}px`
+    }
+  }
+
+  hideBlockDragMarker() {
+    this.blockDragMarker.style.display = 'none'
   }
 
   render() {
@@ -391,10 +413,17 @@ export default class BlockEditor extends React.Component {
               onChange={this.handleEditorChange}
               placeholder=""
               state={value}
+              blockEditor={this}
               plugins={this.slatePlugins}
               schema={this.slateSchema}
             />
+            <div
+              ref={this.refBlockDragMarker}
+              style={{display: 'none'}}
+              className={styles.blockDragMarker}
+            />
           </div>
+
         </div>
       </FormField>
     )

@@ -4,13 +4,14 @@ import getWindow from 'get-window'
 import ReactDOM from 'react-dom'
 import {get} from 'lodash'
 import OffsetKey from 'slate/lib/utils/offset-key'
+import {findDOMNode} from 'slate'
 import ItemForm from './ItemForm'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
 import blockStyles from './styles/BlockPreview.css'
 import inlineStyles from './styles/InlinePreview.css'
-import {IS_FIREFOX} from 'slate/lib/constants/environment'
 import applySanityPatch from './applySanityPatch'
+import styles from './styles/BlockEditor.css'
 
 export default class PreviewNode extends React.Component {
   static propTypes = {
@@ -65,12 +66,14 @@ export default class PreviewNode extends React.Component {
   // Remove the drop target if we leave the editors nodes
   handleDragLeave = event => {
     event.stopPropagation()
+    this.hideBlockDragMarker()
     if (event.target === this._editorNode) {
       this._dropTarget = null
     }
   }
 
   handleDragOverOtherNode = event => {
+
     const targetDOMNode = event.target
 
     // As the event is registered on the editor parent node
@@ -79,7 +82,13 @@ export default class PreviewNode extends React.Component {
       return
     }
 
-    const {state} = this.props
+    const offsetKey = OffsetKey.findKey(targetDOMNode, 0)
+    if (!offsetKey) {
+      return
+    }
+    const {key} = offsetKey
+
+    const {state, editor} = this.props
     const {document} = state
 
     const window = getWindow(event.target)
@@ -98,9 +107,6 @@ export default class PreviewNode extends React.Component {
     const rangeLength = range.startContainer.wholeText ? range.startContainer.wholeText.length : 0
     const rangeIsAtStart = rangeOffset < rangeLength / 2
 
-    const offsetKey = OffsetKey.findKey(targetDOMNode, 0)
-    const {key} = offsetKey
-
     let node
     if (this._isInline) {
       node = document.getClosestBlock(key)
@@ -113,6 +119,14 @@ export default class PreviewNode extends React.Component {
       return
     }
 
+    if (node.type === 'contentBlock') {
+      const domNode = findDOMNode(node)
+      if (rangeIsAtStart) {
+        this.showBlockDragMarker('before', domNode)
+      } else {
+        this.showBlockDragMarker('after', domNode)
+      }
+    }
     this._dropTarget = {node: node, isAtStart: rangeIsAtStart, offset: rangeOffset}
     // console.log(this._dropTarget)
   }
@@ -143,14 +157,6 @@ export default class PreviewNode extends React.Component {
   }
 
   handleDragStart = event => {
-    if (IS_FIREFOX) {
-      // Firefox needs this in able for dragging to work
-      event.dataTransfer.setData('text/plain', '')
-      // When focus bug for Firefox in Slate is fixed (https://github.com/ianstormtaylor/slate/issues/297)
-      // this should be tried, so that caret is moved only in start or end of node through the handleDrag function
-      // like in Chrome and Safari.
-      // event.dataTransfer.setData('application/x-moz-node', null)
-    }
     event.dataTransfer.effectAllowed = 'none'
     event.dataTransfer.setData('text/plain', '')
   }
@@ -179,6 +185,7 @@ export default class PreviewNode extends React.Component {
 
     editor.onChange(next)
     this._dropTarget = null
+    this.hideBlockDragMarker()
   }
 
   handleCancelEvent = event => {
@@ -226,20 +233,31 @@ export default class PreviewNode extends React.Component {
     )
   }
 
+  showBlockDragMarker(pos, node) {
+    const {editor} = this.props
+    editor.props.blockEditor.showBlockDragMarker(pos, node)
+  }
+
+  hideBlockDragMarker() {
+    const {editor} = this.props
+    editor.props.blockEditor.hideBlockDragMarker()
+  }
+
   render() {
     const {isEditing} = this.state
-    const {type} = this.props
+    const {type, attributes} = this.props
     const isInline = get(type, 'options.inline')
     const NodeTag = isInline ? 'span' : 'div'
-    const styles = isInline ? inlineStyles : blockStyles
+    const style = isInline ? inlineStyles : blockStyles
 
-    const className = this.state.isFocused ? styles.active : styles.root
+    const className = this.state.isFocused ? style.active : style.root
 
     return (
       <NodeTag
-        {...this.props.attributes}
+        {...attributes}
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
+        onDragOver={this.handleDragOver}
         draggable
         className={className}
       >
