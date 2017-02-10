@@ -6,11 +6,11 @@ export default class ToggleButtons extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    value: PropTypes.object,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         icon: PropTypes.node,
         title: PropTypes.string,
-        action: PropTypes.func.isRequired
       })
     )
   }
@@ -25,21 +25,17 @@ export default class ToggleButtons extends React.Component {
     }
   }
 
-  handleClick(i, props) {
-    this.setState({
-      selected: i
-    })
-
-    props.items[i].action()
-
+  handleClick = event => {
+    const {onChange} = this.props
+    onChange(this._buttonElement.props.item)
   }
 
-  componentDidMount() {
-
+  setButtonElement = element => {
+    this._buttonElement = element
   }
 
   render() {
-    const {items, label} = this.props
+    const {items, label, value} = this.props
 
     return (
       <div className={styles.root}>
@@ -49,14 +45,17 @@ export default class ToggleButtons extends React.Component {
 
         {
           items.map((item, i) => {
-            const classes = `${this.state.selected == i ? styles.selectedButton : styles.button}`
             return (
               <Button
-                ripple={false}
-                key={i}
-                className={classes}
+                className={`
+                  ${item == value ? styles.selectedButton : styles.button}
+                `}
+                kind="simple"
+                key={item.key}
                 icon={item.icon}
-                onClick={this.handleClick.bind(this, i, this.props)}
+                item={item}
+                onClick={this.handleClick}
+                ref={this.setButtonElement}
               >
                 {item.title}
               </Button>

@@ -11,11 +11,11 @@
 
 .button {
   margin: 0;
+  background-color: var(--gray-lighter);
 }
 
 .selectedButton {
   composes: button;
   background-color: var(--brand-primary);
-  box-shadow: 0.1em 0.25em 0.25em #000 inset;
   color: #fff;
 }

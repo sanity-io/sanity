@@ -109,28 +109,19 @@ storiesOf('Toggles')
     const items = [
       {
         title: 'The good',
-        default: true,
-        action() {
-          action('Clicked the good')
-        }
+        key: 'good'
       },
       {
         title: 'The Bad',
-        default: true,
-        action() {
-          action('Clicked')
-        }
+        key: 'bad'
       },
       {
         title: 'The ugly',
-        default: true,
-        action() {
-          action('Clicked the ugly')
-        }
+        key: 'ugly'
       }
     ]
     return (
-      <ToggleButtons items={items} label="Select something" />
+      <ToggleButtons items={items} label="Select something" onChange={action('onChange')} value={items[1]} />
     )
   },
   {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
