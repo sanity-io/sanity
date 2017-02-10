@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .root {
   position: relative;
   composes: root from 'part:@sanity/base/theme/forms/control-style';
