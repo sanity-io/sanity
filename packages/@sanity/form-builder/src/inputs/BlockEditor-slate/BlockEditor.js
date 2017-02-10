@@ -356,7 +356,7 @@ export default class BlockEditor extends React.Component {
     const editorDOMNode = ReactDOM.findDOMNode(this.editor)
     editorDOMNode.style.display = 'none'
     editorDOMNode.offsetHeight
-    editorDOMNode.style = ''
+    editorDOMNode.style.display = ''
   }
 
   showBlockDragMarker(pos, node) {
