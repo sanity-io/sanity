@@ -19,8 +19,7 @@ export default class Syncer extends React.PureComponent {
 
   handleChange = nextSlateState => {
     const {value} = this.state
-    this.setState({value: value.setState(nextSlateState)})
-    this.emitSet()
+    this.setState({value: value.setState(nextSlateState)}, this.emitSet)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,12 +38,14 @@ export default class Syncer extends React.PureComponent {
     const {onChange} = this.props
     // const onChange = event => console.log(event.patch.type, event.patch.value)
     const {value} = this.state
-    onChange({
-      patch: {
-        type: 'set',
-        value: value.serialize()
-      }
-    })
+    const nextVal = value.serialize()
+
+    const patch = nextVal
+      ? {type: 'set', value: nextVal}
+      : {type: 'unset'}
+
+    onChange({patch})
+
   }, 1000, {trailing: true})
 
   render() {
