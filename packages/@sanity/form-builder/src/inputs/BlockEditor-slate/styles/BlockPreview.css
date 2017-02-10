@@ -1,6 +1,8 @@
 .root {
+  user-select: none;
   cursor: move;
   position: relative;
+  border: 1px solid transparent;
   lost-utility: clearfix;
 
   @nest &:hover {
@@ -10,8 +12,6 @@
 
 .previewContainer {
   display: block;
-  /* User select must be forced when the elements are draggable, or they will visible as selected */
-  user-select: all;
 }
 
 .inputContainer {

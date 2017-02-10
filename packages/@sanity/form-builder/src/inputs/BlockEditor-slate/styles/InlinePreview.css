@@ -1,4 +1,5 @@
 .root {
+  user-select: none;
   cursor: move;
   @nest &:hover {
 
@@ -10,7 +11,5 @@
 }
 
 .previewContainer {
-  /* User select must be forced when the elements are draggable, or they will visible as selected */
-  user-select: all;
   display: inline-block;
 }
