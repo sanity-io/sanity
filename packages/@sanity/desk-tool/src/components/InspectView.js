@@ -74,28 +74,23 @@ function maybeSelectAll(event) {
   selectElement(event.currentTarget)
 }
 
-const VIEW_MODE_PARSED = 'parsed'
-const VIEW_MODE_RAW = 'raw'
-const VIEW_MODES = [
-  {title: 'Parsed', value: VIEW_MODE_PARSED},
-  {title: 'Raw', value: VIEW_MODE_RAW}
-]
+const VIEW_MODE_PARSED = {title: 'Parsed'}
+const VIEW_MODE_RAW = {title: 'Raw'}
+
+const VIEW_MODES = [VIEW_MODE_PARSED, VIEW_MODE_RAW]
 
 export default class InspectView extends React.PureComponent {
   state = {
-    view: VIEW_MODE_PARSED
+    viewMode: VIEW_MODE_PARSED
   }
 
-  toggleItems = VIEW_MODES.map(mode => ({
-    ...mode,
-    action: () => {
-      this.setState({view: mode.value})
-    }
-  }))
+  handleChangeViewMode = nextViewMode => {
+    this.setState({viewMode: nextViewMode})
+  }
 
   render() {
     const {value, onClose} = this.props
-    const {view} = this.state
+    const {viewMode} = this.state
     return (
       <DefaultDialog
         isOpen
@@ -107,14 +102,17 @@ export default class InspectView extends React.PureComponent {
         <div className={styles.content}>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
             <ToggleButtons
-              items={this.toggleItems} />
+              value={viewMode}
+              items={VIEW_MODES}
+              onChange={this.handleChangeViewMode}
+            />
           </div>
-          {view === 'parsed' && <JSONInspector
+          {viewMode === VIEW_MODE_PARSED && <JSONInspector
             isExpanded={isExpanded}
             onClick={toggleExpanded}
             data={value}
           />}
-          {view === 'raw' && (
+          {viewMode === VIEW_MODE_RAW && (
             <pre
               className={styles.raw}
               tabIndex={0}
