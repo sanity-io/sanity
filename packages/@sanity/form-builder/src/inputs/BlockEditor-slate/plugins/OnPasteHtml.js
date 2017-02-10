@@ -23,6 +23,21 @@ const MARK_TAGS = {
   code: 'code'
 }
 
+function resolveListItem(listNodeTagName) {
+  let listStyle
+  switch (listNodeTagName) {
+    case 'ul':
+      listStyle = 'bullet'
+      break
+    case 'ol':
+      listStyle = 'number'
+      break
+    default:
+      listStyle = 'bullet'
+  }
+  return listStyle
+}
+
 const RULES = [
   {
     deserialize(el, next) {
@@ -65,21 +80,14 @@ const RULES = [
       }
     }
   },
-  // {
-  //   deserialize(el, next) {
-  //     if (el.tagName === 'ul') {
-  //       return {
-  //         kind: 'block',
-  //         type: 'list',
-  //         data: {
-  //           listStyle: 'bullet'
-  //         },
-  //         nodes: next(el.children)
-  //       }
-  //     }
-  //     return null
-  //   }
-  // },
+  {
+    deserialize(el, next) {
+      if (el.tagName === 'ul') {
+        return next(el.children)
+      }
+      return null
+    }
+  },
   // {
   //   deserialize(el, next) {
   //     if (el.tagName === 'ol') {
@@ -95,18 +103,22 @@ const RULES = [
   //     return null
   //   }
   // },
-  // {
-  //   deserialize(el, next) {
-  //     if (el.tagName === 'li') {
-  //       return {
-  //         kind: 'block',
-  //         type: 'listItem',
-  //         nodes: next(el.children)
-  //       }
-  //     }
-  //     return null
-  //   }
-  // },
+  {
+    deserialize(el, next) {
+      if (el.tagName === 'li') {
+        const listItem = resolveListItem(el.parentNode.name)
+        return {
+          kind: 'block',
+          type: 'contentBlock',
+          data: {
+            listItem: listItem
+          },
+          nodes: next(el.children)
+        }
+      }
+      return null
+    }
+  },
   // {
   //   // Special case for code blocks, which need to grab the nested children.
   //   deserialize(el, next) {
