@@ -15,16 +15,21 @@ function createOnKeyDown(insertBlockStyle) {
     // This plugin should only kick in when the cursor is at the last listItem of a list,
     // and we have other list items above, and the last  and current list item is empty.
     // Return null if any of the variables below evals to true.
-    const inMiddleOfList = nextBlock && nextBlock.data.get('listItem')
+    const inMiddleOfList = nextBlock
+      && nextBlock.data.get('listItem')
+      && nextBlock.data.get('listItem') === startBlock.data.get('listItem')
     const noPreviousblock = !previousBlock
     const previousBlockNotListItem = previousBlock && !previousBlock.data.get('listItem')
     const currentListItemNotEmpty = startBlock.text !== ''
-    if (inMiddleOfList || noPreviousblock || previousBlockNotListItem || currentListItemNotEmpty) {
+    if (inMiddleOfList
+      || noPreviousblock
+      || previousBlockNotListItem
+      || currentListItemNotEmpty) {
       return null
     }
     let transform = state.transform().deleteBackward(1)
 
-    if (nextBlock) {
+    if (nextBlock && (nextBlock && !nextBlock.data.get('listItem'))) {
       transform = transform
         .collapseToStartOf(nextBlock)
     } else {
