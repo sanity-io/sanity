@@ -31,6 +31,7 @@ function getInitialState() {
     spin: false,
     deleted: null,
     inspect: false,
+    value: null,
     progress: {kind: 'info', message: 'Loading'}
   }
 }
@@ -91,7 +92,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         this.setState({
           loading: false,
           progress: null,
-          value: this.deserialize(event.document)
+          value: event.document ? this.deserialize(event.document) : null
         })
         break
       }
@@ -260,6 +261,14 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         <div className={styles.root}>
           <p>Document was deleted</p>
           <DefaultButton onClick={this.handleRestore}>Restore</DefaultButton>
+        </div>
+      )
+    }
+
+    if (!value) {
+      return (
+        <div className={styles.root}>
+          <p>Document does not exists</p>
         </div>
       )
     }
