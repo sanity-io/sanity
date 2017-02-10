@@ -1,3 +1,5 @@
+@import "part:@sanity/base/theme/variables-style";
+
 :root {
   --blockEditorFullscreenBackground: #eee;
 }
@@ -25,9 +27,12 @@
   position: relative;
   width: 100%;
   min-height: 15rem;
-  overflow: visible;
+  max-height: 40rem;
+  border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg);
 
   @nest .fullscreen & {
+    max-height: none;
     height: 90vh;
     width: 80%;
     max-width: 50em;
@@ -38,14 +43,13 @@
 }
 
 .input {
-  composes: root from 'part:@sanity/base/theme/forms/textarea-style';
+  border-radius: var(--input-border-radius);
   background-color: #fff;
   overflow: hidden;
-  height: 100%;
   width: 100%;
-  min-height: 100%;
   appearance: none;
-  max-height: 30rem;
+  box-sizing: border-box;
+  padding: 1em;
 
   @nest .fullscreen & {
     padding: 2em;
@@ -89,17 +93,6 @@
   z-index: var(--zindex-fullscreen-edit);
 }
 
-.formField {
-  border: 1px solid green;
-}
-
-.formFieldFullscreen {
-  composes: formField;
-  z-index: var(--zindex-fullscreen-edit);
-  position: fixed;
-  top: 0;
-  border: 10px solid red;
-}
 
 .fullscreen {
   position: fixed;
@@ -109,7 +102,6 @@
   left: 0;
   z-index: var(--zindex-fullscreen-edit);
   overflow: hidden;
-
   background-color: var(--blockEditorFullscreenBackground);
   padding-bottom: 5rem;
 }
