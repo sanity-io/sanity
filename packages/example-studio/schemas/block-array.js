@@ -26,14 +26,14 @@ export default [
             title: 'Address'
           },
           {
+            title: 'Image',
+            type: 'image',
             preview: {
               fields: {
                 imageUrl: 'asset.url',
                 title: 'caption'
               }
             },
-            type: 'image',
-            title: 'Image',
             fields: [
               {name: 'caption', type: 'string', title: 'Caption', options: {isHighlighted: true}}
             ]
@@ -45,6 +45,12 @@ export default [
   {
     name: 'address',
     type: 'object',
+    preview: {
+      fields: {
+        title: 'street',
+        subtitle: 'zip'
+      }
+    },
     fields: [
       {
         name: 'street',

@@ -1,0 +1,77 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  padding: 0.5em;
+  user-select: none;
+  overflow: hidden;
+  height: 8em;
+  position: relative;
+}
+
+.heading {
+  vertical-align: baseline;
+  overflow: hidden;
+}
+
+.title {
+  position: absolute;
+  font-size: var(--font-size-h2);
+  line-height: 1.5em;
+  color: inherit;
+  font-weight: 500;
+  text-transform: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% - 1em);
+
+  @nest .hasSubtitle & {
+    top: 0.25em;
+  }
+}
+
+.subtitle {
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  margin-top: -0.2em;
+  font-size: var(--font-size-large);
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1em;
+  width: calc(100% - 1em);
+  position: absolute;
+  top: 2.5em;
+}
+
+.description {
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-small);
+}
+
+.media {
+  float: left;
+  height: 8em;
+  width: 8em;
+  margin-right: 0.5em;
+  overflow: hidden;
+  position: relative;
+
+  @nest & div {
+    position: relative;
+    height: 8em;
+    width: 8em;
+    overflow: hidden;
+  }
+
+  @nest & img {
+    display: block;
+    object-fit: cover;
+  }
+}

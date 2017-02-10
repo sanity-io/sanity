@@ -5,6 +5,7 @@ import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
+import PreviewComponentBlock from 'part:@sanity/components/previews/block'
 
 import PreviewMaterializer from './PreviewMaterializer'
 
@@ -13,7 +14,8 @@ const previewComponentMap = {
   card: PreviewComponentCard,
   media: PreviewComponentMedia,
   detail: PreviewComponentDetail,
-  inline: PreviewComponentInline
+  inline: PreviewComponentInline,
+  block: PreviewComponentBlock
 }
 
 export default class SanityPreview extends React.Component {

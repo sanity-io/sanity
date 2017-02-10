@@ -335,6 +335,10 @@
       "description": "Shows title and media inline"
     },
     {
+      "name": "part:@sanity/components/previews/block",
+      "description": "Shows everything in a block"
+    },
+    {
       "name": "part:@sanity/components/previews/default-style",
       "description": "Default preview styling"
     },
@@ -351,9 +355,14 @@
       "description": "Inline preview styling"
     },
     {
+      "name": "part:@sanity/components/previews/block-style",
+      "description": "Block preview styling"
+    },
+    {
       "name": "part:@sanity/components/previews/media-style",
       "description": "Media preview styling"
     },
+
     {
       "implements": "part:@sanity/components/autocomplete/default",
       "path": "autocomplete/DefaultAutocomplete.js"
@@ -517,6 +526,10 @@
     {
       "implements": "part:@sanity/components/previews/inline",
       "path": "previews/InlinePreview.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block",
+      "path": "previews/BlockPreview.js"
     },
     {
       "implements": "part:@sanity/components/autocomplete/default-style",
@@ -718,6 +731,10 @@
     {
       "implements": "part:@sanity/components/previews/inline-style",
       "path": "previews/styles/InlinePreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block-style",
+      "path": "previews/styles/BlockPreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/media-style",

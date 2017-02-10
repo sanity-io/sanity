@@ -208,6 +208,7 @@ export default class PreviewNode extends React.Component {
       <Preview
         type={type}
         value={this.getValue().serialize()}
+        layout={this._isInline ? 'inline' : 'block'}
       />
     )
   }
@@ -243,9 +244,8 @@ export default class PreviewNode extends React.Component {
 
   render() {
     const {isEditing} = this.state
-    const {type, attributes} = this.props
-    const isInline = get(type, 'options.inline')
-    const NodeTag = isInline ? 'span' : 'div'
+    const {attributes} = this.props
+    const NodeTag = this._isInline ? 'span' : 'div'
 
     const className = this.state.isFocused ? styles.active : styles.root
 

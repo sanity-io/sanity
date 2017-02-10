@@ -10,9 +10,8 @@
 }
 
 .inner {
-  /*composes: inner from 'part:@sanity/base/theme/forms/control-style';*/
+  /* composes: inner from 'part:@sanity/base/theme/forms/control-style'; */
 }
-
 
 .blockDragMarker {
   background-color: rgba(32, 151, 172, 0.8);
@@ -34,10 +33,10 @@
   @nest .fullscreen & {
     max-height: none;
     height: 90vh;
-    width: 80%;
+    width: 90%;
     max-width: 50em;
     margin: 3em auto;
-    box-shadow: 0px 0px 0.8rem -0.2rem rgba(0,0,0,0.2);
+    box-shadow: 0 0 0.8rem -0.2rem rgba(0, 0, 0, 0.2);
     overflow: scroll;
   }
 }
@@ -58,9 +57,8 @@
   }
 }
 
-
 .editBlockContainer {
-  /* A block when editing*/
+  /* A block when editing */
 }
 
 .toolbar {
@@ -92,7 +90,6 @@
   position: fixed;
   z-index: var(--zindex-fullscreen-edit);
 }
-
 
 .fullscreen {
   position: fixed;
