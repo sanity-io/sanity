@@ -1,14 +1,12 @@
 import React, {PropTypes} from 'react'
-import {Editor} from 'slate'
-import {pick, isEqual, uniqueId} from 'lodash'
+import ReactDOM from 'react-dom'
+import {Editor, State, Data} from 'slate'
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import prepareSlateSchema from './util/prepareSlateSchema'
-import createLocalStatePatch from './util/createLocalStatePatch'
 import styles from './styles/BlockEditor.css'
-
-import SlateValueContainer from './SlateValueContainer'
 
 import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
 import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
@@ -17,24 +15,20 @@ import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
 import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
 import OnPasteHtml from './plugins/OnPasteHtml'
 
+import Portal from 'react-portal'
+
 import {
-  SLATE_BLOCK_FORMATTING_OPTION_KEYS,
-  SLATE_LIST_BLOCKS,
-  SLATE_LIST_ITEM_TYPE,
-  SLATE_DEFAULT_NODE,
-  SLATE_TEXT_BLOCKS,
-  SLATE_LINK_TYPE
+  SLATE_DEFAULT_STYLE,
+  SLATE_LINK_TYPE,
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
 
 export default class BlockEditor extends React.Component {
-  static valueContainer = SlateValueContainer
-
   static propTypes = {
     type: PropTypes.any,
     level: PropTypes.number,
-    value: PropTypes.instanceOf(SlateValueContainer),
+    value: PropTypes.instanceOf(State),
     validation: PropTypes.shape({
       errors: PropTypes.array
     }),
@@ -49,20 +43,33 @@ export default class BlockEditor extends React.Component {
     formBuilder: PropTypes.object
   }
 
+  _inputId = uniqueId('SlateBlockEditor')
+
   constructor(props, context) {
     super(props, context)
 
     const slateSchema = prepareSlateSchema(this.props.type)
+    this.textStyles = slateSchema.textStyles
+    this.listItems = slateSchema.listItems
     this.slateSchema = slateSchema.schema
-    this.groupedFields = slateSchema.fields
+    this.groupedTypes = slateSchema.types
     this.slatePlugins = [
-      InsertBlockOnEnter({kind: 'block', type: 'paragraph', nodes: [{kind: 'text', text: '', ranges: []}]}),
+      InsertBlockOnEnter({
+        type: 'contentBlock',
+        kind: 'block',
+        data: {
+          style: SLATE_DEFAULT_STYLE
+        },
+        nodes: [{kind: 'text', text: '', ranges: []}]
+      }),
       OnPasteHtml(),
       FormBuilderNodeOnDrop(),
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
-      ListItemOnEnterKey(),
-      TextBlockOnEnterKey()
+      ListItemOnEnterKey(
+        SLATE_DEFAULT_STYLE
+      ),
+      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
     ]
 
     this.state = {
@@ -70,88 +77,71 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-  handleInsertBlock = item => {
-    const {value, onChange, type} = this.props
+  handleInsert = item => {
+    const {value, onChange} = this.props
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, item)
+    const props = {
+      type: item.type.name,
+      isVoid: true,
+      data: {
+        value: addItemValue
+      }
+    }
+    let transform = value.transform()
+    if (item.options && item.options.inline) {
+      transform = transform.insertInline(props)
+    } else {
+      transform = transform.insertBlock(props)
+    }
+    const nextState = transform.apply()
 
-    const ofType = type.of.find(memberType => memberType.type === type)
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, ofType)
-
-    const nextState = value.state
-      .transform()
-      .insertBlock({
-        type: type,
-        isVoid: true,
-        data: {
-          value: addItemValue
-        }
-      })
-      .apply()
-
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
   handleOnClickMarkButton = (event, type) => {
     event.preventDefault()
     const {value, onChange} = this.props
-    const nextState = value.state
+    const nextState = value
       .transform()
       .toggleMark(type)
       .apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
 
   handleOnClickListFormattingButton = (event, listStyle, active) => {
     const {value, onChange} = this.props
-    const {state} = value
-    const type = this.groupedFields.slate
-      .find(sfield => SLATE_LIST_BLOCKS.includes(sfield.type) && sfield.listStyle === listStyle)
-    const setBlock = {
-      type: type.type,
-      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+    const normalBlock = {
+      type: 'contentBlock',
+      data: {style: SLATE_DEFAULT_STYLE}
     }
-    let transform = state.transform()
-    SLATE_LIST_BLOCKS.forEach(type => {
-      transform = transform.unwrapBlock(type)
-    })
+    const listItemBlock = {
+      type: 'contentBlock',
+      data: {listItem: listStyle}
+    }
+    let transform = value.transform()
+
     if (active) {
-      if (setBlock.type === SLATE_DEFAULT_NODE) {
-        transform.setBlock(setBlock)
-      } else {
-        transform = transform
-          .setBlock(SLATE_LIST_ITEM_TYPE)
-          .wrapBlock(setBlock)
-      }
+      transform = transform
+        .setBlock(listItemBlock)
     } else {
       transform = transform
-        .setBlock(SLATE_DEFAULT_NODE)
+        .setBlock(normalBlock)
     }
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
+    this.refreshCSS()
   }
 
 
   handleSelectBlockFormatting = selectedValue => {
-    const {type} = selectedValue
     const {value, onChange} = this.props
-    const {state} = value
-    const {selection, startBlock, endBlock} = state
+    const {selection, startBlock, endBlock} = value
     const block = {
-      type: type.type,
-      data: pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
+      type: 'contentBlock',
+      data: {style: selectedValue.style.value}
     }
-    let transform = state.transform()
-
-    if (this.isWithinList()) {
-      SLATE_LIST_BLOCKS.forEach(type => {
-        transform = transform.unwrapBlock(type)
-      })
-      transform = transform
-        .setBlock(block)
-      const nextState = transform.apply()
-      onChange({patch: createLocalStatePatch(nextState)})
-      return
-    }
+    let transform = value.transform()
 
     // If a single block is selected partially, split block conditionally (selection in start, middle or end of text)
     if (startBlock === endBlock
@@ -192,21 +182,20 @@ export default class BlockEditor extends React.Component {
     transform
       .setBlock(block)
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
+    this.refreshCSS()
   }
 
   handleOnClickLinkButton = (href, target, text) => {
-
     const {value, onChange} = this.props
-    const {state} = value
-    let transform = state.transform()
+    let transform = value.transform()
 
     if (!href) {
       transform = transform
        .unwrapInline(SLATE_LINK_TYPE)
        .focus()
     } else if (href) {
-      if (state.isExpanded) {
+      if (value.isExpanded) {
         transform = transform
           .unwrapInline(SLATE_LINK_TYPE)
           .wrapInline({
@@ -215,7 +204,7 @@ export default class BlockEditor extends React.Component {
           })
           .focus()
       } else {
-        const linkNode = value.state.inlines
+        const linkNode = value.inlines
           .find(inline => inline.type === SLATE_LINK_TYPE)
         transform = transform
           .focus()
@@ -228,67 +217,43 @@ export default class BlockEditor extends React.Component {
       }
     }
     const nextState = transform.apply()
-    onChange({patch: createLocalStatePatch(nextState)})
+    onChange(nextState)
   }
 
-  hasMark(type) {
+  hasMark(markName) {
     const {value} = this.props
-    return value.state.marks.some(mark => mark.type == type)
+    return value.marks.some(mark => mark.type == markName)
   }
 
   hasBlock(type) {
     const {value} = this.props
-    return value.state.blocks.some(node => node.type === type.type
-        && isEqual(
-          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
-          pick(node.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-        )
-    )
+    return value.blocks.some(block => block.type === type)
+  }
+
+  hasStyle(styleName) {
+    const {value} = this.props
+    return value.blocks.some(block => block.data.get('style') === styleName)
   }
 
   hasLinks() {
     const {value} = this.props
-    return value.state.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
+    return value.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
   }
 
   isWithinList() {
     const {value} = this.props
-    const {state} = value
-    return state.blocks.some(block => block.type === SLATE_LIST_ITEM_TYPE)
+    return value.blocks.some(block => block.data.get('listItem'))
   }
 
-  hasParentBlock(type) {
+  hasListItem(listItem) {
     const {value} = this.props
-    const {state} = value
-    const {document} = state
-    return state.blocks.some(node => {
-      const parent = document.getParent(node.key)
-      return parent && parent.data && parent.type === type.type
-        && isEqual(
-          pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS),
-          pick(parent.data.toObject(), SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-        )
+    return value.blocks.some(block => {
+      return block.data.get('listItem') === listItem
     })
   }
 
   getActiveMarks() {
-    const {value} = this.props
-    if (!value.state.blocks) {
-      return []
-    }
-    const anchorBlock = value.state.blocks
-      .filter(node => SLATE_TEXT_BLOCKS.concat(SLATE_LIST_ITEM_TYPE)
-        .includes(node.type) && value.state.selection.hasAnchorIn(node)
-      )
-      .map(node => node.type).toArray()[0]
-    if (!anchorBlock) {
-      return []
-    }
-    const marksField = this.groupedFields.slate.find(type => type.type === anchorBlock)
-    if (!marksField || !marksField.marks) {
-      return []
-    }
-    return marksField.marks.map(mark => {
+    return Object.keys(this.slateSchema.marks).map(mark => {
       return {
         type: mark,
         active: this.hasMark(mark)
@@ -296,41 +261,38 @@ export default class BlockEditor extends React.Component {
     })
   }
 
-
-  getListFormats() {
-    if (!this.groupedFields.slate.filter(type => SLATE_LIST_BLOCKS.includes(type.type)).length) {
-      return []
-    }
-    return this.groupedFields.slate
-      .filter(type => SLATE_LIST_BLOCKS.includes(type.type))
-      .map((type, index) => {
+  getListTypes() {
+    return (this.listItems)
+      .map((item, index) => {
         return {
-          type: type.listStyle,
-          title: type.title,
-          active: this.hasParentBlock(type)
+          type: item.value,
+          title: item.title,
+          active: this.hasListItem(item.value)
         }
       })
   }
 
-  getTextFormats() {
-    if (!this.groupedFields.slate.length) {
-      return []
+  getStyles() {
+    function Preview(props) {
+      return <span>{props.children}</span>
     }
-    const items = this.groupedFields.slate
-      .filter(type => SLATE_TEXT_BLOCKS.includes(type.type))
-      .map((type, index) => {
+    const items = this.textStyles
+      .map((style, index) => {
         return {
           key: `blockFormat-${index}`,
-          preview: this.slateSchema.nodes[type.type](
-            Object.assign(
-              {isPreview: true},
-              {children: <span>{type.title}</span>},
-              pick(type, SLATE_BLOCK_FORMATTING_OPTION_KEYS)
-            )
-          ),
-          type: type,
-          title: ` ${type.title}`,
-          active: this.hasBlock(type)
+          style: style,
+          preview: this.slateSchema.nodes.contentBlock({
+            children: [
+              <Preview
+                key={style.value}
+                parent={{data: Data.create({style: style.value})}}
+              >
+                {style.title}
+              </Preview>
+            ]
+          }),
+          title: ` ${style.title}`,
+          active: this.hasStyle(style.value)
         }
       })
     let value = items.filter(item => item.active)
@@ -351,11 +313,11 @@ export default class BlockEditor extends React.Component {
 
   getActiveLink() {
     const {value} = this.props
-    if (!value.state.inlines) {
+    if (!value.inlines) {
       return null
     }
     if (this.hasLinks()) {
-      const linkNode = value.state.inlines
+      const linkNode = value.inlines
         .find(inline => inline.type === SLATE_LINK_TYPE)
       if (linkNode) {
         return {
@@ -375,53 +337,114 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorChange = nextState => {
-    this.props.onChange({patch: createLocalStatePatch(nextState)})
+    this.props.onChange(nextState)
   }
 
-  render() {
+  refEditor = editor => {
+    this.editor = editor
+  }
+
+  refBlockDragMarker = marker => {
+    this.blockDragMarker = marker
+  }
+
+  // Hack to force the browser to reapply CSS rules
+  // This is needed to make ::before and ::after CSS rules work properly
+  // under certain conditions (like the list counters for number lists)
+  // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
+  refreshCSS() {
+    const editorDOMNode = ReactDOM.findDOMNode(this.editor)
+    editorDOMNode.style.display = 'none'
+    editorDOMNode.offsetHeight
+    editorDOMNode.style = ''
+  }
+
+  showBlockDragMarker(pos, node) {
+    this.blockDragMarker.style.display = 'block'
+    const editorDOMNode = ReactDOM.findDOMNode(this.editor)
+    const editorRect = editorDOMNode.getBoundingClientRect()
+    const elemRect = node.getBoundingClientRect()
+    const topPos = elemRect.top - editorRect.top
+    const bottomPos = topPos + (elemRect.bottom - elemRect.top)
+    if (pos == 'after') {
+      this.blockDragMarker.style.top = `${parseInt(bottomPos, 0)}px`
+    } else {
+      this.blockDragMarker.style.top = `${parseInt(topPos, 0)}px`
+    }
+  }
+
+  hideBlockDragMarker() {
+    this.blockDragMarker.style.display = 'none'
+  }
+
+  renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const inputId = uniqueId('FormBuilderText')
     const activeLink = this.getActiveLink()
-    const showLinkButton = (value.state.selection && value.state.selection.isExpanded)
+    const showLinkButton = (value.selection && value.selection.isExpanded)
       || !!activeLink
 
     return (
-      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
+      <FormField
+        label={type.title}
+        labelHtmlFor={this._inputId}
+        level={level}
+        className={this.state.fullscreen ? styles.formFieldFullscreen : styles.formField}
+      >
         <div
           className={`
             ${hasError ? styles.error : styles.root}
-            ${this.state.fullscreen && styles.fullscreen}
+            ${this.state.fullscreen ? styles.fullscreen : ''}
           `}
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlock}
-            insertBlocks={this.groupedFields.formBuilder || []}
+            onInsertBlock={this.handleInsert}
+            insertBlocks={this.groupedTypes.formBuilder || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
             onListButtonClick={this.handleOnClickListFormattingButton}
             onFormatSelectChange={this.handleSelectBlockFormatting}
-            listFormats={this.getListFormats()}
-            textFormats={this.getTextFormats()}
+            listFormats={this.getListTypes()}
+            textFormats={this.getStyles()}
             onLinkButtonClick={this.handleOnClickLinkButton}
             activeLink={activeLink}
             showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
-          <div className={styles.inputContainer}>
+          <div className={styles.inputContainer} id={this._inputId}>
             <Editor
+              ref={this.refEditor}
               className={styles.input}
               onChange={this.handleEditorChange}
               placeholder=""
-              state={value.state}
+              state={value}
+              blockEditor={this}
               plugins={this.slatePlugins}
               schema={this.slateSchema}
             />
+            <div
+              ref={this.refBlockDragMarker}
+              style={{display: 'none'}}
+              className={styles.blockDragMarker}
+            />
           </div>
+
         </div>
       </FormField>
     )
+  }
+
+  render() {
+    const {fullscreen} = this.state
+    if (fullscreen) {
+      return (
+        <Portal isOpened>
+          {this.renderBlockEditor()}
+        </Portal>
+      )
+    }
+    return this.renderBlockEditor()
   }
 }

@@ -40,12 +40,7 @@ export default class Toolbar extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.marks !== nextProps.marks
-      || this.props.fullscreen !== nextProps.fullscreen
-    ) {
-      return true
-    }
-    return false
+    return (this.props.marks !== nextProps.marks || this.props.fullscreen !== nextProps.fullscreen)
   }
 
   render() {
@@ -53,13 +48,14 @@ export default class Toolbar extends React.Component {
       className,
       fullscreen,
       marks,
+      onInsertBlock,
       onMarkButtonClick,
       onListButtonClick,
       onFormatSelectChange,
+      onLinkButtonClick,
       listFormats,
       textFormats,
       insertBlocks,
-      onLinkButtonClick,
       activeLink,
       showLinkButton
     } = this.props
@@ -98,7 +94,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertDropdown blocks={insertBlocks} onInsertBlock={this.props.onInsertBlock} />
+          <InsertDropdown blocks={insertBlocks} onInsertBlock={onInsertBlock} />
         </div>
       </div>
     )

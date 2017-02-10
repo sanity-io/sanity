@@ -1,0 +1,27 @@
+.root {
+  user-select: none;
+  cursor: move;
+  position: relative;
+  border: 1px solid transparent;
+  lost-utility: clearfix;
+
+  @nest &:hover {
+    background-color: #efefef;
+  }
+}
+
+.previewContainer {
+  display: block;
+}
+
+.inputContainer {
+  position: absolute;
+  top: calc(50% + 0.5em);
+
+  left: 3rem;
+}
+
+.active {
+  composes: root;
+  border: 1px solid #ccc;
+}

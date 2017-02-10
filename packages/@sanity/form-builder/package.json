@@ -35,9 +35,10 @@
     "object-inspect": "^1.2.1",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.10.1",
+    "react-portal": "^3.0.0",
     "react-sortable-hoc": "0.4.5",
     "shallow-equals": "0.0.0",
-    "slate": "^0.16.10",
+    "slate": "^0.16.12",
     "slate-insert-block-on-enter": "0.0.2",
     "slugify": "^1.1.0"
   },
@@ -75,6 +76,8 @@
     "react-dom": "^15.4.2",
     "react-enroute": "^1.0.0",
     "rimraf": "^2.5.4",
+    "stylelint": "^7.1.0",
+    "stylelint-config-standard": "^14.0.0",
     "tap": "^9.0.3",
     "zen-observable": "^0.4.0"
   },

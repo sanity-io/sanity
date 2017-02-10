@@ -1,1 +1,1 @@
-export {default} from './BlockEditor'
+export {default} from './Syncer'

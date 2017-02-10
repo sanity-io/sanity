@@ -1,17 +1,19 @@
 import React, {PropTypes} from 'react'
 import styles from '../styles/contentStyles/ListItem.css'
 
+const listStyles = ['bullet', 'number', 'roman']
+
 function ListItem(props) {
-  if (props.isPreview) {
-    // Return as a div, because the we don't know the context it will be previewed, and
-    // return in a li or wrapping in ol/ul might be very inappropriate in that context.
-    return <div className={`${styles.root} ${styles.preview}`}>{props.children}</div>
+  const listStyle = props.listStyle
+  if (!listStyles.includes(listStyle)) {
+    throw new Error(`Don't know how to handle listStyle '${listStyle}'. Expected one of '${listStyles.join("', '")}'`)
   }
-  return <li className={styles.root}>{props.children}</li>
+  return <li {...props.attributes} className={styles[listStyle]}>{props.children}</li>
 }
 
 ListItem.propTypes = {
-  isPreview: PropTypes.bool,
+  attributes: PropTypes.object,
+  listStyle: PropTypes.oneOf(listStyles),
   children: PropTypes.node
 }
 

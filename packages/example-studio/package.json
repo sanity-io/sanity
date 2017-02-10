@@ -19,6 +19,7 @@
     "@sanity/default-layout": "^0.100.16",
     "@sanity/default-login": "^0.100.15",
     "@sanity/desk-tool": "^0.100.16",
+    "@sanity/form-builder": "^0.100.16",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "sanity-plugin-vision": "^1.0.6"

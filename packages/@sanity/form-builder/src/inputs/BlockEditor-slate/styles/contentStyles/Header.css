@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .heading1 {
   composes: heading1 from "part:@sanity/base/theme/typography/headings-style";
 }

@@ -1,0 +1,15 @@
+.root {
+  user-select: none;
+  cursor: move;
+  @nest &:hover {
+
+  }
+}
+.active {
+  composes: root;
+  border: 1px solid #ccc;
+}
+
+.previewContainer {
+  display: inline-block;
+}
