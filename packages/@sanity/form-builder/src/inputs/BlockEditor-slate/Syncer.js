@@ -26,6 +26,15 @@ export default class Syncer extends React.PureComponent {
   componentWillReceiveProps(nextProps) {
   }
 
+  componentWillUnmount() {
+    // This is a defensive workaround for an issue causing content to be overwritten
+    // It cancels any pending saves, so if the component gets unmounted within the
+    // 1 second window, work may be lost.
+    // This is by no means ideal, but preferable to overwriting content in other documents
+    // Should be fixed by making the block editor "real" realtime
+    this.emitSet.cancel()
+  }
+
   emitSet = throttle(() => {
     const {onChange} = this.props
     // const onChange = event => console.log(event.patch.type, event.patch.value)
@@ -36,7 +45,7 @@ export default class Syncer extends React.PureComponent {
         value: value.serialize()
       }
     })
-  }, 5 * 1000, {trailing: true})
+  }, 1000, {trailing: true})
 
   render() {
     const {value} = this.state
