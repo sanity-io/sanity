@@ -3,7 +3,6 @@ const createCache = require('./utils/createCache')
 const canonicalize = require('./utils/canonicalize')
 const omit = require('lodash/omit')
 const pubsub = require('nano-pubsub')
-const assert = require('assert')
 const {BufferedDocument, Mutation} = require('@sanity/mutator')
 
 function TODO(msg = 'TODO') {
