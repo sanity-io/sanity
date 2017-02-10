@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
 }
@@ -27,7 +25,7 @@
 }
 
 .icon {
-  composes: icon from './SearchableSelect.css';
+  composes: arrow from './SearchableSelect.css';
 }
 
 .listContainer {

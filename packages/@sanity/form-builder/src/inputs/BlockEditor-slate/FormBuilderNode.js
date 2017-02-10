@@ -8,10 +8,8 @@ import {findDOMNode} from 'slate'
 import ItemForm from './ItemForm'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
-import blockStyles from './styles/BlockPreview.css'
-import inlineStyles from './styles/InlinePreview.css'
 import applySanityPatch from './applySanityPatch'
-import styles from './styles/BlockEditor.css'
+import styles from './styles/FormBuilderNode.css'
 
 export default class PreviewNode extends React.Component {
   static propTypes = {
@@ -248,9 +246,8 @@ export default class PreviewNode extends React.Component {
     const {type, attributes} = this.props
     const isInline = get(type, 'options.inline')
     const NodeTag = isInline ? 'span' : 'div'
-    const style = isInline ? inlineStyles : blockStyles
 
-    const className = this.state.isFocused ? style.active : style.root
+    const className = this.state.isFocused ? styles.active : styles.root
 
     return (
       <NodeTag
@@ -266,7 +263,7 @@ export default class PreviewNode extends React.Component {
         </span>
 
         {isEditing && (
-          <div className={styles.inputContainer}>
+          <div className={styles.editBlockContainer}>
             {this.renderInput()}
           </div>
         )}

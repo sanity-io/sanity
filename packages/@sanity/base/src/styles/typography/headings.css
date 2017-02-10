@@ -14,43 +14,43 @@
 .heading1 {
   composes: root;
   font-size: var(--font-size-h1);
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
 }
 
 .heading2 {
   composes: root;
   font-size: var(--font-size-h2);
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .heading3 {
   composes: root;
   font-size: var(--font-size-h3);
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .heading4 {
   composes: root;
   text-transform: uppercase;
   font-size: var(--font-size-h4);
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .heading5 {
   composes: root;
   text-transform: uppercase;
   font-size: var(--font-size-h5);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .heading6 {
   composes: root;
   font-size: var(--font-size-h6);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }

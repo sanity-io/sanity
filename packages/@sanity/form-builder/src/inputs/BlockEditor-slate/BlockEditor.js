@@ -15,6 +15,8 @@ import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
 import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
 import OnPasteHtml from './plugins/OnPasteHtml'
 
+import Portal from 'react-portal'
+
 import {
   SLATE_DEFAULT_STYLE,
   SLATE_LINK_TYPE,
@@ -375,7 +377,7 @@ export default class BlockEditor extends React.Component {
     this.blockDragMarker.style.display = 'none'
   }
 
-  render() {
+  renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
     const activeLink = this.getActiveLink()
@@ -383,11 +385,16 @@ export default class BlockEditor extends React.Component {
       || !!activeLink
 
     return (
-      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
+      <FormField
+        label={type.title}
+        labelHtmlFor={this._inputId}
+        level={level}
+        className={this.state.fullscreen ? styles.formFieldFullscreen : styles.formField}
+      >
         <div
           className={`
             ${hasError ? styles.error : styles.root}
-            ${this.state.fullscreen && styles.fullscreen}
+            ${this.state.fullscreen ? styles.fullscreen : ''}
           `}
         >
           <Toolbar
@@ -427,5 +434,17 @@ export default class BlockEditor extends React.Component {
         </div>
       </FormField>
     )
+  }
+
+  render() {
+    const {fullscreen} = this.state
+    if (fullscreen) {
+      return (
+        <Portal isOpened>
+          {this.renderBlockEditor()}
+        </Portal>
+      )
+    }
+    return this.renderBlockEditor()
   }
 }

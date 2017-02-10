@@ -1,11 +1,12 @@
 :root {
   --zindex-pane: 900;
   --zindex-navbar: 1000;
+  --zindex-navbar-fixed: 1010;
   --zindex-dropdown: 1010;
+  --zindex-fullscreen-edit: 1050;
   --zindex-popover-background: 1060;
   --zindex-popover: 1070;
   --zindex-tooltip: 1100;
-  --zindex-navbar-fixed: 1200;
-  --zindex-modal-background: 1300;
-  --zindex-modal: 1310;
+  --zindex-modal-background: 2000;
+  --zindex-modal: 2010;
 }
