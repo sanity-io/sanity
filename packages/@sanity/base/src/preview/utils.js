@@ -1,12 +1,3 @@
-const ALWAYS_INCLUDE = ['_id', '_type']
-export function stringifyGradientQuerySelection(fields) {
-  return ALWAYS_INCLUDE.concat(
-    // important: no remapping while querying
-    Object.keys(fields).map(key => fields[key])
-  )
-    .join(',')
-}
-
 export function prepareValue(value, previewConfig) {
   if (!value) {
     return value

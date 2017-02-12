@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
-import materializeForPreview from './materializeForPreview'
+import observeForPreview from './observeForPreview'
+import shallowEquals from 'shallow-equals'
 
 export default class PreviewMaterializer extends React.PureComponent {
   static propTypes = {
@@ -24,15 +25,20 @@ export default class PreviewMaterializer extends React.PureComponent {
     this.materialize(value, type)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.materialize(nextProps.value, nextProps.type)
+  componentWillUnmount() {
+    this.unsubscribe()
+  }
+
+  unsubscribe() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
     }
   }
 
   materialize(value, type) {
-    materializeForPreview(value, type)
-      .then(res => {
+    // this.unsubscribe()
+    this.subscription = observeForPreview(value, type)
+      .subscribe(res => {
         this.setState({result: res})
       })
   }

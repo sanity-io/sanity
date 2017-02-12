@@ -18,7 +18,7 @@ const previewComponentMap = {
   block: PreviewComponentBlock
 }
 
-export default class SanityPreview extends React.Component {
+export default class SanityPreview extends React.PureComponent {
 
   static propTypes = {
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
