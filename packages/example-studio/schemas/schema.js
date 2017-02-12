@@ -125,61 +125,6 @@ export default createSchema({
           title: 'Checked',
           type: 'boolean'
         },
-       {
-          name: 'body',
-          type: 'array',
-          title: 'Blocks',
-          inputComponent: SlateInput,
-          of: [
-            {
-              title: 'Normal',
-              type: 'block',
-              default: true,
-              marks: defaultMarks
-            },
-            {
-              title: 'Heading 1',
-              type: 'block',
-              style: 'h1',
-              marks: headerMarks
-            },
-            {
-              title: 'Heading 2',
-              type: 'block',
-              style: 'h2',
-              marks: headerMarks
-            },
-            {
-              title: 'Heading 3',
-              type: 'block',
-              style: 'h3',
-              marks: headerMarks
-            },
-            {
-              title: 'Bullet list',
-              type: 'block',
-              listItem: 'bullet',
-              marks: defaultMarks
-            },
-            {
-              title: 'Numbered list',
-              type: 'block',
-              listItem: 'number',
-              marks: defaultMarks
-            },
-            {
-              title: 'Author',
-              type: 'author',
-            },
-            {
-              title: 'Inline string',
-              type: 'string',
-              options: {
-                inline: true
-              }
-            }
-          ]
-        },
         {
           name: 'body',
           type: 'array',
