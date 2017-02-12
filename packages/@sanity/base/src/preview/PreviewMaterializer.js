@@ -35,8 +35,14 @@ export default class PreviewMaterializer extends React.PureComponent {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!shallowEquals(nextProps.value, this.props.value)) {
+      this.materialize(nextProps.value, nextProps.type)
+    }
+  }
+
   materialize(value, type) {
-    // this.unsubscribe()
+    this.unsubscribe()
     this.subscription = observeForPreview(value, type)
       .subscribe(res => {
         this.setState({result: res})
