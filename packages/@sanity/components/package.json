@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.101.1",
+  "version": "0.101.2",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -51,7 +51,7 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.101.1",
+    "@sanity/base": "^0.101.2",
     "@sanity/check": "^0.99.0",
     "@sanity/core": "^0.100.3",
     "pre-commit": "^1.1.3",
