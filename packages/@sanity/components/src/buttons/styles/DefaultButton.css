@@ -278,6 +278,9 @@
 }
 
 .content {
+  display: inline-block;
+  vertical-align: middle;
+
   @nest .hasIcon & {
     margin-left: 0.5em;
   }
