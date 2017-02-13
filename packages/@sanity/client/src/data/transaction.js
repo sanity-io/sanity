@@ -90,7 +90,7 @@ assign(Transaction.prototype, {
 
     validators.validateObject(op, doc)
     const dataset = validators.hasDataset(this.client.clientConfig)
-    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
+    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}.`})}
     return this._add(mutation)
   },
 

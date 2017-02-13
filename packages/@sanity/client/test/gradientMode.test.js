@@ -33,24 +33,24 @@ test('[gradient] can query for documents', t => {
 })
 
 test('[gradient] can query for single document', t => {
-  nock(apiHost).get('/doc/bf1942/foo/123').reply(200, {
+  nock(apiHost).get('/doc/bf1942/foo.123').reply(200, {
     ms: 123,
-    documents: [{_id: 'foo/123', mood: 'lax'}]
+    documents: [{_id: 'foo.123', mood: 'lax'}]
   })
 
-  getClient().getDocument('foo/123').then(res => {
+  getClient().getDocument('foo.123').then(res => {
     t.equal(res.mood, 'lax', 'data should match')
   }).catch(t.ifError).then(t.end)
 })
 
 test('[gradient] can query for single document with token', t => {
   const reqheaders = {Authorization: 'Bearer MyToken'}
-  nock(apiHost, {reqheaders}).get('/doc/bf1942/foo/123').reply(200, {
+  nock(apiHost, {reqheaders}).get('/doc/bf1942/foo.123').reply(200, {
     ms: 123,
-    documents: [{_id: 'foo/123', mood: 'lax'}]
+    documents: [{_id: 'foo.123', mood: 'lax'}]
   })
 
-  getClient({token: 'MyToken'}).getDocument('foo/123').then(res => {
+  getClient({token: 'MyToken'}).getDocument('foo.123').then(res => {
     t.equal(res.mood, 'lax', 'data should match')
   }).catch(t.ifError).then(t.end)
 })

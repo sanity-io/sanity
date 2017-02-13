@@ -33,7 +33,7 @@ Initializes a new Sanity Client. Required options are `projectId`, `dataset` and
 ## Fetch a single document
 
 ```js
-client.getDocument('bikeshop/bike-123').then(bike => {
+client.getDocument('bikeshop.bike-123').then(bike => {
   console.log(`${bike.name} (${bike.seats} seats)`)
 })
 ```
@@ -41,7 +41,7 @@ client.getDocument('bikeshop/bike-123').then(bike => {
 ## Performing queries
 
 ```js
-const query = 'bikeshop.bikes[seats >= $minSeats] {name, seats}'
+const query = '*[is "bikeshop.bikes" && seats >= $minSeats] {name, seats}'
 const params = {minSeats: 2}
 
 client.fetch(query, params).then(bikes => {
@@ -59,7 +59,7 @@ Perform a query using the given parameters (if any).
 ## Listening to queries
 
 ```js
-const query = 'bikeshop.comment[authorId != $ownerId]'
+const query = '*[is "bikeshop.comment" && authorId != $ownerId]'
 const params = {ownerId: 'bikeOwnerUserId'}
 
 const subscription = client.listen(query, params)
@@ -94,14 +94,14 @@ client.create(doc).then(res => {
 
 `client.create(doc)`
 
-Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute in `<schema>.<type>` format. It *may* contain an `_id`, in `<dataset>/<someId>` format.
+Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute in `<schema>.<type>` format. It *may* contain an `_id`, in `<dataset>.<someId>` format.
 
 
 ## Patch/update a document
 
 ```js
 client
-  .patch('bikeshop/bike-123') // Document ID to patch
+  .patch('bikeshop.bike-123') // Document ID to patch
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
   .commit() // Perform the patch and return a promise
@@ -122,7 +122,7 @@ Modify a document. `patch` takes a document ID. `set` merges the partialDoc with
 ## Delete a document
 
 ```js
-client.delete('bikeshop/bike-123')
+client.delete('bikeshop.bike-123')
   .then(res => {
     console.log('Bike deleted')
   })
@@ -139,12 +139,12 @@ Delete a document. Parameter is a document ID.
 
 ```js
 const namePatch = client
-  .patch('bikeshop/bike-310')
+  .patch('bikeshop.bike-310')
   .set({name: 'A Bike To Go'})
 
 client.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
-  .delete('bikeshop/bike-123')
+  .delete('bikeshop.bike-123')
   .patch(namePatch)
   .commit()
   .then(res => {
@@ -162,7 +162,7 @@ Create a transaction to perform chained mutations.
 ```js
 client.transaction()
   .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
-  .patch('bikeshop/bike-123', p => p.set({inStock: false}))
+  .patch('bikeshop.bike-123', p => p.set({inStock: false}))
   .commit()
   .then(res => {
     console.log('Bike created and a different bike is updated')
@@ -194,8 +194,8 @@ client.mutate(patch.inc({count: 1}).unset(['visits']))
 
 // Transactions:
 const transaction = new sanityClient.Transaction()
-  .create({_id: 'foo/123', name: 'FooBike'})
-  .delete('foo/bar')
+  .create({_id: 'foo.123', name: 'FooBike'})
+  .delete('foo.bar')
 
 client.mutate(transaction)
 ```
@@ -207,7 +207,7 @@ client.mutate(transaction)
 A few notes on this approach:
 
 * You cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.mutate()`
-* Documents passed to `create`, `createIfNotExists` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>/`
+* Documents passed to `create`, `createIfNotExists` and `createOrReplace` needs to include an `_id` property, since it cannot infer which dataset it should belong to. If you want Sanity to auto-generate one for you, set `_id` to `<datasetName>.`
 
 ## Get client configuration
 

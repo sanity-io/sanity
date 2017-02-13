@@ -8,7 +8,7 @@ module.exports = function getSelection(sel) {
   }
 
   const selectionOpts = [
-    '* Dataset-prefixed document ID (<dataset/docId>)',
+    '* Dataset-prefixed document ID (<dataset.docId>)',
     '* Array of dataset-prefixed document IDs',
     '* Object containing `query`'
   ].join('\n')

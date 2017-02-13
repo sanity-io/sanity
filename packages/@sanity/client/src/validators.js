@@ -26,8 +26,8 @@ exports.validateObject = (op, val) => {
 }
 
 exports.validateDocumentId = (op, id) => {
-  if (typeof id !== 'string' || !/^[-_a-z0-9]{1,128}\/[-_a-z0-9/]+$/i.test(id)) {
-    throw new Error(`${op}() takes a document ID in format dataset/docId`)
+  if (typeof id !== 'string' || !/^[-_a-z0-9]{1,128}\.[-_a-z0-9.]+$/i.test(id)) {
+    throw new Error(`${op}() takes a document ID in format dataset.docId`)
   }
 }
 

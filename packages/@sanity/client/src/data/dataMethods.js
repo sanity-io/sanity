@@ -147,7 +147,7 @@ module.exports = {
 
   _create(doc, op, options = {}) {
     const dataset = validators.hasDataset(this.clientConfig)
-    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}/`})}
+    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}.`})}
     const opts = assign({returnFirst: true, returnDocuments: true}, options)
     return this.dataRequest('mutate', {mutations: [mutation]}, opts)
   }
