@@ -9,7 +9,9 @@ import noop from 'lodash/noop'
 import padEnd from 'lodash/padEnd'
 import throttle from 'lodash/throttle'
 
-const binDir = path.join(__dirname, '..', '..', 'vendor')
+// Use require.resolve to ensure it actually exists
+const binDir = path.join(__dirname, '..', '..', '..', 'vendor')
+const yarnPath = require.resolve(path.join(binDir, 'yarn'))
 
 export default function yarnWithProgress(args, options = {}) {
   /* eslint-disable no-console */
@@ -26,7 +28,7 @@ export default function yarnWithProgress(args, options = {}) {
     env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
   }, options.execOpts || {})
 
-  const proc = execa('yarn', args.concat(['--json']), execOpts)
+  const proc = execa(yarnPath, args.concat(['--json']), execOpts)
   proc.catch(onNativeError);
 
   [proc.stdout, proc.stderr].forEach(stream => {
