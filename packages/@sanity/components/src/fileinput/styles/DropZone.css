@@ -43,7 +43,7 @@
 }
 
 .inner {
-  border: 5px dashed var(--brand-primary);
+  border: 2px dashed var(--brand-primary);
   width: 100%;
   height: 100%;
   box-sizing: border-box;
