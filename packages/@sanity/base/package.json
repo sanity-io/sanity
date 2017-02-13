@@ -38,7 +38,8 @@
     "postcss-cssnext": "^2.9.0",
     "promise-props": "^1.0.0",
     "react-icons": "^2.2.3",
-    "react-intl": "^2.2.2"
+    "react-intl": "^2.2.2",
+    "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "@sanity/check": "^0.99.0",
