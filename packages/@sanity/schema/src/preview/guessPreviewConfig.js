@@ -51,7 +51,7 @@ export default function guessPreviewFields(fields) {
   }
   if (descField && descField.name) {
     // Only set this if we have found a description field
-    config.fields.description = descField.name
+    config.select.description = descField.name
   }
   return config
 }
