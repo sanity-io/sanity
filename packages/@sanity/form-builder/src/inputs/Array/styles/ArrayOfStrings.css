@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   display: block;
 }
@@ -23,6 +25,10 @@
   font-size: 0.9em;
   margin-right: 0;
   box-sizing: border-box;
+}
+
+.addButton {
+  margin-top: var(--medium-padding);
 }
 
 .inputLabel {
