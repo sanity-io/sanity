@@ -27,6 +27,7 @@ export default async (args, context) => {
   if (project) {
     context.output.print('Project:')
     printKeyValue({
+      'ID': project.id,
       'Display name': project.displayName,
       'Studio URL': project.studioHostname,
       'User role': project.userRole
@@ -134,6 +135,7 @@ async function gatherProjectInfo(context, baseInfo) {
   const member = projectInfo.members.find(proj => proj.id === baseInfo.user.id)
   const hostname = projectInfo.studioHostname && `https://${projectInfo.studioHostname}.sanity.studio/`
   return {
+    id: projectId,
     displayName: projectInfo.displayName,
     studioHostname: hostname,
     userRole: member ? member.role : 'unknown'
