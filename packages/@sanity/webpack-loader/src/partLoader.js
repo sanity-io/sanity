@@ -2,6 +2,7 @@
 
 const path = require('path')
 const loaderUtils = require('loader-utils')
+const reduceConfig = require('@sanity/util').reduceConfig
 const multiImplementationHandler = require('./multiImplementationHandler')
 
 function sanityPartLoader(input) {
@@ -17,6 +18,13 @@ function sanityPartLoader(input) {
   // a separate compiler instance is triggered
   if (!this._compiler.sanity) {
     return input
+  }
+
+  if (request === 'config:sanity') {
+    const config = JSON.parse(input)
+    const env = process.env.NODE_ENV // eslint-disable-line no-process-env
+    const indent = env === 'production' ? 0 : 2
+    return `module.exports = ${JSON.stringify(reduceConfig(config, env), null, indent)}\n`
   }
 
   const parts = this._compiler.sanity.parts

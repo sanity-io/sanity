@@ -64,6 +64,11 @@ PartResolverPlugin.prototype.apply = function (compiler) {
           ? path.join(basePath, 'sanity.json')
           : path.join(configPath, `${configMatch[1]}.json`)
       })
+
+      if (configFor === 'sanity') {
+        req.query = `?${qs.stringify({sanityPart: request.request})}`
+      }
+
       return this.doResolve(['file'], req, callback)
     }
 
