@@ -3,7 +3,6 @@ import React, {PropTypes, Element} from 'react'
 import type {Router} from '../types'
 import type {RouterProviderContext, NavigateOptions, InternalRouter, RouterState} from './types'
 import pubsub from 'nano-pubsub'
-import assignLazyGetter from './assignLazyGetter'
 
 type Props = {
   onNavigate: (nextPath: string) => void,
@@ -16,8 +15,7 @@ export default class RouterProvider extends React.Component {
   props: Props
 
   static childContextTypes = {
-    __internalRouter: PropTypes.object,
-    router: PropTypes.object
+    __internalRouter: PropTypes.object
   }
 
   __internalRouter: InternalRouter
@@ -35,6 +33,7 @@ export default class RouterProvider extends React.Component {
       channel: pubsub()
     }
   }
+
   navigateUrl = (url : string, options : NavigateOptions = {}) : void => {
     const {onNavigate} = this.props
     onNavigate(url, options)
@@ -55,31 +54,9 @@ export default class RouterProvider extends React.Component {
   }
 
   getChildContext() : RouterProviderContext {
-
-    let warn = () => {
-      // eslint-disable-next-line no-console
-      console.error(new Error(
-        'Reading "router" from context is deprecated. Use the WithRouter enhancer/HOC, or the <WithRouter> component instead.'
-      ))
-      warn = () => {}
+    return {
+      __internalRouter: this.__internalRouter
     }
-    const deprecatedChildRouter = {}
-    assignLazyGetter(deprecatedChildRouter, 'state', () => {
-      warn()
-      return this.getState()
-    })
-    assignLazyGetter(deprecatedChildRouter, 'navigate', () => {
-      warn()
-      this.getState()
-    })
-
-    // todo: just return childContext with __internalRouter, remove the deprecatedChidlRouter eventually
-    const childContext = {
-      __internalRouter: this.__internalRouter,
-      router: deprecatedChildRouter
-    }
-
-    return childContext
   }
 
   componentWillReceiveProps(nextProps : Props) {

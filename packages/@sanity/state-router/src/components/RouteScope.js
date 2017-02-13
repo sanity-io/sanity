@@ -1,7 +1,6 @@
 // @flow
 import React, {PropTypes, Element} from 'react'
 import isEmpty from '../utils/isEmpty'
-import assignLazyGetter from './assignLazyGetter'
 
 import type {RouterProviderContext, NavigateOptions, InternalRouter} from './types'
 
@@ -22,8 +21,7 @@ export default class RouteScope extends React.Component {
   __internalRouter: InternalRouter
 
   static childContextTypes = RouteScope.contextTypes = {
-    __internalRouter: PropTypes.object,
-    router: PropTypes.object
+    __internalRouter: PropTypes.object
   }
 
   constructor(props : Props, context : RouterProviderContext) {
@@ -39,31 +37,9 @@ export default class RouteScope extends React.Component {
   }
 
   getChildContext() : RouterProviderContext {
-
-    let warn = () => {
-      // eslint-disable-next-line no-console
-      console.error(new Error(
-        'Reading "router" from context is deprecated. Use the WithRouter enhancer/HOC, or the <WithRouter> component instead.'
-      ))
-      warn = () => {}
+    return {
+      __internalRouter: this.__internalRouter
     }
-    const deprecatedChildRouter = {}
-    assignLazyGetter(deprecatedChildRouter, 'state', () => {
-      warn()
-      return this.getScopedState()
-    })
-    assignLazyGetter(deprecatedChildRouter, 'navigate', () => {
-      warn()
-      this.getScopedState()
-    })
-
-    // todo: just return childContext with __internalRouter, remove the deprecatedChidlRouter eventually
-    const childContext = {
-      __internalRouter: this.__internalRouter,
-      router: deprecatedChildRouter
-    }
-
-    return childContext
   }
 
   getScopedState = () => {
