@@ -11,7 +11,7 @@ import InspectView from '../components/InspectView'
 import dataAspects from '../utils/dataAspects'
 import {throttle, omit} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
-
+import TrashIcon from 'part:@sanity/base/trash-icon'
 import styles from './styles/EditorPane.css'
 import {Patcher} from '@sanity/mutator'
 
@@ -279,6 +279,18 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         <h2 className={styles.typeTitle}>{schemaType.title}</h2>
 
         <div className={styles.header}>
+          <div className={styles.deleteContainer}>
+            <DefaultButton
+              onClick={this.handleRequestDelete}
+              color="danger"
+              kind="simple"
+              loading={deleteInProgress}
+              title={`Delete ${value.getAttribute(titleProp).serialize()}`}
+              icon={TrashIcon}
+            >
+              Delete
+            </DefaultButton>
+          </div>
           <h1 className={styles.title}>
             {(titleProp && value.getAttribute(titleProp).serialize()) || 'Untitled…'}
           </h1>
@@ -286,6 +298,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
           <div className={spin ? styles.spinner : styles.spinnerInactive}>
             <Spinner />
           </div>
+
 
         </div>
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_FormBuilder_ScrollContainer">
@@ -295,12 +308,6 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
             validation={validation}
             onChange={this.handleChange}
           />
-
-          <div className={styles.deleteContainer}>
-            <DefaultButton onClick={this.handleRequestDelete} color="danger" loading={deleteInProgress}>
-              <strong>Delete</strong> {value.getAttribute(titleProp).serialize()}
-            </DefaultButton>
-          </div>
         </form>
 
         {referringDocuments && (

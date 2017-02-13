@@ -55,5 +55,9 @@
 }
 
 .deleteContainer {
-  margin-top: 3rem;
+  top: 0;
+  right: 0;
+  position: absolute;
+  z-index: 1;
+
 }
