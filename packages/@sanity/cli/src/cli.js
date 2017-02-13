@@ -12,6 +12,8 @@ import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import baseCommands from './commands'
 
+const isStaging = typeof process.env.SANITY_STAGING !== 'undefined' // eslint-disable-line no-process-env
+
 module.exports = function runCli() {
   updateNotifier({pkg}).notify({defer: false})
 
@@ -23,6 +25,10 @@ module.exports = function runCli() {
   const options = {
     workDir: workDir,
     corePath: getCoreModulePath(workDir)
+  }
+
+  if (isStaging) {
+    console.warn(chalk.yellow('[WARN] Running in staging mode\n'))
   }
 
   if (!isInit && workDir !== cwd) {
