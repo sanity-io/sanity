@@ -193,7 +193,7 @@ export default createSchema({
               title: 'Image',
               type: 'image',
               preview: {
-                fields: {
+                select: {
                   imageUrl: 'asset.url',
                   title: 'caption'
                 }

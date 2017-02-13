@@ -29,7 +29,7 @@ export default [
             title: 'Image',
             type: 'image',
             preview: {
-              fields: {
+              select: {
                 imageUrl: 'asset.url',
                 title: 'caption'
               }
@@ -46,7 +46,7 @@ export default [
     name: 'address',
     type: 'object',
     preview: {
-      fields: {
+      select: {
         title: 'street',
         subtitle: 'zip'
       }
@@ -68,7 +68,7 @@ export default [
     name: 'block',
     type: 'object',
     preview: {
-      fields: {
+      select: {
         style: 'style',
         spans: 'spans'
       },
