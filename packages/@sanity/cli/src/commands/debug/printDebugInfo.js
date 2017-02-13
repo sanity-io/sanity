@@ -48,7 +48,7 @@ export default async (args, context) => {
   context.output.print(`  ${formatObject(globalCfg).replace(/\n/g, '\n  ')}\n`)
 
   // Project configuration (projectDir/sanity.json)
-  if (!(projectConfig instanceof Error)) {
+  if (projectConfig) {
     const configLocation = path.join(context.workDir, 'sanity.json')
     context.output.print(`Project config (${chalk.yellow(configLocation)}):`)
     context.output.print(`  ${formatObject(projectConfig).replace(/\n/g, '\n  ')}`)
@@ -58,6 +58,7 @@ export default async (args, context) => {
   if (versions) {
     context.output.print('\nPackage versions:')
     printVersionsResult(versions, line => context.output.print(`  ${line}`))
+    context.output.print('')
   }
 }
 
@@ -114,7 +115,7 @@ async function gatherProjectConfigInfo(context) {
 
     return config
   } catch (err) {
-    return {error: err}
+    return err.code === 'ENOENT' ? null : {error: err}
   }
 }
 
