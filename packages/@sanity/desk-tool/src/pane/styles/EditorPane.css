@@ -31,9 +31,10 @@
 
 .title {
   font-size: var(--font-size-h4);
-  font-weight: 100;
   margin: 0;
   padding: 0;
+  font-weight: 400;
+
   @media (--screen-medium) {
     font-size: var(--font-size-h2);
   }
@@ -60,5 +61,6 @@
   position: absolute;
   z-index: 1;
   font-size: var(--font-size-small);
+
 
 }
