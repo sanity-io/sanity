@@ -60,7 +60,7 @@ class Search extends React.Component {
           )
         )
 
-    const query = `*[[${union(searchableFields).join(', ')}] match "${q}"][0:10]`
+    const query = `*[[${union(searchableFields).join(', ')}] match "${q}"][0...10]`
 
     this.setState({
       isSearching: true
@@ -87,7 +87,7 @@ class Search extends React.Component {
     // TODO hack until gradient supports 'schemaName.*'
     const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName).map(str => `"${str}"`)
 
-    const query = `*[is [${prefixedTypeNames.join(', ')}][0:3] | order(_updatedAt desc)`
+    const query = `*[is [${prefixedTypeNames.join(', ')}] | order(_updatedAt desc) [0...3]`
 
     client.fetch(query, {})
       .then(response => {
