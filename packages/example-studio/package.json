@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.101.4",
+  "version": "0.101.5",
   "description": "Just a sample Sanity studio project",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -13,13 +13,13 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/base": "^0.101.4",
-    "@sanity/components": "^0.101.4",
+    "@sanity/base": "^0.101.5",
+    "@sanity/components": "^0.101.5",
     "@sanity/core": "^0.101.3",
-    "@sanity/default-layout": "^0.101.4",
+    "@sanity/default-layout": "^0.101.5",
     "@sanity/default-login": "^0.100.15",
-    "@sanity/desk-tool": "^0.101.4",
-    "@sanity/form-builder": "^0.101.4",
+    "@sanity/desk-tool": "^0.101.5",
+    "@sanity/form-builder": "^0.101.5",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "sanity-plugin-vision": "^1.0.6"
