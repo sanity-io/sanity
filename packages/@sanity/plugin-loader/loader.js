@@ -5,6 +5,11 @@ const cssHook = require('css-modules-require-hook')
 const resolver = require('@sanity/resolver')
 const reduceConfig = require('@sanity/util').reduceConfig
 
+/* eslint-disable no-process-env */
+const staging = process.env.SANITY_STAGING
+const env = typeof process.env.NODE_ENV === 'undefined' && staging ? 'staging' : process.env.NODE_ENV
+/* eslint-enable no-process-env */
+
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveParts = resolver.resolveParts
 const defaultResult = {
@@ -64,7 +69,7 @@ function registerLoader(options) {
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
         const sanityConfig = require(path.join(options.basePath, 'sanity.json'))
-        require.cache[request] = getModule(request, reduceConfig(sanityConfig))
+        require.cache[request] = getModule(request, reduceConfig(sanityConfig, env))
         return request
       }
 
