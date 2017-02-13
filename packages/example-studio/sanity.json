@@ -24,5 +24,12 @@
       "implements": "part:@sanity/base/brand-logo",
       "path": "components/BrandLogo.js"
     }
-  ]
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "nlw95s5u"
+      }
+    }
+  }
 }
