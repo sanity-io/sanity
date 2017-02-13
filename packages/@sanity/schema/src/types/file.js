@@ -1,6 +1,7 @@
 import {pick} from 'lodash'
 import {lazyGetter} from './utils'
 import guessPreviewConfig from '../preview/guessPreviewConfig'
+import createPreviewGetter from '../preview/createPreviewGetter'
 
 export const ASSET_FIELD = {
   name: 'asset',
@@ -53,9 +54,7 @@ export const FileType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', () => {
-      return (subTypeDef.preview || (subTypeDef.options || {}).preview) || guessPreviewConfig(parsed.fields)
-    })
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
 
     return subtype(parsed)
 

@@ -34,7 +34,7 @@ export default function guessPreviewFields(fields) {
     }, {})
 
     return {
-      fields: fieldMapping,
+      select: fieldMapping,
       prepare(data) {
         return {
           title: fieldNames.map(name => `${name}: ${JSON.stringify(data[name])}`).join(' / ')
@@ -44,7 +44,7 @@ export default function guessPreviewFields(fields) {
   }
 
   const config = {
-    fields: {
+    select: {
       title: titleField && titleField.name,
     },
     prepare: defaultPrepare

@@ -1,6 +1,6 @@
 import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
-import guessPreviewConfig from '../preview/guessPreviewConfig'
+import createPreviewGetter from '../preview/createPreviewGetter'
 
 const INHERITED_FIELDS = ['fields', 'fieldsets']
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
@@ -9,36 +9,6 @@ const OBJECT_CORE = {
   name: 'object',
   type: null,
   jsonType: 'object'
-}
-
-function parseFields(fields) {
-  return fields.reduce((acc, field) => {
-    acc[field] = field
-    return acc
-  }, {})
-}
-function parsePreview(preview) {
-  if (!preview) {
-    return preview
-  }
-  if (Array.isArray(preview.fields)) {
-    return {
-      ...preview,
-      fields: parseFields(preview.fields)
-    }
-
-  }
-  return preview
-}
-
-function warnIfPreviewOnOptions(type) {
-  if (type.options && type.options.preview) {
-    // eslint-disable-next-line no-console
-    console.warn(
-`Heads up! The preview config is no longer defined on "options", but instead on the type/field itself.
-Please move {options: {preview: ...}} to {..., preview: ...} on the type/field definition of "${type.name}".
-`)
-  }
 }
 
 export const ObjectType = {
@@ -64,11 +34,7 @@ export const ObjectType = {
       return createFieldsets(subTypeDef, parsed.fields)
     })
 
-    lazyGetter(parsed, 'preview', () => {
-      warnIfPreviewOnOptions(subTypeDef)
-      const preview = parsePreview(subTypeDef.preview || (subTypeDef.options || {}).preview)
-      return preview || guessPreviewConfig(parsed.fields)
-    })
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
 
     return subtype(parsed)
 

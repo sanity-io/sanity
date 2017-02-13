@@ -8,8 +8,8 @@ export function prepareValue(value, previewConfig) {
     return value
   }
 
-  const remapped = Object.keys(previewConfig.fields).reduce((item, fieldKey) => {
-    item[fieldKey] = value[previewConfig.fields[fieldKey]]
+  const remapped = Object.keys(previewConfig.select).reduce((item, selectKey) => {
+    item[selectKey] = value[previewConfig.select[selectKey]]
     return item
   }, {})
 

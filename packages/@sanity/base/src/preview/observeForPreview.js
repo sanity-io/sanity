@@ -7,14 +7,14 @@ const pass = v => v
 const observe = createPreview(observePaths)
 
 export default function observeForPreview(value, type) {
-  const fields = type.preview.fields
-  const targetKeys = Object.keys(fields)
-  const paths = targetKeys.map(key => fields[key].split('.'))
+  const selection = type.preview.select
+  const targetKeys = Object.keys(selection)
+  const paths = targetKeys.map(key => selection[key].split('.'))
 
   return observe(value, paths)
     .map(result => {
       return targetKeys.reduce((acc, key) => {
-        acc[key] = get(result, fields[key])
+        acc[key] = get(result, selection[key])
         return acc
       }, {})
     })

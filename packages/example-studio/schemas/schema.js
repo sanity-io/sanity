@@ -39,7 +39,7 @@ export default createSchema({
       type: 'object',
       title: 'Blogpost',
       preview: {
-          fields: {title: 'title', subtitle: 'lead'}
+          select: {title: 'title', subtitle: 'lead'}
         },
       fields: [
 

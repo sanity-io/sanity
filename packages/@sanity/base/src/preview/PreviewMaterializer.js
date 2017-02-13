@@ -7,7 +7,7 @@ export default class PreviewMaterializer extends React.PureComponent {
     value: PropTypes.any.isRequired,
     type: PropTypes.shape({
       preview: PropTypes.shape({
-        fields: PropTypes.object.isRequired,
+        select: PropTypes.object.isRequired,
         prepare: PropTypes.func
       }).isRequired
     }),
