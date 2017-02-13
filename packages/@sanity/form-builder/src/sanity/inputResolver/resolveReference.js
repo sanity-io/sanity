@@ -15,14 +15,17 @@ export function materializeReference(id) {
 }
 
 function observableToPromise(observable) {
+  let subscription
   return new Promise((resolve, reject) => {
-    const subscription = observable.subscribe({
+    subscription = observable.subscribe({
       next: val => {
-        subscription.unsubscribe()
         resolve(val)
       },
       error: reject
     })
+  }).then(result => {
+    subscription.unsubscribe()
+    return result
   })
 }
 function valueToString(value, type) {
