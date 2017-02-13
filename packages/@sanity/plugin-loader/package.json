@@ -1,6 +1,6 @@
 {
   "name": "@sanity/plugin-loader",
-  "version": "0.99.0",
+  "version": "0.101.3",
   "description": "Monkey-patches node's require algorithm to allow requiring of Sanity parts",
   "main": "loader.js",
   "scripts": {
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@sanity/resolver": "^0.99.0",
-    "@sanity/util": "^0.99.0",
+    "@sanity/util": "^0.101.3",
     "css-modules-require-hook": "^4.0.5",
     "interop-require": "^1.0.0"
   }

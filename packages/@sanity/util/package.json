@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "0.99.0",
+  "version": "0.101.3",
   "description": "Utilities shared across projects of Sanity",
   "main": "lib/index.js",
   "scripts": {
