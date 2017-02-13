@@ -1,15 +1,21 @@
+// This plugin is responsible for dragging
+
 function onDrop(event, data, state, editor) {
+
   if (data.type !== 'node') {
-    return
+    return null
   }
+
   let {target} = data
   const {isInternal, node} = data
   let {selection} = state
   if (isInternal) {
+    // Dragging of texts inernally in the document
     data.type = 'fragment'
     data.isInternal = true
     data.fragment = state.document.getFragmentAtRange(selection)
   } else {
+    // Dragging of something from the outside
     selection = selection.moveToRangeOf(state.document.getChild(node.key))
 
     if (
@@ -30,9 +36,9 @@ function onDrop(event, data, state, editor) {
     } else if (node.kind === 'inline') {
       transform = transform.insertInline(node)
     } else {
-      return
+      return null
     }
-    transform.apply()
+    return transform.apply()
   }
 }
 
