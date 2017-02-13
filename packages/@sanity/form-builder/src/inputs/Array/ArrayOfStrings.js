@@ -8,6 +8,7 @@ import {get, uniqueId} from 'lodash'
 import styles from './styles/ArrayOfStrings.css'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 
 function move(arr, from, to) {
   const copy = arr.slice()
@@ -74,10 +75,25 @@ export default class ArrayOfStrings extends React.PureComponent {
 
   handleInputChange = event => {
     const {value, onChange} = this.props
-    const i = event.target.getAttribute('data-key')
+    const i = event.target.getAttribute('data-index')
 
     const nextValue = value.slice()
     nextValue[i] = event.target.value
+
+    onChange({
+      patch: {
+        type: 'set', value: nextValue
+      }
+    })
+  }
+
+  handleRemove = event => {
+    const index = event.currentTarget.getAttribute('data-index')
+    const {value, onChange} = this.props
+
+    const nextValue = value.slice()
+
+    nextValue.splice(index, 1)
 
     onChange({
       patch: {
@@ -106,8 +122,18 @@ export default class ArrayOfStrings extends React.PureComponent {
           className={styles.input}
           onChange={this.handleInputChange}
           onFocus={this.handleInputFocus}
-          data-key={item.key}
+          data-index={item.index}
           id={id}
+        />
+        <Button
+          kind="simple"
+          className={styles.deleteButton}
+          color="danger"
+          icon={TrashIcon}
+          title="Delete"
+          data-index={item.index}
+          onClick={this.handleRemove}
+          onMouseDown={this.handleMouseDown}
         />
       </div>
     )
@@ -117,7 +143,7 @@ export default class ArrayOfStrings extends React.PureComponent {
     const {type} = this.props
     const sortable = get(type, 'options.sortable') !== false
     const items = value.map((item, i) => {
-      return {title: item, value: item, key: i}
+      return {title: item, value: item, index: i}
     })
 
     return (
