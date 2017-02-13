@@ -67,6 +67,7 @@
   border: 2px solid var(--checkbox-off-color);
   border-radius: 2px;
   z-index: 2;
+  background-color: var(--white);
 
   @nest .isChecked & {
     border: 2px solid var(--checkbox-color);

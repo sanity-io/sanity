@@ -8,7 +8,7 @@
 }
 
 .root + .root {
-  margin-top: var(--large-padding);
+  margin-top: var(--extra-large-padding);
 }
 
 .block {
@@ -22,10 +22,12 @@
 
 .label {
   display: block;
+  margin-bottom: var(--small-padding);
 }
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-top: calc(var(--small-padding) * -1);
 
   @nest .inline & {
     font-size: var(--font-size-tiny);

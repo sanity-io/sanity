@@ -14,6 +14,8 @@
 
 .arrow {
   composes: icon from 'part:@sanity/components/selects/default-style';
+  pointer-events: auto;
+  z-index: 2;
 }
 
 .listContainer {

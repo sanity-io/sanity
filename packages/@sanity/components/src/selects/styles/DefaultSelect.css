@@ -16,8 +16,7 @@
   appearance: none;
   position: relative;
   overflow: hidden;
-  margin-right: 1.5em;
-  z-index: 2;
+  z-index: 1;
 }
 
 .selectContainer {
@@ -51,7 +50,8 @@
   font-size: 1.2em;
   color: inherit;
   cursor: default;
-  z-index: 2;
+  z-index: 1;
+  pointer-events: none;
 
   @nest & svg {
     color: inherit;
