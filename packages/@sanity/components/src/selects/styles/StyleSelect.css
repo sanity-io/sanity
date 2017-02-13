@@ -11,7 +11,7 @@
   @nest .transparent & {
     transition: all 0.05s linear;
     background-color: transparent;
-    border-color: transparent;
+    border-color: color(var(--gray-base) a(8%));
 
     @nest &:hover {
       background-color: #fff;
