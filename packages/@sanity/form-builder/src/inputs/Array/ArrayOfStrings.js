@@ -189,7 +189,7 @@ export default class ArrayOfStrings extends React.PureComponent {
             )
           }
           <div className={styles.functions}>
-            <Button onClick={this.handleAddBtnClick} className={styles.addButton} color="primary">
+            <Button onClick={this.handleAddBtnClick} className={styles.addButton} inverted>
               Add
             </Button>
           </div>

@@ -313,7 +313,7 @@ export default class Arr extends React.Component {
           <div className={styles.functions}>
             {
               this.props.type.of.length == 1
-              && <Button onClick={this.handleAddBtnClick} className={styles.addButton} color="primary">
+              && <Button onClick={this.handleAddBtnClick} className={styles.addButton} inverted>
                 Add
               </Button>
             }
