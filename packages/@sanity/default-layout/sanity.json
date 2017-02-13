@@ -20,6 +20,23 @@
       "implements": "part:@sanity/default-layout/tool-switcher",
       "name": "part:@sanity/default-layout/default-tool-switcher",
       "path": "components/ToolSwitcher"
+    },
+
+    {
+      "name":       "part:@sanity/default-layout/branding",
+      "description": "Branding"
+    },
+    {
+      "implements": "part:@sanity/default-layout/branding",
+      "path":       "components/Branding"
+    },
+    {
+      "name":       "part:@sanity/default-layout/branding-style",
+      "description":"Branding styling"
+    },
+    {
+      "implements": "part:@sanity/default-layout/branding-style",
+      "path":       "components/styles/Branding.css"
     }
   ]
 }

@@ -1,10 +1,10 @@
 import React from 'react'
-import styles from './styles/Branding.css'
+import styles from 'part:@sanity/default-layout/branding-style'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 import {StateLink} from 'part:@sanity/base/router'
 import config from 'config:sanity'
 
-class Branding extends React.Component {
+class Branding extends React.PureComponent {
   render() {
     const projectName = (config.project && config.project.name) || ''
     return (
@@ -13,7 +13,7 @@ class Branding extends React.Component {
           <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
           {
             BrandLogo && (
-              <div className={styles.cbrandLogoContainer}>
+              <div className={styles.brandLogoContainer}>
                 <BrandLogo projectName={projectName} />
               </div>
             )
