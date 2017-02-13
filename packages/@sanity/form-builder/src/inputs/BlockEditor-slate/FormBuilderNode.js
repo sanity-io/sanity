@@ -165,6 +165,8 @@ export default class PreviewNode extends React.Component {
   }
 
   handleDragEnd = event => {
+    this.setState({isDragging: false})
+
     const {editor, state, node} = this.props
     const target = this._dropTarget
 
@@ -189,7 +191,6 @@ export default class PreviewNode extends React.Component {
     editor.onChange(next)
     this._dropTarget = null
     this.hideBlockDragMarker()
-    this.setState({isDragging: false})
   }
 
   handleCancelEvent = event => {
