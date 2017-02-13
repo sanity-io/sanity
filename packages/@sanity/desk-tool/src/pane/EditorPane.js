@@ -276,9 +276,9 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
     return (
       <div className={styles.root}>
 
-        <h2 className={styles.typeTitle}>{schemaType.title}</h2>
 
         <div className={styles.header}>
+          <h2 className={styles.typeTitle}>{schemaType.title}</h2>
           <div className={styles.deleteContainer}>
             <DefaultButton
               onClick={this.handleRequestDelete}
