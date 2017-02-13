@@ -60,7 +60,7 @@ class Search extends React.Component {
           )
         )
 
-    const query = `* [(${union(searchableFields).join(', ')}) match "${q}", limit: 10]`
+    const query = `*[[${union(searchableFields).join(', ')}] match "${q}"][0:10]`
 
     this.setState({
       isSearching: true
@@ -85,9 +85,9 @@ class Search extends React.Component {
     // We use 3 last edited items until we have logic for most used etc.
 
     // TODO hack until gradient supports 'schemaName.*'
-    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName)
+    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName).map(str => `"${str}"`)
 
-    const query = `(${prefixedTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
+    const query = `*[is [${prefixedTypeNames.join(', ')}][0:3] | order(_updatedAt desc)`
 
     client.fetch(query, {})
       .then(response => {
@@ -112,7 +112,7 @@ class Search extends React.Component {
   handleGoToItem = item => {
     // @TODO Hack for assuming desktool until we have a path resolver
     const unprefixedType = unprefixTypeName(item._type)
-    const id = item._id.split('/').join('.')
+    const id = item._id
     const url = ['/desk', unprefixedType, 'edit', id].join('/')
 
     locationStore.actions.navigate(url, {replace: false})
