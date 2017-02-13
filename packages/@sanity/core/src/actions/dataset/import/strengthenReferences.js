@@ -11,7 +11,7 @@ export default async function strengthenReferences(options) {
       is "sanity.importmap"
       importId == $importId &&
       importMapNumber > $prevMapNumber
-    ][0:${concurrency}]|order(importMapNumber asc)`
+    ] | order(importMapNumber asc) [0...${concurrency}]`
 
   const getReferenceDocs = ({prevMapNumber}) =>
     client.fetch(importMapQuery, {importId, prevMapNumber})

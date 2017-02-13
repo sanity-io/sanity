@@ -67,7 +67,7 @@ function extractUrlParts(ref) {
 
 async function getWithLabel(client, type, label) {
   const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
-  const query = '*[is $dataType && label == $label][0:2]{_id}'
+  const query = '*[is $dataType && label == $label][0...2]{_id}'
   return (await client.fetch(query, {dataType, label})).map(doc => doc._id)
 }
 
