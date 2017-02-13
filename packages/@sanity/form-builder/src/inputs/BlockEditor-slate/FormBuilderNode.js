@@ -25,7 +25,7 @@ export default class PreviewNode extends React.Component {
     this._dropTarget = null
     this._editorNode = null
     this._isInline = props.type.options && props.type.options.inline
-    this.state = {isFocused: false, isEditing: false}
+    this.state = {isFocused: false, isEditing: false, isDragging: false}
   }
 
   componentDidMount() {
@@ -72,6 +72,10 @@ export default class PreviewNode extends React.Component {
 
   handleDragOverOtherNode = event => {
 
+    if (!this.state.isDragging) {
+      return
+    }
+
     const targetDOMNode = event.target
 
     // As the event is registered on the editor parent node
@@ -86,7 +90,7 @@ export default class PreviewNode extends React.Component {
     }
     const {key} = offsetKey
 
-    const {state, editor} = this.props
+    const {state} = this.props
     const {document} = state
 
     const window = getWindow(event.target)
@@ -107,7 +111,7 @@ export default class PreviewNode extends React.Component {
 
     let node
     if (this._isInline) {
-      node = document.getClosestBlock(key)
+      node = document.getClosestInline(key)
     } else {
       node = document.getClosestBlock(key)
     }
@@ -155,6 +159,7 @@ export default class PreviewNode extends React.Component {
   }
 
   handleDragStart = event => {
+    this.setState({isDragging: true})
     event.dataTransfer.effectAllowed = 'none'
     event.dataTransfer.setData('text/plain', '')
   }
@@ -184,6 +189,7 @@ export default class PreviewNode extends React.Component {
     editor.onChange(next)
     this._dropTarget = null
     this.hideBlockDragMarker()
+    this.setState({isDragging: false})
   }
 
   handleCancelEvent = event => {
