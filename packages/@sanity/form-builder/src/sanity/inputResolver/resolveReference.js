@@ -2,7 +2,7 @@ import {ReferenceInput} from '../../index'
 
 import {materializeReferences, referenceSearch, fetch} from '../data/fetch'
 import {once} from 'lodash'
-import {materializeForPreview, resolveRefType} from 'part:@sanity/base/preview'
+import {observeForPreview, resolveRefType} from 'part:@sanity/base/preview'
 
 
 const ReferenceBrowser = ReferenceInput.createBrowser({
@@ -14,9 +14,20 @@ export function materializeReference(id) {
   return materializeReferences([id]).then(res => res[0])
 }
 
+function observableToPromise(observable) {
+  return new Promise((resolve, reject) => {
+    const subscription = observable.subscribe({
+      next: val => {
+        subscription.unsubscribe()
+        resolve(val)
+      },
+      error: reject
+    })
+  })
+}
 function valueToString(value, type) {
   return resolveRefType(value, type)
-    .then(refType => materializeForPreview(value, refType))
+    .then(refType => observableToPromise(observeForPreview(value, refType)))
     .then(res => res.title)
 }
 
