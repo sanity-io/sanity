@@ -32,6 +32,7 @@ export default class PreviewMaterializer extends React.PureComponent {
   unsubscribe() {
     if (this.subscription) {
       this.subscription.unsubscribe()
+      this.subscription = null
     }
   }
 
