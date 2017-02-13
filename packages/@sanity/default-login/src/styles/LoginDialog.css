@@ -31,6 +31,7 @@
 }
 
 .branding {
+  margin: 0 auto;
   margin-bottom: 4rem;
   @media (--screen-medium) {
     margin: 0;
@@ -54,7 +55,6 @@
 
 .brandLogoContainer {
   height: 3em;
-  max-width: 70vw;
   @nest & svg {
     height: 4em;
     width: auto;
