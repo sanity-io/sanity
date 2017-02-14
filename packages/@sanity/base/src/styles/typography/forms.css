@@ -2,13 +2,13 @@
 
 .headingLevel_0 {
   font-size: var(--font-size-h4);
-  font-weight: 500;
+  font-weight: 400;
   color: var(--black);
 }
 
 .headingLevel_1 {
   font-size: var(--font-size-h4);
-  font-weight: 100;
+  font-weight: 400;
   color: var(--black);
 }
 
@@ -30,5 +30,5 @@
 .label {
   font-size: var(--font-size-base);
   color: var(--black);
-  font-weight: 500;
+  font-weight: 400;
 }
