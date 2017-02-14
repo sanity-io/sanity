@@ -45,18 +45,18 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
     switch (listLayout) { // eslint-disable-line default-case
       case 'media':
-        return <GridList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+        return <GridList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
 
       case 'card':
-        return <GridList items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+        return <GridList overrideItemRender items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
 
       case 'detail':
       case 'default':
-        return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+        return <DefaultList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
     }
 
     console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
-    return <DefaultList items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+    return <DefaultList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
   }
 
   render() {

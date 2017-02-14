@@ -2,18 +2,22 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/items/default-style'
 import classNames from 'classnames'
 
-export default class DefaultListItem extends React.Component {
+function shouldItemBeInView(props) {
+  return props.selected || props.highlighted
+}
+
+/**
+ListItemWrapper implements common behavior for all list items and deals with:
+  - ensuring item is visible (by calling a provided `scrollIntoView`)
+  - rendering correct classes
+*/
+export default class ListItemWrapper extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
-    item: PropTypes.object.isRequired,
-    focus: PropTypes.bool,
-    onSelect: PropTypes.func,
-    onOpen: PropTypes.func,
-    layout: PropTypes.string,
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
-    scrollIntoView: PropTypes.func,
+    scrollIntoView: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
     decoration: PropTypes.oneOf(['default', 'zebra-stripes', 'divider'])
   }
 
@@ -22,29 +26,25 @@ export default class DefaultListItem extends React.Component {
     decoration: 'default'
   }
 
-  state = {
-    mouseIsDown: false
-  }
-
-  handleClick = event => {
-    this.props.onSelect(this.props.item)
-  }
-
-  handleDoubleClick = event => {
-    this.props.onOpen(this.props.item)
-  }
-
   componentDidMount() {
-    this.ensureVisible()
+    // TODO fix this
+    // Hack because the ref in defaultlist is called after this
+    setTimeout(() => this.ensureVisible(this.props), 0)
   }
 
-  componentDidUpdate() {
-    this.ensureVisible()
+  componentDidUpdate(prevProps) {
+    const wasInView = shouldItemBeInView(prevProps)
+    const shouldBeInView = shouldItemBeInView(this.props)
+    if (!wasInView && shouldBeInView) {
+      // Only scrollIntoView when needed
+      this.ensureVisible(this.props)
+    }
   }
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.focus && !this.props.focus) {
-      this._focusableElement.focus()
+  ensureVisible(props) {
+    const {selected, scrollIntoView, highlighted} = props
+    if ((selected || highlighted) && scrollIntoView) {
+      scrollIntoView(this._element)
     }
   }
 
@@ -52,30 +52,8 @@ export default class DefaultListItem extends React.Component {
     this._element = element
   }
 
-  setFocusableElement = element => {
-    this._focusableElement = element
-  }
-
-  ensureVisible() {
-    const {selected, scrollIntoView, highlighted} = this.props
-
-    if ((selected || highlighted) && scrollIntoView) {
-      // TODO fix this
-      // Hack because the ref in defaultlist is called after this
-      setTimeout(() => {
-        scrollIntoView(this._element)
-      }, 0)
-    }
-  }
-
-  handleKeyPress = event => {
-    if (event.key == 'Enter') {
-      this.props.onSelect(this.props.item)
-    }
-  }
-
   render() {
-    const {selected, highlighted, className, decoration} = this.props
+    const {selected, highlighted, className, decoration, children} = this.props
 
     const rootClasses = classNames([
       styles.root,
@@ -87,7 +65,7 @@ export default class DefaultListItem extends React.Component {
 
     return (
       <li className={rootClasses} ref={this.setElement}>
-        {this.props.children}
+        {children}
       </li>
     )
   }

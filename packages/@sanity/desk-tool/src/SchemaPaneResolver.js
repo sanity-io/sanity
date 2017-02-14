@@ -126,7 +126,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     )
   }
 
-  renderDocumentPaneItem = (item, index, props) => {
+  renderDocumentPaneItem = (item, index, options) => {
     const {selectedType} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
@@ -134,9 +134,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     return (
       <StateLinkListItem
         state={linkState}
-        highlighted={props.isHighlighted}
-        selected={props.isSelected}
-        hasFocus={props.hasFocus}
+        highlighted={options.isHighlighted}
+        selected={options.isSelected}
+        hasFocus={options.hasFocus}
       >
         <Preview
           value={item}
