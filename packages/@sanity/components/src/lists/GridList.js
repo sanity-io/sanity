@@ -8,6 +8,7 @@ import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import itemStyles from 'part:@sanity/components/lists/items/grid-style'
 import ListItemWrapper from './items/ListItemWrapper'
 import {item as itemPropType} from './PropTypes'
+import detectIt from 'detect-it'
 
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
@@ -74,6 +75,16 @@ class GridList extends React.Component {
     }
   }
 
+  state = {
+    hasTouch: false
+  }
+
+  componentDidMount() {
+    this.setState({
+      hasTouch: detectIt.hasTouch
+    })
+  }
+
   renderListItem = (item, index) => {
 
     const {
@@ -132,6 +143,8 @@ class GridList extends React.Component {
       onSortEnd
     } = this.props
 
+    const {hasTouch} = this.state
+
     const rootStyle = classnames([
       layout == 'masonry' ? styles.masonry : styles.default,
       scrollable && styles.isScrollable,
@@ -176,7 +189,8 @@ class GridList extends React.Component {
                     className={scrollable ? styles.scrollableList : styles.list}
                     helperClass={itemStyles.sortableHelper}
                     transitionDuration={100}
-                    distance={1}
+                    pressDelay={hasTouch && 200}
+                    distance={hasTouch ? 0 : 1}
                     axis="xy"
                     useDragHandle={useDragHandle}
                     renderListItem={this.renderListItem}
