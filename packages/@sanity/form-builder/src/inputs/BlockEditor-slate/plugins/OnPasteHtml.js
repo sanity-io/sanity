@@ -132,7 +132,12 @@ const RULES = [
   // }
 ]
 
-const serializer = new Html({rules: RULES})
+const defaultBlockType = {
+  type: 'contentBlock',
+  data: {style: 'normal'}
+}
+
+const serializer = new Html({rules: RULES, defaultBlockType: defaultBlockType})
 
 function OnPasteHtml(...args) {
 
