@@ -1,9 +1,20 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import observeForPreview from './observeForPreview'
-import {debounce} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import scrollPosition from './scrollPosition'
+import {capitalize, sampleSize, range, random} from 'lodash'
+
+const chars = 'abcdefghijklmnopqrstuvwxyz'.split('')
+
+function randomWords(minWords = 2, maxWords = 5, minWordLength = 3, maxWordLength = 5) {
+  return capitalize(
+    range(random(minWords, maxWords))
+      .map(() =>
+        sampleSize(chars, random(minWordLength, maxWordLength)).join('')
+      ).join(' ')
+  )
+}
 
 export default class PreviewMaterializer extends React.PureComponent {
   static propTypes = {
@@ -29,7 +40,8 @@ export default class PreviewMaterializer extends React.PureComponent {
   }
 
   componentDidMount() {
-    const {lazy} = this.props
+    const {type, value, lazy} = this.props
+    // todo: clean up this code
     if (lazy) {
       this._isVisible = false
       this.scrollSubscription = scrollPosition.subscribe(windowDimension => {
@@ -44,8 +56,7 @@ export default class PreviewMaterializer extends React.PureComponent {
         const appear = !this._isVisible && isVisible
         const disappear = !isVisible && this._isVisible
         if (appear) {
-          // console.log('subscribe due to appear')
-          this.subscribe()
+          this.subscribe(value, type)
         }
         if (disappear) {
           // console.log('unsubscribe due to disappear')
@@ -54,7 +65,7 @@ export default class PreviewMaterializer extends React.PureComponent {
         this._isVisible = isVisible
       })
     } else {
-      this.subscribe()
+      this.subscribe(value, type)
     }
   }
 
@@ -76,17 +87,11 @@ export default class PreviewMaterializer extends React.PureComponent {
       // console.log('resubscribe due to new props')
       // console.log(this.props.value, nextProps.value)
       // console.log('-----')
-      this.subscribe()
+      this.subscribe(nextProps.value, nextProps.type)
     }
   }
 
-  subscribe = debounce(() => {
-    // console.time('subscribe')
-    this._subscribe(this.props.value, this.props.type)
-    // console.timeEnd('subscribe')
-  }, 500)
-
-  _subscribe(value, type) {
+  subscribe(value, type) {
     this.unsubscribe()
     this.subscription = observeForPreview(value, type)
       .subscribe(res => {
@@ -100,7 +105,14 @@ export default class PreviewMaterializer extends React.PureComponent {
   render() {
     const {result, isLoading, error} = this.state
     if (isLoading) {
-      return <div style={{visibility: 'hidden'}}>{this.props.children({title: 'abc', subtitle: 'abc'})}</div>
+      return (
+        <div style={{filter: 'blur(3px) opacity(0.6)'}}>
+          {this.props.children({
+            title: randomWords(2, 4, 2, 4),
+            subtitle: Math.random() > 0.7 ? randomWords(3, 8, 2, 4) : ''
+          })}
+        </div>
+      )
     }
     if (error) {
       return <div>Error: {error.message}</div>
