@@ -301,7 +301,7 @@ export default class Arr extends React.Component {
     const {type, level, value} = this.props
 
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
+      <Fieldset legend={type.title} description={type.description} level={level} transparent>
         <div className={styles.root}>
           {
             value.value && value.value.length > 0 && (
@@ -313,7 +313,7 @@ export default class Arr extends React.Component {
           <div className={styles.functions}>
             {
               this.props.type.of.length == 1
-              && <Button onClick={this.handleAddBtnClick} className={styles.addButton} inverted>
+              && <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
                 Add
               </Button>
             }

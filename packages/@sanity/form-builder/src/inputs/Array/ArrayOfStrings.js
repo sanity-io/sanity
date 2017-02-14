@@ -179,7 +179,7 @@ export default class ArrayOfStrings extends React.PureComponent {
     }
 
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
+      <Fieldset legend={type.title} description={type.description} level={level} transparent>
         <div className={styles.root}>
           {
             value && value.length > 0 && (
@@ -189,7 +189,7 @@ export default class ArrayOfStrings extends React.PureComponent {
             )
           }
           <div className={styles.functions}>
-            <Button onClick={this.handleAddBtnClick} className={styles.addButton} inverted>
+            <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
               Add
             </Button>
           </div>
