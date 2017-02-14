@@ -137,7 +137,7 @@ export function createSanityManifest(data, opts) {
     ]
   }
 
-  return `${JSON.stringify(manifest, null, 2)}\n`
+  return opts.serialize ? `${JSON.stringify(manifest, null, 2)}\n` : manifest
 }
 
 function serializeManifest(src) {

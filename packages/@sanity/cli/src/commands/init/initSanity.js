@@ -2,14 +2,12 @@ import resolveFrom from 'resolve-from'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
-import resolveLatestVersions from '../../util/resolveLatestVersions'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
 import login from '../../actions/login/login'
-import versionRanges from '../../versionRanges'
 import promptForDatasetName from './promptForDatasetName'
 import gatherInput from './gatherInput'
-import {bootstrapSanity} from './bootstrap'
+import bootstrapTemplate from './bootstrapTemplate'
 
 export default async function initSanity(args, context) {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
@@ -55,24 +53,17 @@ export default async function initSanity(args, context) {
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
-  // Find latest versions of dependencies
-  const spinner = output.spinner('Resolving latest module versions').start()
-  const dependencies = await resolveLatestVersions(
-    Object.keys(versionRanges.core),
-    {asRange: true}
-  )
-  spinner.succeed()
-
   // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapSanity(outputPath, {
+  await bootstrapTemplate({
+    template: 'moviedb',
+    outputDir: outputPath,
     name: sluggedName,
     displayName: displayName,
     dataset: datasetName,
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
-    dependencies,
     ...answers
-  }, output)
+  }, context)
 
   // Now for the slow part... installing dependencies
   try {

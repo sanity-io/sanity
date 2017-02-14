@@ -3,50 +3,9 @@ import fsp from 'fs-promise'
 import partialRight from 'lodash/partialRight'
 import promiseProps from 'promise-props-recursive'
 import {
-  createPackageManifest,
   createSanityManifest,
   createPluginManifest
 } from './createManifest'
-
-export async function bootstrapSanity(targetPath, data, output) {
-  const writeIfNotExists = partialRight(writeFileIfNotExists, output)
-
-  // Create folder structure
-  let spinner = output.spinner('Creating folder structure').start()
-  await Promise.all([
-    fsp.ensureDir(path.join(targetPath, 'config')),
-    fsp.ensureDir(path.join(targetPath, 'plugins')),
-    fsp.ensureDir(path.join(targetPath, 'static')),
-    fsp.ensureDir(path.join(targetPath, 'schemas'))
-  ])
-  spinner.succeed()
-
-  // Initialize/populate templates
-  spinner = output.spinner('Bootstrapping project files').start()
-  const templates = await promiseProps({
-    pluginGitKeep: readTemplate('pluginGitKeep'),
-    staticGitKeep: readTemplate('staticGitKeep'),
-    gitIgnore: readTemplate('gitignore'),
-    checksums: readTemplate('checksums'),
-    schema: readTemplate('schema'),
-    manifest: createPackageManifest(data),
-    sanity: createSanityManifest(data, {}),
-    readme: `# ${data.name}\n\n${data.description}\n`
-  })
-
-  // Write files to target
-  await Promise.all([
-    writeIfNotExists(path.join(targetPath, 'plugins', '.gitkeep'), templates.pluginGitKeep),
-    writeIfNotExists(path.join(targetPath, 'static', '.gitkeep'), templates.staticGitKeep),
-    writeIfNotExists(path.join(targetPath, 'config', '.checksums'), templates.checksums),
-    writeIfNotExists(path.join(targetPath, 'schemas', 'schema.js'), templates.schema),
-    writeIfNotExists(path.join(targetPath, '.gitignore'), templates.gitIgnore),
-    writeIfNotExists(path.join(targetPath, 'package.json'), templates.manifest),
-    writeIfNotExists(path.join(targetPath, 'sanity.json'), templates.sanity),
-    writeIfNotExists(path.join(targetPath, 'README.md'), templates.readme)
-  ])
-  spinner.succeed()
-}
 
 export function bootstrapPlugin(data, opts = {}) {
   const writeIfNotExists = partialRight(writeFileIfNotExists, opts.output)

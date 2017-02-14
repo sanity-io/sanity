@@ -158,7 +158,9 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   function onWarning(event) {
-    holdSpinner(() => print(`${chalk.yellow('●')} ${event.data}`))
+    // For now, skip the warnings as they seem to only contain the first line of the text,
+    // so it makes no sense to show it. Debug this later and consider reimplementing this.
+    // holdSpinner(() => print(`${chalk.yellow('●')} ${event.data}`))
   }
 
   function onError(event) {

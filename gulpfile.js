@@ -124,7 +124,7 @@ gulp.task('storybook', ['watch-js', 'watch-assets'], () => {
   watch(assets, {debounceDelay: 200}, () => {
     gulp.start('watch-assets')
   })
-  
+
   const projectPath = path.join(__dirname, 'packages', 'storybook')
   const npmPath = path.join(projectPath, 'node_modules', '.bin')
   const proc = childProcess.spawn('npm', ['start'], {
