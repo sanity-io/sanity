@@ -189,7 +189,7 @@ class GridList extends React.Component {
                     className={scrollable ? styles.scrollableList : styles.list}
                     helperClass={itemStyles.sortableHelper}
                     transitionDuration={100}
-                    pressDelay={hasTouch && 200}
+                    pressDelay={hasTouch ? 200 : 0}
                     distance={hasTouch ? 0 : 1}
                     axis="xy"
                     useDragHandle={useDragHandle}
