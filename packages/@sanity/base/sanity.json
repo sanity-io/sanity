@@ -430,6 +430,10 @@
       "description": "Logo for the branding"
     },
     {
+      "name": "part:@sanity/base/link-icon",
+      "description": "Link icon"
+    },
+    {
       "name": "part:@sanity/base/upload-icon",
       "description": "Upload icon"
     },
@@ -548,6 +552,10 @@
     {
       "implements": "part:@sanity/base/sign-out-icon",
       "path": "components/icons/SignOut.js"
+    },
+    {
+      "implements": "part:@sanity/base/link-icon",
+      "path": "components/icons/Link.js"
     },
     {
       "implements": "part:@sanity/base/upload-icon",
