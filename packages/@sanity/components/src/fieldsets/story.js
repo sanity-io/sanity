@@ -240,6 +240,23 @@ storiesOf('Fieldsets')
   }
 )
 .addWithInfo(
+  'Transparent',
+  `
+  test
+  `,
+  () => {
+    return (
+      <Fieldset legend="Transparent" transparent>
+        This fieldset has no description
+      </Fieldset>
+    )
+  },
+  {
+    propTables: [Fieldset],
+    role: 'part:@sanity/components/fieldsets/default'
+  }
+)
+.addWithInfo(
   'Example',
   `
     A mix of fieldsets

@@ -113,6 +113,12 @@
     border: none;
     padding: 0;
   }
+
+  @nest .transparent & {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+  }
 }
 
 .inner {

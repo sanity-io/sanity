@@ -17,7 +17,8 @@ export default class Fieldset extends React.Component {
     }),
     children: PropTypes.node,
     level: PropTypes.number,
-    className: PropTypes.string
+    className: PropTypes.string,
+    transparent: PropTypes.bool
   }
 
   state = {
@@ -39,13 +40,14 @@ export default class Fieldset extends React.Component {
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable} = this.props
+    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent} = this.props
     const {isOpen} = this.state
     const levelString = `level${level}`
     const rootClass = `
       ${styles.root}
       ${columns ? styles[`columns${columns}`] : ''}
       ${styles[levelString]}
+      ${transparent ? styles.transparent : ''}
       ${className}
     `
     return (
