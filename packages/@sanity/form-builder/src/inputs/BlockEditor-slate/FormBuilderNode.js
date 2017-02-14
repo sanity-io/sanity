@@ -28,18 +28,6 @@ export default class PreviewNode extends React.Component {
     this.state = {isFocused: false, isEditing: false, isDragging: false}
   }
 
-  componentDidMount() {
-    const {editor} = this.props
-    this._editorNode = ReactDOM.findDOMNode(editor)
-    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
-  }
-
-  componentWillUnmount() {
-    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
-  }
-
   componentWillUpdate(nextProps) {
     const {node} = this.props
     const selection = nextProps.state.selection
@@ -59,6 +47,17 @@ export default class PreviewNode extends React.Component {
       .apply()
 
     editor.onChange(next)
+  }
+
+  handleDragStart = event => {
+    const {editor} = this.props
+    this.setState({isDragging: true})
+    event.dataTransfer.effectAllowed = 'none'
+    event.dataTransfer.setData('text/plain', '')
+    this._editorNode = ReactDOM.findDOMNode(editor)
+    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
+    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -133,39 +132,10 @@ export default class PreviewNode extends React.Component {
     // console.log(this._dropTarget)
   }
 
-  applyDropTargetInline(transform, target) {
-    const {node} = this.props
-    let next = transform
-
-    if (target.isAtStart) {
-      next = next.collapseToStartOf(target.node)
-    } else {
-      next = next.collapseToEndOf(target.node)
-    }
-    return next
-      .moveToOffsets(target.offset)
-      .insertInline(node)
-  }
-
-  applyDropTargetBlock(transform, target) {
-    const {node} = this.props
-    let next = transform
-    if (target.isAtStart) {
-      next = next.collapseToStartOf(target.node)
-    } else {
-      next = next.collapseToEndOf(target.node)
-    }
-    return next.insertBlock(node)
-  }
-
-  handleDragStart = event => {
-    this.setState({isDragging: true})
-    event.dataTransfer.effectAllowed = 'none'
-    event.dataTransfer.setData('text/plain', '')
-  }
-
   handleDragEnd = event => {
     this.setState({isDragging: false})
+    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
+    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
 
     const {editor, state, node} = this.props
     const target = this._dropTarget
@@ -195,6 +165,31 @@ export default class PreviewNode extends React.Component {
 
   handleCancelEvent = event => {
     event.preventDefault()
+  }
+
+  applyDropTargetInline(transform, target) {
+    const {node} = this.props
+    let next = transform
+
+    if (target.isAtStart) {
+      next = next.collapseToStartOf(target.node)
+    } else {
+      next = next.collapseToEndOf(target.node)
+    }
+    return next
+      .moveToOffsets(target.offset)
+      .insertInline(node)
+  }
+
+  applyDropTargetBlock(transform, target) {
+    const {node} = this.props
+    let next = transform
+    if (target.isAtStart) {
+      next = next.collapseToStartOf(target.node)
+    } else {
+      next = next.collapseToEndOf(target.node)
+    }
+    return next.insertBlock(node)
   }
 
   getValue() {
