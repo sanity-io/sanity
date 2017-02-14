@@ -36,7 +36,7 @@ export default {
     try {
       const firstLine = await readFirstLine(sourceFile)
       const firstDocId = JSON.parse(firstLine)._id || ''
-      fromDataset = firstDocId.split('/', 2)[0]
+      fromDataset = firstDocId.split('.', 2)[0]
       rewriteDataset = specifiedDataset && fromDataset !== specifiedDataset
       targetDataset = specifiedDataset ? specifiedDataset : fromDataset
     } catch (err) {

@@ -18,7 +18,7 @@ export default options => {
 
     if (refs.length > 0) {
       this.push({
-        _id: `${targetDataset}/sanity/`,
+        _id: `${targetDataset}.sanity.`,
         _type: 'sanity.importmap',
         importId: importId,
         importMapNumber: ++importMapCount,
