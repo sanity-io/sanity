@@ -39,10 +39,9 @@ export default createSchema({
       type: 'object',
       title: 'Blogpost',
       preview: {
-          select: {title: 'title', subtitle: 'lead'}
-        },
+        select: {title: 'title', subtitle: 'lead', imageUrl: 'mainImage.asset.url'}
+      },
       fields: [
-
         {
           name: 'selectMultipleStrings',
           title: 'Select multiple strings',
