@@ -148,6 +148,9 @@ export default class EditItemPopOver extends React.Component {
     window.addEventListener('keydown', this.handleKeyDown)
     this.elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
+    this.initialBodyStyleOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
     // Sets a scrollContainer with ID
     if (scrollContainerId) {
       this.setState({
@@ -166,6 +169,7 @@ export default class EditItemPopOver extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
     window.removeEventListener('keydown', this.handleKeyDown)
+    document.body.style.overflow = this.initialBodyStyleOverflow
 
     if (this._portalModalElement) {
       this.elementResizeDetector.removeAllListeners(this._portalModalElement)
