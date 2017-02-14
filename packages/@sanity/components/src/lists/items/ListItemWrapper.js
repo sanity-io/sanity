@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/items/default-style'
-import {StateLink} from 'part:@sanity/base/router'
+import classNames from 'classnames'
 
 export default class DefaultListItem extends React.Component {
   static propTypes = {
@@ -75,44 +75,19 @@ export default class DefaultListItem extends React.Component {
   }
 
   render() {
-    const {selected, highlighted, className, decoration, item} = this.props
-    const rootClasses = `
-      ${styles.root}
-      ${decoration ? styles[decoration] : ''}
-      ${highlighted ? styles.highlighted : ''}
-      ${selected ? styles.selected : ''}
-      ${className}
-    `
+    const {selected, highlighted, className, decoration} = this.props
+
+    const rootClasses = classNames([
+      styles.root,
+      decoration && styles[decoration],
+      highlighted && styles.highlighted,
+      selected && styles.selected,
+      className
+    ])
+
     return (
       <li className={rootClasses} ref={this.setElement}>
-        {
-          item.stateLink && (
-            <StateLink
-              tabIndex="0"
-              className={styles.link}
-              onClick={this.handleClick}
-              state={item.stateLink}
-              onDoubleClick={this.handleDoubleClick}
-              ref={this.setFocusableElement}
-            >
-              {this.props.children}
-            </StateLink>
-          )
-        }
-        {
-          !item.stateLink && (
-            <div
-              tabIndex="0"
-              className={styles.noLink}
-              onClick={this.handleClick}
-              onDoubleClick={this.handleDoubleClick}
-              onKeyPress={this.handleKeyPress}
-              ref={this.setFocusableElement}
-            >
-              {this.props.children}
-            </div>
-          )
-        }
+        {this.props.children}
       </li>
     )
   }

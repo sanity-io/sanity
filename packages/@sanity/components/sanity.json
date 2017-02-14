@@ -283,6 +283,10 @@
       "description": "Default list item"
     },
     {
+      "name": "part:@sanity/components/lists/items/statelink",
+      "description": "Default statelink list item"
+    },
+    {
       "name": "part:@sanity/components/lists/items/default-style",
       "description": "Default list item styling"
     },
@@ -683,6 +687,10 @@
     {
       "implements": "part:@sanity/components/lists/items/default",
       "path": "lists/items/DefaultItem.js"
+    },
+    {
+      "implements": "part:@sanity/components/lists/items/statelink",
+      "path": "lists/items/StateLinkItem.js"
     },
     {
       "implements": "part:@sanity/components/lists/items/default-style",
