@@ -24,6 +24,10 @@ export default class LinkNode extends React.Component {
     if (selection !== this.props.state.selection) {
       const isFocused = selection.hasFocusIn(node)
       this.setState({isFocused: isFocused})
+      if (!isFocused) {
+        this.setState({isManaging: false, isEditing: false})
+        return
+      }
       if (this.hasValue() && !this.state.isEditing) {
         this.setState({isManaging: true, isEditing: false})
         return
