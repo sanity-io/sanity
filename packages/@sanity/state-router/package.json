@@ -12,8 +12,6 @@
     "compile": "npm run clean && babel --out-dir lib/ src/",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
-    "postpublish": "in-publish && npm run clean || not-in-publish",
     "clean": "rimraf lib"
   },
   "keywords": [],
@@ -24,6 +22,7 @@
     "nano-pubsub": "^1.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.23.0",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-comments": "^6.22.0",
     "babelify": "^7.3.0",
