@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   display: block;
   position: fixed;
   z-index: 100;
@@ -8,6 +9,7 @@
   left: 0;
   width: 100%;
   height: 3rem;
+
 }
 
 .searchContainer {

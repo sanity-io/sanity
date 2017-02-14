@@ -49,6 +49,7 @@ export default class MobileNavigation extends React.Component {
           title="Menu"
           icon={HamburgerIcon}
         />
+        <div className={styles.headerBackground} />
 
         <div className={`${isOpen ? styles.menuOpen : styles.menuClosed}`}>
           <div className={styles.searchContainer}>
