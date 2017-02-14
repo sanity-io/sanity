@@ -53,6 +53,7 @@ export default class BlockEditor extends React.Component {
     this.listItems = slateSchema.listItems
     this.slateSchema = slateSchema.schema
     this.groupedTypes = slateSchema.types
+    this.linkType = slateSchema.linkType
     this.slatePlugins = [
       InsertBlockOnEnter({
         type: 'contentBlock',
@@ -187,35 +188,50 @@ export default class BlockEditor extends React.Component {
     this.refreshCSS()
   }
 
-  handleOnClickLinkButton = (href, target, text) => {
+  handleOnClickLinkButton = isActiveLink => {
+    if (isActiveLink) {
+      this.removeLink()
+      return
+    }
+    this.insertLink()
+  }
+
+  removeLink() {
+    const {value, onChange} = this.props
+    let transform = value.transform()
+    transform = transform
+      .unwrapInline(SLATE_LINK_TYPE)
+      .focus()
+    const nextState = transform.apply()
+    onChange(nextState)
+  }
+
+  insertLink() {
     const {value, onChange} = this.props
     let transform = value.transform()
 
-    if (!href) {
-      transform = transform
-       .unwrapInline(SLATE_LINK_TYPE)
-       .focus()
-    } else if (href) {
-      if (value.isExpanded) {
-        transform = transform
-          .unwrapInline(SLATE_LINK_TYPE)
-          .wrapInline({
-            type: SLATE_LINK_TYPE,
-            data: {href: href, target: target}
-          })
-          .focus()
-      } else {
-        const linkNode = value.inlines
-          .find(inline => inline.type === SLATE_LINK_TYPE)
-        transform = transform
-          .focus()
-          .moveToRangeOf(linkNode)
-          .unwrapInline(SLATE_LINK_TYPE)
-          .wrapInline({
-            type: SLATE_LINK_TYPE,
-            data: {href: href, target: target}
-          })
+    const addItemValue = this.context.formBuilder.createFieldValue(undefined, this.linkType)
+    const props = {
+      type: SLATE_LINK_TYPE,
+      isVoid: false,
+      kind: 'inline',
+      data: {
+        value: addItemValue
       }
+    }
+    if (value.isExpanded) {
+      transform = transform
+        .unwrapInline(SLATE_LINK_TYPE)
+        .wrapInline(props)
+        .focus()
+    } else {
+      const linkNode = value.inlines
+        .find(inline => inline.type === SLATE_LINK_TYPE)
+      transform = transform
+        .focus()
+        .moveToRangeOf(linkNode)
+        .unwrapInline(SLATE_LINK_TYPE)
+        .wrapInline(props)
     }
     const nextState = transform.apply()
     onChange(nextState)
@@ -312,25 +328,6 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-  getActiveLink() {
-    const {value} = this.props
-    if (!value.inlines) {
-      return null
-    }
-    if (this.hasLinks()) {
-      const linkNode = value.inlines
-        .find(inline => inline.type === SLATE_LINK_TYPE)
-      if (linkNode) {
-        return {
-          href: linkNode.data.get('href'),
-          target: linkNode.data.get('target')
-        }
-      }
-      return null
-    }
-    return null
-  }
-
   handleToggleFullscreen = () => {
     this.setState({
       fullscreen: !this.state.fullscreen
@@ -356,7 +353,7 @@ export default class BlockEditor extends React.Component {
   refreshCSS() {
     const editorDOMNode = ReactDOM.findDOMNode(this.editor)
     editorDOMNode.style.display = 'none'
-    editorDOMNode.offsetHeight
+    editorDOMNode.offsetHeight // eslint-disable-line no-unused-expressions
     editorDOMNode.style.display = ''
   }
 
@@ -381,10 +378,6 @@ export default class BlockEditor extends React.Component {
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const activeLink = this.getActiveLink()
-    const showLinkButton = (value.selection && value.selection.isExpanded)
-      || !!activeLink
-
     return (
       <FormField
         label={type.title}
@@ -410,8 +403,8 @@ export default class BlockEditor extends React.Component {
             listFormats={this.getListTypes()}
             textFormats={this.getStyles()}
             onLinkButtonClick={this.handleOnClickLinkButton}
-            activeLink={activeLink}
-            showLinkButton={showLinkButton}
+            activeLink={!!this.hasLinks()}
+            showLinkButton={!!this.linkType}
             marks={this.getActiveMarks()}
           />
           <div className={styles.inputContainer} id={this._inputId}>

@@ -141,6 +141,17 @@ export default [
         title: 'Text'
       },
       {
+        type: 'object',
+        name: 'link',
+        title: 'Link',
+        fields: [
+          {
+            name: 'href',
+            type: 'url'
+          }
+        ]
+      },
+      {
         type: 'array',
         name: 'marks',
         title: 'Marks',
@@ -177,13 +188,13 @@ export default [
         title: 'Url'
       },
       {
-        name: 'spans',
-        title: 'Spans',
+        name: 'keys',
+        title: 'Keys',
         type: 'array',
         of: [
           {
-            type: 'span',
-            title: 'Text'
+            type: 'string',
+            title: 'Key'
           }
         ]
       }

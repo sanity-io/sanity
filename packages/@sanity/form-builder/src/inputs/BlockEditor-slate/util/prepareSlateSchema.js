@@ -1,11 +1,11 @@
 import React from 'react'
 import createFormBuilderPreviewNode from '../createFormBuilderPreviewNode'
+import createLinkPreviewNode from '../createLinkPreviewNode'
 import mapToObject from './mapToObject'
 import Header from '../preview/Header'
 import Normal from '../preview/Normal'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
-import Link from '../preview/Link'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
@@ -28,13 +28,6 @@ const slateTypeComponentMapping = {
   },
   h6(props) {  // eslint-disable-line react/no-multi-comp
     return <Header level={6} {...props} />
-  },
-  link(props) { // eslint-disable-line react/no-multi-comp
-    // eslint-disable-next-line react/prop-types
-    const href = props.children[0] && props.children[0].props.parent.data.get('href')
-    // eslint-disable-next-line react/prop-types
-    const target = props.children[0] && props.children[0].props.parent.data.get('target')
-    return <Link href={href} target={target} {...props} />
   },
   listItem(props) {  // eslint-disable-line react/no-multi-comp
     // eslint-disable-next-line react/prop-types
@@ -84,10 +77,19 @@ export default function prepareSlateShema(type) {
   }
 
   const groupedTypes = {
-    slate: [{
-      type: 'contentBlock'
-    }],
+    slate: [
+      {type: 'contentBlock'},
+      {type: 'link'}
+    ],
     formBuilder: type.of.filter(ofType => ofType.name !== 'block')
+  }
+
+  let linkType
+  const linkField = blockType.fields.find(btField => btField.name === 'spans')
+    .type.of.find(of => of.name === 'span')
+    .fields.find(field => field.name === 'link')
+  if (linkField) {
+    linkType = linkField.type
   }
 
   const allowedMarks = blockType.fields.find(btField => btField.name === 'spans')
@@ -97,18 +99,27 @@ export default function prepareSlateShema(type) {
     .options
     .list.map(mark => mark.value)
 
+  const slateNodes = {
+    contentBlock: createSlatePreviewNode,
+  }
+
+  if (linkType) {
+    slateNodes.link = createLinkPreviewNode(linkType)
+  }
+
   const schema = {
     nodes: Object.assign(
-        mapToObject(groupedTypes.formBuilder || [], ofType => {
-          return [ofType.name, createFormBuilderPreviewNode(ofType)]
-        }),
-        {contentBlock: createSlatePreviewNode}
+      mapToObject(groupedTypes.formBuilder || [], ofType => {
+        return [ofType.name, createFormBuilderPreviewNode(ofType)]
+      }),
+      slateNodes
     ),
     marks: mapToObject(allowedMarks, mark => {
       return [mark, Mark]
     })
   }
   return {
+    linkType: linkType,
     listItems: listItems,
     textStyles: textStyles,
     types: groupedTypes,

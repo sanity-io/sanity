@@ -32,15 +32,16 @@ export default class Toolbar extends React.Component {
       items: PropTypes.arrayOf(blockFormatShape),
       onSelect: PropTypes.func
     }),
-    activeLink: PropTypes.shape({
-      href: PropTypes.string,
-      target: PropTypes.string
-    }),
+    activeLink: PropTypes.bool,
     showLinkButton: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (this.props.marks !== nextProps.marks || this.props.fullscreen !== nextProps.fullscreen)
+    return (
+      this.props.marks !== nextProps.marks
+      || this.props.fullscreen !== nextProps.fullscreen
+      || this.props.activeLink !== nextProps.activeLink
+    )
   }
 
   render() {
