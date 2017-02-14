@@ -141,7 +141,7 @@ export default class ImageInput extends React.PureComponent {
           {
             type: 'set',
             path: ['asset'],
-            value: {_ref: event.id}
+            value: {_type: 'reference', _ref: event.id}
           }
         ]
       })
