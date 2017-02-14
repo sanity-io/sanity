@@ -63,7 +63,7 @@ export default class BlockEditor extends React.Component {
         },
         nodes: [{kind: 'text', text: '', ranges: []}]
       }),
-      OnPasteHtml(),
+      OnPasteHtml({link: this.linkType}, context),
       FormBuilderNodeOnDrop(),
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
