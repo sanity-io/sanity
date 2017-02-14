@@ -197,8 +197,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.setState({listLayoutSettings: nextSettings})
   }
 
-  getListLayoutForType(schemaType) {
-    return this.state.listLayoutSettings[schemaType.name] || 'default'
+  getListLayoutForType(typeName) {
+    return this.state.listLayoutSettings[typeName] || 'default'
   }
 
   handleSetSort = sorting => {
