@@ -143,7 +143,8 @@ export default class BlockEditor extends React.Component {
     }
     let transform = value.transform()
 
-    // If a single block is selected partially, split block conditionally (selection in start, middle or end of text)
+    // If a single block is selected partially, split block conditionally
+    // (selection in start, middle or end of text)
     if (startBlock === endBlock
       && selection.isExpanded
       && !(
