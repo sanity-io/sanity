@@ -1,6 +1,3 @@
-import {SLATE_TEXT_BLOCKS} from '../constants'
-
-
 // This plugin inserts an empty default node after enter is pressed
 // within a text block which is not a default node type (normal)
 // Meaning: when enter is pressed within a title start a new empty
