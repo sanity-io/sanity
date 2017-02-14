@@ -8,7 +8,7 @@ export default async function strengthenReferences(options) {
   const concurrency = 20
   const importMapQuery = `
     *[
-      is "sanity.importmap"
+      is "sanity.importmap" &&
       importId == $importId &&
       importMapNumber > $prevMapNumber
     ] | order(importMapNumber asc) [0...${concurrency}]`
