@@ -219,7 +219,6 @@ export default class PreviewNode extends React.Component {
     const {type} = this.props
     return (
       <EditItemPopOver
-        scrollContainerId={this.props.editor.props.formBuilderInputId}
         title={this.props.node.title}
         onClose={this.handleClose}
       >
