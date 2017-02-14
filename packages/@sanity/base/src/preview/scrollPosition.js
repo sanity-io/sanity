@@ -51,5 +51,5 @@ function getWindowDimensions() {
 export default new Observable(observer => {
   observer.next(getWindowDimensions())
 
-  return events.add(debounce(() => observer.next(getWindowDimensions()), 100))
+  return events.add(debounce(() => observer.next(getWindowDimensions()), 500))
 })

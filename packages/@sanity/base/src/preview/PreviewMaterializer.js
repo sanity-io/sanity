@@ -84,7 +84,7 @@ export default class PreviewMaterializer extends React.PureComponent {
     // console.time('subscribe')
     this._subscribe(this.props.value, this.props.type)
     // console.timeEnd('subscribe')
-  }, 100)
+  }, 500)
 
   _subscribe(value, type) {
     this.unsubscribe()
