@@ -6,7 +6,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import scroll from 'scroll'
 import ease from 'ease-component'
 import Portal from './Portal'
-import elementResizeDetectorMaker from 'element-resize-detector'
+// import elementResizeDetectorMaker from 'element-resize-detector'
 
 export default class EditItemPopOver extends React.Component {
   static propTypes = {
@@ -146,7 +146,7 @@ export default class EditItemPopOver extends React.Component {
 
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('keydown', this.handleKeyDown)
-    this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
+    //this.elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
     // Sets a scrollContainer with ID
     if (scrollContainerId) {
@@ -166,7 +166,7 @@ export default class EditItemPopOver extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
     window.removeEventListener('keydown', this.handleKeyDown)
-    this.erd.removeAllListeners(this.navigationElement)
+    //this.elementResizeDetector.removeAllListeners(this._portalModalElement)
   }
 
   setRootElement = element => {
@@ -183,17 +183,24 @@ export default class EditItemPopOver extends React.Component {
   }
 
   setPortalModalElement = element => {
-    this._portalModalElement = element
-    this.erd.listenTo(this._portalModalElement, el => {
-      const portalModalRects = element.getBoundingClientRect()
-      const oldHeight = this.state.portalModalRects.height
+
+    if (element) {
+      this._portalModalElement = element
       this.setState({
-        portalModalRects: portalModalRects
+        portalModalRects: element.getBoundingClientRect()
       })
-      if (portalModalRects.height != oldHeight) {
-        this.handleResize()
-      }
-    })
+    }
+
+    // this.elementResizeDetector.listenTo(this._portalModalElement, el => {
+    //   const portalModalRects = element.getBoundingClientRect()
+    //   const oldHeight = this.state.portalModalRects.height
+    //   this.setState({
+    //     portalModalRects: portalModalRects
+    //   })
+    //   if (portalModalRects.height != oldHeight) {
+    //     this.handleResize()
+    //   }
+    // })
   }
 
   setArrowElement = element => {
