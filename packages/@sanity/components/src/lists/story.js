@@ -3,6 +3,7 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
+import DefaultPreview from 'part:@sanity/components/previews/default'
 
 import {arrayMove} from 'react-sortable-hoc'
 import {range, random} from 'lodash'
@@ -27,6 +28,8 @@ const defaultItems = range(100).map((item, i) => {
     title: chance.name()
   }
 })
+
+const defaultRenderItem = item => <DefaultPreview item={item} />
 
 const detailedItems = range(100).map((item, i) => {
   const width = random(10, 100) * 10
@@ -72,6 +75,7 @@ class SortableComponent extends React.Component {
       <DefaultList
         items={items}
         sortable
+        renderItem={defaultRenderItem}
         scrollable={scrollable}
         onSortEnd={this.handleOnSortEnd}
         onSelect={onSelect}
@@ -88,7 +92,7 @@ storiesOf('List (default)')
   'Default',
   'The default fieldset is used to gather a collection of fields.',
   () => {
-    return <DefaultList items={defaultItems} onSelect={action('onSelect')} />
+    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} />
   },
   {
     propTables: [DefaultList],
@@ -101,7 +105,7 @@ storiesOf('List (default)')
   'Zebra-stripes',
   'The default fieldset is used to gather a collection of fields.',
   () => {
-    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="zebra-stripes" />
+    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} decoration="zebra-stripes" />
   },
   {
     propTables: [DefaultList],
@@ -112,7 +116,7 @@ storiesOf('List (default)')
   'Divider',
   'The default fieldset is used to gather a collection of fields.',
   () => {
-    return <DefaultList items={defaultItems} onSelect={action('onSelect')} decoration="divider" />
+    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} decoration="divider" />
   },
   {
     propTables: [DefaultList],
@@ -233,6 +237,7 @@ storiesOf('List (default)')
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
+          renderItem={defaultRenderItem}
           selectedItem={selectedItem}
           onSelect={action('onSelect')}
           scrollable
@@ -285,6 +290,7 @@ storiesOf('List (default)')
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
+          renderItem={defaultRenderItem}
           selectedItem={selectedItem}
           highlightedItem={highlightedItem}
           onSelect={action('Select')}
@@ -311,6 +317,7 @@ storiesOf('List (default)')
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
+          renderItem={defaultRenderItem}
           selectedItem={selectedItem}
           onSelect={action('Select')}
           scrollable
@@ -335,6 +342,7 @@ storiesOf('List (default)')
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
+          renderItem={defaultRenderItem}
           highlightedItem={highlightedItem}
           onSelect={action('Select')}
           scrollable
@@ -359,6 +367,7 @@ storiesOf('List (default)')
       <div style={containerStyle}>
         <DefaultList
           items={defaultItems}
+          renderItem={defaultRenderItem}
           selectedItem={selectedItem}
           onSelect={action('Select')}
           scrollable
