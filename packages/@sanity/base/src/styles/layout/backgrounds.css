@@ -4,7 +4,7 @@
   background-color: color(var(--component-bg) a(95%));
 
   @supports (backdrop-filter: blur(10px)) {
-    background-color: color(var(--component-bg) a(50%));
-    backdrop-filter: blur(5px)
+    background-color: color(var(--component-bg) a(60%));
+    backdrop-filter: blur(10px)
   }
 }
