@@ -1,5 +1,6 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import React, {PropTypes} from 'react'
+import styles from './styles/RenderField.css'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -42,8 +43,9 @@ export default class RenderField extends React.Component {
 
     if (!FieldInput) {
       return (
-        <div>
-          Field input not found for field of type {JSON.stringify(field.type.name)}
+        <div className={styles.missingInput}>
+          <h3>Warning</h3>
+          <p>Field input not found for field of type {JSON.stringify(field.type.name)}</p>
         </div>
       )
     }
