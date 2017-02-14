@@ -47,7 +47,8 @@
   }
 }
 
-.portal {
+.inner {
+  display: block;
   z-index: var(--zindex-popover);
   position: fixed;
   top: 0;
@@ -55,7 +56,6 @@
   box-sizing: border-box;
   height: 100vh;
   width: 100vw;
-  background-color: var(--backdrop-background-color);
 
   @media (--screen-medium) {
     position: absolute;
@@ -66,10 +66,6 @@
     overflow: hidden;
     background-color: transparent;
   }
-}
-
-.inner {
-  display: block;
 }
 
 .autoWidth {

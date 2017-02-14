@@ -5,7 +5,7 @@ import {debounce} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import scroll from 'scroll'
 import ease from 'ease-component'
-import Portal from './Portal'
+import Portal from 'react-portal'
 // import elementResizeDetectorMaker from 'element-resize-detector'
 
 export default class EditItemPopOver extends React.Component {
@@ -232,9 +232,8 @@ export default class EditItemPopOver extends React.Component {
 
     return (
       <Portal
-        isOpen
+        isOpened
         onOpen={this.handleResize}
-        className={styles.portal}
       >
         <div
           className={
