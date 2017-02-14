@@ -18,16 +18,30 @@ export default class IntentLink extends React.PureComponent {
     __internalRouter: PropTypes.object
   }
 
+  focus() {
+    if (this._element) {
+      this._element.focus()
+    }
+  }
+
+  setElement = element => {
+    this._element = element
+  }
+
   render() {
     const {intent, params, children, className} = this.props
 
     // @todo Temporary hack
     if (intent === 'edit' && params.type) {
-      return <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`} className={className}>{children}</Link>
+      return (
+        <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`} className={className} ref={this.setElement} >
+          {children}
+        </Link>
+      )
     }
 
     const url = this.context.__internalRouter.resolveIntentLink(intent, params)
     const rest = omit(this.props, 'intent', 'params')
-    return <Link href={url} className={className} {...rest} />
+    return <Link href={url} className={className} {...rest} ref={this.setElement} />
   }
 }

@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/default-style'
-import ListItem from 'part:@sanity/components/lists/items/default'
+import ListItemWrapper from './items/ListItemWrapper'
 import itemStyles from 'part:@sanity/components/lists/items/default-style'
-import DefaultPreview from 'part:@sanity/components/previews/default'
+import DefaultItem from 'part:@sanity/components/lists/items/default'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
+import {item as itemPropType} from './PropTypes'
 
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
-
 
 const SortableItem = SortableElement(({renderListItem, value}) => {
   return renderListItem(value, value.index)
@@ -35,48 +35,37 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, classNam
 
 export default class DefaultList extends React.Component {
   static propTypes = {
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string,
-        index: PropTypes.number,
-        content: PropTypes.node,
-        extraContent: PropTypes.node,
-        icon: PropTypes.node
-      })
-    ),
-    onSelect: PropTypes.func,
+    items: PropTypes.arrayOf(itemPropType),
+    useDragHandle: PropTypes.bool,
+
+    scrollable: PropTypes.bool,
+    sortable: PropTypes.bool,
+
+    selectedItem: itemPropType,
+    highlightedItem: itemPropType,
+    focusedItem: itemPropType,
+    className: PropTypes.string,
+
+    overrideItemRender: PropTypes.bool,
+
+    renderItem: PropTypes.func,
+
+    decoration: PropTypes.string,
     onOpen: PropTypes.func,
+    onSelect: PropTypes.func,
     onSortStart: PropTypes.func,
     onSortMove: PropTypes.func,
-    onSortEnd: PropTypes.func,
-    useDragHandle: PropTypes.bool,
-    scrollable: PropTypes.bool,
-    selectable: PropTypes.bool,
-    selectedItem: PropTypes.object,
-    highlightedItem: PropTypes.object,
-    focusedItem: PropTypes.object,
-    loading: PropTypes.bool,
-    children: PropTypes.node,
-    className: PropTypes.string,
-    renderItem: PropTypes.func,
-    ListItemContainer: PropTypes.func,
-    decoration: PropTypes.string,
-    sortable: PropTypes.bool
+    onSortEnd: PropTypes.func
   }
 
   static defaultProps = {
     onSelect() {},
     onOpen() {},
     sortable: false,
-    renderItem(item, i) {
-      return (
-        <DefaultPreview item={item} />
-      )
+    overrideItemRender: false,
+    renderItem(item) {
+      return item
     }
-  }
-
-  handleSelect = item => {
-    this.props.onSelect(item)
   }
 
   setListElement = element => {
@@ -100,36 +89,57 @@ export default class DefaultList extends React.Component {
 
   renderListItem = (item, index) => {
     const {
-      ListItemContainer = ListItem,
       renderItem,
       decoration,
       selectedItem,
       highlightedItem,
       sortable,
       useDragHandle,
+      overrideItemRender,
       onOpen,
+      onSelect,
       focusedItem
     } = this.props
 
+    const isSelected = item == selectedItem
+    const hasFocus = focusedItem == item
+    const isHighlighted = item == highlightedItem
+
+    const renderedItem = renderItem(item, index, {
+      isSelected,
+      isHighlighted,
+      hasFocus
+    })
+
     return (
-      <ListItemContainer
+      <ListItemWrapper
         className={styles.item}
         index={index}
         key={`item-${index}`}
         item={item}
-        onSelect={this.handleSelect}
-        onOpen={onOpen}
-        selected={item == selectedItem}
-        focus={focusedItem == item}
-        highlighted={item == highlightedItem}
+        onSelect={onSelect}
+        selected={isSelected}
+        focus={hasFocus}
+        highlighted={isHighlighted}
         decoration={decoration}
         scrollIntoView={this.scrollElementIntoViewIfNeeded}
       >
         {
           sortable && useDragHandle && <DragHandle />
         }
-        {renderItem(item, index)}
-      </ListItemContainer>
+        {overrideItemRender ? renderedItem : (
+          <DefaultItem
+            item={item}
+            onSelect={onSelect}
+            onOpen={onOpen}
+            selected={isSelected}
+            focus={hasFocus}
+          >
+
+            {renderedItem}
+          </DefaultItem>
+        )}
+      </ListItemWrapper>
     )
   }
 
@@ -167,7 +177,7 @@ export default class DefaultList extends React.Component {
           </ul>
         }
         {
-          sortable && SortableList && (
+          sortable && (
             <SortableList
               sortableItems={items}
               onSortEnd={onSortEnd}

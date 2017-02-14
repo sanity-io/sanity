@@ -1,15 +1,15 @@
 import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/lists/grid-style'
-import ListItem from 'part:@sanity/components/lists/items/grid'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import {ContainerQuery} from 'react-container-query'
 import classnames from 'classnames'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import itemStyles from 'part:@sanity/components/lists/items/grid-style'
+import ListItemWrapper from './items/ListItemWrapper'
+import {item as itemPropType} from './PropTypes'
 
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
-
 
 const SortableItem = SortableElement(({value, index, renderListItem, props}) => {
   return renderListItem(value, props, index)
@@ -36,35 +36,32 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, classNam
 
 class GridList extends React.Component {
   static propTypes = {
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string,
-        description: PropTypes.string,
-        content: PropTypes.node,
-        index: PropTypes.string,
-        image: PropTypes.string
-      })
-    ),
-    onSelect: PropTypes.func,
-    onOpen: PropTypes.func,
+    items: PropTypes.arrayOf(itemPropType),
+    useDragHandle: PropTypes.bool,
+
+    scrollable: PropTypes.bool,
     selectable: PropTypes.bool,
+    sortable: PropTypes.bool,
+
+    selectedItem: itemPropType,
+    highlightedItem: itemPropType,
+    focusedItem: itemPropType,
     loading: PropTypes.bool,
     className: PropTypes.string,
-    square: PropTypes.bool,
-    layout: PropTypes.oneOf(['masonry']),
-    scrollable: PropTypes.bool,
-    showInfo: PropTypes.bool,
+
     renderItem: PropTypes.func,
-    containerQuery: PropTypes.object,
-    ListItemContainer: PropTypes.func,
-    sortable: PropTypes.bool,
+
     decoration: PropTypes.string,
-    useDragHandle: PropTypes.bool,
+    onOpen: PropTypes.func,
+    onSelect: PropTypes.func,
     onSortStart: PropTypes.func,
     onSortMove: PropTypes.func,
     onSortEnd: PropTypes.func,
-    selectedItem: PropTypes.object,
-    highlightedItem: PropTypes.object,
+
+    showInfo: PropTypes.bool,
+    square: PropTypes.bool,
+    layout: PropTypes.oneOf(['masonry']),
+    containerQuery: PropTypes.object
   }
 
   static defaultProps = {
@@ -80,7 +77,6 @@ class GridList extends React.Component {
   renderListItem = (item, index) => {
 
     const {
-      ListItemContainer = ListItem,
       renderItem,
       decoration,
       selectedItem,
@@ -91,10 +87,14 @@ class GridList extends React.Component {
       onOpen
     } = this.props
 
+
+    const isSelected = item == selectedItem
+    const isHighlighted = item == highlightedItem
+
     return (
-      <ListItemContainer
+      <ListItemWrapper
         className={styles.item}
-        index={item.index}
+        index={index}
         key={`item-${index}`}
         item={item}
         onSelect={onSelect}
@@ -107,8 +107,12 @@ class GridList extends React.Component {
         {
           sortable && useDragHandle && <DragHandle />
         }
-        {renderItem(item, index)}
-      </ListItemContainer>
+
+        {renderItem(item, index, {
+          isSelected,
+          isHighlighted
+        })}
+      </ListItemWrapper>
     )
   }
 
@@ -128,13 +132,13 @@ class GridList extends React.Component {
       onSortEnd
     } = this.props
 
-    const rootStyle = `
-      ${layout == 'masonry' ? styles.masonry : styles.default}
-      ${scrollable ? styles.isScrollable : ''}
-      ${sortable ? styles.isSortable : ''}
-      ${loading ? styles.isLoading : ''}
-      ${className}
-    `
+    const rootStyle = classnames([
+      layout == 'masonry' ? styles.masonry : styles.default,
+      scrollable && styles.isScrollable,
+      sortable && styles.isSortable,
+      loading && styles.isLoading,
+      className
+    ])
 
     const query = {
       [styles.containerQuery__small]: {
@@ -163,7 +167,7 @@ class GridList extends React.Component {
                 </ul>
               }
               {
-                sortable && SortableList && (
+                sortable && (
                   <SortableList
                     sortableItems={items}
                     onSortEnd={onSortEnd}

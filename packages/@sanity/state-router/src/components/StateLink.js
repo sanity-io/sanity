@@ -38,8 +38,20 @@ export default class StateLink extends React.PureComponent {
 
     return this.context.__internalRouter.resolvePathFromState(nextState)
   }
+
+
+  focus() {
+    if (this._element) {
+      this._element.focus()
+    }
+  }
+
+  setElement = element => {
+    this._element = element
+  }
+
   render() {
     const rest = omit(this.props, 'replace', 'state', 'toIndex')
-    return <Link href={this.resolveUrl()} {...rest} />
+    return <Link href={this.resolveUrl()} {...rest} ref={this.setElement} />
   }
 }

@@ -12,6 +12,7 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
 import Preview from 'part:@sanity/base/preview'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
 
@@ -125,17 +126,24 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     )
   }
 
-  renderDocumentPaneItem = item => {
+  renderDocumentPaneItem = (item, index, options) => {
     const {selectedType} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
-
+    const linkState = {selectedType: type.name, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
     return (
-      <Preview
-        value={item}
-        layout={listLayout}
-        type={type}
-      />
+      <StateLinkListItem
+        state={linkState}
+        highlighted={options.isHighlighted}
+        selected={options.isSelected}
+        hasFocus={options.hasFocus}
+      >
+        <Preview
+          value={item}
+          layout={listLayout}
+          type={type}
+        />
+      </StateLinkListItem>
     )
   }
 
@@ -161,10 +169,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
             this.handleResize()
           }
 
-          const items = result && result.documents && result.documents.map(item => {
-            item.stateLink = {selectedType: type.name, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
-            return item
-          })
+          const items = result ? result.documents : []
           return (
             <Pane
               contentType="documents"

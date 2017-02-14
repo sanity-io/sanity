@@ -54,7 +54,18 @@ export default class Link extends React.PureComponent {
 
     this.context.__internalRouter.navigateUrl(href, {replace})
   }
+
+  focus() {
+    if (this._element) {
+      this._element.focus()
+    }
+  }
+
+  setElement = element => {
+    this._element = element
+  }
+
   render() {
-    return <a {...omit(this.props, 'replace')} onClick={this.handleClick} />
+    return <a {...omit(this.props, 'replace')} onClick={this.handleClick} ref={this.setElement} />
   }
 }
