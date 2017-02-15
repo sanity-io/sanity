@@ -7,16 +7,12 @@ import styles from './styles/LinkButton.css'
 export default class LinkButton extends React.Component {
 
   static propTypes = {
-    createLink: PropTypes.func,
-    activeLink: PropTypes.node
+    onClick: PropTypes.func,
+    activeLink: PropTypes.object
   }
 
   handleToggleButtonClick = () => {
-    if (this.props.activeLink) {
-      this.props.activeLink.removeLink()
-      return
-    }
-    this.props.createLink()
+    this.props.onClick(this.props.activeLink)
   }
 
   render() {
@@ -26,7 +22,7 @@ export default class LinkButton extends React.Component {
         <ToggleButton
           onClick={this.handleToggleButtonClick}
           title={'Link'}
-          selected={activeLink}
+          selected={!!activeLink}
           className={styles.button}
         >
           <div className={styles.iconContainer}>

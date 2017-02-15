@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/Toolbar.css'
-import InsertBlocks, {insertBlockShape} from './InsertBlocks'
+import InsertItems, {insertItemShape} from './InsertItems'
 import Marks, {mark} from './Marks'
 import ListItems, {listItem} from './ListItems'
-import BlockFormat, {blockFormatShape} from './BlockFormat'
+import BlockStyle, {blockStyleShape} from './BlockStyle'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -12,14 +12,14 @@ import LinkButton from './LinkButton'
 export default class Toolbar extends React.Component {
 
   static propTypes = {
-    onInsertBlock: PropTypes.func,
+    onInsertItem: PropTypes.func,
     onFullscreenEnable: PropTypes.func,
     className: PropTypes.string,
     fullscreen: PropTypes.bool,
     onMarkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
     onBlockStyleChange: PropTypes.func,
-    insertBlocks: PropTypes.arrayOf(insertBlockShape),
+    insertItems: PropTypes.arrayOf(insertItemShape),
     marks: PropTypes.arrayOf(
       mark
     ),
@@ -27,12 +27,12 @@ export default class Toolbar extends React.Component {
       listItem
     ),
     blockStyles: PropTypes.shape({
-      value: PropTypes.arrayOf(blockFormatShape),
-      items: PropTypes.arrayOf(blockFormatShape),
+      value: PropTypes.arrayOf(blockStyleShape),
+      items: PropTypes.arrayOf(blockStyleShape),
       onSelect: PropTypes.func
     }),
-    createLink: PropTypes.func,
-    activeLink: PropTypes.node,
+    onLinkButtonClick: PropTypes.func,
+    activeLink: PropTypes.object,
     showLinkButton: PropTypes.bool
   }
 
@@ -50,14 +50,14 @@ export default class Toolbar extends React.Component {
       className,
       fullscreen,
       marks,
-      onInsertBlock,
+      onInsertItem,
       onMarkButtonClick,
       onListButtonClick,
       onBlockStyleChange,
       listItems,
       blockStyles,
-      insertBlocks,
-      createLink,
+      insertItems,
+      onLinkButtonClick,
       activeLink,
       showLinkButton
     } = this.props
@@ -65,7 +65,7 @@ export default class Toolbar extends React.Component {
     return (
       <div className={`${styles.root} ${className}`}>
         <div className={styles.blockFormatContainer}>
-          <BlockFormat value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
+          <BlockStyle value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
         </div>
 
         <div className={styles.formatButtons}>
@@ -85,7 +85,7 @@ export default class Toolbar extends React.Component {
         {
           showLinkButton && (
             <div className={styles.linkContainer}>
-              <LinkButton activeLink={activeLink} createLink={createLink} />
+              <LinkButton activeLink={activeLink} onClick={onLinkButtonClick} />
             </div>
           )
         }
@@ -98,7 +98,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
+          <InsertItems items={insertItems} onInsertItem={onInsertItem} />
         </div>
       </div>
     )

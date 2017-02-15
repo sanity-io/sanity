@@ -34,7 +34,7 @@ export default class ListItem extends React.Component {
 
   renderButton = listFormat => {
     const onClick = event => {
-      this.props.onClick(event, listFormat.type, !listFormat.active)
+      this.props.onClick(listFormat.type, listFormat.active)
     }
     const Icon = this.getIcon(listFormat.type)
     return (

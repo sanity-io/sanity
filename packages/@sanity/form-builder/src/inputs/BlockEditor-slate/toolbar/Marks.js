@@ -38,7 +38,7 @@ export default class Marks extends React.Component {
 
   renderMarkButton = item => {
     const onClick = event => {
-      this.props.onClick(event, item.type)
+      this.props.onClick(item)
     }
     const Icon = this.getIcon(item.type)
     let title = item.type

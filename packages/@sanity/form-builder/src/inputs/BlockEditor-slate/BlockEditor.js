@@ -5,8 +5,7 @@ import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
-import {createLink} from './LinkNode'
-
+import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateSchema from './util/prepareSlateSchema'
 import styles from './styles/BlockEditor.css'
 
@@ -45,6 +44,8 @@ export default class BlockEditor extends React.Component {
     formBuilder: PropTypes.object
   }
 
+  state = {fullscreen: false}
+
   _inputId = uniqueId('SlateBlockEditor')
 
   constructor(props, context) {
@@ -75,118 +76,32 @@ export default class BlockEditor extends React.Component {
       TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
     ]
 
-    this.state = {
-      fullscreen: false
-    }
+    this.operations = createBlockEditorOperations(this)
   }
 
-  handleInsert = item => {
-    const {value, onChange} = this.props
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, item)
-    const props = {
-      type: item.type.name,
-      isVoid: true,
-      data: {
-        value: addItemValue
-      }
-    }
-    let transform = value.transform()
-    if (item.options && item.options.inline) {
-      transform = transform.insertInline(props)
-    } else {
-      transform = transform.insertBlock(props)
-    }
-    const nextState = transform.apply()
-
-    onChange(nextState)
+  handleInsertItem = item => {
+    this.operations.insertItem(item)
   }
 
-  handleOnClickMarkButton = (event, type) => {
-    event.preventDefault()
-    const {value, onChange} = this.props
-    const nextState = value
-      .transform()
-      .toggleMark(type)
-      .apply()
-    onChange(nextState)
+  handleOnClickMarkButton = mark => {
+    this.operations.toggleMark(mark)
   }
 
-
-  handleOnClickListFormattingButton = (event, listStyle, active) => {
-    const {value, onChange} = this.props
-    const normalBlock = {
-      type: 'contentBlock',
-      data: {style: SLATE_DEFAULT_STYLE}
-    }
-    const listItemBlock = {
-      type: 'contentBlock',
-      data: {listItem: listStyle}
-    }
-    let transform = value.transform()
-
-    if (active) {
-      transform = transform
-        .setBlock(listItemBlock)
-    } else {
-      transform = transform
-        .setBlock(normalBlock)
-    }
-    const nextState = transform.apply()
-    onChange(nextState)
+  handleOnClickListFormattingButton = (listItem, isActive) => {
+    this.operations.toggleListItem(listItem, isActive)
     this.refreshCSS()
   }
 
+  handleLinkButtonClick = activeLink => {
+    if (activeLink) {
+      this.operations.removeLink()
+      return
+    }
+    this.operations.createLink()
+  }
 
   handleBlockStyleChange = selectedValue => {
-    const {value, onChange} = this.props
-    const {selection, startBlock, endBlock} = value
-    const block = {
-      type: 'contentBlock',
-      data: {style: selectedValue.style.value}
-    }
-    let transform = value.transform()
-
-    // If a single block is selected partially, split block conditionally
-    // (selection in start, middle or end of text)
-    if (startBlock === endBlock
-      && selection.isExpanded
-      && !(
-        selection.hasStartAtStartOf(startBlock)
-        && selection.hasEndAtEndOf(startBlock
-      )
-    )) {
-      const hasTextBefore = !selection.hasStartAtStartOf(startBlock)
-      const hasTextAfter = !selection.hasEndAtEndOf(startBlock)
-      if (hasTextAfter) {
-        const extendForward = selection.isForward
-          ? (selection.focusOffset - selection.anchorOffset)
-          : (selection.anchorOffset - selection.focusOffset)
-        transform
-          .collapseToStart()
-          .splitBlock()
-          .moveForward()
-          .extendForward(extendForward)
-          .collapseToEnd()
-          .splitBlock()
-          .collapseToStartOfPreviousText()
-      } else {
-        transform = hasTextBefore ? (
-          transform
-            .collapseToStart()
-            .splitBlock()
-            .moveForward()
-        ) : (
-          transform
-            .collapseToEnd()
-            .splitBlock()
-            .moveTo(selection)
-        )
-      }
-    }
-    transform
-      .setBlock(block)
-    const nextState = transform.apply()
-    onChange(nextState)
+    this.operations.setBlockStyle(selectedValue.style.value)
     this.refreshCSS()
   }
 
@@ -198,10 +113,6 @@ export default class BlockEditor extends React.Component {
   hasStyle(styleName) {
     const {value} = this.props
     return value.blocks.some(block => block.data.get('style') === styleName)
-  }
-
-  createLink = () => {
-    createLink(this.linkType, this.props, this.context)
   }
 
   getActiveLink() {
@@ -345,8 +256,8 @@ export default class BlockEditor extends React.Component {
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertBlock={this.handleInsert}
-            insertBlocks={this.groupedTypes.formBuilder || []}
+            onInsertItem={this.handleInsertItem}
+            insertItems={this.groupedTypes.formBuilder || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
@@ -354,7 +265,7 @@ export default class BlockEditor extends React.Component {
             onBlockStyleChange={this.handleBlockStyleChange}
             listItems={this.getListItems()}
             blockStyles={this.getBlockStyles()}
-            createLink={this.createLink}
+            onLinkButtonClick={this.handleLinkButtonClick}
             activeLink={this.getActiveLink()}
             showLinkButton={!!this.linkType}
             marks={this.getActiveMarks()}
