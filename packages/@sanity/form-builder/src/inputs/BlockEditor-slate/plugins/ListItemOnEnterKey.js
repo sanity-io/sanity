@@ -1,43 +1,64 @@
 function createOnKeyDown(insertBlockStyle) {
   return function onKeyDown(event, data, state, editor) {
+
+    const {document, startKey, startBlock} = state
+    let transform = state.transform()
+
+    // only for key
     if (data.key !== 'enter') {
       return null
     }
-    const isList = state.blocks.some(block => block.data.get('listItem'))
+
+    // This plugin should only kick in when the cursor is at the last listItem of a list.
+    // and the new current list item is empty.
+    // OR if no previous block (top of document)
+
+    // Only do listItem nodes
+    const isList = startBlock.data.get('listItem')
     if (!isList) {
       return null
     }
 
-    const {document, startKey, startBlock} = state
-    const previousBlock = document.getPreviousBlock(startKey)
-    const nextBlock = document.getNextBlock(startKey)
-
-    // This plugin should only kick in when the cursor is at the last listItem of a list,
-    // and we have other list items above, and the last  and current list item is empty.
-    // Return null if any of the variables below evals to true.
-    const inMiddleOfList = nextBlock
-      && nextBlock.data.get('listItem')
-      && nextBlock.data.get('listItem') === startBlock.data.get('listItem')
-    const noPreviousblock = !previousBlock
-    const previousBlockNotListItem = previousBlock && !previousBlock.data.get('listItem')
-    const currentListItemNotEmpty = startBlock.text !== ''
-    if (inMiddleOfList
-      || noPreviousblock
-      || previousBlockNotListItem
-      || currentListItemNotEmpty) {
+    // Return if current listItem is not empty
+    if (startBlock.text !== '') {
       return null
     }
-    let transform = state.transform().deleteBackward(1)
 
-    if (nextBlock && (nextBlock && !nextBlock.data.get('listItem'))) {
+    const previousBlock = document.getPreviousBlock(startKey)
+    if (previousBlock && !previousBlock.data.get('listItem')) {
+      return null
+    }
+
+    const blockToInsert = {type: 'contentBlock', data: {style: insertBlockStyle}}
+
+    // If on top of document
+    // and no text insert a node before
+    if (!previousBlock) {
+      return transform
+        .insertBlock(blockToInsert)
+        .focus()
+        .apply()
+    }
+
+    const nextBlock = document.getNextBlock(startKey)
+
+
+    // Delete previous listItem if previous list item is empty
+    if (previousBlock.data.get('listItem') && !previousBlock.nodes.length) {
+      transform = transform.deleteBackward(1)
+    }
+
+    // Jump to next node if next node is not a listItem
+    if (nextBlock && !nextBlock.data.get('listItem')) {
       transform = transform
         .collapseToStartOf(nextBlock)
     } else {
+      // Insert a given block type
       transform = transform
-        .insertBlock({type: 'contentBlock', data: {style: insertBlockStyle}})
+        .insertBlock(blockToInsert)
+        .focus()
     }
     const nextState = transform.apply()
-    event.preventDefault()
     return nextState
   }
 }
