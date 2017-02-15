@@ -7,7 +7,7 @@ const reduceConfig = require('@sanity/util').reduceConfig
 
 /* eslint-disable no-process-env */
 const staging = process.env.SANITY_STAGING
-const env = typeof process.env.NODE_ENV === 'undefined' && staging ? 'staging' : process.env.NODE_ENV
+const env = typeof staging === 'undefined' ? process.env.NODE_ENV : 'staging'
 /* eslint-enable no-process-env */
 
 const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
