@@ -11,8 +11,9 @@ const assetMatcher = /^(file|image)@([a-z]+:\/\/.*)/
 
 export default options => {
   const {client, replace} = options
+  return {processDocument}
 
-  return through2.obj((doc, enc, cb) => {
+  function processDocument(doc) {
     const assets = extractWithPath(`..[${assetKey}]`, doc)
       .map(match => match.path.slice(0, -1))
       .map(path => get(doc, path))
@@ -21,10 +22,8 @@ export default options => {
 
     // Ensure images exist in Sanity. This also mutates the in-memory document,
     // replacing {_sanityAsset: 'url'} with {asset: {_ref: 'some/documentId'}}
-    promiseEach(assets, uploadAsset, {concurrency: 3})
-      .then(() => cb(null, doc))
-      .catch(err => cb(err))
-  })
+    return promiseEach(assets, uploadAsset, {concurrency: 3})
+  }
 
   async function uploadAsset(item) {
     // First, ensure that we have uploaded the item to Sanity

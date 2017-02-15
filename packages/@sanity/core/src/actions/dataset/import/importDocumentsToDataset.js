@@ -3,7 +3,7 @@ import batchedMutationStream from './batchedMutationStream'
 import getJsonStreamer from './getJsonStreamer'
 import getDatasetRewriter from './getDatasetRewriter'
 import getReferenceWeakener from './getReferenceWeakener'
-import getAssetImporter from './getAssetImporter'
+import getBatchedAssetImporter from './getBatchedAssetImporter'
 
 export default (options, context) => new Promise((resolve, reject) => {
   importDocumentsToDataset(options, context, {resolve, reject})
@@ -33,7 +33,7 @@ function importDocumentsToDataset(options, context, promise) {
     // Make strong references weak, create reference maps so we can transform them back
     getReferenceWeakener(options),
     // Transform and upload assets
-    getAssetImporter(options),
+    getBatchedAssetImporter(options),
     // Batch into a transaction of mutations
     mutationStream
   )
