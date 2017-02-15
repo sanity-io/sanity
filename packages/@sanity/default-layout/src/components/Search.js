@@ -87,7 +87,7 @@ class Search extends React.Component {
     // TODO hack until gradient supports 'schemaName.*'
     const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName).map(str => `"${str}"`)
 
-    const query = `*[is [${prefixedTypeNames.join(', ')}] | order(_updatedAt desc) [0...3]`
+    const query = `*[_type in [${prefixedTypeNames.join(', ')}]] | order(_updatedAt desc) [0...3]`
 
     client.fetch(query, {})
       .then(response => {
