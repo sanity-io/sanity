@@ -7,7 +7,7 @@ const multiImplementationHandler = require('./multiImplementationHandler')
 
 /* eslint-disable no-process-env */
 const staging = process.env.SANITY_STAGING
-const env = typeof process.env.NODE_ENV === 'undefined' && staging ? 'staging' : process.env.NODE_ENV
+const env = typeof staging === 'undefined' ? process.env.NODE_ENV : 'staging'
 /* eslint-enable no-process-env */
 
 function sanityPartLoader(input) {
@@ -28,7 +28,8 @@ function sanityPartLoader(input) {
   if (request === 'config:sanity') {
     const config = JSON.parse(input)
     const indent = env === 'production' ? 0 : 2
-    return `module.exports = ${JSON.stringify(reduceConfig(config, env), null, indent)}\n`
+    const reduced = reduceConfig(config, env)
+    return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`
   }
 
   const parts = this._compiler.sanity.parts
