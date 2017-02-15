@@ -1,10 +1,13 @@
 import path from 'path'
+import got from 'got'
+import split from 'split2'
+import fsp from 'fs-promise'
 import prettyMs from 'pretty-ms'
 import progrescii from 'progrescii'
 import linecount from 'linecount/promise'
 import debug from '../../debug'
+import headStream from '../../util/headStream'
 import generateGuid from '../../util/generateGuid'
-import readFirstLine from '../../util/readFirstLine'
 import strengthenReferences from '../../actions/dataset/import/strengthenReferences'
 import importDocumentsToDataset from '../../actions/dataset/import/importDocumentsToDataset'
 
@@ -27,14 +30,18 @@ export default {
       )
     }
 
-    const importStartTime = Date.now()
-    const sourceFile = path.resolve(process.cwd(), file)
+    const isUrl = /^https?:\/\//i.test(file)
+    const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
     const importId = generateGuid()
+    const peek = headStream()
+    const source = isUrl ? got.stream(sourceFile) : fsp.createReadStream(sourceFile)
+    const stream = source.pipe(split(newlineify)).pipe(peek)
+
     let targetDataset = specifiedDataset
     let fromDataset = specifiedDataset
     let rewriteDataset = false
     try {
-      const firstLine = await readFirstLine(sourceFile)
+      const firstLine = (await peek.head).toString()
       const firstDocId = JSON.parse(firstLine)._id || ''
       fromDataset = firstDocId.split('.', 2)[0]
       rewriteDataset = specifiedDataset && fromDataset !== specifiedDataset
@@ -60,9 +67,8 @@ export default {
       apiClient: apiClient
     })
 
-    const documentCount = await linecount(sourceFile)
-
-    debug(`Found ${documentCount} lines in source file`)
+    const documentCount = isUrl ? 0 : await linecount(sourceFile)
+    debug(documentCount ? 'Could not count documents in source' : `Found ${documentCount} lines in source file`)
     debug(`Target dataset has been resolved to "${targetDataset}"`)
     debug(`IDs ${rewriteDataset ? 'needs' : 'do not need'} to be rewritten`)
 
@@ -84,25 +90,42 @@ export default {
     }
 
     // Import documents to the target dataset
+    const importStartTime = Date.now()
     const batchSize = 150
+    const lengthComputable = documentCount > 0
     const progressTotal = documentCount * 2 // @todo figure out how many reference maps we're gonna need and make a progress thing that makes sense
-    const progress = progrescii.create({
+    const progress = lengthComputable ? progrescii.create({
       total: progressTotal,
       template: `${chalk.yellow('●')} Importing documents :b :p% in :ts`
-    })
+    }) : output.spinner('Importing documents (0.00s)').start()
+    const importState = {documentsCompleted: 0}
 
-    const progressTicker = setInterval(() => progress.render(), 60)
+    // Update progress every 60ms
+    const progressTicker = setInterval(() => {
+      if (lengthComputable) {
+        progress.render()
+      } else {
+        const docProgress = importState.documentsCompleted ? `- ${importState.documentsCompleted} imported` : ''
+        progress.text = `Importing documents ${docProgress} (${prettyMs(Date.now() - importStartTime)})`
+      }
+    }, 60)
 
     try {
       await importDocumentsToDataset({
-        sourceFile,
+        inputStream: stream,
         targetDataset,
         fromDataset,
         importId,
         operation,
         batchSize,
         client,
-        progress: () => {
+        progress: numDocs => {
+          importState.documentsCompleted += numDocs
+
+          if (!lengthComputable) {
+            return
+          }
+
           if (progress.progress + batchSize >= documentCount) {
             progress.template = `${chalk.green('✔')} Importing documents :b :p% in :ts`
             clearInterval(progressTicker)
@@ -111,10 +134,18 @@ export default {
           progress.step(Math.min(batchSize, documentCount))
         }
       }, context)
+
       clearInterval(progressTicker)
+      if (!lengthComputable) {
+        progress.succeed()
+      }
     } catch (err) {
       clearInterval(progressTicker)
-      output.print('\n')
+      if (lengthComputable) {
+        output.print('\n')
+      } else {
+        progress.fail()
+      }
       return output.error(err)
     }
 
@@ -176,4 +207,8 @@ function getMutationOperation(flags) {
   }
 
   return 'create'
+}
+
+function newlineify(line) {
+  return `${line}\n`
 }

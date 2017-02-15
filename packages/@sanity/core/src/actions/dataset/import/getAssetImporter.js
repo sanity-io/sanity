@@ -41,7 +41,8 @@ export default options => {
     const label = getHash(item.asset.url)
 
     // See if the item exists on the server
-    const docs = await getWithLabel(client, item.asset.type, label)
+    debug('Checking for asset with URL %s', item.asset.url)
+    const docs = await getAssetIdForLabel(client, item.asset.type, label)
     if (docs.length > 1) {
       throw new Error(`More than one asset with the label "${label}" found, can't reason about import state`)
     } else if (docs.length === 1 && replace) {
@@ -49,6 +50,7 @@ export default options => {
       await client.assets.delete(docs[0])
     } else if (docs.length === 1) {
       // In NON-replace mode, we want to reuse the asset
+      debug('Found %s for URL %s', item.asset.type, item.asset.url)
       return docs[0]
     }
 
@@ -65,7 +67,7 @@ function extractUrlParts(ref) {
   return {ref, asset: type ? {type, url} : null}
 }
 
-async function getWithLabel(client, type, label) {
+async function getAssetIdForLabel(client, type, label) {
   const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
   const query = '*[is $dataType && label == $label][0...2]{_id}'
   return (await client.fetch(query, {dataType, label})).map(doc => doc._id)

@@ -1,4 +1,3 @@
-import fsp from 'fs-promise'
 import pumpify from 'pumpify'
 import batchedMutationStream from './batchedMutationStream'
 import getJsonStreamer from './getJsonStreamer'
@@ -12,7 +11,7 @@ export default (options, context) => new Promise((resolve, reject) => {
 
 function importDocumentsToDataset(options, context, promise) {
   const {resolve, reject} = promise
-  const {sourceFile, targetDataset, fromDataset, client, operation} = options
+  const {inputStream, targetDataset, fromDataset, client, operation} = options
 
   // Create stream that batches documents into transactions
   const mutationStream = batchedMutationStream({
@@ -25,8 +24,8 @@ function importDocumentsToDataset(options, context, promise) {
 
   const startTime = Date.now()
   const stream = pumpify(
-    // Read from input file
-    fsp.createReadStream(sourceFile),
+    // Read from input stream
+    inputStream,
     // Split on each newline character and parse line as JSON
     getJsonStreamer(),
     // Rewrite IDs if we're importing to a different dataset
