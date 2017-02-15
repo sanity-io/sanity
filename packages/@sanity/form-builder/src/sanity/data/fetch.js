@@ -10,16 +10,8 @@ export function fetchSingle(id) {
 
 export function fetch(type) {
   const toFieldTypes = type.to.map(toField => toField.type)
-  const params = toFieldTypes.reduce((acc, toFieldType, i) => {
-    acc[`toFieldType${i}`] = `${schema.name}.${toFieldType.name}`
-    return acc
-  }, {})
-
-  const eqls = Object.keys(params).map(key => (
-    `_type == $${key}`
-  )).join(' || ')
-
-  return client.fetch(`*[${eqls}]`, params)
+  const types = toFieldTypes.map(toFieldType => quote(`${schema.name}.${toFieldType.name}`))
+  return client.fetch(`*[_type in [${types.join(', ')}]]`)
     .then(response => response.map(unprefixType))
 }
 
@@ -47,7 +39,7 @@ export function referenceSearch(textTerm, type) {
 
   const typeFilter = type.to.map(toField => `${schema.name}.${toField.type.name}`).map(quote)
   const terms = textTerm.split(/\s+/).map(quote)
-  const constraints = `[${typeFilter.join(', ')}] include _type && (${textFields.join(', ')}) match (${terms.join(',')})`
+  const constraints = `_type in [${typeFilter.join(', ')}] && (${textFields.join(', ')}) match (${terms.join(',')})`
   const query = `*[${constraints}]` // todo: see if its possible to use selection from previews here
 
   return client.fetch(query)
