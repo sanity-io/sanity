@@ -20,10 +20,11 @@ import Portal from 'react-portal'
 
 import {
   SLATE_DEFAULT_STYLE,
-  SLATE_LINK_TYPE,
+  SLATE_SPAN_TYPE
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
+import {getLinkField} from './util/spanHelpers'
 
 export default class BlockEditor extends React.Component {
   static propTypes = {
@@ -55,8 +56,7 @@ export default class BlockEditor extends React.Component {
     this.textStyles = slateSchema.textStyles
     this.listItems = slateSchema.listItems
     this.slateSchema = slateSchema.schema
-    this.groupedTypes = slateSchema.types
-    this.linkType = slateSchema.linkType
+
     this.slatePlugins = [
       InsertBlockOnEnter({
         type: 'contentBlock',
@@ -80,7 +80,7 @@ export default class BlockEditor extends React.Component {
   }
 
   handleInsertItem = item => {
-    this.operations.insertItem(item)
+    this.operations.insertBlock(item)
   }
 
   handleOnClickMarkButton = mark => {
@@ -92,12 +92,17 @@ export default class BlockEditor extends React.Component {
     this.refreshCSS()
   }
 
-  handleLinkButtonClick = activeLink => {
-    if (activeLink) {
-      this.operations.removeLink()
+  getLinkField() {
+    return getLinkField(this.props.type)
+  }
+
+  handleLinkButtonClick = current => {
+    const linkField = this.getLinkField()
+    if (current) {
+      this.operations.removeInline()
       return
     }
-    this.operations.createLink()
+    this.operations.createFieldValue(linkField)
   }
 
   handleBlockStyleChange = selectedValue => {
@@ -117,7 +122,7 @@ export default class BlockEditor extends React.Component {
 
   getActiveLink() {
     const {value} = this.props
-    return value.inlines.find(inline => inline.type == SLATE_LINK_TYPE)
+    return value.inlines.find(inline => inline.type == SLATE_SPAN_TYPE)
   }
 
   isWithinList() {
@@ -241,6 +246,8 @@ export default class BlockEditor extends React.Component {
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
+    const customTypes = type.of.filter(memberType => memberType.name !== 'block')
+
     return (
       <FormField
         label={type.title}
@@ -257,7 +264,7 @@ export default class BlockEditor extends React.Component {
           <Toolbar
             className={styles.toolbar}
             onInsertItem={this.handleInsertItem}
-            insertItems={this.groupedTypes.formBuilder || []}
+            insertItems={customTypes || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
@@ -267,7 +274,7 @@ export default class BlockEditor extends React.Component {
             blockStyles={this.getBlockStyles()}
             onLinkButtonClick={this.handleLinkButtonClick}
             activeLink={this.getActiveLink()}
-            showLinkButton={!!this.linkType}
+            showLinkButton
             marks={this.getActiveMarks()}
           />
           <div className={styles.inputContainer} id={this._inputId}>

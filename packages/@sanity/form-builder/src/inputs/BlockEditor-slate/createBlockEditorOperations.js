@@ -1,57 +1,44 @@
-import {
-  SLATE_LINK_TYPE,
-  SLATE_DEFAULT_STYLE
-} from './constants'
+import {SLATE_DEFAULT_STYLE, SLATE_SPAN_TYPE} from './constants'
 
 export default function createBlockEditorOperations(blockEditor) {
 
   return {
 
-    createLink() {
+    createFieldValue(field) {
 
       const {value, onChange} = blockEditor.props
-      const {selection, focusKey, document} = value
 
-      let transform = value.transform()
+      if (!value.isExpanded) {
+        throw new Error('todo: decide if we should expand selection before applying')
+      }
 
       const addItemValue = blockEditor.context.formBuilder
-        .createFieldValue(undefined, blockEditor.linkType)
-      const link = {
-        type: SLATE_LINK_TYPE,
-        isVoid: false,
+        .createFieldValue({[field.name]: undefined}, field.type)
+
+      const span = {
+        isVoid: false, // todo: make void if schema says so
+        type: SLATE_SPAN_TYPE,
         kind: 'inline',
         data: {
           value: addItemValue
         }
       }
-      if (value.isExpanded) {
-        transform = transform
-          .unwrapInline(SLATE_LINK_TYPE)
-          .wrapInline(link)
-          .focus()
-      } else {
-        const focusNode = document.getClosestBlock(focusKey)
-        if (focusNode && focusNode.isVoid) {
-          return
-        }
-        transform = transform
-          .focus()
-          .splitInlineAtRange(selection)
-          .collapseToStart()
-          .splitInline()
-          .collapseToEnd()
-      }
-      const nextState = transform.apply()
+
+      const nextState = value.transform()
+        .unwrapInline(SLATE_SPAN_TYPE)
+        .wrapInline(span)
+        .focus()
+        .apply()
+
       onChange(nextState)
     },
 
-    removeLink() {
+    removeInline() {
       const {value, onChange} = blockEditor.props
-      let transform = value.transform()
-      transform = transform
-        .unwrapInline(SLATE_LINK_TYPE)
+      const nextState = value.transform()
+        .unwrapInline(SLATE_SPAN_TYPE)
         .focus()
-      const nextState = transform.apply()
+        .apply()
       onChange(nextState)
     },
 
@@ -140,24 +127,17 @@ export default function createBlockEditorOperations(blockEditor) {
       onChange(nextState)
     },
 
-    insertItem(item) {
+    insertBlock(item) {
       const {value, onChange} = blockEditor.props
       const addItemValue = blockEditor.context.formBuilder.createFieldValue(undefined, item)
+
       const props = {
         type: item.type.name,
         isVoid: true,
-        data: {
-          value: addItemValue
-        }
+        data: {value: addItemValue}
       }
-      let transform = value.transform()
-      if (item.options && item.options.inline) {
-        transform = transform.insertInline(props)
-      } else {
-        transform = transform.insertBlock(props)
-      }
-      const nextState = transform.apply()
 
+      const nextState = value.transform().insertBlock(props).apply()
       onChange(nextState)
     },
 

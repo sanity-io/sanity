@@ -120,10 +120,6 @@ export default [
             title: 'Span'
           },
           {
-            type: 'link',
-            title: 'Link'
-          },
-          {
             type: 'image',
             title: 'Image'
           }
@@ -146,10 +142,16 @@ export default [
         title: 'Link',
         fields: [
           {
+            type: 'url',
             name: 'href',
-            type: 'url'
           }
         ]
+      },
+      {
+        name: 'author',
+        title: 'Author',
+        type: 'reference',
+        to: [{type: 'author'}]
       },
       {
         type: 'array',

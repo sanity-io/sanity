@@ -1,6 +1,6 @@
 import React from 'react'
-import createFormBuilderPreviewNode from '../createFormBuilderPreviewNode'
-import createLinkPreviewNode from '../createLinkPreviewNode'
+import createBlockNode from '../createBlockNode'
+import createSpanNode from '../createSpanNode'
 import mapToObject from './mapToObject'
 import Header from '../preview/Header'
 import Normal from '../preview/Normal'
@@ -9,6 +9,7 @@ import Mark from '../preview/Mark'
 import {
   SLATE_DEFAULT_STYLE
 } from '../constants'
+import {getSpanField} from './spanHelpers'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
@@ -58,7 +59,7 @@ function createSlatePreviewNode(props) {
   return component(props)
 }
 
-export default function prepareSlateShema(type) {
+export default function prepareSlateSchema(type) {
   const blockType = type.of.find(ofType => ofType.name === 'block')
   if (!blockType) {
     throw new Error("'block' type is not defined in the schema (required).")
@@ -83,22 +84,6 @@ export default function prepareSlateShema(type) {
       && listField.type.options.list.filter(listStyle => listStyle.value)
   }
 
-  const groupedTypes = {
-    slate: [
-      {type: 'contentBlock'},
-      {type: 'link'}
-    ],
-    formBuilder: type.of.filter(ofType => ofType.name !== 'block')
-  }
-
-  let linkType
-  const linkField = blockType.fields.find(btField => btField.name === 'spans')
-    .type.of.find(of => of.name === 'span')
-    .fields.find(field => field.name === 'link')
-  if (linkField) {
-    linkType = linkField.type
-  }
-
   const allowedMarks = blockType.fields.find(btField => btField.name === 'spans')
     .type.of.find(of => of.name === 'span')
     .fields.find(field => field.name === 'marks')
@@ -106,30 +91,22 @@ export default function prepareSlateShema(type) {
     .options
     .list.map(mark => mark.value)
 
-  const slateNodes = {
-    contentBlock: createSlatePreviewNode,
-  }
-
-  if (linkType) {
-    slateNodes.link = createLinkPreviewNode(linkType)
-  }
+  const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
+  const spanType = getSpanField(type).type
 
   const schema = {
-    nodes: Object.assign(
-      mapToObject(groupedTypes.formBuilder || [], ofType => {
-        return [ofType.name, createFormBuilderPreviewNode(ofType)]
-      }),
-      slateNodes
-    ),
+    nodes: {
+      ...mapToObject(memberTypesExceptBlock, ofType => [ofType.name, createBlockNode(ofType)]),
+      span: createSpanNode(spanType),
+      contentBlock: createSlatePreviewNode,
+    },
     marks: mapToObject(allowedMarks, mark => {
       return [mark, Mark]
     })
   }
   return {
-    linkType: linkType,
     listItems: listItems,
     textStyles: textStyles,
-    types: groupedTypes,
     schema: schema
   }
 }
