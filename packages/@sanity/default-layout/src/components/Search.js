@@ -42,8 +42,6 @@ class Search extends React.Component {
   }
 
   handleSearch = q => {
-    const params = {}
-
     if (!client) {
       console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
       return
@@ -60,13 +58,15 @@ class Search extends React.Component {
           )
         )
 
-    const query = `*[[${union(searchableFields).join(', ')}] match "${q}"][0...10]`
+    const uniqueFields = union(searchableFields)
+    const constraints = uniqueFields.map(field => `${field} match $term`)
+    const query = `*[${constraints.join(' || ')}][0...10]`
 
     this.setState({
       isSearching: true
     })
 
-    client.fetch(query, params)
+    client.fetch(query, {term: q})
       .then(hits => {
         this.setState({
           isSearching: false,
