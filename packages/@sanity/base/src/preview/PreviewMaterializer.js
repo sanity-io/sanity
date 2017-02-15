@@ -34,7 +34,8 @@ export default class PreviewMaterializer extends React.PureComponent {
   }
 
   state = {
-    isLoading: true,
+    isDeferred: true,
+    isLoading: false,
     error: null,
     result: null
   }
@@ -79,6 +80,7 @@ export default class PreviewMaterializer extends React.PureComponent {
     if (this.subscription) {
       this.subscription.unsubscribe()
       this.subscription = null
+      this.setState({isDeferred: true, isLoading: false})
     }
   }
 
@@ -93,33 +95,42 @@ export default class PreviewMaterializer extends React.PureComponent {
 
   subscribe(value, type) {
     this.unsubscribe()
+    this.setState({isLoading: true})
     this.subscription = observeForPreview(value, type)
       .subscribe(res => {
         this.setState({
           result: res,
+          isDeferred: false
           isLoading: false
         })
       })
   }
 
   render() {
-    const {result, isLoading, error} = this.state
-    if (isLoading) {
+    const {result, isDeferred, isLoading, error} = this.state
+
+    const childParams = {
+      materialized: result,
+      isDeferred,
+      isLoading,
+      error: error
+    }
+
+    // todo: remove the following block when we have better placeholders
+    if (isDeferred) {
       return (
         <div style={{filter: 'blur(3px) opacity(0.6)'}}>
           {this.props.children({
-            title: randomWords(2, 4, 2, 4),
-            subtitle: Math.random() > 0.7 ? randomWords(3, 8, 2, 4) : ''
+            ...childParams,
+            materialized: {
+              title: randomWords(2, 4, 2, 4),
+              subtitle: Math.random() > 0.7 ? randomWords(3, 8, 2, 4) : ''
+            }
           })}
         </div>
       )
     }
-    if (error) {
-      return <div>Error: {error.message}</div>
-    }
-    if (!result) {
-      return <div />
-    }
-    return this.props.children(result)
+
+    return this.props.children(childParams)
   }
 }
