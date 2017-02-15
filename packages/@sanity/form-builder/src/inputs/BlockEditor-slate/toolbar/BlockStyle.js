@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
-import styles from './styles/BlockFormat.css'
+import styles from './styles/BlockStyle.css'
 
 export const blockFormatShape = PropTypes.shape({
   key: PropTypes.string,
@@ -9,7 +9,7 @@ export const blockFormatShape = PropTypes.shape({
   preview: PropTypes.node,
 })
 
-export default class BlockFormat extends React.Component {
+export default class BlockStyle extends React.Component {
 
   static propTypes = {
     value: PropTypes.arrayOf(blockFormatShape),

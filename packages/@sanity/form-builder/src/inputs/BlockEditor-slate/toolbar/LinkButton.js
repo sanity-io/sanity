@@ -7,12 +7,16 @@ import styles from './styles/LinkButton.css'
 export default class LinkButton extends React.Component {
 
   static propTypes = {
-    onClick: PropTypes.func,
-    activeLink: PropTypes.bool
+    createLink: PropTypes.func,
+    activeLink: PropTypes.node
   }
 
   handleToggleButtonClick = () => {
-    this.props.onClick(this.props.activeLink)
+    if (this.props.activeLink) {
+      this.props.activeLink.removeLink()
+      return
+    }
+    this.props.createLink()
   }
 
   render() {

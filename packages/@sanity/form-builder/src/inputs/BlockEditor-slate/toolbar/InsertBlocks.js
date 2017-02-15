@@ -6,7 +6,7 @@ export const insertBlockShape = PropTypes.shape({
   title: PropTypes.string
 })
 
-export default class InsertDropdown extends React.Component {
+export default class InsertBlocks extends React.Component {
 
   static propTypes = {
     onInsertBlock: PropTypes.func,

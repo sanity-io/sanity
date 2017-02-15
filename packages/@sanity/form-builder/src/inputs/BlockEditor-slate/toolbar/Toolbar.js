@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/Toolbar.css'
-import InsertDropdown, {insertBlockShape} from './InsertDropdown'
-import TextFormatToolbar, {textFormatShape} from './TextFormat'
-import ListFormat, {listFormatShape} from './ListFormat'
+import InsertBlocks, {insertBlockShape} from './InsertBlocks'
+import Marks, {mark} from './Marks'
+import ListItems, {listItem} from './ListItems'
 import BlockFormat, {blockFormatShape} from './BlockFormat'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
@@ -17,28 +17,29 @@ export default class Toolbar extends React.Component {
     className: PropTypes.string,
     fullscreen: PropTypes.bool,
     onMarkButtonClick: PropTypes.func,
-    onLinkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
-    onFormatSelectChange: PropTypes.func,
+    onBlockStyleChange: PropTypes.func,
     insertBlocks: PropTypes.arrayOf(insertBlockShape),
     marks: PropTypes.arrayOf(
-      textFormatShape
+      mark
     ),
-    listFormats: PropTypes.arrayOf(
-      listFormatShape
+    listItems: PropTypes.arrayOf(
+      listItem
     ),
-    textFormats: PropTypes.shape({
+    blockStyles: PropTypes.shape({
       value: PropTypes.arrayOf(blockFormatShape),
       items: PropTypes.arrayOf(blockFormatShape),
       onSelect: PropTypes.func
     }),
-    activeLink: PropTypes.bool,
+    createLink: PropTypes.func,
+    activeLink: PropTypes.node,
     showLinkButton: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.marks !== nextProps.marks
+      || this.props.blockStyles !== nextProps.blockStyles
       || this.props.fullscreen !== nextProps.fullscreen
       || this.props.activeLink !== nextProps.activeLink
     )
@@ -52,11 +53,11 @@ export default class Toolbar extends React.Component {
       onInsertBlock,
       onMarkButtonClick,
       onListButtonClick,
-      onFormatSelectChange,
-      onLinkButtonClick,
-      listFormats,
-      textFormats,
+      onBlockStyleChange,
+      listItems,
+      blockStyles,
       insertBlocks,
+      createLink,
       activeLink,
       showLinkButton
     } = this.props
@@ -64,19 +65,19 @@ export default class Toolbar extends React.Component {
     return (
       <div className={`${styles.root} ${className}`}>
         <div className={styles.blockFormatContainer}>
-          <BlockFormat value={textFormats.value} items={textFormats.items} onSelect={onFormatSelectChange} />
+          <BlockFormat value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
         </div>
 
         <div className={styles.formatButtons}>
           {marks && marks.length > 0 && (
             <div className={styles.textFormatContainer}>
-              <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
+              <Marks marks={marks} onClick={onMarkButtonClick} />
             </div>
           )}
 
-          {listFormats && listFormats.length > 0 && (
+          {listItems && listItems.length > 0 && (
             <div className={styles.listFormatContainer}>
-              <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
+              <ListItems listItems={listItems} onClick={onListButtonClick} />
             </div>
           )}
         </div>
@@ -84,7 +85,7 @@ export default class Toolbar extends React.Component {
         {
           showLinkButton && (
             <div className={styles.linkContainer}>
-              <LinkButton activeLink={activeLink} onClick={onLinkButtonClick} />
+              <LinkButton activeLink={activeLink} createLink={createLink} />
             </div>
           )
         }
@@ -97,7 +98,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertDropdown blocks={insertBlocks} onInsertBlock={onInsertBlock} />
+          <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
         </div>
       </div>
     )

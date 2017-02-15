@@ -6,6 +6,43 @@ import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import ItemForm from './ItemForm'
 import styles from './styles/LinkNode.css'
 
+import {
+  SLATE_LINK_TYPE,
+} from './constants'
+
+export function createLink(linkType, blockEditorProps, context) {
+  const {value, onChange} = blockEditorProps
+  const {selection, startOffset, endOffset, focusText} = value
+  let transform = value.transform()
+
+  const addItemValue = context.formBuilder.createFieldValue(undefined, linkType)
+  const link = {
+    type: SLATE_LINK_TYPE,
+    isVoid: false,
+    kind: 'inline',
+    data: {
+      value: addItemValue
+    }
+  }
+  if (value.isExpanded) {
+    transform = transform
+      .unwrapInline(SLATE_LINK_TYPE)
+      .wrapInline(link)
+      .focus()
+  } else {
+    console.log(startOffset, endOffset, focusText)
+    transform = transform
+      .focus()
+      .splitInlineAtRange(selection)
+      .collapseToStart()
+      .splitInline()
+      .collapseToEnd()
+  }
+  const nextState = transform.apply()
+  onChange(nextState)
+}
+
+
 export default class LinkNode extends React.Component {
   static propTypes = {
     type: PropTypes.object,
@@ -81,9 +118,18 @@ export default class LinkNode extends React.Component {
   }
 
   handleRemoveLink = () => {
+    this.remove()
+  }
+
+  remove() {
     const {editor} = this.props
-    const blockEditor = editor.props.blockEditor
-    blockEditor.removeLink()
+    const {value, onChange} = editor.props.blockEditor.props
+    let transform = value.transform()
+    transform = transform
+      .unwrapInline(SLATE_LINK_TYPE)
+      .focus()
+    const nextState = transform.apply()
+    onChange(nextState)
   }
 
   handleCancelEvent = event => {

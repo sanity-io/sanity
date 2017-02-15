@@ -5,6 +5,8 @@ import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
 
+import {createLink} from './LinkNode'
+
 import prepareSlateSchema from './util/prepareSlateSchema'
 import styles from './styles/BlockEditor.css'
 
@@ -135,7 +137,7 @@ export default class BlockEditor extends React.Component {
   }
 
 
-  handleSelectBlockFormatting = selectedValue => {
+  handleBlockStyleChange = selectedValue => {
     const {value, onChange} = this.props
     const {selection, startBlock, endBlock} = value
     const block = {
@@ -188,63 +190,9 @@ export default class BlockEditor extends React.Component {
     this.refreshCSS()
   }
 
-  handleOnClickLinkButton = isActiveLink => {
-    if (isActiveLink) {
-      this.removeLink()
-      return
-    }
-    this.insertLink()
-  }
-
-  removeLink() {
-    const {value, onChange} = this.props
-    let transform = value.transform()
-    transform = transform
-      .unwrapInline(SLATE_LINK_TYPE)
-      .focus()
-    const nextState = transform.apply()
-    onChange(nextState)
-  }
-
-  insertLink() {
-    const {value, onChange} = this.props
-    let transform = value.transform()
-
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, this.linkType)
-    const props = {
-      type: SLATE_LINK_TYPE,
-      isVoid: false,
-      kind: 'inline',
-      data: {
-        value: addItemValue
-      }
-    }
-    if (value.isExpanded) {
-      transform = transform
-        .unwrapInline(SLATE_LINK_TYPE)
-        .wrapInline(props)
-        .focus()
-    } else {
-      const linkNode = value.inlines
-        .find(inline => inline.type === SLATE_LINK_TYPE)
-      transform = transform
-        .focus()
-        .moveToRangeOf(linkNode)
-        .unwrapInline(SLATE_LINK_TYPE)
-        .wrapInline(props)
-    }
-    const nextState = transform.apply()
-    onChange(nextState)
-  }
-
   hasMark(markName) {
     const {value} = this.props
     return value.marks.some(mark => mark.type == markName)
-  }
-
-  hasBlock(type) {
-    const {value} = this.props
-    return value.blocks.some(block => block.type === type)
   }
 
   hasStyle(styleName) {
@@ -252,9 +200,13 @@ export default class BlockEditor extends React.Component {
     return value.blocks.some(block => block.data.get('style') === styleName)
   }
 
-  hasLinks() {
+  createLink = () => {
+    createLink(this.linkType, this.props, this.context)
+  }
+
+  getActiveLink() {
     const {value} = this.props
-    return value.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
+    return value.inlines.find(inline => inline.type == SLATE_LINK_TYPE)
   }
 
   isWithinList() {
@@ -278,7 +230,7 @@ export default class BlockEditor extends React.Component {
     })
   }
 
-  getListTypes() {
+  getListItems() {
     return (this.listItems)
       .map((item, index) => {
         return {
@@ -289,7 +241,7 @@ export default class BlockEditor extends React.Component {
       })
   }
 
-  getStyles() {
+  getBlockStyles() {
     function Preview(props) {
       return <span>{props.children}</span>
     }
@@ -399,11 +351,11 @@ export default class BlockEditor extends React.Component {
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
             onListButtonClick={this.handleOnClickListFormattingButton}
-            onFormatSelectChange={this.handleSelectBlockFormatting}
-            listFormats={this.getListTypes()}
-            textFormats={this.getStyles()}
-            onLinkButtonClick={this.handleOnClickLinkButton}
-            activeLink={!!this.hasLinks()}
+            onBlockStyleChange={this.handleBlockStyleChange}
+            listItems={this.getListItems()}
+            blockStyles={this.getBlockStyles()}
+            createLink={this.createLink}
+            activeLink={this.getActiveLink()}
             showLinkButton={!!this.linkType}
             marks={this.getActiveMarks()}
           />

@@ -2,7 +2,7 @@
   user-select: none;
   cursor: move;
   position: relative;
-  border: 1px solid transparent;
+  border: 1px solid #eee;
   lost-utility: clearfix;
 
   @nest &:hover {
@@ -23,7 +23,7 @@
 
 .active {
   composes: root;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
 }
 
 .editBlockContainer {

@@ -7,18 +7,18 @@ import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon
 import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
-import styles from './styles/TextFormat.css'
+import styles from './styles/Marks.css'
 
-export const textFormatShape = PropTypes.shape({
+export const mark = PropTypes.shape({
   active: PropTypes.bool,
   type: PropTypes.string
 })
 
-export default class TextFormatToolbar extends React.Component {
+export default class Marks extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
-    marks: PropTypes.arrayOf(textFormatShape)
+    marks: PropTypes.arrayOf(mark)
   }
 
   getIcon(type) {
@@ -36,17 +36,17 @@ export default class TextFormatToolbar extends React.Component {
     }
   }
 
-  renderMarkButton = mark => {
+  renderMarkButton = item => {
     const onClick = event => {
-      this.props.onClick(event, mark.type)
+      this.props.onClick(event, item.type)
     }
-    const Icon = this.getIcon(mark.type)
-    let title = mark.type
+    const Icon = this.getIcon(item.type)
+    let title = item.type
     title = title.charAt(0).toUpperCase() + title.slice(1)
     return (
       <ToggleButton
-        key={`markButton${mark.type}`}
-        selected={!!mark.active}
+        key={`markButton${item.type}`}
+        selected={!!item.active}
         onClick={onClick}
         title={title}
         className={styles.button}
