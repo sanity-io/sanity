@@ -5,6 +5,12 @@
   list-style-position: outside;
 }
 
+.root > * {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
 .bullet {
   composes: root;
   list-style-type: disc;

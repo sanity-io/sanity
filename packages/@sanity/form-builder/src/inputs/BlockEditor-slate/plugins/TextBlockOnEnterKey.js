@@ -9,8 +9,9 @@ function createOnKeyDown(insertBlockStyle) {
     }
     const isTextBlock = state.blocks.some(block => block.data.get('style'))
     const isDefaultNode = state.blocks.some(block => block.data.get('style') === insertBlockStyle)
+    const isListNode = state.blocks.some(block => block.data.get('listItem'))
     const {startBlock} = state
-    if (!isTextBlock || state.selection.isExpanded || !state.selection.hasEndAtEndOf(startBlock)) {
+    if (isListNode || !isTextBlock || state.selection.isExpanded || !state.selection.hasEndAtEndOf(startBlock)) {
       return null
     }
     if (!isDefaultNode) {

@@ -6,6 +6,9 @@ import Header from '../preview/Header'
 import Normal from '../preview/Normal'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
+import {
+  SLATE_DEFAULT_STYLE
+} from '../constants'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
@@ -31,8 +34,12 @@ const slateTypeComponentMapping = {
   },
   listItem(props) {  // eslint-disable-line react/no-multi-comp
     // eslint-disable-next-line react/prop-types
-    const listStyle = props.children[0] && props.children[0].props.parent.data.get('listItem')
-    return <ListItem listStyle={listStyle} {...props} />
+    const listItem = props.children[0] && props.children[0].props.parent.data.get('listItem')
+    // eslint-disable-next-line react/prop-types
+    const style = (props.children[0] && props.children[0].props.parent.data.get('style'))
+      || SLATE_DEFAULT_STYLE
+    const contentComponent = slateTypeComponentMapping[style]
+    return <ListItem contentComponent={contentComponent} listItem={listItem} {...props} />
   }
 }
 

@@ -15,9 +15,9 @@
 }
 
 .heading5 {
-  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+  composes: heading5 from "part:@sanity/base/theme/typography/headings-style";
 }
 
 .heading6 {
-  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+  composes: heading6 from "part:@sanity/base/theme/typography/headings-style";
 }

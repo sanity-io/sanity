@@ -63,7 +63,7 @@ export default function createBlockEditorOperations(blockEditor) {
       }
       const listItemBlock = {
         type: 'contentBlock',
-        data: {listItem: listItemName}
+        data: {listItem: listItemName, style: SLATE_DEFAULT_STYLE}
       }
       let transform = value.transform()
 
@@ -103,7 +103,7 @@ export default function createBlockEditorOperations(blockEditor) {
           const extendForward = selection.isForward
             ? (selection.focusOffset - selection.anchorOffset)
             : (selection.anchorOffset - selection.focusOffset)
-          transform
+          transform = transform
             .collapseToStart()
             .splitBlock()
             .moveForward()
@@ -125,8 +125,17 @@ export default function createBlockEditorOperations(blockEditor) {
           )
         }
       }
-      transform
-        .setBlock(block)
+      transform.focus().apply()
+
+      const {focusKey, document} = value
+      const focusNode = document.getClosestBlock(focusKey)
+      transform = value.transform()
+      if (focusNode.type === 'contentBlock') {
+        const newData = {...focusNode.data.toObject(), style: block.data.style}
+        transform.setNodeByKey(focusNode.key, {data: newData})
+      } else {
+        transform.setBlock(block)
+      }
       const nextState = transform.apply()
       onChange(nextState)
     },
