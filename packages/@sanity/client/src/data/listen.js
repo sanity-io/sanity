@@ -101,7 +101,19 @@ function cooerceError(err) {
   }
 
   const evt = parseEvent(err)
-  return evt instanceof Error
-    ? evt
-    : new Error(evt.error || evt.message || 'Unknown listener error')
+  return evt instanceof Error ? evt : new Error(extractErrorMessage(evt))
+}
+
+function extractErrorMessage(err) {
+  if (!err.error) {
+    return err.message || 'Unknown listener error'
+  }
+
+  if (err.error.description) {
+    return err.error.description
+  }
+
+  return typeof err.error === 'string'
+    ? err.error
+    : JSON.stringify(err.error, null, 2)
 }
