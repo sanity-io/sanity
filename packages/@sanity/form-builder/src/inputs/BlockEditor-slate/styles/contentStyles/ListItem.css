@@ -6,29 +6,37 @@
 }
 
 .root > * {
-  display: inline-block;
+  display: inline-flex;;
   margin: 0;
   padding: 0;
 }
 
 .bullet {
   composes: root;
-  list-style-type: disc;
-  padding-left: 0.2em;
+  list-style-type: none;
+}
+
+.bullet > * {
+  @nest &:before {
+    content: '\2022';
+    font-weight: bold;
+    margin-right: 1em;
+  }
 }
 
 .number {
   composes: root;
   list-style-type: none;
   counter-increment: listItem;
-
-  @nest &:before {
-    margin-right: 0.9em;
-    content: counter(listItem) ". ";
-  }
-
   @nest & + :not(.number) {
     counter-reset: listItem
+  }
+}
+
+.number > * {
+  @nest &:before {
+    margin-right: 1em;
+    content: counter(listItem) ".";
   }
 }
 
