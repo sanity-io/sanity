@@ -34,10 +34,14 @@ function createOnKeyDown(insertBlockStyle, callbackFn) {
     // If on top of document
     // and no text insert a node before
     if (!previousBlock) {
-      return transform
+      const nextState = transform
         .insertBlock(blockToInsert)
         .focus()
         .apply()
+      if (callbackFn) {
+        callbackFn(nextState)
+      }
+      return nextState
     }
 
     const nextBlock = document.getNextBlock(startKey)
