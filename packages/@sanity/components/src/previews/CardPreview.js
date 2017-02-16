@@ -2,6 +2,9 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/previews/card-style'
 import Moment from 'moment'
 import {debounce, truncate} from 'lodash'
+import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
+
+let index = 0
 
 export default class CardPreview extends React.Component {
   static propTypes = {
@@ -25,6 +28,8 @@ export default class CardPreview extends React.Component {
     emptyText: 'Untitled',
     aspect: 16 / 9
   }
+
+  index = index++
 
   constructor(props, context) {
     super(props, context)
@@ -66,6 +71,7 @@ export default class CardPreview extends React.Component {
 
 
     if (!item || isPlaceholder) {
+      const itemStyle = getPlaceholderItemStyles(this.index)
       return (
         <div className={`${styles.placeholder}`}>
           <div className={styles.inner} ref={this.setInnerElement}>
@@ -74,11 +80,11 @@ export default class CardPreview extends React.Component {
             </div>
             <div className={styles.meta} ref="meta">
               <div className={styles.heading}>
-                <p className={styles.date} style={{width: `${(Math.random() * 10) + 15}%`}} />
-                <h2 className={styles.title} style={{width: `${(Math.random() * 50) + 15}%`}} />
-                <h3 className={styles.subtitle} style={{width: `${(Math.random() * 80) + 15}%`}} />
+                <p className={styles.date} style={itemStyle.date} />
+                <h2 className={styles.title} style={itemStyle.title} />
+                <h3 className={styles.subtitle} style={itemStyle.subtitle} />
               </div>
-              <p className={styles.description} style={{width: `${(Math.random() * 80) + 15}%`}} />
+              <p className={styles.description} style={itemStyle.description} />
             </div>
           </div>
         </div>
