@@ -1,10 +1,11 @@
 import {SLATE_DEFAULT_STYLE, SLATE_SPAN_TYPE} from './constants'
+import {getSpanField} from './util/spanHelpers'
 
 export default function createBlockEditorOperations(blockEditor) {
 
   return {
 
-    createFieldValue(field) {
+    createFormBuilderSpan() {
 
       const {value, onChange} = blockEditor.props
 
@@ -12,8 +13,9 @@ export default function createBlockEditorOperations(blockEditor) {
         throw new Error('todo: decide if we should expand selection before applying')
       }
 
+      const spanField = getSpanField(blockEditor.props.type)
       const addItemValue = blockEditor.context.formBuilder
-        .createFieldValue({[field.name]: undefined}, field.type)
+        .createFieldValue(undefined, spanField.type)
 
       const span = {
         isVoid: false, // todo: make void if schema says so
@@ -33,7 +35,7 @@ export default function createBlockEditorOperations(blockEditor) {
       onChange(nextState)
     },
 
-    removeInline() {
+    removeSpan() {
       const {value, onChange} = blockEditor.props
       const nextState = value.transform()
         .unwrapInline(SLATE_SPAN_TYPE)

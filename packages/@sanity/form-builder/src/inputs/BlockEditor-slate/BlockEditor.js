@@ -24,7 +24,6 @@ import {
 } from './constants'
 
 import Toolbar from './toolbar/Toolbar'
-import {getLinkField} from './util/spanHelpers'
 
 export default class BlockEditor extends React.Component {
   static propTypes = {
@@ -92,17 +91,12 @@ export default class BlockEditor extends React.Component {
     this.refreshCSS()
   }
 
-  getLinkField() {
-    return getLinkField(this.props.type)
-  }
-
   handleLinkButtonClick = current => {
-    const linkField = this.getLinkField()
     if (current) {
-      this.operations.removeInline()
+      this.operations.removeSpan()
       return
     }
-    this.operations.createFieldValue(linkField)
+    this.operations.createFormBuilderSpan()
   }
 
   handleBlockStyleChange = selectedValue => {
