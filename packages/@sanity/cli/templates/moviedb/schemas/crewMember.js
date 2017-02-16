@@ -22,16 +22,16 @@ export default {
     {
       name: 'externalId',
       title: 'External ID',
-      type: 'number'
+      type: 'string'
     },
     {
       name: 'externalCreditId',
       title: 'External Credit ID',
-      type: 'number'
+      type: 'string'
     },
   ],
   preview: {
-    fields: {
+    select: {
       name: 'person.name',
       job: 'job',
       department: 'department'

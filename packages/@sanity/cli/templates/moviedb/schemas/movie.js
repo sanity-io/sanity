@@ -60,7 +60,7 @@ export default {
   ],
 
   preview: {
-    fields: {
+    select: {
       title: 'title',
       date: 'releaseDate'
     },
