@@ -53,8 +53,8 @@ export default async function initSanity(args, context) {
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapTemplate({
+  // Build a full set of resolved options
+  const initOptions = {
     template: 'moviedb',
     outputDir: outputPath,
     name: sluggedName,
@@ -63,7 +63,10 @@ export default async function initSanity(args, context) {
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
     ...answers
-  }, context)
+  }
+
+  // Bootstrap Sanity, creating required project files, manifests etc
+  const template = await bootstrapTemplate(initOptions, context)
 
   // Now for the slow part... installing dependencies
   try {
@@ -86,6 +89,11 @@ export default async function initSanity(args, context) {
     output.print(`\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(outputPath)}" and run "${chalk.cyan('sanity start')}"`)
   }
 
+  // See if the template has a success message handler and print it
+  const successMessage = template.getSuccessMessage ? template.getSuccessMessage(initOptions, context) : ''
+  if (successMessage) {
+    output.print(`\n${successMessage}`)
+  }
 
   // Create a provisional user and store the token
   async function getOrCreateUser() {
