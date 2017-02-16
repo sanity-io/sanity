@@ -1,4 +1,4 @@
-function createOnKeyDown(insertBlockStyle) {
+function createOnKeyDown(insertBlockStyle, callbackFn) {
   return function onKeyDown(event, data, state, editor) {
 
     const {document, startKey, startBlock} = state
@@ -59,13 +59,16 @@ function createOnKeyDown(insertBlockStyle) {
         .focus()
     }
     const nextState = transform.apply()
+    if (callbackFn) {
+      callbackFn(nextState)
+    }
     return nextState
   }
 }
 
-function ListItemOnEnterKey(...args) {
+function ListItemOnEnterKey(insertBlockStyle, callbackFn) {
   return {
-    onKeyDown: createOnKeyDown(args[0])
+    onKeyDown: createOnKeyDown(insertBlockStyle, callbackFn)
   }
 }
 

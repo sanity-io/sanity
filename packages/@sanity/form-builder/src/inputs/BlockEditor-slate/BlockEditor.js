@@ -70,7 +70,10 @@ export default class BlockEditor extends React.Component {
       FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
       TextFormattingOnKeyDown(),
       ListItemOnEnterKey(
-        SLATE_DEFAULT_STYLE
+        SLATE_DEFAULT_STYLE,
+        () => {
+          this.refreshCSS()
+        }
       ),
       TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
     ]
