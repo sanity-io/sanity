@@ -55,18 +55,6 @@
   margin-right: 0.5em;
   overflow: hidden;
   position: relative;
-
-  @nest & div {
-    position: relative;
-    height: 4em;
-    width: 4em;
-    overflow: hidden;
-  }
-
-  @nest & img {
-    display: block;
-    object-fit: cover;
-  }
 }
 
 .placeholder {

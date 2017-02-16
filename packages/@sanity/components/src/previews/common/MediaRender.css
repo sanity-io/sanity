@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   position: absolute;
   top: 0;
@@ -41,9 +43,12 @@
 }
 
 .noMediaText {
+  display: block;
   position: absolute;
+  font-size: var(--font-size-xsmall);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  opacity: 0.5;
 }
