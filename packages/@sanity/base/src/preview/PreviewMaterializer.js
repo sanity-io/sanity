@@ -3,18 +3,6 @@ import ReactDOM from 'react-dom'
 import observeForPreview from './observeForPreview'
 import shallowEquals from 'shallow-equals'
 import scrollPosition from './scrollPosition'
-import {capitalize, sampleSize, range, random} from 'lodash'
-
-const chars = 'abcdefghijklmnopqrstuvwxyz'.split('')
-
-function randomWords(minWords = 2, maxWords = 5, minWordLength = 3, maxWordLength = 5) {
-  return capitalize(
-    range(random(minWords, maxWords))
-      .map(() =>
-        sampleSize(chars, random(minWordLength, maxWordLength)).join('')
-      ).join(' ')
-  )
-}
 
 export default class PreviewMaterializer extends React.PureComponent {
   static propTypes = {
@@ -35,7 +23,6 @@ export default class PreviewMaterializer extends React.PureComponent {
 
   state = {
     isDeferred: true,
-    isLoading: false,
     error: null,
     result: null
   }
@@ -80,11 +67,11 @@ export default class PreviewMaterializer extends React.PureComponent {
     if (this.subscription) {
       this.subscription.unsubscribe()
       this.subscription = null
-      this.setState({isDeferred: true, isLoading: false})
+      this.setState({isDeferred: true})
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillUpdate(nextProps) {
     if (!shallowEquals(nextProps.value, this.props.value)) {
       // console.log('resubscribe due to new props')
       // console.log(this.props.value, nextProps.value)
@@ -95,23 +82,20 @@ export default class PreviewMaterializer extends React.PureComponent {
 
   subscribe(value, type) {
     this.unsubscribe()
-    this.setState({isLoading: true})
     this.subscription = observeForPreview(value, type)
       .subscribe(res => {
         this.setState({
           result: res,
-          isDeferred: false,
-          isLoading: false
+          isDeferred: false
         })
       })
   }
 
   render() {
-    const {result, isDeferred, isLoading, error} = this.state
+    const {result, isDeferred, error} = this.state
     return this.props.children({
       materialized: result,
       isDeferred,
-      isLoading,
       error: error
     })
   }

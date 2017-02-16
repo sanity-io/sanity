@@ -36,8 +36,8 @@ export default class SanityPreview extends React.PureComponent {
     return (
       <PreviewMaterializer type={type} value={value}>
         {
-          ({materialized, isDeferred, isLoading, error}) => {
-            return <PreviewComponent item={materialized} isPlaceholder={!materialized && isDeferred} isLoading={isLoading} />
+          ({materialized, isDeferred}) => {
+            return <PreviewComponent item={materialized} isPlaceholder={!materialized && isDeferred} />
           }
         }
       </PreviewMaterializer>
