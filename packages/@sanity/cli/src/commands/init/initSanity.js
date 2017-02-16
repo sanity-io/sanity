@@ -108,7 +108,7 @@ export default async function initSanity(args, context) {
       type: 'list',
       choices: [
         {value: 'provisional', name: 'A temp account sounds great'},
-        {value: 'login', name: 'No, I already have an account'},
+        {value: 'login', name: 'Sign in using a Google or Github account'},
         {value: 'arrow', name: 'I took an arrow to the knee'}
       ]
     })
