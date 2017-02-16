@@ -100,7 +100,7 @@ export default class PreviewMaterializer extends React.PureComponent {
       .subscribe(res => {
         this.setState({
           result: res,
-          isDeferred: false
+          isDeferred: false,
           isLoading: false
         })
       })
