@@ -4,6 +4,7 @@ import {Editor, State, Data} from 'slate'
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import InsertBlockOnEnter from 'slate-insert-block-on-enter'
+import SoftBreak from 'slate-soft-break'
 
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateSchema from './util/prepareSlateSchema'
@@ -75,7 +76,11 @@ export default class BlockEditor extends React.Component {
           this.refreshCSS()
         }
       ),
-      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
+      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE),
+      SoftBreak({
+        onlyIn: ['contentBlock'],
+        shift: true
+      })
     ]
 
     this.operations = createBlockEditorOperations(this)
