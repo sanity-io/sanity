@@ -14,7 +14,8 @@ export default class MediaPreview extends React.Component {
     }),
     aspect: PropTypes.number,
     emptyText: PropTypes.string,
-    children: PropTypes.node
+    children: PropTypes.node,
+    isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
@@ -23,12 +24,12 @@ export default class MediaPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children, aspect} = this.props
+    const {item, emptyText, children, aspect, isPlaceholder} = this.props
 
-    if (!item) {
+    if (!item || isPlaceholder) {
       return (
-        <div className={`${styles.empty}`}>
-          {emptyText}
+        <div className={`${styles.placeholder}`}>
+          <div className={styles.mediaContainer} />
         </div>
       )
     }

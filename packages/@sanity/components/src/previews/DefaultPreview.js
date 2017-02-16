@@ -13,6 +13,7 @@ export default class DefaultPreview extends React.Component {
       sanityImage: PropTypes.object
     }),
     emptyText: PropTypes.string,
+    isPlaceholder: PropTypes.bool,
     children: PropTypes.node
   }
 
@@ -24,12 +25,17 @@ export default class DefaultPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children} = this.props
+    const {item, emptyText, children, isPlaceholder} = this.props
 
-    if (!item) {
+    if (!item || isPlaceholder) {
       return (
-        <div className={`${styles.empty}`}>
-          {emptyText}
+        <div className={`${styles.placeholder}`}>
+          <div className={`${styles.media}`} />
+          <div className={styles.heading}>
+            <h2 className={styles.title} style={{width: `${(Math.random() * 80) + 15}%`}} />
+            <h3 className={styles.subtitle} style={{width: `${(Math.random() * 20) + 75}%`}} />
+          </div>
+          <div className={styles.animation} />
         </div>
       )
     }

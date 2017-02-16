@@ -30,7 +30,8 @@ const style = {
 }
 
 const innerStyle = {
-  border: '1px dotted #ccc'
+  border: '1px dotted #ccc',
+  width: '500px'
 }
 
 const centered = function (storyFn) {
@@ -60,6 +61,23 @@ storiesOf('Previews')
     role: 'part:@sanity/components/previews/default'
   }
 )
+
+.addWithInfo(
+  'Default (placeholder)',
+  `
+    Default preview
+  `,
+  () => {
+    return (
+      <DefaultPreview item={item} isPlaceholder />
+    )
+  },
+  {
+    propTables: [DefaultPreview],
+    role: 'part:@sanity/components/previews/default'
+  }
+)
+
 
 .addWithInfo(
   'Default (no media)',
@@ -127,6 +145,23 @@ storiesOf('Previews')
 )
 
 .addWithInfo(
+  'Detail (placeholder)',
+  `
+    Detail
+  `,
+  () => {
+    return (
+      <DetailPreview item={item} isPlaceholder />
+    )
+  },
+  {
+    propTables: [DetailPreview],
+    role: 'part:@sanity/components/previews/detail'
+  }
+)
+
+
+.addWithInfo(
   'Media',
   `
     Detail
@@ -141,6 +176,23 @@ storiesOf('Previews')
     role: 'part:@sanity/components/previews/media'
   }
 )
+
+.addWithInfo(
+  'Media (placeholder)',
+  `
+    Detail
+  `,
+  () => {
+    return (
+      <MediaPreview item={item} isPlaceholder />
+    )
+  },
+  {
+    propTables: [MediaPreview],
+    role: 'part:@sanity/components/previews/media'
+  }
+)
+
 
 .addWithInfo(
   'Inline',

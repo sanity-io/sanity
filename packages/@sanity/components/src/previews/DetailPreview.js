@@ -14,7 +14,8 @@ export default class DetailPreview extends React.Component {
       sanityImage: PropTypes.object
     }),
     emptyText: PropTypes.string,
-    children: PropTypes.node
+    children: PropTypes.node,
+    isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
@@ -25,47 +26,56 @@ export default class DetailPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children} = this.props
+    const {item, emptyText, children, isPlaceholder, isLoading} = this.props
 
-    if (!item) {
+    if ((!item || isPlaceholder)) {
       return (
-        <div className={`${styles.empty}`}>
-          {emptyText}
+        <div className={`${styles.placeholder}`}>
+          <div className={`${styles.media}`} />
+          <div className={styles.content}>
+            <div className={styles.heading}>
+              <h2 className={styles.title} style={{width: `${(Math.random() * 80) + 15}%`}} />
+              <h3 className={styles.subtitle} style={{width: `${(Math.random() * 80) + 15}%`}} />
+            </div>
+            <p className={styles.description} style={{width: '100%'}} />
+            <p className={styles.description} style={{width: `${(Math.random() * 80) + 15}%`}} />
+          </div>
         </div>
       )
     }
 
     return (
       <div className={`${styles.root}`}>
-        {
-          (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
-            <MediaRender item={item} />
+        <div className={`${styles.media}`}>
+          <MediaRender item={item} />
+        </div>
+        <div className={styles.content}>
+          <div className={styles.heading}>
+            <h2 className={styles.title}>
+              {item.title || emptyText}
+            </h2>
+            {
+              item.subtitle && (
+                <h3 className={styles.subtitle}>
+                  {item.subtitle}
+                </h3>
+              )
+            }
           </div>
-        }
-        <div className={styles.heading}>
-          <h2 className={styles.title}>
-            {item.title || emptyText}
-          </h2>
           {
-            item.subtitle && (
-              <h3 className={styles.subtitle}>
-                {item.subtitle}
-              </h3>
+            item.description && (
+              <p className={styles.description}>
+                {
+                  truncate(item.description, {
+                    length: 70,
+                    separator: /,? +/
+                  })
+                }
+              </p>
             )
           }
         </div>
-        {
-          item.description && (
-            <p className={styles.description}>
-              {
-                truncate(item.description, {
-                  length: 70,
-                  separator: /,? +/
-                })
-              }
-            </p>
-          )
-        }
+
         {children}
       </div>
     )

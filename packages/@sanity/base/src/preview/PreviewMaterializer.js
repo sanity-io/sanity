@@ -119,7 +119,7 @@ export default class PreviewMaterializer extends React.PureComponent {
     // todo: remove the following block when we have better placeholders
     if (isDeferred) {
       return (
-        <div style={{filter: 'blur(3px) opacity(0.6)'}}>
+        <div>
           {this.props.children({
             ...childParams,
             materialized: {
