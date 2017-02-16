@@ -67,7 +67,8 @@ export default class CommandRunner {
     const manifestPath = path.join(options.workDir, 'sanity.json')
     debug(`Reading "${manifestPath}"`)
 
-    const manifest = reduceConfig(await loadJson(manifestPath), environment)
+    const baseManifest = await loadJson(manifestPath)
+    const manifest = reduceConfig(baseManifest || {}, environment)
     const apiClient = clientWrapper(manifest, manifestPath)
 
     const context = {
