@@ -19,9 +19,8 @@
 
 .bullet > * {
   @nest &:before {
-    content: '\2022';
+    content: '\25CF';
     margin-right: 1rem;
-    margin-top: 0.1rem;
   }
 }
 
