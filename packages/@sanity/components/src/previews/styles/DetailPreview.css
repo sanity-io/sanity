@@ -55,8 +55,6 @@
   margin-right: 0.5em;
   overflow: hidden;
   position: relative;
-  background-color: var(--brand-danger);
-  border: 1px solid red;
 
   @nest & div {
     position: relative;

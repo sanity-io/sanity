@@ -28,6 +28,11 @@
   float: right;
 }
 
+.mediaContainer {
+  display: block;
+  background-color: var(--preview-placeholder-text-color);
+}
+
 .media {
   position: relative;
   width: 100%;
@@ -49,4 +54,49 @@
 
 .meta {
   padding: 1em;
+  background-color: #fff;
+}
+
+.img {
+  display: block;
+}
+
+.imgLandscape {
+  composes: img;
+}
+
+.imgPortrait {
+  composes: img;
+}
+
+.placeholder {
+  composes: root;
+
+  @nest & .media {
+    width: 100%;
+    background-color: var(--preview-placeholder-text-color);
+  }
+
+  @nest & .title {
+    height: 1em;
+    background-color: var(--preview-placeholder-text-color);
+  }
+
+  @nest & .subtitle {
+    height: 1em;
+    margin-top: 0.2em;
+    background-color: var(--preview-placeholder-text-color);
+  }
+
+  @nest & .date {
+    height: 1em;
+    margin-top: 0.2em;
+    background-color: var(--preview-placeholder-text-color);
+  }
+
+  @nest & .description {
+    height: 1em;
+    margin-top: 1.2em;
+    background-color: var(--preview-placeholder-text-color);
+  }
 }

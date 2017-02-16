@@ -17,7 +17,6 @@
 .title {
   position: absolute;
   font-size: 1em;
-  height: 1em;
   line-height: 1.5em;
   color: inherit;
   font-weight: 500;
@@ -65,7 +64,7 @@
   overflow: hidden;
   position: relative;
 
-  /*@nest & div {
+  @nest & div {
     position: relative;
     height: 2.5em;
     width: 2.5em;
@@ -75,7 +74,7 @@
   @nest & img {
     display: block;
     object-fit: cover;
-  }*/
+  }
 }
 
 .placeholder {
@@ -83,6 +82,7 @@
 
   @nest & .title {
     background-color: var(--preview-placeholder-text-color);
+    height: 1em;
   }
 
   @nest & .subtitle {
@@ -97,7 +97,7 @@
 }
 
 .animation {
-  composes: animated-loading-background from 'part:@sanity/base/theme/animation-style';
+  /* composes: animated-loading-background from 'part:@sanity/base/theme/animation-style'; */
   position: absolute;
   top: 0;
   left: 0;
