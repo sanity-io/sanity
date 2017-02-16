@@ -6,10 +6,10 @@ import Header from '../preview/Header'
 import Normal from '../preview/Normal'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
-import {
-  SLATE_DEFAULT_STYLE
-} from '../constants'
 import {getSpanField} from './spanHelpers'
+import initializeSlatePlugins from './initializeSlatePlugins'
+
+import {SLATE_DEFAULT_STYLE} from '../constants'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
@@ -59,7 +59,8 @@ function createSlatePreviewNode(props) {
   return component(props)
 }
 
-export default function prepareSlateSchema(type) {
+export default function prepareSlateForBlockEditor(blockEditor) {
+  const type = blockEditor.props.type
   const blockType = type.of.find(ofType => ofType.name === 'block')
   if (!blockType) {
     throw new Error("'block' type is not defined in the schema (required).")
@@ -107,6 +108,7 @@ export default function prepareSlateSchema(type) {
   return {
     listItems: listItems,
     textStyles: textStyles,
-    schema: schema
+    schema: schema,
+    plugins: initializeSlatePlugins(blockEditor)
   }
 }

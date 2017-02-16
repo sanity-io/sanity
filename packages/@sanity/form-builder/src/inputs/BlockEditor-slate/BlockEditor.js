@@ -1,32 +1,20 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {Editor, State, Data} from 'slate'
-import {uniqueId} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
-import InsertBlockOnEnter from 'slate-insert-block-on-enter'
-import SoftBreak from 'slate-soft-break'
-
-import createBlockEditorOperations from './createBlockEditorOperations'
-import prepareSlateSchema from './util/prepareSlateSchema'
-import styles from './styles/BlockEditor.css'
-
-import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
-import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
-import TextFormattingOnKeyDown from './plugins/TextFormattingOnKeyDown'
-import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
-import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
-import OnPasteHtml from './plugins/OnPasteHtml'
-
 import Portal from 'react-portal'
+import {uniqueId} from 'lodash'
 
-import {
-  SLATE_DEFAULT_STYLE,
-  SLATE_SPAN_TYPE
-} from './constants'
 
+import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
+import createBlockEditorOperations from './createBlockEditorOperations'
+import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
+
+import styles from './styles/BlockEditor.css'
+import {SLATE_SPAN_TYPE} from './constants'
 
 export default class BlockEditor extends React.Component {
+
   static propTypes = {
     type: PropTypes.any,
     level: PropTypes.number,
@@ -50,38 +38,14 @@ export default class BlockEditor extends React.Component {
   _inputId = uniqueId('SlateBlockEditor')
 
   constructor(props, context) {
+
     super(props, context)
 
-    const slateSchema = prepareSlateSchema(this.props.type)
-    this.textStyles = slateSchema.textStyles
-    this.listItems = slateSchema.listItems
-    this.slateSchema = slateSchema.schema
-
-    this.slatePlugins = [
-      InsertBlockOnEnter({
-        type: 'contentBlock',
-        kind: 'block',
-        data: {
-          style: SLATE_DEFAULT_STYLE
-        },
-        nodes: [{kind: 'text', text: '', ranges: []}]
-      }),
-      OnPasteHtml({link: this.linkType}, context),
-      FormBuilderNodeOnDrop(),
-      FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
-      TextFormattingOnKeyDown(),
-      ListItemOnEnterKey(
-        SLATE_DEFAULT_STYLE,
-        () => {
-          this.refreshCSS()
-        }
-      ),
-      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE),
-      SoftBreak({
-        onlyIn: ['contentBlock'],
-        shift: true
-      })
-    ]
+    const preparation = prepareSlateForBlockEditor(this)
+    this.slateSchema = preparation.schema
+    this.textStyles = preparation.textStyles
+    this.listItems = preparation.listItems
+    this.slatePlugins = preparation.plugins
 
     this.operations = createBlockEditorOperations(this)
   }
@@ -216,14 +180,15 @@ export default class BlockEditor extends React.Component {
     this.blockDragMarker = marker
   }
 
-  // Hack to force the browser to reapply CSS rules
+  // Webkit hack to force the browser to reapply CSS rules
   // This is needed to make ::before and ::after CSS rules work properly
   // under certain conditions (like the list counters for number lists)
   // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
-  refreshCSS() {
+  refreshCSS = () => {
     const editorDOMNode = ReactDOM.findDOMNode(this.editor)
     editorDOMNode.style.display = 'none'
-    editorDOMNode.offsetHeight // eslint-disable-line no-unused-expressions
+    // eslint-disable-next-line no-unused-expressions
+    editorDOMNode.offsetHeight // Looks weird, but it actually has an effect!
     editorDOMNode.style.display = ''
   }
 
