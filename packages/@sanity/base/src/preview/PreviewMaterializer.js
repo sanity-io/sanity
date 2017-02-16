@@ -116,21 +116,6 @@ export default class PreviewMaterializer extends React.PureComponent {
       error: error
     }
 
-    // todo: remove the following block when we have better placeholders
-    if (isDeferred) {
-      return (
-        <div>
-          {this.props.children({
-            ...childParams,
-            materialized: {
-              title: randomWords(2, 4, 2, 4),
-              subtitle: Math.random() > 0.7 ? randomWords(3, 8, 2, 4) : ''
-            }
-          })}
-        </div>
-      )
-    }
-
     return this.props.children(childParams)
   }
 }

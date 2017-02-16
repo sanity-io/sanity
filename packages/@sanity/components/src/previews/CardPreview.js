@@ -23,6 +23,7 @@ export default class CardPreview extends React.Component {
 
   static defaultProps = {
     emptyText: 'Untitled',
+    aspect: 16 / 9
   }
 
   constructor(props, context) {
@@ -60,10 +61,9 @@ export default class CardPreview extends React.Component {
     const {item, emptyText, children, aspect, isPlaceholder} = this.props
     const {emWidth} = this.state
 
-    const containerAspect = aspect || 16 / 9
-    const imageAspect = this.state.aspect || this.props.item.aspect || 1
+    const containerAspect = aspect
+    const imageAspect = this.state.aspect || (this.props.item && this.props.item.aspect) || 1
 
-    const {imageUrl, sanityImage, media} = item
 
     if (!item || isPlaceholder) {
       return (
@@ -84,6 +84,8 @@ export default class CardPreview extends React.Component {
         </div>
       )
     }
+
+    const {imageUrl, sanityImage, media} = item
 
     return (
       <div className={`${styles.root}`}>
