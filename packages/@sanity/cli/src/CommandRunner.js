@@ -4,7 +4,7 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import cloneDeep from 'lodash/cloneDeep'
 import {loadJson} from '@sanity/util/lib/safeJson'
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import {lazyRequire, reduceConfig} from '@sanity/util'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
@@ -13,7 +13,11 @@ import {generateCommandsDocumentation, generateCommandDocumentation} from './uti
 import defaultCommands from './commands'
 import debug from './debug'
 
+/* eslint-disable no-process-env */
+const isStaging = process.env.SANITY_STAGING
+const environment = isStaging ? 'staging' : process.env.NODE_ENV
 const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
+/* eslint-enable no-process-env */
 
 const cmdHasName = cmdName => {
   return cmd => cmd.name === cmdName
@@ -63,7 +67,7 @@ export default class CommandRunner {
     const manifestPath = path.join(options.workDir, 'sanity.json')
     debug(`Reading "${manifestPath}"`)
 
-    const manifest = await loadJson(manifestPath)
+    const manifest = reduceConfig(await loadJson(manifestPath), environment)
     const apiClient = clientWrapper(manifest, manifestPath)
 
     const context = {
