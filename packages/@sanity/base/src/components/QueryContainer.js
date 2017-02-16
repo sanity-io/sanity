@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import {throttle, union} from 'lodash'
 import store from 'part:@sanity/base/datastore/document'
+import shallowEquals from 'shallow-equals'
 
 function deprecatedCheck(props, propName, componentName, ...rest) {
   if (React.isValidElement(props[propName])) {
@@ -35,9 +36,9 @@ export default class QueryContainer extends React.Component {
 
   static propTypes = {
     query: PropTypes.string,
+    params: PropTypes.object,
     mapFn: PropTypes.func,
     children: deprecatedCheck,
-    params: PropTypes.object
   };
 
   static defaultProps = {
@@ -119,7 +120,7 @@ export default class QueryContainer extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillUpdate(nextProps) {
     const sameQuery = nextProps.query === this.props.query
     const sameParams = nextProps.params === this.props.params
 
@@ -130,7 +131,14 @@ export default class QueryContainer extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !keysEqual(this.props, nextProps, ['children']) || !keysEqual(this.state, nextState)
+    if (!shallowEquals(this.state, nextState)) {
+      return true
+    }
+    if (nextProps.query !== this.props.query || !shallowEquals(nextProps.params, this.props.params)) {
+      return true
+    }
+
+    return !keysEqual(nextProps, this.props, ['children', 'mapFn', 'query', 'params'])
   }
 
   renderDeprecated() {
