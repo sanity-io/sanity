@@ -129,6 +129,60 @@ storiesOf('Previews')
 )
 
 .addWithInfo(
+  'Card (no media)',
+  `
+    Card
+  `,
+  () => {
+    const mediaLessItem = {
+      title: 'This is the title',
+      subtitle: 'This is the subtitle',
+      description: 'This is the long the descriptions that should no be to long, beacuse we will cap it',
+      date: new Date()
+    }
+    return (
+      <CardPreview item={mediaLessItem} />
+    )
+  },
+  {
+    propTables: [CardPreview],
+    role: 'part:@sanity/components/previews/card'
+  }
+)
+
+.addWithInfo(
+  'Card (placeholder)',
+  `
+    Card
+  `,
+  () => {
+    return (
+      <CardPreview item={item} isPlaceholder />
+    )
+  },
+  {
+    propTables: [CardPreview],
+    role: 'part:@sanity/components/previews/card'
+  }
+)
+
+.addWithInfo(
+  'Card (placeholder, aspect)',
+  `
+    Card
+  `,
+  () => {
+    return (
+      <CardPreview item={item} isPlaceholder aspect={16 / 9} />
+    )
+  },
+  {
+    propTables: [CardPreview],
+    role: 'part:@sanity/components/previews/card'
+  }
+)
+
+.addWithInfo(
   'Detail',
   `
     Detail

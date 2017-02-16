@@ -17,7 +17,8 @@ export default class CardPreview extends React.Component {
     }),
     aspect: PropTypes.number,
     emptyText: PropTypes.string,
-    children: PropTypes.node
+    children: PropTypes.node,
+    isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
@@ -56,18 +57,30 @@ export default class CardPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children, aspect} = this.props
+    const {item, emptyText, children, aspect, isPlaceholder} = this.props
     const {emWidth} = this.state
 
-    const containerAspect = aspect || 1
+    const containerAspect = aspect || 16 / 9
     const imageAspect = this.state.aspect || this.props.item.aspect || 1
 
     const {imageUrl, sanityImage, media} = item
 
-    if (!item) {
+    if (!item || isPlaceholder) {
       return (
-        <div className={`${styles.empty}`}>
-          {emptyText}
+        <div className={`${styles.placeholder}`}>
+          <div className={styles.inner} ref={this.setInnerElement}>
+            <div className={styles.media}>
+              <div style={{paddingTop: `${100 / containerAspect}%`}} />
+            </div>
+            <div className={styles.meta} ref="meta">
+              <div className={styles.heading}>
+                <p className={styles.date} style={{width: `${(Math.random() * 10) + 15}%`}} />
+                <h2 className={styles.title} style={{width: `${(Math.random() * 50) + 15}%`}} />
+                <h3 className={styles.subtitle} style={{width: `${(Math.random() * 80) + 15}%`}} />
+              </div>
+              <p className={styles.description} style={{width: `${(Math.random() * 80) + 15}%`}} />
+            </div>
+          </div>
         </div>
       )
     }
@@ -75,10 +88,17 @@ export default class CardPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>
-          <div className={`${styles.media}`}>
+          <div className={`${styles.mediaContainer}`}>
+            {
+              (!imageUrl && !sanityImage && !media) && (
+                <div className={styles.media}>
+                  <div style={{paddingTop: `${100 / containerAspect}%`}} />
+                </div>
+              )
+            }
             {
               imageUrl && (
-                <img src={imageUrl} className={imageAspect >= containerAspect ? styles.landscape : styles.portrait} />
+                <img src={imageUrl} className={imageAspect >= containerAspect ? styles.imgLandscape : styles.imgPortrait} />
               )
             }
             {
