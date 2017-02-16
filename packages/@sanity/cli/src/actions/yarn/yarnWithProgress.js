@@ -184,7 +184,7 @@ export default function yarnWithProgress(args, options = {}) {
     throw err
   }
 
-  function holdSpinner(op) {
+  function holdSpinner(op) { // eslint-disable-line no-unused-vars
     if (state.spinner) {
       state.spinner.stop()
     }
