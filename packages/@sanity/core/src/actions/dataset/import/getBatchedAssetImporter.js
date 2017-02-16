@@ -21,7 +21,7 @@ export default options => {
     cb()
   }
 
-  function onChunk (chunk, enc, cb) {
+  function onChunk(chunk, enc, cb) {
     const newLength = documents.push(chunk)
     if (newLength !== batchSize) {
       return cb()
@@ -31,8 +31,11 @@ export default options => {
   }
 
   function onFlush(cb) {
-    if (documents.length > 0) {
-      uploadAssets(this, cb)
+    if (documents.length === 0) {
+      cb()
+      return
     }
+
+    uploadAssets(this, cb)
   }
 }
