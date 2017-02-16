@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   background-color: #fff;
   position: relative;
@@ -57,4 +59,16 @@
 
 .metaInner {
   padding: 0.5em;
+}
+
+.placeholder {
+  composes: animated-loading-background from 'part:@sanity/base/theme/animation-style';
+
+  @nest & .mediaContainer {
+    border: 1px solid red;
+    box-sizing: content-box;
+    background-color: var(--preview-placeholder-text-color);
+    opacity: 0.5;
+    padding-top: 100%;
+  }
 }

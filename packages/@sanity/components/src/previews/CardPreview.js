@@ -75,41 +75,26 @@ export default class CardPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>
+          <div className={`${styles.media}`}>
+            {
+              imageUrl && (
+                <img src={imageUrl} className={imageAspect >= containerAspect ? styles.landscape : styles.portrait} />
+              )
+            }
+            {
+              sanityImage && (
+                <div className={styles.sanityImage}>SanityImage</div>
+              )
+            }
 
-          {
-            (item.media || item.sanityImage || item.imageUrl) && (
-              <div className={`${styles.media}`}>
-
-                <div className={`${styles.media}`}>
-                  {
-                    imageUrl && (
-                      <img src={imageUrl} className={imageAspect >= containerAspect ? styles.landscape : styles.portrait} />
-                    )
-                  }
-                  {
-                    sanityImage && (
-                      <div className={styles.sanityImage}>SanityImage</div>
-                    )
-                  }
-
-                  {
-                    media && (
-                      <div className={styles.media}>
-                        {media}
-                      </div>
-                    )
-                  }
-
+            {
+              media && (
+                <div className={styles.media}>
+                  {media}
                 </div>
-                {
-                  // <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
-                  // <MediaRender item={item} aspect={item.imageAspect || aspect} />
-                }
-
-              </div>
-            )
-          }
-
+              )
+            }
+          </div>
           <div className={styles.meta} ref="meta">
             <div className={styles.heading}>
               {

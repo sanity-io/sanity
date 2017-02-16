@@ -24,7 +24,7 @@ export default class SanityPreview extends React.PureComponent {
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
     type: PropTypes.object.isRequired
-  };
+  }
 
   render() {
     const {layout, value, type} = this.props
@@ -35,9 +35,11 @@ export default class SanityPreview extends React.PureComponent {
 
     return (
       <PreviewMaterializer type={type} value={value}>
-        {({materialized, isDeferred, isLoading, error}) => {
-          return <PreviewComponent item={materialized} placeholder={isDeferred} />
-        }}
+        {
+          ({materialized, isDeferred, isLoading, error}) => {
+            return <PreviewComponent item={materialized} isPlaceholder={isDeferred} isLoading={isLoading} />
+          }
+        }
       </PreviewMaterializer>
     )
   }

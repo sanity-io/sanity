@@ -45,6 +45,7 @@
   right: 0;
   height: 100vh;
   width: 100vw;
+  border: 1px solid red;
 }
 
 .menuClosed {
