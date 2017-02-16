@@ -71,10 +71,6 @@ export default function createBlockEditorOperations(blockEditor) {
     setBlockStyle(styleName) {
       const {value, onChange} = blockEditor.props
       const {selection, startBlock, endBlock} = value
-      const block = {
-        type: 'contentBlock',
-        data: {style: styleName}
-      }
       let transform = value.transform()
 
       // If a single block is selected partially, split block conditionally
@@ -116,15 +112,15 @@ export default function createBlockEditorOperations(blockEditor) {
       }
       transform.focus().apply()
 
-      const {focusKey, document} = value
-      const focusNode = document.getClosestBlock(focusKey)
+      // Do the actual style transform, only acting on type contentBlock
       transform = value.transform()
-      if (focusNode.type === 'contentBlock') {
-        const newData = {...focusNode.data.toObject(), style: block.data.style}
-        transform.setNodeByKey(focusNode.key, {data: newData})
-      } else {
-        transform.setBlock(block)
-      }
+      value.blocks.forEach(blk => {
+        const newData = {...blk.data.toObject(), style: styleName}
+        if (blk.type === 'contentBlock') {
+          transform = transform
+            .setNodeByKey(blk.key, {data: newData})
+        }
+      })
       const nextState = transform.apply()
       onChange(nextState)
     },
