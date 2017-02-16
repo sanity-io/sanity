@@ -18,7 +18,7 @@
 
 .bullet > * {
   @nest &:before {
-    content: '\25CF';
+    content: '\25CF ';
     margin-right: 1rem;
   }
 }
