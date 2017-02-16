@@ -121,7 +121,7 @@ export default function createBlockEditorOperations(blockEditor) {
             .setNodeByKey(blk.key, {data: newData})
         }
       })
-      const nextState = transform.apply()
+      const nextState = transform.focus().apply()
       onChange(nextState)
     },
 
