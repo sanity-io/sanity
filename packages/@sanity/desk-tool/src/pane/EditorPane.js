@@ -223,7 +223,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
   handleRequestDelete = () => {
     this.setState({progress: {kind: 'info', message: 'Checking references…'}, deleteInProgress: true})
-    const refSubscription = documentStore.query('*[references($docId), limit: 100]', {docId: this.props.documentId}).subscribe({
+    const refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId}).subscribe({
       next: this.handleReferenceResult,
       error: this.handleReferenceError
     })
