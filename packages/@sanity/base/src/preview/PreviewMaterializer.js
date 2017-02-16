@@ -108,14 +108,11 @@ export default class PreviewMaterializer extends React.PureComponent {
 
   render() {
     const {result, isDeferred, isLoading, error} = this.state
-
-    const childParams = {
+    return this.props.children({
       materialized: result,
       isDeferred,
       isLoading,
       error: error
-    }
-
-    return this.props.children(childParams)
+    })
   }
 }
