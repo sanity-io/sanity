@@ -185,11 +185,16 @@ export default class BlockEditor extends React.Component {
   // under certain conditions (like the list counters for number lists)
   // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
   refreshCSS = () => {
-    const editorParentDOMNode = ReactDOM.findDOMNode(this.editor).parentNode
-    editorParentDOMNode.style.display = 'none'
+    const isWebkit = 'WebkitAppearance' in document.documentElement.style
+    if (!isWebkit) {
+      return
+    }
+    // Must be body because we have several scrollcontainers loosing state
+    const resetNode = document.body
+    resetNode.style.display = 'none'
     // eslint-disable-next-line no-unused-expressions
-    editorParentDOMNode.offsetHeight // Looks weird, but it actually has an effect!
-    editorParentDOMNode.style.display = ''
+    resetNode.offsetHeight // Looks weird, but it actually has an effect!
+    resetNode.style.display = ''
   }
 
   showBlockDragMarker(pos, node) {
