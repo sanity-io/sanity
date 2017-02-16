@@ -62,10 +62,7 @@
 }
 
 .placeholder {
-  composes: animated-loading-background from 'part:@sanity/base/theme/animation-style';
-
   @nest & .mediaContainer {
-    border: 1px solid red;
     box-sizing: content-box;
     background-color: var(--preview-placeholder-text-color);
     opacity: 0.5;

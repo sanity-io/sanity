@@ -67,5 +67,5 @@
   --page-header-border-color: var(--gray-lighter);
   --hr-border: var(--gray-lighter);
 
-  --preview-placeholder-text-color: var(--gray-light);
+  --preview-placeholder-text-color: color(var(--gray-light) a(50%));
 }
