@@ -65,7 +65,6 @@ export default function createBlockEditorOperations(blockEditor) {
       }
       const nextState = transform.apply()
       onChange(nextState)
-
     },
 
     setBlockStyle(styleName) {

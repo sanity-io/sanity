@@ -97,7 +97,8 @@ export default class FormBuilderBlock extends React.Component {
     }
     const {key} = offsetKey
 
-    const {state} = this.props
+    const {editor} = this.props
+    const state = editor.getState()
     const {document} = state
     const {rangeIsAtStart, rangeOffset} = createRange(event)
 
@@ -124,7 +125,9 @@ export default class FormBuilderBlock extends React.Component {
     this.setState({isDragging: false})
     this.removeDragHandlers()
 
-    const {editor, state, node} = this.props
+    const {editor, node} = this.props
+    const state = editor.getState()
+
     const target = this._dropTarget
 
     // Return if this is our node
