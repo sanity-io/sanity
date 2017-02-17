@@ -1,11 +1,12 @@
-import InsertBlockOnEnter from 'slate-insert-block-on-enter'
-import SoftBreak from 'slate-soft-break'
-import FormBuilderNodeOnDrop from '../plugins/FormBuilderNodeOnDrop'
-import FormBuilderNodeOnPaste from '../plugins/FormBuilderNodeOnPaste'
-import TextFormattingOnKeyDown from '../plugins/TextFormattingOnKeyDown'
-import ListItemOnEnterKey from '../plugins/ListItemOnEnterKey'
-import TextBlockOnEnterKey from '../plugins/TextBlockOnEnterKey'
-import OnPasteHtml from '../plugins/OnPasteHtml'
+import insertBlockOnEnter from 'slate-insert-block-on-enter'
+import softBreak from 'slate-soft-break'
+import formBuilderNodeOnDrop from '../plugins/formBuilderNodeOnDrop'
+import formBuilderNodeOnPaste from '../plugins/formBuilderNodeOnPaste'
+import onModKeySetMarkCombos from '../plugins/onModKeySetMarkCombos'
+import onEnterInListItem from '../plugins/onEnterInListItem'
+import textBlockOnEnterKey from '../plugins/textBlockOnEnterKey'
+import onPasteHtml from '../plugins/onPasteHtml'
+import onBackSpace from '../plugins/onBackSpace'
 
 import {SLATE_DEFAULT_STYLE} from '../constants'
 
@@ -20,17 +21,27 @@ const insertBlockOnEnterDef = {
 
 export default function intializeSlatePlugins(blockEditor) {
   return [
-    InsertBlockOnEnter(insertBlockOnEnterDef),
+    insertBlockOnEnter(insertBlockOnEnterDef),
 
+    // Copy paste
     // TODO: wire up this when spanBlocks are ready
-    OnPasteHtml({link: blockEditor.linkType}, blockEditor.context),
+    onPasteHtml({link: blockEditor.linkType}, blockEditor.context),
+    formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
-    FormBuilderNodeOnDrop(),
-    FormBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
-    TextFormattingOnKeyDown(),
-    ListItemOnEnterKey(SLATE_DEFAULT_STYLE, blockEditor.refreshCSS),
-    TextBlockOnEnterKey(SLATE_DEFAULT_STYLE),
-    SoftBreak({
+    // Key handling
+    onBackSpace(),
+    onEnterInListItem(SLATE_DEFAULT_STYLE, blockEditor.refreshCSS),
+    textBlockOnEnterKey(SLATE_DEFAULT_STYLE),
+
+    // Set mark keyboard shortcuts
+    onModKeySetMarkCombos(),
+
+
+    // Dropping stuff onto formBuilder nodes
+    formBuilderNodeOnDrop(),
+
+
+    softBreak({
       onlyIn: ['contentBlock'],
       shift: true
     })

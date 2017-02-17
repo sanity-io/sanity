@@ -1,9 +1,6 @@
 import {Block, Data, Document} from 'slate'
 
-function FormBuilderNodeOnPaste(...args) {
-
-  const formBuilder = args[0]
-  const editorFields = args[1]
+function formBuilderNodeOnPaste(formBuilder, editorFields) {
 
   function getFieldOfType(typeName) {
     return editorFields.find(ofField => ofField.type === typeName)
@@ -46,4 +43,4 @@ function FormBuilderNodeOnPaste(...args) {
   }
 }
 
-export default FormBuilderNodeOnPaste
+export default formBuilderNodeOnPaste

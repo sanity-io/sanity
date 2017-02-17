@@ -142,11 +142,8 @@ const defaultBlockType = {
 }
 
 
-function OnPasteHtml(...args) {
+function onPasteHtml(types, context) {
 
-
-  const types = args[0]
-  const context = args[1]
   const serializer = new Html({rules: createRules(types, context), defaultBlockType: defaultBlockType})
 
   function onPaste(event, data, state, editor) {
@@ -163,7 +160,6 @@ function OnPasteHtml(...args) {
       .transform()
       .insertFragment(document)
       .apply()
-
   }
 
   return {
@@ -171,4 +167,4 @@ function OnPasteHtml(...args) {
   }
 }
 
-export default OnPasteHtml
+export default onPasteHtml

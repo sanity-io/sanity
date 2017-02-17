@@ -1,3 +1,7 @@
+// This plugin should only kick in when the cursor is at the last listItem of a list.
+// and the new current list item is empty.
+// OR if no previous block (top of document)
+
 function createOnKeyDown(insertBlockStyle, callbackFn) {
   return function onKeyDown(event, data, state, editor) {
 
@@ -8,10 +12,6 @@ function createOnKeyDown(insertBlockStyle, callbackFn) {
     if (data.key !== 'enter') {
       return null
     }
-
-    // This plugin should only kick in when the cursor is at the last listItem of a list.
-    // and the new current list item is empty.
-    // OR if no previous block (top of document)
 
     // Only do listItem nodes
     const isList = startBlock.data.get('listItem')
@@ -70,10 +70,10 @@ function createOnKeyDown(insertBlockStyle, callbackFn) {
   }
 }
 
-function ListItemOnEnterKey(insertBlockStyle, callbackFn) {
+function onEnterInListItem(insertBlockStyle, callbackFn) {
   return {
     onKeyDown: createOnKeyDown(insertBlockStyle, callbackFn)
   }
 }
 
-export default ListItemOnEnterKey
+export default onEnterInListItem

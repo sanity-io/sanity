@@ -2,6 +2,7 @@
 // within a text block which is not a default node type (normal)
 // Meaning: when enter is pressed within a title start a new empty
 // normal block below
+
 function createOnKeyDown(insertBlockStyle) {
   return function onKeyDown(event, data, state, editor) {
     if (data.key !== 'enter') {
@@ -29,10 +30,10 @@ function createOnKeyDown(insertBlockStyle) {
   }
 }
 
-function TextBlockOnEnterKey(...args) {
+function textBlockOnEnterKey(insertBlockStyle) {
   return {
-    onKeyDown: createOnKeyDown(args[0])
+    onKeyDown: createOnKeyDown(insertBlockStyle)
   }
 }
 
-export default TextBlockOnEnterKey
+export default textBlockOnEnterKey
