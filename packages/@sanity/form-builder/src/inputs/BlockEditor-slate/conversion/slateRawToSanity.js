@@ -68,12 +68,10 @@ function isEmpty(blocks) {
 }
 
 export default function slateRawToSanity(raw) {
-  console.log('RAW', raw)
   const nodes = get(raw, 'document.nodes')
   if (!nodes || nodes.length === 0) {
     return undefined
   }
   const blocks = nodes.map(toSanityBlock)
-  console.log('SANITY', blocks)
   return isEmpty(blocks) ? undefined : blocks
 }

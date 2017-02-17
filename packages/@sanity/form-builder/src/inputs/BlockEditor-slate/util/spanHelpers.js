@@ -1,7 +1,7 @@
 
-export function getSpanField(blockArrayType) {
+export function getSpanType(blockArrayType) {
   return getSpansField(blockArrayType)
-    .type.of.find(field => field.name === 'span')
+    .type.of.find(type => type.name === 'span')
 }
 
 export function getSpansField(blockArrayType) {

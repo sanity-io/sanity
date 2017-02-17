@@ -6,7 +6,7 @@ import Header from '../preview/Header'
 import Normal from '../preview/Normal'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
-import {getSpanField} from './spanHelpers'
+import {getSpanType} from './spanHelpers'
 import initializeSlatePlugins from './initializeSlatePlugins'
 
 import {SLATE_DEFAULT_STYLE} from '../constants'
@@ -93,7 +93,7 @@ export default function prepareSlateForBlockEditor(blockEditor) {
     .list.map(mark => mark.value)
 
   const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
-  const spanType = getSpanField(type).type
+  const spanType = getSpanType(type).type
 
   const schema = {
     nodes: {

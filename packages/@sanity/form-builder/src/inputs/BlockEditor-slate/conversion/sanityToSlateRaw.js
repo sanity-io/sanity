@@ -1,5 +1,6 @@
 // Converts a persisted array to a slate compatible json document
 import {createMemberValue} from '../../../state/FormBuilderState'
+import {getSpanType} from '../util/spanHelpers'
 
 function hasKeys(obj) {
   for (const key in obj) { // eslint-disable-line guard-for-in
@@ -16,7 +17,6 @@ function toRawMark(markName) {
 }
 
 function sanitySpanToRawSlateBlockNode(span, context) {
-  // eslint-disable-next-line no-unused-vars
   const {text, _type, marks = [], ...rest} = span
 
   const range = {
@@ -33,7 +33,7 @@ function sanitySpanToRawSlateBlockNode(span, context) {
     kind: 'inline',
     isVoid: false,
     type: 'span',
-    data: {value: createMemberValue(rest, context)},
+    data: {value: createMemberValue({_type, ...rest}, context)},
     nodes: [
       {kind: 'text', ranges: [range]}
     ]
@@ -43,19 +43,25 @@ function sanitySpanToRawSlateBlockNode(span, context) {
 function sanityBlockToRawNode(sanityBlock, context) {
   // eslint-disable-next-line no-unused-vars
   const {spans, _type, ...rest} = sanityBlock
-  const spansType = context.type.fields.find(ofType => ofType.name === 'spans')
 
-  const restData = hasKeys(rest) ? {data: rest} : {}
+  // todo: refactor
+  const spanType = context.type.fields
+    .find(field => field.name === 'spans').type.of
+    .find(spanMemberType => spanMemberType.name === 'span')
+
+  const spanContext = {
+    ...context,
+    type: spanType
+  }
+
+  const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
 
   return {
     kind: 'block',
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: spans.map(span => sanitySpanToRawSlateBlockNode(span, {
-      ...context,
-      type: spansType
-    }))
+    nodes: spans.map(span => sanitySpanToRawSlateBlockNode(span, spanContext))
   }
 }
 
