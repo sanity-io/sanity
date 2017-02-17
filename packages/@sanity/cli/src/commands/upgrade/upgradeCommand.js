@@ -9,7 +9,7 @@ If a specific module name is provided, only that module will be upgraded.
 
 export default {
   name: 'upgrade',
-  signature: '[MODULE_NAME]',
+  signature: '[MODULE_NAME] [--tag DIST_TAG] [--range SEMVER_RANGE]',
   description: 'Upgrades all (or some) Sanity modules to their latest versions',
   action: lazyRequire(require.resolve('./upgradeDependencies')),
   helpText: help

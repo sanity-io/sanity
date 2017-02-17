@@ -26,7 +26,7 @@ export default function yarnWithProgress(args, options = {}) {
     env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
   }, options.execOpts || {})
 
-  const proc = execa(yarnPath, args.concat(['--json']), execOpts)
+  const proc = execa(yarnPath, args.concat(['--json', '--non-interactive']), execOpts)
   proc.catch(onNativeError);
 
   [proc.stdout, proc.stderr].forEach(stream => {

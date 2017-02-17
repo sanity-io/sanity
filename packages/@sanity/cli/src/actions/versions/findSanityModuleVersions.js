@@ -6,22 +6,26 @@ import semverCompare from 'semver-compare'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
-export default async context => {
+export default async (context, target) => {
   const {spinner} = context.output
 
   const sanityModules = filterSanityModules(
     getLocalManifest(context.workDir)
   )
 
+  const resolveOpts = {includeCli: true, target}
   const spin = spinner('Resolving latest versions').start()
-  const packages = values(await promiseProps(buildPackageArray(
-    sanityModules,
-    context.workDir
-  , {includeCli: true})))
+  const versions = await promiseProps(
+    buildPackageArray(sanityModules, context.workDir, resolveOpts)
+  )
+
+  const packages = values(versions)
   spin.stop()
 
   return packages.map(mod => {
-    mod.isOutdated = semverCompare(mod.version, mod.latest) === -1
+    mod.needsUpdate = target === 'latest'
+      ? semverCompare(mod.version, mod.latest) === -1
+      : mod.version !== mod.latest
     return mod
   })
 }
@@ -35,35 +39,47 @@ function getLocalManifest(workDir) {
 }
 
 function filterSanityModules(manifest) {
-  return ([]
-    .concat(Object.keys(manifest.dependencies || {}))
-    .concat(Object.keys(manifest.devDependencies || {}))
+  const dependencies = Object.assign(
+    {},
+    manifest.dependencies || {},
+    manifest.devDependencies || {}
+  )
+
+  const sanityDeps = Object.keys(dependencies)
     .filter(mod => mod.indexOf('@sanity/') === 0)
     .sort()
-  )
+
+  return sanityDeps.reduce((versions, dependency) => {
+    const version = dependencies[dependency]
+    versions[dependency] = version.indexOf('^') === 0 ? 'latest' : version
+    return versions
+  }, {})
 }
 
 function buildPackageArray(packages, workDir, options = {}) {
-  const {includeCli} = options
-  return packages.reduce((result, pkgName) => {
+  const {includeCli, target} = options
+
+  const initial = includeCli ? [{
+    name: pkg.name,
+    version: pkg.version,
+    latest: tryFindLatestVersion(pkg.name, target)
+  }] : []
+
+  return Object.keys(packages).reduce((result, pkgName) => {
     result.push({
       name: pkgName,
       version: getLocalVersion(pkgName, workDir) || '???',
-      latest: tryFindLatestVersion(pkgName)
+      latest: tryFindLatestVersion(pkgName, target)
     })
     return result
-  }, includeCli ? [{
-    name: pkg.name,
-    version: pkg.version,
-    latest: tryFindLatestVersion(pkg.name)
-  }] : [])
+  }, initial)
 }
 
-function tryFindLatestVersion(pkgName) {
-  return getLatestVersion(pkgName).catch(() => 'unknown')
+function tryFindLatestVersion(pkgName, range = 'latest') {
+  return getLatestVersion(pkgName, range).catch(() => 'unknown')
 }
 
 function getLatestVersion(pkgName, range = 'latest') {
-  return getPackageJson(pkgName.toLowerCase(), range)
+  return getPackageJson(pkgName.toLowerCase(), {version: range})
     .then(data => data.version)
 }
