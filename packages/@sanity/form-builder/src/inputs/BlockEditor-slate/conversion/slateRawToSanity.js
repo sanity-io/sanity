@@ -18,7 +18,6 @@ function toSanitySpan(blockNode) {
       if (node.kind !== 'text') {
         throw new Error(`Unexpected non-text child node for inline text: ${node.kind}`)
       }
-      debugger
       return node.ranges
         .map(range => ({
           _type: 'span',
@@ -69,10 +68,12 @@ function isEmpty(blocks) {
 }
 
 export default function slateRawToSanity(raw) {
+  console.log('RAW', raw)
   const nodes = get(raw, 'document.nodes')
   if (!nodes || nodes.length === 0) {
     return undefined
   }
   const blocks = nodes.map(toSanityBlock)
+  console.log('SANITY', blocks)
   return isEmpty(blocks) ? undefined : blocks
 }
