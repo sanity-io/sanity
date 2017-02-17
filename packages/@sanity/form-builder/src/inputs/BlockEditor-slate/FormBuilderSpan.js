@@ -17,23 +17,23 @@ export default class FormBuilderSpan extends React.Component {
     node: PropTypes.object
   }
 
-  state = {isFocused: false, isEditing: true, isManaging: false}
+  state = {isFocused: false, isEditing: false, isManaging: false}
 
   componentWillUpdate(nextProps) {
     const {node} = this.props
+    const {isEditing} = this.state
     const selection = nextProps.state.selection
+    const isFocused = selection.hasFocusIn(node)
+
     if (selection !== this.props.state.selection) {
-      const isFocused = selection.hasFocusIn(node)
       this.setState({isFocused: isFocused})
       if (!isFocused) {
         this.setState({isManaging: false, isEditing: false})
         return
       }
-      if (this.hasValue() && !this.state.isEditing) {
+      if (isFocused && this.hasValue() && !isEditing) {
         this.setState({isManaging: true, isEditing: false})
-        return
       }
-      this.setState({isManaging: false, isEditing: true})
     }
   }
 
@@ -70,7 +70,7 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   handleRemove = () => {
-    this.props.editor.props.blockEditor.operations.removeInline()
+    this.props.editor.props.blockEditor.operations.removeSpan()
   }
 
   handleCancelEvent = event => {
@@ -142,7 +142,7 @@ export default class FormBuilderSpan extends React.Component {
     )
   }
   render() {
-    const {isEditing, isManaging} = this.state
+    const {isEditing, isManaging, isFocused} = this.state
     const {attributes} = this.props
     return (
       <span
@@ -151,7 +151,7 @@ export default class FormBuilderSpan extends React.Component {
       >
         {this.props.children}
 
-        {isManaging && (
+        {isManaging && isFocused && (
           <span className={styles.editBlockContainer}>
             {this.renderManage()}
           </span>
