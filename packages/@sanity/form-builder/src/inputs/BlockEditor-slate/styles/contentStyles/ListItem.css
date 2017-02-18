@@ -1,31 +1,29 @@
 .root {
-  display: list-item;
+  display: block;
   margin-left: 1.1em;
-  margin-bottom: 0.5em;
-  list-style-position: outside;
 }
 
 .root > * {
-  display: inline-flex;;
-  margin: 0;
+  display: flex;
+  margin: 0 0 1em 0;
   padding: 0;
+  @nest &:before {
+    margin-right: 0.5em;
+  }
 }
 
 .bullet {
   composes: root;
-  list-style-type: none;
 }
 
 .bullet > * {
   @nest &:before {
     content: '\25CF ';
-    margin-right: 1rem;
   }
 }
 
 .number {
   composes: root;
-  list-style-type: none;
   counter-increment: listItem;
   @nest & + :not(.number) {
     counter-reset: listItem
@@ -34,12 +32,6 @@
 
 .number > * {
   @nest &:before {
-    margin-right: 1rem;
     content: counter(listItem) ". ";
   }
-}
-
-.roman {
-  composes: root;
-  list-style-type: upper-roman;
 }
