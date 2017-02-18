@@ -10,9 +10,9 @@ function ListItem(props) {
       + `Expected one of '${listItems.join("', '")}'`)
   }
   return (
-    <li {...props.attributes} className={styles[listItem]}>
+    <div {...props.attributes} className={styles[listItem]}>
       { props.contentComponent({children: props.children}) }
-    </li>
+    </div>
   )
 }
 

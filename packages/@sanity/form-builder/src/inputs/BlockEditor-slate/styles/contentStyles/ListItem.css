@@ -1,15 +1,21 @@
 .root {
-  display: block;
-  margin-left: 1.1em;
+  margin-left: 1.1em; /* Must be 1.1 or cursor is hidden at pos 0 */
+  margin-bottom: 1em;
+  display: table;
 }
 
 .root > * {
-  display: flex;
+  display: block;
   margin: 0 0 1em 0;
   padding: 0;
   @nest &:before {
     margin-right: 0.5em;
+    display: table-cell;
   }
+}
+
+.root > * {
+  display: table-row;
 }
 
 .bullet {
