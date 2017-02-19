@@ -52,8 +52,8 @@ function createOnKeyDown(insertBlockStyle, callbackFn) {
       transform = transform.deleteBackward(1)
     }
 
-    // Jump to next node if next node is not a listItem
-    if (nextBlock && !nextBlock.data.get('listItem')) {
+    // Jump to next node if next node is not a listItem or a void block
+    if (nextBlock && !nextBlock.data.get('listItem') && !nextBlock.isVoid) {
       transform = transform
         .collapseToStartOf(nextBlock)
     } else {
