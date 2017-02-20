@@ -4,11 +4,11 @@ import {Editor, State, Data} from 'slate'
 import Portal from 'react-portal'
 import {uniqueId} from 'lodash'
 
-
 import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
+import {openSpanDialog} from './util/spanHelpers'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
@@ -59,13 +59,20 @@ export default class BlockEditor extends React.Component {
   }
 
   handleOnClickListFormattingButton = (listItem, isActive) => {
+    this.editor.focus()
     this.operations.toggleListItem(listItem, isActive)
-    this.refreshCSS()
   }
 
-  handleLinkButtonClick = current => {
-    if (current) {
-      this.operations.removeSpan()
+  handleLinkButtonClick = linkNodes => {
+    this.editor.focus()
+    if (linkNodes.length) {
+      // If selection contains more than one link,
+      // the button will act as a "remove links"-button
+      if (linkNodes.length > 1) {
+        this.operations.removeSpan(linkNodes)
+        return
+      }
+      openSpanDialog(linkNodes[0])
       return
     }
     this.operations.createFormBuilderSpan()
@@ -86,9 +93,9 @@ export default class BlockEditor extends React.Component {
     return value.blocks.some(block => block.data.get('style') === styleName)
   }
 
-  getActiveLink() {
+  getActiveLinks() {
     const {value} = this.props
-    return value.inlines.find(inline => inline.type == SLATE_SPAN_TYPE)
+    return value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE).toArray()
   }
 
   isWithinList() {
@@ -245,7 +252,7 @@ export default class BlockEditor extends React.Component {
             listItems={this.getListItems()}
             blockStyles={this.getBlockStyles()}
             onLinkButtonClick={this.handleLinkButtonClick}
-            activeLink={this.getActiveLink()}
+            activeLinks={this.getActiveLinks()}
             showLinkButton
             marks={this.getActiveMarks()}
           />

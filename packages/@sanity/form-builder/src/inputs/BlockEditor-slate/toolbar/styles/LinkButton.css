@@ -5,3 +5,10 @@
 .iconContainer {
   transform: scale(1.5);
 }
+
+.deleteIcon {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  transform: rotate(20deg);
+}

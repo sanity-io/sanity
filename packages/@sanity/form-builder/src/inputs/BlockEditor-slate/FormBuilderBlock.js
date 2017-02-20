@@ -7,7 +7,7 @@ import ItemForm from './ItemForm'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
 import applySanityPatch from './applySanityPatch'
-import styles from './styles/FormBuilderNode.css'
+import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
 
 export default class FormBuilderBlock extends React.Component {
@@ -100,7 +100,13 @@ export default class FormBuilderBlock extends React.Component {
     const {editor} = this.props
     const state = editor.getState()
     const {document} = state
-    const {rangeIsAtStart, rangeOffset} = createRange(event)
+    const range = createRange(event)
+
+    if (range === null) {
+      return
+    }
+
+    const {rangeIsAtStart, rangeOffset} = range
 
     const node = document.getClosestBlock(key)
 

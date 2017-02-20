@@ -32,7 +32,7 @@ export default class Toolbar extends React.Component {
       onSelect: PropTypes.func
     }),
     onLinkButtonClick: PropTypes.func,
-    activeLink: PropTypes.object,
+    activeLinks: PropTypes.arrayOf(PropTypes.object),
     showLinkButton: PropTypes.bool
   }
 
@@ -41,7 +41,7 @@ export default class Toolbar extends React.Component {
       this.props.marks !== nextProps.marks
       || this.props.blockStyles !== nextProps.blockStyles
       || this.props.fullscreen !== nextProps.fullscreen
-      || this.props.activeLink !== nextProps.activeLink
+      || this.props.activeLinks !== nextProps.activeLinks
     )
   }
 
@@ -58,7 +58,7 @@ export default class Toolbar extends React.Component {
       blockStyles,
       insertItems,
       onLinkButtonClick,
-      activeLink,
+      activeLinks,
       showLinkButton
     } = this.props
 
@@ -85,7 +85,7 @@ export default class Toolbar extends React.Component {
         {
           showLinkButton && (
             <div className={styles.linkContainer}>
-              <LinkButton activeLink={activeLink} onClick={onLinkButtonClick} />
+              <LinkButton activeLinks={activeLinks} onClick={onLinkButtonClick} />
             </div>
           )
         }

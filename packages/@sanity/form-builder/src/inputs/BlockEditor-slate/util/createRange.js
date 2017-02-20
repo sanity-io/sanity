@@ -13,6 +13,10 @@ export default function createRange(event) {
     range.setStart(event.rangeParent, event.rangeOffset)
   }
 
+  if (!range || range.isCollapsed) {
+    return null
+  }
+
   const rangeOffset = range.startOffset
   const rangeLength = range.startContainer.wholeText ? range.startContainer.wholeText.length : 0
   const rangeIsAtStart = rangeOffset < rangeLength / 2

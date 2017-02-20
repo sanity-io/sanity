@@ -4,8 +4,9 @@ import applySanityPatch from './applySanityPatch'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
-import ItemForm from './ItemForm'
-import styles from './styles/LinkNode.css'
+import RenderField from '../Object/RenderField'
+import styles from './styles/FormBuilderSpan.css'
+import arrify from 'arrify'
 
 export default class FormBuilderSpan extends React.Component {
   static propTypes = {
@@ -17,73 +18,79 @@ export default class FormBuilderSpan extends React.Component {
     node: PropTypes.object
   }
 
-  state = {isFocused: false, isEditing: false, isManaging: false}
+  state = {isFocused: false, isEditing: false}
 
-  componentWillUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.isEditing !== this.state.isEditing
+      || nextState.isFocused !== this.state.isFocused
+      || nextProps.state.selection !== this.props.state.selection
+      || nextProps.node.data !== this.props.node.data
+  }
+
+  componentWillUpdate(nextProps, nextState) {
     const {node} = this.props
-    const {isEditing} = this.state
-    const selection = nextProps.state.selection
+    const {state} = nextProps
+    const selection = state.selection
     const isFocused = selection.hasFocusIn(node)
+    const rest = {isFocused}
 
     if (selection !== this.props.state.selection) {
-      this.setState({isFocused: isFocused})
       if (!isFocused) {
-        this.setState({isManaging: false, isEditing: false})
-        return
-      }
-      if (isFocused && this.hasValue() && !isEditing) {
-        this.setState({isManaging: true, isEditing: false})
+        this.setState({isEditing: false, ...rest})
       }
     }
   }
 
-  hasValue() {
-    return this.getValue().serialize()
+  componentWillMount() {
+    if (this.getValue()) {
+      this.setState({isEditing: true})
+    }
   }
 
   getValue() {
     return this.props.node.data.get('value')
   }
 
-  handleToggle = () => {
-    if (this.getValue()) {
-      this.setState({isEditing: true})
-      return
-    }
-    this.setState({isManaging: true})
-  }
-
   handleCloseInput = () => {
-    if (!this.getValue().serialize()) {
-      this.handleRemove()
-      return
-    }
-    this.setState({isEditing: false})
-  }
-
-  handleCloseManage = () => {
-    this.setState({isManaging: false})
-  }
-
-  handleSwitchToEdit = () => {
-    this.setState({isManaging: false, isEditing: true})
+    // Let it happen after focus is set in the editor
+    this.props.editor.focus()
+    setTimeout(() => {
+      if (this.state.isEditing) {
+        this.setState({isEditing: false})
+      }
+    }, 100)
   }
 
   handleRemove = () => {
-    this.props.editor.props.blockEditor.operations.removeSpan()
+    this.props.editor.props.blockEditor
+      .operations
+      .removeSpan(this.props.node)
+  }
+
+  handleNodeClick = () => {
+    this.setState({isEditing: true})
+  }
+
+  handleReset = () => {
+    this.props.editor.props.blockEditor
+      .operations
+      .resetSpan(this.props.node)
   }
 
   handleCancelEvent = event => {
     event.preventDefault()
   }
 
-  handleChange = event => {
+  handleFieldChange = (event, field) => {
     const {node, editor} = this.props
+    const fieldPatch = arrify(event.patch).map(patch => Object.assign({}, patch, {
+      path: [field.name, ...(patch.path || [])]
+    }))
     const next = editor.getState()
       .transform()
       .setNodeByKey(node.key, {
         data: {
-          value: applySanityPatch(node.data.get('value'), event.patch)
+          value: applySanityPatch(node.data.get('value'), fieldPatch)
         }
       })
       .apply()
@@ -93,42 +100,70 @@ export default class FormBuilderSpan extends React.Component {
 
   renderInput() {
     const value = this.getValue()
-    const editType = value.context.type
+    const type = value.context.type
+    const ignoredFields = ['text', 'marks']
+    const memberFields = type.fields.filter(field => {
+      return !ignoredFields.includes(field.name)
+    })
     return (
       <EditItemPopOver
         onClose={this.handleCloseInput}
       >
-        <ItemForm
-          onDrop={this.handleCancelEvent}
-          type={editType}
-          level={0}
-          value={value}
-          onChange={this.handleChange}
-        />
+        {
+          this.renderManage()
+        }
+
+        {
+          memberFields.map(eField => {
+            const fieldValue = value.getAttribute(eField.name)
+            return (
+              <RenderField
+                key={eField.name}
+                field={eField}
+                level={0}
+                value={fieldValue}
+                onChange={this.handleFieldChange}
+              />
+            )
+          })
+        }
       </EditItemPopOver>
     )
   }
 
-  renderManage() {
-    const value = this.getValue()
+  shouldPreview() {
+    // Disabled for now
+    return true
+  }
 
+  renderPreview() {
+    const value = this.getValue()
+    if (!value) {
+      return null
+    }
+    if (this.shouldPreview()) {
+      return (
+        <Preview
+          value={value.serialize()}
+          type={value.context.type}
+        />
+      )
+    }
+    return null
+  }
+
+  renderManage() {
     return (
-      <EditItemPopOver
-        onClose={this.handleCloseManage}
-      >
+      <div>
         <div className={styles.manageLinkPreview}>
-          <Preview
-            value={value.serialize()}
-            type={value.context.type}
-          />
+          { this.renderPreview() }
         </div>
         <div className={styles.manageButtons}>
           <DefaultButton
             kind="simple"
-            color="primary"
-            onClick={this.handleSwitchToEdit}
+            onClick={this.handleReset}
           >
-            Change
+            Reset
           </DefaultButton>
           <DefaultButton
             kind="simple"
@@ -138,24 +173,20 @@ export default class FormBuilderSpan extends React.Component {
             Remove
           </DefaultButton>
         </div>
-      </EditItemPopOver>
+      </div>
     )
   }
+
   render() {
-    const {isEditing, isManaging, isFocused} = this.state
+    const {isEditing} = this.state
     const {attributes} = this.props
     return (
       <span
         {...attributes}
+        onMouseUp={this.handleNodeClick}
         className={styles.root}
       >
         {this.props.children}
-
-        {isManaging && isFocused && (
-          <span className={styles.editBlockContainer}>
-            {this.renderManage()}
-          </span>
-        )}
 
         {isEditing && (
           <span className={styles.editBlockContainer}>
