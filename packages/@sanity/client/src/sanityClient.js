@@ -9,6 +9,7 @@ const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
+const omit = require('./util/omit')
 const {defaultConfig, initConfig} = require('./config')
 
 const toPromise = observable => observable.toPromise()
@@ -21,6 +22,10 @@ function SanityClient(config = defaultConfig) {
   this.projects = new ProjectsClient(this)
   this.users = new UsersClient(this)
   this.auth = new AuthClient(this)
+
+  if (config.isPromiseAPI) {
+    this.observable = new SanityClient(omit(config, ['isPromiseAPI']))
+  }
 }
 
 assign(SanityClient.prototype, dataMethods)
@@ -32,6 +37,10 @@ assign(SanityClient.prototype, {
   config(newConfig) {
     if (typeof newConfig === 'undefined') {
       return assign({}, this.clientConfig)
+    }
+
+    if (this.observable) {
+      this.observable.config(omit(newConfig, ['isPromiseAPI']))
     }
 
     this.clientConfig = initConfig(newConfig, this.clientConfig || {})
@@ -77,9 +86,7 @@ function mergeOptions(...opts) {
 }
 
 function createClient(config) {
-  const client = new SanityClient(assign({}, config, {isPromiseAPI: true}))
-  client.observable = new SanityClient(config)
-  return client
+  return new SanityClient(assign({}, config, {isPromiseAPI: true}))
 }
 
 createClient.Patch = Patch
