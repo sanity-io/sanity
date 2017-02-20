@@ -52,7 +52,7 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   handleCloseInput = () => {
-    // Let it happen after focus is set in the editor
+    // Let it happen after focus is set in the editor (state may be out of sync)
     this.props.editor.focus()
     setTimeout(() => {
       if (this.state.isEditing) {
@@ -133,7 +133,7 @@ export default class FormBuilderSpan extends React.Component {
 
   shouldPreview() {
     // Disabled for now
-    return true
+    return false
   }
 
   renderPreview() {
