@@ -1,17 +1,16 @@
 import React, {PropTypes} from 'react'
 
-import getWindow from 'get-window'
 import ReactDOM from 'react-dom'
-import {get} from 'lodash'
 import OffsetKey from 'slate/lib/utils/offset-key'
 import {findDOMNode} from 'slate'
 import ItemForm from './ItemForm'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
 import applySanityPatch from './applySanityPatch'
-import styles from './styles/FormBuilderNode.css'
+import styles from './styles/FormBuilderBlock.css'
+import createRange from './util/createRange'
 
-export default class PreviewNode extends React.Component {
+export default class FormBuilderBlock extends React.Component {
   static propTypes = {
     type: PropTypes.object,
     node: PropTypes.object,
@@ -20,13 +19,9 @@ export default class PreviewNode extends React.Component {
     attributes: PropTypes.object
   }
 
-  constructor(props) {
-    super(props)
-    this._dropTarget = null
-    this._editorNode = null
-    this._isInline = props.type.options && props.type.options.inline
-    this.state = {isFocused: false, isEditing: false, isDragging: false}
-  }
+  state = {isFocused: false, isEditing: false, isDragging: false}
+  _dropTarget = null
+  _editorNode = null
 
   componentWillUpdate(nextProps) {
     const {node} = this.props
@@ -55,9 +50,17 @@ export default class PreviewNode extends React.Component {
     event.dataTransfer.effectAllowed = 'none'
     event.dataTransfer.setData('text/plain', '')
     this._editorNode = ReactDOM.findDOMNode(editor)
+    this.addDragHandlers()
+  }
+
+  addDragHandlers() {
     this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
     this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+  }
 
+  removeDragHandlers() {
+    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
+    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -65,8 +68,13 @@ export default class PreviewNode extends React.Component {
     event.stopPropagation()
     this.hideBlockDragMarker()
     if (event.target === this._editorNode) {
-      this._dropTarget = null
+      this.resetDropTarget()
     }
+  }
+
+  resetDropTarget() {
+    this._dropTarget = null
+    this.hideBlockDragMarker()
   }
 
   handleDragOverOtherNode = event => {
@@ -89,34 +97,21 @@ export default class PreviewNode extends React.Component {
     }
     const {key} = offsetKey
 
-    const {state} = this.props
+    const {editor} = this.props
+    const state = editor.getState()
     const {document} = state
+    const range = createRange(event)
 
-    const window = getWindow(event.target)
-    const {x, y} = event
-    // Resolve the point where the drag is now
-    let range
-    // COMPAT: In Firefox, `caretRangeFromPoint` doesn't exist. (2016/07/25)
-    if (window.document.caretRangeFromPoint) {
-      range = window.document.caretRangeFromPoint(x, y)
-    } else {
-      range = window.document.createRange()
-      range.setStart(event.rangeParent, event.rangeOffset)
+    if (range === null) {
+      return
     }
 
-    const rangeOffset = range.startOffset
-    const rangeLength = range.startContainer.wholeText ? range.startContainer.wholeText.length : 0
-    const rangeIsAtStart = rangeOffset < rangeLength / 2
+    const {rangeIsAtStart, rangeOffset} = range
 
-    let node
-    if (this._isInline) {
-      node = document.getClosestInline(key)
-    } else {
-      node = document.getClosestBlock(key)
-    }
+    const node = document.getClosestBlock(key)
 
     if (!node) {
-      this._dropTarget = null
+      this.resetDropTarget()
       return
     }
 
@@ -128,16 +123,17 @@ export default class PreviewNode extends React.Component {
         this.showBlockDragMarker('after', domNode)
       }
     }
+
     this._dropTarget = {node: node, isAtStart: rangeIsAtStart, offset: rangeOffset}
-    // console.log(this._dropTarget)
   }
 
   handleDragEnd = event => {
     this.setState({isDragging: false})
-    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+    this.removeDragHandlers()
 
-    const {editor, state, node} = this.props
+    const {editor, node} = this.props
+    const state = editor.getState()
+
     const target = this._dropTarget
 
     // Return if this is our node
@@ -145,13 +141,9 @@ export default class PreviewNode extends React.Component {
       return
     }
 
-    let next = state.transform().removeNodeByKey(node.key)
+    let next = this.applyDropTargetBlock(state.transform().removeNodeByKey(node.key), target)
 
-    if (this._isInline) {
-      next = this.applyDropTargetInline(next, target)
-    } else {
-      next = this.applyDropTargetBlock(next, target)
-    }
+    this.resetDropTarget()
 
     // Move cursor and apply
     next = next.collapseToEndOf(node)
@@ -159,26 +151,10 @@ export default class PreviewNode extends React.Component {
       .apply()
 
     editor.onChange(next)
-    this._dropTarget = null
-    this.hideBlockDragMarker()
   }
 
   handleCancelEvent = event => {
     event.preventDefault()
-  }
-
-  applyDropTargetInline(transform, target) {
-    const {node} = this.props
-    let next = transform
-
-    if (target.isAtStart) {
-      next = next.collapseToStartOf(target.node)
-    } else {
-      next = next.collapseToEndOf(target.node)
-    }
-    return next
-      .moveToOffsets(target.offset)
-      .insertInline(node)
   }
 
   applyDropTargetBlock(transform, target) {
@@ -210,7 +186,7 @@ export default class PreviewNode extends React.Component {
       <Preview
         type={type}
         value={this.getValue().serialize()}
-        layout={this._isInline ? 'inline' : 'block'}
+        layout="block"
       />
     )
   }
@@ -219,7 +195,6 @@ export default class PreviewNode extends React.Component {
     const {type} = this.props
     return (
       <EditItemPopOver
-        scrollContainerId={this.props.editor.props.formBuilderInputId}
         title={this.props.node.title}
         onClose={this.handleClose}
       >
@@ -247,12 +222,11 @@ export default class PreviewNode extends React.Component {
   render() {
     const {isEditing} = this.state
     const {attributes} = this.props
-    const NodeTag = this._isInline ? 'span' : 'div'
 
     const className = this.state.isFocused ? styles.active : styles.root
 
     return (
-      <NodeTag
+      <div
         {...attributes}
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
@@ -269,7 +243,7 @@ export default class PreviewNode extends React.Component {
             {this.renderInput()}
           </div>
         )}
-      </NodeTag>
+      </div>
     )
   }
 }

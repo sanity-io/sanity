@@ -5,19 +5,19 @@ import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 
-import styles from './styles/ListFormat.css'
+import styles from './styles/ListItems.css'
 
-export const listFormatShape = PropTypes.shape({
+export const listItem = PropTypes.shape({
   active: PropTypes.bool,
   type: PropTypes.string,
   title: PropTypes.string
 })
 
-export default class ListFormat extends React.Component {
+export default class ListItem extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
-    listFormats: PropTypes.arrayOf(listFormatShape)
+    listItems: PropTypes.arrayOf(listItem)
   }
 
   getIcon(type) {
@@ -34,7 +34,7 @@ export default class ListFormat extends React.Component {
 
   renderButton = listFormat => {
     const onClick = event => {
-      this.props.onClick(event, listFormat.type, !listFormat.active)
+      this.props.onClick(listFormat.type, listFormat.active)
     }
     const Icon = this.getIcon(listFormat.type)
     return (
@@ -56,7 +56,7 @@ export default class ListFormat extends React.Component {
     return (
       <div className={styles.root}>
         {
-          this.props.listFormats.map(this.renderButton)
+          this.props.listItems.map(this.renderButton)
         }
       </div>
     )

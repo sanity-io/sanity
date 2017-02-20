@@ -27,10 +27,10 @@ function onKeyDown(event, data, state, editor) {
   return nextState
 }
 
-function TextFormattingOnKeyDown(...args) {
+function onModKeySetMarkCombos() {
   return {
     onKeyDown
   }
 }
 
-export default TextFormattingOnKeyDown
+export default onModKeySetMarkCombos

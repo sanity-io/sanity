@@ -2,6 +2,7 @@
 // within a text block which is not a default node type (normal)
 // Meaning: when enter is pressed within a title start a new empty
 // normal block below
+
 function createOnKeyDown(insertBlockStyle) {
   return function onKeyDown(event, data, state, editor) {
     if (data.key !== 'enter') {
@@ -9,8 +10,9 @@ function createOnKeyDown(insertBlockStyle) {
     }
     const isTextBlock = state.blocks.some(block => block.data.get('style'))
     const isDefaultNode = state.blocks.some(block => block.data.get('style') === insertBlockStyle)
+    const isListNode = state.blocks.some(block => block.data.get('listItem'))
     const {startBlock} = state
-    if (!isTextBlock || state.selection.isExpanded || !state.selection.hasEndAtEndOf(startBlock)) {
+    if (isListNode || !isTextBlock || state.selection.isExpanded || !state.selection.hasEndAtEndOf(startBlock)) {
       return null
     }
     if (!isDefaultNode) {
@@ -28,10 +30,10 @@ function createOnKeyDown(insertBlockStyle) {
   }
 }
 
-function TextBlockOnEnterKey(...args) {
+function textBlockOnEnterKey(insertBlockStyle) {
   return {
-    onKeyDown: createOnKeyDown(args[0])
+    onKeyDown: createOnKeyDown(insertBlockStyle)
   }
 }
 
-export default TextBlockOnEnterKey
+export default textBlockOnEnterKey

@@ -40,6 +40,7 @@
     "shallow-equals": "0.0.0",
     "slate": "^0.16.17",
     "slate-insert-block-on-enter": "0.0.2",
+    "slate-soft-break": "^0.3.0",
     "slugify": "^1.1.0"
   },
   "devDependencies": {

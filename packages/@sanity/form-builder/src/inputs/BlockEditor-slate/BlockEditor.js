@@ -1,30 +1,20 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {Editor, State, Data} from 'slate'
-import {uniqueId} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
-import InsertBlockOnEnter from 'slate-insert-block-on-enter'
-
-import prepareSlateSchema from './util/prepareSlateSchema'
-import styles from './styles/BlockEditor.css'
-
-import FormBuilderNodeOnDrop from './plugins/FormBuilderNodeOnDrop'
-import FormBuilderNodeOnPaste from './plugins/FormBuilderNodeOnPaste'
-import TextFormattingOnKeyDown from './plugins/TextFormattingOnKeyDown'
-import ListItemOnEnterKey from './plugins/ListItemOnEnterKey'
-import TextBlockOnEnterKey from './plugins/TextBlockOnEnterKey'
-import OnPasteHtml from './plugins/OnPasteHtml'
-
 import Portal from 'react-portal'
+import {uniqueId} from 'lodash'
 
-import {
-  SLATE_DEFAULT_STYLE,
-  SLATE_LINK_TYPE,
-} from './constants'
-
+import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
+import createBlockEditorOperations from './createBlockEditorOperations'
+import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
+import {openSpanDialog} from './util/spanHelpers'
+
+import styles from './styles/BlockEditor.css'
+import {SLATE_SPAN_TYPE} from './constants'
 
 export default class BlockEditor extends React.Component {
+
   static propTypes = {
     type: PropTypes.any,
     level: PropTypes.number,
@@ -43,182 +33,54 @@ export default class BlockEditor extends React.Component {
     formBuilder: PropTypes.object
   }
 
+  state = {fullscreen: false}
+
   _inputId = uniqueId('SlateBlockEditor')
 
   constructor(props, context) {
+
     super(props, context)
 
-    const slateSchema = prepareSlateSchema(this.props.type)
-    this.textStyles = slateSchema.textStyles
-    this.listItems = slateSchema.listItems
-    this.slateSchema = slateSchema.schema
-    this.groupedTypes = slateSchema.types
-    this.slatePlugins = [
-      InsertBlockOnEnter({
-        type: 'contentBlock',
-        kind: 'block',
-        data: {
-          style: SLATE_DEFAULT_STYLE
-        },
-        nodes: [{kind: 'text', text: '', ranges: []}]
-      }),
-      OnPasteHtml(),
-      FormBuilderNodeOnDrop(),
-      FormBuilderNodeOnPaste(this.context.formBuilder, this.props.type.of),
-      TextFormattingOnKeyDown(),
-      ListItemOnEnterKey(
-        SLATE_DEFAULT_STYLE
-      ),
-      TextBlockOnEnterKey(SLATE_DEFAULT_STYLE)
-    ]
+    const preparation = prepareSlateForBlockEditor(this)
+    this.slateSchema = preparation.schema
+    this.textStyles = preparation.textStyles
+    this.listItems = preparation.listItems
+    this.slatePlugins = preparation.plugins
 
-    this.state = {
-      fullscreen: false
-    }
+    this.operations = createBlockEditorOperations(this)
   }
 
-  handleInsert = item => {
-    const {value, onChange} = this.props
-    const addItemValue = this.context.formBuilder.createFieldValue(undefined, item)
-    const props = {
-      type: item.type.name,
-      isVoid: true,
-      data: {
-        value: addItemValue
+  handleInsertItem = item => {
+    this.operations.insertBlock(item)
+  }
+
+  handleOnClickMarkButton = mark => {
+    this.operations.toggleMark(mark)
+  }
+
+  handleOnClickListFormattingButton = (listItem, isActive) => {
+    this.editor.focus()
+    this.operations.toggleListItem(listItem, isActive)
+  }
+
+  handleLinkButtonClick = linkNodes => {
+    this.editor.focus()
+    if (linkNodes.length) {
+      // If selection contains more than one link,
+      // the button will act as a "remove links"-button
+      if (linkNodes.length > 1) {
+        this.operations.removeSpan(linkNodes)
+        return
       }
+      openSpanDialog(linkNodes[0])
+      return
     }
-    let transform = value.transform()
-    if (item.options && item.options.inline) {
-      transform = transform.insertInline(props)
-    } else {
-      transform = transform.insertBlock(props)
-    }
-    const nextState = transform.apply()
-
-    onChange(nextState)
+    this.operations.createFormBuilderSpan()
   }
 
-  handleOnClickMarkButton = (event, type) => {
-    event.preventDefault()
-    const {value, onChange} = this.props
-    const nextState = value
-      .transform()
-      .toggleMark(type)
-      .apply()
-    onChange(nextState)
-  }
-
-
-  handleOnClickListFormattingButton = (event, listStyle, active) => {
-    const {value, onChange} = this.props
-    const normalBlock = {
-      type: 'contentBlock',
-      data: {style: SLATE_DEFAULT_STYLE}
-    }
-    const listItemBlock = {
-      type: 'contentBlock',
-      data: {listItem: listStyle}
-    }
-    let transform = value.transform()
-
-    if (active) {
-      transform = transform
-        .setBlock(listItemBlock)
-    } else {
-      transform = transform
-        .setBlock(normalBlock)
-    }
-    const nextState = transform.apply()
-    onChange(nextState)
+  handleBlockStyleChange = selectedValue => {
+    this.operations.setBlockStyle(selectedValue.style.value)
     this.refreshCSS()
-  }
-
-
-  handleSelectBlockFormatting = selectedValue => {
-    const {value, onChange} = this.props
-    const {selection, startBlock, endBlock} = value
-    const block = {
-      type: 'contentBlock',
-      data: {style: selectedValue.style.value}
-    }
-    let transform = value.transform()
-
-    // If a single block is selected partially, split block conditionally
-    // (selection in start, middle or end of text)
-    if (startBlock === endBlock
-      && selection.isExpanded
-      && !(
-        selection.hasStartAtStartOf(startBlock)
-        && selection.hasEndAtEndOf(startBlock
-      )
-    )) {
-      const hasTextBefore = !selection.hasStartAtStartOf(startBlock)
-      const hasTextAfter = !selection.hasEndAtEndOf(startBlock)
-      if (hasTextAfter) {
-        const extendForward = selection.isForward
-          ? (selection.focusOffset - selection.anchorOffset)
-          : (selection.anchorOffset - selection.focusOffset)
-        transform
-          .collapseToStart()
-          .splitBlock()
-          .moveForward()
-          .extendForward(extendForward)
-          .collapseToEnd()
-          .splitBlock()
-          .collapseToStartOfPreviousText()
-      } else {
-        transform = hasTextBefore ? (
-          transform
-            .collapseToStart()
-            .splitBlock()
-            .moveForward()
-        ) : (
-          transform
-            .collapseToEnd()
-            .splitBlock()
-            .moveTo(selection)
-        )
-      }
-    }
-    transform
-      .setBlock(block)
-    const nextState = transform.apply()
-    onChange(nextState)
-    this.refreshCSS()
-  }
-
-  handleOnClickLinkButton = (href, target, text) => {
-    const {value, onChange} = this.props
-    let transform = value.transform()
-
-    if (!href) {
-      transform = transform
-       .unwrapInline(SLATE_LINK_TYPE)
-       .focus()
-    } else if (href) {
-      if (value.isExpanded) {
-        transform = transform
-          .unwrapInline(SLATE_LINK_TYPE)
-          .wrapInline({
-            type: SLATE_LINK_TYPE,
-            data: {href: href, target: target}
-          })
-          .focus()
-      } else {
-        const linkNode = value.inlines
-          .find(inline => inline.type === SLATE_LINK_TYPE)
-        transform = transform
-          .focus()
-          .moveToRangeOf(linkNode)
-          .unwrapInline(SLATE_LINK_TYPE)
-          .wrapInline({
-            type: SLATE_LINK_TYPE,
-            data: {href: href, target: target}
-          })
-      }
-    }
-    const nextState = transform.apply()
-    onChange(nextState)
   }
 
   hasMark(markName) {
@@ -226,19 +88,14 @@ export default class BlockEditor extends React.Component {
     return value.marks.some(mark => mark.type == markName)
   }
 
-  hasBlock(type) {
-    const {value} = this.props
-    return value.blocks.some(block => block.type === type)
-  }
-
   hasStyle(styleName) {
     const {value} = this.props
     return value.blocks.some(block => block.data.get('style') === styleName)
   }
 
-  hasLinks() {
+  getActiveLinks() {
     const {value} = this.props
-    return value.inlines.some(inline => inline.type == SLATE_LINK_TYPE)
+    return value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE).toArray()
   }
 
   isWithinList() {
@@ -262,7 +119,7 @@ export default class BlockEditor extends React.Component {
     })
   }
 
-  getListTypes() {
+  getListItems() {
     return (this.listItems)
       .map((item, index) => {
         return {
@@ -273,7 +130,7 @@ export default class BlockEditor extends React.Component {
       })
   }
 
-  getStyles() {
+  getBlockStyles() {
     function Preview(props) {
       return <span>{props.children}</span>
     }
@@ -312,25 +169,6 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-  getActiveLink() {
-    const {value} = this.props
-    if (!value.inlines) {
-      return null
-    }
-    if (this.hasLinks()) {
-      const linkNode = value.inlines
-        .find(inline => inline.type === SLATE_LINK_TYPE)
-      if (linkNode) {
-        return {
-          href: linkNode.data.get('href'),
-          target: linkNode.data.get('target')
-        }
-      }
-      return null
-    }
-    return null
-  }
-
   handleToggleFullscreen = () => {
     this.setState({
       fullscreen: !this.state.fullscreen
@@ -349,15 +187,21 @@ export default class BlockEditor extends React.Component {
     this.blockDragMarker = marker
   }
 
-  // Hack to force the browser to reapply CSS rules
+  // Webkit hack to force the browser to reapply CSS rules
   // This is needed to make ::before and ::after CSS rules work properly
   // under certain conditions (like the list counters for number lists)
   // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
-  refreshCSS() {
-    const editorDOMNode = ReactDOM.findDOMNode(this.editor)
-    editorDOMNode.style.display = 'none'
-    editorDOMNode.offsetHeight
-    editorDOMNode.style.display = ''
+  refreshCSS = () => {
+    const isWebkit = 'WebkitAppearance' in document.documentElement.style
+    if (!isWebkit) {
+      return
+    }
+    // Must be body because we have several scrollcontainers loosing state
+    const resetNode = document.body
+    resetNode.style.display = 'none'
+    // eslint-disable-next-line no-unused-expressions
+    resetNode.offsetHeight // Looks weird, but it actually has an effect!
+    resetNode.style.display = ''
   }
 
   showBlockDragMarker(pos, node) {
@@ -381,9 +225,7 @@ export default class BlockEditor extends React.Component {
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const activeLink = this.getActiveLink()
-    const showLinkButton = (value.selection && value.selection.isExpanded)
-      || !!activeLink
+    const customTypes = type.of.filter(memberType => memberType.name !== 'block')
 
     return (
       <FormField
@@ -400,18 +242,18 @@ export default class BlockEditor extends React.Component {
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertBlock={this.handleInsert}
-            insertBlocks={this.groupedTypes.formBuilder || []}
+            onInsertItem={this.handleInsertItem}
+            insertItems={customTypes || []}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
             onListButtonClick={this.handleOnClickListFormattingButton}
-            onFormatSelectChange={this.handleSelectBlockFormatting}
-            listFormats={this.getListTypes()}
-            textFormats={this.getStyles()}
-            onLinkButtonClick={this.handleOnClickLinkButton}
-            activeLink={activeLink}
-            showLinkButton={showLinkButton}
+            onBlockStyleChange={this.handleBlockStyleChange}
+            listItems={this.getListItems()}
+            blockStyles={this.getBlockStyles()}
+            onLinkButtonClick={this.handleLinkButtonClick}
+            activeLinks={this.getActiveLinks()}
+            showLinkButton
             marks={this.getActiveMarks()}
           />
           <div className={styles.inputContainer} id={this._inputId}>

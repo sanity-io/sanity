@@ -1,4 +1,8 @@
-function createOnKeyDown(insertBlockStyle) {
+// This plugin should only kick in when the cursor is at the last listItem of a list.
+// and the new current list item is empty.
+// OR if no previous block (top of document)
+
+function createOnKeyDown(insertBlockStyle, callbackFn) {
   return function onKeyDown(event, data, state, editor) {
 
     const {document, startKey, startBlock} = state
@@ -8,10 +12,6 @@ function createOnKeyDown(insertBlockStyle) {
     if (data.key !== 'enter') {
       return null
     }
-
-    // This plugin should only kick in when the cursor is at the last listItem of a list.
-    // and the new current list item is empty.
-    // OR if no previous block (top of document)
 
     // Only do listItem nodes
     const isList = startBlock.data.get('listItem')
@@ -34,10 +34,14 @@ function createOnKeyDown(insertBlockStyle) {
     // If on top of document
     // and no text insert a node before
     if (!previousBlock) {
-      return transform
+      const nextState = transform
         .insertBlock(blockToInsert)
         .focus()
         .apply()
+      if (callbackFn) {
+        callbackFn(nextState)
+      }
+      return nextState
     }
 
     const nextBlock = document.getNextBlock(startKey)
@@ -48,8 +52,8 @@ function createOnKeyDown(insertBlockStyle) {
       transform = transform.deleteBackward(1)
     }
 
-    // Jump to next node if next node is not a listItem
-    if (nextBlock && !nextBlock.data.get('listItem')) {
+    // Jump to next node if next node is not a listItem or a void block
+    if (nextBlock && !nextBlock.data.get('listItem') && !nextBlock.isVoid) {
       transform = transform
         .collapseToStartOf(nextBlock)
     } else {
@@ -59,14 +63,17 @@ function createOnKeyDown(insertBlockStyle) {
         .focus()
     }
     const nextState = transform.apply()
+    if (callbackFn) {
+      callbackFn(nextState)
+    }
     return nextState
   }
 }
 
-function ListItemOnEnterKey(...args) {
+function onEnterInListItem(insertBlockStyle, callbackFn) {
   return {
-    onKeyDown: createOnKeyDown(args[0])
+    onKeyDown: createOnKeyDown(insertBlockStyle, callbackFn)
   }
 }
 
-export default ListItemOnEnterKey
+export default onEnterInListItem

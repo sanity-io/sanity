@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/Toolbar.css'
-import InsertDropdown, {insertBlockShape} from './InsertDropdown'
-import TextFormatToolbar, {textFormatShape} from './TextFormat'
-import ListFormat, {listFormatShape} from './ListFormat'
-import BlockFormat, {blockFormatShape} from './BlockFormat'
+import InsertItems, {insertItemShape} from './InsertItems'
+import Marks, {mark} from './Marks'
+import ListItems, {listItem} from './ListItems'
+import BlockStyle, {blockStyleShape} from './BlockStyle'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -12,35 +12,37 @@ import LinkButton from './LinkButton'
 export default class Toolbar extends React.Component {
 
   static propTypes = {
-    onInsertBlock: PropTypes.func,
+    onInsertItem: PropTypes.func,
     onFullscreenEnable: PropTypes.func,
     className: PropTypes.string,
     fullscreen: PropTypes.bool,
     onMarkButtonClick: PropTypes.func,
-    onLinkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
-    onFormatSelectChange: PropTypes.func,
-    insertBlocks: PropTypes.arrayOf(insertBlockShape),
+    onBlockStyleChange: PropTypes.func,
+    insertItems: PropTypes.arrayOf(insertItemShape),
     marks: PropTypes.arrayOf(
-      textFormatShape
+      mark
     ),
-    listFormats: PropTypes.arrayOf(
-      listFormatShape
+    listItems: PropTypes.arrayOf(
+      listItem
     ),
-    textFormats: PropTypes.shape({
-      value: PropTypes.arrayOf(blockFormatShape),
-      items: PropTypes.arrayOf(blockFormatShape),
+    blockStyles: PropTypes.shape({
+      value: PropTypes.arrayOf(blockStyleShape),
+      items: PropTypes.arrayOf(blockStyleShape),
       onSelect: PropTypes.func
     }),
-    activeLink: PropTypes.shape({
-      href: PropTypes.string,
-      target: PropTypes.string
-    }),
+    onLinkButtonClick: PropTypes.func,
+    activeLinks: PropTypes.arrayOf(PropTypes.object),
     showLinkButton: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (this.props.marks !== nextProps.marks || this.props.fullscreen !== nextProps.fullscreen)
+    return (
+      this.props.marks !== nextProps.marks
+      || this.props.blockStyles !== nextProps.blockStyles
+      || this.props.fullscreen !== nextProps.fullscreen
+      || this.props.activeLinks !== nextProps.activeLinks
+    )
   }
 
   render() {
@@ -48,34 +50,34 @@ export default class Toolbar extends React.Component {
       className,
       fullscreen,
       marks,
-      onInsertBlock,
+      onInsertItem,
       onMarkButtonClick,
       onListButtonClick,
-      onFormatSelectChange,
+      onBlockStyleChange,
+      listItems,
+      blockStyles,
+      insertItems,
       onLinkButtonClick,
-      listFormats,
-      textFormats,
-      insertBlocks,
-      activeLink,
+      activeLinks,
       showLinkButton
     } = this.props
 
     return (
       <div className={`${styles.root} ${className}`}>
         <div className={styles.blockFormatContainer}>
-          <BlockFormat value={textFormats.value} items={textFormats.items} onSelect={onFormatSelectChange} />
+          <BlockStyle value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
         </div>
 
         <div className={styles.formatButtons}>
           {marks && marks.length > 0 && (
             <div className={styles.textFormatContainer}>
-              <TextFormatToolbar marks={marks} onClick={onMarkButtonClick} />
+              <Marks marks={marks} onClick={onMarkButtonClick} />
             </div>
           )}
 
-          {listFormats && listFormats.length > 0 && (
+          {listItems && listItems.length > 0 && (
             <div className={styles.listFormatContainer}>
-              <ListFormat listFormats={listFormats} onClick={onListButtonClick} />
+              <ListItems listItems={listItems} onClick={onListButtonClick} />
             </div>
           )}
         </div>
@@ -83,7 +85,7 @@ export default class Toolbar extends React.Component {
         {
           showLinkButton && (
             <div className={styles.linkContainer}>
-              <LinkButton activeLink={activeLink} onClick={onLinkButtonClick} />
+              <LinkButton activeLinks={activeLinks} onClick={onLinkButtonClick} />
             </div>
           )
         }
@@ -96,7 +98,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertDropdown blocks={insertBlocks} onInsertBlock={onInsertBlock} />
+          <InsertItems items={insertItems} onInsertItem={onInsertItem} />
         </div>
       </div>
     )

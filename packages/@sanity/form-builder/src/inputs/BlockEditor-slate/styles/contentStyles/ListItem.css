@@ -1,32 +1,51 @@
 .root {
-  display: list-item;
-  margin-left: 1.1em;
-  margin-bottom: 0.5em;
-  list-style-position: outside;
+  text-indent: 2em;
+
+  display: table;
+  margin: 0;
+
+  /* Last 1.1 is important for the cursor to show properly
+     because of the &:before content-rules
+  */
+  padding: 0em 0em 1em 1.1em;
+}
+
+.root > * {
+  display: block;
+  margin: 0 0 1em 0;
+  padding: 0;
+  @nest &:before {
+    display: table-cell;
+  }
+}
+
+.root > * {
+  display: table-row;
 }
 
 .bullet {
   composes: root;
-  list-style-type: disc;
-  padding-left: 0.2em;
+  display: block;
+}
+
+.bullet > * {
+  @nest &:before {
+    content: '\25CF ';
+  }
 }
 
 .number {
   composes: root;
-  list-style-type: none;
+  display: block;
   counter-increment: listItem;
-
-  @nest &:before {
-    margin-right: 0.9em;
-    content: counter(listItem) ". ";
-  }
-
   @nest & + :not(.number) {
     counter-reset: listItem
   }
 }
 
-.roman {
-  composes: root;
-  list-style-type: upper-roman;
+.number > * {
+  @nest &:before {
+    min-width: 2em;
+    content: counter(listItem) ". ";
+  }
 }

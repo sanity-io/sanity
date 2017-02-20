@@ -1,0 +1,29 @@
+.root {
+  position: relative;
+  text-decoration: underline;
+  color: blue;
+}
+
+
+.active {
+  composes: root;
+  border: 1px solid #ccc;
+}
+
+.editBlockContainer {
+  border: 1px solid red;
+  position: absolute;
+  top: calc(100% + 0.5em);
+  left: 25%;
+}
+
+.manageLinkPreview {
+  word-wrap: break-word;
+  max-width: 400px;
+}
+
+.manageButtons {
+  margin-top: 0.5em;
+  font-size: small;
+  text-align: right;
+}

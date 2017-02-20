@@ -120,10 +120,6 @@ export default [
             title: 'Span'
           },
           {
-            type: 'link',
-            title: 'Link'
-          },
-          {
             type: 'image',
             title: 'Image'
           }
@@ -141,6 +137,23 @@ export default [
         title: 'Text'
       },
       {
+        type: 'object',
+        name: 'link',
+        title: 'Link',
+        fields: [
+          {
+            type: 'url',
+            name: 'href',
+          }
+        ]
+      },
+      {
+        name: 'author',
+        title: 'Author',
+        type: 'reference',
+        to: [{type: 'author'}]
+      },
+      {
         type: 'array',
         name: 'marks',
         title: 'Marks',
@@ -149,7 +162,8 @@ export default [
           direction: 'vertical',
           list: [
             {title: 'Strong', value: 'strong'},
-            {title: 'Emphasis', value: 'em'}
+            {title: 'Emphasis', value: 'em'},
+            {title: 'Code', value: 'code'}
           ]
         }
       }
@@ -177,13 +191,13 @@ export default [
         title: 'Url'
       },
       {
-        name: 'spans',
-        title: 'Spans',
+        name: 'keys',
+        title: 'Keys',
         type: 'array',
         of: [
           {
-            type: 'span',
-            title: 'Text'
+            type: 'string',
+            title: 'Key'
           }
         ]
       }
