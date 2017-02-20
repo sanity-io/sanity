@@ -1,11 +1,13 @@
 const {Observable} = require('rxjs/Observable')
 const {of} = require('rxjs/observable/of')
+const {forkJoin} = require('rxjs/observable/forkJoin')
 const {from} = require('rxjs/observable/from')
 const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
 const {scan} = require('rxjs/operator/scan')
 const {mergeMap} = require('rxjs/operator/mergeMap')
+const {switchMap} = require('rxjs/operator/switchMap')
 const {concatMap} = require('rxjs/operator/concatMap')
 const {toPromise} = require('rxjs/operator/toPromise')
 
@@ -38,6 +40,7 @@ Object.assign(SanityObservable.prototype, {
   scan,
   flatMap: mergeMap,
   mergeMap: mergeMap,
+  switchMap: switchMap,
   concatMap: concatMap,
   toPromise,
   lift
@@ -49,6 +52,10 @@ SanityObservable.of = function SanityObservableOf(...args) {
 
 SanityObservable.from = function SanityObservableFrom(...args) {
   return new SanityObservable(observer => from(...args).subscribe(observer))
+}
+
+SanityObservable.forkJoin = function SanityObservableForkJoin(...args) {
+  return new SanityObservable(observer => forkJoin(...args).subscribe(observer))
 }
 
 module.exports = SanityObservable

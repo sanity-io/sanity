@@ -39,6 +39,7 @@ function run(t) {
       'reduce',
       'toPromise',
       'subscribe',
+      '_trySubscribe', // added by rxjs
       'forEach' // spec
     ])
 

@@ -18,7 +18,8 @@ function run(t) {
     const staticFunctions = staticProps.filter(key => typeof Observable[key] === 'function')
     t.same(staticFunctions, [
       'of',
-      'from'
+      'from',
+      'forkJoin'
     ])
     t.end()
   })
@@ -43,10 +44,12 @@ function run(t) {
       'scan',
       'flatMap',
       'mergeMap',
+      'switchMap',
       'concatMap',
       'toPromise',
       'lift',
       'subscribe',
+      '_trySubscribe', // added by rxjs
       'forEach' // spec
     ])
 
