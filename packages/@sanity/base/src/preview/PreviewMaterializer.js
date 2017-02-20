@@ -36,8 +36,8 @@ export default class PreviewMaterializer extends React.PureComponent {
         const element = ReactDOM.findDOMNode(this)
         const rect = element.getBoundingClientRect()
         const isVisible = (
-          rect.top >= 0
-          && rect.left >= 0
+          rect.top + rect.height >= 0
+          && rect.left + rect.width >= 0
           && rect.bottom <= windowDimension.height
           && rect.right <= windowDimension.width
         )
