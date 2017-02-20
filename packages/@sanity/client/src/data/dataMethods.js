@@ -19,6 +19,11 @@ const getMutationQuery = (options = {}) => {
   }
 }
 
+const isResponse = event => event.type === 'response'
+const getBody = event => event.body
+
+const toPromise = observable => observable.toPromise()
+
 const getQuerySizeLimit = 1948
 
 module.exports = {
@@ -37,10 +42,17 @@ module.exports = {
   },
 
   getDocument(id) {
-    return this.request({
+    const observable = this._requestObservable({
       uri: this.getDataUrl('doc', id),
       json: true
-    }).then(res => res.documents && res.documents[0])
+    })
+      .filter(isResponse)
+      .map(event => event.body.documents && event.body.documents[0])
+
+    return this.isPromiseAPI()
+      ? toPromise(observable)
+      : observable
+
   },
 
   create(doc, options) {
@@ -79,6 +91,14 @@ module.exports = {
   },
 
   dataRequest(endpoint, body, options = {}) {
+    const request = this._dataRequest(endpoint, body, options)
+
+    return this.isPromiseAPI()
+      ? toPromise(request)
+      : request
+  },
+
+  _dataRequest(endpoint, body, options = {}) {
     const isMutation = endpoint === 'mutate'
 
     // Check if the query string is within a configured threshold,
@@ -88,15 +108,17 @@ module.exports = {
     const stringQuery = useGet ? strQuery : ''
     const returnFirst = options.returnFirst
 
-    return validators.promise.hasDataset(this.clientConfig)
-      .then(dataset => this.request({
-        method: useGet ? 'GET' : 'POST',
-        uri: this.getDataUrl(endpoint, `${dataset}${stringQuery}`),
-        json: true,
-        body: useGet ? undefined : body,
-        query: isMutation && getMutationQuery(options)
-      }))
-      .then(res => {
+    const dataset = validators.hasDataset(this.clientConfig)
+    return this._requestObservable({
+      method: useGet ? 'GET' : 'POST',
+      uri: this.getDataUrl(endpoint, `${dataset}${stringQuery}`),
+      json: true,
+      body: useGet ? undefined : body,
+      query: isMutation && getMutationQuery(options)
+    })
+      .filter(isResponse)
+      .map(getBody)
+      .map(res => {
         if (!isMutation) {
           return res
         }

@@ -60,7 +60,3 @@ exports.hasDataset = config => {
 
   return config.dataset || ''
 }
-
-exports.promise = {
-  hasDataset: config => new Promise(resolve => resolve(exports.hasDataset(config)))
-}

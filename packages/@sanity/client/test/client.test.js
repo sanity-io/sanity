@@ -271,17 +271,9 @@ test('populates response body on errors', t => {
     })
 })
 
-test('rejects if trying to perform data request without dataset', t => {
-  sanityClient({projectId: 'foo'}).fetch('blah')
-    .then(res => {
-      t.fail('Resolve handler should not be called on failure')
-      t.end()
-    })
-    .catch(err => {
-      t.ok(err instanceof Error, 'should be error')
-      t.ok(/dataset.*?must be provided/.test(err.message))
-      t.end()
-    })
+test('throws if trying to perform data request without dataset', t => {
+  t.throws(() => sanityClient({projectId: 'foo'}).fetch('blah'), Error, /dataset.*?must be provided/)
+  t.end()
 })
 
 test('can create documents', t => {
@@ -1035,9 +1027,7 @@ test('uploads images', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath))
-    .filter(event => event.type === 'response')
-    .map(event => event.body)
-    .subscribe(body => {
+    .then(body => {
       t.equal(body.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
@@ -1052,7 +1042,7 @@ test('uploads images with progress events', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   // @todo write a test that asserts upload events (slowness)
-  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+  getClient().observable.assets.upload('image', fs.createReadStream(fixturePath))
     .filter(event => event.type === 'progress')
     .subscribe(
       event => t.equal(event.type, 'progress'),
@@ -1070,9 +1060,7 @@ test('uploads images with custom label', t => {
     .reply(201, {label: label})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath), {label: label})
-    .filter(event => event.type === 'response') // todo: test progress events too
-    .map(event => event.body)
-    .subscribe(body => {
+    .then(body => {
       t.equal(body.label, label)
       t.end()
     }, ifError(t))
@@ -1087,9 +1075,7 @@ test('uploads files', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   getClient().assets.upload('file', fs.createReadStream(fixturePath))
-    .filter(event => event.type === 'response')
-    .map(evt => evt.body)
-    .subscribe(body => {
+    .then(body => {
       t.equal(body.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
@@ -1104,7 +1090,6 @@ test('uploads images and can cast to promise', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath))
-    .toPromise()
     .then(body => {
       t.equal(body.url, 'https://some.asset.url')
       t.end()
