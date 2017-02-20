@@ -48,6 +48,14 @@ test('config getter returns a cloned object', t => {
   t.end()
 })
 
+test('calling config() reconfigures observable API too', t => {
+  const client = sanityClient({projectId: 'abc123'})
+
+  client.config({projectId: 'def456'})
+  t.equal(client.observable.config().projectId, 'def456', 'Observable API gets reconfigured')
+  t.end()
+})
+
 test('can clone client', t => {
   const client = sanityClient({projectId: 'abc123'})
   t.equal(client.config().projectId, 'abc123', 'constructor opts are set')

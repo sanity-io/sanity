@@ -38,7 +38,10 @@ module.exports = {
   },
 
   fetch(query, params) {
-    return this.dataRequest('query', {query, params}).then(res => res.result || [])
+    const observable = this._dataRequest('query', {query, params}).map(res => res.result || [])
+    return this.isPromiseAPI()
+      ? toPromise(observable)
+      : observable
   },
 
   getDocument(id) {
