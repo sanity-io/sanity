@@ -11,6 +11,8 @@ const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
 
+const toPromise = observable => observable.toPromise()
+
 function SanityClient(config = defaultConfig) {
   this.config(config)
 
@@ -40,16 +42,26 @@ assign(SanityClient.prototype, {
     return `${this.clientConfig.url}/${uri.replace(/^\//, '')}`
   },
 
-  request(options) {
-    return this.requestObservable(options).toPromise()
+  isPromiseAPI() {
+    return this.clientConfig.isPromiseAPI
   },
 
-  requestObservable(options) {
+  _requestObservable(options) {
     return httpRequest(mergeOptions(
       getRequestOptions(this.clientConfig),
       options,
       {url: this.getUrl(options.url || options.uri)}
     ), this.clientConfig.requester)
+  },
+
+  request(options) {
+    const observable = this._requestObservable(options)
+        .filter(event => event.type === 'response')
+        .map(event => event.body)
+
+    return this.isPromiseAPI()
+      ? toPromise(observable)
+      : observable
   }
 })
 
@@ -65,7 +77,9 @@ function mergeOptions(...opts) {
 }
 
 function createClient(config) {
-  return new SanityClient(config)
+  const client = new SanityClient(assign({}, config, {isPromiseAPI: true}))
+  client.observable = new SanityClient(config)
+  return client
 }
 
 createClient.Patch = Patch

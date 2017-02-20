@@ -2,7 +2,7 @@ import client from 'part:@sanity/base/client'
 import {FileInput} from '../../index'
 
 function upload(file) {
-  return client.assets.upload('file', file).map(event => {
+  return client.observable.assets.upload('file', file).map(event => {
 
     if (event.type !== 'response') {
       return event

@@ -6,7 +6,7 @@ const observable = require('get-it/lib/middleware/observable')
 const retry = require('get-it/lib/middleware/retry')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
-const sanityObservable = require('@sanity/observable/minimal')
+const SanityObservable = require('@sanity/observable/minimal')
 const progress = require('get-it/lib/middleware/progress')
 
 const ClientError = createErrorClass('ClientError', extractError)
@@ -72,7 +72,7 @@ const middleware = [
   jsonResponse(),
   progress(),
   httpError,
-  observable({implementation: sanityObservable}),
+  observable({implementation: SanityObservable}),
   retry({maxRetries: 5, shouldRetry: retry5xx})
 ]
 
@@ -85,14 +85,7 @@ if (process.env.BROWSERIFY_ENV !== 'build') {
 const request = getIt(middleware)
 
 function httpRequest(options, requester = request) {
-  const obs = requester(assign({maxRedirects: 0}, options))
-  obs.toPromise = () => new Promise((resolve, reject) => {
-    obs.filter(ev => ev.type === 'response').subscribe(
-      res => resolve(res.body),
-      reject
-    )
-  })
-  return obs
+  return requester(assign({maxRedirects: 0}, options))
 }
 
 httpRequest.defaultRequester = request
