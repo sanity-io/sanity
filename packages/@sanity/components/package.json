@@ -57,6 +57,7 @@
     "@sanity/base": "^0.101.17",
     "@sanity/check": "^0.99.0",
     "@sanity/core": "^0.101.3",
+    "@sanity/observable": "^0.99.0",
     "pre-commit": "^1.1.3",
     "react-styleguidist": "^2.3.1",
     "stylelint": "^7.1.0",

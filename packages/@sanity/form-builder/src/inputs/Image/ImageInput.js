@@ -5,10 +5,10 @@ import ObjectValueContainer from '../Object/ObjectContainer'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ImageTool from '@sanity/imagetool'
-import _HotspotImage from '@sanity/imagetool/HotspotImage'
-import createImageLoader from './common/createImageLoader'
+import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
+import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import arrify from 'arrify'
 
 const DEFAULT_HOTSPOT = {
@@ -17,10 +17,6 @@ const DEFAULT_HOTSPOT = {
   x: 0.5,
   y: 0.5
 }
-
-const HotspotImage = createImageLoader(_HotspotImage, image => {
-  return {srcAspectRatio: image.width / image.height}
-})
 
 const ASPECT_RATIOS = [
   ['Landscape', 16 / 9],
@@ -264,7 +260,19 @@ export default class ImageInput extends React.PureComponent {
               return (
                 <div key={ratio}>
                   <h2>{title}</h2>
-                  <HotspotImage hotspot={hotspot} crop={crop} src={imageUrl} aspectRatio={ratio} />
+                  <ImageLoader src={imageUrl}>
+                    {({image, error}) => {
+                      return (
+                        <HotspotImage
+                          aspectRatio="auto"
+                          src={image.src}
+                          srcAspectRatio={image.width / image.height}
+                          hotspot={hotspot}
+                          crop={crop}
+                        />
+                      )
+                    }}
+                  </ImageLoader>
                 </div>
               )
             })}
