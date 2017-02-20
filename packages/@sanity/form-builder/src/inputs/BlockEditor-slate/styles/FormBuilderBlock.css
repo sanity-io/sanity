@@ -2,7 +2,7 @@
   user-select: none;
   position: relative;
   lost-utility: clearfix;
-  padding-bottom: 1em;
+  padding: 1em 0em;
 }
 
 .previewContainer {

@@ -25,5 +25,5 @@
 .manageButtons {
   margin-top: 0.5em;
   font-size: small;
-  float: right;
+  text-align: right;
 }
