@@ -37,10 +37,6 @@ class Search extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getTopItems()
-  }
-
   handleSearch = q => {
     if (!client) {
       console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
@@ -98,6 +94,8 @@ class Search extends React.Component {
   }
 
   handleFocus = () => {
+    this.getTopItems()
+
     this.setState({
       active: true,
       isOpen: true
