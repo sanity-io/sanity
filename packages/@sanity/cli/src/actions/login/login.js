@@ -26,7 +26,7 @@ export default async function login(args, context) {
 function loginFlow({output, provider, apiClient}, resolve, reject) {
   debug('Starting OAuth receiver webserver')
   const client = apiClient({requireUser: false, requireProject: false})
-  const spin = output.spinner('Waiting for login flow to complete...')
+  const spin = output.spinner('Waiting for browser login flow to complete... Press Ctrl + C to cancel')
   const server = http
     .createServer(onServerRequest)
     .listen(0, '127.0.0.1', onListen)
