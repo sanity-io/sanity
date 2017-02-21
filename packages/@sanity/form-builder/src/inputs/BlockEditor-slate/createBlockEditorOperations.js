@@ -231,22 +231,23 @@ export default function createBlockEditorOperations(blockEditor) {
 
     expandToFocusedWord() {
       const state = getState()
-      const {startText, focusOffset} = state
-      const text = startText.text
-
-      const newAnchorOffset = text.substring(0, focusOffset).lastIndexOf(' ') + 1
-      const newFocusOffset = focusOffset
-        + text.substring(focusOffset, text.length).split(' ')[0].length
+      const {focusText, focusOffset} = state
+      const charsBefore = focusText.characters.slice(0, focusOffset)
+      const charsAfter = focusText.characters.slice(focusOffset, -1)
+      const isEmpty = obj => obj.get('text').match(/\s/g)
+      const newStartOffset = charsBefore.size
+        - charsBefore.reverse().findIndex(obj => isEmpty(obj))
+      const newEndOffset = charsBefore.size + charsAfter.findIndex(obj => isEmpty(obj))
 
       // Not near any word, abort
-      if (newAnchorOffset === newFocusOffset) {
+      if (newStartOffset === newEndOffset) {
         return null
       }
 
       // Select and highlight current word
       // Note: don't call apply and onChange here
       return state.transform()
-        .moveToOffsets(newAnchorOffset, newFocusOffset)
+        .moveToOffsets(newStartOffset, newEndOffset)
         .focus()
     },
 
