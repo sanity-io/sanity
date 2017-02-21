@@ -46,6 +46,8 @@ function run(t) {
       'mergeMap',
       'switchMap',
       'concatMap',
+      'share',
+      'debounceTime',
       'toPromise',
       'lift',
       'subscribe',
