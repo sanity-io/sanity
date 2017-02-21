@@ -1,4 +1,4 @@
-import {has} from 'lodash'
+import {has, isObject, isArray} from 'lodash'
 import Observable from '@sanity/observable'
 import {create} from 'observable-props'
 
@@ -7,12 +7,23 @@ const props = create(Observable)
 function resolveMissingPaths(value, paths) {
   return paths.filter(path => !has(value, path))
 }
+function isReference(value) {
+  return value._type === 'reference'
+    // should not happen as all references should have _type === 'reference'
+    || (!('_type' in value) && ('_ref' in value))
+}
 
 export default function createPreview(observeWithPaths) {
 
   function follow(value, paths) {
-    if (value._type === 'reference') {
-      return observeWithPaths(value._ref, paths).mergeMap(doc => follow(doc, paths))
+    if (!isArray(value) && !isObject(value)) {
+      // Reached a leaf. Don't blow up
+      return Observable.of(value)
+    }
+    if (isReference(value)) {
+      const heads = paths.map(path => [path[0]])
+      const tails = paths.map(path => path.slice(1))
+      return observeWithPaths(value._ref, heads).mergeMap(doc => follow(doc, tails))
     }
 
     const leads = {}
@@ -40,10 +51,12 @@ export default function createPreview(observeWithPaths) {
     if (missingPaths.length === 0) {
       return follow(value, paths)
     }
-    const id = value._type === 'reference' ? value._ref : value._id
+    const id = isReference(value) ? value._ref : value._id
     if (id) {
-      return observeWithPaths(id, missingPaths)
-        .map(res => ({...value, ...res}))
+      const heads = missingPaths.map(path => [path[0]])
+
+      return observeWithPaths(id, heads)
+        .mergeMap(doc => follow({...value, ...doc}, missingPaths))
     }
 
     // No id means we are at a inline object. There still might be paths that needs fetching
