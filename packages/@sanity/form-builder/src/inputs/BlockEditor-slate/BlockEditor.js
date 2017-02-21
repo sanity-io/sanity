@@ -217,6 +217,10 @@ export default class BlockEditor extends React.Component {
     this.blockDragMarker.style.display = 'none'
   }
 
+  handleEditorContainerClick = () => {
+    this.editor.focus()
+  }
+
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
@@ -251,7 +255,11 @@ export default class BlockEditor extends React.Component {
             showLinkButton
             marks={this.getActiveMarks()}
           />
-          <div className={styles.inputContainer} id={this._inputId}>
+          <div
+            className={styles.inputContainer}
+            id={this._inputId}
+            onClick={this.handleEditorContainerClick}
+          >
             <Editor
               ref={this.refEditor}
               className={styles.input}
