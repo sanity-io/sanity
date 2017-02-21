@@ -42,9 +42,17 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   componentWillMount() {
-    if (this.getValue()) {
+    if (this.isEmpty()) {
       this.setState({isEditing: true})
     }
+  }
+
+  isEmpty() {
+    const valueContainer = this.getValue()
+    if (!valueContainer) {
+      return true
+    }
+    return !valueContainer.value || valueContainer.isEmpty()
   }
 
   getValue() {
