@@ -1,18 +1,18 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
-import {bindAll} from 'lodash'
 import Preview from '../../../Preview'
 import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line
 import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-line
 import styles from './styles/ReferenceBrowser.css'
 import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable-line
-// import Spinner from 'part:@sanity/components/loading/spinner' //eslint-disable-line
+import subscriptionManager from '../../../utils/subscriptionManager'
 
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
-    fetchFn: PropTypes.func,
+    searchFn: PropTypes.func,
+    fetchValueFn: PropTypes.func,
     onChange: PropTypes.func
   };
 
@@ -24,58 +24,63 @@ export default class ReferenceBrowser extends React.Component {
     formBuilder: PropTypes.object
   };
 
-  constructor(props, ...rest) {
-    super(props, ...rest)
-    bindAll(this, [
-      'handleDialogSelectItem',
-      'handleClearValue',
-      'handleShowDialog',
-      'handleCloseDialog',
-      'handleDialogAction'
-    ])
+  state = {
+    items: [],
+    refCache: {},
+    showDialog: false,
+    isSearching: true,
+    dialogSelectedItem: null,
+    materializedValue: null
+  }
 
-    this.state = {
-      items: [],
-      refCache: {},
-      showDialog: false,
-      fetching: false,
-      dialogSelectedItem: null
+  subscriptions = subscriptionManager('fetchValue', 'search')
+
+  componentWillUnmount() {
+    this.subscriptions.unsubscribeAll()
+  }
+
+  componentWillMount() {
+    this.syncValue(this.props.value)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.value !== nextProps.value) {
+      this.syncValue(nextProps.value)
     }
-    this._isFetching = false
   }
 
-  getItemFieldForType(typeName) {
+  getMemberType(typeName) {
     const {type} = this.props
-    return type.to.find(ofType => {
-      return ofType.type === typeName
-    })
+    return type.to.find(ofType => ofType.name === typeName)
   }
 
-  handleDialogSelectItem(item) {
+  handleDialogSelectItem = item => {
     this.setState({
       dialogSelectedItem: item
     })
   }
 
-  handleCloseDialog(event) {
+  handleCloseDialog = event => {
     this.setState({showDialog: false})
   }
 
-  handleShowDialog(event) {
+  handleShowDialog = event => {
     this.setState({showDialog: true})
-    this.fetch()
+    this.search('*')
   }
 
-  handleDialogAction(action) {
+  handleDialogAction = action => {
     const {onChange} = this.props
     switch (action.index) {
       case 'set': {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
           const patch = {
-            path: ['_ref'],
             type: 'set',
-            value: dialogSelectedItem._id
+            value: {
+              _type: 'reference',
+              _ref: dialogSelectedItem._id
+            }
           }
           onChange({patch: patch})
         }
@@ -92,26 +97,34 @@ export default class ReferenceBrowser extends React.Component {
     }
   }
 
-  handleClearValue(event) {
+  handleClearValue = event => {
     event.preventDefault()
     const {onChange} = this.props
     onChange({patch: {type: 'unset'}})
   }
 
-  fetch() {
-    const {fetchFn, type} = this.props
-    if (this._isFetching === true) {
+  syncValue(value) {
+    const {fetchValueFn, type} = this.props
+
+    if (value.isEmpty()) {
+      this.setState({materializedValue: null})
       return
     }
 
-    this._isFetching = true
+    const serialized = value.serialize()
+    this.subscriptions.replace('fetchValue', fetchValueFn(serialized, type)
+      .subscribe(materializedValue => {
+        this.setState({materializedValue})
+      }))
+  }
 
-    this.setState({fetching: true})
+  search(query) {
+    const {searchFn, type} = this.props
 
-    fetchFn(type)
-      .then(items => {
-        this._isFetching = false
+    this.setState({isSearching: true})
 
+    this.subscriptions.replace('search', searchFn(query, type)
+      .subscribe(items => {
         const updatedCache = items.reduce((cache, item) => {
           cache[item._id] = item
           return cache
@@ -119,15 +132,16 @@ export default class ReferenceBrowser extends React.Component {
 
         this.setState({
           items: items,
-          fetching: false,
+          isSearching: false,
           refCache: updatedCache
         })
       })
+    )
   }
 
   renderItem = item => {
     const showItemType = this.props.type.to.length > 1
-    const type = this.getItemFieldForType(item._type)
+    const type = this.getMemberType(item._type)
     return (
       <div>
         <Preview
@@ -140,7 +154,7 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   renderDialog() {
-    const {fetching, items, dialogSelectedItem} = this.state
+    const {isSearching, items, dialogSelectedItem} = this.state
     const {type, value} = this.props
     const toTypes = type.to.map(toField => toField.type)
     const actions = [
@@ -156,14 +170,14 @@ export default class ReferenceBrowser extends React.Component {
       <Dialog
         className={styles.dialog}
         showHeader
-        title={`Select ${toTypes.join(', ')}`}
+        title={`Select ${toTypes.map(toType => toType.title).join(', ')}`}
         actions={actions}
         onClose={this.handleCloseDialog}
         onAction={this.handleDialogAction}
         isOpen
       >
         <DefaultList
-          loading={fetching}
+          loading={isSearching}
           renderItem={this.renderItem}
           items={items}
           scrollable
@@ -174,45 +188,40 @@ export default class ReferenceBrowser extends React.Component {
     )
   }
 
-  renderValue() {
-    const {value, type} = this.props
-
-    const renderButtons = () => {
-      if (value.isEmpty()) {
-        return (
-          <div className={styles.buttons}>
-            <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
-          </div>
-        )
-      }
-      return (
-        <div className={styles.buttons}>
-          <InInputButton onClick={this.handleClearValue} kind="danger">Clear</InInputButton>
-          <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
-        </div>
-      )
-    }
+  renderValue(materializedValue) {
+    const valueType = this.getMemberType(materializedValue._type)
     return (
-      <div>
-        <div className={styles.preview}>
-          {!value.isEmpty() && (
-            <Preview
-              type={type}
-              value={value.serialize()}
-              layout="inline"
-            />
-          )}
-        </div>
-        {renderButtons()}
+      <div className={styles.preview}>
+        {materializedValue && (
+          <Preview
+            type={valueType}
+            value={materializedValue}
+            layout="inline"
+          />
+        )}
       </div>
     )
   }
 
   render() {
-    const {showDialog} = this.state
+    const {showDialog, materializedValue} = this.state
     return (
       <div className={styles.root}>
-        {showDialog ? this.renderDialog() : this.renderValue()}
+        {showDialog && this.renderDialog()}
+        {!materializedValue && (
+          <div className={styles.buttons}>
+            <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
+          </div>
+        )}
+        {materializedValue && (
+          <div>
+            {this.renderValue(materializedValue)}
+            <div className={styles.buttons}>
+              <InInputButton onClick={this.handleClearValue} kind="danger">Clear</InInputButton>
+              <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
+            </div>
+          </div>
+        )}
       </div>
     )
   }

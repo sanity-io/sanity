@@ -10,6 +10,7 @@ import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import arrify from 'arrify'
+import subscriptionManager from '../../utils/subscriptionManager'
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -50,7 +51,7 @@ export default class ImageInput extends React.PureComponent {
     isAdvancedEditOpen: false
   }
 
-  subscription = null
+  subscriptions = subscriptionManager('upload', 'materialize')
 
   componentDidMount() {
     const {value} = this.props
@@ -59,23 +60,29 @@ export default class ImageInput extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
+    const currentRef = this.props.value.getAttribute('asset')
     const nextRef = nextProps.value.getAttribute('asset')
-    if (this.props.value.getAttribute('asset') !== nextRef) {
-      this.cancel()
+    const {materializedImage} = this.state
+
+    const shouldUpdate = currentRef !== nextRef
+      && currentRef.refId !== nextRef.refId
+      && materializedImage
+      && nextRef.refId !== materializedImage._id
+
+    if (shouldUpdate) {
+      this.cancelUpload()
       this.materializeImageRef(nextRef)
     }
   }
 
   upload(image) {
-
-    console.log('trying to upload', image)
-    this.cancel()
+    this.cancelUpload()
     this.setState({uploadingImage: image})
 
-    this.subscription = this.props.uploadFn(image).subscribe({
+    this.subscriptions.replace('upload', this.props.uploadFn(image).subscribe({
       next: this.handleUploadProgress,
       error: this.handleUploadError
-    })
+    }))
   }
 
   materializeImageRef(ref) {
@@ -84,20 +91,19 @@ export default class ImageInput extends React.PureComponent {
       return
     }
     const {materializeReferenceFn} = this.props
-    materializeReferenceFn(ref.refId).then(materialized => {
+    this.subscriptions.replace('materialize', materializeReferenceFn(ref.refId).subscribe(materialized => {
       this.setState({materializedImage: materialized})
-    })
+    }))
   }
 
   componentWillUnmount() {
+    this.subscriptions.unsubscribe('materialize')
     // todo: fix this properly by unsubscribing to upload observable without cancelling it
     this._unmounted = true
   }
 
-  cancel() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
+  cancelUpload() {
+    this.subscriptions.unsubscribe('upload')
   }
 
   hasField(fieldName) {
@@ -115,9 +121,9 @@ export default class ImageInput extends React.PureComponent {
     }
   }
 
-  setStateIfMounted(nextState) {
+  setStateIfMounted(...args) {
     if (!this._unmounted) {
-      this.setState(nextState)
+      this.setState(...args)
     }
   }
 
@@ -131,20 +137,26 @@ export default class ImageInput extends React.PureComponent {
 
     if (event.type === 'complete') {
       const {onChange} = this.props
-      onChange({
-        patch: [
-          this.createSetIfMissingPatch(),
-          {
-            type: 'set',
-            path: ['asset'],
-            value: {_type: 'reference', _ref: event.id}
-          }
-        ]
-      })
       this.setStateIfMounted({
         uploadingImage: null,
-        status: 'complete'
+        status: 'complete',
+        materializedImage: event.asset
+      }, () => {
+        // Important: needs to be emitted after the state is uploaded
+        // or else materializing on the next componentWillReceiveProps may not
+        // be able to compare with current materialized image
+        onChange({
+          patch: [
+            this.createSetIfMissingPatch(),
+            {
+              type: 'set',
+              path: ['asset'],
+              value: {_type: 'reference', _ref: event.id}
+            }
+          ]
+        })
       })
+
     }
   }
 
@@ -166,7 +178,7 @@ export default class ImageInput extends React.PureComponent {
   }
 
   handleCancel = () => {
-    this.cancel()
+    this.cancelUpload()
     this.setState({
       status: 'cancelled',
       error: null,

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
+import subscriptionManager from '../../../utils/subscriptionManager'
 
 export default class ReferenceSelect extends React.Component {
 
@@ -8,7 +9,7 @@ export default class ReferenceSelect extends React.Component {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     fetchAllFn: PropTypes.func,
-    materializeReferences: PropTypes.func,
+    fetchValueFn: PropTypes.func,
     onChange: PropTypes.func
   }
 
@@ -20,63 +21,66 @@ export default class ReferenceSelect extends React.Component {
     formBuilder: PropTypes.object
   }
 
-  constructor(props, ...rest) {
-    super(props, ...rest)
+  state = {
+    items: [],
+    refCache: {},
+    showDialog: false,
+    materializedValue: null,
+    fetching: false,
+    dialogSelectedItem: null
+  }
 
-    this.state = {
-      items: [],
-      refCache: {},
-      showDialog: false,
-      materializedValue: null,
-      fetching: false,
-      dialogSelectedItem: null
+  subscriptions = subscriptionManager('search', 'fetchValue')
+
+  componentWillMount() {
+    this.syncValue(this.props.value)
+    this.fetchAll()
+  }
+
+  componentWillUnmount() {
+    this.subscriptions.unsubscribeAll()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.value !== nextProps.value) {
+      this.syncValue(nextProps.value)
     }
-    this._isFetching = false
   }
 
-  getItemFieldForType = typeName => {
-    const {type} = this.props
-    return type.to.find(ofType => {
-      return ofType.type === typeName
-    })
-  }
+  syncValue(value) {
+    const {fetchValueFn, type} = this.props
 
-  createValueFromItem = item => {
-    return this.context.formBuilder.createFieldValue(item, this.getItemFieldForType(item._type))
-  }
-
-  fetch = () => {
-    const {fetchAllFn, type} = this.props
-    if (this._isFetching === true) {
+    if (value.isEmpty()) {
+      this.setState({materializedValue: null})
       return
     }
 
-    this._isFetching = true
+    const serialized = value.serialize()
+    this.subscriptions.replace('fetchValue', fetchValueFn(serialized, type)
+      .subscribe(materializedValue => {
+        this.setState({materializedValue})
+      }))
+  }
 
-    this.setState({fetching: true})
+  fetchAll() {
+    const {fetchAllFn, type} = this.props
 
-    fetchAllFn(type)
-      .then(items => {
-        this._isFetching = false
-        const preparedItems = items.map(item => this.createValueFromItem(item))
-        const updatedCache = preparedItems.reduce((cache, item) => {
-          cache[item.value._id] = item
+    this.setState({isSearching: true})
+
+    this.subscriptions.replace('search', fetchAllFn(type)
+      .subscribe(items => {
+        const updatedCache = items.reduce((cache, item) => {
+          cache[item._id] = item
           return cache
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
-          items: preparedItems,
-          fetching: false,
+          items: items,
+          isSearching: false,
           refCache: updatedCache
         })
       })
-  }
-
-  handleFocus = () => {
-  }
-
-  componentDidMount() {
-    this.fetch()
+    )
   }
 
   handleChange = item => {
@@ -84,24 +88,19 @@ export default class ReferenceSelect extends React.Component {
       type: 'set',
       value: {
         _type: 'reference',
-        _ref: item.key
+        _ref: item._id
       }
     }
     this.props.onChange({patch: patch})
   }
 
   render() {
-    const {value, type} = this.props
-    const {items} = this.state
+    const {type} = this.props
+    const {items, materializedValue} = this.state
 
-    const selectItems = items.map((item, i) => {
-      return {
-        key: item.value._id,
-        title: item.value.name.value
-      }
-    })
-
-    const selectedItem = selectItems.find(item => item.key === value.refId)
+    const selected = materializedValue
+      ? (items.find(item => item._id === materializedValue._id) || materializedValue)
+      : null
 
     return (
       <Select
@@ -109,8 +108,8 @@ export default class ReferenceSelect extends React.Component {
         description={type.description}
         onChange={this.handleChange}
         onFocus={this.handleFocus}
-        items={selectItems}
-        value={selectedItem}
+        items={items}
+        value={selected}
       />
     )
   }
