@@ -98,11 +98,6 @@ export default class BlockEditor extends React.Component {
     return value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE).toArray()
   }
 
-  isWithinList() {
-    const {value} = this.props
-    return value.blocks.some(block => block.data.get('listItem'))
-  }
-
   hasListItem(listItem) {
     const {value} = this.props
     return value.blocks.some(block => {
