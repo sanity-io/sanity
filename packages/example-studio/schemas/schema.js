@@ -66,6 +66,15 @@ export default createSchema({
           required: true
         },
         {
+          name: 'publishAt',
+          title: 'Publish at',
+          type: 'date',
+          description: 'Blogpost goes live at this date/time',
+          options: {
+            inputUtc: true
+          }
+        },
+        {
           name: 'mainImage',
           title: 'Main image',
           type: 'image',
