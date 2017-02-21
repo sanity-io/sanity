@@ -13,7 +13,7 @@ export default class DateInput extends React.PureComponent {
     this.handleChange = this.handleChange.bind(this)
   }
 
-  // If schema options dictate sez input is UTC
+  // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
     if (this.optionsWithDefaults().inputUtc) {
