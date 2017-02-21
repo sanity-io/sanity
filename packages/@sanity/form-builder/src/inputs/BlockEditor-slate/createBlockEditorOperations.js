@@ -235,9 +235,15 @@ export default function createBlockEditorOperations(blockEditor) {
       const charsBefore = focusText.characters.slice(0, focusOffset)
       const charsAfter = focusText.characters.slice(focusOffset, -1)
       const isEmpty = obj => obj.get('text').match(/\s/g)
-      const newStartOffset = charsBefore.size
-        - charsBefore.reverse().findIndex(obj => isEmpty(obj))
-      const newEndOffset = charsBefore.size + charsAfter.findIndex(obj => isEmpty(obj))
+      const whiteSpaceBeforeIndex = charsBefore.reverse().findIndex(obj => isEmpty(obj))
+
+      const newStartOffset = (whiteSpaceBeforeIndex > -1)
+        ? (charsBefore.size - whiteSpaceBeforeIndex)
+        : -1
+
+      const whiteSpaceAfterIndex = charsAfter.findIndex(obj => isEmpty(obj))
+      const newEndOffset = charsBefore.size
+          + (whiteSpaceAfterIndex > -1 ? whiteSpaceAfterIndex : (charsAfter.size + 1))
 
       // Not near any word, abort
       if (newStartOffset === newEndOffset) {
