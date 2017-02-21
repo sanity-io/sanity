@@ -10,7 +10,7 @@
     "build": "npm test && npm run package-yarn",
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib vendor/yarn",
+    "clean": "rimraf lib",
     "prepublish": "in-publish && npm run build || not-in-publish",
     "posttest": "eslint ."
   },
