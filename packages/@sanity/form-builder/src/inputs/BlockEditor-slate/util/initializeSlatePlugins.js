@@ -1,6 +1,5 @@
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import softBreak from 'slate-soft-break'
-import formBuilderNodeOnCopy from '../plugins/formBuilderNodeOnCopy'
 import formBuilderNodeOnDrop from '../plugins/formBuilderNodeOnDrop'
 import formBuilderNodeOnPaste from '../plugins/formBuilderNodeOnPaste'
 import onModKeySetMarkCombos from '../plugins/onModKeySetMarkCombos'
@@ -27,7 +26,6 @@ export default function intializeSlatePlugins(blockEditor) {
     // Copy paste
     // TODO: wire up this when spanBlocks are ready
     onPasteHtml(blockEditor),
-    formBuilderNodeOnCopy(blockEditor.context.formBuilder, blockEditor.props.type.of),
     formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
     // Key handling
