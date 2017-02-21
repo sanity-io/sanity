@@ -118,6 +118,7 @@ export default class FormBuilderSpan extends React.Component {
     })
     return (
       <EditItemPopOver
+        className={styles.editItemPopOver}
         onClose={this.handleCloseInput}
       >
         {
@@ -199,11 +200,7 @@ export default class FormBuilderSpan extends React.Component {
       >
         {this.props.children}
 
-        {isEditing && (
-          <span className={styles.editBlockContainer}>
-            {this.renderInput()}
-          </span>
-        )}
+        { isEditing && this.renderInput() }
 
       </span>
     )

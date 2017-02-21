@@ -63,10 +63,6 @@
   }
 }
 
-.editBlockContainer {
-  /* A block when editing */
-}
-
 .toolbar {
   @nest .fullscreen & {
     position: fixed;
