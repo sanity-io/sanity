@@ -4,6 +4,7 @@
   "description": "The image hotspot selector / cropper used in Sanity",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf lib",
     "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",
     "lint": "eslint .",
     "pre-commit-check": "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
@@ -33,6 +34,7 @@
     "react-dom": "^15.3.2",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
+    "rimraf": "^2.5.2",
     "should": "^11.1.0",
     "staticr": "^4.0.2"
   },

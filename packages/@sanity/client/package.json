@@ -8,7 +8,7 @@
     "browserify": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
     "build": "npm run browserify && npm run minify && npm run size",
     "size": "node -r babel-register src/scripts/print-bundle-size",
-    "clean": "rimraf coverage .nyc_output umd/*.js",
+    "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "postpublish": "npm run clean",

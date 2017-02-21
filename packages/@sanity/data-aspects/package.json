@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "prepublish": "in-publish && sanity-check || not-in-publish",
     "test": "eslint ."
   },
@@ -18,7 +19,8 @@
     "lodash": "^4.15.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.99.0"
+    "@sanity/check": "^0.99.0",
+    "rimraf": "^2.5.2"
   },
   "repository": {
     "type": "git",

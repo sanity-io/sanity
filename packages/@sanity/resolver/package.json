@@ -4,7 +4,7 @@
   "description": "Resolves parts and plugins from a Sanity configuration",
   "main": "lib/resolver.js",
   "scripts": {
-    "clean": "rimraf coverage",
+    "clean": "rimraf lib coverage",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "posttest": "eslint .",
     "test": "mocha test/**/*.test.js"

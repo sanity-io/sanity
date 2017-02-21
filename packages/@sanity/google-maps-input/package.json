@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "start": "cd example && sanity start",
     "prepublish": "in-publish && sanity-check || not-in-publish",
     "test": "sanity-check && eslint ."
@@ -24,7 +25,8 @@
     "@sanity/components": "^0.101.17",
     "@sanity/core": "^0.101.3",
     "@sanity/form-builder": "^0.101.17",
-    "lodash.keyby": "^4.6.0"
+    "lodash.keyby": "^4.6.0",
+    "rimraf": "^2.5.2"
   },
   "repository": {
     "type": "git",

@@ -4,6 +4,7 @@
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "main": "lib/index.js",
   "scripts": {
+    "clean": "rimraf lib",
     "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js"
   },
   "keywords": [],
@@ -23,6 +24,7 @@
     "eslint-config-bengler": "^2.0.0",
     "eslint-plugin-flowtype-errors": "^1.4.1",
     "eslint-plugin-import": "^2.0.1",
+    "rimraf": "^2.5.2",
     "tap": "^7.0.0"
   },
   "repository": {

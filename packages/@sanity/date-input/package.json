@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "prepublish": "in-publish && sanity-check || not-in-publish",
     "test": "eslint ."
   },

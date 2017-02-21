@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run install",
-    "build": "gulp",
-    "clean": "lerna clean",
+    "build": "lerna run clean && gulp",
+    "clean": "lerna run clean && lerna clean",
     "publish": "npm run build && lerna publish",
     "start": "gulp dev",
     "storybook": "gulp storybook",

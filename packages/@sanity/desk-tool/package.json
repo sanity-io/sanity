@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
     "test": "sanity-check",
