@@ -1,4 +1,5 @@
 import {Html} from 'slate'
+import {getSpanType} from '../util/spanHelpers'
 
 const BLOCK_TAGS = {
   p: {type: 'contentBlock', style: 'normal'}
@@ -38,7 +39,7 @@ function resolveListItem(listNodeTagName) {
   return listStyle
 }
 
-function createRules(types, context) {
+function createRules(blockEditor) {
   return [
     {
       deserialize(el, next) {
@@ -117,19 +118,17 @@ function createRules(types, context) {
     {
       // Special case for links, to grab their href.
       deserialize(el, next) {
-        if (!types.link || el.tagName != 'a') {
+        if (el.tagName != 'a') {
           return null
         }
-        const value = context.formBuilder
-          .createFieldValue(
-            {href: el.attribs.href},
-            types.link
-          )
+        const spanField = getSpanType(blockEditor.props.type)
+        const spanValue = blockEditor.context.formBuilder
+          .createFieldValue({link: {href: el.attribs.href}}, spanField.type)
         return {
           kind: 'inline',
-          type: 'link',
+          type: 'span',
           nodes: next(el.children),
-          data: {value: value}
+          data: {value: spanValue}
         }
       }
     }
@@ -142,9 +141,12 @@ const defaultBlockType = {
 }
 
 
-function onPasteHtml(types, context) {
+function onPasteHtml(blockEditor) {
 
-  const serializer = new Html({rules: createRules(types, context), defaultBlockType: defaultBlockType})
+  const serializer = new Html({
+    rules: createRules(blockEditor),
+    defaultBlockType: defaultBlockType
+  })
 
   function onPaste(event, data, state, editor) {
 

@@ -26,7 +26,7 @@ export default function intializeSlatePlugins(blockEditor) {
 
     // Copy paste
     // TODO: wire up this when spanBlocks are ready
-    onPasteHtml({link: blockEditor.linkType}, blockEditor.context),
+    onPasteHtml(blockEditor),
     formBuilderNodeOnCopy(blockEditor.context.formBuilder, blockEditor.props.type.of),
     formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
