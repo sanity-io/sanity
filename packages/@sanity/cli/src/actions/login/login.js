@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fsp from 'fs-promise'
 import path from 'path'
 import http from 'http'
 import url from 'url'
@@ -31,6 +31,8 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
     .createServer(onServerRequest)
     .listen(0, '127.0.0.1', onListen)
 
+  server.on('connection', socket => socket.unref())
+
   function onListen() {
     debug('Webserver listening, opening browser')
 
@@ -45,28 +47,51 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
   }
 
   function onServerRequest(req, res) {
+    res.setTimeout(1500)
+    req.connection.ref()
+
     if (req.url.indexOf('/return') === 0) {
       debug('Request received, exchanging token for a long-lived one')
       return exchangeToken(req, res)
     }
 
     res.writeHead(404, {'Content-Type': 'text/plain', 'Connection': 'close'})
-    return res.end('File not found')
+    return res.end('File not found', () => {
+      req.connection.unref()
+    })
   }
 
   function exchangeToken(req, res) {
     const returnUrl = url.parse(req.url, true)
-    const tmpToken = (returnUrl.query || {}).fetcher
-    client.request({uri: `/auth/tokens/fetch/${tmpToken}`})
+    const query = returnUrl.query || {}
+    const tmpToken = query.fetcher
+    const error = query.error ? parseJson(query.error, {}) : null
+
+    if (error) {
+      debug('Token exchange failed, error: %s', JSON.stringify(error))
+      const err = new Error('OAuth exchange failed')
+      return onTokenExchangeError(err, req, res)
+    }
+
+    if (!tmpToken) {
+      debug(
+        'Response did not contain temporary token. Query params: %s',
+        JSON.stringify(returnUrl.query || {}, null, 2)
+      )
+      debug('URL: %s', req.url)
+      return onTokenExchangeError(new Error('OAuth exchange failed because of a missing token', req, res))
+    }
+
+    return client.request({uri: `/auth/tokens/fetch/${tmpToken}`})
       .then(httpRes => onTokenExchanged(httpRes, req, res))
-      .catch(err => onTokenExchangeError(err, res))
+      .catch(err => onTokenExchangeError(err, req, res))
   }
 
-  function onTokenExchanged(body, req, res) {
+  async function onTokenExchanged(body, req, res) {
     const token = body.token
     if (!token) {
       const query = url.parse(req.url, true).query || {}
-      const error = query.error ? parseJson(query.error, {}) : {}
+      const error = query.error ? parseJson(query.error, {}) : null
 
       debug('Token exchange failed, body: %s', JSON.stringify(body))
       if (error) {
@@ -74,13 +99,22 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
       }
 
       const err = new Error('Failed to exchange temporary token - no token returned from server')
-      return onTokenExchangeError(err, res)
+      onTokenExchangeError(err, req, res)
+      return
     }
 
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
     res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
-    fs.createReadStream(path.join(__dirname, 'loginResponse.html')).pipe(res)
+    const successPage = await fsp.readFile(path.join(__dirname, 'loginResponse.html'), 'utf8')
+    res.end(successPage, () => {
+      req.connection.unref()
+
+      server.close(() => {
+        debug('Server closed')
+        resolve()
+      })
+    })
 
     // Store the token
     debug('Storing the login token')
@@ -91,18 +125,23 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
 
     spin.stop()
     output.print(chalk.green('Login successful'))
-    server.close(() => debug('Server closed'))
-    return resolve()
   }
 
-  function onTokenExchangeError(err, res) {
-    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
-    fs.createReadStream(path.join(__dirname, 'loginError.html'))
-      .pipe(res)
-      .on('finish', () => server.close(() => debug('Server closed')))
+  async function onTokenExchangeError(err, req, res) {
+    res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
+    const errorPage = await fsp.readFile(path.join(__dirname, 'loginError.html'), 'utf8')
+
+    res.end(errorPage.replace(/%error%/g, err.message), 'utf8', () => {
+      debug('Error page served')
+      req.connection.unref()
+
+      server.close(() => {
+        debug('Server closed')
+        reject(err)
+      })
+    })
 
     spin.stop()
-    reject(err)
   }
 
   function generateUrl(urlPath) {
