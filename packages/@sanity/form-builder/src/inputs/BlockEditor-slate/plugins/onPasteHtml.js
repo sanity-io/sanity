@@ -90,7 +90,8 @@ function createRules(blockEditor) {
             kind: 'block',
             type: 'contentBlock',
             data: {
-              listItem: listItem
+              listItem: listItem,
+              style: 'normal'
             },
             nodes: next(el.children)
           }
