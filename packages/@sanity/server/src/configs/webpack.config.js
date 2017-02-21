@@ -107,6 +107,7 @@ export default (config = {}) => {
     },
     profile: config.profile || false,
     plugins: [
+      new webpack.DefinePlugin({__DEV__: !isProd}),
       cssExtractor,
       new OccurrenceOrderPlugin(),
       new RoleResolverPlugin(resolverOpts),
