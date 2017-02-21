@@ -6,8 +6,8 @@ const reduceConfig = require('@sanity/util').reduceConfig
 const multiImplementationHandler = require('./multiImplementationHandler')
 
 /* eslint-disable no-process-env */
-const staging = process.env.SANITY_STAGING
-const env = typeof staging === 'undefined' ? process.env.NODE_ENV : 'staging'
+const sanityEnv = process.env.SANITY_ENV
+const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
 function sanityPartLoader(input) {

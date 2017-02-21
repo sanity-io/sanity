@@ -14,10 +14,11 @@ import defaultCommands from './commands'
 import debug from './debug'
 
 /* eslint-disable no-process-env */
-const isStaging = process.env.SANITY_STAGING
-const environment = isStaging ? 'staging' : process.env.NODE_ENV
-const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
+const sanityEnv = process.env.SANITY_ENV
+const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
+
+const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
 
 const cmdHasName = cmdName => {
   return cmd => cmd.name === cmdName
