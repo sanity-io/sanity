@@ -16,6 +16,9 @@ export default class DateInput extends React.PureComponent {
   // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
+    if (!newMoment) {
+      return null
+    }
     if (this.optionsWithDefaults().inputUtc) {
       return {
         utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
@@ -40,7 +43,10 @@ export default class DateInput extends React.PureComponent {
   }
 
   editableMoment(previousValue) {
-    if (previousValue && typeof previousValue === 'string') {
+    if (!previousValue) {
+      return null
+    }
+    if (typeof previousValue === 'string') {
       // Backwards compatibility
       if (previousValue.match(/\d\d\d\d-\d\d-\d\d/)) {
         return moment(previousValue, 'YYYY-MM-DD')
