@@ -22,9 +22,8 @@ export default class FormBuilderSpan extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextState.isEditing !== this.state.isEditing
-      || nextState.isFocused !== this.state.isFocused
-      || nextProps.state.selection !== this.props.state.selection
-      || nextProps.node.data !== this.props.node.data
+      || nextProps.state.focusOffset !== this.props.state.focusOffset
+      || nextProps.node.data.get('value') !== this.props.node.data.get('value')
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -60,6 +59,10 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   handleCloseInput = () => {
+    if (this.isEmpty()) {
+      this.handleRemove()
+      return
+    }
     // Let it happen after focus is set in the editor (state may be out of sync)
     this.props.editor.focus()
     setTimeout(() => {
