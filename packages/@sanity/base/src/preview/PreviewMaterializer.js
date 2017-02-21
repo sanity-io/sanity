@@ -36,10 +36,10 @@ export default class PreviewMaterializer extends React.PureComponent {
         const element = ReactDOM.findDOMNode(this)
         const rect = element.getBoundingClientRect()
         const isVisible = (
-          rect.top + rect.height >= 0
-          && rect.left + rect.width >= 0
-          && rect.bottom <= windowDimension.height
-          && rect.right <= windowDimension.width
+          rect.top + rect.height >= 10
+          && rect.left + rect.width >= 10
+          && rect.bottom - 10 <= windowDimension.height
+          && rect.right - 10 <= windowDimension.width
         )
         const appear = !this._isVisible && isVisible
         const disappear = !isVisible && this._isVisible
