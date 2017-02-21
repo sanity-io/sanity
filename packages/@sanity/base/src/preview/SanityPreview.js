@@ -8,6 +8,7 @@ import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import PreviewComponentBlock from 'part:@sanity/components/previews/block'
 
 import PreviewMaterializer from './PreviewMaterializer'
+import prepareForPreview from './prepareForPreview'
 
 const previewComponentMap = {
   default: PreviewComponentDefault,
@@ -37,7 +38,7 @@ export default class SanityPreview extends React.PureComponent {
       <PreviewMaterializer type={type} value={value}>
         {
           ({materialized, isDeferred}) => {
-            return <PreviewComponent item={materialized} isPlaceholder={!materialized && isDeferred} />
+            return <PreviewComponent item={prepareForPreview(materialized, type)} isPlaceholder={!materialized && isDeferred} />
           }
         }
       </PreviewMaterializer>
