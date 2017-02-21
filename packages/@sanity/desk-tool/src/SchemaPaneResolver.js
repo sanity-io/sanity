@@ -148,7 +148,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   getDocumentsPane(schemaType) {
-    const query = `*[is $type] | order(${this.state.sorting}) [0...2000] {_id, _type}`
+    // todo: use this when order is implemented:
+    // const query = `*[is $type] | order(${this.state.sorting}) [0...2000] {_id, _type}`
+    const query = '*[is $type] [0...2000] {_id, _type}'
     const params = {type: `${schema.name}.${schemaType.name}`}
 
     return (
