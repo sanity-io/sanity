@@ -75,7 +75,7 @@ export function createRules(createFieldValue) {
           return null
         }
         // Don't add blocks into list items
-        if (el.parentNode.tagName === 'li') {
+        if (el.parentNode && el.parentNode.tagName === 'li') {
           return next(el.children)
         }
         return {
