@@ -16,14 +16,14 @@ const SortableItem = SortableElement(({value, index, renderListItem, props}) => 
   return renderListItem(value, props, index)
 })
 
-const SortableList = SortableContainer(({sortableItems, renderListItem, className, ref}) => {
+const SortableList = SortableContainer(({sortableItems, renderListItem, getItemKey, className, ref}) => {
   return (
     <ul className={`${styles.sortableList} ${className}`} ref={ref}>
       {
         sortableItems.map((value, index) => {
           return (
             <SortableItem
-              key={`sortableItem-${index}`}
+              key={getItemKey(value, index)}
               index={index}
               value={value}
               renderListItem={renderListItem}
@@ -51,6 +51,7 @@ class GridList extends React.Component {
     className: PropTypes.string,
 
     renderItem: PropTypes.func,
+    getItemKey: PropTypes.func,
 
     decoration: PropTypes.string,
     onOpen: PropTypes.func,
@@ -72,6 +73,9 @@ class GridList extends React.Component {
       return (
         <MediaPreview item={item} />
       )
+    },
+    getItemKey(item, index) {
+      return `list-item-${index}`
     }
   }
 
@@ -89,24 +93,34 @@ class GridList extends React.Component {
 
     const {
       renderItem,
+      getItemKey,
       decoration,
       selectedItem,
       highlightedItem,
+      focusedItem,
       sortable,
       useDragHandle,
       onSelect,
       onOpen
     } = this.props
 
-
     const isSelected = item == selectedItem
+    const hasFocus = focusedItem == item
     const isHighlighted = item == highlightedItem
+
+    const renderedItem = renderItem(item, index, {
+      isSelected,
+      isHighlighted,
+      hasFocus
+    })
+
+    const key = getItemKey(item, index)
 
     return (
       <ListItemWrapper
         className={styles.item}
         index={index}
-        key={`item-${index}`}
+        key={key}
         item={item}
         onSelect={onSelect}
         onOpen={onOpen}
@@ -119,10 +133,7 @@ class GridList extends React.Component {
           sortable && useDragHandle && <DragHandle />
         }
 
-        {renderItem(item, index, {
-          isSelected,
-          isHighlighted
-        })}
+        {renderedItem}
       </ListItemWrapper>
     )
   }

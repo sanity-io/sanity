@@ -13,7 +13,7 @@ const SortableItem = SortableElement(({renderListItem, value}) => {
   return renderListItem(value, value.index)
 })
 
-const SortableList = SortableContainer(({sortableItems, renderListItem, className, ref}) => {
+const SortableList = SortableContainer(({sortableItems, renderListItem, getItemKey, className, ref}) => {
   return (
     <ul className={`${styles.sortableList} ${className}`} ref={ref}>
       {
@@ -21,7 +21,7 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, classNam
           value.index = index
           return (
             <SortableItem
-              key={`sortableItem-${index}`}
+              key={getItemKey(value, index)}
               index={index}
               value={value}
               renderListItem={renderListItem}
@@ -49,6 +49,7 @@ export default class DefaultList extends React.Component {
     overrideItemRender: PropTypes.bool,
 
     renderItem: PropTypes.func,
+    getItemKey: PropTypes.func,
 
     decoration: PropTypes.string,
     onOpen: PropTypes.func,
@@ -65,6 +66,9 @@ export default class DefaultList extends React.Component {
     overrideItemRender: false,
     renderItem(item) {
       return item
+    },
+    getItemKey(item, index) {
+      return `list-item-${index}`
     }
   }
 
@@ -90,6 +94,7 @@ export default class DefaultList extends React.Component {
   renderListItem = (item, index) => {
     const {
       renderItem,
+      getItemKey,
       decoration,
       selectedItem,
       highlightedItem,
@@ -111,11 +116,12 @@ export default class DefaultList extends React.Component {
       hasFocus
     })
 
+    const key = getItemKey(item, index)
     return (
       <ListItemWrapper
         className={styles.item}
         index={index}
-        key={`item-${index}`}
+        key={key}
         item={item}
         onSelect={onSelect}
         selected={isSelected}
@@ -129,6 +135,7 @@ export default class DefaultList extends React.Component {
         }
         {overrideItemRender ? renderedItem : (
           <DefaultItem
+            key={key}
             item={item}
             onSelect={onSelect}
             onOpen={onOpen}
