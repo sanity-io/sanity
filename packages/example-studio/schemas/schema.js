@@ -71,7 +71,13 @@ export default createSchema({
           type: 'date',
           description: 'Blogpost goes live at this date/time',
           options: {
-            inputUtc: true
+            dateFormat: 'YYYY-MM-DD',
+            timeFormat: 'HH:mm',
+            timeStep: 60,
+            calendarTodayLabel: 'Today',
+            inputUtc: false,
+            inputDate: true,
+            inputTime: true
           }
         },
         {
