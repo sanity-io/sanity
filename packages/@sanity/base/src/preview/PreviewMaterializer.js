@@ -27,6 +27,8 @@ export default class PreviewMaterializer extends React.PureComponent {
     result: null
   }
 
+  _isVisible = false
+
   componentDidMount() {
     const {type, value, lazy} = this.props
     // todo: clean up this code

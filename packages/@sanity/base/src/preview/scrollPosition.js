@@ -8,11 +8,9 @@ function getWindowDimensions() {
 }
 
 const EVENTS = ['scroll', 'resize']
-export default new Observable(observer => {
+
+const scrollObserver = new Observable(observer => {
   const listener = () => observer.next(getWindowDimensions())
-
-  listener()
-
   EVENTS.forEach(eventType => {
     document.body.addEventListener(eventType, listener, true)
   })
@@ -25,3 +23,8 @@ export default new Observable(observer => {
 })
   .debounceTime(100)
   .share()
+
+export default new Observable(observer => {
+  observer.next(getWindowDimensions())
+  return scrollObserver.subscribe(observer)
+})
