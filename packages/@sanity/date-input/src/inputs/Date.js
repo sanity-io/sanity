@@ -42,24 +42,24 @@ export default class DateInput extends React.PureComponent {
     })
   }
 
-  editableMoment(previousValue) {
-    if (!previousValue) {
+  editableMoment(currentValue) {
+    if (!currentValue) {
       return null
     }
-    if (typeof previousValue === 'string') {
+    if (typeof currentValue === 'string') {
       // Backwards compatibility
-      if (previousValue.match(/\d\d\d\d-\d\d-\d\d/)) {
-        return moment(previousValue, 'YYYY-MM-DD')
+      if (currentValue.match(/\d\d\d\d-\d\d-\d\d/)) {
+        return moment(currentValue, 'YYYY-MM-DD')
       }
-      if (previousValue.match(/\d\d\/\d\d\/\d\d\d\d/)) {
-        return moment(previousValue, 'MM/DD/YYYY')
+      if (currentValue.match(/\d\d\/\d\d\/\d\d\d\d/)) {
+        return moment(currentValue, 'MM/DD/YYYY')
       }
       return moment() // sorry pal, can't help you
     }
     if (this.optionsWithDefaults().inputUtc) {
-      return previousValue.utc ? moment.utc(previousValue.utc) : moment.utc()
+      return currentValue.utc ? moment.utc(currentValue.utc) : moment.utc()
     }
-    return previousValue.local ? moment(previousValue.local) : moment()
+    return currentValue.local ? moment(currentValue.local) : moment()
   }
 
   optionsWithDefaults() {
