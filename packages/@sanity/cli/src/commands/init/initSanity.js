@@ -149,7 +149,12 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateProject() {
-    const projects = await apiClient({requireProject: false}).projects.list()
+    let projects
+    try {
+      projects = await apiClient({requireProject: false}).projects.list()
+    } catch (err) {
+      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+    }
 
     if (projects.length === 0) {
       debug('No projects found for user, prompting for name')
@@ -219,7 +224,7 @@ export default async function initSanity(args, context) {
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
       const newDatasetName = await promptForDatasetName(prompt, {
-        message: 'Name of your first data set:',
+        message: 'Name your data set:',
         default: 'production'
       })
       await client.datasets.create(newDatasetName)
