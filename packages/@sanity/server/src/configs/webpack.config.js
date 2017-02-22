@@ -31,6 +31,8 @@ export default (config = {}) => {
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const env = config.env || 'development'
   const isProd = env === 'production'
+  const bundleEnv = process.env.BUNDLE_ENV || 'development' // eslint-disable-line no-process-env
+
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
   const resolverOpts = Object.assign({basePath}, config.resolver || {})
 
@@ -107,7 +109,7 @@ export default (config = {}) => {
     },
     profile: config.profile || false,
     plugins: [
-      new webpack.DefinePlugin({__DEV__: !isProd}),
+      new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'}),
       cssExtractor,
       new OccurrenceOrderPlugin(),
       new RoleResolverPlugin(resolverOpts),
