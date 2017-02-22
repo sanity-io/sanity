@@ -19,7 +19,7 @@ export default class FormBuilderBlock extends React.Component {
     attributes: PropTypes.object
   }
 
-  state = {isFocused: false, isEditing: false, isDragging: false}
+  state = {isSelected: false, isFocused: false, isEditing: false, isDragging: false}
   _dropTarget = null
   _editorNode = null
 
@@ -28,7 +28,8 @@ export default class FormBuilderBlock extends React.Component {
     const selection = nextProps.state.selection
     if (selection !== this.props.state.selection) {
       const isFocused = selection.hasFocusIn(node)
-      this.setState({isFocused: isFocused})
+      const isSelected = nextProps.state.blocks.find(block => block.key === node.key)
+      this.setState({...{isFocused}, ...{isSelected}})
     }
   }
 
@@ -223,7 +224,14 @@ export default class FormBuilderBlock extends React.Component {
     const {isEditing} = this.state
     const {attributes} = this.props
 
-    const className = this.state.isFocused ? styles.active : styles.root
+    let className
+    if (this.state.isFocused) {
+      className = styles.focused
+    } else if (this.state.isSelected) {
+      className = styles.selected
+    } else {
+      className = styles.root
+    }
 
     return (
       <div
