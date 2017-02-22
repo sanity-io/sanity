@@ -8,6 +8,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
+import initializeSlatePlugins from './util/initializeSlatePlugins'
 import {openSpanDialog} from './util/spanHelpers'
 
 import styles from './styles/BlockEditor.css'
@@ -45,9 +46,8 @@ export default class BlockEditor extends React.Component {
     this.slateSchema = preparation.schema
     this.textStyles = preparation.textStyles
     this.listItems = preparation.listItems
-    this.slatePlugins = preparation.plugins
-
     this.operations = createBlockEditorOperations(this)
+    this.slatePlugins = initializeSlatePlugins(this)
   }
 
   handleInsertItem = item => {

@@ -34,7 +34,7 @@ export default function intializeSlatePlugins(blockEditor) {
     textBlockOnEnterKey(SLATE_DEFAULT_STYLE),
 
     // Set mark keyboard shortcuts
-    onModKeySetMarkCombos(),
+    onModKeySetMarkCombos(blockEditor),
 
     // Dropping stuff onto formBuilder nodes
     formBuilderNodeOnDrop(),

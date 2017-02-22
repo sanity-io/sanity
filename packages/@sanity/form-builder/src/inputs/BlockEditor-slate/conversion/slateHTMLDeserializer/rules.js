@@ -1,8 +1,21 @@
 import * as helpers from './helpers'
 
+export const defaultBlockType = {
+  kind: 'block',
+  type: 'contentBlock',
+  data: {style: 'normal'}
+}
+
+function variant(type, data) {
+  const _variant = Object.assign({}, type)
+  _variant.data = Object.assign({}, type.data || {}, data)
+  return _variant
+}
+
+
 export const HTML_BLOCK_TAGS = {
-  p: {type: 'contentBlock', style: 'normal'},
-  blockquote: {type: 'contentBlock', style: 'blockquote'}
+  p: defaultBlockType,
+  blockquote: variant(defaultBlockType, {style: 'blockquote'})
 }
 
 export const HTML_SPAN_TAGS = {
@@ -10,17 +23,17 @@ export const HTML_SPAN_TAGS = {
 }
 
 export const HTML_LIST_CONTAINER_TAGS = {
-  ol: {type: null},
-  ul: {type: null}
+  ol: {kind: null},
+  ul: {kind: null}
 }
 
 export const HTML_HEADER_TAGS = {
-  h1: {type: 'contentBlock', style: 'h1'},
-  h2: {type: 'contentBlock', style: 'h2'},
-  h3: {type: 'contentBlock', style: 'h3'},
-  h4: {type: 'contentBlock', style: 'h4'},
-  h5: {type: 'contentBlock', style: 'h5'},
-  h6: {type: 'contentBlock', style: 'h6'}
+  h1: variant(defaultBlockType, {style: 'h1'}),
+  h2: variant(defaultBlockType, {style: 'h2'}),
+  h3: variant(defaultBlockType, {style: 'h3'}),
+  h4: variant(defaultBlockType, {style: 'h4'}),
+  h5: variant(defaultBlockType, {style: 'h5'}),
+  h6: variant(defaultBlockType, {style: 'h6'})
 }
 
 export const HTML_MARK_TAGS = {
@@ -32,31 +45,45 @@ export const HTML_MARK_TAGS = {
   em: 'em',
 
   u: 'underline',
-  s: 'strikethrough',
+  s: 'strike-through',
+  strike: 'strike-through',
+  del: 'strike-through',
 
   code: 'code'
 }
 
 export const HTML_LIST_ITEM_TAGS = {
-  li: {type: 'contentBlock', style: 'normal'},
+  li: defaultBlockType
 }
 
-
-export const defaultBlockType = {
-  kind: 'block',
-  type: 'contentBlock',
-  data: {style: 'normal'}
-}
-
-export const rules = {
+export const elementMap = {
   ...HTML_BLOCK_TAGS,
   ...HTML_SPAN_TAGS,
   ...HTML_LIST_CONTAINER_TAGS,
   ...HTML_HEADER_TAGS,
-  ...HTML_MARK_TAGS
 }
 
-export function createRules(createFieldValue) {
+export const supportedStyles = Array.from(
+  new Set(
+    Object.keys(elementMap)
+    .filter(tag => elementMap[tag].data && elementMap[tag].data.style)
+    .map(tag => elementMap[tag].data.style)
+  )
+)
+
+export const supportedMarks = Array.from(
+  new Set(
+    Object.keys(HTML_MARK_TAGS)
+    .map(tag => HTML_MARK_TAGS[tag])
+  )
+)
+
+
+export function createRules(options) {
+  const noop = () => undefined
+  const createFieldValue = options.createFieldValueFn || noop
+  const enabledStyles = options.enabledStyles || supportedStyles
+  const enabledMarks = options.enabledMarks || supportedMarks
   return [
     // Special case for Google Docs which always
     // wrap the html data in a <b> tag :/
@@ -68,9 +95,11 @@ export function createRules(createFieldValue) {
         return null
       }
     },
+    // Block and header tags
     {
       deserialize(el, next) {
-        const block = HTML_BLOCK_TAGS[el.tagName]
+        const blockAndHeaderTags = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
+        let block = blockAndHeaderTags[el.tagName]
         if (!block) {
           return null
         }
@@ -78,12 +107,17 @@ export function createRules(createFieldValue) {
         if (el.parentNode && el.parentNode.tagName === 'li') {
           return next(el.children)
         }
+        // If style is not supported, return a defaultBlockType
+        if (!enabledStyles.includes(block.data.style)) {
+          block = defaultBlockType
+        }
         return {
-          ...defaultBlockType,
+          ...block,
           nodes: next(el.children)
         }
       }
     },
+    // Ignore span tags
     {
       deserialize(el, next) {
         const span = HTML_SPAN_TAGS[el.tagName]
@@ -93,6 +127,7 @@ export function createRules(createFieldValue) {
         return next(el.children)
       }
     },
+    // Ignore list containers
     {
       deserialize(el, next) {
         const listContainer = HTML_LIST_CONTAINER_TAGS[el.tagName]
@@ -102,24 +137,29 @@ export function createRules(createFieldValue) {
         return next(el.children)
       }
     },
+    // Deal with list items
     {
       deserialize(el, next) {
-        const header = HTML_HEADER_TAGS[el.tagName]
-        if (!header) {
+        const listItem = HTML_LIST_ITEM_TAGS[el.tagName]
+        if (!listItem
+            || !el.parent
+            || !HTML_LIST_CONTAINER_TAGS[el.parent.tagName]) {
           return null
         }
         return {
-          kind: 'block',
-          type: header.type,
-          data: {style: header.style},
-          nodes: next(el.children)
+          ...variant(
+              listItem,
+              {listItem: helpers.resolveListItem(el.parent.tagName)}
+            ),
+          nodes: next(el.children, true)
         }
       }
     },
+    // Deal with marks
     {
       deserialize(el, next) {
         const mark = HTML_MARK_TAGS[el.tagName]
-        if (!mark) {
+        if (!mark || !enabledMarks.includes(mark)) {
           return null
         }
         return {
@@ -129,23 +169,8 @@ export function createRules(createFieldValue) {
         }
       }
     },
+    // Special case for links, to grab their href.
     {
-      deserialize(el, next) {
-        if (el.tagName === 'li') {
-          return {
-            ...defaultBlockType,
-            data: {
-              listItem: helpers.resolveListItem(el.parent.tagName),
-              style: 'normal'
-            },
-            nodes: next(el.children, true)
-          }
-        }
-        return null
-      }
-    },
-    {
-      // Special case for links, to grab their href.
       deserialize(el, next) {
         if (el.tagName != 'a') {
           return null

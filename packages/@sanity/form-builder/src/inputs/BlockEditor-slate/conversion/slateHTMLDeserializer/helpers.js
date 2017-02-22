@@ -18,4 +18,3 @@ export function resolveListItem(listNodeTagName) {
   }
   return listStyle
 }
-

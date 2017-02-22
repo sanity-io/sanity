@@ -1,4 +1,4 @@
-import slateHTMLDeserializer from '../conversion/slateHTMLDeserializer'
+import HtmlDeserializer from '../conversion/slateHTMLDeserializer'
 import {getSpanType} from '../util/spanHelpers'
 
 function onPasteHtml(blockEditor) {
@@ -22,6 +22,21 @@ function onPasteHtml(blockEditor) {
     return value
   }
 
+  function resolveEnabledStyles() {
+    return blockEditor.textStyles
+      .map(style => style.value)
+  }
+
+  function resolveEnabledMarks() {
+    return Object.keys(blockEditor.slateSchema.marks)
+  }
+
+  const deserializer = new HtmlDeserializer({
+    enabledStyles: resolveEnabledStyles(),
+    enabledMarks: resolveEnabledMarks(),
+    createFieldValueFn: createFieldValueFromHtml
+  })
+
   function onPaste(event, data, state, editor) {
 
     if (data.type != 'html') {
@@ -30,9 +45,9 @@ function onPasteHtml(blockEditor) {
     if (data.isShift) {
       return null
     }
-
-    const document = slateHTMLDeserializer(data.html, createFieldValueFromHtml)
-
+    const {document} = deserializer.deserialize(
+      data.html
+    )
     return state
       .transform()
       .insertFragment(document)

@@ -2,14 +2,16 @@ import React from 'react'
 import createBlockNode from '../createBlockNode'
 import createSpanNode from '../createSpanNode'
 import mapToObject from './mapToObject'
+
+import {getSpanType} from './spanHelpers'
+import {SLATE_DEFAULT_STYLE} from '../constants'
+
+// Content previews
+import Blockquote from '../preview/Blockquote'
 import Header from '../preview/Header'
-import Normal from '../preview/Normal'
 import ListItem from '../preview/ListItem'
 import Mark from '../preview/Mark'
-import {getSpanType} from './spanHelpers'
-import initializeSlatePlugins from './initializeSlatePlugins'
-
-import {SLATE_DEFAULT_STYLE} from '../constants'
+import Normal from '../preview/Normal'
 
 // When the slate-fields are rendered in the editor, their node data is stored in a parent container component.
 // In order to use the node data as props inside our components, we have to dereference them here first (see list and header keys)
@@ -41,7 +43,8 @@ const slateTypeComponentMapping = {
       || SLATE_DEFAULT_STYLE
     const contentComponent = slateTypeComponentMapping[style]
     return <ListItem contentComponent={contentComponent} listItem={listItem} {...props} />
-  }
+  },
+  blockquote: Blockquote,
 }
 
 function createSlatePreviewNode(props) {
@@ -110,7 +113,6 @@ export default function prepareSlateForBlockEditor(blockEditor) {
   return {
     listItems: listItems,
     textStyles: textStyles,
-    schema: schema,
-    plugins: initializeSlatePlugins(blockEditor)
+    schema: schema
   }
 }
