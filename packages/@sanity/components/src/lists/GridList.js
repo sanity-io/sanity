@@ -151,6 +151,7 @@ class GridList extends React.Component {
       useDragHandle,
       onSortStart,
       onSortMove,
+      getItemKey,
       onSortEnd
     } = this.props
 
@@ -205,6 +206,7 @@ class GridList extends React.Component {
                     axis="xy"
                     useDragHandle={useDragHandle}
                     renderListItem={this.renderListItem}
+                    getItemKey={getItemKey}
                     ref={this.setListElement}
                     hideSortableGhost
                   />

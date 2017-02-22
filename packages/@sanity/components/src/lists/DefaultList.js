@@ -159,7 +159,8 @@ export default class DefaultList extends React.Component {
       useDragHandle,
       onSortStart,
       onSortEnd,
-      onSortMove
+      onSortMove,
+      getItemKey
     } = this.props
 
     return (
@@ -198,6 +199,7 @@ export default class DefaultList extends React.Component {
               lockAxis="y"
               useDragHandle={useDragHandle}
               renderListItem={this.renderListItem}
+              getItemKey={getItemKey}
               ref={this.setListElement}
               hideSortableGhost
             />
