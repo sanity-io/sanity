@@ -5,6 +5,7 @@ import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'
 import FormatItalicIcon from 'part:@sanity/base/format-italic-icon'
 import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon'
 import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
+import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
 import styles from './styles/Marks.css'
@@ -29,8 +30,10 @@ export default class Marks extends React.Component {
         return FormatItalicIcon
       case 'underline':
         return FormatUnderlinedIcon
-      case 'line-through':
+      case 'strike-through':
         return FormatStrikethroughIcon
+      case 'code':
+        return FormatCodeIcon
       default:
         return SanityLogoIcon
     }
