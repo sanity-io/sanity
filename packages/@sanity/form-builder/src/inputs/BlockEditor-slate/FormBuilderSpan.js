@@ -8,6 +8,8 @@ import RenderField from '../Object/RenderField'
 import styles from './styles/FormBuilderSpan.css'
 import arrify from 'arrify'
 
+let nodeClickCounter = 0
+
 export default class FormBuilderSpan extends React.Component {
   static propTypes = {
     type: PropTypes.object,
@@ -78,8 +80,16 @@ export default class FormBuilderSpan extends React.Component {
       .removeSpan(this.props.node)
   }
 
+  // Open dialog when user clicks the node,
+  // but support double clicks to mark text as usual
   handleNodeClick = () => {
-    this.setState({isEditing: true})
+    setTimeout(() => {
+      if (nodeClickCounter === 1) {
+        this.setState({isEditing: true})
+      }
+      nodeClickCounter = 0
+    }, 350)
+    nodeClickCounter++
   }
 
   handleReset = () => {
