@@ -79,7 +79,7 @@ export default class DateInput extends React.PureComponent {
     const options = this.optionsWithDefaults()
 
     const description = [
-      (options.inputUtc ? 'Input is UTC' : null),
+      (options.inputUtc ? 'Input is UTC' : `Assuming timezone ${moment.tz.guess()}`),
       type.description
     ].filter(Boolean).join('. ')
 
