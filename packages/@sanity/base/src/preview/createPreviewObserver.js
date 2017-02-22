@@ -13,7 +13,7 @@ function isReference(value) {
     || (!('_type' in value) && ('_ref' in value))
 }
 
-export default function createPreview(observeWithPaths) {
+export default function createPreviewObserver(observeWithPaths) {
 
   function follow(value, paths) {
     if (!isArray(value) && !isObject(value)) {
@@ -46,7 +46,7 @@ export default function createPreview(observeWithPaths) {
     }, {...value}))
   }
 
-  return function materialize(value, paths) {
+  return function observe(value, paths) {
     const missingPaths = resolveMissingPaths(value, paths)
     if (missingPaths.length === 0) {
       return follow(value, paths)
