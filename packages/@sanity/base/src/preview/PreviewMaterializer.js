@@ -7,7 +7,6 @@ import scrollPosition from './scrollPosition'
 export default class PreviewMaterializer extends React.PureComponent {
   static propTypes = {
     value: PropTypes.any.isRequired,
-    lazy: PropTypes.bool,
     type: PropTypes.shape({
       preview: PropTypes.shape({
         select: PropTypes.object.isRequired,
@@ -17,88 +16,70 @@ export default class PreviewMaterializer extends React.PureComponent {
     children: PropTypes.func
   };
 
-  static defaultProps = {
-    lazy: true
-  }
-
   state = {
-    isDeferred: true,
     error: null,
-    result: null
+    snapshot: null,
+    isLive: false
   }
-
-  _isVisible = false
 
   componentDidMount() {
-    const {type, value, lazy} = this.props
-    // todo: clean up this code
-    if (lazy) {
-      this._isVisible = false
-      this.scrollSubscription = scrollPosition.subscribe(windowDimension => {
-        const element = ReactDOM.findDOMNode(this)
-        const rect = element.getBoundingClientRect()
-        const isVisible = (
-          rect.top + rect.height >= 10
-          && rect.left + rect.width >= 10
-          && rect.bottom - 10 <= windowDimension.height
-          && rect.right - 10 <= windowDimension.width
-        )
-        const appear = !this._isVisible && isVisible
-        const disappear = !isVisible && this._isVisible
-        if (appear) {
-          this.subscribe(value, type)
-        }
-        if (disappear) {
-          // console.log('unsubscribe due to disappear')
-          this.unsubscribe()
-        }
-        this._isVisible = isVisible
-      })
-    } else {
-      this.subscribe(value, type)
-    }
+    this.subscribe(this.props.value, this.props.type)
   }
 
   componentWillUnmount() {
     this.unsubscribe()
-    this.scrollSubscription.unsubscribe()
-    // console.log('unsubscribe due to unmount')
   }
 
   unsubscribe() {
     if (this.subscription) {
       this.subscription.unsubscribe()
       this.subscription = null
-      this.setState({isDeferred: true})
     }
   }
 
   componentWillUpdate(nextProps) {
     if (!shallowEquals(nextProps.value, this.props.value)) {
-      // console.log('resubscribe due to new props')
-      // console.log(this.props.value, nextProps.value)
-      // console.log('-----')
       this.subscribe(nextProps.value, nextProps.type)
     }
   }
 
   subscribe(value, type) {
     this.unsubscribe()
-    this.subscription = observeForPreview(value, type)
-      .subscribe(res => {
-        this.setState({
-          result: res,
-          isDeferred: false
-        })
+
+    const isVisible$ = scrollPosition.map(windowDimension => {
+      const element = ReactDOM.findDOMNode(this)
+      const rect = element.getBoundingClientRect()
+      return (
+        rect.top + rect.height >= 60
+        && rect.left + rect.width >= 60
+        && rect.bottom - 60 <= windowDimension.height
+        && rect.right - 60 <= windowDimension.width
+      )
+    })
+      .share()
+
+    const appear$ = isVisible$
+      .scan((wasVisible, isVisible) => !wasVisible && isVisible, false)
+      .distinctUntilChanged()
+      .filter(Boolean)
+
+    this.subscription = appear$
+      .mergeMap(() => {
+        return observeForPreview(value, type)
+          .takeUntil(isVisible$.filter(isVisible => !isVisible))
+          .do({
+            next: () => this.setLive(true),
+            complete: () => this.setLive(false)
+          })
+      })
+      .subscribe(snapshot => {
+        this.setState({snapshot})
       })
   }
-
+  setLive = isLive => {
+    this.setState({isLive})
+  }
   render() {
-    const {result, isDeferred, error} = this.state
-    return this.props.children({
-      materialized: result,
-      isDeferred,
-      error: error
-    })
+    return this.props.children(this.state)
   }
 }

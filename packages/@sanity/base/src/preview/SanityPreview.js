@@ -19,6 +19,8 @@ const previewComponentMap = {
   block: PreviewComponentBlock
 }
 
+// Set this to true for debugging preview subscriptions
+const DEBUG = false
 export default class SanityPreview extends React.PureComponent {
 
   static propTypes = {
@@ -37,8 +39,16 @@ export default class SanityPreview extends React.PureComponent {
     return (
       <PreviewMaterializer type={type} value={value}>
         {
-          ({materialized, isDeferred}) => {
-            return <PreviewComponent item={prepareForPreview(materialized, type)} isPlaceholder={!materialized && isDeferred} />
+          ({snapshot, isLive}) => {
+            const preview = (
+              <PreviewComponent item={prepareForPreview(snapshot, type)} isPlaceholder={!snapshot && !isLive} />
+            )
+            return DEBUG ? (
+              <div>
+                <span style={{position: 'absolute', right: 24, top: 2}}>{isLive ? '⚡️' : '💤'}</span>
+                {preview}
+              </div>
+            ) : preview
           }
         }
       </PreviewMaterializer>
