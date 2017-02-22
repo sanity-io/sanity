@@ -225,6 +225,7 @@ export default function createBlockEditorOperations(blockEditor) {
       const nextState = state
         .transform()
         .toggleMark(mark.type)
+        .focus()
         .apply()
       onChange(nextState)
     },
