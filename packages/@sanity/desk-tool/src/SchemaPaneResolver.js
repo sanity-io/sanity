@@ -47,6 +47,10 @@ function isCreate(routerState) {
   return routerState.action === 'create' && !routerState.selectedDocumentId
 }
 
+function getListItemKey(item) {
+  return item._id
+}
+
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
   static propTypes = {
     router: PropTypes.shape({
@@ -178,6 +182,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               type={type}
               loading={loading}
               items={items}
+              getItemKey={getListItemKey}
               renderItem={this.renderDocumentPaneItem}
               onSetListLayout={this.handleSetListLayout}
               onSetSorting={this.handleSetSort}

@@ -14,6 +14,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     loading: PropTypes.bool,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
+    getItemKey: PropTypes.func,
     onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func,
     listLayout: PropTypes.string,
@@ -35,7 +36,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
   }
 
   renderListView() {
-    const {items, renderItem, router, listLayout} = this.props
+    const {items, renderItem, router, listLayout, getItemKey} = this.props
     const {selectedDocumentId} = router.state
 
     const selectedItem = find(items, item => {
@@ -45,18 +46,47 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
     switch (listLayout) { // eslint-disable-line default-case
       case 'media':
-        return <GridList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+        return (
+          <GridList
+            overrideItemRender
+            items={items}
+            getItemKey={getItemKey}
+            renderItem={renderItem}
+            selectedItem={selectedItem}
+            onSelect={this.handleSelect}
+          />
+        )
 
       case 'card':
-        return <GridList overrideItemRender items={items} layout="masonry" renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+        return (
+          <GridList
+            overrideItemRender
+            items={items}
+            getItemKey={getItemKey}
+            layout="masonry"
+            renderItem={renderItem}
+            selectedItem={selectedItem}
+            onSelect={this.handleSelect}
+          />
+        )
 
       case 'detail':
       case 'default':
-        return <DefaultList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
+      default:
+        if (listLayout !== 'detail' && listLayout !== 'default') {
+          console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
+        }
+        return (
+          <DefaultList
+            overrideItemRender
+            items={items}
+            getItemKey={getItemKey}
+            renderItem={renderItem}
+            selectedItem={selectedItem}
+            onSelect={this.handleSelect}
+          />
+        )
     }
-
-    console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
-    return <DefaultList overrideItemRender items={items} renderItem={renderItem} selectedItem={selectedItem} onSelect={this.handleSelect} />
   }
 
   render() {
