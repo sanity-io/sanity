@@ -54,7 +54,9 @@ function createSlatePreviewNode(props) {
     component = slateTypeComponentMapping[style]
   }
   if (!component) {
-    throw new Error(`No mapping for style '${style}' exists.`)
+    // eslint-disable-next-line no-console
+    console.warn(`No mapping for style '${style}' exists, using 'normal'`)
+    component = slateTypeComponentMapping.normal
   }
   return component(props)
 }
