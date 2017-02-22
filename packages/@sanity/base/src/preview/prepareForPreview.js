@@ -13,7 +13,8 @@ const reportErrors = debounce(() => {
   }))
   const errorCount = uniqueErrors.length
   console.groupCollapsed(
-    `%cHeads up! Got ${errorCount === 1 ? 'error' : `${errorCount} errors`} while preparing data for preview. Click for details`,
+    `%cHeads up! Got ${errorCount === 1 ? 'error' : `${errorCount} errors`} while preparing data for preview. Click for details.`
+   + ' This may be a hard failure in production and cause your application to crash.',
     'color: #ff7e7c'
   )
 
