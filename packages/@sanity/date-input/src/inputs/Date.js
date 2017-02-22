@@ -66,7 +66,7 @@ export default class DateInput extends React.PureComponent {
     const options = this.props.type.options || {}
     options.dateFormat = options.dateFormat || 'YYYY-MM-DD'
     options.timeFormat = options.timeFormat || 'HH:mm'
-    options.inputUtc = options.inputUtc || false
+    options.inputUtc = options.inputUtc === true
     options.timeStep = options.timeStep || 15
     options.calendarTodayLabel = options.calendarTodayLabel || 'Today'
     options.inputDate = options.hasOwnProperty('inputDate') ? options.inputDate : true
