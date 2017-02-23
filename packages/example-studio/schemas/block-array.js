@@ -173,39 +173,5 @@ export default [
         }
       }
     ]
-  },
-  {
-    name: 'mark',
-    type: 'object',
-    title: 'Mark',
-    fields: [
-      {
-        name: 'type',
-        title: 'Type',
-        type: 'string'
-      }
-    ]
-  },
-  {
-    name: 'link',
-    type: 'object',
-    fields: [
-      {
-        type: 'url',
-        name: 'href',
-        title: 'Url'
-      },
-      {
-        name: 'keys',
-        title: 'Keys',
-        type: 'array',
-        of: [
-          {
-            type: 'string',
-            title: 'Key'
-          }
-        ]
-      }
-    ]
   }
 ]
