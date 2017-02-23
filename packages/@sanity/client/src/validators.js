@@ -25,9 +25,17 @@ exports.validateObject = (op, val) => {
   }
 }
 
+exports.requireDocumentId = (op, doc) => {
+  if (!doc._id) {
+    throw new Error(`${op}() requires that the document contains an ID ("_id" property)`)
+  }
+
+  exports.validateDocumentId(op, doc._id)
+}
+
 exports.validateDocumentId = (op, id) => {
-  if (typeof id !== 'string' || !/^[-_a-z0-9]{1,128}\.[-_a-z0-9.]+$/i.test(id)) {
-    throw new Error(`${op}() takes a document ID in format dataset.docId`)
+  if (typeof id !== 'string' || !/^[a-z0-9_.-]+$/i.test(id)) {
+    throw new Error(`${op}(): "${id}" is not a valid document ID`)
   }
 }
 

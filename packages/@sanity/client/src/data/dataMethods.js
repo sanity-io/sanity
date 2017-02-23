@@ -29,12 +29,12 @@ const getQuerySizeLimit = 1948
 module.exports = {
   listen: listen,
 
-  getDataUrl(endpoint, uri) {
-    const projectId = this.clientConfig.projectId
-    return (this.clientConfig.gradientMode
-      ? `/${endpoint}/${projectId}/${uri}`
-      : `/data/${endpoint}/${uri}`
-    ).replace(/\/($|\?)/, '$1')
+  getDataUrl(operation, path) {
+    const config = this.clientConfig
+    const catalog = config.gradientMode ? config.namespace : validators.hasDataset(config)
+    const baseUri = `/${operation}/${catalog}`
+    const uri = path ? `${baseUri}/${path}` : baseUri
+    return (this.clientConfig.gradientMode ? uri : `/data${uri}`).replace(/\/($|\?)/, '$1')
   },
 
   fetch(query, params) {
@@ -45,17 +45,14 @@ module.exports = {
   },
 
   getDocument(id) {
-    const observable = this._requestObservable({
-      uri: this.getDataUrl('doc', id),
-      json: true
-    })
+    const options = {uri: this.getDataUrl('doc', id), json: true}
+    const observable = this._requestObservable(options)
       .filter(isResponse)
       .map(event => event.body.documents && event.body.documents[0])
 
     return this.isPromiseAPI()
       ? toPromise(observable)
       : observable
-
   },
 
   create(doc, options) {
@@ -63,10 +60,12 @@ module.exports = {
   },
 
   createIfNotExists(doc, options) {
+    validators.requireDocumentId('createIfNotExists', doc)
     return this._create(doc, 'createIfNotExists', options)
   },
 
   createOrReplace(doc, options) {
+    validators.requireDocumentId('createOrReplace', doc)
     return this._create(doc, 'createOrReplace', options)
   },
 
@@ -75,9 +74,11 @@ module.exports = {
   },
 
   delete(selection, options) {
-    return this.dataRequest('mutate', {
-      mutations: [{delete: getSelection(selection)}]
-    }, options)
+    return this.dataRequest(
+      'mutate',
+      {mutations: [{delete: getSelection(selection)}]},
+      options
+    )
   },
 
   mutate(mutations, options) {
@@ -111,14 +112,17 @@ module.exports = {
     const stringQuery = useGet ? strQuery : ''
     const returnFirst = options.returnFirst
 
-    const dataset = validators.hasDataset(this.clientConfig)
-    return this._requestObservable({
+    const uri = this.getDataUrl(endpoint, stringQuery)
+
+    const reqOptions = {
       method: useGet ? 'GET' : 'POST',
-      uri: this.getDataUrl(endpoint, `${dataset}${stringQuery}`),
+      uri: uri,
       json: true,
       body: useGet ? undefined : body,
       query: isMutation && getMutationQuery(options)
-    })
+    }
+
+    return this._requestObservable(reqOptions)
       .filter(isResponse)
       .map(getBody)
       .map(res => {
@@ -146,8 +150,7 @@ module.exports = {
   },
 
   _create(doc, op, options = {}) {
-    const dataset = validators.hasDataset(this.clientConfig)
-    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}.`})}
+    const mutation = {[op]: doc}
     const opts = assign({returnFirst: true, returnDocuments: true}, options)
     return this.dataRequest('mutate', {mutations: [mutation]}, opts)
   }

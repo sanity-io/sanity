@@ -18,15 +18,22 @@ assign(Transaction.prototype, {
   },
 
   create(doc) {
-    return this._create(doc, 'create')
+    validators.validateObject('create', doc)
+    return this._add({create: doc})
   },
 
   createIfNotExists(doc) {
-    return this._create(doc, 'createIfNotExists')
+    const op = 'createIfNotExists'
+    validators.validateObject(op, doc)
+    validators.requireDocumentId(op, doc)
+    return this._add({[op]: doc})
   },
 
   createOrReplace(doc) {
-    return this._create(doc, 'createOrReplace')
+    const op = 'createOrReplace'
+    validators.validateObject(op, doc)
+    validators.requireDocumentId(op, doc)
+    return this._add({[op]: doc})
   },
 
   delete(documentId) {
@@ -78,20 +85,6 @@ assign(Transaction.prototype, {
   reset() {
     this.operations = []
     return this
-  },
-
-  _create(doc, op) {
-    if (!doc._id && !this.client) {
-      throw new Error(
-        'Document needs an _id property when transaction is create outside a client scope. '
-        + 'Pass `{_id: "<datasetName>:"}` to have Sanity generate an ID for you.'
-      )
-    }
-
-    validators.validateObject(op, doc)
-    const dataset = validators.hasDataset(this.client.clientConfig)
-    const mutation = {[op]: assign({}, doc, {_id: doc._id || `${dataset}.`})}
-    return this._add(mutation)
   },
 
   _add(mut) {

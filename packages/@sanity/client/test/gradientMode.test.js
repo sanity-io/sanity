@@ -9,21 +9,26 @@ const assign = require('xtend')
 const sanityClient = require('../src/sanityClient')
 
 const apiHost = 'https://api.sanity.url'
-const clientConfig = {apiHost: apiHost, projectId: 'bf1942', dataset: 'foo', gradientMode: true}
+const clientConfig = {apiHost: apiHost, namespace: 'beerns', gradientMode: true}
 const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
 
 /*****************
  * GRADIENT MODE *
  *****************/
-test('[gradient] can query for documents', t => {
-  const query = 'beerfiesta.beer[.title == $beerName]'
-  const params = {beerName: 'Headroom Double IPA'}
-  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+test('[gradient] throws when creating client without specifying namespace', t => {
+  t.throws(() => sanityClient({gradientMode: true}), /must contain `namespace`/, 'throws on create()')
+  t.end()
+})
 
-  nock(apiHost).get(`/query/bf1942/foo?query=${qs}`).reply(200, {
+test('[gradient] can query for documents', t => {
+  const query = '*[is "beerfiesta.beer" && title == $beerName]'
+  const params = {beerName: 'Headroom Double IPA'}
+  const qs = '*%5Bis%20%22beerfiesta.beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+
+  nock(apiHost).get(`/query/beerns?query=${qs}`).reply(200, {
     ms: 123,
     q: query,
-    result: [{_id: 'beerfiesta.beer:njgNkngskjg', rating: 5}]
+    result: [{_id: 'njgNkngskjg', _type: 'beerfiesta.beer', rating: 5}]
   })
 
   getClient().fetch(query, params).then(res => {
@@ -33,24 +38,24 @@ test('[gradient] can query for documents', t => {
 })
 
 test('[gradient] can query for single document', t => {
-  nock(apiHost).get('/doc/bf1942/foo.123').reply(200, {
+  nock(apiHost).get('/doc/beerns/njgNkngskjg').reply(200, {
     ms: 123,
-    documents: [{_id: 'foo.123', mood: 'lax'}]
+    documents: [{_id: 'njgNkngskjg', title: 'Headroom Double IPA'}]
   })
 
-  getClient().getDocument('foo.123').then(res => {
-    t.equal(res.mood, 'lax', 'data should match')
+  getClient().getDocument('njgNkngskjg').then(res => {
+    t.equal(res.title, 'Headroom Double IPA', 'data should match')
   }).catch(t.ifError).then(t.end)
 })
 
 test('[gradient] can query for single document with token', t => {
   const reqheaders = {Authorization: 'Bearer MyToken'}
-  nock(apiHost, {reqheaders}).get('/doc/bf1942/foo.123').reply(200, {
+  nock(apiHost, {reqheaders}).get('/doc/beerns/barfoo').reply(200, {
     ms: 123,
-    documents: [{_id: 'foo.123', mood: 'lax'}]
+    documents: [{_id: 'barfoo', mood: 'lax'}]
   })
 
-  getClient({token: 'MyToken'}).getDocument('foo.123').then(res => {
+  getClient({token: 'MyToken'}).getDocument('barfoo').then(res => {
     t.equal(res.mood, 'lax', 'data should match')
   }).catch(t.ifError).then(t.end)
 })
