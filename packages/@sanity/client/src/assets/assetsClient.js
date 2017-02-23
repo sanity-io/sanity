@@ -39,7 +39,7 @@ assign(AssetsClient.prototype, {
 
     // We could be passing an entire asset document instead of an ID
     if (type._type) {
-      assetType = type._type.replace(/^(sanity\.|Asset$)/g, '')
+      assetType = type._type.replace(/(^sanity\.|Asset$)/g, '')
       docId = type._id
     }
 
