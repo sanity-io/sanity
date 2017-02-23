@@ -44,6 +44,7 @@ function run(t) {
       'scan',
       'merge',
       'flatMap',
+      'first',
       'mergeMap',
       'switchMap',
       'concatMap',

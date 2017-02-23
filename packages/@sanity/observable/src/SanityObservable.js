@@ -6,6 +6,7 @@ const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
 const {reduce} = require('rxjs/operator/reduce')
 const {scan} = require('rxjs/operator/scan')
+const {first} = require('rxjs/operator/first')
 const {debounceTime} = require('rxjs/operator/debounceTime')
 const {distinctUntilChanged} = require('rxjs/operator/distinctUntilChanged')
 const {takeUntil} = require('rxjs/operator/takeUntil')
@@ -47,6 +48,7 @@ Object.assign(SanityObservable.prototype, {
   scan,
   merge,
   flatMap: mergeMap,
+  first,
   mergeMap: mergeMap,
   switchMap: switchMap,
   concatMap: concatMap,
