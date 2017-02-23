@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "object-assign": "^4.1.0",
-    "rxjs": "^5.1.1"
+    "rxjs": "5.0.x"
   },
   "devDependencies": {
     "is-observable": "^0.2.0",

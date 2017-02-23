@@ -57,7 +57,6 @@ function run(t) {
       'toPromise',
       'lift',
       'subscribe',
-      '_trySubscribe', // added by rxjs
       'forEach' // spec
     ])
 
