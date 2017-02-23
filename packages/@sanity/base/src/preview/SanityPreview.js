@@ -7,7 +7,7 @@ import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import PreviewComponentBlock from 'part:@sanity/components/previews/block'
 
-import PreviewMaterializer from './PreviewMaterializer'
+import PreviewSubscriber from './PreviewSubscriber'
 import prepareForPreview from './prepareForPreview'
 
 const previewComponentMap = {
@@ -37,7 +37,7 @@ export default class SanityPreview extends React.PureComponent {
       : previewComponentMap.default
 
     return (
-      <PreviewMaterializer type={type} value={value}>
+      <PreviewSubscriber type={type} value={value}>
         {
           ({snapshot, isLive}) => {
             const preview = (
@@ -51,7 +51,7 @@ export default class SanityPreview extends React.PureComponent {
             ) : preview
           }
         }
-      </PreviewMaterializer>
+      </PreviewSubscriber>
     )
   }
 }
