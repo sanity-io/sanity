@@ -3,8 +3,8 @@ import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 
 function fetchDocumentSnapshot(id) {
-  return client.getDocument(id)
-    .then(document => {
+  return client.observable.getDocument(id)
+    .map(document => {
       return {
         type: 'snapshot',
         document: document
@@ -13,8 +13,8 @@ function fetchDocumentSnapshot(id) {
 }
 
 function fetchQuerySnapshot(query, params) {
-  return client.fetch(query, params)
-    .then(documents => {
+  return client.observable.fetch(query, params)
+    .map(documents => {
       return {
         type: 'snapshot',
         documents: documents
@@ -33,7 +33,7 @@ const serverConnection = {
   },
 
   query(query, params) {
-    return Observable.from(client.listen(query, params || {}, {events: ['welcome', 'mutation']}))
+    return Observable.from(client.observable.listen(query, params || {}, {events: ['welcome', 'mutation']}))
       .concatMap(event => {
         return (event.type === 'welcome')
           ? Observable.from(fetchQuerySnapshot(query, params))
@@ -42,15 +42,15 @@ const serverConnection = {
   },
 
   mutate(mutations) {
-    return Observable.from(client.dataRequest('mutate', mutations, {returnDocuments: false}))
+    return Observable.from(client.observable.dataRequest('mutate', mutations, {returnDocuments: false}))
   },
 
   delete(id) {
-    return Observable.from(client.delete(id, {returnDocuments: false}))
+    return Observable.from(client.observable.delete(id, {returnDocuments: false}))
   },
 
   create(doc) {
-    return Observable.from(client.create(doc))
+    return Observable.from(client.observable.create(doc))
   }
 }
 
