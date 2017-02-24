@@ -2,7 +2,6 @@ const Observable = require('@sanity/observable')
 const createCache = require('./utils/createCache')
 const canonicalize = require('./utils/canonicalize')
 const omit = require('lodash/omit')
-const pubsub = require('nano-pubsub')
 const {BufferedDocument, Mutation} = require('@sanity/mutator')
 
 function TODO(msg = 'TODO') {
@@ -10,122 +9,117 @@ function TODO(msg = 'TODO') {
     throw new Error(msg)
   }
 }
-
-function defer() {
-  const deferred = {}
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve
-    deferred.reject = reject
-  })
-  return deferred
+const NOOP = () => {
 }
 
 function createBufferedDocument(documentId, server) {
-  const events = pubsub()
-  let _bufferedDocument = null
-  let whenBufferedDocumentReady = defer()
 
-  function reset() {
-    _bufferedDocument = null
-    whenBufferedDocumentReady = defer()
-  }
+  const serverEvents$ = Observable.from(server.byId(documentId)).share()
+  const bufferedDocs$ = serverEvents$
+    .first(event => event.type === 'snapshot')
+    .map(event => event.document)
+    .map(snapshot => {
+      const bufferedDocument = new BufferedDocument(snapshot)
 
-  function withBufferedDocument(fn) {
-    if (_bufferedDocument) {
-      fn(_bufferedDocument)
-    } else {
-      whenBufferedDocumentReady.promise.then(() => fn(_bufferedDocument))
-    }
-  }
+      serverEvents$
+        .filter(event => event.type === 'mutation')
+        .map(event => bufferedDocument.arrive(new Mutation(event)))
 
-  // todo refcount/dispose
-  const subscription = server.byId(documentId).subscribe({
-    next: event => {
-      if (event.type === 'snapshot') {
-        onSnapshot(event)
-      } else if (event.type === 'mutation') {
-        onMutation(new Mutation(event))
-      } else {
-        console.warn('Ignoring unknown event type %s', event.type)
+      bufferedDocument.commitHandler = function commitHandler(opts) {
+        const payload = opts.mutation.params
+
+        // TODO:
+        // right now the BufferedDocument just commits fire-and-forget-ish
+        // We should be able to handle failures and retry here
+
+        server.mutate(omit(payload, 'resultRev'))
+          .subscribe({
+            next: opts.success,
+            error: opts.failure
+          })
       }
-    },
-    error: reset
-  })
 
-  function onSnapshot(event) {
-    _bufferedDocument = new BufferedDocument(event.document)
+      const rebase$ = new Observable(rebaseObserver => {
+        bufferedDocument.onRebase = edge => {
+          rebaseObserver.next({type: 'rebase', document: edge})
+        }
+        return () => {
+          bufferedDocument.onRebase = NOOP
+        }
+      }).share()
 
-    _bufferedDocument.onRebase = edge => {
-      events.publish({type: 'rebase', document: edge})
+      const mutation$ = new Observable(mutationObserver => {
+        bufferedDocument.onMutation = ({mutation, remote}) => {
+          mutationObserver.next({
+            type: 'mutation',
+            document: bufferedDocument.LOCAL,
+            mutations: mutation.mutations,
+            origin: remote ? 'remote' : 'local'
+          })
+        }
+        return () => {
+          bufferedDocument.onMutation = NOOP
+        }
+      }).share()
+
+      return {
+        events: new Observable(observer => {
+          observer.next({type: 'snapshot', document: bufferedDocument.LOCAL})
+          return mutation$
+            .merge(rebase$)
+            .subscribe(observer)
+        }),
+        patch(patches) {
+          const mutations = patches
+            .map(patch => Object.assign({}, patch, {id: documentId}))
+            .map(patch => ({patch: patch}))
+
+          bufferedDocument.add(new Mutation({mutations: mutations}))
+        },
+        create(document) {
+          const mutation = {
+            create: Object.assign({id: documentId}, document)
+          }
+          bufferedDocument.add(new Mutation({mutations: [mutation]}))
+        },
+        delete() {
+          bufferedDocument.add(new Mutation({mutations: [{delete: {id: documentId}}]}))
+        },
+        commit() {
+          return new Observable(observer => {
+            // todo: connect observable with request from bufferedDocument.commit somehow
+            bufferedDocument.commit()
+            observer.next()
+            observer.complete()
+          })
+        }
+      }
+    })
+    .share()
+
+  let current
+  function getCurrent() {
+    if (current) {
+      return Observable.of(current)
     }
-
-    _bufferedDocument.onMutation = ({mutation, remote}) => {
-      events.publish({
-        type: 'mutate',
-        document: _bufferedDocument.LOCAL,
-        mutations: mutation.mutations,
-        origin: remote ? 'remote' : 'local'
-      })
-    }
-
-    _bufferedDocument.commitHandler = opts => {
-      const payload = opts.mutation.params
-
-      // TODO:
-      // right now the BufferedDocument just commits fire-and-forget-ish
-      // We should be able to handle failures and retry here
-
-      return server.mutate(omit(payload, 'resultRev'))
-        .subscribe({
-          next: opts.success,
-          error: opts.failure
-        })
-    }
-    whenBufferedDocumentReady.resolve()
-  }
-
-  function onMutation(event) {
-    _bufferedDocument.arrive(new Mutation(event))
+    return bufferedDocs$.first().do(next => {
+      current = next
+    })
   }
 
   return {
-    events: new Observable(observer => {
-      withBufferedDocument(bufferedDocument => {
-        observer.next({type: 'snapshot', document: bufferedDocument.LOCAL})
-        events.subscribe(ev => observer.next(ev))
-      })
-    }),
+    events: getCurrent().mergeMap(bufferedDoc => bufferedDoc.events),
     patch(patches) {
-      const mutations = patches
-        .map(patch => Object.assign({}, patch, {id: documentId}))
-        .map(patch => ({patch: patch}))
-
-      withBufferedDocument(bufferedDocument => {
-        bufferedDocument.add(new Mutation({mutations: mutations}))
-      })
+      getCurrent().subscribe(bufferedDoc => bufferedDoc.patch(patches))
     },
     create(document) {
-      const mutation = {
-        create: Object.assign({id: documentId}, document)
-      }
-      withBufferedDocument(bufferedDocument => {
-        bufferedDocument.add(new Mutation({mutations: [mutation]}))
-      })
+      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.create(document))
     },
     delete() {
-      withBufferedDocument(bufferedDocument => {
-        bufferedDocument.add(new Mutation({mutations: [{delete: {id: documentId}}]}))
-      })
+      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.delete())
     },
     commit() {
-      return new Observable(observer => {
-        withBufferedDocument(bufferedDocument => {
-          // todo: connect with bufferedDocument.commit
-          bufferedDocument.commit()
-          observer.next()
-          observer.complete()
-        })
-      })
+      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.commit())
     }
   }
 }
