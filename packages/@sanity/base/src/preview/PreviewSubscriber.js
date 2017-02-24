@@ -6,6 +6,7 @@ import resize$ from './streams/resize'
 import scroll$ from './streams/scroll'
 import orientationChange$ from './streams/orientationChange'
 import visibility$ from './streams/visibilityChange'
+import Observable from '@sanity/observable'
 
 function contains(element, viewport) {
   const rect = element.getBoundingClientRect()
@@ -66,34 +67,33 @@ export default class PreviewSubscriber extends React.PureComponent {
   subscribe(value, type) {
     this.unsubscribe()
 
+    const domNode = ReactDOM.findDOMNode(this)
     const elementVisibility$ = viewport$
-      .map(viewport => contains(ReactDOM.findDOMNode(this), viewport))
+      .map(viewport => contains(domNode, viewport))
+
+    const activate$ = visibility$
+      .switchMap(() => elementVisibility$, (tabVisibility, elementVisibility) => [tabVisibility, elementVisibility])
+      .map(([tabVisibility, elementVisibility]) =>
+        tabVisibility && elementVisibility
+      )
       .share()
 
-    const tabVisibility$ = visibility$.share()
+    const observe$ = observeForPreview(value, type)
 
-    const activateTab$ = tabVisibility$.filter(Boolean)
-    const deactivateTab$ = tabVisibility$.filter(visible => !visible)
-
-    const activateElement$ = elementVisibility$.filter(Boolean)
-    const deActivateElement$ = elementVisibility$.filter(visible => !visible)
-
-    this.subscription = activateTab$
-      .switchMap(() =>
-        activateElement$
-          .switchMap(() =>
-            observeForPreview(value, type)
-              .takeUntil(deActivateElement$.do(() => this.setLive(false)))
-          )
-          .takeUntil(deactivateTab$.do(() => this.setLive(false)))
-      )
+    this.subscription = activate$
+      .distinctUntilChanged()
+      .do(this.setLive)
+      .filter(Boolean)
+      .switchMap(() => observe$)
       .subscribe(snapshot => {
-        this.setState({isLive: true, snapshot})
+        if (snapshot) {
+          this.setState({snapshot})
+        }
       })
   }
 
   setLive = isLive => {
-    this.setState({isLive})
+    this.setState({isLive: isLive})
   }
 
   render() {

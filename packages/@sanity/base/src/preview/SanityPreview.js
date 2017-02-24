@@ -41,7 +41,7 @@ export default class SanityPreview extends React.PureComponent {
         {
           ({snapshot, isLive}) => {
             const preview = (
-              <PreviewComponent item={prepareForPreview(snapshot, type)} isPlaceholder={!snapshot && !isLive} />
+              <PreviewComponent item={prepareForPreview(snapshot, type)} isPlaceholder={!snapshot} />
             )
             return DEBUG ? (
               <div>

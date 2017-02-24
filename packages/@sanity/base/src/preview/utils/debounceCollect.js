@@ -7,26 +7,37 @@ import Observable from '@sanity/observable'
 export default function debounceCollect(fn, wait) {
   let timer
   let pendingArgs = []
-  let observable = null
-  let observer = null
+  let observers = []
   return function (...args) {
-    const index = pendingArgs.push(args) - 1
-    if (!observable) {
-      observable = new Observable(obs => {
-        observer = obs
-      }).share()
-    }
+    const observable = new Observable(obs => {
+      const index = pendingArgs.push(args) - 1
+      observers[index] = obs
+      return () => {
+        observers[index] = null
+      }
+    })
+
     clearTimeout(timer)
     timer = setTimeout(flush, wait)
-    return observable.map(value => value[index])
+    return observable
   }
 
   function flush() {
     const _args = pendingArgs
-    const _observer = observer
+    const _observers = observers
     pendingArgs = []
-    observer = null
-    observable = null
-    fn(_args).subscribe(_observer)
+    observers = []
+
+    const observerCount = _observers.reduce((len, observer) => (observer ? len + 1 : len), 0)
+    if (observerCount === 0) {
+      return
+    }
+    fn(_args).subscribe(results => {
+      results.forEach((result, i) => {
+        if (_observers[i]) {
+          _observers[i].next(results[i])
+        }
+      })
+    })
   }
 }
