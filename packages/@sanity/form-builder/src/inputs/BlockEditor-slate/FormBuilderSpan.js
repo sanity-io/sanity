@@ -8,9 +8,6 @@ import RenderField from '../Object/RenderField'
 import styles from './styles/FormBuilderSpan.css'
 import arrify from 'arrify'
 
-let clickCounter = 0
-let isMarkingText = false
-
 export default class FormBuilderSpan extends React.Component {
   static propTypes = {
     type: PropTypes.object,
@@ -22,6 +19,9 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   state = {isFocused: false, isEditing: false}
+  clickCounter = 0
+  isMarkingText = false
+
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextState.isEditing !== this.state.isEditing
@@ -83,18 +83,18 @@ export default class FormBuilderSpan extends React.Component {
   // Open dialog when user clicks the node,
   // but support double clicks, and mark text as normal
   handleMouseDown = () => {
-    isMarkingText = true
+    this.isMarkingText = true
     setTimeout(() => {
-      if (clickCounter === 1 && !isMarkingText) {
+      if (this.clickCounter === 1 && !this.isMarkingText) {
         this.setState({isEditing: true})
       }
-      clickCounter = 0
+      this.clickCounter = 0
     }, 350)
-    clickCounter++
+    this.clickCounter++
   }
 
   handleMouseUp = () => {
-    isMarkingText = false
+    this.isMarkingText = false
   }
 
   handleReset = () => {
