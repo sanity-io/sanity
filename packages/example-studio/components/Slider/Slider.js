@@ -6,7 +6,7 @@ const set = value => ({type: 'set', value})
 const unset = () => ({type: 'unset'})
 const createPatch = value => ({patch: value === '' ? unset() : set(Number(value))})
 
-export default class Slider {
+export default class Slider extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
       title: PropTypes.string
