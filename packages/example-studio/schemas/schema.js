@@ -66,6 +66,15 @@ export default createSchema({
           required: true
         },
         {
+          name: 'rating',
+          title: 'Rating',
+          type: 'number',
+          options: {
+            range: {min: 0, max: 1, step: 0.2}
+          },
+          required: true
+        },
+        {
           name: 'mainImage',
           title: 'Main image',
           type: 'image',
