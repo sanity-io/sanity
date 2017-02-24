@@ -76,7 +76,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
     const documentEvents = this.document.events.subscribe({
       next: this.handleDocumentEvent,
-      error: this.handleDocumentError
+      // error: this.handleDocumentError
     })
 
     this.subscriptions = [documentEvents]
@@ -102,7 +102,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         })
         break
       }
-      case 'mutate': {
+      case 'mutation': {
         this.handleIncomingMutationEvent(event)
         break
       }
