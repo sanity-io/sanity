@@ -28,9 +28,16 @@ export default class FormBuilderBlock extends React.Component {
     const selection = nextProps.state.selection
     if (selection !== this.props.state.selection) {
       const isFocused = selection.hasFocusIn(node)
-      const isSelected = nextProps.state.blocks.find(block => block.key === node.key)
-      this.setState({...{isFocused}, ...{isSelected}})
+      this.setState({isFocused})
     }
+  }
+
+  componentDidMount() {
+    this.addSelectionHandler()
+  }
+
+  componentWillUnmount() {
+    this.removeSelectionHandler()
   }
 
   handleChange = event => {
@@ -47,11 +54,21 @@ export default class FormBuilderBlock extends React.Component {
 
   handleDragStart = event => {
     const {editor} = this.props
-    this.setState({isDragging: true})
-    event.dataTransfer.effectAllowed = 'none'
-    event.dataTransfer.setData('text/plain', '')
     this._editorNode = ReactDOM.findDOMNode(editor)
+    this.setState({isDragging: true})
     this.addDragHandlers()
+    const element = ReactDOM.findDOMNode(this.previewContainer)
+    event.dataTransfer.setData('text/plain', event.target.id)
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setDragImage(element, (element.clientWidth / 2), -10)
+  }
+
+  addSelectionHandler() {
+    document.addEventListener('selectionchange', this.handleSelectionChange)
+  }
+
+  removeSelectionHandler() {
+    document.removeEventListener('selectionchange', this.handleSelectionChange)
   }
 
   addDragHandlers() {
@@ -60,8 +77,15 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   removeDragHandlers() {
-    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
+    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+  }
+
+  handleSelectionChange = event => {
+    const selection = document.getSelection()
+    const isSelected = selection.containsNode
+        && selection.containsNode(this.formBuilderBlock)
+    this.setState({isSelected})
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -124,7 +148,6 @@ export default class FormBuilderBlock extends React.Component {
         this.showBlockDragMarker('after', domNode)
       }
     }
-
     this._dropTarget = {node: node, isAtStart: rangeIsAtStart, offset: rangeOffset}
   }
 
@@ -192,6 +215,14 @@ export default class FormBuilderBlock extends React.Component {
     )
   }
 
+  refFormBuilderBlock = formBuilderBlock => {
+    this.formBuilderBlock = formBuilderBlock
+  }
+
+  refPreview = previewContainer => {
+    this.previewContainer = previewContainer
+  }
+
   renderInput() {
     const {type} = this.props
     return (
@@ -240,9 +271,14 @@ export default class FormBuilderBlock extends React.Component {
         onDragEnd={this.handleDragEnd}
         onDragOver={this.handleDragOver}
         draggable
+        ref={this.refFormBuilderBlock}
         className={className}
       >
-        <span className={styles.previewContainer} onClick={this.handleToggleEdit}>
+        <span
+          ref={this.refPreview}
+          className={styles.previewContainer}
+          onClick={this.handleToggleEdit}
+        >
           {this.renderPreview()}
         </span>
 

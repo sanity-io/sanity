@@ -7,6 +7,7 @@
   padding: 1em 0em;
 }
 
+
 .previewContainer {
   display: block;
   cursor: move;
@@ -35,7 +36,7 @@
 }
 
 .selected > .previewContainer {
-  background-color: var(--form-builder-block-background-selected)
+  background-color: var(--form-builder-block-background-selected);
 }
 
 .editBlockContainer {
