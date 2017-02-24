@@ -1,6 +1,7 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import {SlateInput} from '@sanity/form-builder'
 import blockArray from './block-array'
+import moment from 'moment'
 
 // Example of a custom slugify function that
 // makes a slug-string and prefixes it with something from the
@@ -39,7 +40,20 @@ export default createSchema({
       type: 'object',
       title: 'Blogpost',
       preview: {
-        select: {title: 'title', subtitle: 'lead', imageUrl: 'mainImage.asset.url'}
+        select: {
+          title: 'title',
+          createdAt: '_createdAt',
+          lead: 'lead',
+          imageUrl: 'mainImage.asset.url',
+          author: 'authorRef.name'
+        },
+        prepare(value) {
+          const timeSince = moment(value.createdAt).fromNow()
+          return Object.assign({}, value, {
+            subtitle: value.author ? `By ${value.author}, ${timeSince}` : timeSince,
+            description: value.lead
+          })
+        }
       },
       fields: [
         {
@@ -312,7 +326,7 @@ export default createSchema({
         },
         {
           name: 'authorRef',
-          title: 'Author reference',
+          title: 'Author',
           type: 'reference',
           to: {
             type: 'author'
@@ -325,10 +339,13 @@ export default createSchema({
       name: 'author',
       type: 'object',
       title: 'Author',
+      preview: {
+        select: {title: 'name'}
+      },
       fields: [
         {
           name: 'name',
-          title: 'Title',
+          title: 'Name',
           type: 'string'
         },
         {
