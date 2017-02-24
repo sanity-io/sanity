@@ -6,17 +6,16 @@ import {uniq, flatten, compact} from 'lodash'
 
 import {observeForPreview, prepareForPreview, resolveRefType} from 'part:@sanity/base/preview'
 
-import Observable from '@sanity/observable'
-
 export function observeReferenceForPreview(value, type) {
-  return Observable.from(resolveRefType(value, type))
+  return resolveRefType(value, type)
     .mergeMap(refType => observeForPreview(value, refType))
 }
 
 export function valueToString(value, referenceType) {
   return observeReferenceForPreview(value, referenceType)
+    .map(unprefixType)
     .map(previewValue => {
-      const memberType = referenceType.to.find(ofType => ofType.type.name === previewValue._type)
+      const memberType = referenceType.to.find(ofType => ofType.name === previewValue._type)
       return prepareForPreview(previewValue, memberType).title
     })
 }
