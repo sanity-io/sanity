@@ -29,7 +29,6 @@ export default function intializeSlatePlugins(blockEditor) {
     formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
     // Key handling
-    onBackSpace(SLATE_DEFAULT_STYLE),
     onEnterInListItem(SLATE_DEFAULT_STYLE, blockEditor.refreshCSS),
     textBlockOnEnterKey(SLATE_DEFAULT_STYLE),
 
