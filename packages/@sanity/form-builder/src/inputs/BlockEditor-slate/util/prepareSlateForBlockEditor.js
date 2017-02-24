@@ -1,4 +1,5 @@
 import React from 'react'
+import {Block} from 'slate'
 import createBlockNode from '../createBlockNode'
 import createSpanNode from '../createSpanNode'
 import mapToObject from './mapToObject'
@@ -108,7 +109,27 @@ export default function prepareSlateForBlockEditor(blockEditor) {
     },
     marks: mapToObject(allowedMarks, mark => {
       return [mark, Mark]
-    })
+    }),
+    rules: [
+      // Rule to insert a default block when document is empty
+      {
+        match: node => {
+          return node.kind === 'document'
+        },
+        validate: document => {
+          return document.nodes.size ? null : true
+        },
+        normalize: (transform, document) => {
+          const block = Block.create({
+            type: 'contentBlock',
+            data: {style: SLATE_DEFAULT_STYLE}
+          })
+          transform
+            .insertNodeByKey(document.key, 0, block)
+            .focus()
+        }
+      }
+    ]
   }
   return {
     listItems: listItems,
