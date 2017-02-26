@@ -5,8 +5,7 @@ import formBuilderNodeOnPaste from '../plugins/formBuilderNodeOnPaste'
 import onModKeySetMarkCombos from '../plugins/onModKeySetMarkCombos'
 import onEnterInListItem from '../plugins/onEnterInListItem'
 import textBlockOnEnterKey from '../plugins/textBlockOnEnterKey'
-import onPasteHtml from '../plugins/onPasteHtml'
-import onBackSpace from '../plugins/onBackSpace'
+import editorOnPasteHtml from '../plugins/editorOnPasteHtml'
 
 import {SLATE_DEFAULT_STYLE} from '../constants'
 
@@ -25,7 +24,7 @@ export default function intializeSlatePlugins(blockEditor) {
 
     // Copy paste
     // TODO: wire up this when spanBlocks are ready
-    onPasteHtml(blockEditor),
+    editorOnPasteHtml(blockEditor),
     formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
     // Key handling
