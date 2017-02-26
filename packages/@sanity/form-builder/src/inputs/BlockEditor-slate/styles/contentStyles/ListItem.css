@@ -1,14 +1,10 @@
 .root {
-  text-indent: 2em;
-
+  margin: 0;
+  width: auto;
   /* Last 1.1 is important for the cursor to show properly
      because of the &:before content-rules
   */
-  padding: 0em 0em 1em 1.1em;
-
-  display: table;
-  margin: 0;
-
+  padding: 0em 0em 0.5em 1.1em;
 }
 
 .root > * {
@@ -16,6 +12,7 @@
   margin: 0 0 1em 0;
   padding: 0;
   @nest &:before {
+    min-width: 2em;
     display: table-cell;
   }
 }
@@ -32,7 +29,6 @@
 .bullet > * {
   @nest &:before {
     content: '\25CF ';
-    min-width: 2em;
   }
 }
 
@@ -46,7 +42,6 @@
 
 .number > * {
   @nest &:before {
-    min-width: 2em;
     content: counter(listItem) ". ";
   }
 }
