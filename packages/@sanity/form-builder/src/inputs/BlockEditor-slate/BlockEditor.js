@@ -14,6 +14,7 @@ import {openSpanDialog} from './util/spanHelpers'
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
 
+
 export default class BlockEditor extends React.Component {
 
   static propTypes = {
@@ -225,7 +226,6 @@ export default class BlockEditor extends React.Component {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
     const customTypes = type.of.filter(memberType => memberType.name !== 'block')
-
     return (
       <FormField
         label={type.title}

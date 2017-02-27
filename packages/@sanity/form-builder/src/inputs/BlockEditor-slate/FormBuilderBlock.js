@@ -19,7 +19,13 @@ export default class FormBuilderBlock extends React.Component {
     attributes: PropTypes.object
   }
 
-  state = {isSelected: false, isFocused: false, isEditing: false, isDragging: false}
+  state = {
+    isSelected: false,
+    isFocused: false,
+    isEditing: false,
+    isDragging: false
+  }
+
   _dropTarget = null
   _editorNode = null
 
@@ -55,8 +61,10 @@ export default class FormBuilderBlock extends React.Component {
   handleDragStart = event => {
     const {editor} = this.props
     this._editorNode = ReactDOM.findDOMNode(editor)
+
     this.setState({isDragging: true})
     this.addDragHandlers()
+
     const element = ReactDOM.findDOMNode(this.previewContainer)
     event.dataTransfer.setData('text/plain', event.target.id)
     event.dataTransfer.effectAllowed = 'move'
@@ -165,12 +173,14 @@ export default class FormBuilderBlock extends React.Component {
       return
     }
 
-    let next = this.applyDropTargetBlock(state.transform().removeNodeByKey(node.key), target)
+    let transform
+    transform = state.transform().removeNodeByKey(node.key)
+    transform = this.moveToDroptarget(transform, target)
 
     this.resetDropTarget()
 
     // Move cursor and apply
-    next = next.collapseToEndOf(node)
+    const next = transform.collapseToEndOf(node)
       .focus()
       .apply()
 
@@ -181,7 +191,7 @@ export default class FormBuilderBlock extends React.Component {
     event.preventDefault()
   }
 
-  applyDropTargetBlock(transform, target) {
+  moveToDroptarget(transform, target) {
     const {node} = this.props
     let next = transform
     if (target.isAtStart) {
