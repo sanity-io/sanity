@@ -79,7 +79,7 @@ assign(Transaction.prototype, {
       )
     }
 
-    return this.client.mutate(this.serialize(), options || defaultMutateOptions)
+    return this.client.mutate(this.serialize(), assign({}, defaultMutateOptions, options || {}))
   },
 
   reset() {
