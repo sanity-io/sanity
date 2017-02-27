@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-import {FormattedMessage} from 'part:@sanity/base/locale/intl'
 import client from 'part:@sanity/base/client'
 import cancelWrap from './cancelWrap'
 import styles from './styles/LoginDialog.css'
@@ -77,7 +76,7 @@ export default class LoginDialog extends React.Component {
 
         <div className={styles.inner}>
           <h2 className={styles.headline}>
-            <FormattedMessage id="loginWithProvider" />
+            Choose login provider
           </h2>
           <ul className={styles.providers}>
             {this.state.providers.map(provider => {

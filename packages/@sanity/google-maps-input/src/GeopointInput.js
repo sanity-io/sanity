@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import config from 'config:@sanity/google-maps-input'
 import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
 import GeopointSelect from './GeopointSelect'
-import {intlShape} from 'part:@sanity/base/locale/intl'
 import {formatMessage} from 'part:@sanity/base/locale/formatters'
 //import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
@@ -10,22 +9,33 @@ import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import styles from '../styles/GeopointInput.css'
 
+
+const getLocale = context => {
+  const intl = context.intl || {}
+  return (
+    intl.locale
+    || (typeof window !== 'undefined' && window.navigator.language)
+    || 'en'
+  )
+}
+
 class GeopointInput extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    title: PropTypes.string,
-    description: PropTypes.string,
     value: PropTypes.shape({
       lat: PropTypes.number,
       lng: PropTypes.number
     }),
     type: PropTypes.shape({
-      title: PropTypes.string.isRequired
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string,
     })
   };
 
   static contextTypes = {
-    intl: intlShape
+    intl: PropTypes.shape({
+      locale: PropTypes.string
+    })
   };
 
   constructor() {
@@ -121,7 +131,7 @@ class GeopointInput extends React.Component {
               onChange={this.props.onChange}
               defaultLocation={config.defaultLocation}
               defaultZoom={config.defaultZoom}
-              locale={this.context.intl.locale}
+              locale={getLocale(this.context)}
               component={GeopointSelect}
             />
 

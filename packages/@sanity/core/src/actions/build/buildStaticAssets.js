@@ -84,7 +84,7 @@ export default async (args, context) => {
     const indexStart = Date.now()
     spin = output.spinner('Building index document').start()
     const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap}, {
-      scripts: ['https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en', 'vendor.bundle.js', 'app.bundle.js'].map(asset => {
+      scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
         const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
         return {
           path: assetPath,
