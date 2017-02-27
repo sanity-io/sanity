@@ -25,10 +25,12 @@ export default function createBlockEditorOperations(blockEditor) {
 
     createFormBuilderSpan() {
       const state = getState()
+      const {startOffset} = state
 
       const spanField = getSpanType(blockEditor.props.type)
 
       let transform
+
       if (state.isExpanded) {
         transform = state.transform()
       } else {
@@ -39,12 +41,18 @@ export default function createBlockEditorOperations(blockEditor) {
         }
       }
 
-      const nextState = transform
+      transform = transform
         .unwrapInline(SLATE_SPAN_TYPE)
         .wrapInline(span)
-        .focus()
-        .apply()
 
+      // There is a bug (in Slate?) where if you
+      // select the first word in a block and try to
+      // make a link of it, at this point, it says
+      // that the range is not in the document
+      // Move the selection back to the initial selection
+      if (startOffset === 0 && state.isExpanded) {
+        transform = transform.moveTo(state.selection)
+      }
 
       // IDEA: get selected text and set it on the data
       // could be used to searching etc in the dialogue
@@ -66,9 +74,8 @@ export default function createBlockEditorOperations(blockEditor) {
       const spanValue = blockEditor.context.formBuilder
         .createFieldValue(undefined, spanField.type)
 
-
       // Update the span with new data
-      const finalState = nextState.transform()
+      const finalState = transform
         .setInline({data: {value: spanValue}})
         .apply()
 
