@@ -164,11 +164,8 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   renderPreview() {
-    const value = this.getValue()
-    if (!value) {
-      return null
-    }
     if (this.shouldPreview()) {
+      const value = this.getValue()
       return (
         <Preview
           value={value.serialize()}
