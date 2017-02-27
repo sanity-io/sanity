@@ -43,13 +43,14 @@ assign(AssetsClient.prototype, {
       docId = type._id
     }
 
+    const dataset = validators.hasDataset(this.client.clientConfig)
     validators.validateAssetType(assetType)
     validators.validateDocumentId('delete', docId)
 
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     return this.client.request({
       method: 'DELETE',
-      url: `/assets/${assetEndpoint}/${docId}`
+      url: `/assets/${assetEndpoint}/${dataset}/${docId}`
     })
   }
 })

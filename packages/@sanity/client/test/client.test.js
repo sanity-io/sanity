@@ -1115,16 +1115,16 @@ test('uploads images and can cast to promise', t => {
 })
 
 test('delete assets', t => {
-  nock(projectHost()).delete('/v1/assets/images/foo.bar').reply(200, {some: 'prop'})
+  nock(projectHost()).delete('/v1/assets/images/foo/image.abc123').reply(200, {some: 'prop'})
 
-  getClient().assets.delete('image', 'foo.bar').then(body => {
+  getClient().assets.delete('image', 'image.abc123').then(body => {
     t.equal(body.some, 'prop')
     t.end()
   }, ifError(t))
 })
 
 test('delete assets given whole asset document', t => {
-  nock(projectHost()).delete('/v1/assets/images/moo987').reply(200, {some: 'prop'})
+  nock(projectHost()).delete('/v1/assets/images/foo/moo987').reply(200, {some: 'prop'})
 
   const doc = {_id: 'moo987', _type: 'sanity.imageAsset'}
   getClient().assets.delete(doc).then(body => {
