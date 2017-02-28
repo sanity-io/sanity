@@ -27,4 +27,6 @@ options.timeStep || 15
 options.inputUtc || false
 options.inputDate || true
 options.inputTime || true
+options.placeholderDate || moment().format(options.dateFormat)
+options.placeholderTime || moment().format(options.timeFormat)
 ```

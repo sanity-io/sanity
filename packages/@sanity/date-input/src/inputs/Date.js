@@ -71,6 +71,8 @@ export default class DateInput extends React.PureComponent {
     options.calendarTodayLabel = options.calendarTodayLabel || 'Today'
     options.inputDate = options.hasOwnProperty('inputDate') ? options.inputDate : true
     options.inputTime = options.hasOwnProperty('inputTime') ? options.inputTime : true
+    options.placeholderDate = options.placeholderDate || moment().format(options.dateFormat)
+    options.placeholderTime = options.placeholderTime || moment().format(options.timeFormat)
     return options
   }
 
@@ -97,7 +99,7 @@ export default class DateInput extends React.PureComponent {
         }
       },
       hideOutsideDateTimes: true,
-      timeStep: options.timeStep
+      timeStep: options.timeStep,
     }
 
     return (
@@ -108,6 +110,7 @@ export default class DateInput extends React.PureComponent {
               date={editableMoment}
               format={options.dateFormat}
               onChangeDateTime={this.handleChange}
+              placeholder={options.placeholderDate}
               {...kronosProps}
             />
           )}
@@ -116,6 +119,7 @@ export default class DateInput extends React.PureComponent {
               time={editableMoment}
               format={options.timeFormat}
               onChangeDateTime={this.handleChange}
+              placeholder={options.placeholderTime}
               {...kronosProps}
             />
           )}
