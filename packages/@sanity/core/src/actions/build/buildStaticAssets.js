@@ -134,7 +134,7 @@ export default async (args, context) => {
     await fsp.copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
   } catch (err) {
     spin.fail()
-    output.error(err)
+    throw err
   }
 
   return bundle
