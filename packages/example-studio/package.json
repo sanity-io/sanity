@@ -23,7 +23,7 @@
     "@sanity/form-builder": "^0.101.17",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "sanity-plugin-vision": "^1.0.6"
+    "sanity-plugin-vision": "^1.0.7"
   },
   "devDependencies": {}
 }

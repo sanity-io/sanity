@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@sanity/base@^0.101.12":
-  version "0.101.12"
-  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.101.12.tgz#fb6f73f0406acfe93c936fc8b4d7626492026a7c"
+"@sanity/base@^0.101.17":
+  version "0.101.17"
+  resolved "https://registry.yarnpkg.com/@sanity/base/-/base-0.101.17.tgz#4416c558e8d43d5e13802669ad1662f0c81b8bce"
   dependencies:
     "@sanity/client" "^0.101.12"
     "@sanity/document-store" "^0.101.0"
@@ -45,9 +45,9 @@
     in-publish "^2.0.0"
     object-assign "^4.1.0"
 
-"@sanity/components@^0.101.12":
-  version "0.101.12"
-  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.101.12.tgz#cf3d3e953ca381715ece51eb8b7091e94abbdf97"
+"@sanity/components@^0.101.17":
+  version "0.101.17"
+  resolved "https://registry.yarnpkg.com/@sanity/components/-/components-0.101.17.tgz#c2d9da9374e7d702ce3c6e355eff18e514cf9787"
   dependencies:
     "@sanity/date-input" "^0.100.15"
     "@sanity/imagetool" "^0.101.6"
@@ -128,9 +128,9 @@
     postcss-simple-extend "^1.0.0"
     react-datepicker "^0.34.0"
 
-"@sanity/default-layout@^0.101.14":
-  version "0.101.14"
-  resolved "https://registry.yarnpkg.com/@sanity/default-layout/-/default-layout-0.101.14.tgz#61b51d58f1fdfca94eddd340af2b625b69c067df"
+"@sanity/default-layout@^0.101.17":
+  version "0.101.17"
+  resolved "https://registry.yarnpkg.com/@sanity/default-layout/-/default-layout-0.101.17.tgz#f6a2425ce7c4d1172e890ae1ba478399340b5b39"
   dependencies:
     react-click-outside "^2.2.0"
 
@@ -140,12 +140,12 @@
   dependencies:
     in-publish "^2.0.0"
 
-"@sanity/desk-tool@^0.101.14":
-  version "0.101.14"
-  resolved "https://registry.yarnpkg.com/@sanity/desk-tool/-/desk-tool-0.101.14.tgz#471cc9964369d492232b08bd48dbb911126bc5d3"
+"@sanity/desk-tool@^0.101.17":
+  version "0.101.17"
+  resolved "https://registry.yarnpkg.com/@sanity/desk-tool/-/desk-tool-0.101.17.tgz#80028ef2abd45b9ba0cf974aac735a2954ec0ea3"
   dependencies:
     "@sanity/data-aspects" "^0.100.11"
-    "@sanity/form-builder" "^0.101.14"
+    "@sanity/form-builder" "^0.101.17"
     "@sanity/mutator" "^0.100.3"
     element-resize-detector "^1.1.10"
     hashlru "^1.0.6"
@@ -177,9 +177,9 @@
     loader-utils "^0.2.3"
     webpack-sources "^0.1.0"
 
-"@sanity/form-builder@^0.101.14":
-  version "0.101.14"
-  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.101.14.tgz#a29b20674b6e4d75f127f0ca1a1088ab074ba218"
+"@sanity/form-builder@^0.101.17":
+  version "0.101.17"
+  resolved "https://registry.yarnpkg.com/@sanity/form-builder/-/form-builder-0.101.17.tgz#2e5d385224b69e3bf82ea34b044ac5b93db6f510"
   dependencies:
     "@sanity/imagetool" "^0.101.6"
     "@sanity/mutator" "^0.100.3"
@@ -199,7 +199,7 @@
     react-portal "^3.0.0"
     react-sortable-hoc "0.4.5"
     shallow-equals "0.0.0"
-    slate "^0.16.17"
+    slate "^0.16.28"
     slate-insert-block-on-enter "0.0.2"
     slate-soft-break "^0.3.0"
     slugify "^1.1.0"
@@ -3348,7 +3348,7 @@ minimist@^1.2.0:
   dependencies:
     minimist "0.0.8"
 
-moment@^2.13.0, moment@^2.15.2, moment@^2.16.0:
+moment@^2.13.0, moment@^2.15.2, moment@^2.17.1:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
 
@@ -4369,7 +4369,7 @@ query-string@^3.0.0:
   dependencies:
     strict-uri-encode "^1.0.0"
 
-query-string@^4.1.0, query-string@^4.2.3:
+query-string@^4.1.0, query-string@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-4.3.2.tgz#ec0fd765f58a50031a3968c2431386f8947a5cdd"
   dependencies:
@@ -4523,17 +4523,9 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-sortable-hoc@0.4.5:
+react-sortable-hoc@0.4.5, react-sortable-hoc@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.5.tgz#8b60c6a42cfb886771cf28ec586efb0442d003fc"
-  dependencies:
-    babel-runtime "^6.11.6"
-    invariant "^2.2.1"
-    lodash "^4.12.0"
-
-react-sortable-hoc@^0.4.5:
-  version "0.4.12"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.4.12.tgz#71ae7dbb3f2bdeb6c852d398851ca178620622ec"
   dependencies:
     babel-runtime "^6.11.6"
     invariant "^2.2.1"
@@ -4831,14 +4823,14 @@ same-origin@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/same-origin/-/same-origin-0.1.1.tgz#c2287d3192577df517acbbd6d1451a9c3c3914f5"
 
-sanity-plugin-vision@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/sanity-plugin-vision/-/sanity-plugin-vision-1.0.6.tgz#7dc4d8bd8e3b27bd6c99c9fabe30012f05f8a626"
+sanity-plugin-vision@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/sanity-plugin-vision/-/sanity-plugin-vision-1.0.7.tgz#00ce9597e9677cebfff425e8ed51ec4e01a9db30"
   dependencies:
     classnames "^2.2.5"
     in-publish "^2.0.0"
-    moment "^2.16.0"
-    query-string "^4.2.3"
+    moment "^2.17.1"
+    query-string "^4.3.2"
     react-json-inspector "^7.0.0"
     react-spinner "^0.2.6"
     react-textarea-autosize "^4.0.5"
@@ -4942,9 +4934,9 @@ slate-soft-break@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/slate-soft-break/-/slate-soft-break-0.3.0.tgz#3d28dea9e0aa4783ddcea785ff5db7277214d65f"
 
-slate@^0.16.17:
-  version "0.16.18"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.18.tgz#ec69dd6988ad5c1413b4f9b0cb0f3f7a753fcbd0"
+slate@^0.16.28:
+  version "0.16.28"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.16.28.tgz#bde4aaa99a461c9ef30c28515fdc7207e114a594"
   dependencies:
     cheerio "^0.22.0"
     debug "^2.3.2"
@@ -4955,6 +4947,7 @@ slate@^0.16.17:
     immutable "^3.8.1"
     is-empty "^1.0.0"
     keycode "^2.1.2"
+    react-portal "^3.0.0"
     type-of "^2.0.1"
 
 slice-ansi@0.0.4:
