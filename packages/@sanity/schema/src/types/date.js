@@ -6,7 +6,7 @@ const DATE_CORE = {
   name: 'date',
   title: 'Date',
   type: null,
-  jsonType: 'string'
+  jsonType: 'object'
 }
 
 export const DateType = {

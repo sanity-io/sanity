@@ -80,6 +80,21 @@ export default createSchema({
           required: true
         },
         {
+          name: 'publishAt',
+          title: 'Publish at',
+          type: 'date',
+          description: 'Blogpost goes live at this date/time',
+          options: {
+            dateFormat: 'YYYY-MM-DD',
+            timeFormat: 'HH:mm',
+            timeStep: 60,
+            calendarTodayLabel: 'Today',
+            inputUtc: false,
+            inputDate: true,
+            inputTime: true
+          }
+        },
+        {
           name: 'rating',
           title: 'Rating',
           type: 'number',

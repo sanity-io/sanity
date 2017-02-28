@@ -16,6 +16,7 @@
     "@sanity/base": "^0.101.17",
     "@sanity/components": "^0.101.17",
     "@sanity/core": "^0.101.3",
+    "@sanity/date-input": "^0.100.15",
     "@sanity/default-layout": "^0.101.17",
     "@sanity/default-login": "^0.101.6",
     "@sanity/desk-tool": "^0.101.17",

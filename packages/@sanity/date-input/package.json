@@ -17,9 +17,10 @@
   "dependencies": {
     "lodash": "^4.16.0",
     "moment": "^2.13.0",
+    "moment-timezone": "^0.5.11",
     "postcss-cssnext": "^2.7.0",
     "postcss-simple-extend": "^1.0.0",
-    "react-datepicker": "^0.34.0"
+    "react-kronos": "^1.5.2"
   },
   "devDependencies": {
     "@sanity/check": "^0.99.0",
