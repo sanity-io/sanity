@@ -9,10 +9,6 @@
       "name": "part:@sanity/google-maps-input/input/geopoint",
       "implements": "part:@sanity/form-builder/input/geopoint",
       "path": "GeopointInput.js"
-    },
-    {
-      "implements": "part:@sanity/base/locale-messages",
-      "path": "./locale/strings.json"
     }
   ]
 }

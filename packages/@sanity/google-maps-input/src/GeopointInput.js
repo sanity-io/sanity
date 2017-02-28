@@ -2,8 +2,6 @@ import React, {PropTypes} from 'react'
 import config from 'config:@sanity/google-maps-input'
 import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
 import GeopointSelect from './GeopointSelect'
-import {formatMessage} from 'part:@sanity/base/locale/formatters'
-//import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
@@ -103,26 +101,23 @@ class GeopointInput extends React.Component {
 
         <div className={styles.functions}>
           <Button onClick={this.handleToggleModal}>
-            {formatMessage(value
-              ? 'google-maps.button.edit'
-              : 'google-maps.button.setLocation'
-            )}
+            {value ? 'Edit' : 'Set location'}
           </Button>
 
           {value && (
             <Button type="button">
-              {formatMessage('google-maps.button.remove')}
+              Remove
             </Button>
           )}
         </div>
 
         {this.state.modalOpen && (
           <Dialog
-            title={formatMessage('google-maps.placeOnMap')}
+            title="Place on map"
             onClose={this.handleCloseModal}
             onCloseClick={this.handleCloseModal}
             onOpen={this.handleOpenModal}
-            message={formatMessage('google-maps.mapHelpText')}
+            message="Select location by dragging the marker or search for a place"
             isOpen={this.state.modalOpen}
           >
             <GoogleMapsLoadProxy

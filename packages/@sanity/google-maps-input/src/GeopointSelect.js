@@ -1,6 +1,4 @@
 import React, {PropTypes} from 'react'
-import {intlShape} from 'part:@sanity/base/locale/intl'
-import {formatMessage} from 'part:@sanity/base/locale/formatters'
 import styles from '../styles/GeopointSelect.css'
 
 class GeopointSelect extends React.Component {
@@ -10,7 +8,6 @@ class GeopointSelect extends React.Component {
       lat: PropTypes.number,
       lng: PropTypes.number
     }),
-    zoom: PropTypes.number,
     api: PropTypes.shape({
       Map: PropTypes.func.isRequired,
       Circle: PropTypes.func.isRequired,
@@ -23,10 +20,6 @@ class GeopointSelect extends React.Component {
       lng: PropTypes.number
     }),
     defaultZoom: PropTypes.number
-  };
-
-  static contextTypes = {
-    intl: intlShape
   };
 
   static defaultProps = {
@@ -143,7 +136,7 @@ class GeopointSelect extends React.Component {
           <input
             name="place"
             ref={this.assignReference('searchInput')}
-            placeholder={formatMessage('google-maps.searchInputPlaceholder')}
+            placeholder="Search for place or address"
             className={styles.input}
           />
         </div>
