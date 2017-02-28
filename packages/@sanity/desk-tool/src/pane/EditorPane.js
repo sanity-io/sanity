@@ -11,8 +11,10 @@ import dataAspects from '../utils/dataAspects'
 import {throttle, omit} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import PlusIcon from 'part:@sanity/base/plus-icon'
 import styles from './styles/EditorPane.css'
 import {Patcher} from '@sanity/mutator'
+import copyDocument from '../utils/copyDocument'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -227,6 +229,13 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
     this.setState({progress: null, referringDocuments: null})
   }
 
+  handleCreateCopy = () => {
+    documentStore.create(copyDocument(this.state.value.serialize())).subscribe(copied => {
+      const {router} = this.props
+      router.navigate({...router.state, action: 'edit', selectedDocumentId: copied._id})
+    })
+  }
+
   handleRestore = () => {
     const {deleted} = this.state
     this.setState({progress: {kind: 'info', message: 'Restoring…'}})
@@ -272,6 +281,15 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
         <div className={styles.header}>
           <h2 className={styles.typeTitle}>{schemaType.title}</h2>
           <div className={styles.deleteContainer}>
+            <DefaultButton
+              onClick={this.handleCreateCopy}
+              color="primary"
+              kind="secondary"
+              title="Create a copy"
+              icon={PlusIcon}
+            >
+              Create a copy
+            </DefaultButton>
             <DefaultButton
               onClick={this.handleRequestDelete}
               color="danger"
