@@ -201,13 +201,13 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
   handleReferenceResult = event => {
     if (event.documents.length === 0) {
-      this.handleDelete()
+      this.performDelete()
     } else {
       this.setState({referringDocuments: event.documents, deleteInProgress: false})
     }
   }
 
-  handleDelete = () => {
+  performDelete = () => {
     this.setState({progress: {kind: 'info', message: 'Deleting…'}, deleteInProgress: false})
     this.document.delete()
     this.commit()
