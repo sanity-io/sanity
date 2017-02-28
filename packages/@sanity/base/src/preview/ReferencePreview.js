@@ -14,22 +14,33 @@ export default class SanityPreview extends React.PureComponent {
     refType: null
   }
 
-  resolveRefType(value, type) {
-    resolveRefType(value, type).then(refType => {
-      this.setState({
-        refType
-      })
-    })
-  }
-
   componentDidMount() {
     const {type, value} = this.props
-    this.resolveRefType(value, type)
+    this.subscribeRefType(value, type)
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe()
+  }
+
+  subscribeRefType(value, type) {
+    this.unsubscribe()
+    this.subscription = resolveRefType(value, type)
+      .subscribe(refType => {
+        this.setState({refType})
+      })
+  }
+
+  unsubscribe() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+      this.subscription = null
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.type !== nextProps.type || this.props.value !== nextProps.value) {
-      this.resolveRefType(nextProps.value, nextProps.type)
+      this.subscribeRefType(nextProps.value, nextProps.type)
     }
   }
 
