@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "test": "mocha --recursive test/**/*.test.js",
     "posttest": "eslint ."
   },

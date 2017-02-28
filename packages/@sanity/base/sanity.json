@@ -466,6 +466,10 @@
       "description": "Format underlined text icon"
     },
     {
+      "name": "part:@sanity/base/format-code-icon",
+      "description": "Format code text icon"
+    },
+    {
       "name": "part:@sanity/base/fullscreen-icon",
       "description": "Fullscreen icon"
     },
@@ -588,6 +592,10 @@
     {
       "implements": "part:@sanity/base/format-underlined-icon",
       "path": "components/icons/FormatUnderlined.js"
+    },
+    {
+      "implements": "part:@sanity/base/format-code-icon",
+      "path": "components/icons/FormatCode.js"
     },
     {
       "implements": "part:@sanity/base/fullscreen-icon",

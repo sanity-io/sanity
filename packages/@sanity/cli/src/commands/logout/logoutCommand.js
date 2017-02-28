@@ -44,8 +44,8 @@ export default {
         await client.request({uri: '/auth/logout'})
       }
 
-      cfg.del('authType')
-      cfg.del('authToken')
+      cfg.delete('authType')
+      cfg.delete('authToken')
 
       output.print(chalk.green('Logged out'))
     }

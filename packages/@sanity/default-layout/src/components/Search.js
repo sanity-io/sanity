@@ -37,13 +37,7 @@ class Search extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getTopItems()
-  }
-
   handleSearch = q => {
-    const params = {}
-
     if (!client) {
       console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
       return
@@ -60,13 +54,15 @@ class Search extends React.Component {
           )
         )
 
-    const query = `* [(${union(searchableFields).join(', ')}) match "${q}", limit: 10]`
+    const uniqueFields = union(searchableFields)
+    const constraints = uniqueFields.map(field => `${field} match $term`)
+    const query = `*[${constraints.join(' || ')}][0...10]`
 
     this.setState({
       isSearching: true
     })
 
-    client.fetch(query, params)
+    client.fetch(query, {term: q})
       .then(hits => {
         this.setState({
           isSearching: false,
@@ -85,9 +81,9 @@ class Search extends React.Component {
     // We use 3 last edited items until we have logic for most used etc.
 
     // TODO hack until gradient supports 'schemaName.*'
-    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName)
+    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName).map(str => `"${str}"`)
 
-    const query = `(${prefixedTypeNames.join(', ')}) [order: _updatedAt desc, limit: 3]`
+    const query = `*[_type in [${prefixedTypeNames.join(', ')}]] | order(_updatedAt desc) [0...3]`
 
     client.fetch(query, {})
       .then(response => {
@@ -98,6 +94,8 @@ class Search extends React.Component {
   }
 
   handleFocus = () => {
+    this.getTopItems()
+
     this.setState({
       active: true,
       isOpen: true
@@ -112,7 +110,7 @@ class Search extends React.Component {
   handleGoToItem = item => {
     // @TODO Hack for assuming desktool until we have a path resolver
     const unprefixedType = unprefixTypeName(item._type)
-    const id = item._id.split('/').join('.')
+    const id = item._id
     const url = ['/desk', unprefixedType, 'edit', id].join('/')
 
     locationStore.actions.navigate(url, {replace: false})

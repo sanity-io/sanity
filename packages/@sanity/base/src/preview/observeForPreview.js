@@ -1,10 +1,7 @@
-import {get} from 'lodash'
-import createPreview from './createPreview'
-import observePaths from './observePaths'
+import createPreviewObserver from './createPreviewObserver'
+import observeWithPaths from './observeWithPaths'
 
-const pass = v => v
-
-const observe = createPreview(observePaths)
+const observe = createPreviewObserver(observeWithPaths)
 
 export default function observeForPreview(value, type) {
   const selection = type.preview.select
@@ -12,11 +9,4 @@ export default function observeForPreview(value, type) {
   const paths = targetKeys.map(key => selection[key].split('.'))
 
   return observe(value, paths)
-    .map(result => {
-      return targetKeys.reduce((acc, key) => {
-        acc[key] = get(result, selection[key])
-        return acc
-      }, {})
-    })
-    .map(type.preview.prepare || pass)
 }

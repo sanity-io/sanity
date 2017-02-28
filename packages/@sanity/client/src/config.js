@@ -9,11 +9,16 @@ const defaultConfig = exports.defaultConfig = {
 
 exports.initConfig = (config, prevConfig) => {
   const newConfig = assign({}, defaultConfig, prevConfig, config)
-  const projectBased = newConfig.useProjectHostname
+  const gradientMode = newConfig.gradientMode
+  const projectBased = !gradientMode && newConfig.useProjectHostname
 
   if (typeof Promise === 'undefined') {
     // @todo add help url?
     throw new Error('No native `Promise`-implementation found, polyfill needed')
+  }
+
+  if (gradientMode && !newConfig.namespace) {
+    throw new Error('Configuration must contain `namespace` when running in gradient mode')
   }
 
   if (projectBased && !newConfig.projectId) {
@@ -24,8 +29,8 @@ exports.initConfig = (config, prevConfig) => {
     validate.projectId(newConfig.projectId)
   }
 
-  if (newConfig.dataset) {
-    validate.dataset(newConfig.dataset)
+  if (!gradientMode && newConfig.dataset) {
+    validate.dataset(newConfig.dataset, newConfig.gradientMode)
   }
 
   if (newConfig.gradientMode) {

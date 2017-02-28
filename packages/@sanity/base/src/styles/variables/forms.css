@@ -1,4 +1,5 @@
 @import 'part:@sanity/base/theme/variables/gray-colors-style';
+@import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
 
@@ -36,5 +37,10 @@
 
   --clear-cross-color: var(--gray-light);
   --clear-cross-color-hover: var(--brand-danger);
+
+  --form-builder-block-border-color: color(var(--gray-light) alpha(80%));
+  --form-builder-block-border-color-focus: var(--brand-primary);
+  --form-builder-block-background-hover: var(--gray-lighter);
+  --form-builder-block-background-selected: var(--text-selection-color);
 
 }

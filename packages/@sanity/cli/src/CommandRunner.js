@@ -4,7 +4,7 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import cloneDeep from 'lodash/cloneDeep'
 import {loadJson} from '@sanity/util/lib/safeJson'
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import {lazyRequire, reduceConfig} from '@sanity/util'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
@@ -12,6 +12,11 @@ import noSuchCommandText from './util/noSuchCommandText'
 import {generateCommandsDocumentation, generateCommandDocumentation} from './util/generateCommandsDocumentation'
 import defaultCommands from './commands'
 import debug from './debug'
+
+/* eslint-disable no-process-env */
+const sanityEnv = process.env.SANITY_ENV
+const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
+/* eslint-enable no-process-env */
 
 const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
 
@@ -63,7 +68,8 @@ export default class CommandRunner {
     const manifestPath = path.join(options.workDir, 'sanity.json')
     debug(`Reading "${manifestPath}"`)
 
-    const manifest = await loadJson(manifestPath)
+    const baseManifest = await loadJson(manifestPath)
+    const manifest = reduceConfig(baseManifest || {}, environment)
     const apiClient = clientWrapper(manifest, manifestPath)
 
     const context = {

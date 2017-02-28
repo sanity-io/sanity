@@ -12,7 +12,8 @@ import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import baseCommands from './commands'
 
-const isStaging = typeof process.env.SANITY_STAGING !== 'undefined' // eslint-disable-line no-process-env
+const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
+const knownEnvs = ['development', 'staging', 'production']
 
 module.exports = function runCli() {
   updateNotifier({pkg}).notify({defer: false})
@@ -27,8 +28,12 @@ module.exports = function runCli() {
     corePath: getCoreModulePath(workDir)
   }
 
-  if (isStaging) {
-    console.warn(chalk.yellow('[WARN] Running in staging mode\n'))
+  if (sanityEnv !== 'production') {
+    console.warn(chalk.yellow(
+      knownEnvs.includes(sanityEnv)
+        ? `[WARN] Running in ${sanityEnv} environment mode\n`
+        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
+    ))
   }
 
   if (!isInit && workDir !== cwd) {

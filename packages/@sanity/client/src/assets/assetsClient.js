@@ -39,17 +39,18 @@ assign(AssetsClient.prototype, {
 
     // We could be passing an entire asset document instead of an ID
     if (type._type) {
-      assetType = type._type.replace(/^(sanity\.|Asset$)/g, '')
+      assetType = type._type.replace(/(^sanity\.|Asset$)/g, '')
       docId = type._id
     }
 
+    const dataset = validators.hasDataset(this.client.clientConfig)
     validators.validateAssetType(assetType)
     validators.validateDocumentId('delete', docId)
 
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     return this.client.request({
       method: 'DELETE',
-      url: `/assets/${assetEndpoint}/${docId}`
+      url: `/assets/${assetEndpoint}/${dataset}/${docId}`
     })
   }
 })

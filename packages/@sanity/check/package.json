@@ -9,6 +9,7 @@
   "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf lib",
     "prepublish": "in-publish && ./lib/bin.js || not-in-publish",
     "test": "eslint ."
   },
@@ -23,6 +24,9 @@
     "fs-promise": "^0.5.0",
     "in-publish": "^2.0.0",
     "promise-props-recursive": "^1.0.0"
+  },
+   "devDependencies": {
+    "rimraf": "^2.5.4"
   },
   "repository": {
     "type": "git",

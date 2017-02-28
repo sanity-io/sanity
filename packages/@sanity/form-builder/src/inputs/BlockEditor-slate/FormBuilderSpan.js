@@ -19,6 +19,9 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   state = {isFocused: false, isEditing: false}
+  clickCounter = 0
+  isMarkingText = false
+
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextState.isEditing !== this.state.isEditing
@@ -31,11 +34,10 @@ export default class FormBuilderSpan extends React.Component {
     const {state} = nextProps
     const selection = state.selection
     const isFocused = selection.hasFocusIn(node)
-    const rest = {isFocused}
 
     if (selection !== this.props.state.selection) {
       if (!isFocused) {
-        this.setState({isEditing: false, ...rest})
+        this.setState({isEditing: false, ...{isFocused}})
       }
     }
   }
@@ -78,8 +80,21 @@ export default class FormBuilderSpan extends React.Component {
       .removeSpan(this.props.node)
   }
 
-  handleNodeClick = () => {
-    this.setState({isEditing: true})
+  // Open dialog when user clicks the node,
+  // but support double clicks, and mark text as normal
+  handleMouseDown = () => {
+    this.isMarkingText = true
+    setTimeout(() => {
+      if (this.clickCounter === 1 && !this.isMarkingText) {
+        this.setState({isEditing: true})
+      }
+      this.clickCounter = 0
+    }, 350)
+    this.clickCounter++
+  }
+
+  handleMouseUp = () => {
+    this.isMarkingText = false
   }
 
   handleReset = () => {
@@ -149,11 +164,8 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   renderPreview() {
-    const value = this.getValue()
-    if (!value) {
-      return null
-    }
     if (this.shouldPreview()) {
+      const value = this.getValue()
       return (
         <Preview
           value={value.serialize()}
@@ -195,7 +207,8 @@ export default class FormBuilderSpan extends React.Component {
     return (
       <span
         {...attributes}
-        onMouseUp={this.handleNodeClick}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
         className={styles.root}
       >
         {this.props.children}

@@ -2,14 +2,12 @@ import resolveFrom from 'resolve-from'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
-import resolveLatestVersions from '../../util/resolveLatestVersions'
 import createProvisionalUser from '../../actions/user/createProvisionalUser'
 import createProject from '../../actions/project/createProject'
 import login from '../../actions/login/login'
-import versionRanges from '../../versionRanges'
 import promptForDatasetName from './promptForDatasetName'
 import gatherInput from './gatherInput'
-import {bootstrapSanity} from './bootstrap'
+import bootstrapTemplate from './bootstrapTemplate'
 
 export default async function initSanity(args, context) {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
@@ -55,24 +53,20 @@ export default async function initSanity(args, context) {
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
-  // Find latest versions of dependencies
-  const spinner = output.spinner('Resolving latest module versions').start()
-  const dependencies = await resolveLatestVersions(
-    Object.keys(versionRanges.core),
-    {asRange: true}
-  )
-  spinner.succeed()
-
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapSanity(outputPath, {
+  // Build a full set of resolved options
+  const initOptions = {
+    template: 'moviedb',
+    outputDir: outputPath,
     name: sluggedName,
     displayName: displayName,
     dataset: datasetName,
     projectId: projectId,
     provisionalToken: isProvisional && getUserConfig().get('authToken'),
-    dependencies,
     ...answers
-  }, output)
+  }
+
+  // Bootstrap Sanity, creating required project files, manifests etc
+  const template = await bootstrapTemplate(initOptions, context)
 
   // Now for the slow part... installing dependencies
   try {
@@ -95,6 +89,11 @@ export default async function initSanity(args, context) {
     output.print(`\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(outputPath)}" and run "${chalk.cyan('sanity start')}"`)
   }
 
+  // See if the template has a success message handler and print it
+  const successMessage = template.getSuccessMessage ? template.getSuccessMessage(initOptions, context) : ''
+  if (successMessage) {
+    output.print(`\n${successMessage}`)
+  }
 
   // Create a provisional user and store the token
   async function getOrCreateUser() {
@@ -109,7 +108,7 @@ export default async function initSanity(args, context) {
       type: 'list',
       choices: [
         {value: 'provisional', name: 'A temp account sounds great'},
-        {value: 'login', name: 'No, I already have an account'},
+        {value: 'login', name: 'Sign in using a Google or Github account'},
         {value: 'arrow', name: 'I took an arrow to the knee'}
       ]
     })
@@ -150,7 +149,12 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateProject() {
-    const projects = await apiClient({requireProject: false}).projects.list()
+    let projects
+    try {
+      projects = await apiClient({requireProject: false}).projects.list()
+    } catch (err) {
+      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+    }
 
     if (projects.length === 0) {
       debug('No projects found for user, prompting for name')
@@ -220,7 +224,7 @@ export default async function initSanity(args, context) {
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
       const newDatasetName = await promptForDatasetName(prompt, {
-        message: 'Name of your first data set:',
+        message: 'Name your data set:',
         default: 'production'
       })
       await client.datasets.create(newDatasetName)

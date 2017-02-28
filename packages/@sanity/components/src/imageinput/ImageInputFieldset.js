@@ -4,18 +4,13 @@ import styles from 'part:@sanity/components/imageinput/fieldset-style'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import createImageLoader from './common/createImageLoader'
-import _HotspotImage from '@sanity/imagetool/HotspotImage'
+import ImageLoader from 'part:@sanity/components/utilities/image-loader'
+import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import Button from 'part:@sanity/components/buttons/default'
-
-const HotspotImage = createImageLoader(_HotspotImage, image => {
-  const srcAspectRatio = image.width / image.height
-  return {srcAspectRatio: srcAspectRatio}
-})
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -96,12 +91,19 @@ export default class ImageInputFieldset extends React.PureComponent {
               && <div className={status === 'complete' || status === 'ready' ? styles.imageIsUploaded : styles.imageIsNotUploaded}>
                 {
                   hotspotImage && (
-                    <HotspotImage
-                      aspectRatio="auto"
-                      hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
-                      crop={hotspotImage.crop || DEFAULT_CROP}
-                      src={hotspotImage.imageUrl}
-                    />
+                    <ImageLoader src={hotspotImage.imageUrl}>
+                      {({image, error}) => {
+                        return (
+                          <HotspotImage
+                            aspectRatio="auto"
+                            src={image.src}
+                            srcAspectRatio={image.width / image.height}
+                            hotspot={hotspotImage.hotspot || DEFAULT_HOTSPOT}
+                            crop={hotspotImage.crop || DEFAULT_CROP}
+                          />
+                        )
+                      }}
+                    </ImageLoader>
                   )
                 }
               </div>

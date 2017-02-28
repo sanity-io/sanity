@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,7 +28,8 @@
     "eslint-config-sanity": "^2.0.1",
     "eslint-plugin-import": "^2.2.0",
     "interop-require": "^1.0.0",
-    "recursive-readdir": "^2.1.0"
+    "recursive-readdir": "^2.1.0",
+    "rimraf": "^2.5.2"
   },
   "dependencies": {
     "lodash": "^4.17.4"

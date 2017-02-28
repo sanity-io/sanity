@@ -1,3 +1,4 @@
+import findComponentFromDOMNode from './findComponentFromDOMNode'
 import {findDOMNode} from 'slate'
 
 export function getSpanType(blockArrayType) {
@@ -14,9 +15,8 @@ export function getBlockField(blockArrayType) {
   return blockArrayType.of.find(ofType => ofType.type.name === 'block')
 }
 
+// Opens a span components editing dialog from a Slate node input
 export function openSpanDialog(spanNode) {
-  // Simulate mouseup on the node to open dialog
-  const mouseUpEvent = document.createEvent('MouseEvents')
-  mouseUpEvent.initEvent('mouseup', true, true)
-  findDOMNode(spanNode).dispatchEvent(mouseUpEvent)
+  const component = findComponentFromDOMNode(findDOMNode(spanNode))
+  component.setState({isEditing: true})
 }

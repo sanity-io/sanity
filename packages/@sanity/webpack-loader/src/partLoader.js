@@ -5,6 +5,11 @@ const loaderUtils = require('loader-utils')
 const reduceConfig = require('@sanity/util').reduceConfig
 const multiImplementationHandler = require('./multiImplementationHandler')
 
+/* eslint-disable no-process-env */
+const sanityEnv = process.env.SANITY_ENV
+const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
+/* eslint-enable no-process-env */
+
 function sanityPartLoader(input) {
   this.cacheable()
 
@@ -22,9 +27,9 @@ function sanityPartLoader(input) {
 
   if (request === 'config:sanity') {
     const config = JSON.parse(input)
-    const env = process.env.NODE_ENV // eslint-disable-line no-process-env
     const indent = env === 'production' ? 0 : 2
-    return `module.exports = ${JSON.stringify(reduceConfig(config, env), null, indent)}\n`
+    const reduced = reduceConfig(config, env)
+    return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`
   }
 
   const parts = this._compiler.sanity.parts

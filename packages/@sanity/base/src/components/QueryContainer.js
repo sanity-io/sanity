@@ -32,6 +32,8 @@ function keysEqual(object, otherObject, excludeKeys = []) {
   return union(objectKeys, otherObjectKeys).every(key => object[key] === otherObject[key])
 }
 
+const RESPOND_TO_TRANSITIONS = ['appear', 'disappear']
+
 export default class QueryContainer extends React.Component {
 
   static propTypes = {
@@ -57,7 +59,9 @@ export default class QueryContainer extends React.Component {
 
   subscribe(query, params) {
     this.unsubscribe()
-    this._subscription = store.query(query, params).subscribe(this)
+    this._subscription = store.query(query, params)
+      .filter(event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition))
+      .subscribe(this)
   }
 
   next = event => {

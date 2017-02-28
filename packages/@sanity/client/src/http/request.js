@@ -24,13 +24,17 @@ const httpError = ({
   }
 })
 
-function retry5xx(err) {
+function retry5xx(err, attempt, options) {
   // Retry low-level network errors
   if (retry.shouldRetry(err)) {
     return true
   }
 
-  return err.response && err.response.statusCode >= 500
+  if (options.method === 'HEAD' || options.method === 'GET') {
+    return err.response && err.response.statusCode >= 500
+  }
+
+  return false
 }
 
 function extractError(res) {

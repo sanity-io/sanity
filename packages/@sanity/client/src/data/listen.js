@@ -1,7 +1,6 @@
 const assign = require('object-assign')
 const Observable = require('@sanity/observable/minimal')
 const encodeQueryString = require('./encodeQueryString')
-const validators = require('../validators')
 const pick = require('../util/pick')
 const defaults = require('../util/defaults')
 
@@ -27,8 +26,7 @@ module.exports = function listen(query, params, opts = {}) {
   const options = defaults(opts, defaultOptions)
   const listenOpts = pick(options, possibleOptions)
   const qs = encodeQueryString({query, params, options: listenOpts})
-  const dataset = validators.hasDataset(this.clientConfig)
-  const uri = `${this.clientConfig.url}${this.getDataUrl('listen', `${dataset}${qs}`)}`
+  const uri = `${this.clientConfig.url}${this.getDataUrl('listen', qs)}`
   const token = this.clientConfig.token
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
@@ -101,7 +99,19 @@ function cooerceError(err) {
   }
 
   const evt = parseEvent(err)
-  return evt instanceof Error
-    ? evt
-    : new Error(evt.error || evt.message || 'Unknown listener error')
+  return evt instanceof Error ? evt : new Error(extractErrorMessage(evt))
+}
+
+function extractErrorMessage(err) {
+  if (!err.error) {
+    return err.message || 'Unknown listener error'
+  }
+
+  if (err.error.description) {
+    return err.error.description
+  }
+
+  return typeof err.error === 'string'
+    ? err.error
+    : JSON.stringify(err.error, null, 2)
 }

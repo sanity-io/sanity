@@ -50,7 +50,7 @@ export default async function gatherInput(prompt, defaults, options = {}) {
 
   const workDirIsEmpty = (await fsp.readdir(workDir)).length === 0
 
-  if (!isPlugin && !workDirIsEmpty) {
+  if (!isPlugin) {
     answers.outputPath = await prompt.single({
       type: 'input',
       message: 'Output path:',

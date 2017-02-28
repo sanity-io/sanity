@@ -1,6 +1,12 @@
 import client from '@sanity/client'
 import getUserConfig from './getUserConfig'
 
+const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
+const apiHosts = {
+  staging: 'https://api.sanity.work',
+  development: 'http://api.sanity.wtf'
+}
+
 /**
  * Creates a wrapper/getter function to retrieve a Sanity API client.
  * Instead of spreading the error checking logic around the project,
@@ -13,11 +19,11 @@ const defaults = {
 
 export default function clientWrapper(manifest, configPath) {
   return function (opts = {}) {
-    const staging = process.env.SANITY_STAGING
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const userApiConf = userConfig.get('api')
     const token = userConfig.get('authToken')
+    const apiHost = apiHosts[sanityEnv]
     const apiConfig = Object.assign(
       {},
       userApiConf || {},
@@ -25,8 +31,8 @@ export default function clientWrapper(manifest, configPath) {
       api || {}
     )
 
-    if (staging) {
-      apiConfig.apiHost = 'https://api.sanity.work'
+    if (apiHost) {
+      apiConfig.apiHost = apiHost
     }
 
     if (requireUser && !token) {

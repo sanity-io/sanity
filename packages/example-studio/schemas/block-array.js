@@ -89,7 +89,10 @@ export default [
             {title: 'H1', value: 'h1'},
             {title: 'H2', value: 'h2'},
             {title: 'H3', value: 'h3'},
-            {title: 'H4', value: 'h4'}
+            {title: 'H4', value: 'h4'},
+            {title: 'H5', value: 'h5'},
+            {title: 'H6', value: 'h6'},
+            {title: 'Quote', value: 'blockquote'}
           ]
         }
       },
@@ -163,43 +166,11 @@ export default [
           list: [
             {title: 'Strong', value: 'strong'},
             {title: 'Emphasis', value: 'em'},
-            {title: 'Code', value: 'code'}
+            {title: 'Code', value: 'code'},
+            {title: 'Underline', value: 'underline'},
+            {title: 'Strike', value: 'strike-through'}
           ]
         }
-      }
-    ]
-  },
-  {
-    name: 'mark',
-    type: 'object',
-    title: 'Mark',
-    fields: [
-      {
-        name: 'type',
-        title: 'Type',
-        type: 'string'
-      }
-    ]
-  },
-  {
-    name: 'link',
-    type: 'object',
-    fields: [
-      {
-        type: 'url',
-        name: 'href',
-        title: 'Url'
-      },
-      {
-        name: 'keys',
-        title: 'Keys',
-        type: 'array',
-        of: [
-          {
-            type: 'string',
-            title: 'Key'
-          }
-        ]
       }
     ]
   }

@@ -1,8 +1,8 @@
 export default {
   encode(id) {
-    return id.split('/').join('.')
+    return id
   },
   decode(id) {
-    return id.split('.').join('/')
+    return id
   }
 }

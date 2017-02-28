@@ -1,15 +1,17 @@
 {
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "gulp",
-    "clean": "lerna clean",
+    "bootstrap": "lerna bootstrap && npm run install",
+    "build": "lerna run clean && gulp",
+    "clean": "lerna run clean && lerna clean",
     "publish": "npm run build && lerna publish",
     "start": "gulp dev",
     "storybook": "gulp storybook",
     "test": "lerna run test",
     "updated": "lerna updated",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "install": "node node_modules/husky/bin/install",
+    "commitmsg": "node scripts/validateCommitMessage.js"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
@@ -24,6 +26,7 @@
     "babel-preset-react": "^6.22.0",
     "babel-preset-react-hmre": "^1.1.1",
     "babel-register": "^6.22.0",
+    "boxen": "^1.0.0",
     "chalk": "^1.1.3",
     "eslint": "^3.13.1",
     "eslint-config-sanity": "^2.0.1",
@@ -36,6 +39,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
+    "husky": "^0.13.1",
     "lerna": "2.0.0-beta.32",
     "through2": "^2.0.3"
   }

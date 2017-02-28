@@ -47,6 +47,10 @@ function isCreate(routerState) {
   return routerState.action === 'create' && !routerState.selectedDocumentId
 }
 
+function getListItemKey(item) {
+  return item._id
+}
+
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
   static propTypes = {
     router: PropTypes.shape({
@@ -148,11 +152,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   getDocumentsPane(schemaType) {
-
-    const query = `${schema.name}.${schemaType.name}[limit: 2000, order: ${this.state.sorting}] {_id, _type}`
+    // todo: use this when order is implemented:
+    // const query = `*[is $type] | order(${this.state.sorting}) [0...2000] {_id, _type}`
+    const query = '*[is $type] [0...2000] {_id, _type}'
+    const params = {type: `${schema.name}.${schemaType.name}`}
 
     return (
-      <QueryContainer query={query} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
+      <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
         {({result, loading, error, type, listLayout}) => {
           if (error) {
             return (
@@ -176,6 +182,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               type={type}
               loading={loading}
               items={items}
+              getItemKey={getListItemKey}
               renderItem={this.renderDocumentPaneItem}
               onSetListLayout={this.handleSetListLayout}
               onSetSorting={this.handleSetSort}

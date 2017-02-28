@@ -1,48 +1,7 @@
-import {ReferenceInput} from '../../index'
-
-import {materializeReferences, referenceSearch, fetch} from '../data/fetch'
 import {once} from 'lodash'
-import {observeForPreview, resolveRefType} from 'part:@sanity/base/preview'
-
-
-const ReferenceBrowser = ReferenceInput.createBrowser({
-  fetch,
-  materializeReferences
-})
-
-export function materializeReference(id) {
-  return materializeReferences([id]).then(res => res[0])
-}
-
-function observableToPromise(observable) {
-  let subscription
-  return new Promise((resolve, reject) => {
-    subscription = observable.subscribe({
-      next: val => {
-        resolve(val)
-      },
-      error: reject
-    })
-  }).then(result => {
-    subscription.unsubscribe()
-    return result
-  })
-}
-function valueToString(value, type) {
-  return resolveRefType(value, type)
-    .then(refType => observableToPromise(observeForPreview(value, refType)))
-    .then(res => res.title)
-}
-
-const ReferenceSearchableSelect = ReferenceInput.createSearchableSelect({
-  search: referenceSearch,
-  valueToString: valueToString
-})
-
-const ReferenceSelect = ReferenceInput.createSelect({
-  fetchAll: fetch,
-  materializeReferences
-})
+import ReferenceSearchableSelect from '../inputs/ReferenceSearchableSelect'
+import ReferenceSelect from '../inputs/ReferenceSelect'
+import ReferenceBrowser from '../inputs/ReferenceBrowser'
 
 // eslint-disable-next-line no-console
 const warnNoSearchYet = once(() => console.warn('Reference browser does not yet support search'))

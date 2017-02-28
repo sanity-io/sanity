@@ -39,7 +39,7 @@ export default function batchedMutationStream(options) {
       .then(() => {
         const timeSpent = prettyMs(Date.now() - transactionStart)
         debug(`Batch #${currentBatch} completed (${timeSpent})`)
-        progress()
+        progress(batch.length)
         callback()
       })
       .catch(err => {

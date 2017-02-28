@@ -3,7 +3,7 @@ import ReferenceBrowser from './browser/ReferenceBrowser'
 import ValueContainer from './common/ValueContainer'
 import FormField from 'part:@sanity/components/formfields/default'
 
-export default function createReferenceInput({fetch, materializeReferences}) {
+export default function createReferenceBrowser({searchFn, fetchValueFn}) {
 
   ReferenceInput.propTypes = ReferenceBrowser.propTypes
   ReferenceInput.valueContainer = ValueContainer
@@ -15,8 +15,8 @@ export default function createReferenceInput({fetch, materializeReferences}) {
     return (
       <FormField label={type.title} description={type.description} level={level}>
         <ReferenceBrowser
-          fetchFn={fetch}
-          materializeReferences={materializeReferences}
+          fetchValueFn={fetchValueFn}
+          searchFn={searchFn}
           type={type}
           {...rest}
         />

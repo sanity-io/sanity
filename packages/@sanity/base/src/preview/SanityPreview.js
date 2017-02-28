@@ -7,7 +7,8 @@ import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import PreviewComponentBlock from 'part:@sanity/components/previews/block'
 
-import PreviewMaterializer from './PreviewMaterializer'
+import PreviewSubscriber from './PreviewSubscriber'
+import prepareForPreview from './prepareForPreview'
 
 const previewComponentMap = {
   default: PreviewComponentDefault,
@@ -18,6 +19,8 @@ const previewComponentMap = {
   block: PreviewComponentBlock
 }
 
+// Set this to true for debugging preview subscriptions
+const DEBUG = false
 export default class SanityPreview extends React.PureComponent {
 
   static propTypes = {
@@ -34,13 +37,21 @@ export default class SanityPreview extends React.PureComponent {
       : previewComponentMap.default
 
     return (
-      <PreviewMaterializer type={type} value={value}>
+      <PreviewSubscriber type={type} value={value}>
         {
-          ({materialized, isDeferred, isLoading, error}) => {
-            return <PreviewComponent item={materialized} isPlaceholder={!materialized && isDeferred} isLoading={isLoading} />
+          ({snapshot, isLive}) => {
+            const preview = (
+              <PreviewComponent item={prepareForPreview(snapshot, type)} isPlaceholder={!snapshot} />
+            )
+            return DEBUG ? (
+              <div>
+                <span style={{position: 'absolute', right: 24, top: 2}}>{isLive ? '⚡️' : '💤'}</span>
+                {preview}
+              </div>
+            ) : preview
           }
         }
-      </PreviewMaterializer>
+      </PreviewSubscriber>
     )
   }
 }

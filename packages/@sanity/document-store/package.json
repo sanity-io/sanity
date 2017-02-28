@@ -4,6 +4,7 @@
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
+    "clean": "rimraf lib",
     "examples": "echo 'Running examples'; for i in examples/*.js; do echo '\n## '$i' ----\n' && node $i; done",
     "tap": "tap --node-arg=--require --node-arg=babel-register test/*.test.js",
     "test": "npm run tap && npm run examples"
@@ -20,6 +21,7 @@
   "devDependencies": {
     "get-random-values": "^1.2.0",
     "in-publish": "^2.0.0",
+    "rimraf": "^2.5.2",
     "tap": "^8.0.1"
   }
 }

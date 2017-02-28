@@ -1,13 +1,10 @@
 .root {
-  text-indent: 2em;
-
-  display: table;
   margin: 0;
-
+  width: auto;
   /* Last 1.1 is important for the cursor to show properly
      because of the &:before content-rules
   */
-  padding: 0em 0em 1em 1.1em;
+  padding: 0em 0em 0.5em 1.1em;
 }
 
 .root > * {
@@ -15,6 +12,7 @@
   margin: 0 0 1em 0;
   padding: 0;
   @nest &:before {
+    min-width: 2em;
     display: table-cell;
   }
 }
@@ -23,9 +21,9 @@
   display: table-row;
 }
 
+
 .bullet {
   composes: root;
-  display: block;
 }
 
 .bullet > * {
@@ -36,7 +34,6 @@
 
 .number {
   composes: root;
-  display: block;
   counter-increment: listItem;
   @nest & + :not(.number) {
     counter-reset: listItem
@@ -45,7 +42,6 @@
 
 .number > * {
   @nest &:before {
-    min-width: 2em;
     content: counter(listItem) ". ";
   }
 }

@@ -11,8 +11,9 @@ const assetMatcher = /^(file|image)@([a-z]+:\/\/.*)/
 
 export default options => {
   const {client, replace} = options
+  return {processDocument}
 
-  return through2.obj((doc, enc, cb) => {
+  function processDocument(doc) {
     const assets = extractWithPath(`..[${assetKey}]`, doc)
       .map(match => match.path.slice(0, -1))
       .map(path => get(doc, path))
@@ -21,10 +22,8 @@ export default options => {
 
     // Ensure images exist in Sanity. This also mutates the in-memory document,
     // replacing {_sanityAsset: 'url'} with {asset: {_ref: 'some/documentId'}}
-    promiseEach(assets, uploadAsset, {concurrency: 3})
-      .then(() => cb(null, doc))
-      .catch(err => cb(err))
-  })
+    return promiseEach(assets, uploadAsset, {concurrency: 3})
+  }
 
   async function uploadAsset(item) {
     // First, ensure that we have uploaded the item to Sanity
@@ -41,7 +40,8 @@ export default options => {
     const label = getHash(item.asset.url)
 
     // See if the item exists on the server
-    const docs = await getWithLabel(client, item.asset.type, label)
+    debug('Checking for asset with URL %s', item.asset.url)
+    const docs = await getAssetIdForLabel(client, item.asset.type, label)
     if (docs.length > 1) {
       throw new Error(`More than one asset with the label "${label}" found, can't reason about import state`)
     } else if (docs.length === 1 && replace) {
@@ -49,6 +49,7 @@ export default options => {
       await client.assets.delete(docs[0])
     } else if (docs.length === 1) {
       // In NON-replace mode, we want to reuse the asset
+      debug('Found %s for URL %s', item.asset.type, item.asset.url)
       return docs[0]
     }
 
@@ -65,10 +66,10 @@ function extractUrlParts(ref) {
   return {ref, asset: type ? {type, url} : null}
 }
 
-async function getWithLabel(client, type, label) {
+async function getAssetIdForLabel(client, type, label) {
   const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
-  const query = `${dataType}[label == $label, limit: 2]{_id}`
-  return (await client.fetch(query, {label})).map(doc => doc._id)
+  const query = '*[is $dataType && label == $label][0...2]{_id}'
+  return (await client.fetch(query, {dataType, label})).map(doc => doc._id)
 }
 
 function getHash(url) {

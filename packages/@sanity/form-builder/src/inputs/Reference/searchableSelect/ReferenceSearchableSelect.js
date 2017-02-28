@@ -2,14 +2,13 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../Preview'
-
+import subscriptionManager from '../../../utils/subscriptionManager'
 
 const getInitialState = () => {
   return {
     fetching: false,
-    query: null,
     hits: [],
-    materializedValue: null
+    valueAsString: null,
   }
 }
 
@@ -23,8 +22,7 @@ export default class ReferenceSearchableSelect extends React.Component {
   };
 
   static defaultProps = {
-    onChange() {
-    }
+    onChange() {}
   }
 
   static contextTypes = {
@@ -33,58 +31,43 @@ export default class ReferenceSearchableSelect extends React.Component {
 
   state = getInitialState()
 
+  subscriptions = subscriptionManager('search', 'valueToString')
 
-  materializeValue(value) {
-    const {valueToString, type} = this.props
-    if (value.isEmpty()) {
-      return
-    }
-    const serialized = value.serialize()
-    valueToString(serialized, type)
-      .then(materializedValue => {
-        this.setState({materializedValue})
-      })
+  componentWillUnmount() {
+    this.subscriptions.unsubscribeAll()
   }
 
   componentDidMount() {
-    this.materializeValue(this.props.value)
+    this.fetchValueAsString(this.props.value)
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value != this.props.value) {
       this.setState(getInitialState())
-      this.materializeValue(nextProps.value)
+      this.fetchValueAsString(nextProps.value)
     }
   }
 
-  getMemberFieldForType(typeName) {
+  fetchValueAsString(value) {
+    const {valueToString, type} = this.props
+    if (value.isEmpty()) {
+      return
+    }
+    const serialized = value.serialize()
+
+    this.subscriptions.replace('valueToString', valueToString(serialized, type)
+      .subscribe(valueAsString => {
+        this.setState({valueAsString})
+      }))
+  }
+
+  getMemberTypeFor(typeName) {
     const {type} = this.props
     return type.to.find(ofType => ofType.type.name === typeName)
   }
 
-  fetchAll() {
-    const {searchFn, type} = this.props
-
-    searchFn('*', type)
-      .then(items => {
-        this._isFetching = false
-
-        const updatedCache = items.reduce((cache, item) => {
-          cache[item._id] = item
-          return cache
-        }, Object.assign({}, this.state.refCache))
-
-        this.setState({
-          items: items,
-          hits: items,
-          fetching: false,
-          refCache: updatedCache
-        })
-      })
-  }
-
   handleFocus = () => {
-    this.fetchAll()
+    this.search('*')
   }
 
   handleChange = item => {
@@ -99,20 +82,14 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleSearch = query => {
+    this.search(query)
+  }
+
+  search = query => {
     const {type, searchFn} = this.props
 
     if (query === '') {
-      this.fetchAll()
-      return
-    }
-
-    if (this._currentQuery === query) {
-      return
-    }
-
-    this._currentQuery = query
-
-    if (!query) {
+      this.search('*')
       return
     }
 
@@ -120,28 +97,24 @@ export default class ReferenceSearchableSelect extends React.Component {
       fetching: true
     })
 
-    searchFn(query, type)
-      .then(hits => {
-        if (this._currentQuery !== query) {
-          return // ignore
-        }
-
-        const nextRefCache = hits.reduce((cache, hit) => {
-          cache[hit._id] = hit
+    this.subscriptions.replace('search', searchFn(query, type)
+      .subscribe(items => {
+        const updatedCache = items.reduce((cache, item) => {
+          cache[item._id] = item
           return cache
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
+          items: items,
+          hits: items,
           fetching: false,
-          hits: hits,
-          refCache: nextRefCache,
-          query: query
+          refCache: updatedCache
         })
-      })
+      }))
   }
 
   renderItem = item => {
-    const type = this.getMemberFieldForType(item._type)
+    const type = this.getMemberTypeFor(item._type)
     return (
       <Preview
         type={type}
@@ -160,11 +133,9 @@ export default class ReferenceSearchableSelect extends React.Component {
 
   render() {
     const {type} = this.props
-    const {materializedValue, fetching, hits} = this.state
+    const {valueAsString, fetching, hits} = this.state
 
-    const value = hits.find(item => {
-      return item._id === this.props.value.value._ref
-    })
+    const value = hits.find(item => item._id === this.props.value.refId)
 
     return (
       <SearchableSelect
@@ -177,7 +148,7 @@ export default class ReferenceSearchableSelect extends React.Component {
         onChange={this.handleChange}
         onClear={this.handleClear}
         value={value || this.props.value}
-        valueAsString={materializedValue}
+        valueAsString={valueAsString}
         renderItem={this.renderItem}
         loading={fetching}
         items={hits}

@@ -4,6 +4,7 @@
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
+    "clean": "rimraf lib",
     "posttest": "eslint .",
     "start": "node bin/sanity-server.js",
     "start-dev": "node bin/sanity-server.js --dev"
@@ -64,6 +65,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "cross-env": "^3.1.4"
+    "cross-env": "^3.1.4",
+    "rimraf": "^2.5.2"
   }
 }
