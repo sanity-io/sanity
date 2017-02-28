@@ -116,7 +116,7 @@ function createBufferedDocument(documentId, server) {
       return getCurrent().mergeMap(bufferedDoc => bufferedDoc.create(document))
     },
     delete() {
-      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.delete())
+      return getCurrent().subscribe(bufferedDoc => bufferedDoc.delete())
     },
     commit() {
       return getCurrent().mergeMap(bufferedDoc => bufferedDoc.commit())
