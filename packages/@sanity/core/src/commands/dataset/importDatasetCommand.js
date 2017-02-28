@@ -1,12 +1,10 @@
 import path from 'path'
 import got from 'got'
-import split from 'split2'
 import fsp from 'fs-promise'
 import prettyMs from 'pretty-ms'
 import progrescii from 'progrescii'
 import linecount from 'linecount/promise'
 import debug from '../../debug'
-import headStream from '../../util/headStream'
 import generateGuid from '../../util/generateGuid'
 import strengthenReferences from '../../actions/dataset/import/strengthenReferences'
 import importDocumentsToDataset from '../../actions/dataset/import/importDocumentsToDataset'
@@ -22,43 +20,24 @@ export default {
     const gradientMode = args.extOptions.gradient
     const operation = getMutationOperation(args.extOptions)
 
-    const [file, specifiedDataset] = args.argsWithoutOptions
-    const signature = 'sanity dataset import [file] [dataset]'
+    const [file, targetDataset] = args.argsWithoutOptions
     if (!file) {
       throw new Error(
-        `File name must be specified ("${signature}")`
+        `Source file name and target dataset must be specified ("sanity dataset import ${chalk.bold('[file]')} [dataset]")`
+      )
+    }
+
+    if (!targetDataset) {
+      // @todo ask which dataset the user wants to use
+      throw new Error(
+        `Target dataset must be specified ("sanity dataset import [file] ${chalk.bold('[dataset]')}")`
       )
     }
 
     const isUrl = /^https?:\/\//i.test(file)
     const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
     const importId = generateGuid()
-    const peek = headStream()
-    const source = isUrl ? got.stream(sourceFile) : fsp.createReadStream(sourceFile)
-    const stream = source.pipe(split(newlineify)).pipe(peek)
-
-    let targetDataset = specifiedDataset
-    let fromDataset = specifiedDataset
-    let rewriteDataset = false
-    try {
-      const firstLine = (await peek.head).toString()
-      const firstDocId = JSON.parse(firstLine)._id || ''
-      fromDataset = firstDocId.split('.', 2)[0]
-      rewriteDataset = specifiedDataset && fromDataset !== specifiedDataset
-      targetDataset = specifiedDataset ? specifiedDataset : fromDataset
-    } catch (err) {
-      throw new Error(err.code === 'ENOENT'
-        ? `File "${chalk.cyan(sourceFile)}" does not exist`
-        : `Failed to parse specified file ("${chalk.cyan(sourceFile)}"): ${err.message}`
-      )
-    }
-
-    if (!targetDataset) {
-      throw new Error([
-        'Could not resolve dataset for import, please specify target dataset:',
-        chalk.cyan(`sanity dataset import ${file} ${chalk.bold('<targetDataset>')}`)
-      ].join('\n'))
-    }
+    const inputStream = isUrl ? got.stream(sourceFile) : fsp.createReadStream(sourceFile)
 
     const client = getSanityClient({
       gradient: gradientMode,
@@ -69,8 +48,7 @@ export default {
 
     const documentCount = isUrl ? 0 : await linecount(sourceFile)
     debug(documentCount ? 'Could not count documents in source' : `Found ${documentCount} lines in source file`)
-    debug(`Target dataset has been resolved to "${targetDataset}"`)
-    debug(`IDs ${rewriteDataset ? 'needs' : 'do not need'} to be rewritten`)
+    debug(`Target dataset has been set to "${targetDataset}"`)
 
     let spinner = null
 
@@ -80,6 +58,7 @@ export default {
       spinner = output.spinner('Checking if destination dataset exists').start()
       const datasets = await client.datasets.list()
       if (!datasets.find(set => set.name === targetDataset)) {
+        // @todo ask if user wants to create it
         spinner.fail()
         throw new Error([
           `Dataset with name "${targetDataset}" not found.`,
@@ -112,9 +91,8 @@ export default {
 
     try {
       await importDocumentsToDataset({
-        inputStream: stream,
+        inputStream,
         targetDataset,
-        fromDataset,
         importId,
         operation,
         batchSize,
@@ -161,7 +139,7 @@ export default {
     }
 
     try {
-      await strengthenReferences({dataset: targetDataset, progress: strengthenProgress, client, importId})
+      await strengthenReferences({progress: strengthenProgress, client, importId})
       const strengthenTime = prettyMs(Date.now() - strengthenStart, {verbose: true})
       spinner.text = `${spinner.text} (${strengthenTime})`
       spinner.succeed()
@@ -207,8 +185,4 @@ function getMutationOperation(flags) {
   }
 
   return 'create'
-}
-
-function newlineify(line) {
-  return `${line}\n`
 }
