@@ -7,16 +7,13 @@ import styles from './styles/ReferringDocumentsHelper.css'
 import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
-import UrlDocId from '../utils/UrlDocId'
-
 
 function renderReferringDocumentItem(item, index, options) {
-  const docUrlId = UrlDocId.encode(item._id)
   const type = schema.get(item._type)
   const linkState = {
+    selectedDocumentId: item._id,
     selectedType: type.name,
-    action: 'edit',
-    selectedDocumentId: docUrlId
+    action: 'edit'
   }
   return (
     <StateLinkListItem state={linkState}>

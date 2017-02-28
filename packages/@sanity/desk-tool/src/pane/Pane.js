@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
-import UrlDocId from '../utils/UrlDocId'
 import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
 import {find} from 'lodash'
@@ -39,9 +38,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     const {items, renderItem, router, listLayout, getItemKey} = this.props
     const {selectedDocumentId} = router.state
 
-    const selectedItem = find(items, item => {
-      return UrlDocId.encode(item._id) == selectedDocumentId
-    })
+    const selectedItem = find(items, item => item._id == selectedDocumentId)
 
 
     switch (listLayout) { // eslint-disable-line default-case

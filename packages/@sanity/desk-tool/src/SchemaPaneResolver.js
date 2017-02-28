@@ -5,7 +5,6 @@ import EditorPane from './pane/EditorPane'
 import TypePaneItem from './pane/TypePaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
 
-import UrlDocId from './utils/UrlDocId'
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
@@ -110,9 +109,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     documentStore.create({_type: selectedType})
       .subscribe(document => {
         router.navigate({
-          action: 'edit',
+          selectedDocumentId: document._id,
           selectedType: selectedType,
-          selectedDocumentId: UrlDocId.encode(document._id)
+          action: 'edit'
         }, {replace: true})
       })
   }
@@ -134,7 +133,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const {selectedType} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
-    const linkState = {selectedType: type.name, action: 'edit', selectedDocumentId: UrlDocId.encode(item._id)}
+    const linkState = {selectedDocumentId: item._id, selectedType: type.name, action: 'edit'}
     return (
       <StateLinkListItem
         state={linkState}
@@ -391,7 +390,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           {
             schemaType && selectedDocumentId && (
               <EditorPane
-                documentId={selectedDocumentId && UrlDocId.decode(selectedDocumentId)}
+                documentId={selectedDocumentId && selectedDocumentId}
                 typeName={schemaType.name}
               />
             )

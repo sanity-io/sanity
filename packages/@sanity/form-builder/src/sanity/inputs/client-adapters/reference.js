@@ -1,6 +1,4 @@
 import client from 'part:@sanity/base/client'
-// import {utils as previewUtils} from 'part:@sanity/base/preview'
-import {unprefixType} from '../../utils/unprefixType'
 import {uniq, flatten, compact} from 'lodash'
 
 import {observeForPreview, prepareForPreview, resolveRefType} from 'part:@sanity/base/preview'
@@ -12,7 +10,6 @@ export function observeReferenceForPreview(value, type) {
 
 export function valueToString(value, referenceType) {
   return observeReferenceForPreview(value, referenceType)
-    .map(unprefixType)
     .map(previewValue => {
       const memberType = referenceType.to.find(ofType => ofType.name === previewValue._type)
       return prepareForPreview(previewValue, memberType).title
@@ -38,5 +35,4 @@ export function search(textTerm, referenceType) {
   const query = `*[${constraints}]` // todo: see if its possible to use selection from previews here
 
   return client.observable.fetch(query)
-    .map(response => response.map(unprefixType))
 }

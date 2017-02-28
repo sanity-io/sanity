@@ -4,7 +4,6 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
-import schemaTypePrefix from '../utils/schemaTypePrefix'
 import schema from 'part:@sanity/base/schema'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import InspectView from '../components/InspectView'
@@ -50,22 +49,15 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
   state = getInitialState();
 
-  get schemaTypePrefix() {
-    if (!this._schemaTypePrefix) {
-      this._schemaTypePrefix = schemaTypePrefix(schema)
-    }
-    return this._schemaTypePrefix
-  }
-
   deserialize(serialized) {
     const {typeName} = this.props
     return serialized
-      ? FormBuilder.deserialize(this.schemaTypePrefix.removeFrom(serialized), typeName)
+      ? FormBuilder.deserialize(serialized, typeName)
       : FormBuilder.createEmpty(typeName)
   }
 
   serialize(value) {
-    return this.schemaTypePrefix.addTo(value.serialize())
+    return value.serialize()
   }
 
   setupSubscriptions(props) {
