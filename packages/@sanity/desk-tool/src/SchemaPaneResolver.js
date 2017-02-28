@@ -107,7 +107,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   doCreate(router) {
     const {selectedType} = router.state
-    documentStore.create({_type: `${schema.name}.${selectedType}`})
+    documentStore.create({_type: selectedType})
       .subscribe(document => {
         router.navigate({
           action: 'edit',
@@ -155,7 +155,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     // todo: use this when order is implemented:
     // const query = `*[is $type] | order(${this.state.sorting}) [0...2000] {_id, _type}`
     const query = '*[is $type] [0...2000] {_id, _type}'
-    const params = {type: `${schema.name}.${schemaType.name}`}
+    const params = {type: schemaType.name}
 
     return (
       <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>

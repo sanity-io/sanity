@@ -1,7 +1,6 @@
 import client from 'part:@sanity/base/client'
 // import {utils as previewUtils} from 'part:@sanity/base/preview'
 import {unprefixType} from '../../utils/unprefixType'
-import schema from 'part:@sanity/base/schema'
 import {uniq, flatten, compact} from 'lodash'
 
 import {observeForPreview, prepareForPreview, resolveRefType} from 'part:@sanity/base/preview'
@@ -33,7 +32,7 @@ export function search(textTerm, referenceType) {
     )
   )))
 
-  const typeFilter = referenceType.to.map(toField => `${schema.name}.${toField.type.name}`).map(quote)
+  const typeFilter = referenceType.to.map(toField => toField.type.name).map(quote)
   const terms = textTerm.split(/\s+/).map(quote)
   const constraints = `_type in [${typeFilter.join(', ')}] && (${textFields.join(', ')}) match (${terms.join(',')})`
   const query = `*[${constraints}]` // todo: see if its possible to use selection from previews here

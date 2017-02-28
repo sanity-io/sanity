@@ -12,10 +12,9 @@ import UrlDocId from '../utils/UrlDocId'
 
 function renderReferringDocumentItem(item, index, options) {
   const docUrlId = UrlDocId.encode(item._id)
-  const typeName = item._type.split('.').slice(1).join('.')
-  const type = schema.get(typeName)
+  const type = schema.get(item._type)
   const linkState = {
-    selectedType: typeName,
+    selectedType: type.name,
     action: 'edit',
     selectedDocumentId: docUrlId
   }

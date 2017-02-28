@@ -1,16 +1,11 @@
 export default function schemaTypePrefix(schema) {
 
   function add(typeName) {
-    return `${schema.name}.${typeName}`
+    return typeName
   }
 
   function remove(typeName) {
-    // not sure if there can be more than one parts after schema name
-    const [schemaName, ...rest] = typeName.split('.')
-    if (schemaName !== schema.name) {
-      throw new Error(`Unexpected schema part of type: "${typeName}". Expected it to begin with "${schema.name}."`)
-    }
-    return rest.join('.')
+    return typeName
   }
 
   return {
