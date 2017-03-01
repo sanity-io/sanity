@@ -25,17 +25,7 @@ export default {
       type: 'image'
     }
   ],
-
-  // options: {
-  //   preview: {
-  //     fields: ['name', 'originalImageUrl'],
-  //     prepare(value) {
-  //       const {name, originalImageUrl} = value
-  //       return {
-  //         title: name,
-  //         imageUrl: originalImageUrl
-  //       }
-  //     }
-  //   }
-  // }
+  preview: {
+    select: {title: 'name', imageUrl: 'image.asset.url'},
+  }
 }

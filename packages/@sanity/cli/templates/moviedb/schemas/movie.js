@@ -62,14 +62,15 @@ export default {
   preview: {
     select: {
       title: 'title',
-      date: 'releaseDate'
+      date: 'releaseDate',
+      imageUrl: 'poster.asset.url'
     },
     prepare(selection) {
-      const {title, date} = selection
-      return {
-        title: title,
-        subtitle: date.split('-')[0]
-      }
+      const {date, imageUrl} = selection
+      return Object.assign({}, selection, {
+        subtitle: date ? date.split('-')[0] : '',
+        imageUrl: imageUrl ? `${imageUrl}?w=100` : imageUrl
+      })
     }
   }
 
