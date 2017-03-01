@@ -9,13 +9,6 @@ import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import styles from './styles/Search.css'
 
-function unprefixTypeName(typeName) {
-  return typeName.split('.')[1]
-}
-
-function prefixTypeName(typeName) {
-  return `${schema.name}.${typeName}`
-}
 
 class Search extends React.Component {
 
@@ -68,7 +61,7 @@ class Search extends React.Component {
           isSearching: false,
           isOpen: true,
           // we need this filtering because the search my return documents of types not in schema
-          items: hits.filter(hit => schema.has(unprefixTypeName(hit._type)))
+          items: hits.filter(hit => schema.has(hit._type))
         })
       })
 
@@ -80,8 +73,7 @@ class Search extends React.Component {
   getTopItems = () => {
     // We use 3 last edited items until we have logic for most used etc.
 
-    // TODO hack until gradient supports 'schemaName.*'
-    const prefixedTypeNames = schema.getTypeNames().map(prefixTypeName).map(str => `"${str}"`)
+    const prefixedTypeNames = schema.getTypeNames().map(str => `"${str}"`)
 
     const query = `*[_type in [${prefixedTypeNames.join(', ')}]] | order(_updatedAt desc) [0...3]`
 
@@ -108,10 +100,8 @@ class Search extends React.Component {
   }
 
   handleGoToItem = item => {
-    // @TODO Hack for assuming desktool until we have a path resolver
-    const unprefixedType = unprefixTypeName(item._type)
     const id = item._id
-    const url = ['/desk', unprefixedType, 'edit', id].join('/')
+    const url = ['/desk', item._type, 'edit', id].join('/')
 
     locationStore.actions.navigate(url, {replace: false})
 
@@ -128,7 +118,7 @@ class Search extends React.Component {
   }
 
   renderItem = (item, options) => {
-    const type = schema.get(unprefixTypeName(item._type))
+    const type = schema.get(item._type)
     return (
       <IntentLink intent="edit" params={{id: item._id, type: type.name}} className={globalSearchStyles.link}>
         <Preview
