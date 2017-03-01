@@ -1,5 +1,5 @@
 import fromEvent from '../utils/fromEvent'
 
-export default fromEvent(document.body, 'scroll', true)
+export default fromEvent(window, 'scroll', {passive: true, capture: true})
+  .debounceTime(200)
   .share()
-  .merge(fromEvent(window, 'scroll', true).share())

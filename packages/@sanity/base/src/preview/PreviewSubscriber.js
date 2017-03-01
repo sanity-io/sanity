@@ -1,15 +1,27 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
+import Observable from '@sanity/observable'
 import observeForPreview from './observeForPreview'
 import shallowEquals from 'shallow-equals'
 import resize$ from './streams/resize'
 import scroll$ from './streams/scroll'
 import orientationChange$ from './streams/orientationChange'
-import visibility$ from './streams/visibilityChange'
-import Observable from '@sanity/observable'
+import visibilityChange$ from './streams/visibilityChange'
 
-function contains(element, viewport) {
-  const rect = element.getBoundingClientRect()
+const log = (...outer) => (...inner) => console.log(...outer, ...inner)
+
+function isVisible() {
+  return !document.hidden
+}
+
+function getViewport() {
+  return {
+    height: window.innerHeight,
+    width: window.innerWidth
+  }
+}
+
+function contains(rect, viewport) {
   return (
     rect.top + rect.height >= 60
     && rect.left + rect.width >= 60
@@ -18,12 +30,10 @@ function contains(element, viewport) {
   )
 }
 
-const viewport$ = resize$
-  .merge(orientationChange$)
-  .merge(scroll$)
-  .withLatestFrom(resize$)
-  .map(([, viewport]) => viewport)
-  .debounceTime(100)
+function inViewport(element) {
+  return () => contains(element.getBoundingClientRect(), getViewport())
+}
+
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
@@ -67,33 +77,36 @@ export default class PreviewSubscriber extends React.PureComponent {
   subscribe(value, type) {
     this.unsubscribe()
 
-    const domNode = ReactDOM.findDOMNode(this)
-    const elementVisibility$ = viewport$
-      .map(viewport => contains(domNode, viewport))
+    const visibilityOn$ = Observable.of(isVisible())
+       .merge(visibilityChange$.map(event => !event.target.hidden))
 
-    const activate$ = visibility$
-      .switchMap(() => elementVisibility$, (tabVisibility, elementVisibility) => [tabVisibility, elementVisibility])
-      .map(([tabVisibility, elementVisibility]) =>
-        tabVisibility && elementVisibility
-      )
-      .share()
+    const checkViewport = inViewport(ReactDOM.findDOMNode(this))
+    const inViewport$ = resize$.merge(scroll$)
+      .merge(orientationChange$)
+      .debounceTime(200)
+      .map(checkViewport)
 
-    const observe$ = observeForPreview(value, type)
-
-    this.subscription = activate$
+    this.subscription = visibilityOn$
       .distinctUntilChanged()
-      .do(this.setLive)
-      .filter(Boolean)
-      .switchMap(() => observe$)
+      .switchMap(on => {
+        return on ? Observable.of(checkViewport()).merge(inViewport$) : Observable.of(false)
+      })
+      .distinctUntilChanged()
+      // .do(log('in viewport', value._id))
+      .switchMap(isInViewport => {
+        return isInViewport
+          ? observeForPreview(value, type)
+            // .do(log('observed for preview', value))
+          : Observable.of(null)
+      })
+      // .do(log('snapshot', value._id))
       .subscribe(snapshot => {
         if (snapshot) {
-          this.setState({snapshot})
+          this.setState({snapshot, isLive: true})
+        } else {
+          this.setState({isLive: false})
         }
       })
-  }
-
-  setLive = isLive => {
-    this.setState({isLive: isLive})
   }
 
   render() {

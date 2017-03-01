@@ -1,16 +1,28 @@
-import {has, isObject, isArray} from 'lodash'
+import {uniq, isObject, isArray} from 'lodash'
 import Observable from '@sanity/observable'
 import {create} from 'observable-props'
 
 const props = create(Observable)
 
-function resolveMissingPaths(value, paths) {
-  return paths.filter(path => !has(value, path))
+function resolveMissingHeads(value, paths) {
+  return paths.filter(path => !(path[0] in value))
 }
+
 function isReference(value) {
   return value._type === 'reference'
     // should not happen as all references should have _type === 'reference'
     || (!('_type' in value) && ('_ref' in value))
+}
+
+function isDocument(value) {
+  return '_id' in value
+}
+
+function createEmpty(keys) {
+  return keys.reduce((result, key) => {
+    result[key] = undefined
+    return result
+  }, {})
 }
 
 export default function createPreviewObserver(observeWithPaths) {
@@ -20,10 +32,19 @@ export default function createPreviewObserver(observeWithPaths) {
       // Reached a leaf. Don't blow up
       return Observable.of(value)
     }
-    if (isReference(value)) {
-      const heads = paths.map(path => [path[0]])
-      const tails = paths.map(path => path.slice(1))
-      return observeWithPaths(value._ref, heads).mergeMap(doc => follow(doc, tails))
+    const missingHeads = resolveMissingHeads(value, paths)
+    if (missingHeads.length > 0) {
+      // Reached a node that is either a document (with _id), or a reference (with _ref) that
+      // needs to be "materialized"
+
+      const nextHeads = uniq(missingHeads.map(path => [path[0]]))
+
+      if (isReference(value) || isDocument(value)) {
+        const id = isReference(value) ? value._ref : value._id
+        return observeWithPaths(id, nextHeads).switchMap(snapshot => {
+          return follow({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
+        })
+      }
     }
 
     const leads = {}
@@ -39,28 +60,12 @@ export default function createPreviewObserver(observeWithPaths) {
       const tails = leads[head]
       if (tails.every(tail => tail.length === 0)) {
         res[head] = value[head]
-      } else {
-        res[head] = follow(value[head] || {}, tails)
+      } else if (value[head]) {
+        res[head] = follow(value[head], tails)
       }
       return res
     }, {...value}))
   }
 
-  return function observe(value, paths) {
-    const missingPaths = resolveMissingPaths(value, paths)
-    if (missingPaths.length === 0) {
-      return follow(value, paths)
-    }
-    const id = isReference(value) ? value._ref : value._id
-    if (id) {
-      const heads = missingPaths.map(path => [path[0]])
-
-      return observeWithPaths(id, heads)
-        .mergeMap(doc => follow({...value, ...doc}, missingPaths))
-    }
-
-    // No id means we are at a inline object. There still might be paths that needs fetching
-    return follow(value, missingPaths)
-
-  }
+  return follow
 }

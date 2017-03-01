@@ -29,6 +29,11 @@ function fetchAllDocumentSnapshots(selections) {
     .map(result => result.map(res => res[0]))
 }
 
+function fetchDocumentSnapshot(id, selection) {
+  return client.observable.fetch(`*[_id==$id]{_id,_type,${selection.join(',')}}`, {id})
+    .map(result => result[0])
+}
+
 const debouncedFetchDocumentSnapshot = debounceCollect(fetchAllDocumentSnapshots, 50)
 
 export default function observePaths(id, paths) {
