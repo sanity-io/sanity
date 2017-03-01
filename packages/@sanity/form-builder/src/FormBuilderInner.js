@@ -16,8 +16,8 @@ export class FormBuilderInner extends React.Component {
     validation: {messages: [], fields: {}}
   }
 
-  resolveInputComponent(field, type) {
-    return this.context.formBuilder.resolveInputComponent(field, type)
+  resolveInputComponent(type) {
+    return this.context.formBuilder.resolveInputComponent(type)
   }
 
   resolvePreviewComponent(type) {
