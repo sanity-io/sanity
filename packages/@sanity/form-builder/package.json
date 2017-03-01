@@ -8,7 +8,6 @@
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
     "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
-    "postpublish": "npm run clean",
     "lint": "eslint . --quiet",
     "tap": "tap --node-arg -r --node-arg ./test/.init.js",
     "test": "npm run tap ./test/*.test.js ./test/**/*.test.js",

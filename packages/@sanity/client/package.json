@@ -11,7 +11,6 @@
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
-    "postpublish": "npm run clean",
     "posttest": "eslint .",
     "prepublish": "in-publish && npm run build || not-in-publish",
     "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
