@@ -132,7 +132,7 @@ async function gatherProjectInfo(context, baseInfo) {
     return new Error(`Project specified in configuration (${projectId}) does not exist in API`)
   }
 
-  const member = projectInfo.members.find(proj => proj.id === baseInfo.user.id)
+  const member = (projectInfo.members || []).find(proj => proj.id === baseInfo.user.id)
   const hostname = projectInfo.studioHostname && `https://${projectInfo.studioHostname}.sanity.studio/`
   return {
     id: projectId,
