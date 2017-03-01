@@ -14,6 +14,7 @@ import styles from './styles/Array.css'
 import arrify from 'arrify'
 import randomKey from './randomKey'
 import {get} from 'lodash'
+import humanizeList from 'humanize-list'
 
 function createProtoValue(schema, type) {
   if (type.jsonType !== 'object') {
@@ -242,9 +243,10 @@ export default class Arr extends React.Component {
     const itemType = this.getItemType(item)
     if (!itemType) {
       return (
-        <div>
-          <p>Invalid type: <pre>{JSON.stringify(item.context.type.name)}</pre></p>
-          <p>Only allowed types are: <pre>{JSON.stringify(type.of.map(ofType => ofType.name))}</pre></p>
+        <div className={styles.warning}>
+          <h3>Warning</h3>
+          <div>Array item has an invalid type: <pre>{item.serialize()._type}</pre></div>
+          <div>The only allowed item types are: <pre>{humanizeList(type.of.map(ofType => ofType.name))}</pre></div>
         </div>
       )
     }
