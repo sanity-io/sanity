@@ -40,7 +40,8 @@
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
     "husky": "^0.13.1",
-    "lerna": "2.0.0-beta.32",
-    "through2": "^2.0.3"
+    "lerna": "2.0.0-beta.38",
+    "through2": "^2.0.3",
+    "yarn": "^0.21.3"
   }
 }

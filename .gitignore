@@ -41,3 +41,7 @@ jspm_packages
 
 # VS Code settings
 .vscode
+
+# Yarn lockfiles 
+packages/*/yarn.lock
+packages/@sanity/*/yarn.lock
