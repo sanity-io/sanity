@@ -4,6 +4,7 @@ import MediaPreview from 'part:@sanity/components/previews/media'
 import {ContainerQuery} from 'react-container-query'
 import classnames from 'classnames'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
+import GridListItem from 'part:@sanity/components/lists/items/grid'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import itemStyles from 'part:@sanity/components/lists/items/grid-style'
 import ListItemWrapper from './items/ListItemWrapper'
@@ -115,7 +116,6 @@ class GridList extends React.Component {
     })
 
     const key = getItemKey(item, index)
-
     return (
       <ListItemWrapper
         className={styles.item}
@@ -133,7 +133,16 @@ class GridList extends React.Component {
           sortable && useDragHandle && <DragHandle />
         }
 
-        {renderedItem}
+        <GridListItem
+          key={key}
+          item={item}
+          onSelect={onSelect}
+          onOpen={onOpen}
+          selected={isSelected}
+          focus={hasFocus}
+        >
+          {renderedItem}
+        </GridListItem>
       </ListItemWrapper>
     )
   }
