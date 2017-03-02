@@ -10,5 +10,8 @@
   "rules": {
     "newline-per-chained-call": 0,
     "sort-imports": 0
+  },
+  "globals": {
+    "__DEV__": true
   }
 }
