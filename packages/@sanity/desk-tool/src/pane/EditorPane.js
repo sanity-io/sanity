@@ -288,7 +288,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
               title="Create a copy"
               icon={PlusIcon}
             >
-              Create a copy
+              Copy
             </DefaultButton>
             <DefaultButton
               onClick={this.handleRequestDelete}
