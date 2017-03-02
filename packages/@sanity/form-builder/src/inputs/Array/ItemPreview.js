@@ -27,16 +27,13 @@ export default class ItemPreview extends React.Component {
     return !equals(nextProps, this.props)
   }
 
-  toggleEdit() {
-    // Handle toggle insted of edit
-  }
-
   handleRemove(event) {
     event.stopPropagation()
     event.preventDefault()
     const {value, onRemove} = this.props
     onRemove(value)
   }
+
   handleMouseDown(event) {
     event.stopPropagation()
   }
