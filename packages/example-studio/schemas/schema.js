@@ -355,13 +355,18 @@ export default createSchema({
       type: 'object',
       title: 'Author',
       preview: {
-        select: {title: 'name'}
+        select: {title: 'name', imageUrl: 'image.asset.url'}
       },
       fields: [
         {
           name: 'name',
           title: 'Name',
           type: 'string'
+        },
+        {
+          name: 'image',
+          title: 'Image',
+          type: 'image'
         },
         {
           name: 'awards',
