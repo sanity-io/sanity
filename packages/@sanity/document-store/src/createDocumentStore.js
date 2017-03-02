@@ -9,21 +9,17 @@ function TODO(msg = 'TODO') {
     throw new Error(msg)
   }
 }
-const NOOP = () => {
-}
+const NOOP = () => {}
 
 function createBufferedDocument(documentId, server) {
 
   const serverEvents$ = Observable.from(server.byId(documentId)).share()
+
   const bufferedDocs$ = serverEvents$
-    .first(event => event.type === 'snapshot')
+    .filter(event => event.type === 'snapshot')
     .map(event => event.document)
     .map(snapshot => {
       const bufferedDocument = new BufferedDocument(snapshot)
-
-      serverEvents$
-        .filter(event => event.type === 'mutation')
-        .map(event => bufferedDocument.arrive(new Mutation(event)))
 
       bufferedDocument.commitHandler = function commitHandler(opts) {
         const payload = opts.mutation.params
@@ -57,7 +53,16 @@ function createBufferedDocument(documentId, server) {
             origin: remote ? 'remote' : 'local'
           })
         }
+
+        const serverMutations = serverEvents$
+          .filter(event => event.type === 'mutation')
+          // .do(event => {
+          //   console.log('server event arrived', event)
+          // })
+          .subscribe(event => bufferedDocument.arrive(new Mutation(event)))
+
         return () => {
+          serverMutations.unsubscribe()
           bufferedDocument.onMutation = NOOP
         }
       }).share()
@@ -97,29 +102,31 @@ function createBufferedDocument(documentId, server) {
     })
     .share()
 
-  let current
-  function getCurrent() {
-    if (current) {
-      return Observable.of(current)
+  let currentBuffered
+  const cachedBuffered = new Observable(observer => {
+    if (currentBuffered) {
+      observer.next(currentBuffered)
+      observer.complete()
     }
-    return bufferedDocs$.first().do(next => {
-      current = next
+    return bufferedDocs$.do(doc => {
+      currentBuffered = doc
     })
-  }
+      .subscribe(observer)
+  })
 
   return {
-    events: getCurrent().mergeMap(bufferedDoc => bufferedDoc.events),
+    events: cachedBuffered.switchMap(bufferedDoc => bufferedDoc.events),
     patch(patches) {
-      getCurrent().subscribe(bufferedDoc => bufferedDoc.patch(patches))
+      cachedBuffered.subscribe(bufferedDoc => bufferedDoc.patch(patches))
     },
     create(document) {
-      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.create(document))
+      return cachedBuffered.switchMap(bufferedDoc => bufferedDoc.create(document))
     },
     delete() {
-      return getCurrent().subscribe(bufferedDoc => bufferedDoc.delete())
+      return cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
     },
     commit() {
-      return getCurrent().mergeMap(bufferedDoc => bufferedDoc.commit())
+      return cachedBuffered.switchMap(bufferedDoc => bufferedDoc.commit())
     }
   }
 }
