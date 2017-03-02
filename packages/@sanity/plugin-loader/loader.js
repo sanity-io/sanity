@@ -94,7 +94,7 @@ function registerLoader(options) {
         ? implementers
         : implementers.map(interopRequire)
 
-      require.cache[request] = getModule(request, implementations)
+      require.cache[request] = getModule(request, implementations.reverse())
       return request
     }
 
