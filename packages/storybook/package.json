@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.101.17",
+  "version": "0.103.0",
   "private": true,
   "description": "",
   "main": "config.js",
@@ -12,13 +12,13 @@
   "dependencies": {
     "@kadira/react-storybook-addon-info": "^3.3.0",
     "@kadira/storybook": "^2.35.3",
-    "@sanity/base": "^0.101.17",
-    "@sanity/components": "^0.101.17",
-    "@sanity/default-layout": "^0.101.17",
-    "@sanity/default-login": "^0.101.6",
-    "@sanity/desk-tool": "^0.101.17",
-    "@sanity/google-maps-input": "^0.101.17",
-    "@sanity/server": "^0.101.3",
+    "@sanity/base": "^0.103.0",
+    "@sanity/components": "^0.103.0",
+    "@sanity/default-layout": "^0.103.0",
+    "@sanity/default-login": "^0.103.0",
+    "@sanity/desk-tool": "^0.103.0",
+    "@sanity/google-maps-input": "^0.103.0",
+    "@sanity/server": "^0.103.0",
     "normalize.css": "^5.0.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
