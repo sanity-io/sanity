@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "sanity start",
-    "test": "sanity check"
+    "test": "sanity check",
+    "clean": "rimraf dist"
   },
   "keywords": [
     "sanity"
@@ -25,5 +26,7 @@
     "react-dom": "^15.4.2",
     "sanity-plugin-vision": "^1.0.7"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "rimraf": "^2.6.1"
+  }
 }
