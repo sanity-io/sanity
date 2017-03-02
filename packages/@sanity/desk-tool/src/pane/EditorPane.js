@@ -274,6 +274,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
       )
     }
 
+    const docTitle = value.getAttribute(titleProp).serialize()
     return (
       <div className={styles.root}>
 
@@ -285,7 +286,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
               onClick={this.handleCreateCopy}
               color="primary"
               kind="secondary"
-              title="Create a copy"
+              title={`Create a copy of ${docTitle}`}
               icon={PlusIcon}
             >
               Copy
@@ -295,14 +296,14 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
               color="danger"
               kind="simple"
               loading={deleteInProgress}
-              title={`Delete ${value.getAttribute(titleProp).serialize()}`}
+              title={`Delete ${docTitle}`}
               icon={TrashIcon}
             >
               Delete
             </DefaultButton>
           </div>
           <h1 className={styles.title}>
-            {(titleProp && value.getAttribute(titleProp).serialize()) || 'Untitled…'}
+            {(titleProp && docTitle) || 'Untitled…'}
           </h1>
 
           <div className={spin ? styles.spinner : styles.spinnerInactive}>
