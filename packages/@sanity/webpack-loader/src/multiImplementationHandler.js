@@ -19,7 +19,7 @@ module.exports = function multiImplementationHandler(partName, implementations) 
   return banner
     .concat(normalizer)
     .concat(['\nmodule.exports = ['])
-    .concat(implementations.map((implementer, i) => `  require('${implementer}')`).join(',\n'))
+    .concat(implementations.reverse().map((implementer, i) => `  require('${implementer}')`).join(',\n'))
     .concat(['].map(normalize)\n'])
     .join('\n')
     .replace(/PART_NAME/g, partName)
