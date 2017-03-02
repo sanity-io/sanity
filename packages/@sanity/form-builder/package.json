@@ -43,7 +43,7 @@
     "slate": "^0.16.28",
     "slate-insert-block-on-enter": "0.0.2",
     "slate-soft-break": "^0.3.0",
-    "slugify": "^1.1.0"
+    "speakingurl": "^13.0.0"
   },
   "devDependencies": {
     "@sanity/base": "^0.103.0",

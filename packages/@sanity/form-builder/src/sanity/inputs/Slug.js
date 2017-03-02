@@ -1,17 +1,11 @@
+import slugify from 'speakingurl'
+
 import client from 'part:@sanity/base/client'
 import {SlugInput} from '../../index'
 
-import slugify from 'slugify'
-slugify.extend({'☃': 'snowman'})
-slugify.extend({'✅': 'check'})
-slugify.extend({'☺': 'smiling'})
-slugify.extend({'☹': 'unhappy'})
-slugify.extend({'☕': 'coffee'})
-slugify.extend({'✌': 'victory'})
-
 // Default slugify for Sanity
 export function sanitySlugify(type, slug) {
-  return slug ? slugify(slug).toLowerCase() : undefined
+  return slug ? slugify(slug, {symbols: true}) : undefined
 }
 
 export function validateSlug(type, slug, myDocId) {
