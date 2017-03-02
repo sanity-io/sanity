@@ -4,6 +4,18 @@
 
 .datepicker {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  margin-top: 10px;
+}
+
+.kronos {
+  position: relative;
+  display: flex;
+  color: hsl(0, 0%, 50%);
+}
+
+.kronos * {
+  box-sizing: border-box;
+  user-select: none;
 }
 
 :global(.react-datepicker) {
