@@ -36,12 +36,5 @@ describe('util', () => {
       expect(reduced.nested.structure).to.equal(true)
       expect(reduced.nested.onlyInOriginal).to.equal('yes')
     })
-
-    it('sets api host in staging mode', () => {
-      const reduced = reduceConfig({api: {dataset: 'hei'}}, 'production', true)
-
-      expect(reduced.api.apiHost).to.include('.work')
-      expect(reduced.api.dataset).to.equal('hei')
-    })
   })
 })
