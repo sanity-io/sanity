@@ -45,6 +45,7 @@
     "@sanity/check": "^0.103.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "eslint": "^3.16.1",
     "mocha": "^3.2.0",
     "nyc": "^10.0.0",
     "proxyquire": "^1.7.10",
