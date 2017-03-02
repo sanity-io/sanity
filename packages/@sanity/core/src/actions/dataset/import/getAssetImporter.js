@@ -1,7 +1,6 @@
 import crypto from 'crypto'
-import {get} from 'lodash'
-import through2 from 'through2'
 import promiseEach from 'promise-each-concurrency'
+import {get} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import getBufferForUri from '../../../util/getBufferForUri'
 import debug from '../../../debug'
@@ -56,7 +55,7 @@ export default options => {
     // If it doesn't exist, we want to upload it
     debug('Uploading %s with URL %s', item.asset.type, item.asset.url)
     const buffer = await getBufferForUri(item.asset.url)
-    const asset = await (client.assets.upload(item.asset.type, buffer, {label}).toPromise())
+    const asset = await client.assets.upload(item.asset.type, buffer, {label})
     return asset.document._id
   }
 }
