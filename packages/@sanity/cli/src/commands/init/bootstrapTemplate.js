@@ -39,14 +39,8 @@ export default async (opts, context) => {
 
   // Resolve latest versions of dependencies
   spinner = output.spinner('Resolving latest module versions').start()
-  const deps = await resolveLatestVersions(modules, {asRange: true})
+  const dependencies = await resolveLatestVersions(modules, {asRange: true})
   spinner.succeed()
-
-  // @todo REMOVE THIS ONCE WERE FINISHED WITH THE NEW QUERY UPGRADE
-  const dependencies = Object.keys(deps).reduce((versions, pkgName) => {
-    versions[pkgName] = pkgName.indexOf('@sanity') === 0 ? 'next' : versions[pkgName]
-    return versions
-  }, deps)
 
   // Now create a package manifest (`package.json`) with the merged dependencies
   const packageManifest = await createPackageManifest({...opts, dependencies})
