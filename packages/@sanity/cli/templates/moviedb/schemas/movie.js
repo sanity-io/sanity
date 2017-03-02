@@ -28,7 +28,11 @@ export default {
     {
       name: 'releaseDate',
       title: 'Release date',
-      type: 'date'
+      type: 'date',
+      options: {
+        inputUtc: true,
+        inputTime: false
+      }
     },
     {
       name: 'externalId',
