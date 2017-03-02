@@ -120,10 +120,10 @@ function createBufferedDocument(documentId, server) {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.patch(patches))
     },
     create(document) {
-      return cachedBuffered.switchMap(bufferedDoc => bufferedDoc.create(document))
+      cachedBuffered.subscribe(bufferedDoc => bufferedDoc.create(document))
     },
     delete() {
-      return cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
+      cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
     },
     commit() {
       return cachedBuffered.switchMap(bufferedDoc => bufferedDoc.commit())
