@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo 'No test specified'"
   },
   "keywords": [],
   "author": "",
