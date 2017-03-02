@@ -12,7 +12,12 @@ export default options => {
   return through.obj(onChunk, onFlush)
 
   async function uploadAssets(stream, cb) {
-    await promiseEach(documents, assetImporter.processDocument, {concurrency})
+    try {
+      await promiseEach(documents, assetImporter.processDocument, {concurrency})
+    } catch (err) {
+      cb(err)
+      return
+    }
 
     while (documents.length > 0) {
       stream.push(documents.shift())
