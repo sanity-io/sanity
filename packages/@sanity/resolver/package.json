@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^0.103.6",
+    "@sanity/util": "^0.103.7",
     "lodash.uniq": "^4.5.0",
     "mz": "^2.4.0",
     "path-exists": "^3.0.0",

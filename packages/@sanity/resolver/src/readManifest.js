@@ -1,14 +1,13 @@
-/* eslint-disable no-sync */
+/* eslint-disable no-sync, no-process-env */
 import fsp from 'mz/fs'
 import path from 'path'
-import validateManifest from './validateManifest'
 import generateHelpUrl from '@sanity/generate-help-url'
+import {reduceConfig} from '@sanity/util'
+import validateManifest from './validateManifest'
 
 function readManifestSync(manifestPath, options) {
   try {
-    const manifest = fsp.readFileSync(manifestPath)
-    const parsedManifest = JSON.parse(manifest)
-    return validateManifest(parsedManifest)
+    return parseManifest(fsp.readFileSync(manifestPath), options)
   } catch (err) {
     return handleManifestReadError(err, options)
   }
@@ -28,7 +27,16 @@ function handleManifestReadError(err, options) {
   throw err
 }
 
-function readManifest(options = {}) {
+function parseManifest(rawData, options) {
+  const parsedManifest = JSON.parse(rawData)
+  const manifest = validateManifest(parsedManifest)
+  const reduced = reduceConfig(manifest, options.env)
+  return reduced
+}
+
+function readManifest(opts = {}) {
+  const env = process.env.NODE_ENV || 'development'
+  const options = Object.assign({env}, opts)
   const basePath = options.basePath || process.cwd()
   const manifestPath = path.join(options.manifestDir || basePath, 'sanity.json')
 
@@ -37,8 +45,7 @@ function readManifest(options = {}) {
   }
 
   return fsp.readFile(manifestPath, {encoding: 'utf8'})
-    .then(data => JSON.parse(data))
-    .then(manifest => validateManifest(manifest, options.plugin))
+    .then(raw => parseManifest(raw, options))
     .catch(err => handleManifestReadError(err, options))
 }
 
