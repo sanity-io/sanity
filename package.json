@@ -1,4 +1,5 @@
 {
+  "name": "sanity",
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run install",
@@ -12,7 +13,7 @@
     "watch": "gulp watch",
     "install": "node node_modules/husky/bin/install",
     "commitmsg": "node scripts/validateCommitMessage.js",
-    "versions": "node scripts/compareDependencyVersions.js"
+    "versions": "node scripts/normalizeDependencyVersions.js"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
@@ -46,5 +47,8 @@
     "rimraf": "^2.6.1",
     "through2": "^2.0.3",
     "yarn": "^0.21.3"
+  },
+  "dependencies": {
+    "semver": "^5.3.0"
   }
 }
