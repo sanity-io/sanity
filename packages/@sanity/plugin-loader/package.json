@@ -32,7 +32,7 @@
   "devDependencies": {
     "ava": "^0.16.0",
     "eslint": "^3.16.1",
-    "nyc": "^8.3.2"
+    "nyc": "^10.1.2"
   },
   "dependencies": {
     "@sanity/resolver": "^0.103.8",

@@ -8,20 +8,20 @@
   },
   "dependencies": {
     "async": "^1.5.0",
-    "loader-utils": "^0.2.3",
+    "loader-utils": "^0.2.16",
     "webpack-sources": "^0.1.0"
   },
   "devDependencies": {
     "codecov.io": "^0.1.2",
     "coveralls": "^2.11.2",
-    "css-loader": "^0.21.0",
-    "file-loader": "^0.8.4",
+    "css-loader": "^0.26.1",
+    "file-loader": "^0.9.0",
     "istanbul": "^0.3.13",
-    "mocha": "^2.3.3",
+    "mocha": "^3.2.0",
     "mocha-lcov-reporter": "0.0.2",
     "raw-loader": "^0.5.1",
-    "should": "^7.1.1",
-    "style-loader": "^0.13.0",
+    "should": "^11.1.0",
+    "style-loader": "^0.13.1",
     "webpack": "^1.14.0"
   },
   "homepage": "http://github.com/webpack/extract-text-webpack-plugin",

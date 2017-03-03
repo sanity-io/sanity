@@ -2,13 +2,14 @@
   "name": "sanity",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap && npm run install",
+    "bootstrap": "lerna bootstrap --hoist --loglevel=silly && npm run install",
     "build": "lerna run clean && gulp",
     "clean": "lerna run clean && lerna clean",
     "publish": "npm run build && lerna publish",
     "start": "gulp dev",
     "storybook": "gulp storybook",
-    "test": "lerna run test",
+    "test": "echo 'Run `npm test-all` to run `npm test` for every package'",
+    "test-all": "lerna run test --stream",
     "updated": "lerna updated",
     "watch": "gulp watch",
     "install": "node node_modules/husky/bin/install",
@@ -45,10 +46,8 @@
     "husky": "^0.13.1",
     "lerna": "2.0.0-beta.38",
     "rimraf": "^2.6.1",
+    "semver": "^5.3.0",
     "through2": "^2.0.3",
     "yarn": "^0.21.3"
-  },
-  "dependencies": {
-    "semver": "^5.3.0"
   }
 }
