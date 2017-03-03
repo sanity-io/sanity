@@ -11,7 +11,8 @@
     "updated": "lerna updated",
     "watch": "gulp watch",
     "install": "node node_modules/husky/bin/install",
-    "commitmsg": "node scripts/validateCommitMessage.js"
+    "commitmsg": "node scripts/validateCommitMessage.js",
+    "versions": "node scripts/compareDependencyVersions.js"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
@@ -32,6 +33,7 @@
     "eslint-config-sanity": "^2.0.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.0",
+    "glob": "^7.1.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-filter": "^5.0.0",
