@@ -1,6 +1,6 @@
 {
   "name": "@sanity/webpack-loader",
-  "version": "0.103.6",
+  "version": "0.103.7",
   "description": "Plugin loader for Sanity. Resolves parts based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
   "main": "src/PartResolverPlugin.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "homepage": "https://github.com/sanity-io/webpack-loader#readme",
   "dependencies": {
     "@sanity/resolver": "^0.103.6",
-    "@sanity/util": "^0.103.6",
+    "@sanity/util": "^0.103.7",
     "loader-utils": "^0.2.16"
   },
   "devDependencies": {
