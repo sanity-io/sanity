@@ -24,8 +24,5 @@
   "dependencies": {
     "eventsource": "^0.2.1",
     "eventsource-polyfill": "^0.9.6"
-  },
-  "devDependencies": {
-    "pre-commit": "^1.1.3"
   }
 }
