@@ -34,7 +34,7 @@ export default (config = {}) => {
   const bundleEnv = process.env.BUNDLE_ENV || 'development' // eslint-disable-line no-process-env
 
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
-  const resolverOpts = Object.assign({basePath}, config.resolver || {})
+  const resolverOpts = Object.assign({basePath, env}, config.resolver || {})
 
   const cssExtractor = isProd
     && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
