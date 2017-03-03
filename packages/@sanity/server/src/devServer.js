@@ -12,6 +12,13 @@ export default function getDevServer(config = {}) {
   const app = getBaseServer()
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
 
+  // Serve an empty CSS file for the main stylesheet,
+  // as they are injected dynamically in development mode
+  app.get('/static/css/main.css', (req, res) => {
+    res.set('Content-Type', 'text/css')
+    res.send()
+  })
+
   // Use babel-register in order to be able to load things like
   // the document component, which can contain JSX etc
   registerBabel()
@@ -42,13 +49,6 @@ export default function getDevServer(config = {}) {
   }))
 
   app.use(webpackHotMiddleware(compiler))
-
-  // Serve an empty CSS file for the main stylesheet,
-  // as they are injected dynamically in development mode
-  app.get('/static/css/main.css', (req, res) => {
-    res.set('Content-Type', 'text/css')
-    res.send()
-  })
 
   // Expose webpack compiler on server instance
   app.locals.compiler = compiler
