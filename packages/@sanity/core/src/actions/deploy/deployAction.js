@@ -31,6 +31,7 @@ export default async (args, context) => {
 
     studioHostname = await prompt.single({
       type: 'input',
+      filter: inp => inp.replace(/\.sanity\.studio$/i, ''),
       message: 'Studio hostname (<value>.sanity.studio):',
       validate: name => validateHostname(name, client)
     })
