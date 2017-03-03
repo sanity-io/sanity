@@ -35,12 +35,12 @@
     "@sanity/client": "^0.103.6",
     "@sanity/components": "^0.103.8",
     "@sanity/core": "^0.103.8",
-    "history": "^4.5.0",
+    "history": "^4.5.1",
     "postcss-cssnext": "^2.9.0",
-    "react": "^15.4.1",
+    "react": "^15.4.2",
     "react-click-outside": "^2.2.0",
-    "react-dom": "^15.4.1",
-    "rimraf": "^2.5.4"
+    "react-dom": "^15.4.2",
+    "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",

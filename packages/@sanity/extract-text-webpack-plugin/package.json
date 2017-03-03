@@ -22,7 +22,7 @@
     "raw-loader": "^0.5.1",
     "should": "^7.1.1",
     "style-loader": "^0.13.0",
-    "webpack": "^1.12.2"
+    "webpack": "^1.14.0"
   },
   "homepage": "http://github.com/webpack/extract-text-webpack-plugin",
   "repository": {

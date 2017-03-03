@@ -15,17 +15,17 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.16.0",
-    "moment": "^2.13.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.15.2",
     "moment-timezone": "^0.5.11",
-    "postcss-cssnext": "^2.7.0",
+    "postcss-cssnext": "^2.9.0",
     "postcss-simple-extend": "^1.0.0",
     "react-kronos": "^1.5.2"
   },
   "devDependencies": {
     "@sanity/check": "^0.103.8",
     "in-publish": "^2.0.0",
-    "rimraf": "^2.5.2",
+    "rimraf": "^2.6.1",
     "stylelint": "^7.5.0",
     "stylelint-config-standard": "^14.0.0"
   },

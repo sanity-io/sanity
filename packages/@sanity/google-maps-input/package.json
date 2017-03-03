@@ -26,7 +26,7 @@
     "@sanity/core": "^0.103.8",
     "@sanity/form-builder": "^0.103.8",
     "lodash.keyby": "^4.6.0",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",

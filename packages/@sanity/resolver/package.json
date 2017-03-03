@@ -26,12 +26,12 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
-    "lodash": "^4.16.4",
+    "lodash": "^4.17.4",
     "mocha": "^2.4.5",
     "mock-fs": "^3.11.0",
     "nyc": "^8.3.0",
-    "proxyquire": "^1.7.4",
-    "rimraf": "^2.5.2"
+    "proxyquire": "^1.7.10",
+    "rimraf": "^2.6.1"
   },
   "dependencies": {
     "@sanity/generate-help-url": "^0.103.6",

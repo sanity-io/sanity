@@ -16,11 +16,11 @@
   ],
   "dependencies": {
     "in-publish": "^2.0.0",
-    "lodash": "^4.15.0"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@sanity/check": "^0.103.8",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",

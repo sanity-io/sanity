@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "boxen": "^1.0.0",
-    "browserify": "^13.1.1",
+    "browserify": "^13.3.0",
     "chalk": "^1.1.3",
     "envify": "^4.0.0",
     "eslint": "^3.16.1",
@@ -36,9 +36,9 @@
     "nock": "git://github.com/rexxars/nock.git#fix-socket-event-scope",
     "nyc": "^10.1.2",
     "pretty-bytes": "^4.0.2",
-    "rimraf": "^2.6.0",
+    "rimraf": "^2.6.1",
     "tape": "^4.6.2",
-    "uglify-js": "^2.7.3",
+    "uglify-js": "^2.7.5",
     "uglifyify": "^3.0.4"
   },
   "repository": {

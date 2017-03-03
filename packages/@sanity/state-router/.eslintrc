@@ -1,7 +1,7 @@
 {
   "extends": [
-    "bengler",
-    "bengler/react"
+    "sanity",
+    "sanity/react"
   ],
   "env": {
     "node": true
