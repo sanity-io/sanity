@@ -8,8 +8,6 @@ import scroll$ from './streams/scroll'
 import orientationChange$ from './streams/orientationChange'
 import visibilityChange$ from './streams/visibilityChange'
 
-const log = (...outer) => (...inner) => console.log(...outer, ...inner)
-
 function isVisible() {
   return !document.hidden
 }
