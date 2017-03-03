@@ -36,5 +36,16 @@ describe('util', () => {
       expect(reduced.nested.structure).to.equal(true)
       expect(reduced.nested.onlyInOriginal).to.equal('yes')
     })
+
+    it('concats arrays', () => {
+      const reduced = reduceConfig({
+        root: true,
+        plugins: ['@sanity/base', '@sanity/components'],
+        env: {development: {plugins: ['vision']}}
+      }, 'development')
+
+      expect(reduced.root, true)
+      expect(reduced.plugins).to.deep.equal(['@sanity/base', '@sanity/components', 'vision'])
+    })
   })
 })

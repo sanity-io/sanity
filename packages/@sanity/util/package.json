@@ -23,7 +23,7 @@
   "homepage": "https://github.com/sanity-io/util#readme",
   "dependencies": {
     "fs-promise": "^0.5.0",
-    "lodash.merge": "^4.6.0"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "babel-preset-es2015-node4": "^2.1.0",
