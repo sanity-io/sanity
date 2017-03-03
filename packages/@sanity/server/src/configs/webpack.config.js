@@ -3,7 +3,7 @@ import path from 'path'
 import webpack from 'webpack'
 import parents from 'parents'
 import resolveFrom from 'resolve-from'
-import RoleResolverPlugin from '@sanity/webpack-loader'
+import PartResolverPlugin from '@sanity/webpack-loader'
 import ExtractTextPlugin from '@sanity/extract-text-webpack-plugin'
 import postcssPlugins from './postcssPlugins'
 
@@ -112,7 +112,7 @@ export default (config = {}) => {
       new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'}),
       cssExtractor,
       new OccurrenceOrderPlugin(),
-      new RoleResolverPlugin(resolverOpts),
+      new PartResolverPlugin(resolverOpts),
       commonChunkPlugin
     ].filter(Boolean),
     postcss: postcssPlugins({basePath})
