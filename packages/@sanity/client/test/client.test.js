@@ -195,6 +195,25 @@ test('can query for documents', t => {
   }).catch(t.ifError).then(t.end)
 })
 
+test('can query for documents and return full response', t => {
+  const query = 'beerfiesta.beer[.title == $beerName]'
+  const params = {beerName: 'Headroom Double IPA'}
+  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+
+  nock(projectHost()).get(`/v1/data/query/foo?query=${qs}`).reply(200, {
+    ms: 123,
+    q: query,
+    result: [{_id: 'njgNkngskjg', rating: 5}]
+  })
+
+  getClient().fetch(query, params, {filterResponse: false}).then(res => {
+    t.equal(res.ms, 123, 'should include timing info')
+    t.equal(res.q, query, 'should include query')
+    t.equal(res.result.length, 1, 'length should match')
+    t.equal(res.result[0].rating, 5, 'data should match')
+  }).catch(t.ifError).then(t.end)
+})
+
 test('handles api errors gracefully', t => {
   const response = {
     statusCode: 403,

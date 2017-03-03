@@ -37,8 +37,12 @@ module.exports = {
     return (this.clientConfig.gradientMode ? uri : `/data${uri}`).replace(/\/($|\?)/, '$1')
   },
 
-  fetch(query, params) {
-    const observable = this._dataRequest('query', {query, params}).map(res => res.result || [])
+  fetch(query, params, options = {}) {
+    const mapResponse = options.filterResponse === false
+      ? res => res
+      : res => res.result || []
+
+    const observable = this._dataRequest('query', {query, params}).map(mapResponse)
     return this.isPromiseAPI()
       ? toPromise(observable)
       : observable
