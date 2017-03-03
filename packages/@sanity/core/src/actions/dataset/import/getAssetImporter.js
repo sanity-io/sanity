@@ -42,7 +42,10 @@ export default options => {
     debug('Checking for asset with URL %s', item.asset.url)
     const docs = await getAssetIdForLabel(client, item.asset.type, label)
     if (docs.length > 1) {
-      throw new Error(`More than one asset with the label "${label}" found, can't reason about import state`)
+      debug('Found multiple %s for URL %s', item.asset.type, item.asset.url)
+      return docs[0]
+      // @todo Reintroduce this when #34 is fixed
+      // throw new Error(`More than one asset with the label "${label}" found, can't reason about import state`)
     } else if (docs.length === 1 && replace) {
       // In replace mode, we want to replace the asset with a new one
       await client.assets.delete(docs[0])
