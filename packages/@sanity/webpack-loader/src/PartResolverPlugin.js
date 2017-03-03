@@ -19,12 +19,14 @@ const PartResolverPlugin = function (options) {
     )
   }
 
+  this.environment = options.env
   this.basePath = options.basePath
   this.additionalPlugins = options.additionalPlugins || []
   this.configPath = path.join(this.basePath, 'config')
 }
 
 PartResolverPlugin.prototype.apply = function (compiler) {
+  const env = this.environment
   const basePath = this.basePath
   const additionalPlugins = this.additionalPlugins
   const configPath = this.configPath
@@ -36,7 +38,7 @@ PartResolverPlugin.prototype.apply = function (compiler) {
     const instance = params.compiler || params
     instance.sanity = compiler.sanity || {basePath: basePath}
     return partResolver
-      .resolveParts({basePath, additionalPlugins})
+      .resolveParts({env, basePath, additionalPlugins})
       .then(parts => {
         instance.sanity.parts = parts
       })
