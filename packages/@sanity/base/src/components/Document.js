@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 
 function assetUrl(staticPath, item) {
@@ -26,12 +27,16 @@ function Document(props) {
     />
   )
 
-  const scripts = props.scripts.map(item =>
-    <script
+  const subresources = props.scripts.map(item =>
+    <link
       key={item.path}
-      src={assetUrl(props.staticPath, item)}
+      rel="subresource"
+      href={assetUrl(props.staticPath, item)}
     />
   )
+
+  const scripts = props.scripts.map(item => assetUrl(props.staticPath, item))
+  const scriptLoader = generateScriptLoader(scripts)
 
   const favicons = props.favicons.map((item, index) =>
     <link
@@ -40,13 +45,13 @@ function Document(props) {
       href={assetUrl(props.staticPath, item)}
     />
   )
-
   return (
     <html>
       <head>
         <meta charSet={props.charset} />
         <title>{props.title}</title>
         {stylesheets}
+        {subresources}
         {favicons}
         <meta name="viewport" content={props.viewport} />
       </head>
@@ -54,7 +59,10 @@ function Document(props) {
         <div id="sanity">
           <AppLoadingScreen text={props.loading} />
         </div>
-        {scripts}
+
+        {/* eslint-disable react/no-danger */}
+        <script dangerouslySetInnerHTML={{__html: scriptLoader}} />
+        {/* eslint-enable react/no-danger */}
       </body>
     </html>
   )
