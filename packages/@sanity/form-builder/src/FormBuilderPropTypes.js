@@ -1,18 +1,18 @@
 import {PropTypes} from 'react'
 
+// todo: fix issue with type being a cicular proptype. Should probably replace all this with flowtypes
+
 function lazy(fn) {
   let cachedFn
   return (...args) => (cachedFn || (cachedFn = fn()))(...args)
 }
 
-let type
-
 const field = PropTypes.shape({
   name: PropTypes.string,
-  type: lazy(() => type)
+  type: PropTypes.object
 })
 
-type = PropTypes.shape({
+const type = PropTypes.shape({
   name: PropTypes.string,
   title: PropTypes.string,
   description: PropTypes.string,
