@@ -1,6 +1,6 @@
 import Observable from '@sanity/observable'
 import Location from '../utils/Location'
-import {createHistory} from 'history'
+import createHistory from 'history/createBrowserHistory'
 import createActions from '../utils/createActions'
 
 const noop = () => {} // eslint-disable-line no-empty-function
@@ -40,16 +40,22 @@ function navigate(nextUrl, options) {
   return {progress: new Observable(noop)}
 }
 
+const locationChange$ = new Observable(observer => {
+  return history.listen(() => observer.next(readLocation()))
+})
+  .map(location => ({
+    type: 'change',
+    location: location
+  }))
+  .share()
+
 export default function createLocationStore(options = {}) {
   const eventStream = new Observable(observer => {
-    let firstEmitted = false
-    return history.listen(() => {
-      firstEmitted = true
-      observer.next({
-        type: firstEmitted ? 'change' : 'snapshot',
-        location: readLocation()
-      })
+    observer.next({
+      type: 'snapshot',
+      location: readLocation()
     })
+    return locationChange$.subscribe(observer)
   })
 
   return {
