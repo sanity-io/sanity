@@ -93,10 +93,8 @@ export default class PreviewSubscriber extends React.PureComponent {
       .switchMap(isInViewport => {
         return isInViewport
           ? observeForPreview(value, type)
-            // .do(log('observed for preview', value))
           : Observable.of(null)
       })
-      // .do(log('snapshot', value._id))
       .subscribe(snapshot => {
         if (snapshot) {
           this.setState({snapshot, isLive: true})
