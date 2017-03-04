@@ -81,7 +81,6 @@ export default class PreviewSubscriber extends React.PureComponent {
     const checkViewport = inViewport(ReactDOM.findDOMNode(this))
     const inViewport$ = resize$.merge(scroll$)
       .merge(orientationChange$)
-      .debounceTime(200)
       .map(checkViewport)
 
     this.subscription = visibilityOn$
