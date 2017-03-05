@@ -34,7 +34,7 @@
     "dialog-polyfill": "^0.4.3",
     "ease-component": "^1.0.0",
     "element-resize-detector": "^1.1.10",
-    "eslint": "^3.16.1",
+    "eslint": "^3.17.0",
     "eslint-config-sanity": "^2.0.2",
     "eslint-plugin-react": "^6.10.0",
     "exif-component": "^1.0.1",

@@ -28,7 +28,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
     "error-capture-middleware": "0.0.2",
-    "eslint": "^3.16.1",
+    "eslint": "^3.17.0",
     "eslint-config-sanity": "^2.0.2",
     "eslint-plugin-flowtype": "^2.30.0",
     "eslint-plugin-import": "^2.2.0",

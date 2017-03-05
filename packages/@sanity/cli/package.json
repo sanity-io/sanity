@@ -72,7 +72,7 @@
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.16.1",
+    "eslint": "^3.17.0",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
     "source-map-support": "^0.4.11"
