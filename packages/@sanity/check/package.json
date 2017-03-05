@@ -2,15 +2,14 @@
   "name": "@sanity/check",
   "version": "0.103.8",
   "description": "Sanity check Sanity plugins and projects",
-  "main": "lib/sanityCheck.js",
+  "main": "src/sanityCheck.js",
   "bin": {
-    "sanity-check": "./lib/bin.js"
+    "sanity-check": "./src/bin.js"
   },
   "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "prepublish": "in-publish && ./lib/bin.js || not-in-publish",
+    "prepublish": "in-publish && ./src/bin.js || not-in-publish",
     "test": "eslint ."
   },
   "keywords": [
@@ -26,10 +25,11 @@
     "promise-props-recursive": "^1.0.0"
   },
   "devDependencies": {
+    "eslint": "^3.17.0",
     "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/check.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }

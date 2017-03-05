@@ -1,8 +1,8 @@
-import path from 'path'
-import fsp from 'fs-promise'
-import {resolveParts} from '@sanity/resolver'
-import promiseProps from 'promise-props-recursive'
-import generateHelpUrl from '@sanity/generate-help-url'
+const path = require('path')
+const fsp = require('fs-promise')
+const promiseProps = require('promise-props-recursive')
+const generateHelpUrl = require('@sanity/generate-help-url')
+const resolveParts = require('@sanity/resolver').resolveParts
 
 function sanityCheck(options) {
   return resolveParts({
@@ -137,4 +137,4 @@ function getProductionHint() {
 }
 /* eslint-enable prefer-template */
 
-export default sanityCheck
+module.exports = sanityCheck

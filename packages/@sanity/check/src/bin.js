@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /* eslint-disable no-console, no-process-env, no-process-exit */
-import path from 'path'
-import chalk from 'chalk'
-import fsp from 'fs-promise'
-import sanityCheck from './sanityCheck'
-import pkg from '../package.json'
-import publish from 'in-publish'
+const path = require('path')
+const fsp = require('fs-promise')
+const chalk = require('chalk')
+const publish = require('in-publish')
+const sanityCheck = require('./sanityCheck')
+const pkg = require('../package.json')
 
 const tag = '[sanity-check]'
 const args = process.argv.slice(2)
