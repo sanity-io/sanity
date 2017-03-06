@@ -279,9 +279,8 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
       <div className={styles.root}>
 
 
-        <div className={styles.header}>
-          <h2 className={styles.typeTitle}>{schemaType.title}</h2>
-          <div className={styles.deleteContainer}>
+        <div className={styles.top}>
+          <div className={styles.functions}>
             <DefaultButton
               onClick={this.handleCreateCopy}
               color="primary"
@@ -302,7 +301,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
               Delete
             </DefaultButton>
           </div>
-          <h1 className={styles.title}>
+          <h1 className={styles.heading}>
             {(titleProp && docTitle) || 'Untitled…'}
           </h1>
 

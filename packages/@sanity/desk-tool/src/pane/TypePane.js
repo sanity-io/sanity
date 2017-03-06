@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePane.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import PaneMenuContainer from './PaneMenuContainer'
 
 export default withRouterHOC(class Pane extends React.PureComponent {
 
@@ -20,6 +21,12 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
+        <div className={styles.top}>
+          <div className={styles.heading}>
+            Content
+          </div>
+          <PaneMenuContainer />
+        </div>
         <ul className={styles.listContainer}>
           {
             items.map((item, i) => {

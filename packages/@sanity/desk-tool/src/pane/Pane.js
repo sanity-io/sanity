@@ -75,7 +75,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         }
         return (
           <DefaultList
-            overrideItemRender
             items={items}
             getItemKey={getItemKey}
             renderItem={renderItem}

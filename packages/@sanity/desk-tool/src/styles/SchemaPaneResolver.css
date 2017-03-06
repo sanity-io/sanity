@@ -24,7 +24,6 @@
 
 .container {
 
-
   @nest &::before {
     content: "shouldNotReposition";
     display: none;
@@ -38,9 +37,7 @@
     right: 0;
     position: absolute;
     box-sizing: border-box;
-    background-color: var(--gray-lightest);
     bottom: 0;
-    box-shadow: 2px 2px 5px var(--gray-light) inset;
     @nest &::before {
       content: "shouldReposition";
     }
@@ -59,7 +56,6 @@
     width: auto;
     min-width: var(--navMinWidth);
     background-color: rgba(255,255,255,0.95);
-    box-shadow: 0 2px 5px var(--gray-light);
     transform: translateX(0);
     transition: transform 0.12s ease-out, opacity 0.12s linear;
 
@@ -123,6 +119,8 @@
     right: 0;
     bottom: 0;
     padding: var(--large-padding);
+    padding-top: 0;
+    padding-right: 0;
     margin-left: 0;
   }
 }

@@ -93,6 +93,11 @@
 .heading {
   line-height: 3rem;
   padding-left: var(--small-padding);
+  font-size: 1em;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+
   @media (--screen-medium) {
     padding-left: 0;
   }

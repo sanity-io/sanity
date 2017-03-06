@@ -12,7 +12,7 @@
   }
 
   @media (--screen-medium) {
-    /*min-width: 7em;*/
+    min-width: 14rem;
     height: 100%;
   }
 }
@@ -42,5 +42,9 @@
 }
 
 .top {
-  composes: menuContainer from './Pane.css';
+  composes: top from './Pane.css';
+}
+
+.heading {
+  composes: heading from './Pane.css';
 }
