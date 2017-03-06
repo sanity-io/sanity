@@ -6,12 +6,13 @@
   position: relative;
   max-width: 100%;
   width: 100%;
-
+  padding-top: 2rem;
 
   @media (--screen-medium) {
     min-width: 14rem;
     float: left;
     width: auto;
+    padding-top: 0;
     padding-left: var(--medium-padding);
     max-width: 25em;
   }
@@ -62,12 +63,10 @@
   position: absolute;
   top: 0;
   right: -0.25rem;
-  z-index: 11;
 }
 
 .menu {
   position: absolute;
-  z-index: 10;
   top: 2em;
   right: 0.5em;
   width: 100%;
@@ -97,6 +96,10 @@
   font-weight: 400;
   margin: 0;
   padding: 0;
+  lost-utility: clearfix;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
   @media (--screen-medium) {
     padding-left: 0;

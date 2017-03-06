@@ -5,6 +5,7 @@
   float: left;
   height: 100%;
   position: relative;
+  padding-top: 2rem;
 
   @media (--max-screen-medium) {
     width: 100%;
@@ -12,6 +13,7 @@
   }
 
   @media (--screen-medium) {
+    padding-top: 0;
     min-width: 14rem;
     height: 100%;
   }

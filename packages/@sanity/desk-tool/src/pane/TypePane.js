@@ -25,7 +25,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
           <div className={styles.heading}>
             Content
           </div>
-          <PaneMenuContainer />
         </div>
         <ul className={styles.listContainer}>
           {

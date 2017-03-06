@@ -75,7 +75,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         }
         return items.map((item, i) => {
           return (
-            <div>
+            <div key={i}>
               {renderItem(item, i, {})}
             </div>
           )
@@ -123,7 +123,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         }
 
         {
-          items && items.length == 0 && (
+          items && !loading && items.length == 0 && (
             <div className={styles.empty}>
               <h3>Nothing here. Yet…</h3>
               <StateLink

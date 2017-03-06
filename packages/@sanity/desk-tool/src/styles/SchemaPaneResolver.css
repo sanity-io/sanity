@@ -100,12 +100,15 @@
 }
 
 .editorContainer {
-  padding: var(--small-padding);
   max-width: 100%;
   box-sizing: border-box;
+  padding-top: 2rem;
+  min-height: 100vh;
 
   @media (--screen-medium) {
+    box-sizing: border-box;
     height: 100%;
+    min-height: 100%;
     width: 100%;
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
