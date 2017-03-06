@@ -119,7 +119,7 @@ class DefaultMenu extends React.Component {
                   <a
                     onClick={this.handleItemClick}
                     data-action-id={i}
-                    className={styles.link}
+                    className={item.danger ? styles.dangerLink : styles.link}
                     onFocus={this.handleFocus}
                     tabIndex="0"
                     onKeyPress={this.handleKeyPress}

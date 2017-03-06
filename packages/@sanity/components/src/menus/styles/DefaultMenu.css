@@ -54,6 +54,11 @@
   }
 }
 
+.dangerLink {
+  composes: link;
+  color: var(--brand-danger);
+}
+
 .divider {
   border-top: 1px solid #ccc;
 }
