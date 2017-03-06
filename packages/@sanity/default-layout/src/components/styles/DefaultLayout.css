@@ -9,7 +9,15 @@
   }
 }
 
+:root {
+  --tool-switcher-width: 4rem;
+}
+
 .defaultLayout {
+  padding: var(--medium-padding);
+  box-sizing: border-box;
+
+
   @media (--screen-medium) {
     max-width: 100%;
     width: 100vw;
@@ -18,30 +26,21 @@
 }
 
 .toolContainer {
-  margin-top: var(--header-height);
   position: relative;
   max-width: 100%;
-  overflow-x: hidden;
 
   @media (--screen-medium) {
-    width: 100vw;
+    float: left;
+    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 2);
     height: calc(100vh - var(--header-height));
     box-sizing: border-box;
-    overflow: auto;
-    overflow-x: hidden;
   }
 }
 
 .desktopNavigation {
   display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--header-height);
   border-bottom: 1px solid #ccc;
-  z-index: 100;
-
+  lost-utility: clearfix;
   @media (--screen-medium) {
     display: block;
   }
@@ -57,6 +56,31 @@
   @media (--screen-medium) {
     display: none;
   }
+}
+
+.secondaryNavigation {
+  width: var(--tool-switcher-width);
+  height: 100%;
+  float: left;
+  @media (--screen-medium) {
+    font-size: var(--font-size-small);
+  }
+}
+
+.createButton {
+  display: block;
+  color: var(--brand-danger);
+  text-align: center;
+}
+
+.createButtonIcon {
+  display: block;
+  font-size: 1.5em;
+}
+
+.createButtonText {
+  display: block;
+  font-size: 1em;
 }
 
 .sanityStudioLogoContainer {

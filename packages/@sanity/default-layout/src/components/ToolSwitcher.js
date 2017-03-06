@@ -17,12 +17,12 @@ function ToolSwitcher(props) {
           return (
             <li key={tool.name} className={itemClass}>
               <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={props.onClick}>
-                <span className={styles.iconContainer}>
+                <div className={styles.iconContainer}>
                   <ToolIcon />
-                </span>
-                <span className={styles.toolName}>
+                </div>
+                <div className={styles.toolName}>
                   {tool.title || tool.name}
-                </span>
+                </div>
               </StateLink>
             </li>
           )

@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react'
-import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
+import {RouteScope, withRouterHOC, WithRouter} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
 import DesktopNavigation from './DesktopNavigation'
 import MobileNavigation from './MobileNavigation'
+import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
+import PlusIcon from 'part:@sanity/base/plus-circle-outline-icon'
 
 export default withRouterHOC(class DefaultLayout extends React.Component {
   static propTypes = {
@@ -16,6 +18,10 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     tools: PropTypes.arrayOf(PropTypes.shape({
       name: PropTypes.string
     }))
+  }
+
+  state = {
+    createMenuOpen: false
   }
 
   maybeRedirectToFirstTool() {
@@ -33,8 +39,16 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     this.maybeRedirectToFirstTool()
   }
 
+  handleCreateButtonClick = () => {
+    this.setState({
+      createMenuOpen: !this.state.createMenuOpen
+    })
+  }
+
   render() {
     const {tools, router} = this.props
+    const {createMenuOpen} = this.state
+
     return (
       <div className={styles.defaultLayout}>
 
@@ -46,11 +60,38 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
           <MobileNavigation tools={tools} />
         </div>
 
-        <div className={styles.toolContainer}>
-          <RouteScope scope={router.state.tool}>
-            <RenderTool tool={router.state.tool} />
-          </RouteScope>
+        <div className={styles.secondaryNavigation}>
+          <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
+            <span className={styles.createButtonIcon}><PlusIcon /></span>
+            <span className={styles.createButtonText}>Create</span>
+          </a>
+          <WithRouter>
+            {toolRouter => (
+              <ToolSwitcher
+                tools={this.props.tools}
+                activeToolName={router.state.tool}
+                className={styles.toolSwitcher}
+              />
+            )}
+          </WithRouter>
         </div>
+        {
+          !createMenuOpen && (
+            <div className={styles.toolContainer}>
+              <RouteScope scope={router.state.tool}>
+                <RenderTool tool={router.state.tool} />
+              </RouteScope>
+            </div>
+          )
+        }
+
+        {
+          createMenuOpen && (
+            <div className={styles.createMenu}>
+              <h1>Create</h1>
+            </div>
+          )
+        }
 
         <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
           <SanityStudioLogo />
