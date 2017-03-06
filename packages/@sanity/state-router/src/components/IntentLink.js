@@ -1,6 +1,5 @@
 // @flow
 import React, {PropTypes, Element} from 'react'
-import omit from 'lodash/omit'
 import Link from './Link'
 import type {RouterProviderContext} from './types'
 
@@ -29,19 +28,9 @@ export default class IntentLink extends React.PureComponent {
   }
 
   render() {
-    const {intent, params, children, className} = this.props
-
-    // @todo Temporary hack
-    if (intent === 'edit' && params.type) {
-      return (
-        <Link href={`/desk/${params.type}/edit/${params.id.replace(/\//g, '.')}`} className={className} ref={this.setElement} >
-          {children}
-        </Link>
-      )
-    }
+    const {intent, params, ...rest} = this.props
 
     const url = this.context.__internalRouter.resolveIntentLink(intent, params)
-    const rest = omit(this.props, 'intent', 'params')
-    return <Link href={url} className={className} {...rest} ref={this.setElement} />
+    return <Link href={url} {...rest} ref={this.setElement} />
   }
 }
