@@ -1,12 +1,12 @@
 import React, {PropTypes} from 'react'
 import addons from '@kadira/storybook-addons'
 
-export class Role extends React.Component {
+export class Part extends React.Component {
   render() {
-    const {children, roles} = this.props
+    const {children, parts} = this.props
     const channel = addons.getChannel()
 
-    channel.emit('kadira/notes/add_notes', roles)
+    channel.emit('kadira/notes/add_notes', parts)
 
     return (
       <div>
@@ -16,7 +16,7 @@ export class Role extends React.Component {
   }
 }
 
-Role.propTypes = {
+Part.propTypes = {
   children: PropTypes.node,
-  roles: PropTypes.array
+  parts: PropTypes.array
 }

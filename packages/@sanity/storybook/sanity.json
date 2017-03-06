@@ -16,9 +16,14 @@
       "path": "addons/Center.js"
     },
     {
-      "name": "part:@sanity/storybook/addons/role",
-      "description": "Role addons for storybook",
-      "path": "addons/Role.js"
+      "name": "part:@sanity/storybook/iframe",
+      "description": "React component that renders a fullscreen iframe that shows the storybook",
+      "path": "tool/StorybookTool.js"
+    },
+    {
+      "name": "part:@sanity/storybook/addons/part",
+      "description": "Part addon for storybook",
+      "path": "addons/Part.js"
     },
     {
       "implements": "part:@sanity/server/initializer",
