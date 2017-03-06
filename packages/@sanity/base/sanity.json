@@ -646,6 +646,10 @@
       "path": "components/icons/ViewColumn.js"
     },
     {
+      "implements": "part:@sanity/base/content-copy-icon",
+      "path": "components/icons/ContentCopy.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
