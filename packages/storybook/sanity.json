@@ -24,6 +24,10 @@
     {
       "implements": "part:@sanity/base/root",
       "path": "./storybook.js"
+    },
+    {
+      "implements": "part:@sanity/base/document",
+      "path": "./storybook.js"
     }
   ]
 }
