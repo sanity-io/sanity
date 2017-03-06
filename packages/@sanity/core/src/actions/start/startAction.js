@@ -13,15 +13,19 @@ export default async (args, context) => {
   const sanityConfig = getConfig(workDir)
   const config = sanityConfig.get('server')
   const getServer = isProduction ? getProdServer : getDevServer
-  const server = getServer({
-    staticPath: resolveStaticPath(workDir, config),
-    basePath: workDir,
-    listen: config
-  })
-
   const {port, hostname} = config
   const httpHost = flags.host === 'all' ? '0.0.0.0' : (flags.host || hostname)
   const httpPort = flags.port || port
+
+  const serverOptions = {
+    staticPath: resolveStaticPath(workDir, config),
+    basePath: workDir,
+    httpHost,
+    httpPort,
+    context,
+  }
+
+  const server = getServer(serverOptions)
   const compiler = server.locals.compiler
   const configSpinner = output.spinner('Checking configuration files...')
 
@@ -44,10 +48,8 @@ export default async (args, context) => {
   // Whether or not you have warnings or errors, you will get this event.
   compiler.plugin('done', stats => {
     if (compileSpinner) {
-      compileSpinner.stop()
+      compileSpinner.succeed()
     }
-
-    output.clear()
 
     const hasErrors = stats.hasErrors()
     const hasWarnings = stats.hasWarnings()

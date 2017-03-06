@@ -1,8 +1,9 @@
-const path = require('path')
 const sanityServer = require('@sanity/server')
 
 module.exports = (storyWpConfig, configType) => {
-  'use strict' // eslint-disable-line strict
+  /* eslint-disable strict */
+
+  'use strict'
 
   const sanityWpConfig = sanityServer.getWebpackBaseConfig({
     basePath: __dirname,
@@ -11,13 +12,11 @@ module.exports = (storyWpConfig, configType) => {
 
   sanityWpConfig.module = sanityWpConfig.module || {loaders: []}
 
-  if (configType === 'DEVELOPMENT') {
+  if (configType.toLowerCase() === 'development') {
     sanityWpConfig.module.loaders = sanityServer.applyStaticLoaderFix(sanityWpConfig, {
-      listen: {
-        hostname: 'localhost',
-        port: 9001,
-        staticPath: './static'
-      }
+      httpHost: 'localhost',
+      httpPort: 9001,
+      staticPath: './static'
     })
   }
 
@@ -25,7 +24,7 @@ module.exports = (storyWpConfig, configType) => {
     plugins: [].concat(storyWpConfig.plugins, sanityWpConfig.plugins || []),
     resolve: Object.assign({}, storyWpConfig.resolve, sanityWpConfig.resolve, {
       alias: Object.assign({}, storyWpConfig.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
-    }), 
+    }),
     module: Object.assign({}, storyWpConfig.module, sanityWpConfig.module, {
       loaders: [].concat(storyWpConfig.module.loaders, sanityWpConfig.module.loaders)
     })

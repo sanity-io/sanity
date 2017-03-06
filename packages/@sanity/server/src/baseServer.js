@@ -2,10 +2,12 @@ import path from 'path'
 import express from 'express'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import {resolveParts} from '@sanity/resolver'
 import requireUncached from 'require-uncached'
+import {resolveParts} from '@sanity/resolver'
 
 const docPart = 'part:@sanity/base/document'
+const initPart = 'part:@sanity/server/initializer'
+
 const getDefaultModule = mod => {
   return mod && mod.__esModule ? mod.default : mod
 }
@@ -55,9 +57,7 @@ export function applyStaticRoutes(app, config = {}) {
     }
 
     return getDocumentElement(config)
-      .then(doc => {
-        res.send(`<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`)
-      })
+      .then(doc => res.send(`<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`))
       .catch(err => {
         console.error(err.stack) // eslint-disable-line no-console
 
@@ -69,4 +69,17 @@ export function applyStaticRoutes(app, config = {}) {
   })
 
   return app
+}
+
+export function callInitializers(config) {
+  resolveParts({config}).then(res => {
+    const parts = res.implementations[initPart]
+    if (!parts) {
+      return
+    }
+
+    res.implementations[initPart]
+      .map(part => getDefaultModule(require(part.path)))
+      .forEach(initializer => initializer(config))
+  })
 }

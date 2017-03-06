@@ -1,7 +1,7 @@
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
-import {getBaseServer, applyStaticRoutes} from './baseServer'
+import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 import registerBabel from 'babel-register'
 import find from 'lodash/find'
@@ -9,7 +9,7 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 
 export default function getDevServer(config = {}) {
-  const app = getBaseServer()
+  const app = getBaseServer(config)
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
 
   // Serve an empty CSS file for the main stylesheet,
@@ -52,6 +52,9 @@ export default function getDevServer(config = {}) {
 
   // Expose webpack compiler on server instance
   app.locals.compiler = compiler
+
+  // Call any registered initializers
+  callInitializers(config)
 
   return applyStaticRoutes(app, config)
 }
