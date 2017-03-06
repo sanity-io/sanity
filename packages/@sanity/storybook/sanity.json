@@ -23,6 +23,10 @@
     {
       "implements": "part:@sanity/server/initializer",
       "path": "server/fork.js"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "tool/index.js"
     }
   ]
 }
