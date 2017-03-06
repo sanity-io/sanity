@@ -2,16 +2,22 @@
 
 .item {
   position: relative;
+  color: #999;
 }
 
 .link {
-  text-decoration: inherit;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 100%;
+  line-height: 2em;
+  text-decoration: none;
+  color: inherit;
+
+  @nest &:hover {
+    color: #666;
+  }
+
 }
 
 .selected {
   composes: item;
+  font-weight: 500;
+  color: var(--black);
 }

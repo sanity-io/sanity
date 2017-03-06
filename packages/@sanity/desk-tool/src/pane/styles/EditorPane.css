@@ -45,3 +45,7 @@
 .heading {
   composes: heading from './Pane.css';
 }
+
+.menuButton {
+  composes: menuButton from './Pane.css';
+}

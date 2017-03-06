@@ -73,15 +73,13 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         if (listLayout !== 'detail' && listLayout !== 'default') {
           console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
         }
-        return (
-          <DefaultList
-            items={items}
-            getItemKey={getItemKey}
-            renderItem={renderItem}
-            selectedItem={selectedItem}
-            onSelect={this.handleSelect}
-          />
-        )
+        return items.map((item, i) => {
+          return (
+            <div>
+              {renderItem(item, i, {})}
+            </div>
+          )
+        })
     }
   }
 
