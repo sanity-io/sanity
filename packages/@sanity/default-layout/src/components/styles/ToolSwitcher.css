@@ -15,6 +15,7 @@
   position: relative;
   text-align: center;
   color: var(--selectable-item-color);
+  margin-bottom: var(--medium-padding);
 }
 
 .activeItem {
@@ -24,13 +25,8 @@
 
 .iconContainer {
   display: block;
-  width: 1.5em;
-  height: 1.5em;
+  font-size: 2em;
   margin: 0 auto;
-}
-
-.iconContainer img {
-  width: 100%;
 }
 
 .toolName {

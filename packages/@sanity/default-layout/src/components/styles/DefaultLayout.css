@@ -31,7 +31,7 @@
 
   @media (--screen-medium) {
     float: left;
-    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 2);
+    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
     height: calc(100vh - var(--header-height));
     box-sizing: border-box;
   }
@@ -60,6 +60,8 @@
 
 .secondaryNavigation {
   width: var(--tool-switcher-width);
+  margin-right: var(--medium-padding);
+  padding-top: var(--medium-padding);
   height: 100%;
   float: left;
   @media (--screen-medium) {
@@ -71,6 +73,7 @@
   display: block;
   color: var(--brand-danger);
   text-align: center;
+  margin-bottom: var(--medium-padding);
 }
 
 .createButtonIcon {
