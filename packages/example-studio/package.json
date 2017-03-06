@@ -24,7 +24,7 @@
     "@sanity/form-builder": "^0.103.22",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "sanity-plugin-vision": "^1.0.7"
+    "sanity-plugin-vision": "^2.0.2"
   },
   "devDependencies": {
     "rimraf": "^2.6.1"
