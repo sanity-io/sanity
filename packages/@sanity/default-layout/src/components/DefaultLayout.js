@@ -8,6 +8,7 @@ import DesktopNavigation from './DesktopNavigation'
 import MobileNavigation from './MobileNavigation'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import PlusIcon from 'part:@sanity/base/plus-circle-outline-icon'
+import ActionModal from './ActionModal'
 
 export default withRouterHOC(class DefaultLayout extends React.Component {
   static propTypes = {
@@ -45,6 +46,12 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     })
   }
 
+  handleActionModalClose = () => {
+    this.setState({
+      createMenuOpen: false
+    })
+  }
+
   render() {
     const {tools, router} = this.props
     const {createMenuOpen} = this.state
@@ -75,22 +82,15 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
             )}
           </WithRouter>
         </div>
-        {
-          !createMenuOpen && (
-            <div className={styles.toolContainer}>
-              <RouteScope scope={router.state.tool}>
-                <RenderTool tool={router.state.tool} />
-              </RouteScope>
-            </div>
-          )
-        }
+
+        <div className={styles.toolContainer}>
+          <RouteScope scope={router.state.tool}>
+            <RenderTool tool={router.state.tool} />
+          </RouteScope>
+        </div>
 
         {
-          createMenuOpen && (
-            <div className={styles.createMenu}>
-              <h1>Create</h1>
-            </div>
-          )
+          createMenuOpen && <ActionModal onClose={this.handleActionModalClose} />
         }
 
         <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">

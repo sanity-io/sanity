@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react'
-import {StateLink} from '@sanity/state-router'
+import {StateLink} from 'part:@sanity/base/router'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import styles from 'part:@sanity/default-layout/action-modal-style'
+import styles from './styles/ActionModal.css'
 
 function ActionModal(props) {
   return (
-    <FullScreenDialog className={styles.modal} title={props.title} onClose={props.onClose}>
+    <FullScreenDialog className={styles.modal} title={props.title} onClose={props.onClose} isOpen>
       <div className={styles.content}>
         <ul className={styles.list}>
           {props.actions.map(action =>
