@@ -2,5 +2,4 @@
 .editorconfig
 .eslintignore
 .eslintrc
-src
 test
