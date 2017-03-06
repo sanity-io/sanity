@@ -638,6 +638,14 @@
       "path": "components/icons/Edit.js"
     },
     {
+      "implements": "part:@sanity/base/more-vert-icon",
+      "path": "components/icons/MoreVert.js"
+    },
+    {
+      "implements": "part:@sanity/base/view-column-icon",
+      "path": "components/icons/ViewColumn.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
