@@ -26,6 +26,7 @@ class GlobalSearch extends React.Component {
     isSearching: false,
     label: 'Search',
     placeholder: '',
+    onChange() {},
     onClose() {},
     onBlur() {},
     renderItem() {},

@@ -99,18 +99,6 @@ class Search extends React.Component {
     })
   }
 
-  handleGoToItem = item => {
-    const id = item._id
-    const url = ['/desk', item._type, 'edit', id].join('/')
-
-    locationStore.actions.navigate(url, {replace: false})
-
-    this.setState({
-      isOpen: false
-    })
-    this.props.onSelect()
-  }
-
   handleBlur = () => {
     this.setState({
       isOpen: false
@@ -141,7 +129,6 @@ class Search extends React.Component {
         <GlobalSearch
           onSearch={this.handleSearch}
           isSearching={this.state.isSearching}
-          onChange={this.handleGoToItem}
           onBlur={this.handleBlur}
           renderItem={this.renderItem}
           onFocus={this.handleFocus}
