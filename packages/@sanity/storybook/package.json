@@ -1,0 +1,34 @@
+{
+  "name": "@sanity/storybook",
+  "version": "0.103.10",
+  "description": "Sanity plugin for running react-storybook in a Sanity studio",
+  "main": "./index.js",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sanity-io/sanity.git"
+  },
+  "keywords": [
+    "sanity",
+    "storybook"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://github.com/sanity-io/sanity#readme",
+  "dependencies": {
+    "@kadira/react-storybook-addon-info": "^3.3.0",
+    "@kadira/storybook": "^2.35.3",
+    "@kadira/storybook-addons": "^1.6.1",
+    "@sanity/server": "^0.103.9",
+    "normalize.css": "^5.0.0",
+    "shelljs": "^0.7.6"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.0"
+  }
+}
