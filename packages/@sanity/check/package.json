@@ -1,6 +1,6 @@
 {
   "name": "@sanity/check",
-  "version": "0.103.9",
+  "version": "0.103.10",
   "description": "Sanity check Sanity plugins and projects",
   "main": "src/sanityCheck.js",
   "bin": {
