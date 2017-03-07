@@ -9,13 +9,17 @@ import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+import {withKnobs, text, select} from 'part:@sanity/storybook/addons/knobs'
 
-storiesOf('Buttons')
+const getButtonKinds = () => select('Kind', ['default', 'simple', 'secondary'], 'default')
+
+storiesOf('Buttons', module)
+  .addDecorator(withKnobs)
   .addWithInfo(
     'Default Button',
     'Standard button Role: part:@sanity/components/buttons/default',
     () => (
-      <Button onClick={action('clicked')}>Touch me!</Button>
+      <Button kind={getButtonKinds()} onClick={action('clicked')}>{text('Text', 'Touch Me!')}</Button>
     ),
     {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )
@@ -23,7 +27,7 @@ storiesOf('Buttons')
     'Default Button (disabled)',
     'Standard button Role: part:@sanity/components/buttons/default',
     () => (
-      <Button onClick={action('clicked')} disabled>I'm disabled!</Button>
+      <Button onClick={action('clicked')} disabled>I&apos;m disabled!</Button>
     ),
     {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )

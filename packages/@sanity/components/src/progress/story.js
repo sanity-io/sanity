@@ -2,7 +2,7 @@
 import React from 'react'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
-
+import {withKnobs, number} from 'part:@sanity/storybook/addons/knobs'
 import {storiesOf} from 'part:@sanity/storybook'
 
 const style = {
@@ -65,13 +65,14 @@ class ProgressBarImplementation extends React.Component {
 
 storiesOf('Progress')
 .addDecorator(centered)
+.addDecorator(withKnobs)
 .addWithInfo(
   'Progress bar',
   `
     Default progress bar.
   `,
   () => (
-    <ProgressBar style={{width: '20em'}} />
+    <ProgressBar style={{width: '20em'}} percent={number('Percentage', 10)} />
   ),
   {
     propTables: [ProgressBar],
