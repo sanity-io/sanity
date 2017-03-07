@@ -20,7 +20,7 @@
     width: 100%;
     clear: both;
     box-sizing: border-box;
-    max-height: calc(100% - 4rem);
+    height: calc(100% - 4rem);
   }
 }
 
