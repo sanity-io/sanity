@@ -24,7 +24,7 @@
   border-radius: 12px;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -10.65px;
+  margin-top: -8px;
   background-size: 20px;
   background: #ffff7d url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>") no-repeat;
 }
