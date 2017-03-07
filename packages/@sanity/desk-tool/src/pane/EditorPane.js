@@ -353,7 +353,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
 
         </div>
-        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_FormBuilder_ScrollContainer">
+        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
             key={documentId}
             value={value}

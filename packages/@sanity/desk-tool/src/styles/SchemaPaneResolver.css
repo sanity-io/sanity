@@ -106,23 +106,20 @@
   min-height: 100vh;
 
   @media (--screen-medium) {
+    min-height: auto;
     box-sizing: border-box;
     height: 100%;
-    min-height: 100%;
     width: 100%;
-    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
     transition: transform 0.12s ease-out, opacity 0.12s linear;
     width: auto;
     min-width: 32em;
     position: absolute;
     top: 0;
+    margin-left: var(--medium-padding);
     right: 0;
     bottom: 0;
-    padding: var(--large-padding);
     padding-top: 0;
-    padding-right: 0;
-    margin-left: 0;
+    overflow: hidden;
   }
 }
 

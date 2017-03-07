@@ -6,12 +6,21 @@
 
 .editor {
   display: block;
+
+
   @media (--screen-medium) {
+    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+    position: absolute;
+    top: 4rem;
+    left: 0;
+    padding-left: var(--large-padding);
+    padding-right: var(--large-padding);
     max-width: 40em;
+    width: 100%;
     clear: both;
-    margin-top: 1em;
     box-sizing: border-box;
-    lost-utility: clearfix;
+    max-height: calc(100% - 4rem);
   }
 }
 
@@ -40,6 +49,7 @@
 
 .top {
   composes: top from './Pane.css';
+  margin-left: var(--medium-padding);
 }
 
 .heading {
