@@ -10,7 +10,7 @@
 }
 
 :root {
-  --tool-switcher-width: 4rem;
+  --tool-switcher-width: 3rem;
 }
 
 .defaultLayout {
@@ -60,12 +60,16 @@
 }
 
 .secondaryNavigation {
-  width: var(--tool-switcher-width);
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  position: relative;
+  width: calc(var(--tool-switcher-width) + var(--medium-padding));
   margin-right: var(--medium-padding);
+  margin-left: calc(var(--medium-padding) * -1);
   padding-top: var(--medium-padding);
   height: 100%;
   float: left;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-xsmall);
+  z-index: var(--zindex-navbar);
   display: none;
 
   @media (--screen-medium) {
