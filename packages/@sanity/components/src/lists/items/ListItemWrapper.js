@@ -1,5 +1,8 @@
 import React, {PropTypes} from 'react'
-import styles from 'part:@sanity/components/lists/items/default-style'
+// import styles from 'part:@sanity/components/lists/items/default-style'
+import listStyles from './styles/ListItemWrapper.css'
+import gridStyles from './styles/GridItemWrapper.css'
+
 import classNames from 'classnames'
 
 function shouldItemBeInView(props) {
@@ -18,12 +21,14 @@ export default class ListItemWrapper extends React.Component {
     selected: PropTypes.bool,
     highlighted: PropTypes.bool,
     scrollIntoView: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-    decoration: PropTypes.oneOf(['default', 'zebra-stripes', 'divider'])
+    decoration: PropTypes.oneOf(['default', 'zebra-stripes', 'divider']),
+    layout: PropTypes.oneOf(['list', 'grid'])
   }
 
   static defaultProps = {
     onSelect() {},
-    decoration: 'default'
+    decoration: 'default',
+    layout: 'list'
   }
 
   componentDidMount() {
@@ -53,7 +58,9 @@ export default class ListItemWrapper extends React.Component {
   }
 
   render() {
-    const {selected, highlighted, className, decoration, children} = this.props
+    const {selected, highlighted, className, decoration, children, layout} = this.props
+
+    const styles = layout == 'grid' ? gridStyles : listStyles
 
     const rootClasses = classNames([
       styles.root,

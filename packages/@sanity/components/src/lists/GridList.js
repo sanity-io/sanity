@@ -128,6 +128,7 @@ class GridList extends React.Component {
         highlighted={item == highlightedItem}
         decoration={decoration}
         scrollIntoView={this.scrollElementIntoViewIfNeeded}
+        layout="grid"
       >
         {
           sortable && useDragHandle && <DragHandle />

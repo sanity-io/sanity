@@ -4,6 +4,7 @@ import styles from './MediaRender.css'
 export default class MediaRender extends React.Component {
   static propTypes = {
     aspect: PropTypes.number,
+    fallbackText: PropTypes.string,
     item: PropTypes.shape({
       media: PropTypes.node,
       imageUrl: PropTypes.string,
@@ -42,11 +43,12 @@ export default class MediaRender extends React.Component {
   }
 
   static defaultProps = {
-    emptyText: 'Nothing here…',
+    fallbackText: 'Nothing here…',
   }
 
   render() {
-    const {media, imageUrl, sanityImage} = this.props.item
+    const {item, fallbackText} = this.props
+    const {media, imageUrl, sanityImage} = item
 
     const containerAspect = this.props.aspect || 1
     const imageAspect = this.props.item.aspect || this.state.aspect || 1
@@ -68,7 +70,9 @@ export default class MediaRender extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.noMedia}>
-          <div className={styles.noMediaText}>No media</div>
+          <div className={styles.noMediaText}>
+            {fallbackText}
+          </div>
         </div>
       </div>
     )

@@ -1,0 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --default-item-selected-color: var(--brand-primary);
+  --default-item-active-color: var(--brand-primary);
+}
+
+.root {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  background-color: transparent;
+  position: relative;
+  box-sizing: border-box;
+  user-select: none;
+  cursor: default;
+}
+
+.selected {
+  opacity: 0.2;
+}
+
+.highlighted {
+  background-color: color(var(--default-item-selected-color) a(30%));
+
+  @nest &.selected {
+    background-color: color(var(--default-item-selected-color) a(90%));
+  }
+}

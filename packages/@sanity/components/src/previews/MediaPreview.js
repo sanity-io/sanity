@@ -41,7 +41,7 @@ export default class MediaPreview extends React.Component {
       <div className={styles.root} title={item.title || emptyText}>
         <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
         <div className={styles.mediaContainer}>
-          <MediaRender item={item} aspect={aspect} />
+          <MediaRender item={item} aspect={aspect} fallbackText={item.title || 'No media'} />
         </div>
         <div className={`${styles.meta}`}>
           <div className={`${styles.metaInner}`}>
