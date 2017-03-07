@@ -37,7 +37,7 @@ storiesOf('Buttons', module)
       )
     }
   )
-  .add(
+.add(
   'Examples',
   () => (
     <form>
@@ -159,7 +159,8 @@ storiesOf('Buttons', module)
       </div>
     </form>
   )
-  .add(
+)
+.add(
     'Fab (Floating Action Button)',
     () => {
       return (
@@ -169,8 +170,7 @@ storiesOf('Buttons', module)
       )
     }
   )
-
-  .add(
+.add(
     'DropDownButton',
     () => {
       const items = [
@@ -197,10 +197,8 @@ storiesOf('Buttons', module)
           </div>
         </Sanity>
       )
-    },
-    {propTables: [DropDownButton], role: 'part:@sanity/components/buttons/dropdown'}
+    }
   )
-
   .add(
     'InInput',
     () => {
@@ -215,8 +213,6 @@ storiesOf('Buttons', module)
             </div>
           </DefaultFormField>
         </Sanity>
-
       )
-    },
-    {propTables: [InInputButton], role: 'part:@sanity/components/buttons/in-input'}
+    }
   )
