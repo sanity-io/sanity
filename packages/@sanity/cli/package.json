@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "0.103.9",
+  "version": "0.103.11",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -33,9 +33,9 @@
   },
   "homepage": "https://github.com/sanity-io/cli#readme",
   "dependencies": {
-    "@sanity/client": "^0.103.9",
-    "@sanity/resolver": "^0.103.9",
-    "@sanity/util": "^0.103.9",
+    "@sanity/client": "^0.103.11",
+    "@sanity/resolver": "^0.103.11",
+    "@sanity/util": "^0.103.11",
     "babel-polyfill": "^6.23.0",
     "chalk": "^1.1.3",
     "configstore": "^3.0.0",
