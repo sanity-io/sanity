@@ -43,7 +43,8 @@ function sanityPartLoader(input) {
 
   // The debug role needs to return the whole parts tree
   if (partName === 'sanity:debug') {
-    return `module.exports = ${JSON.stringify(parts, null, 2)}\n`
+    const debug = Object.assign({}, parts, {basePath})
+    return `module.exports = ${JSON.stringify(debug, null, 2)}\n`
   }
 
   return loadAll
