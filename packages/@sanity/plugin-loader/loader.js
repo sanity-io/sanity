@@ -60,7 +60,8 @@ function registerLoader(options) {
   Module._resolveFilename = (request, parent) => {
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {
-      require.cache['sanity:debug'] = getModule('sanity:debug', parts)
+      const debug = Object.assign({}, parts, {basePath: options.basePath})
+      require.cache['sanity:debug'] = getModule('sanity:debug', debug)
       return request
     }
 
