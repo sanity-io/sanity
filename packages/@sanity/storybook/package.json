@@ -27,6 +27,7 @@
     "@kadira/storybook-addons": "^1.6.1",
     "@sanity/server": "^0.103.11",
     "normalize.css": "^5.0.0",
+    "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6"
   },
   "devDependencies": {

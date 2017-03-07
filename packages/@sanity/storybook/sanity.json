@@ -31,6 +31,11 @@
       "path": "addons/Knobs.js"
     },
     {
+      "name": "part:@sanity/storybook/addons/sanity",
+      "description": "Sanity addon for storybook",
+      "path": "addons/sanity/Sanity.js"
+    },
+    {
       "implements": "part:@sanity/server/initializer",
       "path": "server/fork.js"
     },

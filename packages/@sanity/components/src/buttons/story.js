@@ -10,6 +10,7 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {withKnobs, text, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const getButtonKinds = () => select('Kind', ['default', 'simple', 'secondary'], 'default')
 
@@ -19,7 +20,9 @@ storiesOf('Buttons', module)
     'Default Button',
     'Standard button Role: part:@sanity/components/buttons/default',
     () => (
-      <Button kind={getButtonKinds()} onClick={action('clicked')}>{text('Text', 'Touch Me!')}</Button>
+      <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
+        <Button kind={getButtonKinds()} onClick={action('clicked')}>{text('Text', 'Touch Me!')}</Button>
+      </Sanity>
     ),
     {propTables: [Button], role: 'part:@sanity/components/buttons/default'}
   )
