@@ -1,6 +1,6 @@
 import schema from 'part:@sanity/base/schema'
 import inputResolver from './inputResolver/inputResolver'
-import {resolver as previewResolver} from 'part:@sanity/base/preview'
+import SanityPreview from 'part:@sanity/base/preview'
 import ValidationList from 'part:@sanity/form-builder/validation-list'
 import arrify from 'arrify'
 import toGradientPatch from './utils/toGradientPatch'
@@ -11,7 +11,7 @@ import {createFormBuilder} from '../index'
 const FormBuilder = createFormBuilder({
   schema: schema,
   resolveInputComponent: inputResolver,
-  resolvePreviewComponent: previewResolver,
+  resolvePreviewComponent: () => SanityPreview,
   resolveValidationComponent: () => ValidationList
 })
 
