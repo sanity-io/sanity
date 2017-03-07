@@ -4,27 +4,19 @@ import {createFormBuilderState, createMemberValue} from './state/FormBuilderStat
 import defaultConfig from './defaultConfig'
 import Schema from '@sanity/schema'
 
-function withDefaultFallback(fn, defaultFn) {
-  if (!fn) {
-    return defaultFn
-  }
-  return (...args) => {
-    const result = fn(...args)
-    return result === undefined ? defaultFn(...args) : result
-  }
-}
+const NOOP = () => {}
 
-const noop = () => {}
 export default function createFormBuilder(config = {}) {
   const {schema} = config
 
-  const providedInputResolver = config.resolveInputComponent || noop
-  const defaultResolve = defaultConfig.resolveInputComponent
+  if (!schema) {
+    throw new TypeError('You must provide a schema to createFormBuilder(...)')
+  }
 
-  function resolveInputComponent(type) {
+  function resolve(type, providedResolve = NOOP, defaultResolve = NOOP) {
     let itType = type
     while (itType) {
-      const resolved = providedInputResolver(itType) || defaultResolve(itType)
+      const resolved = providedResolve(itType) || defaultResolve(itType)
       if (resolved) {
         return resolved
       }
@@ -33,18 +25,20 @@ export default function createFormBuilder(config = {}) {
     return undefined
   }
 
-  const resolvePreviewComponent = withDefaultFallback(config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
+  const resolveInputComponent = type => {
+    return resolve(type, config.resolveInputComponent, defaultConfig.resolveInputComponent)
+  }
 
-  if (!schema) {
-    throw new TypeError('You must provide a schema to createFormBuilder(...)')
+  const resolvePreviewComponent = type => {
+    return resolve(type, config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
   }
 
   function _createFieldValue(value, type) {
     return createMemberValue(value, {
-      type: type,
-      schema: schema,
-      resolveInputComponent: resolveInputComponent,
-      resolvePreviewComponent: resolvePreviewComponent
+      type,
+      schema,
+      resolveInputComponent,
+      resolvePreviewComponent
     })
   }
 

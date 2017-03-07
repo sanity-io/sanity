@@ -1,47 +1,37 @@
 import React, {PropTypes} from 'react'
-
-import PreviewComponentCard from 'part:@sanity/components/previews/card'
-import PreviewComponentDefault from 'part:@sanity/components/previews/default'
-import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
-import PreviewComponentInline from 'part:@sanity/components/previews/inline'
-import PreviewComponentMedia from 'part:@sanity/components/previews/media'
-import PreviewComponentBlock from 'part:@sanity/components/previews/block'
-
+import {resolver} from '.'
 import PreviewSubscriber from './PreviewSubscriber'
 import prepareForPreview from './prepareForPreview'
-
-const previewComponentMap = {
-  default: PreviewComponentDefault,
-  card: PreviewComponentCard,
-  media: PreviewComponentMedia,
-  detail: PreviewComponentDetail,
-  inline: PreviewComponentInline,
-  block: PreviewComponentBlock
-}
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
 export default class SanityPreview extends React.PureComponent {
 
   static propTypes = {
-    layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
+    layout: PropTypes.string,
     value: PropTypes.object,
     type: PropTypes.object.isRequired
   }
 
   render() {
-    const {layout, value, type} = this.props
+    const {type, value, layout} = this.props
 
-    const PreviewComponent = previewComponentMap.hasOwnProperty(layout)
-      ? previewComponentMap[layout]
-      : previewComponentMap.default
+    const PreviewComponent = resolver(type)
+
+    if (!PreviewComponent) {
+      return <div>No preview for {JSON.stringify(value)}</div>
+    }
 
     return (
       <PreviewSubscriber type={type} value={value}>
         {
           ({snapshot, isLive}) => {
             const preview = (
-              <PreviewComponent item={prepareForPreview(snapshot, type)} isPlaceholder={!snapshot} />
+              <PreviewComponent
+                value={prepareForPreview(snapshot, type)}
+                layout={layout}
+                isPlaceholder={!snapshot}
+              />
             )
             return DEBUG ? (
               <div>
