@@ -13,6 +13,22 @@
   /* composes: inner from 'part:@sanity/base/theme/forms/control-style'; */
 }
 
+.fullscreen {
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: var(--zindex-fullscreen-edit);
+  background-color: var(--blockEditorFullscreenBackground);
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
 .blockDragMarker {
   background-color: var(--brand-primary);
   width: 100%;
@@ -21,17 +37,18 @@
 }
 
 .inputContainer {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   position: relative;
   width: 100%;
   min-height: 15rem;
   max-height: 40rem;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg);
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
 
   @nest .fullscreen & {
     width: 90%;
+    min-height: calc(100vh - 8rem);
     max-width: 50em;
     margin: 3em auto;
     box-shadow: 0 0 0.8rem -0.2rem rgba(0, 0, 0, 0.2);
@@ -39,11 +56,6 @@
     overflow: hidden;
     max-height: none;
     border: none;
-
-    @media (--screen-medium) {
-      overflow: scroll;
-      height: 90vh;
-    }
   }
 }
 
@@ -66,13 +78,18 @@
 .toolbar {
   @nest .fullscreen & {
     position: fixed;
+    box-sizing: border-box;
     width: 100%;
     top: 0;
     left: 0;
     z-index: 5001;
     background-color: color(var(--blockEditorFullscreenBackground) a(70%));
     backdrop-filter: blur(3px);
-    padding: 0.5em;
+    padding: var(--small-padding);
+
+    @media (--screen-medium) {
+      padding: var(--medium-padding);
+    }
   }
 }
 
@@ -91,23 +108,6 @@
 .portal {
   position: fixed;
   z-index: var(--zindex-fullscreen-edit);
-}
-
-.fullscreen {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: var(--zindex-fullscreen-edit);
-  background-color: var(--blockEditorFullscreenBackground);
-  padding-bottom: 5rem;
-  overflow: scroll;
-  -webkit-overflow-scrolling: touch;
-
-  @media (--screen-medium) {
-    overflow: hidden;
-  }
 }
 
 .textFormattingToolbar {
