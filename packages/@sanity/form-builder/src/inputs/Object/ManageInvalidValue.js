@@ -22,10 +22,10 @@ export default class ManageInvalidValue extends React.PureComponent {
     const {value, field, expectedJSType, valueJSType} = this.props
     return (
       <div className={styles.root}>
-        <h3>{field.name}</h3>
+        <h3>{field.type.title}</h3>
         <p>
           {
-          `Value type mismatch. Expected '${expectedJSType}' got '${valueJSType}'.`
+          `The field "${field.name}" has an invalid value of type "${valueJSType}", expected "${expectedJSType}".`
         }
         </p>
         <p>
