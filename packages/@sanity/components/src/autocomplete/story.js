@@ -9,11 +9,11 @@ const chance = new Chance()
 const formStyle = {width: '30em', margin: '0 auto', paddingBottom: '20em'}
 
 storiesOf('Autocomplete')
-  .addWithInfo(
+  .add(
   'Default',
-  `
-    Autocomplete is used to help user complete a normal text input. The input can be anything.
-  `,
+  // `
+  //   Autocomplete is used to help user complete a normal text input. The input can be anything.
+  // `,
   () => {
     return (
       <form style={formStyle}>
@@ -24,12 +24,11 @@ storiesOf('Autocomplete')
   {propTables: [Autocomplete], role: 'part:@sanity/components/autocomplete/default'}
 )
 
-
-.addWithInfo(
+.add(
   'Default with suggestions',
-  `
-    Default textfield
-  `,
+  // `
+  //   Default textfield
+  // `,
   () => {
 
     const suggestions = range(10).map((item, i) => {

@@ -231,14 +231,6 @@
       "description": "Fieldset styling"
     },
     {
-      "name": "part:@sanity/components/cards/default",
-      "description": "Card"
-    },
-    {
-      "name": "part:@sanity/components/cards/default-style",
-      "description": "Card styling"
-    },
-    {
       "name": "part:@sanity/components/dialogs/fullscreen",
       "description": "Fullscreen dialog"
     },
@@ -309,14 +301,6 @@
     {
       "name": "part:@sanity/components/lists/items/grid-style",
       "description": "Grid item styling"
-    },
-    {
-      "name": "part:@sanity/components/referencepickers/default",
-      "description": "Reference picker"
-    },
-    {
-      "name": "part:@sanity/components/referencepickers/default-style",
-      "description": "Reference picker styling"
     },
     {
       "name": "part:@sanity/components/edititem/popover",
@@ -866,10 +850,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "imageinput/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "datepicker/story.js"
     },
     {
       "implements": "part:@sanity/base/component",

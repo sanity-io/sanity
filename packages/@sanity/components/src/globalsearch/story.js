@@ -10,6 +10,8 @@ const chance = new Chance()
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import DetailPreview from 'part:@sanity/components/previews/detail'
 
+import {withKnobs, number, text, boolean, select, object} from 'part:@sanity/storybook/addons/knobs'
+
 const items = range(7).map((item, i) => {
   return {
     title: chance.name(),
@@ -78,85 +80,30 @@ const renderItem = (item, options) => {
 
 
 storiesOf('Global Search')
+.addDecorator(withKnobs)
 .addDecorator(centered)
-.addWithInfo(
-  'Closed',
-  `
-    Global search. Can be invoked with cmd+shift+f, cmd+shift+s, ctrl+shift+f, ctrl+shift+s.
-    Needs to be in an relative container.
-  `,
+.add(
+  'Default',
+  // `
+  //   Global search. Can be invoked with cmd+shift+f, cmd+shift+s, ctrl+shift+f, ctrl+shift+s.
+  //   Needs to be in an relative container.
+  // `,
   () => {
     return (
       <div style={elementStyle}>
         <GlobalSearch
-          label="Label"
-          placeholder="This is the placeholder"
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onSearch={action('onSearch')}
-          onClose={action('onClose')}
-          items={items}
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [GlobalSearch],
-    role: 'part:@sanity/components/globalsearch/default'
-  }
-)
-
-
-.addWithInfo(
-  'Searching',
-  `
-    Global search. Can be invoked with cmd+T
-  `,
-  () => {
-    return (
-      <div style={elementStyle}>
-        <GlobalSearch
-          label="Label"
-          placeholder="This is the placeholder"
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onSearch={action('onSearch')}
-          onClose={action('onClose')}
-          isSearching
-          isOpen
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [GlobalSearch],
-    role: 'part:@sanity/components/globalsearch/default'
-  }
-)
-
-
-.addWithInfo(
-  'Open',
-  `
-    Global search. Can be invoked with cmd+T
-  `,
-  () => {
-    return (
-      <div style={elementStyle}>
-        <GlobalSearch
-          label="Label"
-          placeholder="This is the placeholder"
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onSearch={action('onSearch')}
-          onClose={action('onClose')}
-          topItems={topItems}
-          items={items}
+          label={text('label', 'Search')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          isSearching={boolean('Is searching', false)}
+          isOpen={boolean('is open', true)}
+          items={object('items', items)}
+          topItems={object('top tiems', [])}
           renderItem={renderItem}
-          isOpen
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onSearch={action('onSearch')}
+          onClose={action('onClose')}
         />
       </div>
     )
@@ -167,27 +114,24 @@ storiesOf('Global Search')
   }
 )
 
-
-.addWithInfo(
+.add(
   'Basic',
-  `
-    Basic without a decoration wrapper
-  `,
   () => {
     return (
       <div style={{backgroundColor: '#fff', width: '15em'}}>
         <GlobalSearch
-          label="Label"
-          placeholder="This is the placeholder"
+          label={text('label', 'Search')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          isSearching={boolean('Is searching', false)}
+          isOpen={boolean('is open', true)}
+          items={items}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
           onSearch={action('onSearch')}
           onClose={action('onClose')}
           topItems={topItems}
-          items={items}
           renderItem={renderItem}
-          isSearching
         />
       </div>
     )

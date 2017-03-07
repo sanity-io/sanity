@@ -1,7 +1,7 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-
+import {withKnobs, boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 
 class DefaultTextInputTest extends React.Component {
 
@@ -37,17 +37,20 @@ class DefaultTextInputTest extends React.Component {
   }
 }
 
-
 storiesOf('Text inputs')
-  .addWithInfo(
+  .addDecorator(withKnobs)
+  .add(
   'Default',
-  `
-    Default textinput
-  `,
   () => {
     return (
       <DefaultTextInput
-        placeholder="This is the placeholder"
+        placeholder={text('placeholder', 'This is the placeholder')}
+        value={text('value', false)}
+        type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
+        error={boolean('error', false)}
+        focus={boolean('focus', false)}
+        showClearButton={boolean('clear button', false)}
+        selected={boolean('selected', false)}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onKeyPress={action('onKeyPress')}
@@ -61,72 +64,17 @@ storiesOf('Text inputs')
     role: 'part:@sanity/components/textinputs/default'
   }
 )
-.addWithInfo(
+.add(
   'Default (test)',
-  `
-    Default textinput
-  `,
   () => {
     return (
       <DefaultTextInputTest
-        placeholder="This is the placeholder"
+        placeholder={text('placeholder', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onKeyPress={action('onKeyPress')}
         onBlur={action('onBlur')}
         id="ThisIsAnUniqueId"
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextInput],
-    role: 'part:@sanity/components/textinputs/default'
-  }
-)
-.addWithInfo(
-  'Default with clearbutton',
-  `
-    Default textinput
-  `,
-  () => {
-    return (
-      <DefaultTextInput
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onKeyPress={action('onKeyPress')}
-        onClear={action('onClear')}
-        onBlur={action('onBlur')}
-        value="This field has a clearbutton"
-        id="ThisIsAnUniqueId_ufthw"
-        showClearButton
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextInput],
-    role: 'part:@sanity/components/textinputs/default'
-  }
-)
-
-.addWithInfo(
-  'Default (selected)',
-  `
-    Default textinput
-  `,
-  () => {
-    return (
-      <DefaultTextInput
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onKeyPress={action('onKeyPress')}
-        onClear={action('onClear')}
-        onBlur={action('onBlur')}
-        value="This field has a clearbutton"
-        id="ThisIsAnUniqueId_ufthw"
-        showClearButton
-        selected
       />
     )
   },

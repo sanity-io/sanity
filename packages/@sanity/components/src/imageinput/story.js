@@ -6,6 +6,7 @@ import buttonStyles from 'part:@sanity/components/buttons/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import Dialog from 'part:@sanity/components/dialogs/default'
+import {withKnobs, number, text, boolean, select, object} from 'part:@sanity/storybook/addons/knobs'
 
 const imageUrl = `https://unsplash.it/${parseInt(Math.random() * 10, 0) * 100}/${parseInt(Math.random() * 10, 0) * 100}`
 
@@ -18,11 +19,8 @@ const renderEdit = () => {
 }
 
 storiesOf('Image input')
-.addWithInfo(
+.add(
   'Image select',
-  `
-    Image input for uploading images.
-  `,
   () => {
     return (
       <ImageSelect
@@ -37,11 +35,8 @@ storiesOf('Image input')
     role: 'part:@sanity/components/imageinput/image-select'
   }
 )
-.addWithInfo(
+.add(
   'Image select as button',
-  `
-    Image input for uploading images.
-  `,
   () => {
     return (
       <div className={buttonStyles.default}>
@@ -60,11 +55,11 @@ storiesOf('Image input')
   }
 )
 
-.addWithInfo(
+.add(
   'Image select inside button',
-  `
-    Remember to set ripple to false
-  `,
+  // `
+  //   Remember to set ripple to false
+  // `,
   () => {
     return (
       <Button
@@ -86,21 +81,26 @@ storiesOf('Image input')
 )
 
 storiesOf('Image input Fieldset')
-
-.addWithInfo(
-  'Level 0',
-  `
-    Image input for uploading images.
-  `,
+.addDecorator(withKnobs)
+.add(
+  'Fieldset',
   () => {
     return (
       <ImageInput
-        legend="Image input fieldset"
+        legend={text('Legend', 'This is the legend')}
         onSelect={action('Select image')}
-        status="ready"
-        multiple={false}
+        onEdit={action('onEdit')}
+        onClear={action('onClear')}
+        onCancel={action('onCancel')}
+        status={select('Status', ['ready', 'error', 'pending'], 'ready')}
+        percent={number('percent', 50, {range: true, min: 0, max: 100, step: 5})}
+        level={number('Level', 0)}
+        multiple={boolean('Multiple', false)}
+        hotspotImage={object('hotspotImage', {imageUrl: imageUrl})}
+        showContent={boolean('show content', false)}
+        accept={text('accept', 'image/png')}
       >
-        <h2>Content goes here</h2>
+        {text('Content', 'This is the content')}
       </ImageInput>
     )
   },
@@ -110,205 +110,8 @@ storiesOf('Image input Fieldset')
   }
 )
 
-.addWithInfo(
-  'Level 1',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        status="ready"
-        level={1}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Level 1 (with image)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        status="ready"
-        hotspotImage={{imageUrl: imageUrl}}
-        level={1}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Only image (showContent not set)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        hotspotImage={{imageUrl: imageUrl}}
-        level={0}
-      />
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Only image (Level 0)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        hotspotImage={{imageUrl: imageUrl}}
-        showContent={false}
-        level={0}
-      />
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Only image (Level 1)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        hotspotImage={{imageUrl: imageUrl}}
-        level={1}
-        showContent={false}
-      />
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Error on upload',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        status="error"
-        percent={43}
-        hotspotImage={{
-          imageUrl: imageUrl
-        }}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-
-.addWithInfo(
-  'Progress 43%',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        onCancel={action('Cancel upload')}
-        status="pending"
-        percent={43}
-        uploadingImage
-        hotspotImage={{
-          imageUrl: imageUrl
-        }}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'Fieldset (completed)',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        onClear={action('Clear image')}
-        status="complete"
-        percent={100}
-        hotspotImage={{
-          imageUrl: imageUrl
-        }}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
+.add(
   'Invalid url',
-  `
-    Image input for uploading images.
-  `,
   () => {
     return (
       <ImageInput
@@ -326,13 +129,8 @@ storiesOf('Image input Fieldset')
     role: 'part:@sanity/components/imageinput/fieldset'
   }
 )
-
-
-.addWithInfo(
+.add(
   'Invalid blob',
-  `
-    Image input for uploading images.
-  `,
   () => {
     return (
       <ImageInput
@@ -340,30 +138,6 @@ storiesOf('Image input Fieldset')
         onSelect={action('Select image')}
         status="complete"
         hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
-      >
-        <h2>Content goes here</h2>
-      </ImageInput>
-    )
-  },
-  {
-    propTables: [ImageInput],
-    role: 'part:@sanity/components/imageinput/fieldset'
-  }
-)
-
-.addWithInfo(
-  'With edit button',
-  `
-    Image input for uploading images.
-  `,
-  () => {
-    return (
-      <ImageInput
-        legend="Image input fieldset"
-        onSelect={action('Select image')}
-        status="complete"
-        hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
-        onEdit={action('onEdit')}
       >
         <h2>Content goes here</h2>
       </ImageInput>

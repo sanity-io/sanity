@@ -5,6 +5,7 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
+import {withKnobs, boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 
 const style = {
   height: '100vh',
@@ -23,88 +24,41 @@ const centered = function (storyFn) {
 }
 
 storiesOf('Toggles')
-.addDecorator(centered)
-.addWithInfo(
-  'Switch (off)',
-  '',
+.addDecorator(withKnobs)
+.add(
+  'Switch',
   () => {
     return (
-      <Switch onChange={action('change')} label="Switch is off" onFocus={action('onFocus')} onBlur={action('onBlur')} />
+      <Switch
+        checked={boolean('checked', false)}
+        label={text('label', 'This is the label')}
+        disabled={boolean('disabled', false)}
+        onChange={action('change')}
+        onFocus={action('onFocus')}
+        onBlur={action('onBlur')}
+      />
     )
   },
   {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
 )
-.addWithInfo(
-  'Switch (on)',
-  '',
-  () => {
-    return (
-      <Switch checked label="Switch is on" onChange={linkTo('Switch (off)')} onFocus={action('onFocus')} onBlur={action('onBlur')} />
-    )
-  },
-  {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
-)
-.addWithInfo(
-  'Switch (disabled)',
-  '',
-  () => {
-    return (
-      <Switch label="This checkbox is disabled" disabled />
-    )
-  },
-  {propTables: [Switch], role: 'part:@sanity/components/toggles/switch'}
-)
-.addWithInfo(
+.add(
   'Checkbox',
-  '',
   () => {
     return (
-      <Checkbox label="This is a checked checkbox" onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
+      <Checkbox
+        label={text('label', 'This is the label')}
+        checked={boolean('checked', false)}
+        disabled={boolean('disabled', false)}
+        onChange={action('onChange')}
+        onBlur={action('onBlur')}
+        onFocus={action('onFocus')}
+      />
     )
   },
   {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
 )
-
-.addWithInfo(
-  'Checkbox checked',
-  '',
-  () => {
-    return (
-      <Checkbox label="This is a checked checkbox" checked onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
-    )
-  },
-  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
-)
-
-.addWithInfo(
-  'Checkbox disabled',
-  '',
-  () => {
-    return (
-      <Checkbox label="This is a checked checkbox" disabled onChange={action('onChange')} onBlur={action('onBlur')} onFocus={action('onFocus')} />
-    )
-  },
-  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
-)
-.addWithInfo(
-  'Checkboxes',
-  '',
-  () => {
-    return (
-      <div>
-        <Checkbox label="This is a checkbox" onChange={action('onChange')} />
-        <Checkbox label="This is a disabled checkbox" disabled />
-        <Checkbox label="This is a checked checkbox" checked onChange={action('onChange')} />
-        <Checkbox label="This is a disabled checked checkbox" checked disabled />
-      </div>
-    )
-  },
-  {propTables: [Checkbox], role: 'part:@sanity/components/toggles/checkbox'}
-)
-
-.addWithInfo(
+.add(
   'Buttons',
-  '',
   () => {
     const items = [
       {
@@ -126,54 +80,24 @@ storiesOf('Toggles')
   },
   {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
 )
-
-.addWithInfo(
+.add(
   'Toggle button',
-  '',
   () => {
+    const icon = boolean('icon', false) ? SanityLogoIcon : false
     return (
-      <ToggleButton onClick={action('onClick')}>Toggle button</ToggleButton>
+      <ToggleButton
+        selected={boolean('selected', false)}
+        onClick={action('onClick')}
+        icon={icon}
+      >
+        {text('content', 'this is the content')}
+      </ToggleButton>
     )
   },
   {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
 )
-
-.addWithInfo(
-  'Toggle button (selected)',
-  '',
-  () => {
-    return (
-      <ToggleButton selected onClick={action('onClick')}>Toggle selected</ToggleButton>
-    )
-  },
-  {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
-)
-
-.addWithInfo(
-  'Toggle button with icon',
-  '',
-  () => {
-    return (
-      <ToggleButton icon={SanityLogoIcon} onClick={action('onClick')} />
-    )
-  },
-  {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
-)
-
-.addWithInfo(
-  'Toggle button with icon (selected)',
-  '',
-  () => {
-    return (
-      <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-    )
-  },
-  {propTables: [ToggleButtons], role: 'part:@sanity/components/toggles/buttons'}
-)
-
-.addWithInfo(
+.add(
   'Toggle button collection',
-  '',
   () => {
     return (
       <div>

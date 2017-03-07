@@ -14,8 +14,16 @@ import Fuse from 'fuse.js'
 import Chance from 'chance'
 const chance = new Chance()
 
+import {withKnobs, object, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
 
 const items = range(100).map((item, i) => {
+  return {
+    title: chance.name(),
+    key: `${i}`
+  }
+})
+
+const radioItems = range(10).map((item, i) => {
   return {
     title: chance.name(),
     key: `${i}`
@@ -160,20 +168,18 @@ class SearchableTest extends React.Component {
 
 
 storiesOf('Selects')
-  .addWithInfo(
+  .addDecorator(withKnobs)
+  .add(
   'Default',
-  `
-    Default select. Works as a normal <select />
-  `,
   () => {
     return (
       <DefaultSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onBlur={action('onBlur')}
-        items={items}
+        items={object('items', items)}
       />
     )
   },
@@ -182,16 +188,13 @@ storiesOf('Selects')
     role: 'part:@sanity/components/selects/default'
   }
 )
-.addWithInfo(
-  'Default other value',
-  `
-    Default select. Works as a normal <select />
-  `,
+.add(
+  'Default with value',
   () => {
     return (
       <DefaultSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onBlur={action('onBlur')}
@@ -206,11 +209,11 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
-  'Searchable (selected value)',
-  `
-    When provided with items, the component searches inside these when no onInputChange is provided
-  `,
+.add(
+  'Searchable',
+  // `
+  //   When provided with items, the component searches inside these when no onInputChange is provided
+  // `,
   () => {
     const renderItem = function (item) {
       return (
@@ -220,8 +223,8 @@ storiesOf('Selects')
     const valueToString = item => item.title
     return (
       <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onBlur={action('onBlur')}
@@ -230,6 +233,7 @@ storiesOf('Selects')
         valueToString={valueToString}
         renderItem={renderItem}
         items={items}
+        isLoading={boolean('is loading', false)}
       />
     )
   },
@@ -239,11 +243,11 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
+.add(
   'Searchable (selected value, renderItem)',
-  `
-    When provided with items, the component searches inside these when no onInputChange is provided
-  `,
+  // `
+  //   When provided with items, the component searches inside these when no onInputChange is provided
+  // `,
   () => {
     class Example extends React.Component {
       state = {
@@ -260,8 +264,8 @@ storiesOf('Selects')
         const valueToString = item => item.title
         return (
           <SearchableSelect
-            label="This is the label"
-            placeholder="This is the placeholder"
+            label={text('label', 'This is the label')}
+            placeholder={text('placeholder', 'This is the placeholder')}
             onChange={item => this.setState({value: item})}
             onFocus={action('onFocus')}
             onBlur={action('onBlur')}
@@ -282,11 +286,11 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
+.add(
   'Searchable (with onClear)',
-  `
-    When provided with items, the component searches inside these when no onInputChange is provided
-  `,
+  // `
+  //   When provided with items, the component searches inside these when no onInputChange is provided
+  // `,
   () => {
     const renderItem = function (item) {
       return (
@@ -297,8 +301,8 @@ storiesOf('Selects')
 
     return (
       <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onBlur={action('onBlur')}
@@ -317,78 +321,8 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
-  'Searchable (loading)',
-  `
-    Takes a loading prop.
-  `,
-  () => {
-    const renderItem = function (item) {
-      return (
-        <div>{item.title}</div>
-      )
-    }
-    const renderValue = function (item) {
-      return item.title
-    }
-    return (
-      <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onInputChange={action('onInputChange')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onOpen={action('onOpen')}
-        isLoading
-        items={[]}
-        renderItem={renderItem}
-        renderValue={renderValue}
-      />
-    )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
-  }
-)
-
-.addWithInfo(
+.add(
   'Custom select',
-  `
-    Custom preview
-  `,
-  () => {
-
-    const renderItem = function (item) {
-      return (
-        <div>Custom rendering of {item.title}</div>
-      )
-    }
-
-    return (
-      <CustomSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onOpen={action('onOpen')}
-        renderItem={renderItem}
-        value={items[2]}
-        items={items}
-      />
-    )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
-  }
-)
-
-.addWithInfo(
-  'Custom select (transparent)',
-  `
-    Custom preview
-  `,
   () => {
 
     const renderItem = function (item) {
@@ -400,13 +334,13 @@ storiesOf('Selects')
     return (
       <div style={{padding: '2em', backgroundColor: '#eee'}}>
         <CustomSelect
-          label="This is the label"
-          placeholder="This is the placeholder"
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          transparent={boolean('transparent', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onOpen={action('onOpen')}
           renderItem={renderItem}
-          transparent
           value={items[2]}
           items={items}
         />
@@ -419,24 +353,20 @@ storiesOf('Selects')
   }
 )
 
-
-.addWithInfo(
+.add(
   'Style select',
-  `
-    Style select
-  `,
   () => {
 
     return (
       <div style={{padding: '2em', backgroundColor: '#eee'}}>
         <StyleSelect
-          label="This is the label"
-          placeholder="Select style…"
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          transparent={boolean('transparent', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onOpen={action('onOpen')}
           renderItem={renderStyleItem}
-          transparent
           items={styleItems}
         />
       </div>
@@ -449,23 +379,21 @@ storiesOf('Selects')
 )
 
 
-.addWithInfo(
+.add(
   'Style select (one style)',
-  `
-    Custom preview
-  `,
   () => {
 
     return (
       <div style={{padding: '2em', backgroundColor: '#eee'}}>
         <StyleSelect
-          label="This is the label"
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          transparent={boolean('transparent', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onOpen={action('onOpen')}
           renderItem={renderStyleItem}
           value={[styleItems[0]]}
-          transparent
           items={styleItems}
         />
       </div>
@@ -477,23 +405,20 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
+.add(
   'Style select (multiple)',
-  `
-    Custom preview
-  `,
   () => {
 
     return (
       <div style={{padding: '2em', backgroundColor: '#eee'}}>
         <StyleSelect
-          label="This is the label"
-          placeholder="This is the placeholder"
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          transparent={boolean('transparent', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onOpen={action('onOpen')}
           renderItem={renderStyleItem}
-          transparent
           value={[styleItems[0], styleItems[2]]}
           items={styleItems}
         />
@@ -527,17 +452,17 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
+.add(
   'Radiobuttons',
-  `
-    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
-  `,
+  // `
+  //   When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+  // `,
   () => {
 
-    const value = items[0]
+    const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
 
     return (
-      <RadioSelect items={items} value={value} onChange={action('onChange')} legend="Radio button select" />
+      <RadioSelect items={radioItems} value={value} onChange={action('onChange')} legend="Radio button select" />
     )
   },
   {
@@ -546,17 +471,17 @@ storiesOf('Selects')
   }
 )
 
-.addWithInfo(
+.add(
   'Radiobuttons vertical',
-  `
-    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
-  `,
+  // `
+  //   When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+  // `,
   () => {
 
-    const value = items[0]
+    const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
 
     return (
-      <RadioSelect items={items} value={value} onChange={action('onChange')} direction="vertical" legend="Vertical" />
+      <RadioSelect items={radioItems} value={value} onChange={action('onChange')} direction="vertical" legend="Vertical" />
     )
   },
   {

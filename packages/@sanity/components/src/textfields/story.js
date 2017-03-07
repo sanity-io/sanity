@@ -2,63 +2,24 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
 import SearchTextField from 'part:@sanity/components/textfields/search'
+import {withKnobs, boolean, text} from 'part:@sanity/storybook/addons/knobs'
 
 storiesOf('Textfields')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  `
-    Default textfield
-  `,
   () => {
     return (
       <DefaultTextField
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextField],
-    role: 'part:@sanity/components/textfields/default'
-  }
-)
-.addWithInfo(
-  'With value',
-  `
-    Default textfield
-  `,
-  () => {
-    return (
-      <DefaultTextField
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        value="Donald Duck"
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextField],
-    role: 'part:@sanity/components/textfields/default'
-  }
-)
-.addWithInfo(
-  'Default (with clear)',
-  `
-    Default textfield
-  `,
-  () => {
-    return (
-      <DefaultTextField
-        label="This is the label"
-        placeholder="This is the placeholder"
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
+        value={text('value')}
+        error={boolean('error', false)}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onClear={action('onClear')}
-        showClearButton
+        showClearButton={boolean('clear button', false)}
+        focus={boolean('focus', false)}
       />
     )
   },
@@ -67,85 +28,22 @@ storiesOf('Textfields')
     role: 'part:@sanity/components/textfields/default'
   }
 )
-.addWithInfo(
-  'Default (error)',
-  `
-    Default textfield
-  `,
-  () => {
-    return (
-      <DefaultTextField
-        label="This is the label"
-        placeholder="This is the placeholder"
-        error
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextField],
-    role: 'part:@sanity/components/textfields/default'
-  }
-)
-.addWithInfo(
+.add(
   'Search',
-  `
-    Default searchfield
-  `,
   () => {
     return (
       <SearchTextField
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange', 'more')}
+        label={text('label', 'This is the label')}
+        placeholder={text('placeholder', 'This is the placeholder')}
+        value={text('value')}
+        focus={boolean('focus', false)}
+        onChange={action('onChange')}
+        showClearButton={boolean('clear button', false)}
       />
     )
   },
   {
     propTables: [SearchTextField],
     role: 'part:@sanity/components/textfields/search'
-  }
-)
-
-.addWithInfo(
-  'Default (level 0)',
-  `
-    Default textfield
-  `,
-  () => {
-    return (
-      <DefaultTextField
-        level="0"
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextField],
-    role: 'part:@sanity/components/textfields/default'
-  }
-)
-
-.addWithInfo(
-  'Default (level 1)',
-  `
-    Default textfield
-  `,
-  () => {
-    return (
-      <DefaultTextField
-        level="1"
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextField],
-    role: 'part:@sanity/components/textfields/default'
   }
 )

@@ -1,10 +1,9 @@
 import React from 'react'
 import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
+import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Chance from 'chance'
-const chance = new Chance()
 
 const style = {
   position: 'absolute',
@@ -15,7 +14,15 @@ const style = {
 const backgroundStuff = function (storyFn) {
   return (
     <div>
-      <div style={style}>{chance.sentence(50)}</div>
+      <div style={style}>
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        Lorem Ipsum has been the industrys standard dummy text ever since the 1500s,
+        when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+        It has survived not only five centuries, but also the leap into electronic typesetting,
+        remaining essentially unchanged. It was popularised in the 1960s with the release
+        of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
+        publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+      </div>
       {storyFn()}
     </div>
   )
@@ -23,111 +30,21 @@ const backgroundStuff = function (storyFn) {
 
 storiesOf('Dialogs')
 .addDecorator(backgroundStuff)
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  '',
   () => {
     return (
       <div>
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')}>
-          This is the content
-          {chance.paragraph()}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-.addWithInfo(
-  'Default (danger)',
-  '',
-  () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="danger">
-          This is the content
-          {chance.paragraph()}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-.addWithInfo(
-  'Default (success)',
-  '',
-  () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="success">
-          This is the content
-          {chance.paragraph()}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-.addWithInfo(
-  'Default (info)',
-  '',
-  () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="info">
-          This is the content
-          {chance.paragraph()}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-.addWithInfo(
-  'Default (warning)',
-  '',
-  () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} kind="warning">
-          This is the content
-          {chance.paragraph()}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-.addWithInfo(
-  'Default (with header)',
-  '',
-  () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog title={chance.sentence()} isOpen onClose={action('onClose')} showHeader>
-          This is the content
-          {chance.paragraph()}
+        <DefaultDialog
+          title={text('title', 'This is the title')}
+          isOpen={boolean('is Open', true)}
+          showHeader={boolean('Show Header', false)}
+          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+          onClose={action('onClose')}
+        >
+          {text('content', 'This is the content')}
         </DefaultDialog>
       </div>
     )
@@ -138,266 +55,65 @@ storiesOf('Dialogs')
   }
 )
 
-.addWithInfo(
+.add(
+  'Default (with actions)',
+  () => {
+    const actions = [
+      {
+        index: '1',
+        title: 'Finish'
+      },
+      {
+        index: '2',
+        title: 'Cancel',
+      },
+      {
+        index: '3',
+        title: 'Secondary',
+        kind: 'secondary'
+      }
+    ]
+    return (
+      <div>
+        <DefaultDialog
+          title={text('title', 'This is the title')}
+          isOpen={boolean('is Open', true)}
+          showHeader={boolean('Show Header', true)}
+          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+          onClose={action('onClose')}
+          actions={object('actions', actions)}
+        >
+          {text('content', 'This is the content')}
+        </DefaultDialog>
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultDialog],
+    role: 'part:@sanity/components/dialogs/fullscreen'
+  }
+)
+
+.add(
   'Fullscreen',
-  '',
   () => {
     return (
       <div>
         <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
-        <FullscreenDialog title="This is the title" onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-.addWithInfo(
-  'Fullscreen (open)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Fullscreen (info)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="info" title="This is the title" isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-
-.addWithInfo(
-  'Fullscreen (danger & centered)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="danger" centered title="This is the title" isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Fullscreen (danger, centered, no close button)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="danger" centered title="This is the title" isOpen>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Fullscreen (danger)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="danger" title="This is the title" isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Fullscreen (success)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="success" title="This is the title" isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Fullscreen (warning)',
-  '',
-  () => {
-    return (
-      <div>
-        <FullscreenDialog kind="warning" title="This is the title" isOpen onClose={action('onClose')}>
-          This is the content
-        </FullscreenDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-
-.addWithInfo(
-  'Default (with actions)',
-  '',
-  () => {
-    const actions = [
-      {
-        index: '1',
-        title: 'Finish'
-      },
-      {
-        index: '2',
-        title: 'Cancel',
-      },
-      {
-        index: '3',
-        title: 'Secondary',
-        kind: 'secondary'
-      }
-    ]
-    return (
-      <div>
-        <DefaultDialog
-          title="This is the title"
-          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
-          actions={actions}
-          onAction={action('onAction')}
+        <FullscreenDialog
+          title={text('title', 'This is the title')}
+          onClose={action('onClose')}
+          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+          centered={boolean('Centered', false)}
+          isOpen={boolean('is Open', true)}
         >
-          This is the content
-          {chance.paragraph({sentences: 50})}
-        </DefaultDialog>
+          {text('content', 'This is the content')}
+        </FullscreenDialog>
       </div>
     )
   },
   {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-.addWithInfo(
-  'Default (with actions and header)',
-  '',
-  () => {
-    const actions = [
-      {
-        index: '1',
-        title: 'Finish'
-      },
-      {
-        index: '2',
-        title: 'Cancel',
-      },
-      {
-        index: '3',
-        title: 'Secondary',
-        kind: 'secondary'
-      }
-    ]
-    return (
-      <div>
-        <DefaultDialog
-          title="This is the title"
-          isOpen onClose={linkTo('Dialogs', 'Fullscreen')}
-          showHeader
-          actions={actions}
-          onAction={action('onAction')}
-        >
-          This is the content
-          {chance.paragraph({sentences: 50})}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
-  }
-)
-.addWithInfo(
-  'Default (danger with actions and header)',
-  '',
-  () => {
-    const actions = [
-      {
-        index: '1',
-        title: 'Finish'
-      },
-      {
-        index: '2',
-        title: 'Cancel',
-      },
-      {
-        index: '3',
-        title: 'Secondary',
-        kind: 'secondary'
-      }
-    ]
-    return (
-      <div>
-        <DefaultDialog
-          title="This is the title"
-          isOpen
-          onClose={linkTo('Dialogs', 'Fullscreen')}
-          showHeader
-          actions={actions}
-          onAction={action('onAction')}
-          kind="danger"
-        >
-          This is the content
-          {chance.paragraph({sentences: 50})}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
+    propTables: [FullscreenDialog],
     role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )

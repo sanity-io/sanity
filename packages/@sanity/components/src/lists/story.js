@@ -10,6 +10,7 @@ import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()
 
+import {withKnobs, boolean, select} from 'part:@sanity/storybook/addons/knobs'
 
 const containerStyle = {
   width: '90%',
@@ -88,61 +89,21 @@ class SortableComponent extends React.Component {
 
 
 storiesOf('List (default)')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  'The default fieldset is used to gather a collection of fields.',
-  () => {
-    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} />
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
-
-
-.addWithInfo(
-  'Zebra-stripes',
-  'The default fieldset is used to gather a collection of fields.',
-  () => {
-    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} decoration="zebra-stripes" />
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
-.addWithInfo(
-  'Divider',
-  'The default fieldset is used to gather a collection of fields.',
-  () => {
-    return <DefaultList renderItem={defaultRenderItem} items={defaultItems} onSelect={action('onSelect')} decoration="divider" />
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
-
-
-.addWithInfo(
-  'Sortable (divider, scrollable)',
-  `
-    Sortable DefaultList
-  `,
   () => {
     return (
       <div style={containerStyle}>
-        <SortableComponent
+        <DefaultList
+          renderItem={defaultRenderItem}
           items={defaultItems}
+          decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+          scrollable={boolean('scrollable', false)}
           onSelect={action('onSelect')}
           onSortStart={action('onSortStart')}
           onSortMove={action('onSortMove')}
           onSortEnd={action('onSortEnd')}
-          useDragHandle
-          scrollable
-          sortable
-          decoration="divider"
         />
       </div>
     )
@@ -153,11 +114,36 @@ storiesOf('List (default)')
   }
 )
 
-.addWithInfo(
-  'Sortable (detailed, divider)',
-  `
-    Sortable DefaultList
-  `,
+.add(
+  'Sortable',
+  () => {
+    return (
+      <div style={containerStyle}>
+        <SortableComponent
+          items={detailedItems}
+          scrollable={boolean('scrollable', false)}
+          decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+          useDragHandle={boolean('Use Drag Handle', false)}
+          onSelect={action('onSelect')}
+          onSortStart={action('onSortStart')}
+          onSortMove={action('onSortMove')}
+          onSortEnd={action('onSortEnd')}
+        />
+      </div>
+    )
+  },
+  {
+    propTables: [DefaultList],
+    role: 'part:@sanity/components/lists/default'
+  }
+)
+
+
+.add(
+  'Detailed',
+  // `
+  //   Sortable DefaultList
+  // `,
   () => {
     return (
       <SortableComponent
@@ -177,60 +163,12 @@ storiesOf('List (default)')
   }
 )
 
-.addWithInfo(
-  'Sortable (detailed, no draghandle, zebra-stripes)',
-  `
-    Sortable DefaultList
-  `,
-  () => {
-    return (
-      <SortableComponent
-        items={detailedItems}
-        onSelect={action('onSelect')}
-        onSortStart={action('onSortStart')}
-        onSortMove={action('onSortMove')}
-        onSortEnd={action('onSortEnd')}
-        decoration="zebra-stripes"
-      />
-    )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
 
-.addWithInfo(
-  'Sortable, scrollable',
-  `
-    Sortable DefaultList
-  `,
-  () => {
-    return (
-      <div style={containerStyle}>
-        <SortableComponent
-          scrollable
-          items={defaultItems}
-          onSelect={action('onSelect')}
-          onSortStart={action('onSortStart')}
-          onSortMove={action('onSortMove')}
-          onSortEnd={action('onSortEnd')}
-          decoration="zebra-stripes"
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
-
-.addWithInfo(
+.add(
   'Scrollable, selected item',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     const selectedItem = defaultItems[3]
     return (
@@ -251,38 +189,11 @@ storiesOf('List (default)')
   }
 )
 
-.addWithInfo(
-  'Scrollable, sortable',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
-  () => {
-    return (
-      <div style={containerStyle}>
-        <SortableComponent
-          sortable
-          scrollable
-          useDragHandle
-          items={defaultItems}
-          onSelect={action('onSelect')}
-          onSortStart={action('onSortStart')}
-          onSortMove={action('onSortMove')}
-          onSortEnd={action('onSortEnd')}
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
-  }
-)
-
-.addWithInfo(
+.add(
   'Scrollable, selected item,highlighted item',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     const selectedItem = defaultItems[3]
     const highlightedItem = defaultItems[5]
@@ -306,11 +217,11 @@ storiesOf('List (default)')
 )
 
 
-.addWithInfo(
+.add(
   'Selected item outside view',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     const selectedItem = defaultItems[50]
     return (
@@ -331,11 +242,11 @@ storiesOf('List (default)')
   }
 )
 
-.addWithInfo(
+.add(
   'Highlighted item outside view',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     const highlightedItem = defaultItems[50]
     return (
@@ -356,11 +267,11 @@ storiesOf('List (default)')
   }
 )
 
-.addWithInfo(
+.add(
   'Selected item outside view (bottom)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     const selectedItem = defaultItems[defaultItems.length - 1]
     return (

@@ -1,15 +1,14 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
+import {withKnobs, text, boolean} from 'part:@sanity/storybook/addons/knobs'
 
 import FileInput from 'part:@sanity/components/fileinput/default'
 import DropZone from 'part:@sanity/components/fileinput/dropzone'
 
 storiesOf('File Input')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  `
-    Default with text
-  `,
   () => {
     return (
       <FileInput onSelect={action('onSelect')}>
@@ -23,11 +22,8 @@ storiesOf('File Input')
   }
 )
 
-.addWithInfo(
+.add(
   'Drop zone',
-  `
-    Drop zone
-  `,
   () => {
     return (
       <div
@@ -40,67 +36,9 @@ storiesOf('File Input')
       >
         <DropZone
           onDrop={action('onDrop')}
-          multiple={false}
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [DropZone],
-    role: 'part:@sanity/components/fileinput/dropzone'
-  }
-)
-
-
-.addWithInfo(
-  'Drop zone (ghost)',
-  `
-    Drop zone
-  `,
-  () => {
-    return (
-      <div
-        style={{
-          position: 'absolute',
-          width: '50vw',
-          height: '50vh',
-          transform: 'translate(50%, 50%)'
-        }}
-      >
-        <DropZone
-          onDrop={action('onDrop')}
-          multiple={false}
-          ghost
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [DropZone],
-    role: 'part:@sanity/components/fileinput/dropzone'
-  }
-)
-
-
-.addWithInfo(
-  'Drop zone (only png)',
-  `
-    Drop zone
-  `,
-  () => {
-    return (
-      <div
-        style={{
-          position: 'absolute',
-          width: '50vw',
-          height: '50vh',
-          transform: 'translate(50%, 50%)'
-        }}
-      >
-        <DropZone
-          onDrop={action('onDrop')}
-          multiple={false}
-          accept="image/png"
+          multiple={boolean('multiple', false)}
+          ghost={boolean('ghost', false)}
+          accept={text('accept', 'image/png')}
         />
       </div>
     )

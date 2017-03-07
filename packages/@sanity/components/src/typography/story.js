@@ -9,34 +9,32 @@ import Chance from 'chance'
 const chance = new Chance()
 
 
-storiesOf('Typography').addWithInfo(
+storiesOf('Typography').add(
   'Basic',
-  `
-    ## Headings
-
-    ### Use in JS
-    import headings from 'part:@sanity/base/theme/typography/headings-style'
-    <h1 className={headings.heading1}>This is the big heading</h1>
-
-    ### Use in CSS
-    - composes: heading1 from "part:@sanity/base/theme/typography/headings-style"
-    - composes: heading2 from ...
-    - composes: heading3 from ...
-    - composes: heading4 from ...
-    - composes: heading5 from ...
-
-    ## Text blocks
-
-    ### Use in JS
-    import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
-    <p className={textBlocks.paragraph}</p>
-
-    ### Use in CSS
-    - composes: lead from "part:@sanity/base/theme/typography/text-blocks-style"
-    - composes: paragraph from ...
-
-
-  `,
+  // `
+  //   ## Headings
+  //
+  //   ### Use in JS
+  //   import headings from 'part:@sanity/base/theme/typography/headings-style'
+  //   <h1 className={headings.heading1}>This is the big heading</h1>
+  //
+  //   ### Use in CSS
+  //   - composes: heading1 from "part:@sanity/base/theme/typography/headings-style"
+  //   - composes: heading2 from ...
+  //   - composes: heading3 from ...
+  //   - composes: heading4 from ...
+  //   - composes: heading5 from ...
+  //
+  //   ## Text blocks
+  //
+  //   ### Use in JS
+  //   import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
+  //   <p className={textBlocks.paragraph}</p>
+  //
+  //   ### Use in CSS
+  //   - composes: lead from "part:@sanity/base/theme/typography/text-blocks-style"
+  //   - composes: paragraph from ...
+  // `,
   () => {
     return (
       <article className={styles.wrapper}>

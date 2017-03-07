@@ -150,11 +150,11 @@ class EditItemPopOverComponent extends React.Component {
 }
 
 storiesOf('Edit item')
-.addWithInfo(
+.add(
   'PopOver',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowHidden} id="myScrollContainerId">
@@ -171,11 +171,11 @@ storiesOf('Edit item')
     role: 'part:@sanity/components/edititem/popover'
   }
 )
-.addWithInfo(
+.add(
   'PopOver (nested)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowHidden} id="myScrollContainerId">
@@ -201,11 +201,11 @@ storiesOf('Edit item')
     role: 'part:@sanity/components/edititem/popover'
   }
 )
-.addWithInfo(
+.add(
   'PopOver (Full Width)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowHidden} id="myScrollContainerId">
@@ -223,11 +223,11 @@ storiesOf('Edit item')
   }
 )
 
-.addWithInfo(
+.add(
   'PopOver (position test)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowHidden} id="myScrollContainerId">
@@ -246,11 +246,11 @@ storiesOf('Edit item')
   }
 )
 
-.addWithInfo(
+.add(
   'PopOver (position test with content)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowScroll} id="myScrollContainerId">
@@ -270,11 +270,11 @@ storiesOf('Edit item')
     role: 'part:@sanity/components/edititem/popover'
   }
 )
-.addWithInfo(
+.add(
   'PopOver (position test a lot content)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div style={overflowScroll} id="myScrollContainerId">
@@ -307,11 +307,11 @@ storiesOf('Edit item')
   }
 )
 
-.addWithInfo(
+.add(
   'PopOver (position test Full Width)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div id="myScrollContainerId">
@@ -331,11 +331,11 @@ storiesOf('Edit item')
 )
 
 
-.addWithInfo(
+.add(
   'PopOver (test inline)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div id="myScrollContainerId" style={overflowScroll}>
@@ -370,11 +370,11 @@ storiesOf('Edit item')
 )
 
 
-.addWithInfo(
+.add(
   'PopOver (test inline offsetContainer)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div id="myScrollContainerId" style={overflowScrollOffset}>
@@ -409,11 +409,11 @@ storiesOf('Edit item')
 )
 
 
-.addWithInfo(
+.add(
   'PopOver (inline offsetContainer, scrolled)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div
@@ -460,11 +460,11 @@ storiesOf('Edit item')
   }
 )
 
-.addWithInfo(
+.add(
   'PopOver (scrolled inside scrolled)',
-  `
-    The default fieldset is used to gather a collection of fields.
-  `,
+  // `
+  //   The default fieldset is used to gather a collection of fields.
+  // `,
   () => {
     return (
       <div

@@ -6,14 +6,7 @@ import DetailPreview from 'part:@sanity/components/previews/detail'
 import InlinePreview from 'part:@sanity/components/previews/inline'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import CardPreview from 'part:@sanity/components/previews/card'
-
-const item = {
-  title: 'This is the title',
-  subtitle: 'This is the subtitle',
-  description: 'This is the long the descriptions that should no be to long, beacuse we will cap it',
-  imageUrl: 'http://www.fillmurray.com/500/300',
-  date: new Date()
-}
+import {withKnobs, object, boolean, number} from 'part:@sanity/storybook/addons/knobs'
 
 const style = {
   height: '100vh',
@@ -46,118 +39,43 @@ const centered = function (storyFn) {
 
 storiesOf('Previews')
 .addDecorator(centered)
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  `
-    Default preview
-  `,
   () => {
-    return (
-      <DefaultPreview item={item} />
-    )
-  },
-  {
-    propTables: [DefaultPreview],
-    role: 'part:@sanity/components/previews/default'
-  }
-)
-
-.addWithInfo(
-  'Default (placeholder)',
-  `
-    Default preview
-  `,
-  () => {
-    return (
-      <DefaultPreview item={item} isPlaceholder />
-    )
-  },
-  {
-    propTables: [DefaultPreview],
-    role: 'part:@sanity/components/previews/default'
-  }
-)
-
-
-.addWithInfo(
-  'Default (no media)',
-  `
-    Default preview with title and subtitle
-  `,
-  () => {
-    return (
-      <DefaultPreview item={{title: 'This is the title', subtitle: 'This is the subtitle'}} />
-    )
-  },
-  {
-    propTables: [DefaultPreview],
-    role: 'part:@sanity/components/previews/default'
-  }
-)
-
-.addWithInfo(
-  'Default (only title)',
-  `
-    Default preview with title and subtitle
-  `,
-  () => {
-    return (
-      <DefaultPreview item={{title: 'This is the title'}} />
-    )
-  },
-  {
-    propTables: [DefaultPreview],
-    role: 'part:@sanity/components/previews/default'
-  }
-)
-
-
-.addWithInfo(
-  'Card',
-  `
-    Card
-  `,
-  () => {
-    return (
-      <CardPreview item={item} />
-    )
-  },
-  {
-    propTables: [CardPreview],
-    role: 'part:@sanity/components/previews/card'
-  }
-)
-
-.addWithInfo(
-  'Card (no media)',
-  `
-    Card
-  `,
-  () => {
-    const mediaLessItem = {
-      title: 'This is the title',
-      subtitle: 'This is the subtitle',
-      description: 'This is the long the descriptions that should no be to long, beacuse we will cap it',
-      date: new Date()
+    const item = {
+      title: boolean('title', true) ? 'This is the title' : false,
+      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
+      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
+      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
+      date: boolean('date', true) ? new Date() : false
     }
     return (
-      <CardPreview item={mediaLessItem} />
+      <DefaultPreview item={object('item', item)} isPlaceholder={boolean('placeholder', false)} />
     )
   },
   {
-    propTables: [CardPreview],
-    role: 'part:@sanity/components/previews/card'
+    propTables: [DefaultPreview],
+    role: 'part:@sanity/components/previews/default'
   }
 )
 
-.addWithInfo(
-  'Card (placeholder)',
-  `
-    Card
-  `,
+.add(
+  'Card',
   () => {
+    const item = {
+      title: boolean('title', true) ? 'This is the title' : false,
+      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
+      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
+      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
+      date: boolean('date', true) ? new Date() : false
+    }
     return (
-      <CardPreview item={item} isPlaceholder />
+      <CardPreview
+        item={object('item', item)}
+        isPlaceholder={boolean('placeholder', false)}
+        aspect={number('aspect', 1, {range: true, min: 0.8, max: 3, step: 0.2})}
+      />
     )
   },
   {
@@ -166,30 +84,18 @@ storiesOf('Previews')
   }
 )
 
-.addWithInfo(
-  'Card (placeholder, aspect)',
-  `
-    Card
-  `,
-  () => {
-    return (
-      <CardPreview item={item} isPlaceholder aspect={16 / 9} />
-    )
-  },
-  {
-    propTables: [CardPreview],
-    role: 'part:@sanity/components/previews/card'
-  }
-)
-
-.addWithInfo(
+.add(
   'Detail',
-  `
-    Detail
-  `,
   () => {
+    const item = {
+      title: boolean('title', true) ? 'This is the title' : false,
+      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
+      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
+      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
+      date: boolean('date', true) ? new Date() : false
+    }
     return (
-      <DetailPreview item={item} />
+      <DetailPreview item={object('item', item)} isPlaceholder={boolean('placeholder', false)} />
     )
   },
   {
@@ -198,31 +104,18 @@ storiesOf('Previews')
   }
 )
 
-.addWithInfo(
-  'Detail (placeholder)',
-  `
-    Detail
-  `,
-  () => {
-    return (
-      <DetailPreview item={item} isPlaceholder />
-    )
-  },
-  {
-    propTables: [DetailPreview],
-    role: 'part:@sanity/components/previews/detail'
-  }
-)
-
-
-.addWithInfo(
+.add(
   'Media',
-  `
-    Detail
-  `,
   () => {
+    const item = {
+      title: boolean('title', true) ? 'This is the title' : false,
+      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
+      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
+      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
+      date: boolean('date', true) ? new Date() : false
+    }
     return (
-      <MediaPreview item={item} />
+      <MediaPreview item={object('item', item)} isPlaceholder={boolean('placeholder', false)} />
     )
   },
   {
@@ -231,32 +124,21 @@ storiesOf('Previews')
   }
 )
 
-.addWithInfo(
-  'Media (placeholder)',
-  `
-    Detail
-  `,
-  () => {
-    return (
-      <MediaPreview item={item} isPlaceholder />
-    )
-  },
-  {
-    propTables: [MediaPreview],
-    role: 'part:@sanity/components/previews/media'
-  }
-)
-
-
-.addWithInfo(
+.add(
   'Inline',
-  `
-    Detail
-  `,
   () => {
+    const item = {
+      title: boolean('title', true) ? 'This is the title' : false,
+      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
+      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
+      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
+      date: boolean('date', true) ? new Date() : false
+    }
     return (
       <p>
-        This is a text, and suddenly a inline preview appearst before <InlinePreview item={item} /> this word.
+        This is a text, and suddenly a inline preview appearst before
+        <InlinePreview item={object('item', item)} isPlaceholder={boolean('placeholder', false)} />
+        this word.
       </p>
     )
   },

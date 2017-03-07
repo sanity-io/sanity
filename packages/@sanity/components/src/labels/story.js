@@ -1,16 +1,15 @@
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import {withKnobs, number, text} from 'part:@sanity/storybook/addons/knobs'
 
 storiesOf('Labels')
-  .addWithInfo(
+  .addDecorator(withKnobs)
+  .add(
   'Default',
-  `
-    Default label
-  `,
   () => {
     return (
-      <DefaultLabel htmlFor="thisNeedsToBeUnique">This is an label</DefaultLabel>
+      <DefaultLabel level={number('level', 0)} htmlFor="thisNeedsToBeUnique">{text('content', 'Label')}</DefaultLabel>
     )
   },
   {

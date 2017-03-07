@@ -1,96 +1,40 @@
 import React from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {storiesOf, action} from 'part:@sanity/storybook'
+import {withKnobs, select, text, number} from 'part:@sanity/storybook/addons/knobs'
+
+const getKinds = () => select('Kind', ['default', 'success', 'error', 'warning', 'info'], 'default')
 
 storiesOf('Snackbar')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Info',
-  `
-    Default snackbar.
-  `,
   () => (
-    <Snackbar>This is the message</Snackbar>
-  ),
-  {
-    propTables: [Snackbar],
-    role: 'part:@sanity/components/snackbar/default'
-  }
-).addWithInfo(
-  'Wwarning',
-  `
-    Used to give a warning
-  `,
-  () => (
-    <Snackbar kind="warning">This is the message</Snackbar>
+    <Snackbar
+      kind={getKinds()}
+      time={number('time in sec', 500)}
+    >
+      {text('content', 'This is the content')}
+    </Snackbar>
   ),
   {
     propTables: [Snackbar],
     role: 'part:@sanity/components/snackbar/default'
   }
 )
-.addWithInfo(
-  'Success',
-  `
-    Default snackbar.
-  `,
-  () => (
-    <Snackbar kind="success">This is the success message</Snackbar>
-  ),
-  {
-    propTables: [Snackbar],
-    role: 'part:@sanity/components/snackbar/default'
-  }
-)
-.addWithInfo(
-  'Error',
-  `
-    Default snackbar.
-  `,
-  () => (
-    <Snackbar kind="error">This is the error message</Snackbar>
-  ),
-  {
-    propTables: [Snackbar],
-    role: 'part:@sanity/components/snackbar/default'
-  }
-)
-.addWithInfo(
+.add(
   'With action',
-  `
-    Default snackbar.
-  `,
   () => {
     const myAction = {
-      title: 'Undo',
+      title: text('action title', 'Press me before i go'),
       action: () => action('Action fired!')
     }
     return (
-      <Snackbar action={myAction}>
-        You published the document
-      </Snackbar>
-    )
-  },
-  {
-    propTables: [Snackbar],
-    role: 'part:@sanity/components/snackbar/default'
-  }
-)
-
-.addWithInfo(
-  'Danger with action',
-  `
-    Default snackbar.
-  `,
-  () => {
-    const myAction = {
-      title: 'Revert',
-      action: () => {
-        action('Action fired!')
-      }
-    }
-    return (
-      <Snackbar kind="danger" action={myAction} time={2}>
-        You deleted <strong>Name of something</strong>
+      <Snackbar
+        action={myAction}
+        time={number('time in sec', 500)}
+      >
+        {text('content', 'This is the content')}
       </Snackbar>
     )
   },

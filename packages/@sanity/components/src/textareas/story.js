@@ -1,46 +1,24 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultTextArea from 'part:@sanity/components/textareas/default'
+import {withKnobs, number, text, boolean} from 'part:@sanity/storybook/addons/knobs'
 
 storiesOf('Text areas')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  `
-    Default text area
-  `,
   () => {
     return (
       <DefaultTextArea
-        placeholder="This is the placeholder"
+        placeholder={text('placehodler', 'This is the placeholder')}
         onChange={action('onChange')}
         onFocus={action('onFocus')}
         onKeyPress={action('onKeyPress')}
         onBlur={action('onBlur')}
-        rows={2}
+        rows={number('rows', 2)}
+        value={text('value')}
         id="ThisIsAnUniqueIdForTextArea"
-      />
-    )
-  },
-  {
-    propTables: [DefaultTextArea],
-    role: 'part:@sanity/components/textinputs/default'
-  }
-)
-.addWithInfo(
-  'Default (10 rows)',
-  `
-    Default text area
-  `,
-  () => {
-    return (
-      <DefaultTextArea
-        placeholder="This is the placeholder"
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onKeyPress={action('onKeyPress')}
-        onBlur={action('onBlur')}
-        rows={10}
-        id="ThisIsAnUniqueIdForTextArea"
+        focus={boolean('focus', false)}
       />
     )
   },

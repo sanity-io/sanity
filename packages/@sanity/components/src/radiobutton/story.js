@@ -1,45 +1,21 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import RadioButton from 'part:@sanity/components/radiobutton/default'
-
-const style = {
-  height: '100vh',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-}
-
-const centered = function (storyFn) {
-  return <div style={style}>{storyFn()}</div>
-}
-
-const item = {
-  title: 'test'
-}
+import {withKnobs, object, boolean, text} from 'part:@sanity/storybook/addons/knobs'
 
 storiesOf('Radiobutton')
-.addDecorator(centered)
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Default',
-  '',
   () => {
     return (
-      <RadioButton name="radioButton" label={item.title} item={item} onChange={action('onChange')} />
-    )
-  },
-  {propTables: [RadioButton], role: 'part:@sanity/components/radiobutton/default'}
-)
-.addWithInfo(
-  'Default checked',
-  '',
-  () => {
-    return (
-      <RadioButton name="radioButton" label={item.title} item={item} onChange={action('onChange')} checked />
+      <RadioButton
+        name="radioButton"
+        label={text('label', 'Label')}
+        item={object('Item', {title: 'test'})}
+        checked={boolean('checked', false)}
+        onChange={action('onChange')}
+      />
     )
   },
   {propTables: [RadioButton], role: 'part:@sanity/components/radiobutton/default'}

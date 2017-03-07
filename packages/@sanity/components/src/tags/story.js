@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import TagsTextField from 'part:@sanity/components/tags/textfield'
+import {withKnobs, array, text} from 'part:@sanity/storybook/addons/knobs'
 
 class DefaultTextFieldTagsImplementation extends React.Component {
   static propTypes = {
@@ -47,19 +48,17 @@ class DefaultTextFieldTagsImplementation extends React.Component {
 }
 
 storiesOf('Tags')
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'Tags',
-  `
-    Default tags
-  `,
   () => {
     const tags = ['Test', 'Sanity']
 
     return (
       <TagsTextField
-        label="Tags"
-        placeholder="This is the placeholder"
-        tags={tags}
+        label={text('label', 'Tags')}
+        placeholder={text('placeholder', 'This is the placeholder')}
+        tags={array('tags', tags)}
         onAddTag={action('onAddTag')}
         onRemoveTag={action('onRemoveTag')}
       />
@@ -71,16 +70,13 @@ storiesOf('Tags')
   }
 )
 
-.addWithInfo(
+.add(
   'Tags (test)',
-  `
-    Default tags
-  `,
   () => {
     const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
 
     return (
-      <DefaultTextFieldTagsImplementation tags={tags} />
+      <DefaultTextFieldTagsImplementation tags={array('tags', tags)} />
     )
   },
   {
