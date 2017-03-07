@@ -8,7 +8,7 @@
     "publish": "npm run build && lerna publish",
     "start": "gulp dev",
     "storybook": "gulp storybook",
-    "test": "echo 'Run `npm test-all` to run `npm test` for every package'",
+    "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
     "test-all": "lerna run test --stream",
     "updated": "lerna updated",
     "watch": "gulp watch",
