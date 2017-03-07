@@ -62,8 +62,18 @@ class SanityPanel extends PureComponent {
     )
   }
 
+  normalizePath(path) {
+    const basePath = this.state.info.basePath
+    const normalized = path.indexOf(basePath) === 0
+      ? path.slice(basePath.length)
+      : path
+
+    return normalized.replace(/(^\/|\/$)/g, '')
+  }
+
   render() {
-    const {part} = this.state.info
+    const {part, definition, implementations} = this.state.info
+    const def = definition || {}
     if (!part) {
       return <div>No Sanity info recorded for this component</div>
     }
@@ -73,6 +83,21 @@ class SanityPanel extends PureComponent {
         <dl>
           <dt>Part name</dt>
           <dd>{part}</dd>
+
+          <dt>Description</dt>
+          <dd>{def.description || '<no description provided>'}</dd>
+
+          <dt>Defined by</dt>
+          <dd>{def.plugin} ({this.normalizePath(def.path)})</dd>
+
+          <dt>Implemented by</dt>
+          <dd>
+            <ul>
+              {(implementations || []).reverse().map(impl => (
+                <li key={impl.path}>{impl.plugin} ({this.normalizePath(impl.path)})</li>
+              ))}
+            </ul>
+          </dd>
         </dl>
 
         {this.renderPropTables()}
