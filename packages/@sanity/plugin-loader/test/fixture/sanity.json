@@ -15,6 +15,11 @@
       "name": "part:base/bar",
       "description": "Returns 'bar' when called",
       "path": "./getBar.js"
+    },
+    {
+      "name": "part:base/indexpart",
+      "description": "Points to an index",
+      "path": "./folder"
     }
   ],
 

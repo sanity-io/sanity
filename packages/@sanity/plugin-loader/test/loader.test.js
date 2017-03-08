@@ -111,3 +111,10 @@ test('should return undefined when using optional role requires on an unfulfille
   const result = require('part:not/existant?')
   t.is(result, undefined)
 })
+
+test('should resolve parts that point to a path which is a directory containing an index.js-file', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const result = require('part:base/indexpart')
+  t.is(result(), 'index value')
+})

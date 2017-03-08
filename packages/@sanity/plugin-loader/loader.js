@@ -119,7 +119,8 @@ function registerLoader(options) {
       return request
     }
 
-    return parts.implementations[partName][0]
+    const partPath = parts.implementations[partName][0]
+    return require.resolve(partPath)
   }
 
   // Register CSS hook
