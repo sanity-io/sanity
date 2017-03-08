@@ -488,10 +488,6 @@
       "path": "fieldsets/DefaultFieldset.js"
     },
     {
-      "implements": "part:@sanity/components/cards/default",
-      "path": "cards/DefaultCard.js"
-    },
-    {
       "implements": "part:@sanity/components/snackbar/default",
       "path": "snackbar/DefaultSnackbar.js"
     },
@@ -648,10 +644,6 @@
       "path": "fieldsets/styles/DefaultFieldset.css"
     },
     {
-      "implements": "part:@sanity/components/cards/default-style",
-      "path": "cards/styles/DefaultCard.css"
-    },
-    {
       "implements": "part:@sanity/components/snackbar/default-style",
       "path": "snackbar/styles/DefaultSnackbar.css"
     },
@@ -702,14 +694,6 @@
     {
       "implements": "part:@sanity/components/lists/items/grid-style",
       "path":    "lists/items/styles/GridItem.css"
-    },
-    {
-      "implements": "part:@sanity/components/referencepickers/default",
-      "path":    "referencepickers/ReferencePickerDefault.js"
-    },
-    {
-      "implements": "part:@sanity/components/referencepickers/default-style",
-      "path":    "referencepickers/styles/ReferencePickerDefault.css"
     },
     {
       "implements": "part:@sanity/components/edititem/popover-style",
@@ -806,10 +790,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "loading/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "referencepickers/story.js"
     },
     {
       "implements": "part:@sanity/base/component",
