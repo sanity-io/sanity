@@ -55,13 +55,6 @@ const menuItems = [
     action: 'setListLayout',
     key: 'card'
 
-  },
-  {
-    title: 'Settings',
-    icon: IconSettings,
-    action: 'goTo',
-    key: 'settings',
-    divider: true
   }
 ]
 
