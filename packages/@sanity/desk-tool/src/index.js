@@ -2,8 +2,6 @@ import DeskTool from './DeskTool'
 import Icon from './Icon'
 import {route} from 'part:@sanity/base/router'
 
-const CAN_HANDLE_INTENTS = ['edit', 'create']
-
 export default {
   router: route('/:selectedType', [
     route('/:action', [
@@ -11,7 +9,8 @@ export default {
     ])
   ]),
   canHandleIntent(intentName, params) {
-    return CAN_HANDLE_INTENTS.includes(intentName) && params.type && params.id
+    return (intentName === 'edit' && params.type && params.id)
+            || (intentName === 'create' && params.type)
   },
   getIntentState(intentName, params) {
     return {
