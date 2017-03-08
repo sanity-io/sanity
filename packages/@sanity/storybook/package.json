@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook",
-  "version": "0.103.13",
+  "version": "0.103.15",
   "description": "Sanity plugin for running react-storybook in a Sanity studio",
   "main": "./index.js",
   "scripts": {
