@@ -2,14 +2,24 @@ import {ImmutableAccessor} from '@sanity/mutator'
 import {createMemberValue} from '../../state/FormBuilderState'
 import hasOwn from '../../utils/hasOwn'
 
-function hasKeys(object) {
+function isEmpty(object) {
   for (const key in object) {
     if (object.hasOwnProperty(key)) {
-      return true
+      return false
     }
   }
-  return false
+  return true
 }
+
+// Add _type field to values except if they are of type "object"
+// (plain objects have their type implicit)
+function maybeAddType(object, type) {
+  return type.name === 'object' ? object : {
+    _type: type.name,
+    ...object
+  }
+}
+
 export default class ObjectContainer {
 
   static deserialize(serialized = {}, context) {
@@ -77,7 +87,7 @@ export default class ObjectContainer {
   serialize() {
     const {type} = this.context
 
-    const serialized = type.name === 'object' ? {} : {_type: type.name}
+    const serialized = {}
 
     if (hasOwn(this.value, '_id')) {
       serialized._id = this.value._id
@@ -94,7 +104,7 @@ export default class ObjectContainer {
       }
     })
 
-    return hasKeys(serialized) ? serialized : undefined
+    return isEmpty(serialized) ? undefined : maybeAddType(serialized, type)
   }
 
   get key() {
