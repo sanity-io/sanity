@@ -60,7 +60,7 @@ export default class ListItemWrapper extends React.Component {
   render() {
     const {selected, highlighted, className, decoration, children, layout} = this.props
 
-    const styles = layout == 'grid' ? gridStyles : listStyles
+    const styles = layout === 'grid' ? gridStyles : listStyles
 
     const rootClasses = classNames([
       styles.root,

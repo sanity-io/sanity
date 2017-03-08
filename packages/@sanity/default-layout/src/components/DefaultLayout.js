@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {RouteScope, withRouterHOC, WithRouter} from 'part:@sanity/base/router'
+import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import styles from './styles/DefaultLayout.css'
@@ -72,15 +72,11 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
             <span className={styles.createButtonIcon}><PlusIcon /></span>
             <span className={styles.createButtonText}>Create</span>
           </a>
-          <WithRouter>
-            {toolRouter => (
-              <ToolSwitcher
-                tools={this.props.tools}
-                activeToolName={router.state.tool}
-                className={styles.toolSwitcher}
-              />
-            )}
-          </WithRouter>
+          <ToolSwitcher
+            tools={this.props.tools}
+            activeToolName={router.state.tool}
+            className={styles.toolSwitcher}
+          />
         </div>
 
         <div className={styles.toolContainer}>

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePane.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import PaneMenuContainer from './PaneMenuContainer'
 
 export default withRouterHOC(class Pane extends React.PureComponent {
 

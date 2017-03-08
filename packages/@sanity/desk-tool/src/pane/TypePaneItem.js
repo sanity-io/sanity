@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/TypePaneItem.css'
 import {StateLink} from 'part:@sanity/base/router'
-import PlusCircleIcon from 'part:@sanity/base/plus-circle-icon'
-import PlusCircleOutlineIcon from 'part:@sanity/base/plus-circle-outline-icon'
 
 export default class TypePaneItem extends React.Component {
   static propTypes = {
