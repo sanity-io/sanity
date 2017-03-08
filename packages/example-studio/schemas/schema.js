@@ -99,7 +99,7 @@ export default createSchema({
           title: 'Rating',
           type: 'number',
           options: {
-            range: {min: 0, max: 1, step: 0.2}
+            range: {min: 0, max: 10, step: 0.2}
           },
           required: true
         },

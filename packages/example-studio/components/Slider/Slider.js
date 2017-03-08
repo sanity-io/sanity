@@ -11,18 +11,22 @@ export default class Slider extends React.Component {
     type: PropTypes.shape({
       title: PropTypes.string
     }).isRequired,
-    value: PropTypes.number.isRequired,
+    value: PropTypes.number,
     onChange: PropTypes.func.isRequired
   };
 
   render() {
     const {type, value, onChange} = this.props
+    const {min, max, step} = type.options.range
     return (
       <FormField label={type.title} description={type.description}>
         <input
           type="range"
           className={styles.slider}
-          value={value}
+          min={min}
+          max={max}
+          step={step}
+          value={value === undefined ? '' : value}
           onChange={event => onChange(createPatch(event.target.value))}
         />
       </FormField>
