@@ -35,8 +35,9 @@ function inViewport(element) {
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
-    value: PropTypes.any.isRequired,
     type: PropTypes.object.isRequired,
+    value: PropTypes.any.isRequired,
+    layout: PropTypes.string.isRequired,
     children: PropTypes.func
   };
 
@@ -101,7 +102,7 @@ export default class PreviewSubscriber extends React.PureComponent {
 
   render() {
     const {result, isLive, error} = this.state
-    const Child = this.props.children
-    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} />
+    const {children: Child, layout} = this.props
+    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} layout={layout} />
   }
 }
