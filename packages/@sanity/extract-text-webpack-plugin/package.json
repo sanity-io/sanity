@@ -1,6 +1,6 @@
 {
   "name": "@sanity/extract-text-webpack-plugin",
-  "version": "0.103.9",
+  "version": "0.103.13",
   "author": "Tobias Koppers @sokra",
   "description": "Extract text from bundle into a file.",
   "peerDependencies": {
