@@ -2,6 +2,7 @@
 import React, {PropTypes, PureComponent} from 'react'
 import addons from '@kadira/storybook-addons'
 import PropTable from './PropTable'
+import styles from './styles/SanityPanel.css'
 
 addons.register('sanity/info', api => {
   addons.addPanel('sanity/info/panel', {
@@ -44,10 +45,12 @@ class SanityPanel extends PureComponent {
   renderPropTables() {
     const components = this.state.info.propTypes || []
     const propTables = components.map((comp, idx) => (
-      <div key={idx}>
-        <h2>&quot;{comp.name}&quot; Component</h2>
+      <span key={idx}>
+        <h1 className={styles.header}>
+          Proptypes for <code className={styles.code}>&lt;{comp.name} /&gt;</code>
+        </h1>
         <PropTable propTypes={comp.props} />
-      </div>
+      </span>
     ))
 
     if (!propTables || propTables.length === 0) {
@@ -56,7 +59,6 @@ class SanityPanel extends PureComponent {
 
     return (
       <div>
-        <h1>Prop Types</h1>
         {propTables}
       </div>
     )
@@ -79,28 +81,34 @@ class SanityPanel extends PureComponent {
     }
 
     return (
-      <div>
-        <dl>
-          <dt>Part name</dt>
-          <dd>{part}</dd>
+      <div className={styles.root}>
+        <section className={styles.section}>
+          <h1 className={styles.header}>Part Info</h1>
+          <dl>
+            <dt className={styles.title}>Part name</dt>
+            <dd>{part}</dd>
 
-          <dt>Description</dt>
-          <dd>{def.description || '<no description provided>'}</dd>
+            <dt className={styles.title}>Description</dt>
+            <dd>{def.description || '<no description provided>'}</dd>
 
-          <dt>Defined by</dt>
-          <dd>{def.plugin} ({this.normalizePath(def.path)})</dd>
+            <dt className={styles.title}>Defined by</dt>
+            <dd>{def.plugin} <span className={styles.light}>({this.normalizePath(def.path)})</span></dd>
 
-          <dt>Implemented by</dt>
-          <dd>
-            <ul>
-              {(implementations || []).reverse().map(impl => (
-                <li key={impl.path}>{impl.plugin} ({this.normalizePath(impl.path)})</li>
-              ))}
-            </ul>
-          </dd>
-        </dl>
-
-        {this.renderPropTables()}
+            <dt className={styles.title}>Implemented by</dt>
+            <dd>
+              <ul>
+                {(implementations || []).reverse().map(impl => (
+                  <li key={impl.path}>
+                    {impl.plugin} <span className={styles.light}>({this.normalizePath(impl.path)})</span>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </dl>
+        </section>
+        <section className={styles.section}>
+          {this.renderPropTables()}
+        </section>
       </div>
     )
   }

@@ -1,0 +1,49 @@
+.root {
+  box-sizing: border-box;
+  max-width: 100%;
+  border-collapse: collapse;
+  width: 100%;
+
+  @nest & thead {
+    text-transform: uppercase;
+  }
+
+  @nest & td {
+    padding: 0.5em;
+    font-family: monospace;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.heading {
+  text-align: left;
+  border-bottom: 1px solid #333;
+  font-size: 0.8em;
+  padding: 0.8em 0;
+}
+
+.headingPropType {
+  composes: heading;
+  text-align: center;
+}
+
+.headingRequired {
+  composes: heading;
+  text-align: center;
+}
+
+.headingDefault {
+  composes: heading;
+}
+
+.property {
+  font-family: monospace;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  width: auto;
+}
+
+.required,
+.proptype {
+  text-align: center;
+}

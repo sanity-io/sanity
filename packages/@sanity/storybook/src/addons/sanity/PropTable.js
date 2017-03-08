@@ -1,13 +1,6 @@
 import React, {PropTypes} from 'react'
 import PropVal from './PropVal'
-
-const stylesheet = {
-  propTable: {
-    marginLeft: -10,
-    borderSpacing: '10px 5px',
-    borderCollapse: 'separate',
-  },
-}
+import styles from './styles/PropTable.css'
 
 function PropTable({propTypes}) {
   if (!propTypes || propTypes.length === 0) {
@@ -15,21 +8,21 @@ function PropTable({propTypes}) {
   }
 
   return (
-    <table style={stylesheet.propTable}>
+    <table className={styles.root}>
       <thead>
         <tr>
-          <th>property</th>
-          <th>propType</th>
-          <th>required</th>
-          <th>default</th>
+          <th className={styles.heading}>Property</th>
+          <th className={styles.headingPropType}>PropType</th>
+          <th className={styles.headingRequired}>Required</th>
+          <th className={styles.headingDefault}>Default</th>
         </tr>
       </thead>
       <tbody>
         {propTypes.map(prop => (
           <tr key={prop.property}>
-            <td>{prop.property}</td>
-            <td>{prop.propType}</td>
-            <td>{prop.required ? 'Yes' : 'No'}</td>
+            <th className={styles.property}>{prop.property}</th>
+            <td className={styles.proptype}>{prop.propType}</td>
+            <td className={styles.required}>{prop.required ? 'Yes' : 'No'}</td>
             <td>{prop.defaultValue === undefined ? '-' : <PropVal val={prop.defaultValue} />}</td>
           </tr>
         ))}

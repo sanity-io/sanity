@@ -1,0 +1,72 @@
+.root {
+  composes: root from "part:@sanity/base/theme/typography/text-blocks-style";
+  box-sizing: border-box;
+  font-size: 14px;
+  padding: 1em;
+  padding-top: 0;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  max-width: 100%;
+  width: 100%;
+  white-space: normal;
+  margin-left: -1rem;
+
+  @nest & dl {
+    margin: 0;
+  }
+
+  @nest & dd {
+    margin: 0;
+    padding: 0;
+  }
+
+  @nest & ul {
+    padding: 0;
+    margin: 0;
+    white-space: wrap;
+  }
+
+  @nest & li {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+}
+
+.header {
+  font-size: 1.2em;
+  line-height: 2em;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  border-bottom: 3px solid #000;
+  margin-top: 1em;
+}
+
+.title {
+  font-size: 1em;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  padding-top: 1em;
+}
+
+.subTitle {
+  font-size: 0.8rem;
+  font-weight: 200;
+  margin: 0;
+  padding: 0;
+}
+
+.light {
+  font-weight: 200;
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+.section {
+  flex-grow: 1;
+  margin-left: 1rem;
+  flex-basis: 30em;
+}
