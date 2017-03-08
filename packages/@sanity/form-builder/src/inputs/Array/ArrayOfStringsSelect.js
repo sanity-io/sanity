@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import {get, filter} from 'lodash'
+import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 
@@ -10,48 +10,28 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
     type: FormBuilderPropTypes.type,
     value: PropTypes.arrayOf(PropTypes.string),
     level: PropTypes.number,
-    onChange: PropTypes.func,
-    focus: PropTypes.bool
-  }
-
-  static contextTypes = {
-    formBuilder: PropTypes.object
+    onChange: PropTypes.func
   }
 
   state = {
-    hasFocus: this.props.focus,
     focusedItem: null
   }
 
-  handleRemoveItem = index => {
-    const nextVal = this.props.value.slice()
-    nextVal.splice(index, 1)
-    this.props.onChange({
-      patch: {
-        type: 'set',
-        value: nextVal
-      }
-    })
-  }
-
   handleChange = event => {
-    const eventValue = event.target.value
-    const {onChange, value} = this.props
-    let nextValue = (value && value.slice()) || []
-    const hasValue = value && value.find(item => item === eventValue)
+    const {onChange, type, value = []} = this.props
 
-    if (hasValue) {
-      nextValue = filter(nextValue, item => {
-        return item != eventValue
+    const list = get(type, 'options.list')
+
+    const nextValue = list
+      .map(item => item.value)
+      .filter(itemValue => {
+        return event.target.value === itemValue ? event.target.checked : value.includes(itemValue)
       })
-    } else {
-      nextValue.push(eventValue)
-    }
 
     onChange({
-      patch: {
-        type: 'set', value: nextValue
-      }
+      patch: nextValue.length > 0
+        ? {type: 'set', value: nextValue}
+        : {type: 'unset'}
     })
   }
 
@@ -79,14 +59,14 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
           {
             list.map(item => {
 
-              const checked = value && !!value.find(valueItem => valueItem === item.value)
+              const checked = Boolean(value) && value.includes(item.value)
 
               return (
                 <div
                   key={item.value}
                   style={{
-                    display: direction == 'horizontal' ? 'inline-block' : 'block',
-                    marginRight: direction == 'horizontal' ? '1em' : '0',
+                    display: direction === 'horizontal' ? 'inline-block' : 'block',
+                    marginRight: direction === 'horizontal' ? '1em' : '0',
                   }}
                 >
                   <Checkbox
@@ -94,7 +74,6 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
                     value={item.value}
                     item={item}
                     onChange={this.handleChange}
-                    data-key={item.value}
                     checked={checked}
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
