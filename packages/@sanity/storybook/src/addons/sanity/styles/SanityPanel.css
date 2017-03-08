@@ -70,3 +70,17 @@
   margin-left: 1rem;
   flex-basis: 30em;
 }
+
+.noContent {
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", Roboto, "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgb(190, 190, 190);
+  padding: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  transform: translate(-50%, -50%);
+
+}

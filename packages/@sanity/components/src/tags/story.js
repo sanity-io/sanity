@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import TagsTextField from 'part:@sanity/components/tags/textfield'
 import {withKnobs, array, text} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 class DefaultTextFieldTagsImplementation extends React.Component {
   static propTypes = {
@@ -55,18 +56,16 @@ storiesOf('Tags')
     const tags = ['Test', 'Sanity']
 
     return (
-      <TagsTextField
-        label={text('label', 'Tags')}
-        placeholder={text('placeholder', 'This is the placeholder')}
-        tags={array('tags', tags)}
-        onAddTag={action('onAddTag')}
-        onRemoveTag={action('onRemoveTag')}
-      />
+      <Sanity part="part:@sanity/components/tags/textfield" propTables={[TagsTextField]}>
+        <TagsTextField
+          label={text('label', 'Tags')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          tags={array('tags', tags)}
+          onAddTag={action('onAddTag')}
+          onRemoveTag={action('onRemoveTag')}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [TagsTextField],
-    role: 'part:@sanity/components/tags/textfield'
   }
 )
 
@@ -76,11 +75,9 @@ storiesOf('Tags')
     const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
 
     return (
-      <DefaultTextFieldTagsImplementation tags={array('tags', tags)} />
+      <Sanity part="part:@sanity/components/tags/textfield" propTables={[TagsTextField]}>
+        <DefaultTextFieldTagsImplementation tags={array('tags', tags)} />
+      </Sanity>
     )
-  },
-  {
-    propTables: [TagsTextField],
-    role: 'part:@sanity/components/tags/textfield'
   }
 )

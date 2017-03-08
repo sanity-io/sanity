@@ -1,6 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
+import {withKnobs, text, boolean, object} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
+
 import {range} from 'lodash'
 import GlobalSearch from 'part:@sanity/components/globalsearch/default'
 
@@ -9,8 +12,6 @@ const chance = new Chance()
 
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import DetailPreview from 'part:@sanity/components/previews/detail'
-
-import {withKnobs, number, text, boolean, select, object} from 'part:@sanity/storybook/addons/knobs'
 
 const items = range(7).map((item, i) => {
   return {
@@ -90,27 +91,25 @@ storiesOf('Global Search')
   // `,
   () => {
     return (
-      <div style={elementStyle}>
-        <GlobalSearch
-          label={text('label', 'Search')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          isSearching={boolean('Is searching', false)}
-          isOpen={boolean('is open', true)}
-          items={object('items', items)}
-          topItems={object('top tiems', [])}
-          renderItem={renderItem}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onSearch={action('onSearch')}
-          onClose={action('onClose')}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/globalsearch/default" propTables={[GlobalSearch]}>
+        <div style={elementStyle}>
+          <GlobalSearch
+            label={text('label', 'Search')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            isSearching={boolean('Is searching', false)}
+            isOpen={boolean('is open', true)}
+            items={object('items', items)}
+            topItems={object('top tiems', [])}
+            renderItem={renderItem}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            onSearch={action('onSearch')}
+            onClose={action('onClose')}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [GlobalSearch],
-    role: 'part:@sanity/components/globalsearch/default'
   }
 )
 
@@ -118,26 +117,24 @@ storiesOf('Global Search')
   'Basic',
   () => {
     return (
-      <div style={{backgroundColor: '#fff', width: '15em'}}>
-        <GlobalSearch
-          label={text('label', 'Search')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          isSearching={boolean('Is searching', false)}
-          isOpen={boolean('is open', true)}
-          items={items}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onSearch={action('onSearch')}
-          onClose={action('onClose')}
-          topItems={topItems}
-          renderItem={renderItem}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/globalsearch/default" propTables={[GlobalSearch]}>
+        <div style={{backgroundColor: '#fff', width: '15em'}}>
+          <GlobalSearch
+            label={text('label', 'Search')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            isSearching={boolean('Is searching', false)}
+            isOpen={boolean('is open', true)}
+            items={items}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            onSearch={action('onSearch')}
+            onClose={action('onClose')}
+            topItems={topItems}
+            renderItem={renderItem}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [GlobalSearch],
-    role: 'part:@sanity/components/globalsearch/default'
   }
 )

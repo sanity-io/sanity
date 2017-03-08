@@ -77,7 +77,7 @@ class SanityPanel extends PureComponent {
     const {part, definition, implementations} = this.state.info
     const def = definition || {}
     if (!part) {
-      return <div>No Sanity info recorded for this component</div>
+      return <div className={styles.noContent}>No Sanity info recorded for this component</div>
     }
 
     return (

@@ -5,20 +5,20 @@ import {withKnobs, text, boolean} from 'part:@sanity/storybook/addons/knobs'
 import FileInput from 'part:@sanity/components/fileinput/default'
 import DropZone from 'part:@sanity/components/fileinput/dropzone'
 
+import Sanity from 'part:@sanity/storybook/addons/sanity'
+
 storiesOf('File Input')
 .addDecorator(withKnobs)
 .add(
   'Default',
   () => {
     return (
-      <FileInput onSelect={action('onSelect')}>
-        All this content triggers a file select from device
-      </FileInput>
+      <Sanity part="part:@sanity/components/fileinput/default" propTables={[FileInput]}>
+        <FileInput onSelect={action('onSelect')}>
+          All this content triggers a file select from device
+        </FileInput>
+      </Sanity>
     )
-  },
-  {
-    propTables: [FileInput],
-    role: 'part:@sanity/components/fileinput/default'
   }
 )
 
@@ -26,25 +26,23 @@ storiesOf('File Input')
   'Drop zone',
   () => {
     return (
-      <div
-        style={{
-          position: 'absolute',
-          width: '50vw',
-          height: '50vh',
-          transform: 'translate(50%, 50%)'
-        }}
-      >
-        <DropZone
-          onDrop={action('onDrop')}
-          multiple={boolean('multiple', false)}
-          ghost={boolean('ghost', false)}
-          accept={text('accept', 'image/png')}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/fileinput/dropzone" propTables={[DropZone]}>
+        <div
+          style={{
+            position: 'absolute',
+            width: '50vw',
+            height: '50vh',
+            transform: 'translate(50%, 50%)'
+          }}
+        >
+          <DropZone
+            onDrop={action('onDrop')}
+            multiple={boolean('multiple', false)}
+            ghost={boolean('ghost', false)}
+            accept={text('accept', 'image/png')}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DropZone],
-    role: 'part:@sanity/components/fileinput/dropzone'
   }
 )

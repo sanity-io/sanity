@@ -4,7 +4,7 @@ import Menu from 'part:@sanity/components/menus/default'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
 import {withKnobs, object, boolean} from 'part:@sanity/storybook/addons/knobs'
-
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const noIconItems = [
   {
@@ -57,50 +57,26 @@ storiesOf('Menus')
 .add(
   'Default',
   () => {
+
+    const items = boolean('icons', false) ? itemsWithIcons : noIconItems
+
     return (
-      <div
-        style={{
-          width: '300px',
-          position: 'relative'
-        }}
-      >
-        <Menu
-          onAction={action('onAction')}
-          onClose={action('onClose')}
-          onClickOutside={action('Clicked outside')}
-          items={object('items', noIconItems)}
-          opened={boolean('opened', true)}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/menus/default" propTables={[Menu]}>
+        <div
+          style={{
+            width: '300px',
+            position: 'relative'
+          }}
+        >
+          <Menu
+            onAction={action('onAction')}
+            onClose={action('onClose')}
+            onClickOutside={action('Clicked outside')}
+            items={object('items', items)}
+            opened={boolean('opened', true)}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [Menu],
-    role: 'part:@sanity/components/menus/default'
-  }
-)
-.add(
-  'With icons',
-  () => {
-    return (
-      <div
-        style={{
-          width: '300px',
-          position: 'relative'
-        }}
-      >
-        <Menu
-          onAction={action('onAction')}
-          onClose={action('onClose')}
-          onClickOutside={action('onClickOutside')}
-          items={object('items', itemsWithIcons)}
-          opened={boolean('opened', true)}
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [Menu],
-    role: 'part:@sanity/components/menus/default'
   }
 )

@@ -14,7 +14,8 @@ import Fuse from 'fuse.js'
 import Chance from 'chance'
 const chance = new Chance()
 
-import {withKnobs, object, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, object, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const items = range(100).map((item, i) => {
   return {
@@ -173,39 +174,35 @@ storiesOf('Selects')
   'Default',
   () => {
     return (
-      <DefaultSelect
-        label={text('label', 'This is the label')}
-        placeholder={text('placeholder', 'This is the placeholder')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        items={object('items', items)}
-      />
+      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+        <DefaultSelect
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          items={object('items', items)}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultSelect],
-    role: 'part:@sanity/components/selects/default'
   }
 )
 .add(
   'Default with value',
   () => {
     return (
-      <DefaultSelect
-        label={text('label', 'This is the label')}
-        placeholder={text('placeholder', 'This is the placeholder')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        value={items[10]}
-        items={items}
-      />
+      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+        <DefaultSelect
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          value={items[10]}
+          items={items}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultSelect],
-    role: 'part:@sanity/components/selects/default'
   }
 )
 
@@ -222,24 +219,22 @@ storiesOf('Selects')
     }
     const valueToString = item => item.title
     return (
-      <SearchableSelect
-        label={text('label', 'This is the label')}
-        placeholder={text('placeholder', 'This is the placeholder')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onOpen={action('onOpen')}
-        value={items[5]}
-        valueToString={valueToString}
-        renderItem={renderItem}
-        items={items}
-        isLoading={boolean('is loading', false)}
-      />
+      <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
+        <SearchableSelect
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onOpen={action('onOpen')}
+          value={items[5]}
+          valueToString={valueToString}
+          renderItem={renderItem}
+          items={items}
+          isLoading={boolean('is loading', false)}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -279,10 +274,6 @@ storiesOf('Selects')
       }
     }
     return <Example />
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -300,24 +291,22 @@ storiesOf('Selects')
     const valueToString = value => value.title
 
     return (
-      <SearchableSelect
-        label={text('label', 'This is the label')}
-        placeholder={text('placeholder', 'This is the placeholder')}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onBlur={action('onBlur')}
-        onOpen={action('onOpen')}
-        onClear={action('onClear')}
-        value={items[5]}
-        items={items}
-        renderItem={renderItem}
-        valueToString={valueToString}
-      />
+      <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
+        <SearchableSelect
+          label={text('label', 'This is the label')}
+          placeholder={text('placeholder', 'This is the placeholder')}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
+          onOpen={action('onOpen')}
+          onClear={action('onClear')}
+          value={items[5]}
+          items={items}
+          renderItem={renderItem}
+          valueToString={valueToString}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -332,24 +321,22 @@ storiesOf('Selects')
     }
 
     return (
-      <div style={{padding: '2em', backgroundColor: '#eee'}}>
-        <CustomSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          transparent={boolean('transparent', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onOpen={action('onOpen')}
-          renderItem={renderItem}
-          value={items[2]}
-          items={items}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/selects/custom" propTables={[CustomSelect]}>
+        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+          <CustomSelect
+            label={text('label', 'This is the label')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            transparent={boolean('transparent', false)}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onOpen={action('onOpen')}
+            renderItem={renderItem}
+            value={items[2]}
+            items={items}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -358,23 +345,21 @@ storiesOf('Selects')
   () => {
 
     return (
-      <div style={{padding: '2em', backgroundColor: '#eee'}}>
-        <StyleSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          transparent={boolean('transparent', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onOpen={action('onOpen')}
-          renderItem={renderStyleItem}
-          items={styleItems}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+          <StyleSelect
+            label={text('label', 'This is the label')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            transparent={boolean('transparent', false)}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onOpen={action('onOpen')}
+            renderItem={renderStyleItem}
+            items={styleItems}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [StyleSelect],
-    role: 'part:@sanity/components/selects/style'
   }
 )
 
@@ -384,24 +369,22 @@ storiesOf('Selects')
   () => {
 
     return (
-      <div style={{padding: '2em', backgroundColor: '#eee'}}>
-        <StyleSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          transparent={boolean('transparent', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onOpen={action('onOpen')}
-          renderItem={renderStyleItem}
-          value={[styleItems[0]]}
-          items={styleItems}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+          <StyleSelect
+            label={text('label', 'This is the label')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            transparent={boolean('transparent', false)}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onOpen={action('onOpen')}
+            renderItem={renderStyleItem}
+            value={[styleItems[0]]}
+            items={styleItems}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [StyleSelect],
-    role: 'part:@sanity/components/selects/style'
   }
 )
 
@@ -410,24 +393,22 @@ storiesOf('Selects')
   () => {
 
     return (
-      <div style={{padding: '2em', backgroundColor: '#eee'}}>
-        <StyleSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          transparent={boolean('transparent', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onOpen={action('onOpen')}
-          renderItem={renderStyleItem}
-          value={[styleItems[0], styleItems[2]]}
-          items={styleItems}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+          <StyleSelect
+            label={text('label', 'This is the label')}
+            placeholder={text('placeholder', 'This is the placeholder')}
+            transparent={boolean('transparent', false)}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onOpen={action('onOpen')}
+            renderItem={renderStyleItem}
+            value={[styleItems[0], styleItems[2]]}
+            items={styleItems}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [StyleSelect],
-    role: 'part:@sanity/components/selects/style'
   }
 )
 
@@ -445,10 +426,6 @@ storiesOf('Selects')
         This text should be behind the dropdown
       </div>
     )
-  },
-  {
-    propTables: [SearchableSelect],
-    role: 'part:@sanity/components/selects/searchable'
   }
 )
 
@@ -462,30 +439,15 @@ storiesOf('Selects')
     const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
 
     return (
-      <RadioSelect items={radioItems} value={value} onChange={action('onChange')} legend="Radio button select" />
+      <Sanity part="part:@sanity/components/selects/radio" propTables={[RadioSelect]}>
+        <RadioSelect
+          items={radioItems}
+          value={value}
+          onChange={action('onChange')}
+          legend={text('legend', 'Radio button select')}
+          direction={select('direction', [false, 'vertical', 'vertical'])}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [RadioSelect],
-    role: 'part:@sanity/components/selects/radio'
-  }
-)
-
-.add(
-  'Radiobuttons vertical',
-  // `
-  //   When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
-  // `,
-  () => {
-
-    const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
-
-    return (
-      <RadioSelect items={radioItems} value={value} onChange={action('onChange')} direction="vertical" legend="Vertical" />
-    )
-  },
-  {
-    propTables: [RadioSelect],
-    role: 'part:@sanity/components/selects/radio'
   }
 )

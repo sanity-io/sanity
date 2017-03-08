@@ -11,6 +11,7 @@ import Chance from 'chance'
 const chance = new Chance()
 
 import {withKnobs, boolean, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const containerStyle = {
   width: '90%',
@@ -94,23 +95,21 @@ storiesOf('List (default)')
   'Default',
   () => {
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          renderItem={defaultRenderItem}
-          items={defaultItems}
-          decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
-          scrollable={boolean('scrollable', false)}
-          onSelect={action('onSelect')}
-          onSortStart={action('onSortStart')}
-          onSortMove={action('onSortMove')}
-          onSortEnd={action('onSortEnd')}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            renderItem={defaultRenderItem}
+            items={defaultItems}
+            decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+            scrollable={boolean('scrollable', false)}
+            onSelect={action('onSelect')}
+            onSortStart={action('onSortStart')}
+            onSortMove={action('onSortMove')}
+            onSortEnd={action('onSortEnd')}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -118,23 +117,21 @@ storiesOf('List (default)')
   'Sortable',
   () => {
     return (
-      <div style={containerStyle}>
-        <SortableComponent
-          items={detailedItems}
-          scrollable={boolean('scrollable', false)}
-          decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
-          useDragHandle={boolean('Use Drag Handle', false)}
-          onSelect={action('onSelect')}
-          onSortStart={action('onSortStart')}
-          onSortMove={action('onSortMove')}
-          onSortEnd={action('onSortEnd')}
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <SortableComponent
+            items={detailedItems}
+            scrollable={boolean('scrollable', false)}
+            decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+            useDragHandle={boolean('Use Drag Handle', false)}
+            onSelect={action('onSelect')}
+            onSortStart={action('onSortStart')}
+            onSortMove={action('onSortMove')}
+            onSortEnd={action('onSortEnd')}
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -146,20 +143,18 @@ storiesOf('List (default)')
   // `,
   () => {
     return (
-      <SortableComponent
-        items={detailedItems}
-        useDragHandle
-        onSelect={action('onSelect')}
-        onSortStart={action('onSortStart')}
-        onSortMove={action('onSortMove')}
-        onSortEnd={action('onSortEnd')}
-        decoration="divider"
-      />
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <SortableComponent
+          items={detailedItems}
+          useDragHandle
+          onSelect={action('onSelect')}
+          onSortStart={action('onSortStart')}
+          onSortMove={action('onSortMove')}
+          onSortEnd={action('onSortEnd')}
+          decoration="divider"
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -172,20 +167,18 @@ storiesOf('List (default)')
   () => {
     const selectedItem = defaultItems[3]
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          renderItem={defaultRenderItem}
-          selectedItem={selectedItem}
-          onSelect={action('onSelect')}
-          scrollable
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            items={defaultItems}
+            renderItem={defaultRenderItem}
+            selectedItem={selectedItem}
+            onSelect={action('onSelect')}
+            scrollable
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -198,21 +191,19 @@ storiesOf('List (default)')
     const selectedItem = defaultItems[3]
     const highlightedItem = defaultItems[5]
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          renderItem={defaultRenderItem}
-          selectedItem={selectedItem}
-          highlightedItem={highlightedItem}
-          onSelect={action('Select')}
-          scrollable
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            items={defaultItems}
+            renderItem={defaultRenderItem}
+            selectedItem={selectedItem}
+            highlightedItem={highlightedItem}
+            onSelect={action('Select')}
+            scrollable
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -225,20 +216,18 @@ storiesOf('List (default)')
   () => {
     const selectedItem = defaultItems[50]
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          renderItem={defaultRenderItem}
-          selectedItem={selectedItem}
-          onSelect={action('Select')}
-          scrollable
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            items={defaultItems}
+            renderItem={defaultRenderItem}
+            selectedItem={selectedItem}
+            onSelect={action('Select')}
+            scrollable
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -250,20 +239,18 @@ storiesOf('List (default)')
   () => {
     const highlightedItem = defaultItems[50]
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          renderItem={defaultRenderItem}
-          highlightedItem={highlightedItem}
-          onSelect={action('Select')}
-          scrollable
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            items={defaultItems}
+            renderItem={defaultRenderItem}
+            highlightedItem={highlightedItem}
+            onSelect={action('Select')}
+            scrollable
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )
 
@@ -275,19 +262,17 @@ storiesOf('List (default)')
   () => {
     const selectedItem = defaultItems[defaultItems.length - 1]
     return (
-      <div style={containerStyle}>
-        <DefaultList
-          items={defaultItems}
-          renderItem={defaultRenderItem}
-          selectedItem={selectedItem}
-          onSelect={action('Select')}
-          scrollable
-        />
-      </div>
+      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+        <div style={containerStyle}>
+          <DefaultList
+            items={defaultItems}
+            renderItem={defaultRenderItem}
+            selectedItem={selectedItem}
+            onSelect={action('Select')}
+            scrollable
+          />
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultList],
-    role: 'part:@sanity/components/lists/default'
   }
 )

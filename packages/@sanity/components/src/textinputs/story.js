@@ -2,6 +2,7 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {withKnobs, boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 class DefaultTextInputTest extends React.Component {
 
@@ -43,25 +44,23 @@ storiesOf('Text inputs')
   'Default',
   () => {
     return (
-      <DefaultTextInput
-        placeholder={text('placeholder', 'This is the placeholder')}
-        value={text('value', false)}
-        type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
-        error={boolean('error', false)}
-        focus={boolean('focus', false)}
-        showClearButton={boolean('clear button', false)}
-        selected={boolean('selected', false)}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onKeyPress={action('onKeyPress')}
-        onBlur={action('onBlur')}
-        id="ThisIsAnUniqueId"
-      />
+      <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
+        <DefaultTextInput
+          placeholder={text('placeholder', 'This is the placeholder')}
+          value={text('value', false)}
+          type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
+          error={boolean('error', false)}
+          focus={boolean('focus', false)}
+          showClearButton={boolean('clear button', false)}
+          selected={boolean('selected', false)}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onKeyPress={action('onKeyPress')}
+          onBlur={action('onBlur')}
+          id="ThisIsAnUniqueId"
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultTextInput],
-    role: 'part:@sanity/components/textinputs/default'
   }
 )
 .add(
@@ -77,9 +76,5 @@ storiesOf('Text inputs')
         id="ThisIsAnUniqueId"
       />
     )
-  },
-  {
-    propTables: [DefaultTextInput],
-    role: 'part:@sanity/components/textinputs/default'
   }
 )

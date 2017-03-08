@@ -4,6 +4,7 @@ import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/a
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const style = {
   position: 'absolute',
@@ -34,30 +35,6 @@ storiesOf('Dialogs')
 .add(
   'Default',
   () => {
-    return (
-      <div>
-        <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
-        <DefaultDialog
-          title={text('title', 'This is the title')}
-          isOpen={boolean('is Open', true)}
-          showHeader={boolean('Show Header', false)}
-          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
-          onClose={action('onClose')}
-        >
-          {text('content', 'This is the content')}
-        </DefaultDialog>
-      </div>
-    )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/default'
-  }
-)
-
-.add(
-  'Default (with actions)',
-  () => {
     const actions = [
       {
         index: '1',
@@ -73,24 +50,26 @@ storiesOf('Dialogs')
         kind: 'secondary'
       }
     ]
+
+    const dialogActions = boolean('has actions', false) ? actions : false
+
     return (
-      <div>
-        <DefaultDialog
-          title={text('title', 'This is the title')}
-          isOpen={boolean('is Open', true)}
-          showHeader={boolean('Show Header', true)}
-          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
-          onClose={action('onClose')}
-          actions={object('actions', actions)}
-        >
-          {text('content', 'This is the content')}
-        </DefaultDialog>
-      </div>
+      <Sanity part="part:@sanity/components/dialogs/default" propTables={[DefaultDialog]}>
+        <div>
+          <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
+          <DefaultDialog
+            title={text('title', 'This is the title')}
+            isOpen={boolean('is Open', true)}
+            showHeader={boolean('Show Header', false)}
+            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+            onClose={action('onClose')}
+            actions={object('actions', dialogActions)}
+          >
+            {text('content', 'This is the content')}
+          </DefaultDialog>
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [DefaultDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )
 
@@ -98,22 +77,20 @@ storiesOf('Dialogs')
   'Fullscreen',
   () => {
     return (
-      <div>
-        <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
-        <FullscreenDialog
-          title={text('title', 'This is the title')}
-          onClose={action('onClose')}
-          kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
-          centered={boolean('Centered', false)}
-          isOpen={boolean('is Open', true)}
-        >
-          {text('content', 'This is the content')}
-        </FullscreenDialog>
-      </div>
+      <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
+        <div>
+          <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
+          <FullscreenDialog
+            title={text('title', 'This is the title')}
+            onClose={action('onClose')}
+            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+            centered={boolean('Centered', false)}
+            isOpen={boolean('is Open', true)}
+          >
+            {text('content', 'This is the content')}
+          </FullscreenDialog>
+        </div>
+      </Sanity>
     )
-  },
-  {
-    propTables: [FullscreenDialog],
-    role: 'part:@sanity/components/dialogs/fullscreen'
   }
 )

@@ -5,6 +5,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import AppLoadingScreen from './AppLoadingScreen'
 
 import {withKnobs, boolean, text} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Loading')
 .addDecorator(withKnobs)
@@ -12,16 +13,14 @@ storiesOf('Loading')
   'Spinner',
   () => {
     return (
-      <Spinner
-        inline={boolean('inline', false)}
-        message={text('Message', 'This is the message')}
-        fullscreen={boolean('fullscreen', false)}
-      />
+      <Sanity part="part:@sanity/components/loading/spinner" propTables={[Spinner]}>
+        <Spinner
+          inline={boolean('inline', false)}
+          message={text('Message', 'This is the message')}
+          fullscreen={boolean('fullscreen', false)}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [Spinner],
-    role: 'part:@sanity/components/loading/spinner'
   }
 )
 
@@ -34,9 +33,5 @@ storiesOf('Loading')
     return (
       <AppLoadingScreen />
     )
-  },
-  {
-    propTables: [AppLoadingScreen],
-    role: 'part:@sanity/components/loading/app-loading-screen'
   }
 )
