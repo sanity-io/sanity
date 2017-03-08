@@ -1,19 +1,11 @@
 import client from 'part:@sanity/base/client'
 import {uniq, flatten, compact} from 'lodash'
 
-import {observeForPreview, prepareForPreview, resolveRefType} from 'part:@sanity/base/preview'
-
-export function observeReferenceForPreview(value, type) {
-  return resolveRefType(value, type)
-    .mergeMap(refType => observeForPreview(value, refType))
-}
+import {observeForPreview} from 'part:@sanity/base/preview'
 
 export function valueToString(value, referenceType) {
-  return observeReferenceForPreview(value, referenceType)
-    .map(previewValue => {
-      const memberType = referenceType.to.find(ofType => ofType.name === previewValue._type)
-      return prepareForPreview(previewValue, memberType).title
-    })
+  return observeForPreview(value, referenceType)
+    .map(result => result.snapshot.title)
 }
 
 function quote(str) {

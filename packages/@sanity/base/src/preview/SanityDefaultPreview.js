@@ -20,8 +20,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
   static propTypes = {
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
-    value: PropTypes.object,
-    type: PropTypes.object.isRequired
+    value: PropTypes.object
   }
 
   render() {

@@ -36,18 +36,13 @@ function inViewport(element) {
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
     value: PropTypes.any.isRequired,
-    type: PropTypes.shape({
-      preview: PropTypes.shape({
-        select: PropTypes.object.isRequired,
-        prepare: PropTypes.func
-      }).isRequired
-    }),
+    type: PropTypes.object.isRequired,
     children: PropTypes.func
   };
 
   state = {
     error: null,
-    snapshot: null,
+    result: {snapshot: null, type: null},
     isLive: false
   }
 
@@ -95,9 +90,9 @@ export default class PreviewSubscriber extends React.PureComponent {
           ? observeForPreview(value, type)
           : Observable.of(null)
       })
-      .subscribe(snapshot => {
-        if (snapshot) {
-          this.setState({snapshot, isLive: true})
+      .subscribe(result => {
+        if (result) {
+          this.setState({result, isLive: true})
         } else {
           this.setState({isLive: false})
         }
@@ -105,6 +100,8 @@ export default class PreviewSubscriber extends React.PureComponent {
   }
 
   render() {
-    return this.props.children(this.state)
+    const {result, isLive, error} = this.state
+    const Child = this.props.children
+    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} />
   }
 }

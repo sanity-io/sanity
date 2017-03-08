@@ -329,23 +329,28 @@ export default createSchema({
           ]
         },
         {
-          name: 'authors',
-          title: 'Authors',
-          type: 'array',
-          of: [
-            {
-              type: 'author'
-            }
-          ],
+          name: 'firstAuthor',
+          title: 'Author',
+          type: 'reference',
+          to: {type: 'author'},
           required: true
         },
         {
-          name: 'authorRef',
-          title: 'Author',
-          type: 'reference',
-          to: {
-            type: 'author'
-          },
+          name: 'coauthors',
+          title: 'Co authors',
+          type: 'array',
+          of: [{
+            type: 'reference',
+            to: {type: 'author'}
+          }],
+          required: true
+        },
+        {
+          name: 'extraAuthors',
+          title: 'Additional authors',
+          description: 'Note: This is an inline array of authors',
+          type: 'array',
+          of: [{type: 'author'}],
           required: true
         }
       ]
