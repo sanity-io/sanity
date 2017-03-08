@@ -35,7 +35,7 @@ export default function RenderPreviewSnapshot(props) {
 
 RenderPreviewSnapshot.propTypes = {
   snapshot: PropTypes.object,
-  type: PropTypes.type,
+  type: PropTypes.object,
   isLive: PropTypes.bool,
   layout: PropTypes.string
 }
