@@ -31,12 +31,12 @@ module.exports = function listen(query, params, opts = {}) {
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
 
-  const es = new EventSource(uri, assign(
-    {withCredentials: true},
-    token ? {headers: {'Sanity-Token': token}} : {}
-  ))
-
   return new Observable(observer => {
+    const es = new EventSource(uri, assign(
+      {withCredentials: true},
+      token ? {headers: {'Sanity-Token': token}} : {}
+    ))
+
     es.addEventListener('error', onError, false)
     es.addEventListener('channelError', onChannelError, false)
     es.addEventListener('disconnect', onDisconnect, false)
