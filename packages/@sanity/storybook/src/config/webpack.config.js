@@ -1,3 +1,4 @@
+const path = require('path')
 const sanityServer = require('@sanity/server')
 
 // This is very hacky, but I couldn't figure out a way to pass config from
@@ -29,7 +30,8 @@ function getWebpackConfig(storyWpConfig, configType) {
     sanityWpConfig.module.loaders = sanityServer.applyStaticLoaderFix(sanityWpConfig, {
       httpHost: sanityContext.httpHost,
       httpPort: 9001,
-      staticPath: './static'
+      basePath: sanityContext.basePath,
+      staticPath: path.join(sanityContext.basePath, 'static'),
     })
   }
 
