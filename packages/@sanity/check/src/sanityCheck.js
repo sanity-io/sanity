@@ -4,6 +4,8 @@ const promiseProps = require('promise-props-recursive')
 const generateHelpUrl = require('@sanity/generate-help-url')
 const resolveParts = require('@sanity/resolver').resolveParts
 
+const includes = (arr, val) => arr.indexOf(val) !== -1
+
 function sanityCheck(options) {
   return resolveParts({
     basePath: options.dir,
@@ -68,8 +70,8 @@ function verifyImplementationsExist(implementations, folderContents) {
 
 function verifyImplementationExists(impl, parentDirContent) {
   // Case-sensitive check
-  const containsFile = parentDirContent.includes(impl.fileName)
-  const containsJsFile = parentDirContent.includes(`${impl.fileName}.js`)
+  const containsFile = includes(parentDirContent, impl.fileName)
+  const containsJsFile = includes(parentDirContent, `${impl.fileName}.js`)
   if (containsFile) {
     return isFileOrDirectoryWithIndex(impl)
   } else if (containsJsFile) {
@@ -116,7 +118,7 @@ function isFileOrDirectoryWithIndex(impl) {
 
 function directoryHasIndex(impl) {
   return fsp.readdir(impl.path).then(dirContent => {
-    return dirContent.includes('index.js')
+    return includes(dirContent, 'index.js')
       ? true
       : new Error(
         `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", `

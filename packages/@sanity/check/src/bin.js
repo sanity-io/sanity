@@ -7,18 +7,19 @@ const publish = require('in-publish')
 const sanityCheck = require('./sanityCheck')
 const pkg = require('../package.json')
 
+const includes = (arr, val) => arr.indexOf(val) !== -1
 const tag = '[sanity-check]'
 const args = process.argv.slice(2)
 const relativeDir = args.filter(arg => arg[0] !== '-')[0]
 const dir = path.resolve(process.cwd(), relativeDir || '.')
 const manifestDir = path.join(dir, 'sanity.json')
-const showHelp = args.includes('-h') || args.includes('--help')
-const showVersion = args.includes('-v') || args.includes('--version')
+const showHelp = includes(args, '-h') || includes(args, '--help')
+const showVersion = includes(args, '-v') || includes(args, '--version')
 const productionMode = (
   process.env.NODE_ENV === 'production'
   || publish.inPublish()
-  || args.includes('-p')
-  || args.includes('--production')
+  || includes(args, '-p')
+  || includes(args, '--production')
 )
 
 if (showHelp) {
