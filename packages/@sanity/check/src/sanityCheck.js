@@ -11,7 +11,8 @@ function sanityCheck(options) {
   }).then(parts => checkImplementations(parts, options))
 }
 
-function checkImplementations({implementations}, options) {
+function checkImplementations(result, options) {
+  const implementations = result.implementations
   if (!implementations) {
     return Promise.resolve('No implementations found, nothing to check')
   }
