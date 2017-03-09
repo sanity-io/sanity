@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 
-export class FormBuilderInner extends React.Component {
+export class FormBuilderInput extends React.Component {
   static propTypes = {
     value: PropTypes.any,
     validation: PropTypes.object,
@@ -29,15 +29,15 @@ export class FormBuilderInner extends React.Component {
 
     const type = value.context.type
 
-    const FieldInput = this.resolveInputComponent(type)
-    if (!FieldInput) {
+    const InputComponent = this.resolveInputComponent(type)
+    if (!InputComponent) {
       return <div>No input resolved for type {JSON.stringify(type.name)}</div>
     }
 
     const passSerialized = value && value.constructor.passSerialized
 
     return (
-      <FieldInput
+      <InputComponent
         type={type}
         onChange={onChange}
         validation={validation}

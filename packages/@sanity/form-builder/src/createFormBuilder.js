@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import {FormBuilderInner} from './FormBuilderInner'
+import {FormBuilderInput} from './FormBuilderInput'
 import {createFormBuilderState, createMemberValue} from './state/FormBuilderState'
 import defaultConfig from './defaultConfig'
 import Schema from '@sanity/schema'
@@ -102,7 +102,7 @@ export default function createFormBuilder(config = {}) {
     render() {
       const {value, onChange} = this.props
       return (
-        <FormBuilderInner value={value} onChange={onChange} />
+        <FormBuilderInput value={value} onChange={onChange} />
       )
     }
   }

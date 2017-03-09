@@ -6,7 +6,7 @@ import arrify from 'arrify'
 import toGradientPatch from './utils/toGradientPatch'
 import React, {PropTypes} from 'react'
 
-import {createFormBuilder} from '../index'
+import {createFormBuilder, defaultConfig} from '../index'
 
 const FormBuilder = createFormBuilder({
   schema: schema,
@@ -14,6 +14,8 @@ const FormBuilder = createFormBuilder({
   resolvePreviewComponent: () => SanityPreview,
   resolveValidationComponent: () => ValidationList
 })
+
+export {createFormBuilder, inputResolver, defaultConfig, toGradientPatch}
 
 export default class SanityFormBuilder extends React.PureComponent {
   static createEmpty = FormBuilder.createEmpty;
