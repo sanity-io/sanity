@@ -1,12 +1,12 @@
 import webpack from 'webpack'
+import find from 'lodash/find'
+import get from 'lodash/get'
+import set from 'lodash/set'
+import registerBabel from 'babel-register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
-import registerBabel from 'babel-register'
-import find from 'lodash/find'
-import get from 'lodash/get'
-import set from 'lodash/set'
 
 export default function getDevServer(config = {}) {
   const app = getBaseServer(config)
