@@ -34,9 +34,9 @@
   --brand-danger: #f43;
   --brand-danger--text: var(--brand-white);
 
-  --body-bg: var(--brand-white);
+  --body-bg: #fafafa;
 
-  --component-bg: var(--body-bg);
+  --component-bg: #fff;
 
   --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
 }
