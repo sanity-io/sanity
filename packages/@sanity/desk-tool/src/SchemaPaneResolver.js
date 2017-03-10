@@ -293,8 +293,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
       navIsMinimized: navTranslateX < 0,
       editorWidth: editorWidth
     })
-
-    return false
   })
 
   handlePanesMouseEnter = event => {
@@ -380,7 +378,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
         <div
           className={styles.editorContainer}
           ref={this.setEditorPaneElement}
-          id="Sanity_Default_DeskTool_Editor_ScrollContainer"
           style={{
             width: editorWidth,
             transform: `translateX(${editorTranslateX}px)`

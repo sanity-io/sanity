@@ -28,6 +28,7 @@
 }
 
 .textFormatContainer {
+  composes: dividerLeft;
   float: left;
   padding-left: 0.5em;
 }
@@ -47,6 +48,7 @@
   @media (--screen-medium) {
     max-width: none;
     min-width: 8em;
+    padding-top: 0.2em;
   }
 }
 

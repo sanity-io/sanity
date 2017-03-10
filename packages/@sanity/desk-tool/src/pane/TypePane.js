@@ -20,6 +20,11 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
     return (
       <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
+        <div className={styles.top}>
+          <div className={styles.heading}>
+            Content
+          </div>
+        </div>
         <ul className={styles.listContainer}>
           {
             items.map((item, i) => {

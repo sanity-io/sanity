@@ -2,7 +2,7 @@
 import React, {PropTypes} from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import DefaultButton from 'part:@sanity/components/buttons/default'
+import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
 import schema from 'part:@sanity/base/schema'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
@@ -11,10 +11,12 @@ import dataAspects from '../utils/dataAspects'
 import {throttle, omit} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import PlusIcon from 'part:@sanity/base/plus-icon'
 import styles from './styles/EditorPane.css'
 import {Patcher} from '@sanity/mutator'
 import copyDocument from '../utils/copyDocument'
+import IconMoreVert from 'part:@sanity/base/more-vert-icon'
+import Menu from 'part:@sanity/components/menus/default'
+import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -33,9 +35,27 @@ function getInitialState() {
     deleted: null,
     inspect: false,
     value: null,
-    progress: {kind: 'info', message: 'Loading'}
+    progress: {kind: 'info', message: 'Loading'},
+    isMenuOpen: false
   }
 }
+
+const menuItems = [
+  {
+    title: 'Duplicate',
+    icon: ContentCopyIcon,
+    action: 'duplicate',
+    key: 'duplicate'
+  },
+  {
+    title: 'Delete',
+    icon: TrashIcon,
+    action: 'delete',
+    key: 'delete',
+    divider: true,
+    danger: true
+  }
+]
 
 
 export default withRouterHOC(class EditorPane extends React.PureComponent {
@@ -243,6 +263,29 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
     this.commit()
   }
 
+  handleMenuToggle = () => {
+    this.setState({
+      isMenuOpen: !this.state.isMenuOpen
+    })
+  }
+
+  handleMenuClose = () => {
+    this.setState({
+      isMenuOpen: false
+    })
+  }
+
+
+  handleMenuClick = item => {
+    if (item.action === 'delete') {
+      this.handleRequestDelete()
+    }
+
+    if (item.action === 'duplicate') {
+      this.handleCreateCopy()
+    }
+  }
+
   render() {
     const {value, inspect, deleted, loading, spin, validation, deleteInProgress, referringDocuments} = this.state
     const {typeName, documentId} = this.props
@@ -261,7 +304,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
       return (
         <div className={styles.root}>
           <p>Document was deleted</p>
-          <DefaultButton onClick={this.handleRestore}>Restore</DefaultButton>
+          <Button onClick={this.handleRestore}>Restore</Button>
         </div>
       )
     }
@@ -279,30 +322,28 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
       <div className={styles.root}>
 
 
-        <div className={styles.header}>
-          <h2 className={styles.typeTitle}>{schemaType.title}</h2>
-          <div className={styles.deleteContainer}>
-            <DefaultButton
-              onClick={this.handleCreateCopy}
-              color="primary"
-              kind="secondary"
-              title={`Create a copy of ${docTitle}`}
-              icon={PlusIcon}
-            >
-              Copy
-            </DefaultButton>
-            <DefaultButton
-              onClick={this.handleRequestDelete}
-              color="danger"
-              kind="simple"
-              loading={deleteInProgress}
-              title={`Delete ${docTitle}`}
-              icon={TrashIcon}
-            >
-              Delete
-            </DefaultButton>
+        <div className={styles.top}>
+          <div className={styles.functions}>
+            <div className={styles.menuContainer}>
+              <div className={styles.menuButton}>
+                <Button kind="simple" onClick={this.handleMenuToggle}>
+                  <IconMoreVert />
+                </Button>
+              </div>
+
+              <div className={styles.menu}>
+                <Menu
+                  onAction={this.handleMenuClick}
+                  opened={this.state.isMenuOpen}
+                  onClose={this.handleMenuClose}
+                  onClickOutside={this.handleMenuClose}
+                  items={menuItems}
+                  origin="top-right"
+                />
+              </div>
+            </div>
           </div>
-          <h1 className={styles.title}>
+          <h1 className={styles.heading}>
             {(titleProp && docTitle) || 'Untitled…'}
           </h1>
 
@@ -312,7 +353,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
 
 
         </div>
-        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_FormBuilder_ScrollContainer">
+        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
             key={documentId}
             value={value}

@@ -1,96 +1,23 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .item {
-  composes: root from "part:@sanity/components/lists/items/default-style";
   position: relative;
+  color: #999;
 }
 
 .link {
-  composes: link from "part:@sanity/components/lists/items/default-style";
-  composes: root from "part:@sanity/components/previews/default-style";
-  text-decoration: inherit;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  padding-right: 2em;
-  padding-left: var(--small-padding);
-  max-width: 100%;
+  line-height: 2em;
+  text-decoration: none;
+  color: inherit;
 
-  @media (--screen-medium) {
-    padding-left: var(--medium-padding);
-    max-width: 20em;
+  @nest &:hover {
+    color: #666;
   }
+
 }
 
 .selected {
   composes: item;
-  composes: selected from "part:@sanity/components/lists/items/default-style";
-}
-
-.createNew {
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  padding-top: 0.5rem;
-  display: block;
-  text-decoration: none;
-  vertical-align: middle;
-  line-height: inherit;
-  font-size: 1em;
-  font-weight: 100;
-  cursor: pointer;
-  color: inherit;
-  opacity: 0.3;
-  position: absolute;
-  top: 0;
-  right: 0;
-
-  @nest .item:active & {
-    color: var(--white);
-  }
-
-  @nest &:hover {
-    font-weight: 400;
-    opacity: 1;
-    color: var(--selected-item-color);
-  }
-
-  @nest .selected & {
-    color: var(--white);
-    opacity: 1;
-  }
-}
-
-.createNewIcon {
-  display: block;
-  color: inherit;
-  line-height: inherit;
-  margin-top: -0.15em;
-}
-
-.createNewIconOutline {
-  composes: createNewIcon;
-
-  @nest .createNew:active & {
-    display: none;
-  }
-  @nest .selected & {
-    display: none;
-  }
-}
-
-.createNewIconFilled {
-  composes: createNewIcon;
-  display: none;
-
-  @nest .createNew:active & {
-    display: block;
-  }
-
-  @nest .selected & {
-    opacity: 0.5;
-    display: block;
-    @nest &:hover {
-      opacity: 1;
-    }
-  }
+  font-weight: 500;
+  color: var(--black);
 }

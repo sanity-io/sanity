@@ -128,6 +128,7 @@ class GridList extends React.Component {
         highlighted={item == highlightedItem}
         decoration={decoration}
         scrollIntoView={this.scrollElementIntoViewIfNeeded}
+        layout="grid"
       >
         {
           sortable && useDragHandle && <DragHandle />
@@ -177,10 +178,10 @@ class GridList extends React.Component {
     const query = {
       [styles.containerQuery__small]: {
         minWidth: 0,
-        maxWidth: 480
+        maxWidth: 220
       },
       [styles.containerQuery__medium]: {
-        minWidth: 481,
+        minWidth: 221,
         maxWidth: 1000,
       },
       [styles.containerQuery__large]: {

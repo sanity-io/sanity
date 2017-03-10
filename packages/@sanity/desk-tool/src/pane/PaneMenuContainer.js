@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import PaneMenu from './PaneMenu.js'
-import IconHamburger from 'part:@sanity/base/hamburger-icon'
+import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import clickOutsideEnhancer from 'react-click-outside'
 import styles from './styles/Pane.css'
@@ -50,7 +50,7 @@ class PaneMenuContainer extends React.PureComponent {
       <div className={styles.menuContainer}>
         <div className={styles.menuButton}>
           <Button kind="simple" onClick={this.handleMenuToggle}>
-            <IconHamburger />
+            <IconMoreVert />
           </Button>
         </div>
 

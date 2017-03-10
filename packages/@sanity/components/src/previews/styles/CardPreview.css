@@ -54,11 +54,13 @@
 
 .meta {
   padding: 1em;
-  background-color: #fff;
+  background-color: inherit;
 }
 
 .img {
   display: block;
+  width: 100%;
+  height: auto;
 }
 
 .imgLandscape {

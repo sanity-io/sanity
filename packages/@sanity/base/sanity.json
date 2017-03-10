@@ -638,6 +638,26 @@
       "path": "components/icons/Edit.js"
     },
     {
+      "implements": "part:@sanity/base/more-vert-icon",
+      "path": "components/icons/MoreVert.js"
+    },
+    {
+      "implements": "part:@sanity/base/view-column-icon",
+      "path": "components/icons/ViewColumn.js"
+    },
+    {
+      "implements": "part:@sanity/base/content-copy-icon",
+      "path": "components/icons/ContentCopy.js"
+    },
+    {
+      "implements": "part:@sanity/base/question-icon",
+      "path": "components/icons/Question.js"
+    },
+    {
+      "implements": "part:@sanity/base/plugin-icon",
+      "path": "components/icons/Plug.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },

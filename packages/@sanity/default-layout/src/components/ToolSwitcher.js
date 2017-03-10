@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import {StateLink} from 'part:@sanity/base/router'
 import styles from './styles/ToolSwitcher.css'
+import PluginIcon from 'part:@sanity/base/plugin-icon'
 
 function ToolSwitcher(props) {
   const {tools, activeToolName} = props
@@ -12,17 +13,17 @@ function ToolSwitcher(props) {
             ? styles.activeItem
             : styles.item
 
-          const ToolIcon = tool.icon
+          const ToolIcon = tool.icon || PluginIcon
 
           return (
             <li key={tool.name} className={itemClass}>
               <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={props.onClick}>
-                <span className={styles.iconContainer}>
+                <div className={styles.iconContainer}>
                   <ToolIcon />
-                </span>
-                <span className={styles.toolName}>
+                </div>
+                <div className={styles.toolName}>
                   {tool.title || tool.name}
-                </span>
+                </div>
               </StateLink>
             </li>
           )
@@ -39,7 +40,7 @@ ToolSwitcher.propTypes = {
   tools: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      icon: PropTypes.func.isRequired
+      icon: PropTypes.func
     })
   )
 }

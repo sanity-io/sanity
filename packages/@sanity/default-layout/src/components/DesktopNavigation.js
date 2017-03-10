@@ -1,7 +1,5 @@
 import React, {PropTypes} from 'react'
 import LoginStatus from './LoginStatus'
-import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import {WithRouter} from 'part:@sanity/base/router'
 import styles from './styles/DesktopNavigation.css'
 import Branding from './Branding'
 import Search from './Search'
@@ -17,15 +15,6 @@ export default class DesktopNavigation extends React.Component {
     return (
       <div className={styles.root}>
         <Branding />
-        <WithRouter>
-          {router => (
-            <ToolSwitcher
-              tools={this.props.tools}
-              activeToolName={router.state.tool}
-              className={styles.toolSwitcher}
-            />
-          )}
-        </WithRouter>
         <LoginStatus className={styles.loginStatus} />
         <div className={styles.searchContainer}>
           <Search />

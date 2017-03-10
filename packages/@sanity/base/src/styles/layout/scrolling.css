@@ -3,9 +3,8 @@
 .lightScrollbars {
 
   @nest &::-webkit-scrollbar {
-    background-color: #fafafa;
+    background-color: transparent;
     width: 3px;
-    display: none;
 
     @media (--screen-medium) {
       width: 10px;
@@ -17,44 +16,49 @@
    }
 
   @nest &::-webkit-scrollbar-thumb:window-inactive {
-  	display: none;
+	opacity: 0;
   }
 
   @nest &:hover {
     @nest &::-webkit-scrollbar {
       display: block;
       width: 3px;
+      opacity: 1;
       @media (--screen-medium) {
         width: 10px;
       }
     }
+    @nest &::-webkit-scrollbar-thumb {
+      background-color: var(--gray);
+    }
+    @nest &::-webkit-scrollbar-track {
+      background-color: var(--gray-lighter);
+    }
   }
 
-  @nest &::-webkit-scrollbar-track {
-    display: none;
-  }
+
 
   @nest &::-webkit-scrollbar-thumb {
-    background-color: var(--gray);
+    background-color: transparent;
     @nest &:hover {
       background-color: var(--black);
     }
   }
 
   @nest &::-webkit-scrollbar-track-piece {
-    display: none;
+    /*display: none;*/
   }
 
   @nest &::-webkit-scrollbar-button {
-    display: none;
+    /*display: none;*/
   }
 
   @nest &::-webkit-scrollbar-corner {
-    display: none;
+    /*display: none;*/
   }
 
   @nest &::-webkit-resizer {
-    display: none;
+    /*display: none;*/
   }
 }
 

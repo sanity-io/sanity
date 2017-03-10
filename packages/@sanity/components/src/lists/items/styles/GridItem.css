@@ -32,7 +32,6 @@
   }
 
   @nest .selected & {
-    background-color: var(--default-item-selected-color);
     color: #fff;
   }
 }

@@ -6,14 +6,7 @@
 }
 
 .root {
-  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
-  background-color: transparent;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-  text-overflow: ellipsis;
-  user-select: none;
-  cursor: default;
+
 }
 
 .link {
@@ -41,19 +34,6 @@
   composes: link;
 }
 
-.selected {
-  background-color: color(var(--default-item-selected-color) a(80%));
-  color: #fff;
-}
-
-.highlighted {
-  background-color: color(var(--default-item-selected-color) a(30%));
-
-  @nest &.selected {
-    background-color: color(var(--default-item-selected-color) a(90%));
-  }
-}
-
 .sortableHelper {
   background-color: inherit;
   color: inherit;
@@ -62,23 +42,6 @@
 
 .default {
   composes: root;
-}
-
-.divider {
-  composes: root;
-  border-bottom: 1px solid color(var(--black) a(7%));
-
-  @nest &:first-child {
-    border-top: 1px solid color(var(--black) a(7%));
-  }
-}
-
-.zebra-stripes {
-  composes: root;
-
-  @nest &:nth-child(even) {
-    background-color: color(var(--gray-base) a(4%));
-  }
 }
 
 .sortableHelper {

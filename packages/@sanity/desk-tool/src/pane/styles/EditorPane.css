@@ -6,37 +6,21 @@
 
 .editor {
   display: block;
+
+
   @media (--screen-medium) {
+    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+    position: absolute;
+    top: 4rem;
+    left: 0;
+    padding-left: var(--large-padding);
+    padding-right: var(--large-padding);
     max-width: 40em;
+    width: 100%;
     clear: both;
-    margin-top: 1em;
     box-sizing: border-box;
-    lost-utility: clearfix;
-  }
-}
-
-.typeTitle {
-  font-size: var(--font-size-small);
-  margin: 0;
-  font-weight: 400;
-  text-transform: uppercase;
-}
-
-.header {
-  padding-bottom: 0.5em;
-  position: relative;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 1rem;
-}
-
-.title {
-  font-size: var(--font-size-h4);
-  margin: 0;
-  padding: 0;
-  font-weight: 400;
-
-  @media (--screen-medium) {
-    font-size: var(--font-size-h2);
+    height: calc(100% - 4rem);
   }
 }
 
@@ -55,12 +39,27 @@
   transition: opacity 0.5s ease-out;
 }
 
-.deleteContainer {
+.functions {
   top: 0;
-  right: 0;
+  right: var(--small-padding);
   position: absolute;
   z-index: 1;
   font-size: var(--font-size-small);
+}
 
+.top {
+  composes: top from './Pane.css';
+  margin-left: var(--medium-padding);
+}
 
+.heading {
+  composes: heading from './Pane.css';
+}
+
+.menu {
+  composes: menu from './Pane.css';
+}
+
+.menuButton {
+  composes: menuButton from './Pane.css';
 }

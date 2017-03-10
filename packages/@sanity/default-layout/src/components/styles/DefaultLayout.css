@@ -9,39 +9,39 @@
   }
 }
 
+:root {
+  --tool-switcher-width: 3rem;
+}
+
 .defaultLayout {
+  box-sizing: border-box;
+  padding: var(--small-padding);
+
   @media (--screen-medium) {
+    padding: var(--medium-padding);
+    padding-top: var(--small-padding);
     max-width: 100%;
     width: 100vw;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 }
 
 .toolContainer {
-  margin-top: var(--header-height);
   position: relative;
   max-width: 100%;
-  overflow-x: hidden;
 
   @media (--screen-medium) {
-    width: 100vw;
-    height: calc(100vh - var(--header-height));
+    float: left;
+    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
+    height: calc(100vh - var(--header-height) - var(--medium-padding));
     box-sizing: border-box;
-    overflow: auto;
-    overflow-x: hidden;
   }
 }
 
 .desktopNavigation {
   display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--header-height);
   border-bottom: 1px solid #ccc;
-  z-index: 100;
-
+  lost-utility: clearfix;
   @media (--screen-medium) {
     display: block;
   }
@@ -57,6 +57,41 @@
   @media (--screen-medium) {
     display: none;
   }
+}
+
+.secondaryNavigation {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  position: relative;
+  width: calc(var(--tool-switcher-width) + var(--medium-padding));
+  margin-right: var(--medium-padding);
+  margin-left: calc(var(--medium-padding) * -1);
+  padding-top: var(--medium-padding);
+  height: 100vh;
+  float: left;
+  font-size: var(--font-size-xsmall);
+  z-index: var(--zindex-navbar);
+  display: none;
+
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.createButton {
+  display: block;
+  color: var(--brand-danger);
+  text-align: center;
+  margin-bottom: var(--medium-padding);
+}
+
+.createButtonIcon {
+  display: block;
+  font-size: 1.5em;
+}
+
+.createButtonText {
+  display: block;
+  font-size: 1em;
 }
 
 .sanityStudioLogoContainer {

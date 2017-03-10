@@ -53,7 +53,7 @@ export default class DetailPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={`${styles.media}`}>
-          <MediaRender item={item} />
+          <MediaRender item={item} fallbackText="No media" />
         </div>
         <div className={styles.content}>
           <div className={styles.heading}>

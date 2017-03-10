@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .toolSwitcher {
-  margin-left: var(--medium-padding);
   position: relative;
 }
 
@@ -16,32 +15,18 @@
   position: relative;
   text-align: center;
   color: var(--selectable-item-color);
-  transition: border 0.1s linear;
-  box-sizing: border-box;
-
-  @media (--screen-medium) {
-    font-size: 1em;
-    display: block;
-    height: 3rem;
-    line-height: 1rem;
-    float: left;
-  }
+  margin-bottom: var(--medium-padding);
 }
 
 .activeItem {
   composes: item;
-  @media (--screen-medium) {
-    color: var(--selected-item-color);
-    border-color: var(--selected-item-color);
-  }
+  color: var(--selected-item-color);
 }
 
 .iconContainer {
-  display: none;
-}
-
-.iconContainer img {
-  width: 100%;
+  display: block;
+  font-size: 2em;
+  margin: 0 auto;
 }
 
 .toolName {
@@ -52,15 +37,6 @@
   color: inherit;
   text-decoration: none;
   display: block;
-  padding: 1rem var(--medium-padding);
-
-  @media (--screen-medium) {
-    font-size: 1em;
-    display: inline-block;
-    height: 3rem;
-    line-height: 1rem;
-    float: left;
-  }
 
   @nest &:hover {
     color: var(--selectable-item-color-hover);
@@ -69,9 +45,4 @@
   @nest &:active {
     color: var(--black);
   }
-
-  @media (--screen-medium) {
-    font-size: var(--font-size-small);
-  }
-
 }

@@ -1,5 +1,5 @@
 import DeskTool from './DeskTool'
-import Icon from './Icon'
+import Icon from 'part:@sanity/base/view-column-icon'
 import {route} from 'part:@sanity/base/router'
 
 export default {
