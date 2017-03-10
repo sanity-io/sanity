@@ -4,8 +4,8 @@
 .root {
   margin: 0;
   padding: 0;
-  border: 0;
   composes: root from "part:@sanity/components/formfields/default-style";
+  border: none;
 
   & & {
     /* nested inside itself */
@@ -75,10 +75,12 @@
 
 .content {
   padding: var(--medium-padding);
-  background-color: var(--gray-lighter);
   position: relative;
   lost-utility: clearfix;
   display: none;
+  background-color: var(--component-bg);
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px #ddd;
 
   @nest &.isOpen {
     display: block;
@@ -88,6 +90,7 @@
     /* nested inside itself */
     border: none;
     padding: 0;
+    box-shadow: none;
   }
 
   @nest .level1 & {
@@ -112,12 +115,6 @@
     background-color: transparent;
     border: none;
     padding: 0;
-  }
-
-  @nest .transparent & {
-    padding: 0;
-    border: none;
-    background-color: transparent;
   }
 }
 
