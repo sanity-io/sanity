@@ -16,7 +16,7 @@ Unless you want to modify/contribute to the core Sanity components, you're proba
 git clone git@github.com:sanity-io/sanity.git
 cd sanity
 npm install
-npm run bootstrap
+npm run init
 npm start
 ```
 
@@ -28,7 +28,7 @@ npm run publish
 
 ## Issues?
 
-If you run into build issues, you might want to run `npm run clean`, which will delete all `node_modules` folders, then run a fresh `npm run bootstrap` to install and cross-symlink all modules.
+If you run into build issues, you might want to run `npm run init`, which will delete all `node_modules` folders, then run a fresh `npm run bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
 
 ## Testing
 

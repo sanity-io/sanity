@@ -2,10 +2,11 @@
   "name": "sanity",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist --loglevel=silly && npm run install",
+    "bootstrap": "lerna bootstrap --hoist && npm run install",
     "build": "lerna run clean && gulp",
     "clean": "lerna run clean && lerna clean",
     "publish": "npm run build && lerna publish",
+    "init": "lerna clean --yes && npm run bootstrap && npm run build",
     "start": "gulp dev",
     "storybook": "gulp storybook",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
