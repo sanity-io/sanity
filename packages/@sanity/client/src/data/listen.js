@@ -26,15 +26,22 @@ module.exports = function listen(query, params, opts = {}) {
   const options = defaults(opts, defaultOptions)
   const listenOpts = pick(options, possibleOptions)
   const qs = encodeQueryString({query, params, options: listenOpts})
-  const uri = `${this.clientConfig.url}${this.getDataUrl('listen', qs)}`
-  const token = this.clientConfig.token
+  const {gradientMode, url, token} = this.clientConfig
+
+  const authHeaders = {}
+  if (token) {
+    const header = gradientMode ? 'Authorization' : 'Sanity-Token'
+    authHeaders[header] = gradientMode ? `Bearer ${token}` : token
+  }
+
+  const uri = `${url}${this.getDataUrl('listen', qs)}`
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
 
   return new Observable(observer => {
     const es = new EventSource(uri, assign(
       {withCredentials: true},
-      token ? {headers: {'Sanity-Token': token}} : {}
+      token ? {headers: authHeaders} : {}
     ))
 
     es.addEventListener('error', onError, false)
