@@ -17,7 +17,7 @@
     opacity: 0.5
   }
   100% {
-    background-color: color(var(--white) a(50%));
+    background-color: color(var(--body-bg) a(50%));
     opacity: 1;
   }
 }
@@ -55,12 +55,12 @@
     top: 0;
     width: auto;
     min-width: var(--navMinWidth);
-    background-color: rgba(255,255,255,0.95);
+    background-color: color(var(--body-bg) a(95%));
     transform: translateX(0);
     transition: transform 0.12s ease-out, opacity 0.12s linear;
 
     @supports (backdrop-filter: blur(20px)) {
-      background-color: rgba(255,255,255,0.6);
+      background-color: color(var(--body-bg) a(60%));
       backdrop-filter: blur(20px);
     }
   }
@@ -79,7 +79,7 @@
       content: '';
       position: absolute;
       z-index: 100;
-      background-color: var(--white);
+      background-color: var(--body-bg);
       height: 100%;
       width: 100%;
       opacity: 0.7;
