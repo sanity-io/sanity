@@ -14,7 +14,8 @@
     "@sanity/default-login",
     "@sanity/date-input",
     "@sanity/desk-tool",
-    "vision"
+    "vision",
+    "@sanity/storybook"
   ],
   "parts": [
     {
