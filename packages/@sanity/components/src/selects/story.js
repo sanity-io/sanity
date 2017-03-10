@@ -413,11 +413,8 @@ storiesOf('Selects')
 )
 
 
-.addWithInfo(
+.add(
   'Searchable example',
-  `
-    When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
-  `,
   () => {
 
     return (

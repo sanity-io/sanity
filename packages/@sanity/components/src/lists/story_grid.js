@@ -12,6 +12,9 @@ import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()
 
+import {withKnobs, boolean, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
+
 
 const containerStyle = {
   width: '90%',
@@ -23,30 +26,6 @@ const containerStyle = {
   left: '50%',
   transform: 'translateX(-50%) translateY(-50%)',
 }
-
-// const defaultItems = range(100).map((item, i) => {
-//   return {
-//     key: `${i}`,
-//     title: chance.name()
-//   }
-// })
-
-// const detailedItems = range(100).map((item, i) => {
-//   const width = random(10, 100) * 10
-//   const height = random(10, 50) * 10
-//   const randomImage = `http://placekitten.com/${width}/${height}`
-//   return {
-//     key: `${i}`,
-//     title: chance.name(),
-//     subtitle: chance.sentence(),
-//     description: chance.paragraph(),
-//     mediaRender() {
-//       return (
-//         <img src={randomImage} />
-//       )
-//     }
-//   }
-// })
 
 class SortableComponent extends React.Component {
   static propTypes = DefaultList.propTypes
@@ -85,12 +64,9 @@ class SortableComponent extends React.Component {
 }
 
 storiesOf('List (grid)')
-
-.addWithInfo(
+.addDecorator(withKnobs)
+.add(
   'MediaPreview',
-  `
-    Showing landscape thumbs in a grid
-  `,
   () => {
     const items = range(50).map((item, i) => {
       const width = random(10, 80) * 10
@@ -104,20 +80,15 @@ storiesOf('List (grid)')
       }
     })
     return (
-      <GridList items={items} onSelect={action('Select')} />
+      <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
+        <GridList items={items} onSelect={action('Select')} />
+      </Sanity>
     )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
   }
 )
 
-.addWithInfo(
+.add(
   'MediaPreview (sortable)',
-  `
-    Showing landscape thumbs in a grid
-  `,
   () => {
     const items = range(50).map((item, i) => {
       const width = random(10, 80) * 10
@@ -131,11 +102,16 @@ storiesOf('List (grid)')
       }
     })
     return (
-      <SortableComponent
-        items={items}
-        onSelect={action('Select')}
-        onSortEnd={action('onSortEnd')}
-      />
+      <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
+        <div style={containerStyle}>
+          <SortableComponent
+            items={items}
+            onSelect={action('Select')}
+            onSortEnd={action('onSortEnd')}
+            scrollable={boolean('scrollable', false)}
+          />
+        </div>
+      </Sanity>
     )
   },
   {
@@ -144,46 +120,8 @@ storiesOf('List (grid)')
   }
 )
 
-
-.addWithInfo(
-  'MediaPreview (sortable, scrollable)',
-  `
-    Showing landscape thumbs in a grid
-  `,
-  () => {
-    const items = range(50).map((item, i) => {
-      const width = random(10, 80) * 10
-      const height = random(10, 50) * 10
-      const randomImage = `http://placekitten.com/${width}/${height}`
-      return {
-        key: `${i}`,
-        title: chance.name(),
-        imageUrl: randomImage,
-        aspect: width / height
-      }
-    })
-    return (
-      <div style={containerStyle}>
-        <SortableComponent
-          items={items}
-          onSelect={action('Select')}
-          onSortEnd={action('onSortEnd')}
-          scrollable
-        />
-      </div>
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-.addWithInfo(
+.add(
   'MediaPreview (masonry)',
-  `
-    Showing landscape thumbs in a grid
-  `,
   () => {
     const items = range(50).map((item, i) => {
       const width = random(10, 80) * 10
@@ -200,7 +138,14 @@ storiesOf('List (grid)')
       return <MediaPreview item={item} aspect={item.aspect} />
     }
     return (
-      <GridList items={items} onSelect={action('Select')} layout="masonry" renderItem={renderItem} />
+      <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
+        <GridList
+          items={items}
+          onSelect={action('Select')}
+          layout={select('layoyt', ['masonry', false], 'masonry')}
+          renderItem={renderItem}
+        />
+      </Sanity>
     )
   },
   {
@@ -209,11 +154,8 @@ storiesOf('List (grid)')
   }
 )
 
-.addWithInfo(
+.add(
   'Cards',
-  `
-    Showing landscape thumbs in a grid
-  `,
   () => {
 
     const items = range(50).map((item, i) => {
@@ -232,50 +174,15 @@ storiesOf('List (grid)')
       return <CardPreview item={item} />
     }
     return (
-      <GridList
-        items={items}
-        onSelect={action('Select')}
-        onSortEnd={action('onSortEnd')}
-        renderItem={renderItem}
-      />
+      <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
+        <GridList
+          items={items}
+          layout={select('layoyt', ['masonry', false], 'masonry')}
+          onSelect={action('Select')}
+          onSortEnd={action('onSortEnd')}
+          renderItem={renderItem}
+        />
+      </Sanity>
     )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
-  }
-)
-
-
-.addWithInfo(
-  'Cards (masonry)',
-  `
-    Showing landscape thumbs in a grid
-  `,
-  () => {
-
-    const items = range(50).map((item, i) => {
-      const width = random(10, 100) * 10
-      const height = random(10, 33) * 10
-      const randomImage = `http://placekitten.com/${width}/${height}`
-      return {
-        key: `${i}`,
-        title: chance.name(),
-        subtitle: chance.sentence(),
-        description: chance.paragraph(),
-        imageUrl: randomImage,
-        imageAspect: width / height
-      }
-    })
-    const renderItem = function (item, i) {
-      return <CardPreview item={item} aspect={item.imageAspect} />
-    }
-    return (
-      <GridList items={items} layout="masonry" onSelect={action('Select')} renderItem={renderItem} />
-    )
-  },
-  {
-    propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
   }
 )
