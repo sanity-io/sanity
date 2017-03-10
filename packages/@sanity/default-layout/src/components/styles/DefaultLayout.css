@@ -60,7 +60,6 @@
 }
 
 .secondaryNavigation {
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   position: relative;
   width: calc(var(--tool-switcher-width) + var(--medium-padding));
   margin-right: var(--medium-padding);
@@ -70,7 +69,9 @@
   float: left;
   font-size: var(--font-size-xsmall);
   z-index: var(--zindex-navbar);
+  background-color: var(--body-bg);
   display: none;
+
 
   @media (--screen-medium) {
     display: block;
