@@ -785,10 +785,6 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "autocomplete/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
       "path": "loading/story.js"
     },
     {
