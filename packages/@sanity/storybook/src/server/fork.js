@@ -8,6 +8,8 @@ const serverPath = path.join(__dirname, 'server.js')
 module.exports = config => {
   const {output, chalk} = config.context
 
+  const debug = (process.env.DEBUG || '').indexOf('storybook') >= 0
+
   // The repository info is sent to the storybook while running on
   // development mode so it'll be easier for tools to integrate.
   const exec = cmd => shelljs.exec(cmd, {silent: true}).stdout.trim()
@@ -28,6 +30,12 @@ module.exports = config => {
   proc.stderr.on('data', data => {
     output.print(chalk.red(`Storybook: ${data}`))
   })
+
+  if (debug) {
+    proc.stdout.on('data', data => {
+      output.print(chalk.cyan(`Storybook: ${data}`))
+    })
+  }
 
   proc.send({event: 'start', config})
 }

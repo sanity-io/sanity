@@ -1,4 +1,3 @@
-const path = require('path')
 const sanityServer = require('@sanity/server')
 
 // This is very hacky, but I couldn't figure out a way to pass config from
@@ -19,20 +18,13 @@ function getWebpackConfig(storyWpConfig, configType) {
     throw new Error('Sanity context has not been set for Storybook!')
   }
 
-  const sanityWpConfig = sanityServer.getWebpackBaseConfig({
-    basePath: sanityContext.basePath,
-    commonChunkPlugin: false
-  })
+  const config = Object.assign({}, sanityContext, {commonChunkPlugin: false})
+  const sanityWpConfig = sanityServer.getWebpackDevConfig(config)
 
   sanityWpConfig.module = sanityWpConfig.module || {loaders: []}
 
   if (configType.toLowerCase() === 'development') {
-    sanityWpConfig.module.loaders = sanityServer.applyStaticLoaderFix(sanityWpConfig, {
-      httpHost: sanityContext.httpHost,
-      httpPort: 9001,
-      basePath: sanityContext.basePath,
-      staticPath: path.join(sanityContext.basePath, 'static'),
-    })
+    sanityWpConfig.module.loaders = sanityServer.applyStaticLoaderFix(sanityWpConfig, config)
   }
 
   return Object.assign({}, sanityWpConfig, storyWpConfig, {
