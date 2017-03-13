@@ -8,7 +8,7 @@
     {
       "name": "part:@sanity/storybook",
       "description": "Sanity wrapped version of Kadira's React Storybook",
-      "path": "./index.js"
+      "path": "index.js"
     },
     {
       "name": "part:@sanity/storybook/decorators/center",

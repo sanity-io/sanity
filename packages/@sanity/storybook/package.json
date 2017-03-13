@@ -2,7 +2,7 @@
   "name": "@sanity/storybook",
   "version": "0.104.3",
   "description": "Sanity plugin for running react-storybook in a Sanity studio",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "eslint ."
   },

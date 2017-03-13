@@ -2,12 +2,12 @@ const storyBook = require('@kadira/storybook')
 const sortByName = (storyA, storyB) => (storyB.name || '').localeCompare(storyA.name || '')
 const registerStoryKind = storyBook.storiesOf
 
-const declaredStories = []
+const storybookApi = Object.assign({}, storyBook, {
+  declaredStories: [],
 
-module.exports = Object.assign({}, storyBook, {
   storiesOf: (...args) => {
     const kind = {name: args[0], kind: args, decorators: [], stories: []}
-    declaredStories.push(kind)
+    storybookApi.declaredStories.push(kind)
 
     const api = {
       add: (...story) => {
@@ -26,9 +26,9 @@ module.exports = Object.assign({}, storyBook, {
 
   sanity: {
     registerDeclaredStories: () => {
-      declaredStories.sort(sortByName)
-      while (declaredStories.length > 0) {
-        const story = declaredStories.pop()
+      storybookApi.declaredStories.sort(sortByName)
+      while (storybookApi.declaredStories.length > 0) {
+        const story = storybookApi.declaredStories.pop()
         const kind = registerStoryKind(...story.kind)
         story.decorators.forEach(dec => kind.addDecorator(...dec))
         story.stories.forEach(stry => kind.add(...stry))
@@ -36,3 +36,5 @@ module.exports = Object.assign({}, storyBook, {
     }
   }
 })
+
+module.exports = storybookApi
