@@ -260,21 +260,23 @@ export default class BlockEditor extends React.Component {
             id={this._inputId}
             onClick={this.handleEditorContainerClick}
           >
-            <Editor
-              ref={this.refEditor}
-              className={styles.input}
-              onChange={this.handleEditorChange}
-              placeholder=""
-              state={value}
-              blockEditor={this}
-              plugins={this.slatePlugins}
-              schema={this.slateSchema}
-            />
-            <div
-              ref={this.refBlockDragMarker}
-              style={{display: 'none'}}
-              className={styles.blockDragMarker}
-            />
+            <div>
+              <Editor
+                ref={this.refEditor}
+                className={styles.input}
+                onChange={this.handleEditorChange}
+                placeholder=""
+                state={value}
+                blockEditor={this}
+                plugins={this.slatePlugins}
+                schema={this.slateSchema}
+              />
+              <div
+                ref={this.refBlockDragMarker}
+                style={{display: 'none'}}
+                className={styles.blockDragMarker}
+              />
+            </div>
           </div>
 
         </div>
