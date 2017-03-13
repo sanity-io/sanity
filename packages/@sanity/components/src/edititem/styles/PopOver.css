@@ -181,11 +181,15 @@
 }
 
 .content {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
+}
+
+.contentWithScroll {
+  composes: content;
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
 }
 
 .head {

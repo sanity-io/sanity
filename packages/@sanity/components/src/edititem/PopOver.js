@@ -51,11 +51,11 @@ export default class EditItemPopOver extends React.Component {
   _portalModalElement = null
   _arrowElement = null
   _scrollContainerElement = null
+  _contentElement = null
   _initialScrollTop = null
   _scrollContainerElementInitialPaddingBottom = null
   _translateYHistory = []
   _initialBodyStyleOverflow = null
-  _isMoving = null
   _portalOffsetHeight = null
 
 
@@ -67,6 +67,7 @@ export default class EditItemPopOver extends React.Component {
   }
 
   componentDidMount() {
+
     popOverStack.push(this)
 
     // Only set scrollcontainer once, and reuse that
@@ -83,22 +84,26 @@ export default class EditItemPopOver extends React.Component {
       this._scrollContainerElement = popOverStack[0]._scrollContainerElement
     }
 
+    if (!this._scrollContainerElement) {
+      console.warn('No scroll container found, trying to find one!')
+      this.tryFindScrollContainer()
+    }
+
     // As we add padding to make room for the dialogs in the scrollcontainer,
     // save the inital padding so we can resore it when all modals are closed
     this._scrollContainerElementInitialPaddingBottom = parseInt(
-        this._scrollContainerElement.style.paddingBottom, 0
+        this._scrollContainerElement.lastChild.style.paddingBottom, 0
       ) || 0
 
     // Same with the scrolltop
     this._initialScrollTop = this._scrollContainerElement.scrollTop
 
+    // Set the modal as focused
+    setFocus(this)
+
     // Don't allow any user scrolling of the page when modals are shown
     this._initialBodyStyleOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-
-
-    // Set the modal as focused
-    setFocus(this)
 
     window.addEventListener('keydown', this.handleKeyDown)
     window.addEventListener('resize', this.handleWindowResize)
@@ -107,7 +112,7 @@ export default class EditItemPopOver extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowResize)
     window.removeEventListener('keydown', this.handleKeyDown)
-    this._elementResizeDetector.uninstall(this._portalModalElement)
+    this._elementResizeDetector.uninstall(this._contentElement)
     popOverStack.pop()
     setFocus(popOverStack.slice(-1)[0])
     document.body.style.overflow = this._initialBodyStyleOverflow
@@ -119,7 +124,7 @@ export default class EditItemPopOver extends React.Component {
     }
     // Scroll back to original scroll position
     scroll.top(this._scrollContainerElement, this._initialScrollTop, scrollOptions, () => {
-      this._scrollContainerElement.style.paddingBottom
+      this._scrollContainerElement.lastChild.style.paddingBottom
         = `${this._scrollContainerElementInitialPaddingBottom}px`
     })
     // Change other modals translateY back to their initial value
@@ -130,6 +135,24 @@ export default class EditItemPopOver extends React.Component {
       })
     }
     this.props.onClose()
+  }
+
+  tryFindScrollContainer() {
+    let scrollContainer = this._rootElement.parentNode
+    while (!this._scrollContainerElement) {
+      if (!scrollContainer.parentNode) {
+        break
+      }
+      if (['overlay', 'auto', 'scroll'].includes(window.getComputedStyle(scrollContainer).overflowY)) {
+        this._scrollContainerElement = scrollContainer
+        console.warn('Found a scrollcontainer: ', scrollContainer)
+        break
+      }
+      scrollContainer = scrollContainer.parentNode
+    }
+    if (!this._scrollContainerElement) {
+      throw new Error('PopOver needs a scrollcontainer!')
+    }
   }
 
   handleKeyDown = event => {
@@ -150,34 +173,43 @@ export default class EditItemPopOver extends React.Component {
     clearTimeout(this._resizeTimeout)
     this._resizeTimeout = setTimeout(() => {
       this.moveIntoPosition()
-    }, 17)
+    }, 40)
   }
 
   handleElementResize = el => {
-    if (this._isMoving) {
+    if (!this.state.isFocused) {
       return
     }
-    const offsetHeight = el.offsetHeight
-    if (!this._portalOffsetHeight !== offsetHeight) {
-      this.moveIntoPosition()
-      this._portalOffsetHeight = offsetHeight
+    const scrollHeight = el.scrollHeight
+    if (this._modalContentScrollHeight) {
+      if (this._modalContentScrollHeight !== scrollHeight) {
+        const diff = scrollHeight - this._modalContentScrollHeight
+        const newHeight = this._portalModalElement.offsetHeight + diff
+        this._portalModalElement.style.height = `${newHeight}px`
+        this.moveIntoPosition()
+        this._modalContentScrollHeight = scrollHeight
+      }
+    } else {
+      this._modalContentScrollHeight = scrollHeight
     }
-  }
-
-  addResizeDetector = () => {
-    this._elementResizeDetector.listenTo(this._portalModalElement, this.handleElementResize)
   }
 
   moveIntoPosition(shouldMoveOtherModals) {
-    this._isMoving = true
+
     const rootRects = this._rootElement.getBoundingClientRect()
-    const modalRects = this._portalModalElement.getBoundingClientRect()
 
     // Place the modal initially near the orginating element
     const {top, left} = rootRects
     this._portalModalElement.style.position = 'absolute'
-    this._portalModalElement.style.top = `${top}px`
+
+    const currentModalTranslateY = getComputedTranslateY(this._portalModalElement)
+    if (currentModalTranslateY === 0) {
+      this._portalModalElement.style.top = `${top}px`
+    }
     this._portalModalElement.style.left = `${left}px`
+    this._portalModalElement.style.height = 'auto'
+
+    const modalRects = this._portalModalElement.getBoundingClientRect()
 
     const windowWidth = window.innerWidth
 
@@ -185,23 +217,13 @@ export default class EditItemPopOver extends React.Component {
     const scrollTop = scrollContainer.scrollTop
     const scrollContainerRects = scrollContainer.getBoundingClientRect()
 
-    // The visible offset of the modal within the scroll container
-    const modalScrollOffset = Math.abs(
-      scrollContainer.scrollHeight - scrollTop - rootRects.top - modalRects.height
-    )
-
-    // How much vertical space we have visible for the scroll container
-    const spaceAvailable = scrollContainer.parentNode.offsetHeight
-
-    // How much vertical space the modal needs
-    const spaceNeeded = modalRects.height
-
-    const newOffsetHeight = modalScrollOffset + modalRects.height
-
     let modalTranslateY = 0
     let newScrollTop = scrollTop
 
-    const padding = 30
+    const padding = 20
+
+    // Set content default class (can be changed futher down if content neeeds scrolling)
+    this._contentElement.className = styles.content
 
     // Make sure the whole width is visible within the screen,
     // and move arrow to point to originating element
@@ -211,29 +233,53 @@ export default class EditItemPopOver extends React.Component {
       this._arrowElement.style.transform = `translateX(${diff * -1}px)`
     }
 
-    // The bottom of the modal within the page
-    const globalBottomPos = this._portalModalElement.offsetTop + modalRects.height
+    const newBottom = () => this._portalModalElement.offsetTop + this._portalModalElement.offsetHeight
 
     // If there isn't vertical room in the scrollcontainer to show the dialog,
     // add extra padding and scroll it into view
-    if (globalBottomPos > spaceAvailable) {
-      // Model content is too large to display on screen
-      if (spaceNeeded > spaceAvailable) {
-        newScrollTop = scrollTop + rootRects.top - scrollContainerRects.top - padding
-        const newHeight = spaceAvailable - (padding * 2)
-        this._portalModalElement.style.height = `${newHeight}px`
-      // Model content will fit on screen in whole
-      } else {
-        newScrollTop = scrollTop + (globalBottomPos - spaceAvailable) - padding
-        this._portalModalElement.style.height = `${modalRects.height}px`
+    if (newBottom() + padding > scrollContainer.clientHeight) {
+
+      // Add padding
+
+      // First check if we need to pad down to the bottom of the scroll container
+      // (content is not filling up the scroll container as we add padding from the bottom)
+      const childBottom = scrollContainer.lastChild.getBoundingClientRect().bottom
+      let padChildToBottom = scrollContainerRects.bottom - childBottom
+      if (padChildToBottom < 0) {
+        padChildToBottom = 0
       }
-      const extraPaddingBottom = (parseInt(scrollContainer.style.paddingBottom, 10) || 0) + newOffsetHeight
-      scrollContainer.style.paddingBottom = `${extraPaddingBottom}px`
+      // Add needed padding to show the whole modal
+      const extraPaddingBottom = padChildToBottom
+        + parseInt(scrollContainer.lastChild.style.paddingBottom || 0, 10)
+        + (newBottom() - scrollContainer.offsetHeight)
+      scrollContainer.lastChild.style.paddingBottom = `${extraPaddingBottom}px`
+
+      // Model content is too large to display on screen
+      if (modalRects.height >= (scrollContainerRects.height - padding)) {
+        const newHeight = scrollContainerRects.height - scrollContainerRects.top - padding
+        this._portalModalElement.style.height = `${newHeight}px`
+        newScrollTop = scrollTop - scrollContainerRects.top
+          + (newBottom() - scrollContainer.offsetHeight) + (padding * 2)
+        // Add class to get scrollbars
+        this._contentElement.className = styles.contentWithScroll
+      } else {
+      // Model content will fit on screen in whole
+        this._portalModalElement.style.height = `${modalRects.height}px`
+        newScrollTop = scrollTop
+          + (newBottom() - scrollContainer.offsetHeight)
+      }
+
+      // If we already have translated, add that to the new scrolltop
+      if (currentModalTranslateY) {
+        newScrollTop += currentModalTranslateY
+      }
+
+      // Set the new translate
+      modalTranslateY = scrollTop - newScrollTop + currentModalTranslateY
+      this._portalModalElement.style.transform = `translateY(${modalTranslateY}px)`
 
       // Do the scroll
-      scroll.top(scrollContainer, newScrollTop, scrollOptions, () => {
-        this._isMoving = false
-      })
+      scroll.top(scrollContainer, newScrollTop, scrollOptions)
 
     } else {
       // No need to add extra space and scroll
@@ -241,26 +287,23 @@ export default class EditItemPopOver extends React.Component {
       this._isMoving = false
     }
 
-    // Move the modal along with the container scroll
-    modalTranslateY = scrollTop - newScrollTop
-    this._portalModalElement.style.transform = `translateY(${modalTranslateY}px)`
-
-    // Move all other previously opened modals accordingly (on open only)
+    // Move other modals accordingly (on open)
     if (shouldMoveOtherModals) {
-      if (popOverStack.length > 1) {
-        popOverStack.slice(0, -1).forEach(popOver => {
-          const currentModalTranslateY = getComputedTranslateY(popOver._portalModalElement)
-          popOver._translateYHistory.push(currentModalTranslateY)
-          const newTranslateY = currentModalTranslateY + modalTranslateY
-          popOver._portalModalElement.style.transform = `translateY(${newTranslateY}px)`
-        })
-      }
+      popOverStack.slice(0, -1).forEach(popOver => {
+        const translateY = getComputedTranslateY(popOver._portalModalElement)
+        popOver._translateYHistory.push(translateY)
+        const newTranslateY = translateY + modalTranslateY
+        popOver._portalModalElement.style.transform = `translateY(${newTranslateY}px)`
+      })
     }
   }
 
   handlePortalOpened = element => {
     this.moveIntoPosition(true)
-    this.addResizeDetector()
+    this._elementResizeDetector.listenTo(
+      this._contentElement.firstChild,
+      this.handleElementResize
+    )
   }
 
   setArrowElement = element => {
@@ -269,6 +312,10 @@ export default class EditItemPopOver extends React.Component {
 
   setPortalModalElement = element => {
     this._portalModalElement = element
+  }
+
+  setContentElement = element => {
+    this._contentElement = element
   }
 
   setRootElement = element => {
@@ -308,7 +355,7 @@ export default class EditItemPopOver extends React.Component {
               </h3>
             </div>
 
-            <div className={styles.content}>
+            <div className={styles.content} ref={this.setContentElement}>
               {children}
             </div>
 
