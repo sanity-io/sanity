@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.104.5",
+  "version": "0.104.6",
   "private": true,
   "description": "",
   "main": "config.js",
@@ -12,11 +12,11 @@
   "dependencies": {
     "@sanity/base": "^0.104.3",
     "@sanity/core": "^0.104.3",
-    "@sanity/components": "^0.104.5",
-    "@sanity/default-layout": "^0.104.5",
+    "@sanity/components": "^0.104.6",
+    "@sanity/default-layout": "^0.104.6",
     "@sanity/default-login": "^0.104.0",
-    "@sanity/desk-tool": "^0.104.5",
-    "@sanity/google-maps-input": "^0.104.5",
+    "@sanity/desk-tool": "^0.104.6",
+    "@sanity/google-maps-input": "^0.104.6",
     "@sanity/server": "^0.104.3",
     "@sanity/storybook": "^0.104.4",
     "react": "^15.4.2",
