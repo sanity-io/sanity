@@ -28,7 +28,6 @@ class StatelessSearchableSelect extends React.PureComponent {
     renderItem: PropTypes.func,
     placeholder: PropTypes.string,
 
-    hasError: PropTypes.bool,
     isLoading: PropTypes.bool,
 
     isOpen: PropTypes.bool,
@@ -112,7 +111,7 @@ class StatelessSearchableSelect extends React.PureComponent {
 
   handleKeyUp = event => {
     const {items, onChange, highlightIndex} = this.props
-    if (event.key == 'Enter' && highlightIndex > -1) {
+    if (event.key === 'Enter' && highlightIndex > -1) {
       onChange(items[highlightIndex])
     }
   }
@@ -176,19 +175,21 @@ class StatelessSearchableSelect extends React.PureComponent {
 
         <div className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}>
           {
-            items.length == 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+            items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
           }
           {
-            items.length == 0 && isLoading && <Spinner message="Loading items…" center />
+            items.length === 0 && isLoading && <Spinner message="Loading items…" center />
           }
-          <DefaultList
-            items={items}
-            highlightedItem={(items && items[highlightIndex]) || value}
-            selectedItem={value}
-            scrollable
-            onSelect={this.handleSelect}
-            renderItem={renderItem}
-          />
+          {isOpen && items.length > 0 && (
+            <DefaultList
+              items={items}
+              highlightedItem={(items && items[highlightIndex]) || value}
+              selectedItem={value}
+              scrollable
+              onSelect={this.handleSelect}
+              renderItem={renderItem}
+            />
+          )}
         </div>
 
       </DefaultFormField>

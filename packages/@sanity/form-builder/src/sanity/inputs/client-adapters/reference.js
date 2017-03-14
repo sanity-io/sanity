@@ -8,23 +8,23 @@ export function valueToString(value, referenceType) {
     .map(result => result.snapshot.title)
 }
 
-function quote(str) {
-  return `"${str}"`
-}
-
 export function search(textTerm, referenceType) {
   const textFields = uniq(compact(flatten(
     referenceType.to.map(refType =>
       refType.fields.map(field =>
-        (field.type.name == 'string' ? field.name : null)
+        (field.type.name === 'string' ? field.name : null)
       )
     )
   )))
 
-  const typeFilter = referenceType.to.map(toField => toField.type.name).map(quote)
-  const terms = textTerm.split(/\s+/).map(quote)
-  const constraints = `_type in [${typeFilter.join(', ')}] && (${textFields.join(', ')}) match (${terms.join(',')})`
-  const query = `*[${constraints}]` // todo: see if its possible to use selection from previews here
+  const typeConstraints = referenceType.to.map(toField => toField.type.name)
+    .map(typeName => `is "${typeName}"`)
 
-  return client.observable.fetch(query)
+  const stringConstraints = textFields
+    .map(fieldName => `${fieldName} match $term`)
+
+  // todo: see if its possible to use selection from previews here
+  const query = `*[(${typeConstraints.join(' || ')}) && (${stringConstraints.join(' || ')})]`
+
+  return client.observable.fetch(query, {term: textTerm.trim()})
 }

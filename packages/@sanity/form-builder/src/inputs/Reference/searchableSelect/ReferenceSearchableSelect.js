@@ -42,7 +42,7 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value != this.props.value) {
+    if (nextProps.value !== this.props.value) {
       this.setState(getInitialState())
       this.fetchValueAsString(nextProps.value)
     }
@@ -67,7 +67,7 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleFocus = () => {
-    this.search('*')
+    this.search(this._lastQuery || '*')
   }
 
   handleChange = item => {
@@ -93,6 +93,7 @@ export default class ReferenceSearchableSelect extends React.Component {
       return
     }
 
+    this._lastQuery = query
     this.setState({
       fetching: true
     })

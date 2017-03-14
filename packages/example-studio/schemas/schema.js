@@ -389,6 +389,17 @@ export default createSchema({
               type: 'string'
             }
           ]
+        },
+        {
+          name: 'relatedAuthors',
+          title: 'Related authors',
+          type: 'array',
+          of: [
+            {
+              type: 'reference',
+              to: {type: 'author'}
+            }
+          ]
         }
       ]
     }
