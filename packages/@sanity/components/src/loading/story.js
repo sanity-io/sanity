@@ -18,6 +18,7 @@ storiesOf('Loading')
           inline={boolean('inline', false)}
           message={text('Message', 'This is the message')}
           fullscreen={boolean('fullscreen', false)}
+          center={boolean('center', false)}
         />
       </Sanity>
     )
