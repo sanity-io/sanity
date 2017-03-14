@@ -109,7 +109,14 @@ export default createSchema({
           type: 'image',
           options: {
             hotspot: true
-          }
+          },
+          fields: [
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Caption'
+            }
+          ]
         },
         {
           name: 'pngImage',

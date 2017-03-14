@@ -220,22 +220,21 @@ export default class ImageInput extends React.PureComponent {
 
   handleImageToolChange = newValue => {
     const {onChange} = this.props
-    // @todo: fix
-    // eslint-disable-next-line no-console
-    return console.log('image tool is disabled for now. Please check back later')
-    // onChange({
-    //   patch: [
-    //     this.createSetIfMissingPatch(),
-    //     {
-    //       type: 'set',
-    //       path: ['crop'],
-    //       value: {
-    //         crop: newValue.crop,
-    //         hotspot: newValue.hotspot
-    //       }
-    //     }
-    //   ]
-    // })
+    onChange({
+      patch: [
+        this.createSetIfMissingPatch(),
+        {
+          type: 'set',
+          path: ['crop'],
+          value: newValue.crop
+        },
+        {
+          type: 'set',
+          path: ['hotspot'],
+          value: newValue.hotspot
+        }
+      ]
+    })
   }
 
   getImageUrl() {
@@ -263,25 +262,27 @@ export default class ImageInput extends React.PureComponent {
     const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
     return (
       <div>
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex', flexDirection: 'row'}}>
           <div style={{width: '40%'}}>
             <ImageTool value={{hotspot, crop}} src={imageUrl} onChange={this.handleImageToolChange} />
           </div>
-          <div>
+          <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
             {ASPECT_RATIOS.map(([title, ratio]) => {
               return (
-                <div key={ratio}>
-                  <h2>{title}</h2>
+                <div key={ratio} style={{flexGrow: 1}}>
+                  <h4>{title}</h4>
                   <ImageLoader src={imageUrl}>
                     {({image, error}) => {
                       return (
-                        <HotspotImage
-                          aspectRatio="auto"
-                          src={image.src}
-                          srcAspectRatio={image.width / image.height}
-                          hotspot={hotspot}
-                          crop={crop}
-                        />
+                        <div style={{margin: 4, border: '1px dashed #999', backgroundColor: '#eee'}}>
+                          <HotspotImage
+                            aspectRatio={ratio}
+                            src={image.src}
+                            srcAspectRatio={image.width / image.height}
+                            hotspot={hotspot}
+                            crop={crop}
+                          />
+                        </div>
                       )
                     }}
                   </ImageLoader>
@@ -293,6 +294,7 @@ export default class ImageInput extends React.PureComponent {
       </div>
     )
   }
+
   renderAdvancedEdit(fields) {
     const grouped = groupBy(fields, field => {
       if (field.name === 'hotspot' || field.name === 'crop') {
@@ -302,8 +304,13 @@ export default class ImageInput extends React.PureComponent {
     })
     return (
       <Dialog title="Edit details" onClose={this.handleEditDialogClose} isOpen>
-        {grouped.imagetool && this.renderImageTool()}
-        {grouped.other && this.renderFields(grouped.other)}
+        <h2>Hotspot/crop</h2>
+        <div>
+          {grouped.imagetool && this.renderImageTool()}
+        </div>
+        <div>
+          {grouped.other && this.renderFields(grouped.other)}
+        </div>
         <Button onClick={this.handleEditDialogClose}>Close</Button>
       </Dialog>
     )
