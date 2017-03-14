@@ -51,7 +51,7 @@ export default function createBlockEditorOperations(blockEditor) {
       // that the range is not in the document
       // Move the selection back to the initial selection
       if (startOffset === 0 && state.isExpanded) {
-        transform = transform.moveTo(state.selection)
+        transform = transform.select(state.selection)
       }
 
       // IDEA: get selected text and set it on the data
@@ -194,7 +194,7 @@ export default function createBlockEditorOperations(blockEditor) {
             transform
               .collapseToEnd()
               .splitBlock()
-              .moveTo(selection)
+              .select(selection)
           )
         }
       }
@@ -261,7 +261,7 @@ export default function createBlockEditorOperations(blockEditor) {
       // Select and highlight current word
       // Note: don't call apply and onChange here
       return state.transform()
-        .moveToOffsets(newStartOffset, newEndOffset)
+        .moveOffsetsTo(newStartOffset, newEndOffset)
         .focus()
     },
 

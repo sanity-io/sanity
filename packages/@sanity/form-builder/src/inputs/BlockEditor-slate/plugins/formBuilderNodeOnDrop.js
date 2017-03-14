@@ -38,7 +38,7 @@ function onDrop(event, data, state, editor) {
 
   let transform = state.transform()
     .removeNodeByKey(node.key)
-    .moveTo(target)
+    .select(target)
 
   if (node.kind === 'block') {
     transform = transform.insertBlock(node)
