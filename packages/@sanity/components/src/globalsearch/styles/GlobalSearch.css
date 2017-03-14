@@ -21,6 +21,11 @@
   line-height: inherit;
   font-size: inherit;
   margin-top: -0.05em;
+
+  @nest &::placeholder {
+    color: inherit;
+    opacity: 0.4;
+  }
 }
 
 .listContainer {
