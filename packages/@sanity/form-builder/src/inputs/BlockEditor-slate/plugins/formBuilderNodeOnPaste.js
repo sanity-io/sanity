@@ -3,7 +3,7 @@ import {Block, Data, Document} from 'slate'
 function formBuilderNodeOnPaste(formBuilder, editorFields) {
 
   function getFieldOfType(typeName) {
-    return editorFields.find(ofField => ofField.type === typeName)
+    return editorFields.find(ofField => ofField.type.name === typeName)
   }
 
   function onPaste(event, data, state, editor) {
@@ -12,10 +12,13 @@ function formBuilderNodeOnPaste(formBuilder, editorFields) {
     }
     const newNodesList = Block.createList(data.fragment.nodes.toArray().map(node => {
       const ofField = getFieldOfType(node.type)
-      const value = node.data.get('value')
-      if (!value) {
+      // If this is not a formBuilder type, it is a Slate type, and just pass
+      // it as it is
+      if (!ofField) {
         return node
       }
+      // This is a formBuilder type. Clone its structure and value.
+      const value = node.data.get('value')
       const nodeValue = formBuilder.createFieldValue(value, ofField)
       return new Block({
         data: Data.create({value: nodeValue}),
