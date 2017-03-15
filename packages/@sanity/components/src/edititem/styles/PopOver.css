@@ -218,3 +218,9 @@
 .primaryFunctions {
   margin-top: 1em;
 }
+
+
+.paddingDummy {
+  padding: 0px;
+  margin: 0px;
+}
