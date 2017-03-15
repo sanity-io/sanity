@@ -83,11 +83,15 @@ export default class EditItemPopOver extends React.Component {
     }
 
     if (!this._scrollContainerElement) {
-      console.warn('No scroll container found, trying to find one!') // eslint-disable-line no-console
+      if (__DEV__) {
+        console.warn('No scroll container found, trying to find one!') // eslint-disable-line no-console
+      }
       this.tryFindScrollContainer()
     } else if (popOverStack[0] === this && !this._scrollContainerElement.contains(this._rootElement)) {
-      // eslint-disable-next-line no-console
-      console.warn('This rootElement is not a child of the scollcontainer, trying to find a valid scrollContainer!')
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.warn('This rootElement is not a child of the scollcontainer, trying to find a valid scrollContainer!')
+      }
       this._scrollContainerElement = null
       this.tryFindScrollContainer()
     }
@@ -146,8 +150,10 @@ export default class EditItemPopOver extends React.Component {
       }
       if (['overlay', 'auto', 'scroll'].includes(window.getComputedStyle(scrollContainer).overflowY)) {
         this._scrollContainerElement = scrollContainer
-        // eslint-disable-next-line no-console
-        console.warn('Found a scrollcontainer: ', scrollContainer)
+        if (__DEV__) { // eslint-disable-line max-depth
+          // eslint-disable-next-line no-console
+          console.warn('Found a scrollcontainer: ', scrollContainer)
+        }
         break
       }
       scrollContainer = scrollContainer.parentNode
