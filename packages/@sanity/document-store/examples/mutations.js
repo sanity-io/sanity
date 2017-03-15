@@ -1,6 +1,5 @@
 const createDocumentStore = require('../src')
 const mockServerConnection = require('./mock-db/mockServerConnection')
-const firstOf = require('../src/utils/firstOf')
 
 const documentStore = createDocumentStore({serverConnection: mockServerConnection})
 
@@ -8,7 +7,7 @@ const wait = (ms, fn) => setTimeout(fn, ms)
 
 const buffered = documentStore.checkout(22)
 
-const byId = documentStore.byId(22).subscribe(event => {
+documentStore.byId(22).subscribe(event => {
   console.log('Got event from byId', event)
 })
 
@@ -19,16 +18,16 @@ const mutations = buffered.events
   })
 
 wait(500, () => {
-  const buffered = documentStore.checkout(22)
+  const buffered2 = documentStore.checkout(22)
 
-  buffered.events.subscribe(event => {
+  buffered2.events.subscribe(event => {
     console.log('Doc event #22!', event)
   })
 
-  buffered.patch([
+  buffered2.patch([
     {set: {body: 'New body'}}
   ])
-  buffered.commit().subscribe(() => {
+  buffered2.commit().subscribe(() => {
     console.log('Committed!')
   })
 })

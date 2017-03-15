@@ -2,7 +2,7 @@ const debug = require('../../src/utils/debug')
 const db = require('./db')
 
 function byId(documentId) {
-  debug('Server is "fetching" document with id %s', documentId)
+  debug('Mock server is "fetching" document with id %s', documentId)
   return db.listen(documentId)
 }
 

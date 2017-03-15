@@ -1,6 +1,5 @@
 const Observable = require('@sanity/observable')
 const createCache = require('./utils/createCache')
-const canonicalize = require('./utils/canonicalize')
 const omit = require('lodash/omit')
 const {BufferedDocument, Mutation} = require('@sanity/mutator')
 
@@ -131,18 +130,9 @@ function createBufferedDocument(documentId, server) {
   }
 }
 
-const identity = val => val
-
 module.exports = function createDocumentStore({serverConnection}) {
 
   const RECORDS_CACHE = createCache()
-
-  const server = {
-    byId: canonicalize(identity, serverConnection.byId),
-    query: canonicalize(identity, serverConnection.query),
-    mutate: serverConnection.mutate,
-    delete: serverConnection.delete,
-  }
 
   return {
     byId,
@@ -173,7 +163,7 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function checkout(documentId) {
-    return RECORDS_CACHE.fetch(documentId, () => createBufferedDocument(documentId, server))
+    return RECORDS_CACHE.fetch(documentId, () => createBufferedDocument(documentId, serverConnection))
   }
 
   function byIds(documentIds) {
