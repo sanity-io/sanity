@@ -72,6 +72,6 @@ export default function slateRawToSanity(raw) {
   if (!nodes || nodes.length === 0) {
     return undefined
   }
-  const blocks = nodes.map(toSanityBlock)
+  const blocks = nodes.map(toSanityBlock).filter(Boolean)
   return isEmpty(blocks) ? undefined : blocks
 }
