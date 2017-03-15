@@ -14,8 +14,7 @@ const insertBlockOnEnterDef = {
   kind: 'block',
   data: {
     style: SLATE_DEFAULT_STYLE
-  },
-  nodes: [{kind: 'text', text: '', ranges: []}]
+  }
 }
 
 export default function intializeSlatePlugins(blockEditor) {
