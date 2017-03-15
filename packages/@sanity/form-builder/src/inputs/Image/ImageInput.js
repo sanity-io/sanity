@@ -261,35 +261,33 @@ export default class ImageInput extends React.PureComponent {
 
     const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
     return (
-      <div>
-        <div style={{display: 'flex', flexDirection: 'row'}}>
-          <div style={{width: '40%'}}>
-            <ImageTool value={{hotspot, crop}} src={imageUrl} onChange={this.handleImageToolChange} />
-          </div>
-          <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
-            {ASPECT_RATIOS.map(([title, ratio]) => {
-              return (
-                <div key={ratio} style={{flexGrow: 1}}>
-                  <h4>{title}</h4>
-                  <ImageLoader src={imageUrl}>
-                    {({image, error}) => {
-                      return (
-                        <div style={{margin: 4, border: '1px dashed #999', backgroundColor: '#eee'}}>
-                          <HotspotImage
-                            aspectRatio={ratio}
-                            src={image.src}
-                            srcAspectRatio={image.width / image.height}
-                            hotspot={hotspot}
-                            crop={crop}
-                          />
-                        </div>
-                      )
-                    }}
-                  </ImageLoader>
-                </div>
-              )
-            })}
-          </div>
+      <div style={{display: 'flex', flexDirection: 'row', width: 800}}>
+        <div style={{width: '40%'}}>
+          <ImageTool value={{hotspot, crop}} src={imageUrl} onChange={this.handleImageToolChange} />
+        </div>
+        <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
+          {ASPECT_RATIOS.map(([title, ratio]) => {
+            return (
+              <div key={ratio} style={{flexGrow: 1}}>
+                <h4>{title}</h4>
+                <ImageLoader src={imageUrl}>
+                  {({image, error}) => {
+                    return (
+                      <div style={{margin: 4, border: '1px dashed #999', backgroundColor: '#eee'}}>
+                        <HotspotImage
+                          aspectRatio={ratio}
+                          src={image.src}
+                          srcAspectRatio={image.width / image.height}
+                          hotspot={hotspot}
+                          crop={crop}
+                        />
+                      </div>
+                    )
+                  }}
+                </ImageLoader>
+              </div>
+            )
+          })}
         </div>
       </div>
     )

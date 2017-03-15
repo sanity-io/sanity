@@ -17,7 +17,8 @@ export function search(textTerm, referenceType) {
     )
   )))
 
-  const typeConstraints = referenceType.to.map(toField => toField.type.name)
+  const typeConstraints = referenceType.to
+    .map(toField => toField.type.name)
     .map(typeName => `is "${typeName}"`)
 
   const stringConstraints = textFields
