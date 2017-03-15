@@ -48,6 +48,9 @@ export default class FormBuilderSpan extends React.Component {
     if (this.isEmpty()) {
       this.setState({isEditing: true})
     }
+  }
+
+  componentDidMount() {
     this._editorNodeRect = ReactDOM.findDOMNode(this.props.editor).getBoundingClientRect()
   }
 
