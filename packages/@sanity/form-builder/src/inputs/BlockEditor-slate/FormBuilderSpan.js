@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import ReactDOM from 'react-dom'
 
 import applySanityPatch from './applySanityPatch'
 import DefaultButton from 'part:@sanity/components/buttons/default'
@@ -19,12 +20,13 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   state = {isFocused: false, isEditing: false}
-  clickCounter = 0
-  isMarkingText = false
-
+  _clickCounter = 0
+  _isMarkingText = false
+  _editorNodeRect = null
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextState.isEditing !== this.state.isEditing
+      || nextState.rootElement !== this.state.rootElement
       || nextProps.state.focusOffset !== this.props.state.focusOffset
       || nextProps.node.data.get('value') !== this.props.node.data.get('value')
   }
@@ -46,6 +48,7 @@ export default class FormBuilderSpan extends React.Component {
     if (this.isEmpty()) {
       this.setState({isEditing: true})
     }
+    this._editorNodeRect = ReactDOM.findDOMNode(this.props.editor).getBoundingClientRect()
   }
 
   isEmpty() {
@@ -83,18 +86,18 @@ export default class FormBuilderSpan extends React.Component {
   // Open dialog when user clicks the node,
   // but support double clicks, and mark text as normal
   handleMouseDown = () => {
-    this.isMarkingText = true
+    this._isMarkingText = true
     setTimeout(() => {
-      if (this.clickCounter === 1 && !this.isMarkingText) {
+      if (this._clickCounter === 1 && !this._isMarkingText) {
         this.setState({isEditing: true})
       }
-      this.clickCounter = 0
+      this._clickCounter = 0
     }, 350)
-    this.clickCounter++
+    this._clickCounter++
   }
 
   handleMouseUp = () => {
-    this.isMarkingText = false
+    this._isMarkingText = false
   }
 
   handleReset = () => {
@@ -131,30 +134,40 @@ export default class FormBuilderSpan extends React.Component {
     const memberFields = type.fields.filter(field => {
       return !ignoredFields.includes(field.name)
     })
-    return (
-      <EditItemPopOver
-        className={styles.editItemPopOver}
-        onClose={this.handleCloseInput}
-      >
-        {
-          this.renderManage()
-        }
+    const style = {}
+    if (this.state.rootElement) {
+      const {width, height, left} = this.state.rootElement.getBoundingClientRect()
+      style.width = `${width}px`
+      style.height = `${height}px`
+      style.left = `${left - this._editorNodeRect.left}px`
+      style.top = `${this.state.rootElement.offsetTop + height + 10}px`
+    }
 
-        {
-          memberFields.map(eField => {
-            const fieldValue = value.getAttribute(eField.name)
-            return (
-              <RenderField
-                key={eField.name}
-                field={eField}
-                level={0}
-                value={fieldValue}
-                onChange={this.handleFieldChange}
-              />
-            )
-          })
-        }
-      </EditItemPopOver>
+    return (
+      <span className={styles.editSpanContainer} style={style}>
+        <EditItemPopOver
+          onClose={this.handleCloseInput}
+        >
+          {
+            this.renderManage()
+          }
+
+          {
+            memberFields.map(eField => {
+              const fieldValue = value.getAttribute(eField.name)
+              return (
+                <RenderField
+                  key={eField.name}
+                  field={eField}
+                  level={0}
+                  value={fieldValue}
+                  onChange={this.handleFieldChange}
+                />
+              )
+            })
+          }
+        </EditItemPopOver>
+      </span>
     )
   }
 
@@ -201,6 +214,10 @@ export default class FormBuilderSpan extends React.Component {
     )
   }
 
+  setRootElement = element => {
+    this.setState({rootElement: element})
+  }
+
   render() {
     const {isEditing} = this.state
     const {attributes} = this.props
@@ -210,6 +227,7 @@ export default class FormBuilderSpan extends React.Component {
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
         className={styles.root}
+        ref={this.setRootElement}
       >
         {this.props.children}
 

@@ -3,11 +3,6 @@
   color: blue;
 }
 
-.editItemPopOver {
-  margin-left: -4em;
-  margin-top: 2em;
-}
-
 .manageLinkPreview {
   word-wrap: break-word;
   max-width: 400px;
@@ -17,4 +12,9 @@
   margin-top: 0.5em;
   font-size: small;
   text-align: right;
+}
+
+.editSpanContainer {
+  position: absolute;
+  display: block;
 }
