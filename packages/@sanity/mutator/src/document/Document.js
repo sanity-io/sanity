@@ -236,18 +236,22 @@ export default class Document {
     // If we can consume the directly upcoming mutation, we won't have to rebase
     if (this.submitted.length != 0) {
       if (this.submitted[0].transactionId == txnId) {
+        debug(`Remote mutation ${txnId} matches upcoming submitted mutation, consumed from 'submitted' buffer`)
         this.submitted.shift()
         return false
       }
     } else if (this.pending.length > 0 && this.pending[0].transactionId == txnId) {
       // There are no submitted, but some are pending so let's check the upcoming pending
+      debug(`Remote mutation ${txnId} matches upcoming pending mutation, consumed from 'pending' buffer`)
       this.pending.shift()
       return false
     }
+    debug(`The mutation was not the upcoming mutation, scrubbing. Pending: ${this.pending.length}, Submitted: ${this.submitted.length}`)
     // The mutation was not the upcoming mutation, so we'll have to check everything to
     // see if we have an out of order situation
     this.submitted = this.submitted.filter(mut => mut.transactionId != txnId)
     this.pending = this.pending.filter(mut => mut.transactionId != txnId)
+    debug(`After scrubbing: Pending: ${this.pending.length}, Submitted: ${this.submitted.length}`)
     // Whether we had it or not we have either a reordering, or an unexpected mutation
     // so must rebase
     return true
