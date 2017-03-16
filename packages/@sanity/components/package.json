@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.104.12",
+  "version": "0.104.13",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -56,9 +56,9 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.104.12",
+    "@sanity/base": "^0.104.13",
     "@sanity/check": "^0.104.0",
-    "@sanity/core": "^0.104.12",
+    "@sanity/core": "^0.104.13",
     "eslint": "^3.17.1",
     "eslint-config-sanity": "^2.1.0",
     "eslint-plugin-react": "^6.10.0",
