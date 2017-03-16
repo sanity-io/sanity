@@ -190,9 +190,7 @@ export default class EditItemPopOver extends React.Component {
       const newHeight = this._portalModalElement.offsetHeight + diff
       this._portalModalElement.style.height = `${newHeight}px`
       if (this.state.isFocused) { // eslint-disable-line max-depth
-        setTimeout(() => {
-          this.moveIntoPosition()
-        }, 300)
+        this.moveIntoPosition()
       }
       this._modalContentScrollHeight = scrollHeight
     }
