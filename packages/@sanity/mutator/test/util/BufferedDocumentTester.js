@@ -81,6 +81,7 @@ export default class BufferedDocumentTester {
       previousRev: fromRev,
       mutations: [operation]
     })
+    debug(`Local mutation: ${JSON.stringify(mut)}`)
     this.doc.add(mut)
     return this
   }
@@ -97,6 +98,17 @@ export default class BufferedDocumentTester {
       this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
     }
     this.doc.arrive(this.pendingCommit.mutation)
+    this.pendingCommit = null
+    return this
+  }
+  commitSucceedsButMutationArriveDuringCommitProcess() {
+    this.resetState()
+    // Magically this commit is based on the current HEAD revision
+    if (this.doc.document.HEAD) {
+      this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+    }
+    this.doc.arrive(this.pendingCommit.mutation)
+    this.pendingCommit.success()
     this.pendingCommit = null
     return this
   }

@@ -85,6 +85,7 @@ export default class Document {
     }
     this.lastStagedAt = new Date()
 
+    debug(`Staging mutation ${mutation.transactionId} (pushed to pending)`)
     this.pending.push(mutation)
     this.EDGE = mutation.apply(this.EDGE)
 
@@ -185,25 +186,19 @@ export default class Document {
 
     this.HEAD = mut.apply(this.HEAD)
 
-    if (this.HEAD === null) {
-      // If the document was deleted, clear all upcoming pending edits that do no apply to missing documents
-      while (this.pending.length > 0 && !this.pending[0].appliesToMissingDocument()) {
-        this.pending.shift()
-      }
-    }
-
     // Eliminate from incoming set
     this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)
 
-    debug(`Submitted local mutations awaiting confirmation: ${this.submitted.map(m => m.transactionId).join(', ')}`)
 
     if (this.anyUnresolvedMutations()) {
-      debug(`Incoming mutation ${mut.transactionId} corresponded to local pending mutation`)
+      debug(`Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`)
+      debug(`Submitted txnIds: ${this.submitted.map(m => m.transactionId).join(', ')}`)
+      debug(`Pending txnIds: ${this.pending.map(m => m.transactionId).join(', ')}`)
       const needRebase = this.consumeUnresolved(mut.transactionId)
       debug(`needRebase == ${needRebase}`)
       return needRebase
     }
-    debug(`Remote mutation ${mut.transactionId} did not correspond to local pending mutation`)
+    debug(`Remote mutation ${mut.transactionId} arrived w/o any pending or submitted local mutations`)
     this.EDGE = this.HEAD
     if (this.onMutation) {
       this.onMutation({
