@@ -57,23 +57,6 @@ export default createSchema({
       },
       fields: [
         {
-          name: 'selectMultipleStrings',
-          title: 'Select multiple strings',
-          type: 'array',
-          options: {
-            direction: 'vertical',
-            list: [
-              {title: 'Red', value: 'red'},
-              {title: 'Green', value: 'green'},
-              {title: 'Blue', value: 'blue'},
-              {title: 'Black', value: 'black'},
-            ]
-          },
-          of: [{
-            type: 'string'
-          }]
-        },
-        {
           name: 'title',
           title: 'Title',
           type: 'string',
@@ -95,15 +78,6 @@ export default createSchema({
           }
         },
         {
-          name: 'rating',
-          title: 'Rating',
-          type: 'number',
-          options: {
-            range: {min: 0, max: 10, step: 0.2}
-          },
-          required: true
-        },
-        {
           name: 'mainImage',
           title: 'Main image',
           type: 'image',
@@ -117,6 +91,32 @@ export default createSchema({
               title: 'Caption'
             }
           ]
+        },
+        {
+          name: 'rating',
+          title: 'Rating',
+          type: 'number',
+          options: {
+            range: {min: 0, max: 10, step: 0.2}
+          },
+          required: true
+        },
+        {
+          name: 'selectMultipleStrings',
+          title: 'Select multiple strings',
+          type: 'array',
+          options: {
+            direction: 'vertical',
+            list: [
+              {title: 'Red', value: 'red'},
+              {title: 'Green', value: 'green'},
+              {title: 'Blue', value: 'blue'},
+              {title: 'Black', value: 'black'},
+            ]
+          },
+          of: [{
+            type: 'string'
+          }]
         },
         {
           name: 'pngImage',
