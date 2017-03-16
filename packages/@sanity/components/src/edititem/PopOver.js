@@ -185,16 +185,15 @@ export default class EditItemPopOver extends React.Component {
   }
 
   handleElementResize = el => {
-    if (!this.state.isFocused || this._isMoving) {
-      return
-    }
     const scrollHeight = el.scrollHeight
     if (this._modalContentScrollHeight) {
       if (this._modalContentScrollHeight !== scrollHeight) {
         const diff = scrollHeight - this._modalContentScrollHeight
         const newHeight = this._portalModalElement.offsetHeight + diff
         this._portalModalElement.style.height = `${newHeight}px`
-        this.moveIntoPosition()
+        if (this.state.isFocused && !this._isMoving) { // eslint-disable-line max-depth
+          this.moveIntoPosition()
+        }
         this._modalContentScrollHeight = scrollHeight
       }
     } else {
@@ -385,7 +384,6 @@ export default class EditItemPopOver extends React.Component {
             <div className={styles.content} ref={this.setContentElement} onScroll={this.handleContentScroll}>
               {children}
             </div>
-
             {
               actions.length > 0 && <div className={styles.functions}>
                 {
