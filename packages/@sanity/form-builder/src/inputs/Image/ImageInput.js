@@ -70,7 +70,7 @@ export default class ImageInput extends React.PureComponent {
     const shouldUpdate = currentRef !== nextRef && currentRef.refId !== nextRef.refId
 
     if (shouldUpdate) {
-      this.setState(omit(getInitialState(), 'materializedImage'))
+      this.setState(omit(getInitialState(), 'materializedImage', 'uploadingImage'))
       this.cancelUpload()
       this.syncImageRef(nextRef)
     }
@@ -89,6 +89,9 @@ export default class ImageInput extends React.PureComponent {
   syncImageRef(ref) {
     if (ref.isEmpty()) {
       this.setState({materializedImage: null})
+      return
+    }
+    if (this.state.materializedImage && this.state.materializedImage._id === ref.refId) {
       return
     }
     const {materializeReferenceFn} = this.props
