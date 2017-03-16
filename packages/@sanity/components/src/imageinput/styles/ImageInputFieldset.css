@@ -112,6 +112,13 @@
   height: 100%;
 }
 
+.imagePreviewError {
+  display: inline-block;
+  margin-top: 3%;
+  width: 100%;
+  text-align: center
+}
+
 .imageIsUploaded {
   composes: image;
 }
