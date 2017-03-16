@@ -52,7 +52,34 @@ test('simple edit cycle', tap => {
   .end()
 })
 
-test('simple edit cycle with remote edits', tap => {
+test('simple remote edit', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    numbers: [0]
+  }))
+  .hasNoLocalEdits()
+
+  .stage('when remote patch appear')
+  .remotePatch('1', '2', {
+    id: 'a',
+    insert: {
+      before: 'numbers[0]',
+      items: [-1]
+    }
+  })
+  .onMutationFired()
+  .didNotRebase()
+  .hasNoLocalEdits()
+  .assertLOCAL('numbers', [-1, 0])
+  .assertEDGE('numbers', [-1, 0])
+  .isConsistent()
+
+  .end()
+})
+
+
+test('simple edit cycle with remote edits causing rebase', tap => {
   (new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',

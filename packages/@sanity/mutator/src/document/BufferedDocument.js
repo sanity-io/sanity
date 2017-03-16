@@ -191,6 +191,7 @@ export default class BufferedDocument {
       if (this.onMutation) {
         this.onMutation(msg)
       }
+      return
     } else {
       debug('Document mutated from remote with local changes')
     }
