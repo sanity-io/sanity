@@ -195,10 +195,15 @@ export default class Document {
     // Eliminate from incoming set
     this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)
 
+    debug(`Submitted local mutations awaiting confirmation: ${this.submitted.map(m => m.transactionId).join(', ')}`)
+
     if (this.anyUnresolvedMutations()) {
+      debug(`Incoming mutation ${mut.transactionId} corresponded to local pending mutation`)
       const needRebase = this.consumeUnresolved(mut.transactionId)
+      debug(`needRebase == ${needRebase}`)
       return needRebase
     }
+    debug(`Remote mutation ${mut.transactionId} did not correspond to local pending mutation`)
     this.EDGE = this.HEAD
     if (this.onMutation) {
       this.onMutation({

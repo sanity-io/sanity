@@ -2,6 +2,7 @@
 
 import {Patcher} from '../patch'
 import luid from './luid'
+import debug from './debug'
 
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
@@ -95,10 +96,13 @@ export default class Mutation {
     }
   }
   apply(document : Object) : Object {
+    debug(`Applying mutation ${JSON.stringify(this.mutations)} to document ${JSON.stringify(document)}`)
     if (!this.compiled) {
       this.compile()
     }
-    return this.compiled(document)
+    const result = this.compiled(document)
+    debug(`  => ${JSON.stringify(result)}`)
+    return result
   }
   static applyAll(document : Object, mutations : Array<Mutation>) : Object {
     return mutations.reduce((doc, mutation) => mutation.apply(doc), document)

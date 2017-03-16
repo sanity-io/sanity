@@ -4,6 +4,8 @@
 
 import {BufferedDocument, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
+import debugLogger from 'debug'
+const debug = debugLogger('buffered-document-tester')
 
 export default class BufferedDocumentTester {
   doc : BufferedDocument
@@ -37,6 +39,7 @@ export default class BufferedDocumentTester {
     this.doc.reset(doc)
   }
   stage(title) {
+    debug(`Stage: ${title}`)
     this.context = title
     return this
   }

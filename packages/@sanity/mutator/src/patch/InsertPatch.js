@@ -33,7 +33,6 @@ export default class InsertPatch {
         // TODO: Properly implement ranges in compliance with Gradient
         // This will only properly support single contiguous ranges
         const indicies = targetsToIndicies(targets, accessor)
-        console.log(result)
         result = result.unsetIndices(indicies)
         result = result.insertItemsAt(indicies[0], this.items)
         break

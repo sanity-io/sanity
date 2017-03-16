@@ -48,7 +48,6 @@ export default class PlainProbe {
   }
   getAttribute(key : string) : any {
     if (this.containerType() != 'object') {
-      console.log(this._value)
       throw new Error('getAttribute only applies to plain objects')
     }
     if (!this.hasAttribute(key)) {

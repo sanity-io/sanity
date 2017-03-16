@@ -34,7 +34,7 @@ export default class Patcher {
     this.patches.forEach(patch => {
       if (patch.id != id) {
         // Ignore patches that are not targetted at this document
-        console.log("Ignored patch because id did not match document id", patch.id, id)
+        // console.log("Ignored patch because id did not match document id", patch.id, id)
         return
       }
       const matcher = Matcher.fromPath(patch.path).setPayload(patch)

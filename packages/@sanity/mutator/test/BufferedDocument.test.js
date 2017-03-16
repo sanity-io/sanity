@@ -150,3 +150,30 @@ test('document being deleted by remote', tap => {
 
   .end()
 })
+
+
+
+test('document being deleted by local', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
+
+  .stage('when local deletes document')
+  .localMutation('1', '2', {
+    delete: {id: 'a'}
+  })
+  .onMutationFired()
+  .onDeleteDidFire()
+  .hasLocalEdits()
+  .stage('when local commits delete')
+  .commit()
+  .onMutationDidNotFire()
+  .stage('when local delete commits succeed')
+  .commitSucceeds()
+  .onMutationDidNotFire()
+  .assertALLDeleted()
+  .end()
+})
