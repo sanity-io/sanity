@@ -20,6 +20,5 @@ export const uploadFile = fileAsset => uploadAsset('file', fileAsset)
 
 export function materializeReference(id) {
   return client.observable
-    .fetch('*[_id == $id] {_id, _type, url}', {id: id})
-    .map(results => results[0])
+    .getDocument(id)
 }
