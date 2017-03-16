@@ -56,7 +56,6 @@ export default class EditItemPopOver extends React.Component {
   _translateYHistory = []
   _initialBodyStyleOverflow = null
   _portalOffsetHeight = null
-  _isMoving = false
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
   state = {
@@ -186,24 +185,20 @@ export default class EditItemPopOver extends React.Component {
 
   handleElementResize = el => {
     const scrollHeight = el.scrollHeight
-    if (this._modalContentScrollHeight) {
-      if (this._modalContentScrollHeight !== scrollHeight) {
-        const diff = scrollHeight - this._modalContentScrollHeight
-        const newHeight = this._portalModalElement.offsetHeight + diff
-        this._portalModalElement.style.height = `${newHeight}px`
-        if (this.state.isFocused && !this._isMoving) { // eslint-disable-line max-depth
-          this.moveIntoPosition()
-        }
-        this._modalContentScrollHeight = scrollHeight
+    if (this._modalContentScrollHeight !== scrollHeight) {
+      const diff = scrollHeight - this._modalContentScrollHeight
+      const newHeight = this._portalModalElement.offsetHeight + diff
+      this._portalModalElement.style.height = `${newHeight}px`
+      if (this.state.isFocused) { // eslint-disable-line max-depth
+        this.moveIntoPosition()
       }
-    } else {
       this._modalContentScrollHeight = scrollHeight
     }
   }
 
   moveIntoPosition(shouldMoveOtherModals) {
 
-    this._isMoving = true
+    this._contentElement.removeEventListener('scroll', this.handleContentScroll)
 
     const {top, left} = this._rootElement.getBoundingClientRect()
 
@@ -270,17 +265,27 @@ export default class EditItemPopOver extends React.Component {
 
       // Model content is too large to display on screen
       if (modalRects.height >= (scrollContainerRects.height - padding)) {
+
+        // Set this modal to max possible height
         const contextVisibilityHeight = 50 // How much of the orginating content will be visible in the top
         const newHeight = scrollContainer.offsetHeight - contextVisibilityHeight
         this._portalModalElement.style.height = `${newHeight}px`
-        // Add class to get scrollbars
+
+        // Add class to get scrollbars on the content
         this._contentElement.className = styles.contentWithScroll
-        this._contentElement.scrollTop = this._contentScrollTop
+
+        // Set back scroll position of modal content if something is resizing
+        // it and triggering this.handleElementResize
+        if (this._contentScrollTop) { // eslint-disable-line max-depth
+          this._contentElement.scrollTop = this._contentScrollTop
+        }
+
       } else {
         // Model content will fit on screen in whole
         this._portalModalElement.style.height = `${modalRects.height}px`
       }
 
+      // The new scollposition of the scollcontainer
       newScrollTop = scrollContainer.scrollTop
         + (modalBottom() - scrollContainerRects.bottom)
         + padding
@@ -297,14 +302,13 @@ export default class EditItemPopOver extends React.Component {
 
         // Do the scroll
         scroll.top(scrollContainer, newScrollTop, scrollOptions, () => {
-          this._isMoving = false
+          this._contentElement.addEventListener('scroll', this.handleContentScroll)
         })
       }
 
     } else {
       // No need to add extra space and scroll
       this._portalModalElement.style.height = 'auto'
-      this._isMoving = false
     }
 
     // Move other modals accordingly (on open)
@@ -381,7 +385,7 @@ export default class EditItemPopOver extends React.Component {
               </h3>
             </div>
 
-            <div className={styles.content} ref={this.setContentElement} onScroll={this.handleContentScroll}>
+            <div className={styles.content} ref={this.setContentElement}>
               {children}
             </div>
             {
