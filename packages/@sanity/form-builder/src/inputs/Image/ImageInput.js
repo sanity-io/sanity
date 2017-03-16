@@ -26,6 +26,17 @@ const ASPECT_RATIOS = [
   ['Panorama', 4]
 ]
 
+function getInitialState() {
+  return {
+    status: 'ready',
+    error: null,
+    progress: null,
+    uploadingImage: null,
+    materializedImage: null,
+    isAdvancedEditOpen: false
+  }
+}
+
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
     type: PropTypes.shape({
@@ -42,36 +53,26 @@ export default class ImageInput extends React.PureComponent {
   }
   static valueContainer = ObjectValueContainer
 
-  state = {
-    status: 'ready',
-    error: null,
-    progress: null,
-    uploadingImage: null,
-    materializedImage: null,
-    isAdvancedEditOpen: false
-  }
+  state = getInitialState()
 
   subscriptions = subscriptionManager('upload', 'materialize')
 
   componentDidMount() {
     const {value} = this.props
     const imageReference = value.getAttribute('asset')
-    this.materializeImageRef(imageReference)
+    this.syncImageRef(imageReference)
   }
 
   componentWillReceiveProps(nextProps) {
     const currentRef = this.props.value.getAttribute('asset')
     const nextRef = nextProps.value.getAttribute('asset')
-    const {materializedImage} = this.state
 
-    const shouldUpdate = currentRef !== nextRef
-      && currentRef.refId !== nextRef.refId
-      && materializedImage
-      && nextRef.refId !== materializedImage._id
+    const shouldUpdate = currentRef !== nextRef && currentRef.refId !== nextRef.refId
 
     if (shouldUpdate) {
+      this.setState(omit(getInitialState(), 'materializedImage'))
       this.cancelUpload()
-      this.materializeImageRef(nextRef)
+      this.syncImageRef(nextRef)
     }
   }
 
@@ -85,7 +86,7 @@ export default class ImageInput extends React.PureComponent {
     }))
   }
 
-  materializeImageRef(ref) {
+  syncImageRef(ref) {
     if (ref.isEmpty()) {
       this.setState({materializedImage: null})
       return
