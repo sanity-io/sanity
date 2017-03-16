@@ -8,6 +8,8 @@ import React, {PropTypes} from 'react'
 
 import {createFormBuilder, defaultConfig} from '../index'
 
+export {default as WithFormBuilderValue} from './WithFormBuilderValue'
+
 const FormBuilder = createFormBuilder({
   schema: schema,
   resolveInputComponent: inputResolver,
