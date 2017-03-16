@@ -94,6 +94,9 @@ export default class BufferedDocument {
   // Call when a mutation arrives from Sanity
   arrive(mutation : Mutation) {
     debug('Remote mutation arrived %s -> %s', mutation.previousRev, mutation.resultRev)
+    if (mutation.previousRev == mutation.resultRev) {
+      throw new Error(`Mutation ${mutation.transactionId} has previousRev == resultRev (${mutation.previousRev})`)
+    }
     return this.document.arrive(mutation)
   }
 
