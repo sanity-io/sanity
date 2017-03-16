@@ -175,12 +175,13 @@ export default class ImageInput extends React.PureComponent {
     event.preventDefault()
     const {onChange} = this.props
     onChange({patch: {type: 'unset'}})
+    this.setState({status: 'ready'})
   }
 
   handleCancel = () => {
     this.cancelUpload()
     this.setState({
-      status: 'cancelled',
+      status: 'ready',
       error: null,
       progress: null,
       uploadingImage: null
@@ -204,10 +205,6 @@ export default class ImageInput extends React.PureComponent {
 
   handleFieldEnter = (event, fieldName) => {
     this.props.onEnter(fieldName)
-  }
-
-  handleEditBtnClick = event => {
-    this.setState({isAdvancedEditOpen: true})
   }
 
   handleEditDialogClose = event => {
