@@ -25,8 +25,11 @@ export default class SanityFormBuilder extends React.PureComponent {
   }
   handleChange = event => {
     const {onChange} = this.props
-    const patches = arrify(event.patch).map(toGradientPatch)
-    onChange({patches: patches})
+    const arrified = arrify(event.patch)
+    onChange({
+      patches: arrified.map(toGradientPatch),
+      _formBuilderPatches: arrified
+    })
   }
   render() {
     return <FormBuilder {...this.props} onChange={this.handleChange} />
