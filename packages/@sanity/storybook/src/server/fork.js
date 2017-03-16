@@ -31,11 +31,11 @@ module.exports = config => {
     output.print(chalk.red(`Storybook: ${data}`))
   })
 
-  if (debug) {
-    proc.stdout.on('data', data => {
+  proc.stdout.on('data', data => {
+    if (debug || data.toString().indexOf('ERROR in') !== -1) {
       output.print(chalk.cyan(`Storybook: ${data}`))
-    })
-  }
+    }
+  })
 
   proc.send({event: 'start', config})
 }
