@@ -19,6 +19,8 @@ const DEFAULT_HOTSPOT = {
   y: 0.5
 }
 
+const ERROR_STYLE = {display: 'inline-block', height: '100%', width: '100%', textAlign: 'center'}
+
 export default class ImageInputFieldset extends React.PureComponent {
   static propTypes = {
     status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
@@ -93,6 +95,9 @@ export default class ImageInputFieldset extends React.PureComponent {
                   hotspotImage && (
                     <ImageLoader src={hotspotImage.imageUrl}>
                       {({image, error}) => {
+                        if (error) {
+                          return <div style={ERROR_STYLE}>Image preview unavailable</div>
+                        }
                         return (
                           <HotspotImage
                             aspectRatio="auto"
