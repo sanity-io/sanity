@@ -164,7 +164,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
   }
 
   handleIncomingMutationEvent(event) {
-    const {mutations, origin} = event
+    const {mutations} = event
     const operations = []
     mutations.forEach(mutation => {
       if (mutation.create) {
@@ -175,10 +175,7 @@ export default withRouterHOC(class EditorPane extends React.PureComponent {
           return this.deserialize(mutation.create)
         })
       } else if (mutation.delete) {
-        // Handle deletions after the fact
-        if (origin !== 'local') {
-          operations.push(() => null)
-        }
+        operations.push(() => null)
       } else if (mutation.patch) {
         operations.push(previous => new Patcher(mutation.patch).applyViaAccessor(previous))
       } else {
