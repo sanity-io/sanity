@@ -159,7 +159,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             focus={focus}
           />
           {
-            onClear && (
+            onClear && inputValue && (
               <button className={styles.clearButton} onClick={onClear}>
                 <CloseIcon color="inherit" />
               </button>
