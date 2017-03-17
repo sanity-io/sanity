@@ -37,6 +37,9 @@ function Document(props) {
 
   const scripts = props.scripts.map(item => assetUrl(props.staticPath, item))
   const scriptLoader = generateScriptLoader(scripts)
+  const clientHints = props.clientHints.length > 0
+    ? <meta httpEquiv="Accept-CH" content={props.clientHints.join(',')} />
+    : null
 
   const favicons = props.favicons.map((item, index) =>
     <link
@@ -50,10 +53,11 @@ function Document(props) {
       <head>
         <meta charSet={props.charset} />
         <title>{props.title}</title>
+        <meta name="viewport" content={props.viewport} />
+        {clientHints}
         {stylesheets}
         {subresources}
         {favicons}
-        <meta name="viewport" content={props.viewport} />
       </head>
       <body>
         <div id="sanity">
@@ -80,8 +84,9 @@ Document.defaultProps = {
   loading: 'Restoring Sanity…',
   staticPath: '/static',
   favicons: [{path: 'favicon.ico'}],
+  clientHints: ['DPR'],
   stylesheets: [],
-  scripts: []
+  scripts: [],
 }
 
 Document.propTypes = {
@@ -92,7 +97,8 @@ Document.propTypes = {
   staticPath: PropTypes.string,
   favicons: PropTypes.arrayOf(asset),
   stylesheets: PropTypes.arrayOf(asset),
-  scripts: PropTypes.arrayOf(asset)
+  scripts: PropTypes.arrayOf(asset),
+  clientHints: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default Document
