@@ -2,7 +2,7 @@ import Observable from '@sanity/observable'
 import createActions from '../utils/createActions'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-
+import client from 'part:@sanity/base/client'
 const userChannel = pubsub()
 
 let _currentUser = null
@@ -45,11 +45,19 @@ const currentUser = new Observable(observer => {
   }
 })
 
+const getUser = id => client.request({
+  uri: `/users/${id}`,
+  withCredentials: true
+}).then(user => {
+  return user && user.id ? user : null
+})
+
 export default function createUserStore(options = {}) {
   return {
     actions: createActions({
       logout
     }),
-    currentUser
+    currentUser,
+    getUser
   }
 }
