@@ -185,7 +185,7 @@ export default class EditItemPopOver extends React.Component {
 
   handleElementResize = el => {
     const scrollHeight = el.scrollHeight
-    if (this._modalContentScrollHeight !== scrollHeight) {
+    if (this._modalContentScrollHeight && this._modalContentScrollHeight !== scrollHeight) {
       const diff = scrollHeight - this._modalContentScrollHeight
       const newHeight = this._portalModalElement.offsetHeight + diff
       this._portalModalElement.style.height = `${newHeight}px`
@@ -236,14 +236,14 @@ export default class EditItemPopOver extends React.Component {
     }
 
     const modalBottom = () => this._portalModalElement.offsetTop + this._portalModalElement.offsetHeight
-    const containerBottom = () => scrollContainer.offsetTop + scrollContainer.offsetHeight
+
+    let scrollContainerRects = scrollContainer.getBoundingClientRect()
 
     // If there isn't vertical room in the scrollcontainer to show the dialog,
     // add extra padding and scroll it into view
-    if (modalBottom() + padding > containerBottom()) {
+    if (modalBottom() + padding > scrollContainerRects.bottom) {
 
       // Add padding
-      let scrollContainerRects = scrollContainer.getBoundingClientRect()
 
       // First check if we need to pad down to the bottom of the scroll container
       // (content is not filling up the scroll container as we add padding from the bottom)
@@ -263,11 +263,11 @@ export default class EditItemPopOver extends React.Component {
       // Compute new rect after padding is applied
       scrollContainerRects = scrollContainer.getBoundingClientRect()
 
-      // Model content is too large to display on screen
-      if (modalRects.height >= (scrollContainerRects.height - padding)) {
+      const contextVisibilityHeight = 50 // How much of the orginating content will be visible in the top
 
+      // Model content is too large to display on screen
+      if (modalRects.height >= (scrollContainerRects.height - contextVisibilityHeight - padding)) {
         // Set this modal to max possible height
-        const contextVisibilityHeight = 50 // How much of the orginating content will be visible in the top
         const newHeight = scrollContainer.offsetHeight - contextVisibilityHeight
         this._portalModalElement.style.height = `${newHeight}px`
 
@@ -291,9 +291,7 @@ export default class EditItemPopOver extends React.Component {
         + padding
 
       // If we already have translated, add that to the new scrolltop
-      if (currentModalTranslateY) {
-        newScrollTop += currentModalTranslateY
-      }
+      newScrollTop += currentModalTranslateY
 
       if (newScrollTop > this._initialScrollTop) { // never scroll above the initial scrolltop
         // Set the new translate
@@ -309,6 +307,15 @@ export default class EditItemPopOver extends React.Component {
     } else {
       // No need to add extra space and scroll
       this._portalModalElement.style.height = 'auto'
+
+      // Set the new translate
+      modalTranslateY = scrollTop - this._initialScrollTop + currentModalTranslateY
+      this._portalModalElement.style.transform = `translateY(${modalTranslateY}px)`
+
+      // Do the scroll
+      scroll.top(scrollContainer, this._initialScrollTop, scrollOptions, () => {
+        this._contentElement.addEventListener('scroll', this.handleContentScroll)
+      })
     }
 
     // Move other modals accordingly (on open)
