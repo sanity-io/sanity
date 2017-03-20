@@ -42,11 +42,11 @@ const serverConnection = {
   },
 
   mutate(mutations) {
-    return Observable.from(client.observable.dataRequest('mutate', mutations, {returnDocuments: false}))
+    return Observable.from(client.observable.dataRequest('mutate', mutations, {visibility: 'async', returnDocuments: false}))
   },
 
   delete(id) {
-    return Observable.from(client.observable.delete(id, {returnDocuments: false}))
+    return Observable.from(client.observable.delete(id, {visibility: 'async', returnDocuments: false}))
   },
 
   create(doc) {
