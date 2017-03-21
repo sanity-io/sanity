@@ -1,16 +1,27 @@
 import React, {PropTypes} from 'react'
+import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import styles from './MediaRender.css'
 
 export default class MediaRender extends React.Component {
   static propTypes = {
     aspect: PropTypes.number,
     fallbackText: PropTypes.string,
+    size: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     item: PropTypes.shape({
       media: PropTypes.node,
       imageUrl: PropTypes.string,
       sanityImage: PropTypes.object,
       aspect: PropTypes.number
     })
+  }
+
+  static defaultProps = {
+    size: {width: 100},
+    fallbackText: 'Nothing here…',
   }
 
   constructor(...args) {
@@ -28,8 +39,12 @@ export default class MediaRender extends React.Component {
     const {imageUrl, aspect} = this.props.item
 
     if (imageUrl && !aspect) {
-      this.renderImage(imageUrl)
+      this.renderImage(this.getAssetUrl(imageUrl))
     }
+  }
+
+  getAssetUrl() {
+    return assetUrlBuilder({...this.props.size, url: this.props.item.imageUrl})
   }
 
   renderImage = url => {
@@ -40,10 +55,6 @@ export default class MediaRender extends React.Component {
         aspect: image.width / image.height
       })
     }
-  }
-
-  static defaultProps = {
-    fallbackText: 'Nothing here…',
   }
 
   render() {
@@ -57,7 +68,7 @@ export default class MediaRender extends React.Component {
       return (
         <div className={styles.root}>
           <img
-            src={imageUrl}
+            src={this.getAssetUrl(imageUrl)}
             className={imageAspect > containerAspect ? styles.landscape : styles.portrait}
           />
         </div>
@@ -67,6 +78,7 @@ export default class MediaRender extends React.Component {
     } else if (media) {
       return <div className={styles.media}>{media}</div>
     }
+
     return (
       <div className={styles.root}>
         <div className={styles.noMedia}>

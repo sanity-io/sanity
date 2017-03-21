@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react'
-import styles from 'part:@sanity/components/previews/card-style'
 import Moment from 'moment'
 import {debounce, truncate} from 'lodash'
+import styles from 'part:@sanity/components/previews/card-style'
+import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
 
 let index = 0
@@ -18,6 +19,11 @@ export default class CardPreview extends React.Component {
       sanityImage: PropTypes.object,
       aspect: PropTypes.number
     }),
+    assetSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     aspect: PropTypes.number,
     emptyText: PropTypes.string,
     children: PropTypes.node,
@@ -25,6 +31,7 @@ export default class CardPreview extends React.Component {
   }
 
   static defaultProps = {
+    assetSize: {width: 400},
     emptyText: 'Untitled',
     aspect: 16 / 9
   }
@@ -92,6 +99,7 @@ export default class CardPreview extends React.Component {
     }
 
     const {imageUrl, sanityImage, media} = item
+    const assetUrl = assetUrlBuilder({...this.props.assetSize, url: imageUrl})
 
     return (
       <div className={`${styles.root}`}>
@@ -106,7 +114,7 @@ export default class CardPreview extends React.Component {
             }
             {
               imageUrl && (
-                <img src={imageUrl} className={imageAspect >= containerAspect ? styles.imgLandscape : styles.imgPortrait} />
+                <img src={assetUrl} className={imageAspect >= containerAspect ? styles.imgLandscape : styles.imgPortrait} />
               )
             }
             {

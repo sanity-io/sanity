@@ -15,6 +15,11 @@ export default class DefaultPreview extends React.Component {
       imageUrl: PropTypes.string,
       sanityImage: PropTypes.object
     }),
+    assetSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     emptyText: PropTypes.string,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node
@@ -22,15 +27,13 @@ export default class DefaultPreview extends React.Component {
 
   static defaultProps = {
     emptyText: 'Untitled',
-    mediaRender() {
-      return false
-    }
+    assetSize: {width: 40, height: 40}
   }
 
   index = index++
 
   render() {
-    const {item, emptyText, children, isPlaceholder} = this.props
+    const {item, assetSize, emptyText, children, isPlaceholder} = this.props
 
     if (!item || isPlaceholder) {
       const itemStyle = getPlaceholderItemStyles(this.index)
@@ -55,7 +58,7 @@ export default class DefaultPreview extends React.Component {
       >
         {
           (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
-            <MediaRender item={item} />
+            <MediaRender size={assetSize} item={item} />
           </div>
         }
         <div className={styles.heading}>

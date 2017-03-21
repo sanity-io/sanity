@@ -12,19 +12,22 @@ export default class BlockPreview extends React.Component {
       imageUrl: PropTypes.string,
       sanityImage: PropTypes.object
     }),
+    assetSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     emptyText: PropTypes.string,
     children: PropTypes.node
   }
 
   static defaultProps = {
     emptyText: 'Untitled',
-    mediaRender() {
-      return false
-    }
+    assetSize: {width: 140, height: 140},
   }
 
   render() {
-    const {item, emptyText, children} = this.props
+    const {item, emptyText, assetSize, children} = this.props
 
     if (!item) {
       return (
@@ -43,7 +46,7 @@ export default class BlockPreview extends React.Component {
       >
         {
           (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
-            <MediaRender item={item} />
+            <MediaRender size={assetSize} item={item} />
           </div>
         }
         <div className={styles.heading}>

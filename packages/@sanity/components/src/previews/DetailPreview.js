@@ -16,6 +16,11 @@ export default class DetailPreview extends React.Component {
       imageUrl: PropTypes.string,
       sanityImage: PropTypes.object
     }),
+    assetSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     emptyText: PropTypes.string,
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
@@ -23,15 +28,13 @@ export default class DetailPreview extends React.Component {
 
   static defaultProps = {
     emptyText: 'Untitled',
-    mediaRender() {
-      return false
-    }
+    assetSize: {width: 80, height: 80},
   }
 
   index = index++
 
   render() {
-    const {item, emptyText, children, isPlaceholder, isLoading} = this.props
+    const {item, emptyText, assetSize, children, isPlaceholder} = this.props
 
     if ((!item || isPlaceholder)) {
       const itemStyle = getPlaceholderItemStyles(this.index)
@@ -53,7 +56,7 @@ export default class DetailPreview extends React.Component {
     return (
       <div className={`${styles.root}`}>
         <div className={`${styles.media}`}>
-          <MediaRender item={item} fallbackText="No media" />
+          <MediaRender size={assetSize} item={item} fallbackText="No media" />
         </div>
         <div className={styles.content}>
           <div className={styles.heading}>

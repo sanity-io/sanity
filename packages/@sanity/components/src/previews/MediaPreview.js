@@ -13,6 +13,11 @@ export default class MediaPreview extends React.Component {
       imageUrl: PropTypes.string,
       sanityImage: PropTypes.object,
     }),
+    assetSize: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+    }),
     aspect: PropTypes.number,
     emptyText: PropTypes.string,
     children: PropTypes.node,
@@ -20,12 +25,13 @@ export default class MediaPreview extends React.Component {
   }
 
   static defaultProps = {
+    assetSize: {width: 120, height: 120},
     emptyText: 'Nothing here…',
     aspect: 1
   }
 
   render() {
-    const {item, emptyText, children, aspect, isPlaceholder, isLoading} = this.props
+    const {item, emptyText, assetSize, children, aspect, isPlaceholder} = this.props
 
     if (!item || isPlaceholder) {
       return (
@@ -41,7 +47,7 @@ export default class MediaPreview extends React.Component {
       <div className={styles.root} title={item.title || emptyText}>
         <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
         <div className={styles.mediaContainer}>
-          <MediaRender item={item} aspect={aspect} fallbackText={item.title || 'No media'} />
+          <MediaRender size={assetSize} item={item} aspect={aspect} fallbackText={item.title || 'No media'} />
         </div>
         <div className={`${styles.meta}`}>
           <div className={`${styles.metaInner}`}>
