@@ -27,7 +27,13 @@
     },
     {
       "name": "part:@sanity/base/preview-resolver",
-      "description": "A function that resolves a preview component for a given type"
+      "description": "Function that resolves a preview component for a given type"
+    },
+    {
+      "name": "part:@sanity/base/asset-url-builder-default",
+      "implements": "part:@sanity/base/asset-url-builder",
+      "description": "Function that generates or modifies asset URLs for display in various contexts",
+      "path": "assets/asset-url-builder.js"
     },
     {
       "name": "part:@sanity/base/component",
