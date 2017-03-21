@@ -19,12 +19,13 @@ function getViewport() {
   }
 }
 
+const MARGIN = 60
 function contains(rect, viewport) {
   return (
-    rect.top + rect.height >= 60
-    && rect.left + rect.width >= 60
-    && rect.bottom - 60 <= viewport.height
-    && rect.right - 60 <= viewport.width
+    rect.top + rect.height >= MARGIN
+    && rect.left + rect.width >= MARGIN
+    && rect.bottom - rect.height - MARGIN <= viewport.height
+    && rect.right - rect.width - MARGIN <= viewport.width
   )
 }
 
