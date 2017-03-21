@@ -2,7 +2,7 @@ const sanityUrlMatch = /^https?:\/\/cdn.sanity.\w+\/images\//
 
 export default function assetUrlBuilder(asset) {
   const {url, width, height, fit} = asset
-  if (!sanityUrlMatch.test(url)) {
+  if (!sanityUrlMatch.test(url) || url.indexOf('?') !== -1) {
     return url
   }
 
