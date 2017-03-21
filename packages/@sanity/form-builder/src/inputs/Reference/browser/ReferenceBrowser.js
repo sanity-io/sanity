@@ -75,14 +75,21 @@ export default class ReferenceBrowser extends React.Component {
       case 'set': {
         const {dialogSelectedItem} = this.state
         if (dialogSelectedItem) {
-          const patch = {
-            type: 'set',
+          const setIfMissingPatch = {
+            type: 'setIfMissing',
             value: {
               _type: 'reference',
               _ref: dialogSelectedItem._id
             }
           }
-          onChange({patch: patch})
+          const setPatch = {
+            type: 'set',
+            path: ['_ref'],
+            value: dialogSelectedItem._id
+          }
+          onChange({
+            patch: [setIfMissingPatch, setPatch]
+          })
         }
         this.setState({dialogSelectedItem: null, showDialog: false})
         break

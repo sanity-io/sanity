@@ -71,14 +71,21 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleChange = item => {
-    const patch = {
-      type: 'set',
+    const setIfMissingPatch = {
+      type: 'setIfMissing',
       value: {
         _type: 'reference',
         _ref: item._id
       }
     }
-    this.props.onChange({patch: patch})
+    const setPatch = {
+      type: 'set',
+      path: ['_ref'],
+      value: item._id
+    }
+    this.props.onChange({
+      patch: [setIfMissingPatch, setPatch]
+    })
   }
 
   handleSearch = query => {

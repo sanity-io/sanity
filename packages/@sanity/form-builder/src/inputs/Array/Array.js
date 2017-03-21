@@ -16,7 +16,7 @@ import randomKey from './randomKey'
 import {get} from 'lodash'
 import humanizeList from 'humanize-list'
 
-function createProtoValue(schema, type) {
+function createProtoValue(type) {
   if (type.jsonType !== 'object') {
     throw new Error(`Invalid item type: "${type.type}". Default array input can only contain objects (for now)`)
   }
@@ -52,13 +52,13 @@ export default class Arr extends React.Component {
   }
 
   handleAddBtnClick = () => {
-    const {type, value} = this.props
+    const {type} = this.props
     if (type.of.length > 1) {
       this.setState({selectType: true})
       return
     }
 
-    const item = createProtoValue(value.context.schema, type.of[0])
+    const item = createProtoValue(type.of[0])
 
     this.append(item)
 
@@ -120,8 +120,7 @@ export default class Arr extends React.Component {
   }
 
   handleDropDownAction = menuItem => {
-    const {value} = this.props
-    const item = createProtoValue(value.context.schema, menuItem.type)
+    const item = createProtoValue(menuItem.type)
     this.setState({editItemKey: item._key})
     this.append(item)
   }
@@ -149,17 +148,15 @@ export default class Arr extends React.Component {
 
     const key = item.key || randomKey(12)
 
-    let setKeyPatch = []
-
-    if (!item.key) {
-      setKeyPatch = {
+    const setKeyPatch = item.key
+      ? []
+      : [{
         path: [value.indexOf(item), '_key'],
         type: 'set',
         value: key
-      }
-    }
+      }]
 
-    // Rewrite patch by prepending the item index to its path
+    // Rewrite patch by prepending the item key to its path
     const patches = []
       .concat(setKeyPatch)
       .concat(arrify(event.patch)
@@ -180,14 +177,20 @@ export default class Arr extends React.Component {
   }
 
   handleMove = event => {
-    const {value} = this.props
+    const {value, onChange} = this.props
     const item = value.at(event.oldIndex)
     const refItem = value.at(event.newIndex)
+
+    // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
+    if (!item.key || !refItem.key) {
+      console.error('Neither the item you are moving nor the item you are moving to have a key. Cannot continue.')
+      return
+    }
+
     if (event.oldIndex === event.newIndex || item.key === refItem.key) {
       return
     }
-    // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
-    this.props.onChange({
+    onChange({
       patch: [
         {
           type: 'unset',
