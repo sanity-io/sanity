@@ -34,14 +34,16 @@ export class FormBuilderInput extends React.Component {
       return <div>No input resolved for type {JSON.stringify(type.name)}</div>
     }
 
-    const passSerialized = value && value.constructor.passSerialized
+    const passValue = value && value.constructor.passSerialized ? value.serialize() : value
+    const document = InputComponent.passDocument ? this.context.formBuilder.getDocument() : null
 
     return (
       <InputComponent
         type={type}
         onChange={onChange}
         validation={validation}
-        value={passSerialized ? value.serialize() : value}
+        value={passValue}
+        document={document}
         isRoot
       />
     )

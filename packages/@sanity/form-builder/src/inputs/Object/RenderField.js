@@ -66,8 +66,7 @@ export default class RenderField extends React.Component {
     }
 
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
-
-    const docProps = FieldInput.passDocument ? {document: this.context.formBuilder.getDocument()} : {}
+    const document = FieldInput.passDocument ? this.context.formBuilder.getDocument() : null
 
     return (
       <FieldInput
@@ -78,7 +77,7 @@ export default class RenderField extends React.Component {
         onChange={this.handleChange}
         onEnter={this.handleEnter}
         focus={focus}
-        {...docProps}
+        document={document}
       />
     )
   }

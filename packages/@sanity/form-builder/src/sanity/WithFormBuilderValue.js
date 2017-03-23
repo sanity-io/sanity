@@ -6,13 +6,16 @@ import {throttle} from 'lodash'
 import {Patcher} from '@sanity/mutator'
 import subscriptionManager from '../utils/subscriptionManager'
 import schema from 'part:@sanity/base/schema'
+import toGradientPatch from './utils/toGradientPatch'
+import arrify from 'arrify'
 
 function getInitialState() {
   return {
     isLoading: true,
     isSaving: false,
     isDeleted: false,
-    value: null
+    value: null,
+    deletedSnapshot: null
   }
 }
 
@@ -145,13 +148,31 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }, 1000, {leading: true, trailing: true})
 
   handleChange = event => {
-    this.document.patch(event.patches)
+    this.document.patch(arrify(event.patch).map(toGradientPatch))
+    this.commit()
+  }
+
+  handleDelete = () => {
+    this.document.delete()
+    this.commit()
+  }
+
+  handleCreate = document => {
+    this.document.create(document)
     this.commit()
   }
 
   render() {
-    const type = schema.get(this.props.typeName)
-    const Component = this.props.children
-    return <Component {...this.state} type={type} onChange={this.handleChange} />
+    const {typeName, documentId, children: Component} = this.props
+    return (
+      <Component
+        {...this.state}
+        documentId={documentId}
+        type={schema.get(typeName)}
+        onChange={this.handleChange}
+        onDelete={this.handleDelete}
+        onCreate={this.handleCreate}
+      />
+    )
   }
 }
