@@ -17,8 +17,6 @@ class CustomSelect extends React.Component {
     onClose: PropTypes.func,
     value: PropTypes.object,
     error: PropTypes.bool,
-    placeholder: PropTypes.string,
-    loading: PropTypes.bool,
     renderItem: PropTypes.func,
     className: PropTypes.string,
     transparent: PropTypes.bool,
@@ -38,44 +36,17 @@ class CustomSelect extends React.Component {
     onClose() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      hasFocus: false,
-      inputValue: this.props.value && this.props.value.title,
-      inputSelected: false,
-      arrowNavigationPosition: 0
-    }
+  state = {
+    hasFocus: false,
+    inputSelected: false,
+    arrowNavigationPosition: 0
   }
 
   handleClickOutside = () => {
     this.handleCloseList()
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.items != this.props.items) {
-  //     this.setState({
-  //       searchResult: this.props.items,
-  //       showList: true
-  //     })
-  //   }
-  //   if (nextProps.value != this.props.value) {
-  //     this.setState({
-  //       inputValue: nextProps.value.title,
-  //       inputSelected: true,
-  //       value: nextProps.value.title,
-  //       showList: false
-  //     })
-  //   }
-  // }
-
   handleFocus = event => {
-    this.setState({
-      hasFocus: true,
-      inputSelected: true
-    })
-
     this.props.onFocus(event)
   }
 
@@ -118,7 +89,6 @@ class CustomSelect extends React.Component {
       if (event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition - 1,
-          inputValue: items[arrowNavigationPosition - 1].title,
           showList: true
         })
         return false
@@ -127,7 +97,6 @@ class CustomSelect extends React.Component {
       if (event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition + 1,
-          inputValue: items[arrowNavigationPosition + 1].title,
           showList: true
         })
         return false
@@ -157,7 +126,6 @@ class CustomSelect extends React.Component {
     const {label, error, value, description, items, className, transparent} = this.props
     const {hasFocus, showList, arrowNavigationPosition} = this.state
 
-
     return (
       <DefaultFormField
         className={`
@@ -173,23 +141,24 @@ class CustomSelect extends React.Component {
         <div className={styles.inner} onClick={this.handleInnerClick}>
           <div className={styles.selectContainer}>
             <span className={styles.text}>
-              {this.state.inputValue}
+              {this.props.renderItem(this.props.value)}
             </span>
             <div className={styles.icon}>
               <FaAngleDown color="inherit" />
             </div>
           </div>
         </div>
-
         <div className={`${showList ? styles.listContainer : styles.listContainerHidden}`}>
-          <DefaultList
-            items={items}
-            scrollable
-            highlightedItem={(items && items[arrowNavigationPosition]) || value}
-            selectedItem={value}
-            onSelect={this.handleSelect}
-            renderItem={this.props.renderItem}
-          />
+          {showList && (
+            <DefaultList
+              items={items}
+              scrollable
+              highlightedItem={(items && items[arrowNavigationPosition]) || value}
+              selectedItem={value}
+              onSelect={this.handleSelect}
+              renderItem={this.props.renderItem}
+            />
+          )}
         </div>
       </DefaultFormField>
     )
