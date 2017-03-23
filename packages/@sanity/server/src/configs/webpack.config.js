@@ -110,6 +110,7 @@ export default (config = {}) => {
     profile: config.profile || false,
     plugins: [
       new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'}),
+      new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|nb/),
       cssExtractor,
       new OccurrenceOrderPlugin(),
       new PartResolverPlugin(resolverOpts),
