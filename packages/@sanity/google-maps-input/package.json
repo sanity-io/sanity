@@ -25,7 +25,8 @@
     "@sanity/components": "^0.104.18",
     "@sanity/core": "^0.104.13",
     "@sanity/form-builder": "^0.104.18",
-    "lodash.keyby": "^4.6.0",
+    "babel-plugin-lodash": "^3.2.11",
+    "lodash": "^4.17.4",
     "rimraf": "^2.6.1"
   },
   "repository": {

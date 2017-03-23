@@ -18,7 +18,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.15.2",
     "moment-timezone": "^0.5.11",
-    "postcss-cssnext": "^2.9.0",
+    "postcss-cssnext": "^2.10.0",
     "postcss-simple-extend": "^1.0.0",
     "react-kronos": "^1.5.2"
   },

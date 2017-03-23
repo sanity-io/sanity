@@ -1,6 +1,5 @@
 import chalk from 'chalk'
-import padEnd from 'lodash/padEnd'
-import padStart from 'lodash/padStart'
+import {padStart, padEnd} from 'lodash'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 
 export default async (args, context) => {

@@ -1,6 +1,6 @@
 import path from 'path'
 import fsp from 'fs-promise'
-import partialRight from 'lodash/partialRight'
+import {partialRight} from 'lodash'
 import promiseProps from 'promise-props-recursive'
 import {
   createSanityManifest,

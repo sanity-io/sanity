@@ -1,6 +1,5 @@
 import path from 'path'
-import get from 'lodash/get'
-import merge from 'lodash/merge'
+import {get, merge} from 'lodash'
 import {loadJsonSync} from './safeJson'
 import reduceConfig from './reduceConfig'
 

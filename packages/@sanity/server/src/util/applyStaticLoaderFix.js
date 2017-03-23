@@ -1,6 +1,5 @@
 import path from 'path'
-import get from 'lodash/get'
-import merge from 'lodash/merge'
+import {get, merge} from 'lodash'
 
 const applyStaticLoaderFix = (wpConfig, sanityConfig) => {
   // We need to fix the public path, prefixing the server URL for assets such as

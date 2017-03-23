@@ -1,4 +1,4 @@
-import find from 'lodash/find'
+import {find} from 'lodash'
 
 export default (baseCommands, corePath) => {
   if (!corePath) {

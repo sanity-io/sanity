@@ -1,7 +1,5 @@
 import webpack from 'webpack'
-import find from 'lodash/find'
-import get from 'lodash/get'
-import set from 'lodash/set'
+import {find, get, set} from 'lodash'
 import registerBabel from 'babel-register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'

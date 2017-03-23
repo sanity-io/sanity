@@ -1,7 +1,7 @@
-const Observable = require('@sanity/observable')
-const createCache = require('./utils/createCache')
-const omit = require('lodash/omit')
-const {BufferedDocument, Mutation} = require('@sanity/mutator')
+import Observable from '@sanity/observable'
+import createCache from './utils/createCache'
+import {omit} from 'lodash'
+import {BufferedDocument, Mutation} from '@sanity/mutator'
 
 function TODO(msg = 'TODO') {
   return function todo() {

@@ -1,7 +1,7 @@
 import {on, off} from 'dom-event'
 import React, {PropTypes} from 'react'
 import Debug from 'debug'
-import omit from 'lodash.omit'
+import {omit} from 'lodash'
 
 const debug = Debug('sanity-imagetool')
 

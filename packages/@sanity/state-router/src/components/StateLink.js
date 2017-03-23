@@ -1,6 +1,6 @@
 // @flow
 import React, {PropTypes} from 'react'
-import omit from 'lodash/omit'
+import {omit} from 'lodash'
 import Link from './Link'
 import type {RouterProviderContext} from './types'
 

@@ -1,6 +1,6 @@
 import {resolveParts} from '@sanity/resolver'
 import resolveNodeModule from 'resolve'
-import assign from 'lodash/assign'
+import {assign} from 'lodash'
 
 function resolveStyleImport(moduleId, opts) {
   const id = moduleId.replace(/^\.\/(part|all:)/, '$1')

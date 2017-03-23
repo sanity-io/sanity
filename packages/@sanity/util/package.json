@@ -26,12 +26,13 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "babel-plugin-lodash": "^3.2.11",
     "babel-preset-es2015-node4": "^2.1.1",
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.0",
-    "eslint-config-sanity": "^2.0.2",
+    "eslint": "^3.18.0",
+    "eslint-config-sanity": "^2.1.0",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1"
   }

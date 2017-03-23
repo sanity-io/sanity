@@ -1,4 +1,4 @@
-import noop from 'lodash/noop'
+import {noop} from 'lodash'
 import prettyMs from 'pretty-ms'
 import batchStreamOperation from 'batch-stream-operation'
 import debug from '../../../debug'

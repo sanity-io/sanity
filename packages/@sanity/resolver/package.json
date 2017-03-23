@@ -24,10 +24,10 @@
   },
   "homepage": "https://github.com/sanity-io/resolver#readme",
   "devDependencies": {
+    "babel-plugin-lodash": "^3.2.11",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.0",
-    "lodash": "^4.17.4",
+    "eslint": "^3.18.0",
     "mocha": "^3.2.0",
     "mock-fs": "^3.11.0",
     "nyc": "^10.1.2",
@@ -37,7 +37,7 @@
   "dependencies": {
     "@sanity/generate-help-url": "^0.103.13",
     "@sanity/util": "^0.103.13",
-    "lodash.uniq": "^4.5.0",
+    "lodash": "^4.17.4",
     "mz": "^2.4.0",
     "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"

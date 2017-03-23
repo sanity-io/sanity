@@ -1,6 +1,6 @@
 import path from 'path'
 import fsp from 'fs-promise'
-import padStart from 'lodash/padStart'
+import {padStart} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 import {getFormatters} from '../versions/printVersionResult'

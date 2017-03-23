@@ -1,6 +1,6 @@
 import fsp from 'fs-promise'
 import path from 'path'
-import without from 'lodash/without'
+import {without} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {hasSameChecksum, localConfigExists} from '../../util/pluginChecksumManifest'

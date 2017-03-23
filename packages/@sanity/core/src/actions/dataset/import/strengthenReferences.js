@@ -1,4 +1,4 @@
-import noop from 'lodash/noop'
+import {noop} from 'lodash'
 import promiseEach from 'promise-each-concurrency'
 import trimQuery from '../../../util/trimQuery'
 import debug from '../../../debug'

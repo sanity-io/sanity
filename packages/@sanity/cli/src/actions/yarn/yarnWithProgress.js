@@ -5,9 +5,7 @@ import execa from 'execa'
 import split2 from 'split2'
 import chalk from 'chalk'
 import progrescii from 'progrescii'
-import noop from 'lodash/noop'
-import padEnd from 'lodash/padEnd'
-import throttle from 'lodash/throttle'
+import {noop, padEnd, throttle} from 'lodash'
 
 // Use require.resolve to ensure it actually exists
 const binDir = path.join(__dirname, '..', '..', '..', 'vendor')

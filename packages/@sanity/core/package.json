@@ -42,6 +42,7 @@
     "uglify-js": "^2.8.15"
   },
   "devDependencies": {
+    "babel-plugin-lodash": "^3.2.11",
     "babel-preset-es2015-node4": "^2.1.1",
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",

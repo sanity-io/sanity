@@ -1,5 +1,5 @@
 import path from 'path'
-import values from 'lodash/values'
+import {values} from 'lodash'
 import promiseProps from 'promise-props-recursive'
 import getPackageJson from 'package-json'
 import semverCompare from 'semver-compare'
