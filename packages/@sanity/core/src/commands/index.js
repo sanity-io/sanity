@@ -10,6 +10,7 @@ import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
 import documentsGroup from './documents/documentsGroup'
 import getDocumentsCommand from './documents/getDocumentsCommand'
+import queryDocumentsCommand from './documents/queryDocumentsCommand'
 import installCommand from './install/installCommand'
 import startCommand from './start/startCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
@@ -27,6 +28,7 @@ export default [
   deleteDatasetCommand,
   documentsGroup,
   getDocumentsCommand,
+  queryDocumentsCommand,
   installCommand,
   startCommand,
   uninstallCommand
