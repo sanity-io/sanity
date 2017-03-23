@@ -38,7 +38,6 @@ export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
     type: PropTypes.object.isRequired,
     value: PropTypes.any.isRequired,
-    layout: PropTypes.string.isRequired,
     children: PropTypes.func
   };
 
@@ -103,7 +102,7 @@ export default class PreviewSubscriber extends React.PureComponent {
 
   render() {
     const {result, isLive, error} = this.state
-    const {children: Child, layout} = this.props
-    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} layout={layout} />
+    const {children: Child, ...rest} = this.props
+    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} {...rest} />
   }
 }
