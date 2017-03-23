@@ -80,6 +80,13 @@ export default async (args, context) => {
 
     bundle.stats = stats
 
+    if (flags.profile) {
+      await fsp.writeFile(
+        path.join(workDir, 'build-stats.json'),
+        JSON.stringify(statistics.toJson('verbose'))
+      )
+    }
+
     // Build new index document with correct hashes
     const indexStart = Date.now()
     spin = output.spinner('Building index document').start()
@@ -112,22 +119,17 @@ export default async (args, context) => {
     }
 
     // Now compress the JS bundles
-    spin = output.spinner('Minifying Javascript bundles').start()
-    const compressStart = Date.now()
-    await Promise.all(Object.keys(chunkMap)
-      .filter(fileName => path.extname(fileName) === '.js')
-      .map(fileName => path.join(compilationConfig.outputPath, fileName))
-      .map(compressJavascript)
-    )
-
-    spin.text = `Minifying Javascript bundles (${Date.now() - compressStart}ms)`
-    spin.succeed()
-
-    if (flags.profile) {
-      await fsp.writeFile(
-        path.join(workDir, 'build-stats.json'),
-        JSON.stringify(statistics.toJson('verbose'))
+    if (!compilationConfig.skipMinify) {
+      spin = output.spinner('Minifying Javascript bundles').start()
+      const compressStart = Date.now()
+      await Promise.all(Object.keys(chunkMap)
+        .filter(fileName => path.extname(fileName) === '.js')
+        .map(fileName => path.join(compilationConfig.outputPath, fileName))
+        .map(compressJavascript)
       )
+
+      spin.text = `Minifying Javascript bundles (${Date.now() - compressStart}ms)`
+      spin.succeed()
     }
 
     // Copy static assets (from /static folder) to output dir
