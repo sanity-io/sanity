@@ -1,6 +1,7 @@
 import Observable from '@sanity/observable'
 import createCache from './utils/createCache'
 import {omit} from 'lodash'
+import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 
 function TODO(msg = 'TODO') {
@@ -13,6 +14,7 @@ const NOOP = () => {}
 function createBufferedDocument(documentId, server) {
 
   const serverEvents$ = Observable.from(server.byId(documentId)).share()
+  const saves = pubsub()
 
   const bufferedDocs$ = serverEvents$
     .filter(event => event.type === 'snapshot')
@@ -29,7 +31,10 @@ function createBufferedDocument(documentId, server) {
 
         server.mutate(omit(payload, 'resultRev'))
           .subscribe({
-            next: opts.success,
+            next: res => {
+              opts.success(res)
+              saves.publish()
+            },
             error: opts.failure
           })
       }
@@ -93,8 +98,10 @@ function createBufferedDocument(documentId, server) {
           return new Observable(observer => {
             // todo: connect observable with request from bufferedDocument.commit somehow
             bufferedDocument.commit()
-            observer.next()
-            observer.complete()
+            return saves.subscribe(() => {
+              observer.next()
+              observer.complete()
+            })
           })
         }
       }
