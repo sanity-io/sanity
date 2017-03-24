@@ -100,6 +100,10 @@ export default function prepareSlateForBlockEditor(blockEditor) {
 
   const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
   const spanType = getSpanType(type).type
+  const customSpanFields = spanType.fields.filter(field => {
+    return !['text', 'marks'].includes(field.name)
+  })
+
 
   const schema = {
     nodes: {
@@ -134,6 +138,8 @@ export default function prepareSlateForBlockEditor(blockEditor) {
   return {
     listItems: listItems,
     textStyles: textStyles,
+    customSpans: customSpanFields,
+    customBlocks: memberTypesExceptBlock,
     schema: schema
   }
 }

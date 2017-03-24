@@ -47,11 +47,13 @@ export default class BlockEditor extends React.Component {
     this.slateSchema = preparation.schema
     this.textStyles = preparation.textStyles
     this.listItems = preparation.listItems
+    this.customSpans = preparation.customSpans
+    this.customBlocks = preparation.customBlocks
     this.operations = createBlockEditorOperations(this)
     this.slatePlugins = initializeSlatePlugins(this)
   }
 
-  handleInsertItem = item => {
+  handleInsertBlock = item => {
     this.operations.insertBlock(item)
   }
 
@@ -225,7 +227,7 @@ export default class BlockEditor extends React.Component {
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const customTypes = type.of.filter(memberType => memberType.name !== 'block')
+    const showLinkButton = this.customSpans.length > 0
     return (
       <FormField
         label={type.title}
@@ -241,8 +243,8 @@ export default class BlockEditor extends React.Component {
         >
           <Toolbar
             className={styles.toolbar}
-            onInsertItem={this.handleInsertItem}
-            insertItems={customTypes || []}
+            onInsertBlock={this.handleInsertBlock}
+            insertBlocks={this.customBlocks}
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
@@ -252,7 +254,7 @@ export default class BlockEditor extends React.Component {
             blockStyles={this.getBlockStyles()}
             onLinkButtonClick={this.handleLinkButtonClick}
             activeLinks={this.getActiveLinks()}
-            showLinkButton
+            showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
           <div

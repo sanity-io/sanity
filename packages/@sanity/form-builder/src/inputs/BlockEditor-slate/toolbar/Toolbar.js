@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react'
 import styles from './styles/Toolbar.css'
-import InsertItems, {insertItemShape} from './InsertItems'
+import InsertBlocks, {insertBlockShape} from './InsertBlocks'
 import Marks, {mark} from './Marks'
 import ListItems, {listItem} from './ListItems'
 import BlockStyle, {blockStyleShape} from './BlockStyle'
@@ -12,14 +12,14 @@ import LinkButton from './LinkButton'
 export default class Toolbar extends React.Component {
 
   static propTypes = {
-    onInsertItem: PropTypes.func,
+    onInsertBlock: PropTypes.func,
     onFullscreenEnable: PropTypes.func,
     className: PropTypes.string,
     fullscreen: PropTypes.bool,
     onMarkButtonClick: PropTypes.func,
     onListButtonClick: PropTypes.func,
     onBlockStyleChange: PropTypes.func,
-    insertItems: PropTypes.arrayOf(insertItemShape),
+    insertBlocks: PropTypes.arrayOf(insertBlockShape),
     marks: PropTypes.arrayOf(
       mark
     ),
@@ -34,7 +34,7 @@ export default class Toolbar extends React.Component {
     onLinkButtonClick: PropTypes.func,
     activeLinks: PropTypes.arrayOf(PropTypes.object),
     showLinkButton: PropTypes.bool
-  }
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
@@ -50,13 +50,13 @@ export default class Toolbar extends React.Component {
       className,
       fullscreen,
       marks,
-      onInsertItem,
+      onInsertBlock,
       onMarkButtonClick,
       onListButtonClick,
       onBlockStyleChange,
       listItems,
       blockStyles,
-      insertItems,
+      insertBlocks,
       onLinkButtonClick,
       activeLinks,
       showLinkButton
@@ -98,7 +98,7 @@ export default class Toolbar extends React.Component {
           />
         </div>
         <div className={styles.insertContainer}>
-          <InsertItems items={insertItems} onInsertItem={onInsertItem} />
+          <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
         </div>
       </div>
     )
