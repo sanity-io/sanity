@@ -55,7 +55,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
       return exchangeToken(req, res)
     }
 
-    res.writeHead(404, {'Content-Type': 'text/plain', 'Connection': 'close'})
+    res.writeHead(404, {'Content-Type': 'text/plain', Connection: 'close'})
     return res.end('File not found', () => {
       req.connection.unref()
     })
@@ -105,7 +105,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
 
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
-    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
+    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
     const successPage = await fsp.readFile(path.join(__dirname, 'loginResponse.html'), 'utf8')
     res.end(successPage, () => {
       req.connection.unref()
@@ -128,7 +128,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
   }
 
   async function onTokenExchangeError(err, req, res) {
-    res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8', 'Connection': 'close'})
+    res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
     const errorPage = await fsp.readFile(path.join(__dirname, 'loginError.html'), 'utf8')
 
     res.end(errorPage.replace(/%error%/g, err.message), 'utf8', () => {

@@ -63,7 +63,7 @@ function tryFindLatestVersion(pkgName) {
   return getLatestVersion(pkgName).catch(() => 'unknown')
 }
 
-async function getLatestVersion(pkgName, range = 'latest') {
+function getLatestVersion(pkgName, range = 'latest') {
   return getPackageJson(pkgName.toLowerCase(), range)
     .then(data => data.version)
 }

@@ -17,5 +17,5 @@ export default (args, context) => {
     return initPlugin(args, context, {sanityStyle: true})
   }
 
-  return Promise.reject(`Unknown init type "${type}"`)
+  return Promise.reject(new Error(`Unknown init type "${type}"`))
 }

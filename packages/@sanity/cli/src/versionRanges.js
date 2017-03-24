@@ -7,7 +7,7 @@ export default {
     '@sanity/default-layout': '^0.99.0',
     '@sanity/default-login': '^0.99.0',
     '@sanity/desk-tool': '^0.99.0',
-    'react': '^15.4.2',
+    react: '^15.4.2',
     'react-dom': '^15.4.2'
   },
 
@@ -21,10 +21,10 @@ export default {
       'babel-plugin-transform-class-properties': '^6.9.1',
       'babel-preset-es2015': '^6.9.0',
       'babel-preset-react': '^6.5.0',
-      'eslint': '^3.4.0',
+      eslint: '^3.4.0',
       'eslint-config-sanity': '^1.1.3',
       'eslint-plugin-react': '^6.3.0',
-      'rimraf': '^2.5.2'
+      rimraf: '^2.5.2'
     },
     prod: {
       'in-publish': '^2.0.0'

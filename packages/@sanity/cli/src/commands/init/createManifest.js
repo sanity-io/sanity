@@ -39,7 +39,7 @@ function getCommonManifest(data) {
   return pkg
 }
 
-export async function createPackageManifest(data) {
+export function createPackageManifest(data) {
   const deps = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
   const pkg = Object.assign(getCommonManifest(data), {
     main: 'package.json',

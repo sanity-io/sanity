@@ -11,7 +11,7 @@ module.exports = function parseArguments(argv = process.argv) {
     ...extOptions,
   } = minimist(argv.slice(2), {
     '--': true,
-    'boolean': ['h', 'help', 'd', 'debug', 'v', 'version']
+    boolean: ['h', 'help', 'd', 'debug', 'v', 'version']
   })
 
   const [groupOrCommand, ...argsWithoutOptions] = _

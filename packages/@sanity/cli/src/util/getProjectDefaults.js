@@ -5,7 +5,7 @@ import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
 import thenify from 'thenify'
 
-export default async (workDir, {isPlugin}) => {
+export default (workDir, {isPlugin}) => {
   const cwd = process.cwd()
   const isSanityRoot = workDir === cwd
 
