@@ -99,10 +99,11 @@ export default async function initSanity(args, context) {
   async function getOrCreateUser() {
     output.print("We can't find any auth credentials in your Sanity config - looks like you")
     output.print("haven't used Sanity on this system before?\n")
-    output.print("If you're looking to try out Sanity and haven't registered we can just set up")
-    output.print('a temp account for testing. You can always claim it later.\n')
+    //output.print("If you're looking to try out Sanity and haven't registered we can just set up")
+    //output.print('a temp account for testing. You can always claim it later.\n')
 
-    // Provide login options
+    // Provide login options (temporarily disabled until claiming provisional accounts is in place)
+    /*
     const authMethod = await prompt.single({
       message: 'Create temporary account?',
       type: 'list',
@@ -112,6 +113,8 @@ export default async function initSanity(args, context) {
         {value: 'arrow', name: 'I took an arrow to the knee'}
       ]
     })
+    */
+    const authMethod = 'login'
 
     if (authMethod === 'arrow') {
       output.print("Cool story about the arrow, guess you're in a hurry. Here's a temp account.")
