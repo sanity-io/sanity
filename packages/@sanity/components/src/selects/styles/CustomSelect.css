@@ -26,8 +26,8 @@
   composes: selectContainer from 'part:@sanity/components/selects/default-style';
 }
 
-.icon {
-  composes: icon from './SearchableSelect.css';
+.arrow {
+  composes: arrow from './SearchableSelect.css';
 }
 
 .listContainer {

@@ -143,7 +143,7 @@ class CustomSelect extends React.Component {
             <span className={styles.text}>
               {this.props.renderItem(this.props.value)}
             </span>
-            <div className={styles.icon}>
+            <div className={styles.arrow}>
               <FaAngleDown color="inherit" />
             </div>
           </div>
