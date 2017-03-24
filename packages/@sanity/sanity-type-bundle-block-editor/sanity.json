@@ -1,0 +1,13 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
+  "parts": [
+    {
+      "implements": "part:@sanity/type-bundle/block-editor",
+      "path": "index.js"
+    }
+  ]
+}
