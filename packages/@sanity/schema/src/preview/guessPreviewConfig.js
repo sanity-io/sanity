@@ -7,22 +7,22 @@ function defaultPrepare(obj) {
 
 export default function guessPreviewFields(fields) {
 
+  const stringFieldNames = fields
+    .filter(field => field.type.name === 'string')
+    .map(field => field.name)
+
   // Check if we have fields with names that is listed in candidate fields
-  let titleField = fields.find(field => TITLE_CANDIDATES.includes(field.name))
-  let descField = fields.find(field => field !== titleField && DESCRIPTION_CANDIDATES.includes(field.name))
+  let titleField = TITLE_CANDIDATES
+    .find(candidate => stringFieldNames.includes(candidate))
+
+  let descField = DESCRIPTION_CANDIDATES
+    .find(candidate => candidate !== titleField && stringFieldNames.includes(candidate))
 
   if (!titleField) {
     // Pick first defined string field
-    titleField = fields.find(field => field.type.name === 'string')
+    titleField = stringFieldNames[0]
     // Pick next as desc
-    descField = fields.find(field => field !== titleField && field.type.name === 'string')
-  }
-
-  if (!titleField) {
-    // Pick first defined string field
-    titleField = fields.find(field => field.type.name === 'string')
-    // Pick next as desc
-    descField = fields.find(field => field !== titleField && field.type.name === 'string')
+    descField = stringFieldNames.find(field => field !== titleField)
   }
 
   if (!titleField) {
@@ -45,13 +45,13 @@ export default function guessPreviewFields(fields) {
 
   const config = {
     select: {
-      title: titleField && titleField.name,
+      title: titleField,
     },
     prepare: defaultPrepare
   }
-  if (descField && descField.name) {
+  if (descField) {
     // Only set this if we have found a description field
-    config.select.description = descField.name
+    config.select.description = descField
   }
   return config
 }
