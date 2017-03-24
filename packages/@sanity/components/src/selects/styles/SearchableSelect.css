@@ -26,7 +26,7 @@
   border: 1px solid var(--input-border-color-focus);
   box-sizing: border-box;
   transform: translateY(-1px);
-  background-color: var(--body-bg);
+  background-color: var(--component-bg);
   z-index: var(--zindex-dropdown);
 }
 
