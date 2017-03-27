@@ -32,6 +32,7 @@ export default (config = {}) => {
   const env = config.env || 'development'
   const isProd = env === 'production'
   const bundleEnv = process.env.BUNDLE_ENV || 'development' // eslint-disable-line no-process-env
+  const sanityDev = typeof process.env.SANITY_DEV !== 'undefined' // eslint-disable-line no-process-env
 
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
   const resolverOpts = Object.assign({basePath, env}, config.resolver || {})
@@ -53,9 +54,10 @@ export default (config = {}) => {
   return {
     entry: {
       app: [
+        !isProd && require.resolve('react-hot-loader/patch'),
         require.resolve('normalize.css'),
-        path.join(__dirname, '..', 'browser', 'entry')
-      ],
+        path.join(__dirname, '..', 'browser', isProd ? 'entry.js' : 'entry-dev.js')
+      ].filter(Boolean),
       vendor: ['react', 'react-dom']
     },
     output: {
@@ -66,7 +68,7 @@ export default (config = {}) => {
     resolve: {
       fallback: resolvePaths,
       alias: {
-        'react': path.dirname(reactPath),
+        react: path.dirname(reactPath),
         'react-dom': path.dirname(reactDomPath)
       }
     },
@@ -76,7 +78,13 @@ export default (config = {}) => {
     module: {
       loaders: [{
         test: /\.jsx?/,
-        exclude: modPath => modPath.indexOf('/node_modules/') >= 0,
+        exclude: modPath => {
+          if (sanityDev && modPath.indexOf('/@sanity/') >= 0) {
+            return false
+          }
+
+          return modPath.indexOf('/node_modules/') >= 0
+        },
         loader: require.resolve('babel-loader'),
         query: babelConfig || {
           presets: [
@@ -85,8 +93,9 @@ export default (config = {}) => {
           ],
           plugins: [
             require.resolve('babel-plugin-syntax-class-properties'),
-            require.resolve('babel-plugin-transform-class-properties')
-          ],
+            require.resolve('babel-plugin-transform-class-properties'),
+            !isProd && require.resolve('react-hot-loader/patch')
+          ].filter(Boolean),
           cacheDirectory: true
         }
       }, {
