@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.104.24",
+  "version": "0.104.25",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "@sanity/client": "^0.104.23",
     "@sanity/document-store": "^0.104.23",
     "@sanity/observable": "^0.103.13",
-    "@sanity/schema": "^0.104.24",
+    "@sanity/schema": "^0.104.25",
     "@sanity/state-router": "^0.104.23",
     "history": "^4.5.1",
     "in-publish": "^2.0.0",
@@ -42,7 +42,7 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.104.23",
+    "@sanity/check": "^0.104.25",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "eslint": "^3.18.0",
