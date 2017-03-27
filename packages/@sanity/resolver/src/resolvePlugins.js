@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
+import {uniq} from 'lodash'
 import pathExists from 'path-exists'
-import uniq from 'lodash.uniq'
 import readManifest from './readManifest'
 import promiseProps from 'promise-props-recursive'
 
