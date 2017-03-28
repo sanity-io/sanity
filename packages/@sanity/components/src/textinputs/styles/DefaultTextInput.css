@@ -1,10 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
+.container {
   position: relative;
 }
 
-.error {
+.hasError {
 
 }
 
@@ -22,7 +22,7 @@
   composes: error from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
-.hasClearButton {
+.isClearable {
   padding-right: 2em;
 }
 
@@ -46,6 +46,6 @@
   }
 }
 
-.disabled {
+.isDisabled {
   opacity: 0.4;
 }
