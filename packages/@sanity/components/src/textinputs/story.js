@@ -4,6 +4,19 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {withKnobs, boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
+const VALID_TYPES = [
+  'color',
+  'date',
+  'email',
+  'month',
+  'password',
+  'search',
+  'tel',
+  'text',
+  'url',
+  'week',
+]
+
 class DefaultTextInputTest extends React.Component {
 
   constructor(...args) {
@@ -47,16 +60,17 @@ storiesOf('Text inputs')
       <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
         <DefaultTextInput
           placeholder={text('placeholder', 'This is the placeholder')}
-          value={text('value', false)}
-          type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
-          error={boolean('error', false)}
-          focus={boolean('focus', false)}
-          showClearButton={boolean('clear button', false)}
-          selected={boolean('selected', false)}
+          value={text('value', '')}
+          type={select('type', VALID_TYPES, 'text')}
+          hasError={boolean('hasError', false)}
+          hasFocus={boolean('hasFocus', false)}
+          isClearable={boolean('isClearable', false)}
+          isSelected={boolean('isSelected', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onKeyPress={action('onKeyPress')}
           onBlur={action('onBlur')}
+          onClear={action('onClear')}
           id="ThisIsAnUniqueId"
         />
       </Sanity>

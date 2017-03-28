@@ -20,8 +20,8 @@ storiesOf('Textfields')
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onClear={action('onClear')}
-          showClearButton={boolean('clear button', false)}
-          focus={boolean('focus', false)}
+          isClearable={boolean('clear button', false)}
+          hasFocus={boolean('hasFocus', false)}
         />
       </Sanity>
     )
@@ -38,7 +38,7 @@ storiesOf('Textfields')
           value={text('value')}
           focus={boolean('focus', false)}
           onChange={action('onChange')}
-          showClearButton={boolean('clear button', false)}
+          isClearable={boolean('clear button', false)}
         />
       </Sanity>
     )

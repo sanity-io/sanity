@@ -12,11 +12,11 @@ export default class DefaultAutocomplete extends React.Component {
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
     value: PropTypes.string,
-    error: PropTypes.bool,
+    hasError: PropTypes.bool,
     onKeyPress: PropTypes.func,
     placeholder: PropTypes.string,
     focus: PropTypes.func,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     isOpen: PropTypes.bool,
     id: PropTypes.string,
     items: PropTypes.arrayOf(

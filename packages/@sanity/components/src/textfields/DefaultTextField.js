@@ -19,7 +19,7 @@ export default class DefaultTextField extends React.Component {
     error: PropTypes.bool,
     level: PropTypes.number,
     placeholder: PropTypes.string,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     className: PropTypes.string,
     description: PropTypes.string,
     focus: PropTypes.bool
@@ -47,7 +47,7 @@ export default class DefaultTextField extends React.Component {
       label,
       placeholder,
       error,
-      showClearButton,
+      isClearable,
       type,
       className,
       level,
@@ -80,7 +80,7 @@ export default class DefaultTextField extends React.Component {
           onFocus={onFocus}
           onBlur={onBlur}
           onClear={this.handleClear}
-          showClearButton={showClearButton}
+          isClearable={isClearable}
           focus={focus}
         />
       </FormField>

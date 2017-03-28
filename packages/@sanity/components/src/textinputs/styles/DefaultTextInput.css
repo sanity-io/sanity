@@ -18,7 +18,7 @@
   }
 }
 
-.inputError {
+.inputOnError {
   composes: error from 'part:@sanity/base/theme/forms/text-input-style';
 }
 

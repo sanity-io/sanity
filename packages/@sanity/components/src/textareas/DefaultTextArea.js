@@ -12,7 +12,7 @@ export default class DefaultTextArea extends React.Component {
     value: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     rows: PropTypes.number,
     id: PropTypes.string.isRequired,
     focus: PropTypes.bool
@@ -34,7 +34,7 @@ export default class DefaultTextArea extends React.Component {
   }
 
   render() {
-    const {value, placeholder, error, showClearButton, id, rows, onKeyPress, onChange, onFocus, onBlur, focus} = this.props
+    const {value, placeholder, error, isClearable, id, rows, onKeyPress, onChange, onFocus, onBlur, focus} = this.props
 
     return (
       <div
@@ -47,7 +47,7 @@ export default class DefaultTextArea extends React.Component {
           className={`
             ${styles.textarea}
             ${error ? styles.inputError : styles.input}
-            ${showClearButton ? styles.hasClearButton : ''}
+            ${isClearable ? styles.hasClearButton : ''}
           `}
           rows={rows}
           id={id}
@@ -61,7 +61,7 @@ export default class DefaultTextArea extends React.Component {
         />
         <div className={styles.focusHelper} />
         {
-          showClearButton && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
+          isClearable && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
         }
       </div>
     )

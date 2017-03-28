@@ -11,7 +11,7 @@ export default class TagsTextField extends React.Component {
     onRemoveTag: PropTypes.func.isRequired,
     error: PropTypes.bool,
     focus: PropTypes.bool,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.string),
     description: PropTypes.string,
     level: PropTypes.number

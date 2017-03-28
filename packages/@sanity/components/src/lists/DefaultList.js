@@ -125,7 +125,7 @@ export default class DefaultList extends React.Component {
         item={item}
         onSelect={onSelect}
         selected={isSelected}
-        focus={hasFocus}
+        hasFocus={hasFocus}
         highlighted={isHighlighted}
         decoration={decoration}
         scrollIntoView={this.scrollElementIntoViewIfNeeded}

@@ -13,7 +13,7 @@ export default class DefaultSelect extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     level: PropTypes.number,
     focus: PropTypes.bool,
     items: PropTypes.arrayOf(
