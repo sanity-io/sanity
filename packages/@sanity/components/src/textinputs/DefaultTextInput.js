@@ -100,7 +100,7 @@ export default class DefaultTextInput extends React.Component {
         className={`
           ${error ? styles.error : styles.root}
           ${showClearButton ? styles.hasClearButton : ''}
-          ${focus ? styles.hasFocus : styles.hasNoFocus}
+          ${focus ? styles.hasFocus : ''}
           ${level ? levelClass : ''}
           ${disabled ? styles.disabled : ''}
       `}

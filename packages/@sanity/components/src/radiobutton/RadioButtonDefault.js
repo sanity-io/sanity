@@ -47,11 +47,10 @@ export default class RadioButton extends React.Component {
     return (
       <label
         className={`
-        ${styles.root}
-        ${disabled ? styles.isDisabled : styles.isEnabled}
-        ${checked ? styles.isChecked : styles.unChecked}
-        ${focus ? styles.isFocused : ''}
-
+          ${styles.root}
+          ${disabled ? styles.isDisabled : ''}
+          ${checked ? styles.isChecked : styles.unChecked}
+          ${focus ? styles.isFocused : ''}
         `}
         onMouseUp={this.handleMouseUp}
       >

@@ -45,10 +45,10 @@ export default class Fieldset extends React.Component {
     const levelString = `level${level}`
     const rootClass = `
       ${styles.root}
-      ${columns ? styles[`columns${columns}`] : ''}
-      ${styles[levelString]}
+      ${styles[`columns${columns}`] || ''}
+      ${styles[levelString] || ''}
       ${transparent ? styles.transparent : ''}
-      ${className}
+      ${className || ''}
     `
     return (
       <fieldset className={rootClass} data-nesting-level={level}>

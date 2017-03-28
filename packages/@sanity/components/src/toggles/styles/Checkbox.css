@@ -39,6 +39,10 @@
   opacity: 0.2;
 }
 
+.isEnabled {
+  opacity: 1;
+}
+
 .input {
   line-height: var(--checkbox-label-height);
 

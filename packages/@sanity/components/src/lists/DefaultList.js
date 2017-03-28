@@ -169,7 +169,7 @@ export default class DefaultList extends React.Component {
           ${scrollable ? styles.scrollable : styles.root}
           ${sortable ? styles.isSortable : ''}
           ${useDragHandle ? styles.usesDragHandle : ''}
-          ${className}
+          ${className || ''}
         `}
       >
 

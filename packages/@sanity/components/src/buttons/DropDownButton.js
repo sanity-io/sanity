@@ -60,7 +60,10 @@ class DropDownButton extends React.Component {
     return (
       <Button
         {...rest}
-        className={`${styles.root} ${className}`}
+        className={`
+          ${styles.root}
+          ${className || ''}
+        `}
         onClick={this.handleOnClick}
         kind={kind}
       >

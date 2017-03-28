@@ -63,7 +63,7 @@ export default class ImageInputFieldset extends React.PureComponent {
     }
 
     return (
-      <Fieldset legend={legend} level={level} className={`${styles[`level${level}`]}`}>
+      <Fieldset legend={legend} level={level} className={`${styles[`level${level}`] || ''}`}>
         <div className={`${styles.grid} ${showContent ? styles.hasContent : styles.noContent}`}>
           <div
             className={`
