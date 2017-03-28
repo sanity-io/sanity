@@ -82,14 +82,14 @@ export default class LoginDialog extends React.Component {
             {this.state.providers.map(provider => {
               const onLoginClick = this.handleLoginButtonClicked.bind(this, provider.name)
               return (
-                <li key={provider.name} className={`${styles.provider} ${styles[`loginProvider_${provider.name}`]}`}>
+                <li key={provider.name} className={styles.provider}>
                   <button onClick={onLoginClick} className={styles.providerButton}>
                     <span className={styles.providerLogo}>
                       {
-                        provider.name == 'google_oauth2' && <GoogleLogo />
+                        provider.name === 'google_oauth2' && <GoogleLogo />
                       }
                       {
-                        provider.name == 'github' && <GithubLogo />
+                        provider.name === 'github' && <GithubLogo />
                       }
                     </span>
                     <span className={styles.providerName}>

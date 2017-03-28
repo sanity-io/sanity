@@ -7,7 +7,6 @@
 }
 
 .headline {
-  composes: heading2 from "part:@sanity/base/theme/typography/text-blocks-style";
   text-align: center;
   font-weight: 100;
   text-transform: uppercase;
