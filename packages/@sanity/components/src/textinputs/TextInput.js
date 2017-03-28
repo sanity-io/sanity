@@ -84,6 +84,7 @@ export default class DefaultTextInput extends React.PureComponent {
       isClearable,
       hasFocus,
       isDisabled,
+      isSelected,
       styles,
       ...rest
     } = this.props
