@@ -9,6 +9,20 @@
   }
 }
 
+:global([data-env='development'] .undefined) {
+  position: relative;
+  @nest &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: color(red a(50%));
+    color: white;
+    content: 'FIXME: "undefined" as className!';
+  }
+}
+
 :root {
   --tool-switcher-width: 3rem;
 }
