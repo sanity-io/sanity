@@ -33,6 +33,7 @@ class StyleSelect extends React.Component {
   static defaultProps = {
     placeholder: 'Type to search…',
     loading: false,
+    className: '',
     onChange() {},
     onBlur() {},
     onOpen() {},
@@ -163,10 +164,11 @@ class StyleSelect extends React.Component {
       <DefaultFormField
         className={`
           ${styles.root}
-          ${hasFocus && styles.focused}
-          ${error && styles.error}
-          ${transparent && styles.transparent}
-          ${className}`}
+          ${hasFocus ? styles.focused : ''}
+          ${error ? styles.error : ''}
+          ${transparent ? styles.transparent : ''}
+          ${className}
+        `}
         description={description}
         labelHtmlFor={this._inputId}
         label={label}
@@ -190,9 +192,8 @@ class StyleSelect extends React.Component {
               const isSemiSelected = value && value.length > 1 && includes(value, item)
               const isSelected = value && value.length === 1 && value[0] == item
               const classNames = `
-                ${styles.item}
-                ${isSelected && styles.itemSelected}
-                ${isSemiSelected && styles.itemSemiSelected}
+                ${isSelected ? styles.itemSelected : styles.item}
+                ${isSemiSelected ? styles.itemSemiSelected : ''}
               `
               return (
                 <a className={classNames} key={item.key} title={item.title} onClick={() => this.handleSelect(item)}>

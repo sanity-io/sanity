@@ -12,6 +12,10 @@ export default class ToggleButton extends React.Component {
     title: PropTypes.string
   }
 
+  static defaultProps = {
+    className: ''
+  }
+
   render() {
     const {selected, icon, className, title} = this.props
     const buttonClasses = `

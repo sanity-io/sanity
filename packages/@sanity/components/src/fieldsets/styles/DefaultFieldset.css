@@ -65,6 +65,10 @@
   }
 }
 
+.transparent {
+  /* Nothing here yet */
+}
+
 .columns1 {
   composes: root;
 }
@@ -154,6 +158,13 @@
     font-size: var(--font-size-h4);
     text-transform: none;
   }
+}
+
+.level1,
+.level2,
+.level3,
+.level4 {
+  display: block;
 }
 
 .functions {
