@@ -12,7 +12,7 @@ export default class FuzzySearchableSelect extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,

@@ -1,12 +1,27 @@
 import React, {PropTypes} from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
+import warnOnNativeBoolProps from '../utilities/warnOnNativeBoolProps'
+
 const NOOP = () => {}
+
+const VALID_TYPES = [
+  'color',
+  'date',
+  'email',
+  'month',
+  'password',
+  'search',
+  'tel',
+  'text',
+  'url',
+  'week',
+]
 
 export default class DefaultTextInput extends React.PureComponent {
   static propTypes = {
     value: PropTypes.string,
-    type: PropTypes.string,
+    type: PropTypes.oneOf(VALID_TYPES),
     onClear: PropTypes.func,
     isClearable: PropTypes.bool,
     hasFocus: PropTypes.bool,
@@ -36,6 +51,13 @@ export default class DefaultTextInput extends React.PureComponent {
     autoComplete: 'off',
     onClear: NOOP,
     styles: {}
+  }
+
+  constructor(props) {
+    super()
+    if (__DEV__) {
+      warnOnNativeBoolProps(this, props)
+    }
   }
 
   componentDidMount() {

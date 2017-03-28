@@ -14,7 +14,7 @@ export default class RadioSelect extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
-    showClearButton: PropTypes.bool,
+    isClearable: PropTypes.bool,
     level: PropTypes.number,
     items: PropTypes.arrayOf(
       PropTypes.shape({
