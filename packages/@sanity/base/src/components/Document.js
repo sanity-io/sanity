@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react'
 import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 
+const ENV = process.env.NODE_ENV || 'development'
+
 function assetUrl(staticPath, item) {
   const isAbsolute = item.path.match(/^https?:\/\//)
   if (isAbsolute) {
@@ -59,7 +61,7 @@ function Document(props) {
         {subresources}
         {favicons}
       </head>
-      <body>
+      <body data-env={ENV}>
         <div id="sanity">
           <AppLoadingScreen text={props.loading} />
         </div>
