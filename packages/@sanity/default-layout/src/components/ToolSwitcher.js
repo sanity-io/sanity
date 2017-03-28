@@ -9,7 +9,7 @@ function ToolSwitcher(props) {
     <div className={`${styles.toolSwitcher} ${props.className}`}>
       <ul className={styles.toolList}>
         {tools.map(tool => {
-          const itemClass = activeToolName === tool.name
+          const itemClass = (activeToolName === tool.name)
             ? styles.activeItem
             : styles.item
 
@@ -31,6 +31,10 @@ function ToolSwitcher(props) {
       </ul>
     </div>
   )
+}
+
+ToolSwitcher.defaultProps = {
+  className: ''
 }
 
 ToolSwitcher.propTypes = {
