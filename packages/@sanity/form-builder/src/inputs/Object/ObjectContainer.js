@@ -141,6 +141,12 @@ export default class ObjectContainer {
         _key: value
       }), this.context)
     }
+    if (key === '_type') {
+      if (value !== this.context.type.name) {
+        throw new Error(`Type mismatch. Expected ${value} to be ${this.context.type.name}`)
+      }
+      return this
+    }
     const fieldDef = this._getFieldDefForFieldName(key)
     const nextValue = Object.assign({}, this.value, {
       [key]: createMemberValue(value, {

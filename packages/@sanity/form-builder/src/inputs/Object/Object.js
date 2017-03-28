@@ -27,18 +27,14 @@ export default class ObjectInput extends React.PureComponent {
     level: 0
   };
 
-  static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    formBuilder: PropTypes.object
-  };
-
   handleFieldChange = (event, field) => {
-    const {onChange, isRoot, type} = this.props
+    const {onChange, type} = this.props
 
-    const setIfMissingPatch = isRoot ? [] : [{
+    const setIfMissingPatch = [{
       type: 'setIfMissing',
       value: type.name === 'object' ? {} : {_type: type.name}
     }]
+
     const patches = setIfMissingPatch.concat(arrify(event.patch).map(patch => {
       return {
         ...patch,
@@ -92,7 +88,9 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   render() {
-    const {isRoot, type, level} = this.props
+    const {type, level} = this.props
+
+    const isRoot = level === 0
 
     const renderedFields = type.fieldsets.map((fieldset, i) => {
       return fieldset.single

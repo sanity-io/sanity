@@ -1,6 +1,6 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import React, {PropTypes} from 'react'
-import styles from './styles/RenderField.css'
+import {FormBuilderInput} from '../../FormBuilderInput'
 import {resolveJSType} from '../../utils/resolveJSType'
 import ManageInvalidValue from './ManageInvalidValue'
 
@@ -20,12 +20,7 @@ export default class RenderField extends React.Component {
 
   static defaultProps = {
     validation: {messages: [], fields: {}},
-    onEnter() {
-    }
-  };
-
-  static contextTypes = {
-    formBuilder: PropTypes.object
+    onEnter() {}
   };
 
   handleChange = event => {
@@ -39,9 +34,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, level, validation, focus} = this.props
-
-    const FieldInput = this.context.formBuilder.resolveInputComponent(field.type)
+    const {value, field, level, validation, focus, onChange} = this.props
 
     const expectedJSType = value.context.type.jsonType
     const valueJSType = resolveJSType(value.value)
@@ -49,35 +42,24 @@ export default class RenderField extends React.Component {
     if (value.value && expectedJSType !== valueJSType) {
       return (
         <ManageInvalidValue
-          {...this.props}
-          {...{expectedJSType}}
-          {...{valueJSType}}
+          field={field}
+          value={value}
+          onChange={onChange}
+          expectedJSType={expectedJSType}
+          valueJSType={valueJSType}
         />
       )
     }
 
-    if (!FieldInput) {
-      return (
-        <div className={styles.missingInput}>
-          <h3>Warning</h3>
-          <p>Field input not found for field of type {JSON.stringify(field.type.name)}</p>
-        </div>
-      )
-    }
-
-    const passValue = value && value.constructor.passSerialized ? value.serialize() : value
-    const document = FieldInput.passDocument ? this.context.formBuilder.getDocument() : null
-
     return (
-      <FieldInput
-        level={level}
-        value={passValue}
+      <FormBuilderInput
+        value={value}
         type={field.type}
         validation={validation}
         onChange={this.handleChange}
         onEnter={this.handleEnter}
+        level={level}
         focus={focus}
-        document={document}
       />
     )
   }

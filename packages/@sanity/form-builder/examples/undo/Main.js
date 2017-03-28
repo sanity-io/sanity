@@ -1,7 +1,9 @@
 import React from 'react'
 import Undoable from './lib/Undoable'
 
-import {createFormBuilder, Schema} from '../../src'
+import Schema from '@sanity/schema'
+import {createFormBuilder} from '../../src'
+import applyPatch from '../../src/simplePatch'
 
 const schema = Schema.compile({
   name: 'simple',
@@ -33,14 +35,9 @@ const schema = Schema.compile({
 const FormBuilder = createFormBuilder({schema})
 
 export default class SimpleExample extends React.Component {
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      value: new Undoable(FormBuilder.createEmpty('book')),
-      shouldInspect: false
-    }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleCommand = this.handleCommand.bind(this)
+  state = {
+    value: new Undoable(FormBuilder.createEmpty('book')),
+    shouldInspect: false
   }
   setValue(nextValue) {
     this.setState({
@@ -50,8 +47,8 @@ export default class SimpleExample extends React.Component {
   getValue() {
     return this.state.value.get()
   }
-  handleChange(event) {
-    this.setValue(this.getValue().patch(event.patch))
+  handleChange = event => {
+    this.setValue(applyPatch(this.getValue(), event.patch))
   }
   undo() {
     this.setState({
@@ -63,7 +60,7 @@ export default class SimpleExample extends React.Component {
       value: this.state.value.redo()
     })
   }
-  handleCommand(event) {
+  handleCommand = event => {
     const command = event.currentTarget.dataset.command
     switch (command) {
       case 'undo':

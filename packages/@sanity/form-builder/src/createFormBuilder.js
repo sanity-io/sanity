@@ -55,10 +55,6 @@ export default function createFormBuilder(config = {}) {
     })
   }
 
-  function deserialize(value, asType) {
-    return createValue(value, asType)
-  }
-
   function createEmpty(typeName) {
     if (!typeName) {
       throw new TypeError('You must pass a type name as first parameter')
@@ -68,7 +64,7 @@ export default function createFormBuilder(config = {}) {
 
   return class FormBuilder extends React.Component {
     static createEmpty = createEmpty;
-    static deserialize = deserialize;
+    static deserialize = createValue;
     static propTypes = {
       value: PropTypes.any, // todo: fix
       onChange: PropTypes.func
@@ -102,7 +98,12 @@ export default function createFormBuilder(config = {}) {
     render() {
       const {value, onChange} = this.props
       return (
-        <FormBuilderInput value={value} onChange={onChange} />
+        <FormBuilderInput
+          value={value}
+          type={value.context.type}
+          onChange={onChange}
+          level={0}
+        />
       )
     }
   }

@@ -5,7 +5,7 @@ import Inspector from './Inspector'
 import {save, restore} from '../lib/persist'
 
 import sourceSchemas from '../schemas'
-import {Schema} from '@sanity/schema'
+import Schema from '@sanity/schema'
 import {createFormBuilder} from '../../../src'
 import {parseParams, preventDefault} from '../lib/utils'
 
@@ -14,12 +14,10 @@ import MyCustomValidationList from './custom/MyCustomValidationList'
 import MyCustomImageInput from './custom/MyCustomImageInput'
 import MyCustomFileInput from './custom/MyCustomFileInput'
 import MyCustomSlugInput from './custom/MyCustomSlugInput'
-import MyCustomReferencePreview from './custom/MyCustomReferencePreview'
-import BlockEditorSlate from '../../../src/inputs/BlockEditor-slate'
-import toGradientPatch from '../../../src/sanity/utils/toGradientPatch'
+import applyPatch from '../../../src/simplePatch'
 import resolveReferenceInput from './custom/resolveReferenceInput'
 import arrify from 'arrify'
-import {arrayToJSONMatchPath, Patcher} from '@sanity/mutator'
+import {arrayToJSONMatchPath} from '@sanity/mutator'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -34,11 +32,11 @@ function logPatch(patch) {
     'color:#2097ac',
     patch.type,
     'color:inherit',
-    arrayToJSONMatchPath(patch.path),
+    arrayToJSONMatchPath(patch.path || []),
     patch.value
   )
 }
-console.log(schema)
+
 const FormBuilder = schema && createFormBuilder({
   schema: schema,
   resolveInputComponent(type) {
@@ -66,12 +64,6 @@ const FormBuilder = schema && createFormBuilder({
     }
     return undefined // signal to use default
   },
-  resolvePreviewComponent(type) {
-    if (type.name === 'reference') {
-      return MyCustomReferencePreview
-    }
-    return undefined // signal to use default
-  },
   resolveValidationComponent() {
     return MyCustomValidationList
   }
@@ -85,17 +77,11 @@ export default class Main extends React.Component {
   }
 
   handleChange = event => {
-    const {patch} = event
 
-    let pendingValue = this.state.value
-    arrify(patch).map(logPatch)
-    const gpatches = arrify(patch).map(toGradientPatch)
-    gpatches.forEach(gpatch => {
-      pendingValue = new Patcher(gpatch).applyViaAccessor(pendingValue)
-    })
+    arrify(event.patch).map(logPatch)
 
     this.setState({
-      value: pendingValue,
+      value: applyPatch(this.state.value, event.patch),
       saved: false
     })
   }
@@ -116,6 +102,7 @@ export default class Main extends React.Component {
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})
   }
+
   handleDispatchCommand = event => {
     const command = event.currentTarget.getAttribute('data-cmd')
     const methodName = `cmd${command}`
@@ -143,6 +130,7 @@ export default class Main extends React.Component {
       </button>
     )
   }
+
   renderToolbar() {
     const {inspect, saved} = this.state
     return (
@@ -191,13 +179,11 @@ export default class Main extends React.Component {
         {this.renderToolbar()}
         <div className={styles.inner}>
           <form onSubmit={preventDefault}>
-            <div>
-              <FormBuilder
-                value={value}
-                validation={validation}
-                onChange={this.handleChange}
-              />
-            </div>
+            <FormBuilder
+              value={value}
+              validation={validation}
+              onChange={this.handleChange}
+            />
           </form>
         </div>
         {inspect && this.renderInspect()}

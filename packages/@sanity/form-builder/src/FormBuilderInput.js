@@ -3,8 +3,10 @@ import React, {PropTypes} from 'react'
 export class FormBuilderInput extends React.Component {
   static propTypes = {
     value: PropTypes.any,
+    type: PropTypes.object.isRequired,
     validation: PropTypes.object,
-    onChange: PropTypes.func
+    onChange: PropTypes.func.isRequired,
+    level: PropTypes.number.isRequired
   };
 
   static contextTypes = {
@@ -25,9 +27,7 @@ export class FormBuilderInput extends React.Component {
   }
 
   render() {
-    const {onChange, value, validation} = this.props
-
-    const type = value.context.type
+    const {onChange, value, type, level, validation} = this.props
 
     const InputComponent = this.resolveInputComponent(type)
     if (!InputComponent) {
@@ -39,12 +39,12 @@ export class FormBuilderInput extends React.Component {
 
     return (
       <InputComponent
+        value={passValue}
         type={type}
         onChange={onChange}
         validation={validation}
-        value={passValue}
         document={document}
-        isRoot
+        level={level}
       />
     )
   }
