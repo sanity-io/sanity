@@ -5,12 +5,4 @@
 - Focus handling is currently only implemented for String input
 - References:
 
-Gradient currently stores references as:
-```
-"author": {
-  "_ref": "bookstore:40303"
-}
-```
-where the type
-
 - Define a schema on inputs
