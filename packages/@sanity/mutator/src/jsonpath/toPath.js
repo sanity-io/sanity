@@ -11,7 +11,7 @@ function toPathInner(expr : Object, inUnion : bool) : string {
     case 'attribute':
       return expr.name
     case 'alias':
-      return expr.target == 'self' ? '@' : '$'
+      return expr.target === 'self' ? '@' : '$'
     case 'number':
       return `${expr.value}`
     case 'range': {
@@ -54,7 +54,7 @@ function toPathInner(expr : Object, inUnion : bool) : string {
         const node = nodes.shift()
         result.push(toPath(node, false))
         const upcoming = nodes[0]
-        if (upcoming && toPathInner(upcoming, false)[0] != '[') {
+        if (upcoming && toPathInner(upcoming, false)[0] !== '[') {
           result.push('.')
         }
       }

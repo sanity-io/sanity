@@ -6,8 +6,8 @@ export default function luid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(36)
-      .substring(1);
+      .substring(1)
   }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
+  return `${s4() + s4()}-${s4()}-${s4()}-${
+    s4()}-${s4()}${s4()}${s4()}`
 }

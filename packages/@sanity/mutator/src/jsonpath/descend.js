@@ -10,23 +10,25 @@ export default function descend(tail) : Array {
 
 // Split path in [head, tail]
 function splitIfPath(tail) : Array {
-  if (tail.type != 'path') {
+  if (tail.type !== 'path') {
     return [tail, null]
   }
   const nodes = tail.nodes
-  if (nodes.length == 0) {
+  if (nodes.length === 0) {
     return [null, null]
-  } else if (nodes.length == 1) {
+  } else if (nodes.length === 1) {
     return [nodes[0], null]
   }
   return [
     nodes[0],
-    { type: 'path', nodes: nodes.slice(1)}
+    {type: 'path', nodes: nodes.slice(1)}
   ]
 }
 
 function concatPaths(path1, path2) {
-  if (!path1 && !path2) { return null }
+  if (!path1 && !path2) {
+    return null
+  }
   const nodes1 = path1 ? path1.nodes : []
   const nodes2 = path2 ? path2.nodes : []
   return {
@@ -37,11 +39,11 @@ function concatPaths(path1, path2) {
 
 // Spreads a union head into several heads/tails
 function spreadIfUnionHead(head, tail) : Array {
-  if (head.type != 'union') {
+  if (head.type !== 'union') {
     return [[head, tail]]
   }
   return head.nodes.map(node => {
-    if (node.type == 'path') {
+    if (node.type === 'path') {
       const [subHead, subTail] = splitIfPath(node)
       return [subHead, concatPaths(subTail, tail)]
     }

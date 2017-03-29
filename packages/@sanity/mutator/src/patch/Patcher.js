@@ -32,7 +32,7 @@ export default class Patcher {
       throw new Error('Cannot apply patch to document with no _id')
     }
     this.patches.forEach(patch => {
-      if (patch.id != id) {
+      if (patch.id !== id) {
         // Ignore patches that are not targetted at this document
         // console.log("Ignored patch because id did not match document id", patch.id, id)
         return

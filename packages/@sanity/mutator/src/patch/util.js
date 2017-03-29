@@ -1,6 +1,3 @@
-import {Expression} from '../jsonpath/Expression'
-
-
 export function targetsToIndicies(targets, accessor) {
   const result = []
   targets.forEach(target => {

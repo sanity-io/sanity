@@ -7,10 +7,10 @@ export function extractIdFromPatch(patch) : string {
       return null
     }
     for (const key in attrs) {
-      if (key == '_id' || key == 'id') {
+      if (key === '_id' || key === 'id') {
         return attrs[key]
       }
-      if (key == '_id' || key == 'id') {
+      if (key === '_id' || key === 'id') {
         return extractInner(attrs[key])
       }
     }

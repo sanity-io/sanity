@@ -47,7 +47,7 @@ export default class Document {
   // We are consistent when there are no unresolved mutations of our own, and no un-applicable incoming mutations.
   // When this has been going on for too long, and there has been a while since we staged a new mutation,
   //  it is time to reset your state.
-  inconsistentAt : Date
+  inconsistentAt : ?Date
   // The last time we staged a patch of our own. If we have been inconsistent for a while, but it hasn't been long since
   // we staged a new mutation, the reason is probably just because the user is typing or something. Should be used as
   // a guard agains resetting state for inconsistensy reasons.

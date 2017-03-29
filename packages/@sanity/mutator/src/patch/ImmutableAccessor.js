@@ -26,13 +26,13 @@ export default class ImmutableAccessor {
 
   // Array reader
   length() : number {
-    if (this.containerType() != 'array') {
+    if (this.containerType() !== 'array') {
       throw new Error("Won't return length of non-indexable _value")
     }
     return this._value.length
   }
   getIndex(i : number) : any {
-    if (this.containerType() != 'array') {
+    if (this.containerType() !== 'array') {
       return false
     }
     if (i >= this.length()) {
@@ -43,19 +43,19 @@ export default class ImmutableAccessor {
 
   // Object reader
   hasAttribute(key : string) : bool {
-    if (this.containerType() != 'object') {
+    if (this.containerType() !== 'object') {
       return false
     }
     return this._value.hasOwnProperty(key)
   }
   attributeKeys() : Array<string> {
-    if (this.containerType() != 'object') {
+    if (this.containerType() !== 'object') {
       return []
     }
     return Object.keys(this._value)
   }
   getAttribute(key : string) : any {
-    if (this.containerType() != 'object') {
+    if (this.containerType() !== 'object') {
       throw new Error('getAttribute only applies to plain objects')
     }
     if (!this.hasAttribute(key)) {
@@ -93,7 +93,7 @@ export default class ImmutableAccessor {
     const nextValue = []
     // Copy every _value _not_ in the indices array over to the newValue
     for (let i = 0; i < length; i++) {
-      if (indices.indexOf(i) == -1) {
+      if (indices.indexOf(i) === -1) {
         nextValue.push(this._value[i])
       }
     }
@@ -101,7 +101,7 @@ export default class ImmutableAccessor {
   }
   insertItemsAt(pos : number, items : Array<any>) {
     let nextValue
-    if (this.length() == 0 && pos == 0) {
+    if (this.length() === 0 && pos === 0) {
       nextValue = items
     } else {
       nextValue = this._value.slice(0, pos).concat(items).concat(this._value.slice(pos))
@@ -111,7 +111,7 @@ export default class ImmutableAccessor {
 
   // Object writer interface
   setAttribute(key : string, value : any) {
-    if (this.containerType() != 'object') {
+    if (this.containerType() !== 'object') {
       throw new Error('Unable to set attribute of non-object container')
     }
     if (value === this._value[key]) {

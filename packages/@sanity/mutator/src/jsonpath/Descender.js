@@ -59,7 +59,7 @@ export default class Descender {
 
     const result : Array<Descender> = []
 
-    if (probe.containerType() == 'primitive' && head.constraintTargetIsSelf()) {
+    if (probe.containerType() === 'primitive' && head.constraintTargetIsSelf()) {
       if (head.testConstraint(probe)) {
         result.push(...this.descend())
       }
@@ -67,13 +67,13 @@ export default class Descender {
     }
 
     // The value is an array
-    if (probe.containerType() == 'array') {
+    if (probe.containerType() === 'array') {
       const length = probe.length()
       for (let i = 0; i < length; i++) {
         // Push new descenders with constraint translated to literal indices
         // where they match
         if (head.testConstraint(probe.getIndex(i))) {
-            result.push(new Descender(
+          result.push(new Descender(
             new Expression({type: 'index', value: i}),
             this.tail
           ))

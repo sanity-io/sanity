@@ -15,7 +15,7 @@ export default class InsertPatch {
   }
   apply(targets, accessor) {
     let result = accessor
-    if (accessor.containerType() != 'array') {
+    if (accessor.containerType() !== 'array') {
       throw new Error('Attempt to apply insert patch to non-array value')
     }
     switch (this.location) {

@@ -12,7 +12,7 @@ function stringifySegment(segment, hasLeading) {
     return `[${segment}]`
   }
 
-  const isObject = type === 'object' && segment != null
+  const isObject = type === 'object' && segment !== null && segment !== undefined
 
   if (isObject) {
     return Object.keys(segment).map(key => {

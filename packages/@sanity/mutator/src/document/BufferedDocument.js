@@ -79,7 +79,7 @@ export default class BufferedDocument {
     const oldLocal = this.LOCAL
     this.LOCAL = mutation.apply(this.LOCAL)
     if (this.onMutation && oldLocal !== this.LOCAL) {
-      debug("onMutation fired")
+      debug('onMutation fired')
       this.onMutation({
         mutation,
         document: this.LOCAL,
@@ -195,9 +195,9 @@ export default class BufferedDocument {
         this.onMutation(msg)
       }
       return
-    } else {
-      debug('Document mutated from remote with local changes')
     }
+    debug('Document mutated from remote with local changes')
+
 
     // If there are local edits, and the document was deleted, we need to purge those local edits now
     if (this.document.EDGE === null) {

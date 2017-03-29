@@ -51,7 +51,7 @@ export default class Mutation {
     this.params.resultRev = this.params.transactionId = luid()
   }
   appliesToMissingDocument() {
-    if (typeof this._appliesToMissingDocument != 'undefined') {
+    if (typeof this._appliesToMissingDocument !== 'undefined') {
       return this._appliesToMissingDocument
     }
     // Only mutations starting with a create operation apply to documents that do not exist ...

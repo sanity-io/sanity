@@ -155,7 +155,7 @@ class Tokenizer {
 
   tokenizeIdentifier() : Object {
     let first = true
-    const identifier = this.takeWhile((char) => {
+    const identifier = this.takeWhile(char => {
       if (first) {
         first = false
         return char.match(attributeFirstCharMatcher) ? char : null
@@ -192,7 +192,7 @@ class Tokenizer {
       return {
         type: 'number',
         value: negative ? -number : +number,
-        raw: negative ? '-' + number : number
+        raw: negative ? `-${number}` : number
       }
     }
     // No number, rewind

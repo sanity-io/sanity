@@ -64,7 +64,7 @@ export default class SquashingBuffer {
 
   addOperation(op : Operation) {
     // Is this a set patch, and only a set patch, and does it apply to the document at hand?
-    if (op.patch && op.patch.set && op.patch.id == this.PRESTAGE._id && Object.keys(op.patch).length == 2) {
+    if (op.patch && op.patch.set && op.patch.id === this.PRESTAGE._id && Object.keys(op.patch).length == 2) {
       // console.log("Attempting to apply optimised set patch")
       const setPatch = op.patch.set
       const unoptimizable = {}
@@ -99,7 +99,7 @@ export default class SquashingBuffer {
   optimiseSetOperation(path : string, nextValue : any) : bool {
     // console.log('optimiseSetOperation', path, nextValue)
     // If target value is not a plain value, unable to optimise
-    if (typeof nextValue == 'object') {
+    if (typeof nextValue === 'object') {
       // console.log("Not optimisable because next value is object")
       return false
     }
@@ -107,7 +107,7 @@ export default class SquashingBuffer {
     // we won't optimise
     const matches = extractWithPath(path, this.PRESTAGE)
     // If we are not overwriting exactly one key, this cannot be optimised, so we bail
-    if (matches.length != 1) {
+    if (matches.length !== 1) {
       // console.log('Not optimisable because match count is != 1', JSON.stringify(matches))
       return false
     }
@@ -115,18 +115,18 @@ export default class SquashingBuffer {
     const match = matches[0]
     // If the value of the match is an array or object, we cannot safely optimise this since the meaning
     // of pre-existing operations might change (in theory, at least), so we bail
-    if (typeof match.value == 'object') {
+    if (typeof match.value === 'object') {
       // console.log("Not optimisable because old value is object")
       return false
     }
     // If the new and old value are the equal, we optimise this operation by discarding it
     // Now, let's build the operation
     let op
-    if (match.value == nextValue) {
+    if (match.value === nextValue) {
       // If new and old values are equal, we optimise this by deleting the operation
       // console.log("Omitting operation")
       op = null
-    } else if (typeof match.value == 'string' && typeof nextValue == 'string') {
+    } else if (typeof match.value === 'string' && typeof nextValue === 'string') {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
       const patch = this.dmp.patch_make(match.value, nextValue).map(patch => patch.toString()).join('')

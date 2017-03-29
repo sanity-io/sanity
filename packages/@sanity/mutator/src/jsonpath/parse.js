@@ -1,13 +1,13 @@
 // Converts a string into an abstract syntax tree representation
 
 import tokenize from './tokenize'
-import _ from 'lodash'
+import {uniq} from 'lodash'
 
 // TODO: Support '*'
 
 class Parser {
   tokens : Array
-  length : integer
+  length : number
   i : number
   constructor(path : string) {
     this.tokens = tokenize(path)
@@ -318,8 +318,7 @@ function unionFromTerms(terms) : Object {
     }
   })
   if (result.indexes) {
-    const pre = result.indexes
-    result.indexes = _.uniq(result.indexes)
+    result.indexes = uniq(result.indexes)
   }
   return result
 }
@@ -328,7 +327,7 @@ function mergeUnions(union1, union2) : Object {
   const result = {
     type: 'union'
   }
-  _.uniq(Object.keys(union1).concat(Object.keys(union2))).forEach(key => {
+  uniq(Object.keys(union1).concat(Object.keys(union2))).forEach(key => {
     result[key] = (union1[key] || []).concat(union2[key] || [])
   })
   return result
