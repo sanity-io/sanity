@@ -4,8 +4,8 @@ npm-shrinkwrap.json
 .DS_Store
 coverage
 .idea
-npm-shrinkwrap.json
 /lib
 form-builder-old
 plugins/@sanity
 examples/schema-testbed/plugins/@sanity
+flow-typed

@@ -1,3 +1,4 @@
+// @flow weak
 // Connects the FormBuilder with various sanity roles
 import React, {PropTypes} from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
@@ -7,7 +8,7 @@ import {Patcher} from '@sanity/mutator'
 import subscriptionManager from '../utils/subscriptionManager'
 import schema from 'part:@sanity/base/schema'
 import toGradientPatch from './utils/toGradientPatch'
-import arrify from 'arrify'
+import PatchEvent from '../PatchEvent'
 
 function getInitialState() {
   return {
@@ -147,8 +148,8 @@ export default class WithFormBuilderValue extends React.PureComponent {
 
   }, 1000, {leading: true, trailing: true})
 
-  handleChange = event => {
-    this.document.patch(arrify(event.patch).map(toGradientPatch))
+  handleChange = (event : PatchEvent) => {
+    this.document.patch(event.patches.map(toGradientPatch))
     this.commit()
   }
 

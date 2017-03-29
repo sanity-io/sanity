@@ -1,16 +1,19 @@
+// @flow weak
 import React, {PropTypes} from 'react'
 import {omit, groupBy, get} from 'lodash'
-import RenderField from '../Object/RenderField'
-import ObjectValueContainer from '../Object/ObjectContainer'
+
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
+import ImageLoader from 'part:@sanity/components/utilities/image-loader'
+
+import RenderField from '../Object/RenderField'
+import ObjectValueContainer from '../Object/ObjectContainer'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
-import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
-import ImageLoader from 'part:@sanity/components/utilities/image-loader'
-import arrify from 'arrify'
 import subscriptionManager from '../../utils/subscriptionManager'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -114,17 +117,6 @@ export default class ImageInput extends React.PureComponent {
     return this.props.type.fields.find(field => field.name === fieldName)
   }
 
-  createSetIfMissingPatch() {
-    return {
-      type: 'setIfMissing',
-      path: [],
-      value: {
-        _type: this.props.type.name,
-        asset: {_type: 'reference'}
-      }
-    }
-  }
-
   setStateIfMounted(...args) {
     if (!this._unmounted) {
       this.setState(...args)
@@ -140,27 +132,23 @@ export default class ImageInput extends React.PureComponent {
     }
 
     if (event.type === 'complete') {
-      const {onChange} = this.props
+      const {onChange, type} = this.props
       this.setStateIfMounted({
         uploadingImage: null,
         status: 'complete',
         materializedImage: event.asset
       }, () => {
-        // Important: needs to be emitted after the state is uploaded
+        // Important: needs to be emitted after the state is updated
         // or else materializing on the next componentWillReceiveProps may not
         // be able to compare with current materialized image
-        onChange({
-          patch: [
-            this.createSetIfMissingPatch(),
-            {
-              type: 'set',
-              path: ['asset'],
-              value: {_type: 'reference', _ref: event.id}
-            }
-          ]
-        })
+        onChange(PatchEvent.from(
+          setIfMissing({
+            _type: type.name,
+            asset: {_type: 'reference'}
+          }),
+          set({_type: 'reference', _ref: event.id}, ['asset'])
+        ))
       })
-
     }
   }
 
@@ -178,7 +166,7 @@ export default class ImageInput extends React.PureComponent {
   handleClearValue = event => {
     event.preventDefault()
     const {onChange} = this.props
-    onChange({patch: {type: 'unset'}})
+    onChange(PatchEvent.from(unset()))
     this.setState({status: 'ready'})
   }
 
@@ -192,19 +180,15 @@ export default class ImageInput extends React.PureComponent {
     })
   }
 
-  handleFieldChange = (event, field) => {
+  handleFieldChange = (event : PatchEvent, field) => {
+    const {onChange, type} = this.props
 
-    const {onChange} = this.props
-
-    const setIfMissingPatch = this.createSetIfMissingPatch()
-
-    const patches = [setIfMissingPatch].concat(arrify(event.patch).map(patch => {
-      return {
-        ...patch,
-        path: [field.name, ...(patch.path || [])]
-      }
-    }))
-    onChange({patch: patches})
+    onChange(event
+      .prefixAll(field.name)
+      .prepend(setIfMissing({
+        _type: type.name,
+        asset: {_type: 'reference'}
+      })))
   }
 
   handleFieldEnter = (event, fieldName) => {
@@ -220,22 +204,17 @@ export default class ImageInput extends React.PureComponent {
   }
 
   handleImageToolChange = newValue => {
-    const {onChange} = this.props
-    onChange({
-      patch: [
-        this.createSetIfMissingPatch(),
-        {
-          type: 'set',
-          path: ['crop'],
-          value: newValue.crop
-        },
-        {
-          type: 'set',
-          path: ['hotspot'],
-          value: newValue.hotspot
-        }
-      ]
-    })
+    const {onChange, type} = this.props
+    onChange(
+      PatchEvent.from(
+        setIfMissing({
+          _type: type.name,
+          asset: {_type: 'reference'}
+        }),
+        set(newValue.crop, ['crop']),
+        set(newValue.hotspot, ['hotspot'])
+      )
+    )
   }
 
   getImageUrl() {

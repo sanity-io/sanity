@@ -4,6 +4,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
+import PatchEvent, {set, unset} from '../../PatchEvent'
 
 export default class ArrayOfStringsSelect extends React.PureComponent {
   static propTypes = {
@@ -18,21 +19,25 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
   }
 
   handleChange = event => {
-    const {onChange, type, value = []} = this.props
+    const {type, value = []} = this.props
 
     const list = get(type, 'options.list')
 
-    const nextValue = list
-      .map(item => item.value)
-      .filter(itemValue => {
-        return event.target.value === itemValue ? event.target.checked : value.includes(itemValue)
-      })
+    const eventValue = event.target.value
 
-    onChange({
-      patch: nextValue.length > 0
-        ? {type: 'set', value: nextValue}
-        : {type: 'unset'}
-    })
+    const nextValue = list
+      .filter(item => (
+        eventValue === item.value
+          ? event.target.checked
+          : value.includes(item.value)
+      ))
+      .map(item => item.value)
+
+    this.set(nextValue)
+  }
+
+  set(nextValue) {
+    this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
   }
 
   handleFocus = item => {
@@ -77,7 +82,7 @@ export default class ArrayOfStringsSelect extends React.PureComponent {
                     checked={checked}
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
-                    focus={this.state.focusedItem === item}
+                    hasFocus={this.state.focusedItem === item}
                   />
                 </div>
               )

@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
+import PatchEvent, {set} from '../PatchEvent'
 
 export default class StringSelect extends React.PureComponent {
   static displayName = 'StringSelect';
@@ -36,13 +37,9 @@ export default class StringSelect extends React.PureComponent {
   }
 
   handleChange(item) {
-    if (typeof (item) === 'object') {
-      this.props.onChange({patch: {type: 'set', value: item.value}})
-    }
+    const {onChange} = this.props
 
-    if (typeof (item) === 'string') {
-      this.props.onChange({patch: {type: 'set', value: item}})
-    }
+    onChange(PatchEvent.from(set(typeof item === 'string' ? item : item.value)))
   }
 
   handleFocus = () => {

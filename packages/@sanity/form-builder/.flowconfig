@@ -1,0 +1,8 @@
+[include]
+./src
+[libs]
+defs
+[ignore]
+.*/examples/.*
+.*/node_modules/.*
+.*/../mutator/.*

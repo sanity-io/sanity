@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import BlockEditor from './BlockEditor'
 import {throttle} from 'lodash'
 import SimpleSlateValueContainer from './SimpleSlateValueContainer'
+import PatchEvent, {set, unset} from '../../PatchEvent'
 
 export default class Syncer extends React.PureComponent {
   static valueContainer = SimpleSlateValueContainer;
@@ -40,11 +41,7 @@ export default class Syncer extends React.PureComponent {
     const {value} = this.state
     const nextVal = value.serialize()
 
-    const patch = nextVal
-      ? {type: 'set', value: nextVal}
-      : {type: 'unset'}
-
-    onChange({patch})
+    onChange(PatchEvent.from(nextVal ? set(nextVal) : unset()))
 
   }, 1000, {trailing: true})
 

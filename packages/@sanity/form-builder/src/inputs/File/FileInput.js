@@ -1,14 +1,18 @@
+// @flow weak
 import React, {PropTypes} from 'react'
 import FileSelect from './FileSelect'
-import {omit, uniqueId} from 'lodash'
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import ObjectValueContainer from '../Object/ObjectContainer'
+import PatchEvent, {set, setIfMissing} from '../../PatchEvent'
 
 export default class FileInput extends React.PureComponent {
   static propTypes = {
+    value: PropTypes.object.isRequired,
+    type: PropTypes.object.isRequired,
+    level: PropTypes.number,
     onChange: PropTypes.func,
     upload: PropTypes.func.isRequired,
-    value: PropTypes.object.isRequired,
   }
   static valueContainer = ObjectValueContainer
 
@@ -21,6 +25,8 @@ export default class FileInput extends React.PureComponent {
 
   subscription = null
 
+  _inputId = uniqueId('FileInput')
+
   upload(file) {
     this.cancel()
     this.setState({uploadingFile: file})
@@ -30,6 +36,7 @@ export default class FileInput extends React.PureComponent {
       error: this.handleUploadError
     })
   }
+
   componentWillUnmount() {
     this.cancel()
   }
@@ -39,14 +46,14 @@ export default class FileInput extends React.PureComponent {
     }
   }
 
-  createSetIfMissingPatch() {
-    return {
-      type: 'setIfMissing',
-      value: {
-        _type: this.props.value.context.type.type,
-        asset: {}
-      }
-    }
+  setRef(id) {
+    this.props.onChange(PatchEvent.from(
+      setIfMissing({
+        _type: this.props.type.name,
+        asset: {_type: 'reference'}
+      }),
+      set({_ref: id}, ['asset'])
+    ))
   }
 
   handleUploadProgress = event => {
@@ -58,17 +65,7 @@ export default class FileInput extends React.PureComponent {
     }
 
     if (event.type === 'complete') {
-      const {onChange} = this.props
-      onChange({
-        patch: this.createSetIfMissingPatch()
-      })
-      onChange({
-        patch: {
-          type: 'set',
-          path: ['asset'],
-          value: {_ref: event.id}
-        }
-      })
+      this.setRef(event.id)
       this.setState({
         uploadingFile: null,
         status: 'complete'
@@ -106,22 +103,22 @@ export default class FileInput extends React.PureComponent {
   render() {
     // TODO: Render additional fields
     const {status, progress, uploadingFile} = this.state
-    const {type, level, value, fieldName, ...rest} = omit(this.props,
-      'upload',
-      'onChange',
-      'onEnter',
-      'validation', // todo
-      'focus' // todo
-    )
-    const inputId = uniqueId('FormBuilderText')
+    const {
+      type,
+      level,
+      value,
+      upload,
+      onChange,
+      ...rest
+    } = this.props
+
     return (
-      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
         {status && <h2>{status}</h2>}
         {uploadingFile && <b>Uploading {uploadingFile.name}</b>}
         {progress && <pre>{JSON.stringify(progress)}</pre>}
         {value && <pre>{JSON.stringify(value)}</pre>}
         <FileSelect
-          name={fieldName}
           onSelect={this.handleSelect}
           {...rest}
         >

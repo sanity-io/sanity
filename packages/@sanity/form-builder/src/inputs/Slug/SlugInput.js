@@ -4,8 +4,9 @@ import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import {isEqual, uniqueId, debounce} from 'lodash'
+import {uniqueId, debounce} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import PatchEvent, {set, unset} from '../../PatchEvent'
 
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
@@ -84,13 +85,7 @@ export default class SlugInput extends React.Component {
 
   updateValue(value) {
     this.setState({loading: false})
-    this.props.onChange({
-      patch: {
-        type: value ? 'set' : 'unset',
-        path: [],
-        value: value
-      }
-    })
+    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
   updateValueWithUniquenessCheck(value) {

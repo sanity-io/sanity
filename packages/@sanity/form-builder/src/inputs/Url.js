@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
+import PatchEvent, {set, unset} from '../PatchEvent'
 
 export default class Url extends React.Component {
   static propTypes = {
@@ -17,13 +18,7 @@ export default class Url extends React.Component {
 
   handleChange = event => {
     const value = event.target.value || undefined
-    this.props.onChange({
-      patch: {
-        type: value ? 'set' : 'unset',
-        path: [],
-        value: value
-      }
-    })
+    this.props.onChange(PatchEvent(value ? set(value) : unset()))
   }
 
   render() {
@@ -38,7 +33,6 @@ export default class Url extends React.Component {
         onKeyPress={this.handleKeyPress}
         value={value}
         hasFocus={hasFocus}
-        ref={this.setInputElement}
       />
     )
   }

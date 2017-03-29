@@ -2,6 +2,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import React, {PropTypes} from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import styles from './styles/ManageInvalidValue.css'
+import PatchEvent, {unset} from '../../PatchEvent'
 
 export default class ManageInvalidValue extends React.PureComponent {
 
@@ -15,7 +16,7 @@ export default class ManageInvalidValue extends React.PureComponent {
 
   handleResetClicked = () => {
     const {onChange, field} = this.props
-    onChange({patch: {type: 'unset'}}, field)
+    onChange(PatchEvent.from(unset()), field)
   }
 
   render() {

@@ -1,14 +1,16 @@
+// @flow weak
 /* eslint-disable import/no-extraneous-dependencies */
 import React, {PropTypes} from 'react'
+import {get, uniqueId} from 'lodash'
 import TagInput from 'part:@sanity/components/tags/textfield'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import DefaultList from 'part:@sanity/components/lists/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {get, uniqueId} from 'lodash'
-import styles from './styles/ArrayOfStrings.css'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import styles from './styles/ArrayOfStrings.css'
+import PatchEvent, {set, unset} from '../../PatchEvent'
 
 function move(arr, from, to) {
   const copy = arr.slice()
@@ -36,15 +38,25 @@ export default class ArrayOfStrings extends React.PureComponent {
     hasFocus: this.props.hasFocus
   }
 
-  handleRemoveItem = index => {
-    const nextVal = this.props.value.slice()
-    nextVal.splice(index, 1)
-    this.props.onChange({
-      patch: {
-        type: 'set',
-        value: nextVal
-      }
-    })
+  set(nextValue : string[]) {
+    const patch = nextValue.length === 0 ? unset() : set(nextValue)
+    this.props.onChange(PatchEvent.from(patch))
+  }
+
+  setAt(index : number, nextItemValue : string) {
+    this.set(this.props.value.map((item, i) => (i === index ? nextItemValue : item)))
+  }
+
+  removeAt(index : number) {
+    this.set(this.props.value.filter((_, i) => i !== index))
+  }
+
+  append(value : string) {
+    this.set((this.props.value || []).concat(value))
+  }
+
+  handleRemoveItem = (index : number) => {
+    this.removeAt(index)
   }
 
   handleFocus = () => {
@@ -59,57 +71,27 @@ export default class ArrayOfStrings extends React.PureComponent {
     })
   }
 
-  handleAddString = string => {
-    const {value, onChange} = this.props
-
-    onChange({
-      patch: {
-        type: 'set', value: (value || []).concat(string)
-      }
-    })
+  handleAddItem = item => {
+    this.append(item)
   }
 
   handleAddBtnClick = () => {
-    this.handleAddString('')
+    this.append('')
   }
 
   handleInputChange = event => {
-    const {value, onChange} = this.props
-    const i = event.target.getAttribute('data-index')
-
-    const nextValue = value.slice()
-    nextValue[i] = event.target.value
-
-    onChange({
-      patch: {
-        type: 'set', value: nextValue
-      }
-    })
+    const {target} = event
+    this.setAt(Number(target.getAttribute('data-index')), target.value)
   }
 
   handleRemove = event => {
-    const index = event.currentTarget.getAttribute('data-index')
-    const {value, onChange} = this.props
-
-    const nextValue = value.slice()
-
-    nextValue.splice(index, 1)
-
-    onChange({
-      patch: {
-        type: 'set', value: nextValue
-      }
-    })
+    this.removeAt(Number(event.currentTarget.getAttribute('data-index')))
   }
 
   handleMove = event => {
-    const {value, onChange} = this.props
+    const {value} = this.props
     const {oldIndex, newIndex} = event
-    onChange({
-      patch: {
-        type: 'set', value: move(value, oldIndex, newIndex)
-      }
-    })
+    this.set(move(value, oldIndex, newIndex))
   }
 
   renderItem = item => {
@@ -119,7 +101,6 @@ export default class ArrayOfStrings extends React.PureComponent {
         <label className={styles.inputLabel} htmlFor={id}>Value</label>
         <DefaultTextInput
           value={item.value}
-          className={styles.input}
           onChange={this.handleInputChange}
           data-index={item.index}
           id={id}
@@ -132,7 +113,6 @@ export default class ArrayOfStrings extends React.PureComponent {
           title="Delete"
           data-index={item.index}
           onClick={this.handleRemove}
-          onMouseDown={this.handleMouseDown}
         />
       </div>
     )
@@ -149,7 +129,6 @@ export default class ArrayOfStrings extends React.PureComponent {
       <DefaultList
         items={items}
         renderItem={this.renderItem}
-        onSelect={this.handleItemEdit}
         sortable={sortable}
         onSortEnd={this.handleMove}
         useDragHandle
@@ -171,7 +150,7 @@ export default class ArrayOfStrings extends React.PureComponent {
           description={description}
           tags={value || []}
           onRemoveTag={this.handleRemoveItem}
-          onAddTag={this.handleAddString}
+          onAddTag={this.handleAddItem}
           hasFocus={hasFocus}
         />
       )
