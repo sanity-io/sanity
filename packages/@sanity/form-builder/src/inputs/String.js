@@ -13,7 +13,7 @@ export default class Str extends React.PureComponent {
     validation: PropTypes.shape({
       messages: PropTypes.array
     }),
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func
   };
@@ -25,7 +25,7 @@ export default class Str extends React.PureComponent {
   }
 
   state = {
-    hasFocus: this.props.focus
+    hasFocus: this.props.hasFocus
   }
 
 
@@ -72,7 +72,7 @@ export default class Str extends React.PureComponent {
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}
-        focus={hasFocus}
+        hasFocus={hasFocus}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       />

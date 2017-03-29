@@ -10,7 +10,7 @@ export default class StringSelect extends React.PureComponent {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
   };
@@ -27,7 +27,7 @@ export default class StringSelect extends React.PureComponent {
     this.handleChange = this.handleChange.bind(this)
     this.setInputElement = this.setInputElement.bind(this)
     this.state = {
-      hasFocus: this.props.focus
+      hasFocus: this.props.hasFocus
     }
   }
 
@@ -109,7 +109,7 @@ export default class StringSelect extends React.PureComponent {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         items={items}
-        focus={this.state.hasFocus}
+        hasFocus={this.state.hasFocus}
         ref={this.setInputElement}
       />
     )

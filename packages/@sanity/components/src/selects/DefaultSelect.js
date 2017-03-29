@@ -15,7 +15,7 @@ export default class DefaultSelect extends React.Component {
     hasFocus: PropTypes.bool,
     isClearable: PropTypes.bool,
     level: PropTypes.number,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -27,7 +27,7 @@ export default class DefaultSelect extends React.Component {
     onChange() {},
     onBlur() {},
     onFocus() {},
-    focus: false
+    hasFocus: false
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -45,13 +45,13 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {label, error, items, value, level, onFocus, onBlur, focus} = this.props
+    const {label, error, items, value, level, onFocus, onBlur, hasFocus} = this.props
 
     return (
       <FormField
         className={`
           ${error ? styles.error : styles.root}
-          ${focus ? styles.hasFocus : ''}`
+          ${hasFocus ? styles.hasFocus : ''}`
         }
         label={label}
         labelHtmlFor={this._inputId || ''}

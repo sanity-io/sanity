@@ -12,7 +12,7 @@ export default class RadioButton extends React.Component {
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
     name: PropTypes.string,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -42,7 +42,7 @@ export default class RadioButton extends React.Component {
   }
 
   render() {
-    const {disabled, checked, label, name, focus} = this.props
+    const {disabled, checked, label, name, hasFocus} = this.props
 
     return (
       <label
@@ -50,7 +50,7 @@ export default class RadioButton extends React.Component {
           ${styles.root}
           ${disabled ? styles.isDisabled : ''}
           ${checked ? styles.isChecked : styles.unChecked}
-          ${focus ? styles.isFocused : ''}
+          ${hasFocus ? styles.isFocused : ''}
         `}
         onMouseUp={this.handleMouseUp}
       >

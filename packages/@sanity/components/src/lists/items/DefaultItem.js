@@ -8,7 +8,7 @@ export default class DefaultItem extends React.Component {
     item: itemPropType,
     onSelect: PropTypes.func,
     onOpen: PropTypes.func,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -34,8 +34,8 @@ export default class DefaultItem extends React.Component {
     this._domElement = domElement
   }
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.focus && !this.props.focus) {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.hasFocus && this.props.hasFocus) {
       this._domElement.focus()
     }
   }

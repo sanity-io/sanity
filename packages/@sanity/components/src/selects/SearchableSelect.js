@@ -19,7 +19,7 @@ export default class SearchableSelect extends React.Component {
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func,
     items: PropTypes.array,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -132,7 +132,7 @@ export default class SearchableSelect extends React.Component {
     return (
       <StatelessSearchableSelect
         {...this.props}
-        focus={hasFocus}
+        hasFocus={hasFocus}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         onHighlightIndexChange={this.handleHighlightIndexChange}

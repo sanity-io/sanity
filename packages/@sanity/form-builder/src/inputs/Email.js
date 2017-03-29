@@ -8,7 +8,7 @@ export default class Email extends React.PureComponent {
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -17,11 +17,11 @@ export default class Email extends React.PureComponent {
   }
 
   state = {
-    hasFocus: this.props.focus
+    hasFocus: this.props.hasFocus
   }
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.focus != this.props.focus) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.hasFocus !== this.props.hasFocus) {
       this.handleFocus()
     }
   }
@@ -63,8 +63,8 @@ export default class Email extends React.PureComponent {
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
+        hasFocus={hasFocus}
         value={value}
-        focus={hasFocus}
         ref={this.setInputElement}
       />
     )

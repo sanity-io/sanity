@@ -9,10 +9,6 @@ export default class FuzzySearchableSelect extends React.Component {
     onChange: PropTypes.func,
     value: PropTypes.object,
     error: PropTypes.bool,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    hasFocus: PropTypes.bool,
-    isClearable: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -26,17 +22,8 @@ export default class FuzzySearchableSelect extends React.Component {
     onFocus() {}
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.hasFocus != this.props.hasFocus) {
-      this.handleFocus()
-    }
-  }
-
   constructor(props, context) {
     super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
 
     const fuseOptions = {
@@ -49,7 +36,6 @@ export default class FuzzySearchableSelect extends React.Component {
 
     this.state = {
       searchResult: [],
-      hasFocus: false,
       query: null
     }
   }

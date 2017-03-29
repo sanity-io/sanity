@@ -25,7 +25,7 @@ export default class ArrayOfStrings extends React.PureComponent {
     level: PropTypes.number,
     onChange: PropTypes.func,
     description: PropTypes.string,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static contextTypes = {
@@ -33,7 +33,7 @@ export default class ArrayOfStrings extends React.PureComponent {
   }
 
   state = {
-    hasFocus: this.props.focus
+    hasFocus: this.props.hasFocus
   }
 
   handleRemoveItem = index => {
@@ -121,7 +121,6 @@ export default class ArrayOfStrings extends React.PureComponent {
           value={item.value}
           className={styles.input}
           onChange={this.handleInputChange}
-          onFocus={this.handleInputFocus}
           data-index={item.index}
           id={id}
         />
@@ -173,7 +172,7 @@ export default class ArrayOfStrings extends React.PureComponent {
           tags={value || []}
           onRemoveTag={this.handleRemoveItem}
           onAddTag={this.handleAddString}
-          focus={hasFocus}
+          hasFocus={hasFocus}
         />
       )
     }

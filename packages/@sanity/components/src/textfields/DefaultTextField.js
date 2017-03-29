@@ -22,12 +22,13 @@ export default class DefaultTextField extends React.Component {
     isClearable: PropTypes.bool,
     className: PropTypes.string,
     description: PropTypes.string,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
     level: 0,
     value: '',
+    hasFocus: false,
     onKeyPress() {},
     onChange() {},
     onFocus() {},
@@ -52,7 +53,7 @@ export default class DefaultTextField extends React.Component {
       className,
       level,
       description,
-      focus,
+      hasFocus,
       onChange,
       onKeyPress,
       onFocus,
@@ -81,7 +82,7 @@ export default class DefaultTextField extends React.Component {
           onBlur={onBlur}
           onClear={this.handleClear}
           isClearable={isClearable}
-          focus={focus}
+          hasFocus={hasFocus}
         />
       </FormField>
     )

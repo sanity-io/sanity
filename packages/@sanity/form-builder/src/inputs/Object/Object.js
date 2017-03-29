@@ -14,7 +14,7 @@ export default class ObjectInput extends React.PureComponent {
     type: FormBuilderPropTypes.type,
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
     level: PropTypes.number,
@@ -49,7 +49,7 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
-    const {value, focus, validation} = this.props
+    const {value, hasFocus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
     const fieldValue = value && value.getAttribute(field.name)
@@ -57,7 +57,7 @@ export default class ObjectInput extends React.PureComponent {
     return (
       <RenderField
         key={field.name}
-        focus={focus && index === 0}
+        hasFocus={hasFocus && index === 0}
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}

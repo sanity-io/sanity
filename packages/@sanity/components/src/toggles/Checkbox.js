@@ -11,7 +11,7 @@ export default class Checkbox extends React.Component {
     onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     value: PropTypes.string
   }
 
@@ -44,7 +44,7 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const {disabled, checked, onChange, focus, value} = this.props
+    const {disabled, checked, onChange, hasFocus, value} = this.props
 
     return (
       <label
@@ -53,7 +53,7 @@ export default class Checkbox extends React.Component {
           ${styles.root}
           ${disabled ? styles.isDisabled : styles.isEnabled}
           ${checked ? styles.isChecked : styles.unChecked}
-          ${focus ? styles.hasFocus : ''}
+          ${hasFocus ? styles.hasFocus : ''}
         `}
         onMouseUp={this.handleMouseUp}
       >
