@@ -7,6 +7,7 @@ const test = require('tape')
 const nock = require('nock')
 const assign = require('xtend')
 const sanityClient = require('../src/sanityClient')
+const sseServer = require('./helpers/sseServer')
 
 const apiHost = 'https://api.sanity.url'
 const clientConfig = {apiHost: apiHost, namespace: 'beerns', gradientMode: true}
@@ -59,3 +60,31 @@ test('[gradient] can query for single document with token', t => {
     t.equal(res.mood, 'lax', 'data should match')
   }).catch(t.ifError).then(t.end)
 })
+
+test('[gradient] can listen in gradient mode', t => {
+  function onRequest(opts) {
+    t.equal(opts.request.headers.authorization, 'Bearer FooToken', 'should have correct token')
+    opts.channel.send({event: 'mutation', data: {abc: 123}})
+    process.nextTick(() => opts.channel.close())
+  }
+
+  sseServer(onRequest, (err, server) => {
+    if (err) {
+      t.end(err)
+      return
+    }
+
+    const client = getClient({
+      apiHost: `http://localhost:${server.address().port}`,
+      token: 'FooToken',
+    })
+
+    const subscription = client.listen('*').subscribe(msg => {
+      t.deepEqual(msg, {type: 'mutation', abc: 123}, 'should have correct data')
+      subscription.unsubscribe()
+      server.close()
+      t.end()
+    })
+  })
+})
+

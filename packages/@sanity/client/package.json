@@ -37,6 +37,7 @@
     "nyc": "^10.1.2",
     "pretty-bytes": "^4.0.2",
     "rimraf": "^2.6.1",
+    "sse-channel": "^2.0.6",
     "tape": "^4.6.2",
     "uglify-js": "^2.8.15",
     "uglifyify": "^3.0.4"

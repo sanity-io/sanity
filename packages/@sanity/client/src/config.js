@@ -1,11 +1,13 @@
 const assign = require('object-assign')
 const validate = require('./validators')
 
-const defaultConfig = exports.defaultConfig = {
+const defaultConfig = {
   apiHost: 'https://api.sanity.io',
   useProjectHostname: true,
   gradientMode: false
 }
+
+exports.defaultConfig = defaultConfig
 
 exports.initConfig = (config, prevConfig) => {
   const newConfig = assign({}, defaultConfig, prevConfig, config)
