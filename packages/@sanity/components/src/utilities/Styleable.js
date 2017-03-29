@@ -1,19 +1,11 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 
-const DEFAULT_PROPS = {
-  styles: {}
-}
-const PROPTYPES = {
-  styles: PropTypes.object
-}
-
-export default function Styleable(Component, styles) {
+export default function Styleable(Component, defaultStyles) {
   function Styled(props) {
-    const {styles: overrideStyles, ...rest} = props
-    return <Component styles={{...overrideStyles, ...styles}} {...rest} />
+    const {styles, ...rest} = props // eslint-disable-line react/prop-types
+    return <Component styles={{...styles, ...defaultStyles}} {...rest} />
   }
-  Styled.propTypes = PROPTYPES
-  Styled.defaultProps = DEFAULT_PROPS
+  Object.assign(Styled, Component)
   Styled.displayName = `Styleable(${Component.displayName || Component.name})`
   return Styled
 }
