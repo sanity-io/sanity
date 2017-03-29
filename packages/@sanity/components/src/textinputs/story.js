@@ -13,6 +13,7 @@ const VALID_TYPES = [
   'search',
   'tel',
   'text',
+  'number',
   'url',
   'week',
 ]
