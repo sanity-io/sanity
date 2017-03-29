@@ -23,6 +23,6 @@
     "get-random-values": "^1.2.0",
     "in-publish": "^2.0.0",
     "rimraf": "^2.6.1",
-    "tap": "^9.0.3"
+    "tap": "^10.3.0"
   }
 }

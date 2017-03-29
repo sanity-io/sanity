@@ -30,12 +30,12 @@
     "browserify": "^13.3.0",
     "error-capture-middleware": "0.0.2",
     "eslint": "^3.18.0",
-    "eslint-config-sanity": "^2.1.0",
+    "eslint-config-sanity": "^2.1.2",
     "eslint-plugin-flowtype": "^2.30.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.0",
     "express": "^4.15.2",
-    "flow-bin": "^0.38.0",
+    "flow-bin": "^0.42.0",
     "history": "^4.5.1",
     "in-publish": "^2.0.0",
     "object-inspect": "^1.2.1",
@@ -46,7 +46,7 @@
     "remon": "^1.0.2",
     "rimraf": "^2.6.1",
     "staticr": "^4.0.2",
-    "tap": "^9.0.3"
+    "tap": "^10.3.0"
   },
   "repository": {
     "type": "git",
