@@ -15,7 +15,7 @@ export default class DefaultTextArea extends React.Component {
     isClearable: PropTypes.bool,
     rows: PropTypes.number,
     id: PropTypes.string.isRequired,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -34,13 +34,13 @@ export default class DefaultTextArea extends React.Component {
   }
 
   render() {
-    const {value, placeholder, error, isClearable, id, rows, onKeyPress, onChange, onFocus, onBlur, focus} = this.props
+    const {value, placeholder, error, isClearable, id, rows, onKeyPress, onChange, onFocus, onBlur, hasFocus} = this.props
 
     return (
       <div
         className={`
           ${error ? styles.error : styles.root}
-          ${focus ? styles.hasFocus : ''}
+          ${hasFocus ? styles.hasFocus : ''}
         `}
       >
         <textarea

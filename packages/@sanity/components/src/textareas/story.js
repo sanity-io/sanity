@@ -20,7 +20,7 @@ storiesOf('Text areas')
           rows={number('rows', 2)}
           value={text('value')}
           id="ThisIsAnUniqueIdForTextArea"
-          focus={boolean('focus', false)}
+          hasFocus={boolean('hasFocus', false)}
         />
       </Sanity>
     )

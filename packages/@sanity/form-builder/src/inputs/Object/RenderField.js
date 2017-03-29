@@ -15,7 +15,7 @@ export default class RenderField extends React.Component {
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
     level: PropTypes.number,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -34,7 +34,7 @@ export default class RenderField extends React.Component {
   }
 
   render() {
-    const {value, field, level, validation, focus, onChange} = this.props
+    const {value, field, level, validation, hasFocus, onChange} = this.props
 
     const expectedJSType = value.context.type.jsonType
     const valueJSType = resolveJSType(value.value)
@@ -59,7 +59,7 @@ export default class RenderField extends React.Component {
         onChange={this.handleChange}
         onEnter={this.handleEnter}
         level={level}
-        focus={focus}
+        hasFocus={hasFocus}
       />
     )
   }

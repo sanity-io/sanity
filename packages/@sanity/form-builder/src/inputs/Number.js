@@ -10,7 +10,7 @@ export default class Num extends React.Component {
     level: PropTypes.number.isRequired,
     value: PropTypes.number,
     onChange: PropTypes.func,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -33,7 +33,7 @@ export default class Num extends React.Component {
   }
 
   render() {
-    const {value, type, focus, level} = this.props
+    const {value, type, hasFocus, level} = this.props
     return (
       <DefaultTextField
         label={type.title}
@@ -43,7 +43,7 @@ export default class Num extends React.Component {
         placeholder={type.placeholder || 'Must be a number'}
         onChange={this.handleChange}
         value={typeof value === 'undefined' ? value : Number(value)}
-        focus={focus}
+        hasFocus={hasFocus}
       />
     )
   }

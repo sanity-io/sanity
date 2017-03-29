@@ -61,7 +61,7 @@ export default class Text extends React.PureComponent {
           onChange={this.handleChange}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          focus={hasFocus}
+          hasFocus={hasFocus}
           rows={type.rows}
           value={value}
         />

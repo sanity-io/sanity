@@ -7,7 +7,7 @@ export default class Url extends React.Component {
     type: FormBuilderPropTypes.type,
     value: PropTypes.string,
     onChange: PropTypes.func,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   };
 
   static defaultProps = {
@@ -27,7 +27,7 @@ export default class Url extends React.Component {
   }
 
   render() {
-    const {value, type, focus} = this.props
+    const {value, type, hasFocus} = this.props
     return (
       <DefaultTextField
         label={type.title}
@@ -37,7 +37,7 @@ export default class Url extends React.Component {
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
         value={value}
-        focus={focus}
+        hasFocus={hasFocus}
         ref={this.setInputElement}
       />
     )

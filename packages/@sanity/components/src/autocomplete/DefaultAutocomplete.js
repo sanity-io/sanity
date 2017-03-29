@@ -15,7 +15,6 @@ export default class DefaultAutocomplete extends React.Component {
     hasError: PropTypes.bool,
     onKeyPress: PropTypes.func,
     placeholder: PropTypes.string,
-    focus: PropTypes.func,
     isClearable: PropTypes.bool,
     isOpen: PropTypes.bool,
     id: PropTypes.string,

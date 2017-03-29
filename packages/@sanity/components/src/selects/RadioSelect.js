@@ -75,7 +75,7 @@ export default class RadioSelect extends React.Component {
                     checked={value === item}
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
-                    focus={focusedItem == item}
+                    hasFocus={focusedItem === item}
                   />
                 </div>
               )

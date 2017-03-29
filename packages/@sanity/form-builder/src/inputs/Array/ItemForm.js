@@ -6,7 +6,7 @@ export default class ItemForm extends React.PureComponent {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func
   }
@@ -30,7 +30,7 @@ export default class ItemForm extends React.PureComponent {
   }
 
   render() {
-    const {value, type, focus, level} = this.props
+    const {value, type, hasFocus, level} = this.props
 
     const InputComponent = this.context.formBuilder.resolveInputComponent(type)
     if (!InputComponent) {
@@ -48,7 +48,7 @@ export default class ItemForm extends React.PureComponent {
         value={passSerialized ? value.serialize() : value}
         type={type}
         level={level}
-        focus={focus}
+        hasFocus={hasFocus}
         onEnter={this.handleEnter}
         onChange={this.handleChange}
       />

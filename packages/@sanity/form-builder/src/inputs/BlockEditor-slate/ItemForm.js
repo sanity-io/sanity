@@ -1,25 +1,19 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import equals from 'shallow-equals'
 
-export default class ItemForm extends React.Component {
+export default class ItemForm extends React.PureComponent {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
-    focus: PropTypes.bool,
-    onChange: PropTypes.func,
-    onRemove: PropTypes.func,
-    onClose: PropTypes.func
+    hasFocus: PropTypes.bool,
+    onChange: PropTypes.func
   };
 
   static contextTypes = {
     formBuilder: PropTypes.object
   };
 
-  shouldComponentUpdate(nextProps) {
-    return !equals(nextProps, this.props)
-  }
   resolveInputComponent(type, fieldType) {
     return this.context.formBuilder.resolveInputComponent(type, fieldType)
   }
@@ -30,7 +24,7 @@ export default class ItemForm extends React.Component {
   }
 
   render() {
-    const {value, type, focus, level} = this.props
+    const {value, type, hasFocus, level} = this.props
 
     const InputComponent = this.context.formBuilder.resolveInputComponent(type)
     if (!InputComponent) {
@@ -48,7 +42,7 @@ export default class ItemForm extends React.Component {
         value={passSerialized ? value.serialize() : value}
         type={type}
         level={level}
-        focus={focus}
+        hasFocus={hasFocus}
         onChange={this.handleChange}
       />
     )

@@ -57,7 +57,7 @@ export default class Bool extends React.Component {
           description={type.description}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          focus={hasFocus}
+          hasFocus={hasFocus}
         />
       )
     }
@@ -70,7 +70,7 @@ export default class Bool extends React.Component {
         description={type.description}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        focus={hasFocus}
+        hasFocus={hasFocus}
       />
     )
   }

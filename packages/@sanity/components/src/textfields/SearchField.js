@@ -11,9 +11,7 @@ export default class SearchFieldField extends React.Component {
     onKeyPress: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
-
-    placeholder: PropTypes.string,
-    focus: PropTypes.bool
+    placeholder: PropTypes.string
   }
 
   static defaultProps = {
@@ -29,8 +27,9 @@ export default class SearchFieldField extends React.Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
   }
+  _inputId = uniqueId('searchfield')
 
-  handleChange(event) {
+  handleChange = event => {
     const value = event.target.value
     this.props.onChange(value)
   }
@@ -48,7 +47,6 @@ export default class SearchFieldField extends React.Component {
       label,
       placeholder,
       value,
-      focus,
       onChange,
       onFocus,
       onBlur,
@@ -72,7 +70,6 @@ export default class SearchFieldField extends React.Component {
           value={value}
           placeholder={placeholder}
           onKeyPress={onKeyPress}
-          focus={focus}
         />
       </div>
     )

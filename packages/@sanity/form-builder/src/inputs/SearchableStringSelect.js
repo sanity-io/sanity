@@ -9,7 +9,7 @@ export default class SearchableStringSelect extends React.Component {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
   };
@@ -46,7 +46,7 @@ export default class SearchableStringSelect extends React.Component {
   }
 
   render() {
-    const {value, type, focus, level} = this.props
+    const {value, type, hasFocus, level} = this.props
 
     const items = type.options.list.map(item => {
       return {title: item}
@@ -67,7 +67,7 @@ export default class SearchableStringSelect extends React.Component {
         onFocus={this.handleFocus}
         value={currentItem}
         items={items}
-        focus={focus}
+        hasFocus={hasFocus}
       />
     )
   }

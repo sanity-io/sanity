@@ -9,7 +9,7 @@ export default class Switch extends React.Component {
     onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    focus: PropTypes.bool
+    hasFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -27,14 +27,14 @@ export default class Switch extends React.Component {
   }
 
   render() {
-    const {disabled, checked, onChange, onFocus, focus} = this.props
+    const {disabled, checked, onChange, onFocus, hasFocus} = this.props
 
     return (
       <label
         className={`
           ${disabled ? styles.disabled : styles.enabled}
           ${checked ? styles.isChecked : styles.unchecked}
-          ${focus ? styles.hasFocus : ''}
+          ${hasFocus ? styles.hasFocus : ''}
         `}
         onMouseUp={this.handleMouseUp}
       >

@@ -10,7 +10,7 @@ export default class TagsTextField extends React.Component {
     onAddTag: PropTypes.func.isRequired,
     onRemoveTag: PropTypes.func.isRequired,
     error: PropTypes.bool,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
     isClearable: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.string),
     description: PropTypes.string,
@@ -31,7 +31,7 @@ export default class TagsTextField extends React.Component {
 
     this.state = {
       length: 4,
-      hasFocus: this.props.focus
+      hasFocus: this.props.hasFocus
     }
   }
 

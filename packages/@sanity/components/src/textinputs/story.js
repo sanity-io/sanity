@@ -64,7 +64,7 @@ storiesOf('Text inputs')
             value={text('value', false)}
             type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
             error={boolean('error', false)}
-            focus={boolean('focus', false)}
+            hasFocus={boolean('hasFocus', false)}
             showClearButton={boolean('clear button', false)}
             selected={boolean('selected', false)}
             onChange={action('onChange')}
@@ -87,7 +87,7 @@ storiesOf('Text inputs')
             value={text('value', false)}
             type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
             error={boolean('error', false)}
-            focus={boolean('focus', false)}
+            hasFocus={boolean('hasFocus', false)}
             showClearButton={boolean('clear button', false)}
             selected={boolean('selected', false)}
             onChange={action('onChange')}

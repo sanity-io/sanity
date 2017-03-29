@@ -36,7 +36,7 @@ storiesOf('Textfields')
           label={text('label', 'This is the label')}
           placeholder={text('placeholder', 'This is the placeholder')}
           value={text('value')}
-          focus={boolean('focus', false)}
+          hasFocus={boolean('hasFocus', false)}
           onChange={action('onChange')}
           isClearable={boolean('clear button', false)}
         />

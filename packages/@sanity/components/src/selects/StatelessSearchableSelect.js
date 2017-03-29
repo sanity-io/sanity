@@ -17,7 +17,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     description: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.any,
-    focus: PropTypes.bool,
+    hasFocus: PropTypes.bool,
 
     inputValue: PropTypes.string,
     onInputChange: PropTypes.func,
@@ -48,7 +48,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     onClose: noop,
     onInputChange: noop,
     hasError: false,
-    focus: false,
+    hasFocus: false,
     isLoading: false,
     renderItem: item => item,
     items: []
@@ -130,7 +130,7 @@ class StatelessSearchableSelect extends React.PureComponent {
       description,
       items,
       renderItem,
-      focus,
+      hasFocus,
       isOpen,
       highlightIndex,
       isInputSelected,
@@ -156,7 +156,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             onBlur={this.handleInputBlur}
             value={inputValue || ''}
             selected={isInputSelected}
-            focus={focus}
+            hasFocus={hasFocus}
           />
           {
             onClear && inputValue && (

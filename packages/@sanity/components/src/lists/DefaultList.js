@@ -106,9 +106,9 @@ export default class DefaultList extends React.Component {
       focusedItem
     } = this.props
 
-    const isSelected = item == selectedItem
-    const hasFocus = focusedItem == item
-    const isHighlighted = item == highlightedItem
+    const isSelected = item === selectedItem
+    const hasFocus = focusedItem === item
+    const isHighlighted = item === highlightedItem
 
     const renderedItem = renderItem(item, index, {
       isSelected,
@@ -140,7 +140,7 @@ export default class DefaultList extends React.Component {
             onSelect={onSelect}
             onOpen={onOpen}
             selected={isSelected}
-            focus={hasFocus}
+            hasFocus={hasFocus}
           >
 
             {renderedItem}

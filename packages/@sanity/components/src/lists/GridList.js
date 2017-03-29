@@ -105,9 +105,9 @@ class GridList extends React.Component {
       onOpen
     } = this.props
 
-    const isSelected = item == selectedItem
-    const hasFocus = focusedItem == item
-    const isHighlighted = item == highlightedItem
+    const isSelected = item === selectedItem
+    const hasFocus = focusedItem === item
+    const isHighlighted = item === highlightedItem
 
     const renderedItem = renderItem(item, index, {
       isSelected,
@@ -140,7 +140,7 @@ class GridList extends React.Component {
           onSelect={onSelect}
           onOpen={onOpen}
           selected={isSelected}
-          focus={hasFocus}
+          hasFocus={hasFocus}
         >
           {renderedItem}
         </GridListItem>
