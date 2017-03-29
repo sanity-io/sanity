@@ -1,7 +1,11 @@
+// @flow weak
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import subscriptionManager from '../../../utils/subscriptionManager'
+import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+
+const EMPTY = {}
 
 export default class ReferenceSelect extends React.Component {
 
@@ -84,21 +88,17 @@ export default class ReferenceSelect extends React.Component {
   }
 
   handleChange = item => {
-    const setIfMissingPatch = {
-      type: 'setIfMissing',
-      value: {
-        _type: 'reference',
-        _ref: item._id
-      }
-    }
-    const setPatch = {
-      type: 'set',
-      path: ['_ref'],
-      value: item._id
-    }
-    this.props.onChange({
-      patch: [setIfMissingPatch, setPatch]
-    })
+    const {onChange} = this.props
+
+    onChange(PatchEvent.from(item === EMPTY
+      ? unset()
+      : [
+        setIfMissing({
+          _type: 'reference',
+          _ref: item._id
+        }),
+        set(item._id, ['_ref'])
+      ]))
   }
 
   render() {
@@ -114,8 +114,7 @@ export default class ReferenceSelect extends React.Component {
         label={type.title}
         description={type.description}
         onChange={this.handleChange}
-        onFocus={this.handleFocus}
-        items={items}
+        items={[EMPTY, ...items]}
         value={selected}
       />
     )

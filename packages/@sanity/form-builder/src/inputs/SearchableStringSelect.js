@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import {find} from 'lodash'
+import PatchEvent, {set} from '../PatchEvent'
 
 export default class SearchableStringSelect extends React.Component {
 
@@ -27,16 +28,7 @@ export default class SearchableStringSelect extends React.Component {
   }
 
   handleChange(item) {
-    this.props.onChange({
-      patch: {
-        type: 'set',
-        value: item.title
-      }
-    })
-  }
-
-  handleFocus(event) {
-    // Handle focus here
+    this.props.onChange(PatchEvent.from(set(item.value)))
   }
 
   handleKeyPress(event) {
@@ -49,11 +41,11 @@ export default class SearchableStringSelect extends React.Component {
     const {value, type, hasFocus, level} = this.props
 
     const items = type.options.list.map(item => {
-      return {title: item}
+      return {title: item, value: item}
     })
 
     const currentItem = find(items, item => {
-      return item.title == value
+      return item.title === value
     })
 
     return (
@@ -64,7 +56,6 @@ export default class SearchableStringSelect extends React.Component {
         description={type.description}
         onChange={this.handleChange}
         onKeyPress={this.handleKeyPress}
-        onFocus={this.handleFocus}
         value={currentItem}
         items={items}
         hasFocus={hasFocus}

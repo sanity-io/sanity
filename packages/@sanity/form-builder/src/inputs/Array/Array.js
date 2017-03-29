@@ -1,20 +1,22 @@
-/* eslint-disable import/no-extraneous-dependencies */
+//@flow weak
 import React, {PropTypes} from 'react'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import ItemForm from './ItemForm'
-import ItemPreview from './ItemPreview'
-import ArrayContainer from './ArrayContainer'
+import {get} from 'lodash'
+import humanizeList from 'humanize-list'
+
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
+
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import ItemForm from './ItemForm'
+import ItemPreview from './ItemPreview'
+import ArrayContainer from './ArrayContainer'
 import styles from './styles/Array.css'
-import arrify from 'arrify'
 import randomKey from './randomKey'
-import {get} from 'lodash'
-import humanizeList from 'humanize-list'
+import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 
 function createProtoValue(type) {
   if (type.jsonType !== 'object') {
@@ -70,21 +72,10 @@ export default class Arr extends React.Component {
 
   insert(itemValue, position, atIndex) {
     const {onChange} = this.props
-    onChange({
-      patch: [
-        {
-          path: [atIndex],
-          type: 'insert',
-          position: position,
-          items: [itemValue]
-        },
-        {
-          path: [],
-          type: 'setIfMissing',
-          value: [itemValue]
-        }
-      ]
-    })
+    onChange(PatchEvent.from(
+      insert([itemValue], position, [atIndex]),
+      setIfMissing([itemValue])
+    ))
   }
 
   prepend(value) {
@@ -97,15 +88,14 @@ export default class Arr extends React.Component {
 
   handleRemoveItem = item => {
     const {onChange, value} = this.props
-    const target = item.key ? {_key: item.key} : value.indexOf(item)
-    const patch = {
-      type: 'unset',
-      path: [target]
-    }
     if (item.key === this.state.editItemKey) {
       this.setState({editItemKey: null})
     }
-    onChange({patch})
+    onChange(
+      PatchEvent.from(
+        unset(item.key ? [{_key: item.key}] : [value.indexOf(item)])
+      )
+    )
   }
 
   handleClose = () => {
@@ -143,30 +133,15 @@ export default class Arr extends React.Component {
     )
   }
 
-  handleItemChange = (event, item) => {
+  handleItemChange = (event : PatchEvent, item) => {
     const {onChange, value} = this.props
 
     const key = item.key || randomKey(12)
-
-    const setKeyPatch = item.key
-      ? []
-      : [{
-        path: [value.indexOf(item), '_key'],
-        type: 'set',
-        value: key
-      }]
-
-    // Rewrite patch by prepending the item key to its path
-    const patches = []
-      .concat(setKeyPatch)
-      .concat(arrify(event.patch)
-      .map(patch => {
-        return {
-          ...patch,
-          path: [{_key: key}, ...(patch.path || [])]
-        }
-      }))
-    onChange({patch: patches})
+    onChange(
+      event
+        .prefixAll({_key: key})
+        .prepend(item.key ? [] : set(key, [value.indexOf(item), '_key']))
+    )
   }
 
   handleItemEdit = item => {
@@ -183,6 +158,7 @@ export default class Arr extends React.Component {
 
     // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
     if (!item.key || !refItem.key) {
+      // eslint-disable-next-line no-console
       console.error('Neither the item you are moving nor the item you are moving to have a key. Cannot continue.')
       return
     }
@@ -190,20 +166,15 @@ export default class Arr extends React.Component {
     if (event.oldIndex === event.newIndex || item.key === refItem.key) {
       return
     }
-    onChange({
-      patch: [
-        {
-          type: 'unset',
-          path: [{_key: item.key}]
-        },
-        {
-          type: 'insert',
-          path: [{_key: refItem.key}],
-          position: event.oldIndex > event.newIndex ? 'before' : 'after',
-          items: [item.get()]
-        }
-      ]
-    })
+
+    onChange(PatchEvent.from(
+      unset([{_key: item.key}]),
+      insert(
+        [item.get()],
+        event.oldIndex > event.newIndex ? 'before' : 'after',
+        [{_key: refItem.key}]
+      )
+    ))
   }
 
   handleItemEnter = () => {

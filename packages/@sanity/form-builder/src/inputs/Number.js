@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
+import PatchEvent, {set, unset} from '../PatchEvent'
 
-export default class Num extends React.Component {
+export default class NumberInput extends React.Component {
   static displayName = 'Number';
 
   static propTypes = {
@@ -18,18 +19,8 @@ export default class Num extends React.Component {
   }
 
   handleChange = event => {
-    const nextValue = event.target.value === '' ? undefined : Number(event.target.value)
-    this.props.onChange({
-      patch: {
-        type: (typeof nextValue === 'undefined') ? 'unset' : 'set',
-        path: [],
-        value: nextValue
-      }
-    })
-  }
-
-  setInputElement = input => {
-    this.inputElement = input
+    const patch = event.target.value === '' ? unset() : set(Number(event.target.value))
+    this.props.onChange(PatchEvent.from(patch))
   }
 
   render() {
@@ -42,7 +33,7 @@ export default class Num extends React.Component {
         level={level}
         placeholder={type.placeholder || 'Must be a number'}
         onChange={this.handleChange}
-        value={typeof value === 'undefined' ? value : Number(value)}
+        value={value}
         hasFocus={hasFocus}
       />
     )

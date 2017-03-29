@@ -1,8 +1,10 @@
+// @flow weak
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import {uniqueId} from 'lodash'
+import PatchEvent, {set, unset} from '../PatchEvent'
 
 export default class Text extends React.PureComponent {
 
@@ -18,14 +20,11 @@ export default class Text extends React.PureComponent {
     onChange() {}
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.inputId = uniqueId('FormBuilderText')
-    this.state = {
-      hasFocus: false
-    }
+  state = {
+    hasFocus: false
   }
+
+  _inputId = uniqueId('Text')
 
   handleFocus = () => {
     this.setState({
@@ -39,24 +38,18 @@ export default class Text extends React.PureComponent {
     })
   }
 
-  handleChange(event) {
+  handleChange = event => {
     const value = event.target.value || undefined
-    this.props.onChange({
-      patch: {
-        type: value ? 'set' : 'unset',
-        path: [],
-        value: value
-      }
-    })
+    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
   render() {
     const {value, type, level} = this.props
     const {hasFocus} = this.state
     return (
-      <FormField label={type.title} labelHtmlFor={this.inputId} level={level} description={type.description}>
+      <FormField label={type.title} labelHtmlFor={this._inputId} level={level} description={type.description}>
         <TextArea
-          id={this.inputId}
+          id={this._inputId}
           placeholder={type.placeholder}
           onChange={this.handleChange}
           onFocus={this.handleFocus}

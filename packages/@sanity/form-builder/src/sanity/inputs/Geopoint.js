@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import PatchEvent, {set} from '../../PatchEvent'
 
 export default class GeopointInput extends React.Component {
   static propTypes = {
@@ -11,17 +12,11 @@ export default class GeopointInput extends React.Component {
     value: {}
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleLatChange = this.handleLatChange.bind(this)
-    this.handleLonChange = this.handleLonChange.bind(this)
-  }
-
-  handleLatChange(event) {
+  handleLatChange = event => {
     this.handleFieldChange('lat', event.target.value)
   }
 
-  handleLonChange(event) {
+  handleLonChange = event => {
     this.handleFieldChange('lon', event.target.value)
   }
 
@@ -30,7 +25,7 @@ export default class GeopointInput extends React.Component {
     const nextValue = Object.assign({}, value, {
       [fieldName]: fieldValue.trim() ? Number(fieldValue) : undefined
     })
-    onChange({patch: {type: 'set', value: nextValue}})
+    onChange(PatchEvent.from(set(nextValue)))
   }
 
   render() {

@@ -1,9 +1,10 @@
+//@flow weak
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
 import ObjectContainer from './ObjectContainer'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import arrify from 'arrify'
+import PatchEvent, {setIfMissing} from '../../PatchEvent'
 
 export default class ObjectInput extends React.PureComponent {
   static displayName = 'Object'
@@ -17,8 +18,7 @@ export default class ObjectInput extends React.PureComponent {
     hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
-    level: PropTypes.number,
-    isRoot: PropTypes.bool
+    level: PropTypes.number
   };
 
   static defaultProps = {
@@ -27,21 +27,14 @@ export default class ObjectInput extends React.PureComponent {
     level: 0
   };
 
-  handleFieldChange = (event, field) => {
+  handleFieldChange = (event : PatchEvent, field) => {
     const {onChange, type} = this.props
 
-    const setIfMissingPatch = [{
-      type: 'setIfMissing',
-      value: type.name === 'object' ? {} : {_type: type.name}
-    }]
-
-    const patches = setIfMissingPatch.concat(arrify(event.patch).map(patch => {
-      return {
-        ...patch,
-        path: [field.name, ...(patch.path || [])]
-      }
-    }))
-    onChange({patch: patches})
+    onChange(
+      event
+        .prefixAll(field.name)
+        .prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
+    )
   }
 
   handleFieldEnter = (event, field) => {

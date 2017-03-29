@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import {uniqueId} from 'lodash'
+import PatchEvent, {set, unset} from '../../PatchEvent'
 
 export default class FileInput extends React.PureComponent {
 
   static propTypes = {
     type: PropTypes.shape({}).isRequired,
     level: PropTypes.number.isRequired,
-    value: PropTypes.string,
     onChange: PropTypes.func
   };
 
@@ -16,18 +16,19 @@ export default class FileInput extends React.PureComponent {
     onChange() {}
   };
 
+  _inputId = uniqueId('FormBuilderFileInput')
+
   handleChange = event => {
-    const val = event.target.value || undefined
-    this.props.onChange({patch: {type: 'set', value: val}})
+    const value = event.target.value
+    this.props.onChange(PatchEvent(value ? set(value) : unset()))
   }
 
   render() {
     const {type, level} = this.props
-    const inputId = uniqueId('FormBuilderFileInput')
     return (
-      <FormField label={type.title} labelHtmlFor={inputId} level={level}>
+      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
         <File
-          id={inputId}
+          id={this._inputId}
           placeholder={type.placeholder}
           onChange={this.handleChange}
         />

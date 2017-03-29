@@ -2,7 +2,9 @@ import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
+import PatchEvent, {set} from '../PatchEvent'
 
+// Todo: support indeterminate state, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
 export default class Bool extends React.Component {
   static displayName = 'Boolean';
 
@@ -24,12 +26,7 @@ export default class Bool extends React.Component {
   }
 
   handleChange = event => {
-    this.props.onChange({
-      patch: {
-        type: 'set',
-        value: event.target.checked
-      }
-    })
+    this.props.onChange(PatchEvent.from(set(event.target.checked)))
   }
 
   handleFocus = event => {
@@ -48,7 +45,7 @@ export default class Bool extends React.Component {
     const {value, type} = this.props
     const {hasFocus} = this.state
 
-    if (type.options && type.options.layout == 'checkbox') {
+    if (type.options && type.options.layout === 'checkbox') {
       return (
         <Checkbox
           onChange={this.handleChange}

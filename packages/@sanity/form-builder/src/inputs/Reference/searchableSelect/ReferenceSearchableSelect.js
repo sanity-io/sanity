@@ -3,6 +3,7 @@ import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Preview from '../../../Preview'
 import subscriptionManager from '../../../utils/subscriptionManager'
+import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 
 const getInitialState = () => {
   return {
@@ -71,21 +72,13 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleChange = item => {
-    const setIfMissingPatch = {
-      type: 'setIfMissing',
-      value: {
+    this.props.onChange(PatchEvent.from(
+      setIfMissing({
         _type: 'reference',
         _ref: item._id
-      }
-    }
-    const setPatch = {
-      type: 'set',
-      path: ['_ref'],
-      value: item._id
-    }
-    this.props.onChange({
-      patch: [setIfMissingPatch, setPatch]
-    })
+      }),
+      set(item._id, ['_ref'])
+    ))
   }
 
   handleSearch = query => {
@@ -133,10 +126,7 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleClear = item => {
-    const patch = {
-      type: 'unset'
-    }
-    this.props.onChange({patch: patch})
+    this.props.onChange(PatchEvent.from(unset()))
   }
 
   render() {

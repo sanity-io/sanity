@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
+import PatchEvent, {set, unset} from '../PatchEvent'
 
 export default class Email extends React.PureComponent {
   static propTypes = {
@@ -40,13 +41,7 @@ export default class Email extends React.PureComponent {
 
   handleChange = event => {
     const value = event.target.value || undefined
-    this.props.onChange({
-      patch: {
-        type: value ? 'set' : 'unset',
-        path: [],
-        value: value
-      }
-    })
+    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
   render() {

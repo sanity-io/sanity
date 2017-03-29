@@ -22,11 +22,6 @@ export default class SearchFieldField extends React.Component {
     onBlur() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-  }
   _inputId = uniqueId('searchfield')
 
   handleChange = event => {
@@ -34,12 +29,8 @@ export default class SearchFieldField extends React.Component {
     this.props.onChange(value)
   }
 
-  handleKeyPress(event) {
+  handleKeyPress = event => {
     this.props.onKeyPress(event)
-  }
-
-  componentWillMount() {
-    this._inputId = uniqueId('searchfield')
   }
 
   render() {

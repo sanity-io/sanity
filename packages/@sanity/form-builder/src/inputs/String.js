@@ -1,18 +1,17 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import equals from 'shallow-equals'
-import DefaultTextField from 'part:@sanity/components/textfields/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import FormField from 'part:@sanity/components/formfields/default'
+import {uniqueId} from 'lodash'
+import PatchEvent, {set, unset} from '../PatchEvent'
 
-export default class Str extends React.PureComponent {
+export default class StringInput extends React.PureComponent {
   static displayName = 'String';
 
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    validation: PropTypes.shape({
-      messages: PropTypes.array
-    }),
     hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func
@@ -28,16 +27,11 @@ export default class Str extends React.PureComponent {
     hasFocus: this.props.hasFocus
   }
 
+  _inputId = uniqueId('String')
 
   handleChange = event => {
     const value = event.target.value || undefined
-    this.props.onChange({
-      patch: {
-        type: value ? 'set' : 'unset',
-        path: [],
-        value: value
-      }
-    })
+    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
   handleFocus = () => {
@@ -59,23 +53,28 @@ export default class Str extends React.PureComponent {
   }
 
   render() {
-    const {value, type, validation, level} = this.props
+    const {value, type, level} = this.props
     const {hasFocus} = this.state
 
     return (
-      <DefaultTextField
+      <FormField
+        level={level}
+        labelHtmlFor={this._inputId}
         label={type.title}
         description={type.description}
-        level={level}
-        validation={validation}
-        placeholder={type.placeholder}
-        onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        value={value}
-        hasFocus={hasFocus}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-      />
+      >
+        <TextInput
+          type="text"
+          value={value}
+          id={this._inputId}
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+          onKeyPress={this.handleKeyPress}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          hasFocus={hasFocus}
+        />
+      </FormField>
     )
   }
 }
