@@ -213,7 +213,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           </div>
           <h1 className={styles.heading}>
-            {(titleProp && value.getAttribute(titleProp).serialize()) || 'Untitled…'}
+            {titleProp && String(value.getAttribute(titleProp).serialize() || 'Untitled…')}
           </h1>
           {showSpinner && <div className={styles.spinner}><Spinner /></div>}
         </div>
