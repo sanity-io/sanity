@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 .root {
   width: 100%;
   position: relative;
@@ -11,7 +9,6 @@
   composes: root from 'part:@sanity/base/theme/forms/textarea-style';
   position: relative;
   width: 100%;
-  z-index: 2;
 }
 
 .focusHelper {
