@@ -45,7 +45,7 @@ export default class TagsTextField extends React.Component {
 
   handleKeyDown(event) {
     const value = this._input.value
-    if (event.key == 'Backspace' && value == '') {
+    if (event.key === 'Backspace' && value === '') {
       this.removeTag(this.props.tags.length - 1)
     }
 
@@ -58,7 +58,7 @@ export default class TagsTextField extends React.Component {
   handleKeyPress(event) {
     const value = this._input.value
 
-    if (event.key == 'Enter') {
+    if (event.key === 'Enter') {
       if (value) {
         this.addTag(value)
       }

@@ -90,15 +90,15 @@ class StatelessSearchableSelect extends React.PureComponent {
       return
     }
 
-    if (event.key == 'Escape' && isOpen) {
+    if (event.key === 'Escape' && isOpen) {
       onClose()
     }
 
-    if (event.key == 'ArrowUp' && highlightIndex > -1) {
+    if (event.key === 'ArrowUp' && highlightIndex > -1) {
       event.preventDefault()
       onHighlightIndexChange(Math.max(highlightIndex - 1, -1))
     }
-    if (event.key == 'ArrowDown' && highlightIndex < items.length - 1) {
+    if (event.key === 'ArrowDown' && highlightIndex < items.length - 1) {
       event.preventDefault()
 
       if (isOpen) {

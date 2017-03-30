@@ -25,7 +25,7 @@ export default class DefaultItem extends React.Component {
   }
 
   handleKeyPress = event => {
-    if (event.key == 'Enter') {
+    if (event.key === 'Enter') {
       this.props.onSelect(this.props.item)
     }
   }
