@@ -9,20 +9,17 @@
   }
 }
 
-:global([data-env='development'] .undefined) {
-  position: relative;
-  @nest &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: color(red a(50%));
-    color: white;
-    content: 'FIXME: "undefined" as className!';
-    z-index: 1000;
-    font-size: 12px;
-    line-height: 1.2;
-    padding: 2px 4px
-  }
+:global([data-env='development'] .undefined)::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: color(red a(50%));
+  color: white;
+  content: 'FIXME: "undefined" as className!';
+  z-index: 1000;
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 2px 4px
 }
 
 :root {
