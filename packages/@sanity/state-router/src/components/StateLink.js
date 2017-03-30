@@ -51,7 +51,7 @@ export default class StateLink extends React.PureComponent {
   }
 
   render() {
-    const rest = omit(this.props, 'replace', 'state', 'toIndex')
-    return <Link href={this.resolveUrl()} {...rest} ref={this.setElement} />
+    const {state, toIndex, ...rest} = this.props
+    return <Link {...rest} href={this.resolveUrl()} ref={this.setElement} />
   }
 }
