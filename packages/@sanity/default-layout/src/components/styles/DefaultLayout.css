@@ -11,8 +11,6 @@
 
 :global([data-env='development'] .undefined)::before {
   position: absolute;
-  top: 0;
-  left: 0;
   background-color: color(red a(50%));
   color: white;
   content: 'FIXME: "undefined" as className!';
