@@ -11,7 +11,6 @@ export default function assetUrlBuilder(asset) {
     width && `w=${width}`,
     height && `h=${height}`,
     `fit=${fit ? fit : defaultFit}`,
-    'ch=DPR',
     'q=85',
   ].filter(Boolean).join('&')
 
