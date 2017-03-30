@@ -40,12 +40,14 @@ export default class FullScreenDialog extends React.PureComponent {
   render() {
     const {kind, title, className, onClose, centered, isOpen} = this.props
 
-    const classNames = `
-      ${styles[kind]}
-      ${isOpen ? styles.isOpen : styles.isClosed}
-      ${className}
-      ${centered && styles.centered}
-    `
+    const classNames = [
+      styles[kind],
+      isOpen ? styles.isOpen : styles.isClosed,
+      className,
+      centered && styles.centered
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     return (
       <Portal closeOnEsc={this.isClosable()} isOpened={isOpen} onClose={onClose}>
