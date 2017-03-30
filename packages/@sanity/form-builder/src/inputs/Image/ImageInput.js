@@ -41,6 +41,8 @@ function getInitialState() {
 }
 
 export default class ImageInput extends React.PureComponent {
+  _unmounted: boolean
+
   static propTypes = {
     type: PropTypes.shape({
       name: PropTypes.string.isRequired,

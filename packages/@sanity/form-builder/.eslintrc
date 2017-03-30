@@ -10,11 +10,16 @@
   "settings": {
     "import/ignore": ["\\.css$", "node_modules", ".*:.*"]
   },
+  "plugins": [
+    "flowtype"
+  ],
   "parser": "babel-eslint",
   "rules": {
     "import/no-unresolved": ["error", {
       "ignore": [".*:.*"]
     }],
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
     "import/no-extraneous-dependencies": "off",
     "sort-imports": [1, {
       "ignoreCase": true,
