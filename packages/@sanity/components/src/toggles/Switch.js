@@ -16,10 +16,6 @@ export default class Switch extends React.Component {
     onChange() {}
   }
 
-  setInputElement = element => {
-    this._inputElement = element
-  }
-
   handleMouseUp = event => {
     this.handleBlur()
   }
