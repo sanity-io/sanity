@@ -21,6 +21,8 @@ function getInitialState() {
 }
 
 export default class WithFormBuilderValue extends React.PureComponent {
+  document: any
+
   static propTypes = {
     documentId: PropTypes.string,
     typeName: PropTypes.string,
