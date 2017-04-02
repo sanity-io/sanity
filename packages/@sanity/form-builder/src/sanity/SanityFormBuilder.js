@@ -6,6 +6,7 @@ import toGradientPatch from './utils/toGradientPatch'
 
 import {createFormBuilder, defaultConfig} from '../index'
 export {default as WithFormBuilderValue} from './WithFormBuilderValue'
+export {default as PatchEvent} from '../PatchEvent'
 
 export default createFormBuilder({
   schema: schema,

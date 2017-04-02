@@ -67,6 +67,7 @@ export default function createFormBuilder(config = {}) {
     static deserialize = createValue;
     static propTypes = {
       value: PropTypes.any, // todo: fix
+      children: PropTypes.any,
       onChange: PropTypes.func
     };
 
@@ -96,8 +97,8 @@ export default function createFormBuilder(config = {}) {
     }
 
     render() {
-      const {value, onChange} = this.props
-      return (
+      const {value, onChange, children} = this.props
+      return children || (
         <FormBuilderInput
           value={value}
           type={value.context.type}
