@@ -29,6 +29,10 @@ export default class WithFormBuilderValue extends React.PureComponent {
     children: PropTypes.func
   };
 
+  static childContextTypes = {
+    formBuilder: PropTypes.object
+  };
+
   subscriptions = subscriptionManager('documentEvents', 'commit')
 
   state = getInitialState();
@@ -163,6 +167,12 @@ export default class WithFormBuilderValue extends React.PureComponent {
   handleCreate = document => {
     this.document.create(document)
     this.commit()
+  }
+
+  getChildContext() {
+    return {
+      formBuilder: FormBuilder.context
+    }
   }
 
   render() {

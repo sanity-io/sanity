@@ -22,10 +22,6 @@ export class FormBuilderInput extends React.Component {
     return this.context.formBuilder.resolveInputComponent(type)
   }
 
-  resolvePreviewComponent(type) {
-    return this.context.formBuilder.resolvePreviewComponent(type)
-  }
-
   render() {
     const {onChange, value, type, level, validation} = this.props
 
