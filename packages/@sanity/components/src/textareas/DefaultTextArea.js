@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/textareas/default-style'
 import IoAndroidClose from 'part:@sanity/base/close-icon'
 
+const NOOP = () => {}
 export default class DefaultTextArea extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
@@ -20,13 +21,15 @@ export default class DefaultTextArea extends React.Component {
 
   static defaultProps = {
     value: '',
-    type: 'text',
     rows: 10,
-    onKeyPress() {},
-    onChange() {},
-    onFocus() {},
-    onClear() {},
-    onBlur() {}
+    placeholder: '',
+    isClearable: false,
+    hasFocus: false,
+    onKeyPress: NOOP,
+    onChange: NOOP,
+    onFocus: NOOP,
+    onClear: NOOP,
+    onBlur: NOOP
   }
 
   handleClear = event => {
