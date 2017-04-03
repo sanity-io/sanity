@@ -9,6 +9,7 @@
   composes: root from 'part:@sanity/base/theme/forms/textarea-style';
   position: relative;
   width: 100%;
+  z-index: 1;
 }
 
 .focusHelper {
