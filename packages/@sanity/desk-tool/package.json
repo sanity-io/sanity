@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.104.26",
+  "version": "0.104.27",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.104.26",
-    "@sanity/form-builder": "^0.104.26",
+    "@sanity/form-builder": "^0.104.27",
     "@sanity/mutator": "^0.104.26",
     "element-resize-detector": "^1.1.10",
     "hashlru": "^1.0.6",
@@ -34,7 +34,7 @@
     "@sanity/base": "^0.104.26",
     "@sanity/check": "^0.104.26",
     "@sanity/client": "^0.104.26",
-    "@sanity/components": "^0.104.26",
+    "@sanity/components": "^0.104.27",
     "@sanity/core": "^0.104.26",
     "babel-plugin-lodash": "^3.2.11",
     "history": "^4.5.1",
