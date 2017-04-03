@@ -5,6 +5,8 @@ const styles = {
   border: 0,
   width: '100%',
   height: '100%',
+  display: 'block',
+  boxSizing: 'border-box'
 }
 
 export default class StorybookTool extends PureComponent {
