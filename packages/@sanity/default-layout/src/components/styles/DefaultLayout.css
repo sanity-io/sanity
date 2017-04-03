@@ -45,6 +45,7 @@
     float: left;
     width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
     height: calc(100vh - var(--header-height) - var(--medium-padding));
+    overflow: auto;
     box-sizing: border-box;
   }
 }
