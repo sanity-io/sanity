@@ -47,9 +47,11 @@ export default class InInputButton extends React.Component {
     }
 
     const style = `
-      ${className}
-      ${styles[kind] || (inverted && styles.inverted) || styles.root}
-      ${colored && styles.colored} ${Icon && styles.hasIcon}
+      ${className || ''}
+      ${(inverted && styles.inverted) || ''}
+      ${styles[kind] ? styles[kind] : styles.root}
+      ${colored && styles.colored ? styles.colored : ''}
+      ${Icon && styles.hasIcon ? styles.hasIcon : ''}
     `
 
     return (

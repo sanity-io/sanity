@@ -93,6 +93,11 @@
   padding: 0.5em 0;
 }
 
+.itemSelected {
+  composes: item;
+  background-color: var(--gray-light--transparent);
+}
+
 .itemIcon {
   display: block;
   position: absolute;

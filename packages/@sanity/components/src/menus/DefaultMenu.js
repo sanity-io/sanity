@@ -99,10 +99,17 @@ class DefaultMenu extends React.Component {
   render() {
     const {focusedItem} = this.state
     const {items, origin, ripple, fullWidth, className} = this.props
-    const originStyle = styles[`origin__${origin}`]
+    const originStyle = styles[`origin__${origin}`] ? styles[`origin__${origin}`] : ''
 
     return (
-      <div className={`${this.props.opened ? styles.opened : styles.closed} ${originStyle} ${fullWidth && styles.fullWidth} ${className}`}>
+      <div
+        className={`
+          ${this.props.opened ? styles.opened : styles.closed}
+          ${originStyle}
+          ${fullWidth && styles.fullWidth ? styles.fullWidth : ''}
+          ${className || ''}
+        `}
+      >
         <ul className={styles.list}>
           {
             items.map((item, i) => {
@@ -112,8 +119,7 @@ class DefaultMenu extends React.Component {
                   key={i}
                   className={`
                     ${item === focusedItem ? styles.focusedItem : styles.item}
-                    ${styles.item}
-                    ${item.divider && styles.divider}
+                    ${item.divider && styles.divider ? styles.divider : ''}
                   `}
                 >
                   <a

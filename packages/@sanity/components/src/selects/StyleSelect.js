@@ -167,7 +167,7 @@ class StyleSelect extends React.Component {
           ${hasFocus ? styles.focused : ''}
           ${error ? styles.error : ''}
           ${transparent ? styles.transparent : ''}
-          ${className}
+          ${className || ''}
         `}
         description={description}
         labelHtmlFor={this._inputId}
