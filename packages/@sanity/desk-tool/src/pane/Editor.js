@@ -14,6 +14,7 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import dataAspects from '../utils/dataAspects'
+import {debounce} from 'lodash'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -28,7 +29,8 @@ function listen(target, eventType, callback, useCapture = false) {
 function getInitialState() {
   return {
     inspect: false,
-    isMenuOpen: false
+    isMenuOpen: false,
+    showSavingStatus: false
   }
 }
 
@@ -101,7 +103,23 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
   componentWillUnmount() {
     this.unlistenForKey()
+    this.setSavingStatus.cancel()
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isSaving && !nextProps.isSaving) {
+      this.setState({
+        showSavingStatus: true
+      })
+      this.setSavingStatus()
+    }
+  }
+
+  setSavingStatus = debounce(() => {
+    this.setState({
+      showSavingStatus: false
+    })
+  }, 2000, {trailing: true})
 
   handleReferenceResult = event => {
     if (event.documents.length === 0) {
@@ -158,8 +176,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   render() {
-    const {value, type, documentId, onChange, isLoading, isDeleted, isDeleting, isSaving} = this.props
-    const {inspect, referringDocuments} = this.state
+    const {value, type, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
+
+    const {inspect, referringDocuments, showSavingStatus} = this.state
 
     if (isLoading) {
       return (
@@ -188,7 +207,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
     const titleProp = dataAspects.getItemDisplayField(type.name)
 
-    const showSpinner = isLoading || isDeleted || isSaving || isDeleting
 
     return (
       <div className={styles.root}>
@@ -215,7 +233,27 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <h1 className={styles.heading}>
             {titleProp && String(value.getAttribute(titleProp).serialize() || 'Untitled…')}
           </h1>
-          {showSpinner && <div className={styles.spinner}><Spinner /></div>}
+
+          {
+            isDeleting && (
+              <div className={styles.savingStatus}>Deleting…</div>
+            )
+          }
+
+          {
+            showSavingStatus && (
+              <div className={styles.savingStatus}>
+                <span className={styles.spinner}><Spinner /></span> Saving…
+              </div>
+            )
+          }
+          {
+            !showSavingStatus && (
+              <div className={styles.savingStatus}>
+                ✓ Saved
+              </div>
+            )
+          }
         </div>
 
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">

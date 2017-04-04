@@ -22,11 +22,18 @@
   }
 }
 
-.spinner {
+.savingStatus {
   position: absolute;
   top: 0.3rem;
   right: 4rem;
-  font-size: 1.5rem;
+  line-height: 2.3rem;
+  opacity: 0.5;
+}
+
+.spinner {
+  position: absolute;
+  left: -1.5em;
+  font-size: 0.9em;
 }
 
 .functions {
