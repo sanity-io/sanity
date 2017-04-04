@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react'
 
+import PatchEvent, {set} from '../../../../src/PatchEvent'
+
 export default class MyCustomLatLonInput extends React.Component {
 
   static propTypes = {
@@ -12,31 +14,20 @@ export default class MyCustomLatLonInput extends React.Component {
     value: {}
   };
 
-  static contextTypes = {
-    resolveInputComponent: PropTypes.func,
-    schema: PropTypes.object
-  };
-
-  constructor(props, context) {
-    super(props, context)
-    this.handleLatChange = this.handleLatChange.bind(this)
-    this.handleLonChange = this.handleLonChange.bind(this)
-  }
-
-  handleLatChange(event) {
+  handleLatChange = event => {
     this.handleFieldChange('lat', event.target.value)
   }
 
-  handleLonChange(event) {
+  handleLonChange = event => {
     this.handleFieldChange('lon', event.target.value)
   }
 
   handleFieldChange(fieldName, fieldValue) {
-    const {value, onChange} = this.props
+    const {onChange, value} = this.props
     const nextValue = Object.assign({_type: 'latlon'}, value, {
       [fieldName]: fieldValue.trim() ? Number(fieldValue) : undefined
     })
-    onChange({patch: {type: 'set', value: nextValue}})
+    onChange(PatchEvent.from(set(nextValue)))
   }
 
   render() {
