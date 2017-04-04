@@ -16,7 +16,7 @@ function getInitialState() {
     isSaving: false,
     isDeleted: false,
     value: null,
-    deletedSnapshot: null
+    snapshot: null
   }
 }
 
@@ -64,12 +64,14 @@ export default class WithFormBuilderValue extends React.PureComponent {
       case 'snapshot': {
         this.setState({
           isLoading: false,
+          snapshot: event.document,
           value: event.document ? this.deserialize(event.document) : null
         })
         break
       }
       case 'rebase': {
         this.setState({
+          snapshot: event.document,
           value: this.deserialize(event.document)
         })
         break
@@ -80,6 +82,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
       }
       case 'create': {
         this.setState({
+          snapshot: event.document,
           value: this.deserialize(event.document)
         })
         break
@@ -107,7 +110,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }
 
   handleIncomingMutationEvent(event) {
-    const {mutations} = event
+    const {mutations, document} = event
     const operations = []
     mutations.forEach(mutation => {
       if (mutation.create) {
@@ -133,7 +136,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
     const isDeleted = nextValue === null
     this.setState({
       isDeleted: isDeleted,
-      deletedSnapshot: isDeleted ? this.serialize(previousValue) : null,
+      snapshot: document,
       value: nextValue
     })
   }
