@@ -78,10 +78,10 @@ export default class Main extends React.Component {
 
   handleChange = event => {
 
-    arrify(event.patch).map(logPatch)
+    event.patches.map(logPatch)
 
     this.setState({
-      value: applyPatch(this.state.value, event.patch),
+      value: applyPatch(this.state.value, event.patches),
       saved: false
     })
   }

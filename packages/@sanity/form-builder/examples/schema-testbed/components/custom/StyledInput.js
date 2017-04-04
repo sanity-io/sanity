@@ -1,7 +1,12 @@
 import React, {PropTypes} from 'react'
+import PatchEvent, {set, unset} from '../../../../src/PatchEvent'
+
+function defaultGeneratePatch(inputValue) {
+  return inputValue === '' ? unset() : set(inputValue)
+}
 
 // Just an idea
-function fromInput(Component) {
+function fromInput(Component, generatePatch = defaultGeneratePatch) {
   return class extends React.Component {
     static displayName = Component.name || 'FromInput';
     static propTypes = {
@@ -9,13 +14,8 @@ function fromInput(Component) {
       value: PropTypes.string,
     };
 
-    constructor(...args) {
-      super(...args)
-      this.handleChange = this.handleChange.bind(this)
-    }
-
-    handleChange(ev) {
-      this.props.onChange({patch: {type: 'set', value: ev.currentTarget.value.trim() || undefined}})
+    handleChange = event => {
+      this.props.onChange(PatchEvent.from(generatePatch(event.target.value)))
     }
 
     render() {
