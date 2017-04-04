@@ -1,6 +1,6 @@
+import cls from 'classnames'
 import React, {PropTypes} from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
@@ -97,14 +97,13 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     const {selectedType, action, selectedDocumentId} = router.state
 
     const isActive = selectedType && !action && !selectedDocumentId
+    const paneClasses = cls([
+      isActive ? styles.isActive : styles.isInactive,
+      styles[`list-layout--${listLayout}`]
+    ])
 
     return (
-      <div
-        className={`
-          ${isActive ? styles.isActive : styles.isInactive}
-          ${styles[`list-layout--${listLayout}`]}
-        `}
-      >
+      <div className={paneClasses}>
         <div className={styles.top}>
           <div className={styles.heading}>
             {type.title}
