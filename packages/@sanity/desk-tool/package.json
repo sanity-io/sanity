@@ -25,7 +25,7 @@
     "@sanity/mutator": "^0.104.30",
     "classnames": "^2.2.5",
     "element-resize-detector": "^1.1.10",
-    "hashlru": "^1.0.6",
+    "hashlru": "^2.1.0",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "react-click-outside": "^2.2.0",

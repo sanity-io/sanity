@@ -7,32 +7,7 @@ import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
 
-// Fix due to falsey-check for key existence in HLRU
-// todo: submit pr
-
-function BoolLRU(limit) {
-  const FALSE = {}
-  const lru = HLRU(limit)
-
-  function toFakeBool(val) {
-    return val ? true : FALSE
-  }
-
-  function toBool(cachedVal) {
-    return cachedVal === FALSE ? false : cachedVal
-  }
-
-  return {
-    get(key) {
-      return toBool(lru.get(key))
-    },
-    set(key, val) {
-      return lru.set(key, toFakeBool(val))
-    }
-  }
-}
-
-const lru = BoolLRU(1000)
+const lru = HLRU(1000)
 
 function isExpanded(keyPath, value) {
   const cached = lru.get(keyPath)
@@ -74,18 +49,26 @@ function maybeSelectAll(event) {
   selectElement(event.currentTarget)
 }
 
-const VIEW_MODE_PARSED = {title: 'Parsed'}
-const VIEW_MODE_RAW = {title: 'Raw'}
+const VIEW_MODE_PARSED = {value: 'parsed', title: 'Parsed'}
+const VIEW_MODE_RAW = {value: 'raw', title: 'Raw'}
 
 const VIEW_MODES = [VIEW_MODE_PARSED, VIEW_MODE_RAW]
 
+const VIEW_MODE_LS_KEY = 'desk-tool-inspect-view-preferred-view-mode'
+
+function getPreferredViewMode() {
+  const preferredViewMode = localStorage.getItem(VIEW_MODE_LS_KEY)
+  return preferredViewMode && VIEW_MODES.find(mode => mode.value === preferredViewMode)
+}
+
 export default class InspectView extends React.PureComponent {
   state = {
-    viewMode: VIEW_MODE_PARSED
+    viewMode: getPreferredViewMode() || VIEW_MODE_PARSED
   }
 
-  handleChangeViewMode = nextViewMode => {
-    this.setState({viewMode: nextViewMode})
+  handleChangeViewMode = viewMode => {
+    this.setState({viewMode: viewMode})
+    localStorage.setItem(VIEW_MODE_LS_KEY, viewMode.value)
   }
 
   render() {
@@ -107,11 +90,13 @@ export default class InspectView extends React.PureComponent {
               onChange={this.handleChangeViewMode}
             />
           </div>
-          {viewMode === VIEW_MODE_PARSED && <JSONInspector
-            isExpanded={isExpanded}
-            onClick={toggleExpanded}
-            data={value}
-          />}
+          {viewMode === VIEW_MODE_PARSED && (
+            <JSONInspector
+              isExpanded={isExpanded}
+              onClick={toggleExpanded}
+              data={value}
+            />
+          )}
           {viewMode === VIEW_MODE_RAW && (
             <pre
               className={styles.raw}
