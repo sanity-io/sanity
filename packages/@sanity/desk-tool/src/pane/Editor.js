@@ -68,11 +68,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     isSaving: PropTypes.bool,
     isDeleting: PropTypes.bool,
 
-    deletedSnapshot: PropTypes.object,
+    snapshot: PropTypes.object,
   }
 
   static defaultProps = {
-    deletedSnapshot: null,
+    snapshot: null,
     isLoading: false,
     isSaving: false,
     isDeleting: false,
@@ -149,8 +149,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleRestore = () => {
-    const {deletedSnapshot} = this.props
-    this.props.onCreate(deletedSnapshot)
+    const {snapshot} = this.props
+    this.props.onCreate(snapshot)
   }
 
   handleMenuToggle = () => {
@@ -176,7 +176,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   render() {
-    const {value, type, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
+    const {value, type, snapshot, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
 
     const {inspect, referringDocuments, showSavingStatus} = this.state
 
@@ -266,7 +266,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
         {inspect && (
           <InspectView
-            value={value.serialize()}
+            value={snapshot}
             onClose={() => this.setState({inspect: false})}
           />
         )}
