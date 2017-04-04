@@ -35,7 +35,7 @@ const FormBuilder = createFormBuilder({schema: schema})
 export default class QuickstartExample extends React.Component {
 
   state = {
-    editorValue: FormBuilder.createEmpty('book')
+    editorValue: undefined
   }
 
   handleLogClick = event => {

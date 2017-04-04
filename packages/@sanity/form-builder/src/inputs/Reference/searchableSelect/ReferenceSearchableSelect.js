@@ -51,12 +51,11 @@ export default class ReferenceSearchableSelect extends React.Component {
 
   fetchValueAsString(value) {
     const {valueToString, type} = this.props
-    if (value.isEmpty()) {
+    if (!value || !value._ref) {
       return
     }
-    const serialized = value.serialize()
 
-    this.subscriptions.replace('valueToString', valueToString(serialized, type)
+    this.subscriptions.replace('valueToString', valueToString(value, type)
       .subscribe(valueAsString => {
         this.setState({valueAsString})
       }))
@@ -133,7 +132,7 @@ export default class ReferenceSearchableSelect extends React.Component {
     const {type} = this.props
     const {valueAsString, fetching, hits} = this.state
 
-    const value = hits.find(item => item._id === this.props.value.refId)
+    const value = hits.find(item => item._id === this.props.value._ref)
 
     return (
       <SearchableSelect

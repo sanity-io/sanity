@@ -140,7 +140,7 @@ export class SpansAccessor {
     const length = this.length()
     const result = []
     for (let i = 0; i < length; i++) {
-      result.push(this.getIndex(i).serialize())
+      result.push(this.getIndex(i))
     }
     return result
   }

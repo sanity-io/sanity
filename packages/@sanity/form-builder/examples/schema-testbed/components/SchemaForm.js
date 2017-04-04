@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 import styles from './styles/SchemaForm.css'
 import Header from './Header'
@@ -6,6 +7,7 @@ import {save, restore} from '../lib/persist'
 
 import sourceSchemas from '../schemas'
 import Schema from '@sanity/schema'
+import pubsub from 'nano-pubsub'
 import {createFormBuilder} from '../../../src'
 import {parseParams, preventDefault} from '../lib/utils'
 
@@ -16,8 +18,8 @@ import MyCustomFileInput from './custom/MyCustomFileInput'
 import MyCustomSlugInput from './custom/MyCustomSlugInput'
 import applyPatch from '../../../src/simplePatch'
 import resolveReferenceInput from './custom/resolveReferenceInput'
-import arrify from 'arrify'
 import {arrayToJSONMatchPath} from '@sanity/mutator'
+import CustomPatchHandlingInput from './custom/CustomPatchHandlingInput'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -26,14 +28,17 @@ const schema = params.schemaName && params.typeName && Schema.compile(sourceSche
 
 const PERSISTKEY = `form-builder-value-${params.schemaName}-${params.typeName}`
 
+const schemaType = schema && schema.get(params.typeName)
+
 function logPatch(patch) {
-  console.info( // eslint-disable-line no-console
-    '%c%s%c %s => %o',
+  const {type, path, ...rest} = patch
+  console.log( // eslint-disable-line no-console
+    '%c%s%c %s =>',
     'color:#2097ac',
-    patch.type,
+    type,
     'color:inherit',
-    arrayToJSONMatchPath(patch.path || []),
-    patch.value
+    arrayToJSONMatchPath(path || []),
+    rest
   )
 }
 
@@ -46,15 +51,14 @@ const FormBuilder = schema && createFormBuilder({
     if (type.name === 'latlon') {
       return MyCustomLatLonInput
     }
-    // debugger
-    // if (type.isTypeOf('array') && type.get('options').editor === 'slate') {
-    //   return BlockEditorSlate
-    // }
     if (type.name === 'reference') {
       return resolveReferenceInput(type)
     }
     if (type.name === 'image') {
       return MyCustomImageInput
+    }
+    if (type.name === 'customPatchHandlingExampleType') {
+      return CustomPatchHandlingInput
     }
     if (type.name === 'file') {
       return MyCustomFileInput
@@ -69,35 +73,40 @@ const FormBuilder = schema && createFormBuilder({
   }
 })
 
+const EMPTY_VALUE = schema && {_type: schemaType.name, _id: 'example'}
+
 export default class Main extends React.Component {
   state = {
     inspect: false,
-    value: FormBuilder.createEmpty(params.typeName),
+    value: EMPTY_VALUE,
     saved: false
   }
 
+  patchChannel = pubsub()
+
   handleChange = event => {
-
-    event.patches.map(logPatch)
-
-    this.setState({
-      value: applyPatch(this.state.value, event.patches),
-      saved: false
+    this.patchChannel.publish(event.patches)
+    this.setState(currentState => {
+      const nextValue = event.patches.reduce((prev, patch) => applyPatch(prev, patch), currentState.value)
+      return ({
+        value: nextValue,
+        saved: false
+      })
     })
   }
 
   cmdSave(event) {
-    save(PERSISTKEY, this.state.value.serialize())
+    save(PERSISTKEY, this.state.value)
     this.setState({saved: true})
   }
   cmdLog(event) {
-    console.log(this.state.value.serialize()) // eslint-disable-line no-console
+    console.log(this.state.value) // eslint-disable-line no-console
   }
   cmdClear(event) {
-    this.setState({value: FormBuilder.createEmpty(params.typeName)})
+    this.setState({value: EMPTY_VALUE})
   }
   cmdRevert(event) {
-    this.setState({value: FormBuilder.deserialize(restore(PERSISTKEY), params.typeName)})
+    this.setState({value: restore(PERSISTKEY)})
   }
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})
@@ -160,7 +169,7 @@ export default class Main extends React.Component {
           <button className={styles.dockedInspectPaneButton} onClick={() => this.setState({inspect: 'docked'})}>↓</button>
         )}
         <div className={styles[inspect === 'docked' ? 'inspectPaneInner' : 'inspectPaneInnerFullScreen']}>
-          <Inspector inspect={value.serialize()} />
+          <Inspector inspect={value} />
         </div>
       </div>
     )
@@ -180,7 +189,9 @@ export default class Main extends React.Component {
         <div className={styles.inner}>
           <form onSubmit={preventDefault}>
             <FormBuilder
+              patchChannel={this.patchChannel}
               value={value}
+              type={schemaType}
               validation={validation}
               onChange={this.handleChange}
             />

@@ -20,7 +20,7 @@ export default class PatchEvent {
   }
 
   prepend(...patches: Array<PatchArg>) : PatchEvent {
-    return PatchEvent.from([...this.patches, ...flatten(patches)])
+    return PatchEvent.from([...flatten(patches), ...this.patches])
   }
 
   append(...patches: Array<PatchArg>) : PatchEvent {

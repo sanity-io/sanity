@@ -127,9 +127,8 @@ export default class FormBuilderSpan extends React.Component {
     editor.onChange(next)
   }
 
-  renderInput() {
+  renderInput(type) {
     const value = this.getValue()
-    const type = value.context.type
     const ignoredFields = ['text', 'marks']
     const memberFields = type.fields.filter(field => {
       return !ignoredFields.includes(field.name)

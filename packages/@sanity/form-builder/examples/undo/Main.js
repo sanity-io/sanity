@@ -36,7 +36,7 @@ const FormBuilder = createFormBuilder({schema})
 
 export default class SimpleExample extends React.Component {
   state = {
-    value: new Undoable(FormBuilder.createEmpty('book')),
+    value: new Undoable(undefined),
     shouldInspect: false
   }
   setValue(nextValue) {
@@ -45,7 +45,7 @@ export default class SimpleExample extends React.Component {
     })
   }
   getValue() {
-    return this.state.value.get()
+    return this.state.value
   }
   handleChange = event => {
     this.setValue(applyPatch(this.getValue(), event.patch))

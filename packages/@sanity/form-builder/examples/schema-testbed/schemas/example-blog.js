@@ -121,6 +121,11 @@ export default {
           ]
         },
         {
+          name: 'deepFieldTest',
+          title: 'Deep Field test',
+          type: 'deepField'
+        },
+        {
           name: 'homestead',
           title: 'Homestead',
           type: 'object',
@@ -138,6 +143,22 @@ export default {
               required: true
             }
           ]
+        }
+      ]
+    },
+    {
+      name: 'deepField',
+      type: 'object',
+      fields: [
+        {
+          name: 'first',
+          type: 'string',
+          title: 'First'
+        },
+        {
+          name: 'second',
+          type: 'string',
+          title: 'Second'
         }
       ]
     }

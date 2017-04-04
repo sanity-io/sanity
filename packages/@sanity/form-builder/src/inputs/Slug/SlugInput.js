@@ -90,7 +90,7 @@ export default class SlugInput extends React.Component {
 
   updateValueWithUniquenessCheck(value) {
     const {type, checkValidityFn, document} = this.props
-    const docId = document.getAttribute('_id').get()
+    const docId = document._id
     return makeCancelable(tryPromise(() => {
       if (!value.current) {
         this.updateValue(value)
@@ -149,8 +149,8 @@ export default class SlugInput extends React.Component {
     const {document, type, value} = nextProps
 
     // Reset state if document is changed
-    const oldDocId = this.props.document.getAttribute('_id').get()
-    const newDocId = document.getAttribute('_id').get()
+    const oldDocId = this.props.document._id
+    const newDocId = document._id
     if (oldDocId !== newDocId) {
       this.setState(vanillaState)
       return
@@ -160,7 +160,7 @@ export default class SlugInput extends React.Component {
     // verify and set the new slug if it is different from the current one
     let newCurrent
     if (value.auto) {
-      const newFromSource = document.getAttribute(type.options.source).get()
+      const newFromSource = document[type.options.source]
       newCurrent = this.slugify(newFromSource)
     }
 

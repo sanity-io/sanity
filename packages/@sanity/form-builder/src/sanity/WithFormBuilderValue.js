@@ -37,17 +37,6 @@ export default class WithFormBuilderValue extends React.PureComponent {
 
   state = getInitialState();
 
-  deserialize(serialized) {
-    const {typeName} = this.props
-    return serialized
-      ? FormBuilder.deserialize(serialized, typeName)
-      : FormBuilder.createEmpty(typeName)
-  }
-
-  serialize(value) {
-    return value.serialize()
-  }
-
   checkoutDocument(documentId) {
     this.document = documentStore.checkout(documentId)
 
@@ -65,14 +54,14 @@ export default class WithFormBuilderValue extends React.PureComponent {
         this.setState({
           isLoading: false,
           snapshot: event.document,
-          value: event.document ? this.deserialize(event.document) : null
+          value: event.document ? event.document : null
         })
         break
       }
       case 'rebase': {
         this.setState({
           snapshot: event.document,
-          value: this.deserialize(event.document)
+          value: event.document
         })
         break
       }
@@ -83,7 +72,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
       case 'create': {
         this.setState({
           snapshot: event.document,
-          value: this.deserialize(event.document)
+          value: event.document
         })
         break
       }
@@ -118,12 +107,12 @@ export default class WithFormBuilderValue extends React.PureComponent {
           if (prev) {
             throw new Error('Had an unexpected existing document when receiving a create mutation')
           }
-          return this.deserialize(mutation.create)
+          return mutation.create
         })
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {
-        operations.push(previous => new Patcher(mutation.patch).applyViaAccessor(previous))
+        operations.push(previous => new Patcher(mutation.patch).apply(previous))
       } else {
         // eslint-disable-next-line no-console
         console.error(new Error(`Received unsupported mutation ${JSON.stringify(mutation, null, 2)}`))

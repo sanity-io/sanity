@@ -36,10 +36,10 @@ export default class RenderField extends React.Component {
   render() {
     const {value, field, level, validation, hasFocus, onChange} = this.props
 
-    const expectedJSType = value.context.type.jsonType
-    const valueJSType = resolveJSType(value.value)
+    const expectedJSType = field.type.jsonType
+    const valueJSType = resolveJSType(value)
 
-    if (value.value && expectedJSType !== valueJSType) {
+    if (value && expectedJSType !== valueJSType) {
       return (
         <ManageInvalidValue
           field={field}

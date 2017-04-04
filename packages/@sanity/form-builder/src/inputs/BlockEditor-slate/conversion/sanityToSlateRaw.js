@@ -1,7 +1,3 @@
-// Converts a persisted array to a slate compatible json document
-import {createMemberValue} from '../../../state/FormBuilderState'
-import {getSpanType} from '../util/spanHelpers'
-
 function hasKeys(obj) {
   for (const key in obj) { // eslint-disable-line guard-for-in
     return true
