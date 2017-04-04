@@ -1,6 +1,6 @@
 {
   "name": "@sanity/imagetool",
-  "version": "0.104.26",
+  "version": "0.104.30",
   "description": "The image hotspot selector / cropper used in Sanity",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "@sanity/state-router": "^0.104.26",
+    "@sanity/state-router": "^0.104.30",
     "babel-plugin-lodash": "^3.2.11",
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
