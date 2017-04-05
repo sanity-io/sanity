@@ -85,7 +85,7 @@ export default class ImageInput extends React.PureComponent {
     this.cancelUpload()
     this.setState({uploadingImage: image})
 
-    this.subscriptions.replace('upload', this.props.uploadFn(image).subscribe({
+    this.subscriptions.replace('upload', this.props.uploadFn(image.file).subscribe({
       next: this.handleUploadProgress,
       error: this.handleUploadError
     }))

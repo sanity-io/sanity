@@ -1,7 +1,7 @@
 import client from 'part:@sanity/base/client'
 
-function uploadAsset(assetType, asset) {
-  return client.observable.assets.upload(assetType, asset.file)
+function uploadAsset(assetType, file) {
+  return client.observable.assets.upload(assetType, file)
     .map(event => {
       if (event.type === 'response') {
         // rewrite to a 'complete' event
@@ -15,8 +15,8 @@ function uploadAsset(assetType, asset) {
     })
 }
 
-export const uploadImage = imageAsset => uploadAsset('image', imageAsset)
-export const uploadFile = fileAsset => uploadAsset('file', fileAsset)
+export const uploadImage = file => uploadAsset('image', file)
+export const uploadFile = file => uploadAsset('file', file)
 
 export function materializeReference(id) {
   return client.observable

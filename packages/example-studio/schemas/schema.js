@@ -128,6 +128,11 @@ export default createSchema({
           }
         },
         {
+          name: 'attachment',
+          title: 'File',
+          type: 'file'
+        },
+        {
           name: 'slug',
           title: 'Slug',
           description: 'The unique identifier for the blogpost in links and urls',
