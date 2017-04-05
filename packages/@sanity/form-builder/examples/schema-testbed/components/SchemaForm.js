@@ -7,7 +7,6 @@ import {save, restore} from '../lib/persist'
 
 import sourceSchemas from '../schemas'
 import Schema from '@sanity/schema'
-import pubsub from 'nano-pubsub'
 import {createFormBuilder} from '../../../src'
 import {parseParams, preventDefault} from '../lib/utils'
 
@@ -19,7 +18,8 @@ import MyCustomSlugInput from './custom/MyCustomSlugInput'
 import applyPatch from '../../../src/simplePatch'
 import resolveReferenceInput from './custom/resolveReferenceInput'
 import {arrayToJSONMatchPath} from '@sanity/mutator'
-import CustomPatchHandlingInput from './custom/CustomPatchHandlingInput'
+import InputWithCustomState from './custom/InputWithCustomState'
+import {set, unset} from '../../../src/utils/patches'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -58,7 +58,7 @@ const FormBuilder = schema && createFormBuilder({
       return MyCustomImageInput
     }
     if (type.name === 'customPatchHandlingExampleType') {
-      return CustomPatchHandlingInput
+      return InputWithCustomState
     }
     if (type.name === 'file') {
       return MyCustomFileInput
@@ -66,7 +66,7 @@ const FormBuilder = schema && createFormBuilder({
     if (type.name === 'slug') {
       return MyCustomSlugInput
     }
-    return undefined // signal to use default
+    return type.inputComponent || undefined // signal to use default
   },
   resolveValidationComponent() {
     return MyCustomValidationList
@@ -82,17 +82,20 @@ export default class Main extends React.Component {
     saved: false
   }
 
-  patchChannel = pubsub()
-
   handleChange = event => {
-    this.patchChannel.publish(event.patches)
+    this.receivePatches(event.patches)
+  }
+
+  receivePatches(patches) {
+    FormBuilder.receivePatches(patches)
     this.setState(currentState => {
-      const nextValue = event.patches.reduce((prev, patch) => applyPatch(prev, patch), currentState.value)
+      const nextValue = patches.reduce((prev, patch) => applyPatch(prev, patch), currentState.value)
       return ({
         value: nextValue,
         saved: false
       })
     })
+
   }
 
   cmdSave(event) {
@@ -103,10 +106,10 @@ export default class Main extends React.Component {
     console.log(this.state.value) // eslint-disable-line no-console
   }
   cmdClear(event) {
-    this.setState({value: EMPTY_VALUE})
+    this.receivePatches([unset()])
   }
   cmdRevert(event) {
-    this.setState({value: restore(PERSISTKEY)})
+    this.receivePatches([set(restore(PERSISTKEY))])
   }
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})

@@ -33,6 +33,7 @@
     "humanize-list": "^1.0.1",
     "immutable": "^3.8.1",
     "is-empty": "^1.0.0",
+    "is-equal": "^1.5.5",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.1",
     "object-inspect": "^1.2.1",

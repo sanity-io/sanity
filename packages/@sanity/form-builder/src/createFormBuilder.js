@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import {FormBuilderInput} from './FormBuilderInput'
 import defaultConfig from './defaultConfig'
 import Schema from '@sanity/schema'
+import pubsub from 'nano-pubsub'
 
 const NOOP = () => {}
 
@@ -32,7 +33,10 @@ export default function createFormBuilder(config = {}) {
     return resolve(type, config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
   }
 
+  const patchChannel = pubsub()
+
   return class FormBuilder extends React.Component {
+    static receivePatches = patchChannel.publish
     static propTypes = {
       value: PropTypes.any,
       type: PropTypes.object,
@@ -45,9 +49,7 @@ export default function createFormBuilder(config = {}) {
 
     static childContextTypes = {
       getValuePath: PropTypes.func,
-      patchChannel: PropTypes.shape({
-        subscribe: PropTypes.func
-      }),
+      onPatch: PropTypes.func,
       formBuilder: PropTypes.shape({
         schema: PropTypes.instanceOf(Schema),
         resolveInputComponent: PropTypes.func,
@@ -63,7 +65,7 @@ export default function createFormBuilder(config = {}) {
       return {
         getValuePath: () => ([]),
         formBuilder: {
-          patchChannel: this.props.patchChannel,
+          onPatch: patchChannel.subscribe,
           schema: config.schema,
           resolveInputComponent: resolveInputComponent,
           resolvePreviewComponent: resolvePreviewComponent,
