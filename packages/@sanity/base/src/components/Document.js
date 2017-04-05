@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 
+// todo: investigate this. Doesn't seem like NODE_ENV gets set on sanity.io
 const ENV = process.env.NODE_ENV || 'development'
 
 function assetUrl(staticPath, item) {
@@ -57,7 +58,7 @@ function Document(props) {
         {subresources}
         {favicons}
       </head>
-      <body data-env={ENV}>
+      <body>
         <div id="sanity">
           <AppLoadingScreen text={props.loading} />
         </div>
