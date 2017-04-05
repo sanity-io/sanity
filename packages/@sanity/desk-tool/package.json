@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.104.31",
+  "version": "0.104.32",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.104.30",
-    "@sanity/form-builder": "^0.104.31",
+    "@sanity/form-builder": "^0.104.32",
     "@sanity/mutator": "^0.104.30",
     "classnames": "^2.2.5",
     "element-resize-detector": "^1.1.10",
