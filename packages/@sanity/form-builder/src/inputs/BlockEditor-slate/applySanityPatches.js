@@ -5,7 +5,7 @@ import {Patcher, ImmutableAccessor} from '@sanity/mutator'
 const FAKE_KEY = 'fakeRoot'
 const FAKE_ID = 'fakeID'
 
-export default function applySanityPatch(value, patches) {
+export default function applySanityPatches(value, patches) {
   const gradientPatches = arrify(patches)
     .map(patch => ({
       ...patch,

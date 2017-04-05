@@ -6,7 +6,7 @@ import {findDOMNode} from 'slate'
 import ItemForm from './ItemForm'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
-import applySanityPatch from './applySanityPatch'
+import applySanityPatches from './applySanityPatches'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
 
@@ -51,7 +51,7 @@ export default class FormBuilderBlock extends React.Component {
     const next = editor.getState()
       .transform()
       .setNodeByKey(node.key, {
-        data: {value: applySanityPatch(node.data.get('value'), event.patch)}
+        data: {value: applySanityPatches(node.data.get('value'), event.patches)}
       })
       .apply()
 

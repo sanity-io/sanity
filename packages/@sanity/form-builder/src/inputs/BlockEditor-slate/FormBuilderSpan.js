@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
-import applySanityPatch from './applySanityPatch'
+import applySanityPatches from './applySanityPatches'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
@@ -115,14 +115,11 @@ export default class FormBuilderSpan extends React.Component {
 
   handleFieldChange = (event, field) => {
     const {node, editor} = this.props
-    const fieldPatch = arrify(event.patch).map(patch => Object.assign({}, patch, {
-      path: [field.name, ...(patch.path || [])]
-    }))
     const next = editor.getState()
       .transform()
       .setNodeByKey(node.key, {
         data: {
-          value: applySanityPatch(node.data.get('value'), fieldPatch)
+          value: applySanityPatches(node.data.get('value'), event.prefixAll(field.name).patches)
         }
       })
       .apply()
