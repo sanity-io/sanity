@@ -31,7 +31,7 @@ export class FormBuilderInput extends React.Component {
     }
 
     const passValue = value && value.constructor.passSerialized ? value.serialize() : value
-    const document = InputComponent.passDocument ? this.context.formBuilder.getDocument() : null
+    const docProps = InputComponent.passDocument ? {document: this.context.formBuilder.getDocument()} : {}
 
     return (
       <InputComponent
@@ -39,7 +39,7 @@ export class FormBuilderInput extends React.Component {
         type={type}
         onChange={onChange}
         validation={validation}
-        document={document}
+        {...docProps}
         level={level}
       />
     )

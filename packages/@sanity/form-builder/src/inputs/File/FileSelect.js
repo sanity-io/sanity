@@ -1,9 +1,11 @@
 import React, {PropTypes} from 'react'
-import {omit} from 'lodash'
 
 export default class FileSelect extends React.PureComponent {
   static propTypes = {
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    children: PropTypes.node,
+    validation: PropTypes.object,
+    className: PropTypes.string
   }
   static defaultProps = {
     onSelect() {}
@@ -23,10 +25,9 @@ export default class FileSelect extends React.PureComponent {
   }
 
   render() {
-    const {children, style = {}, className, ...rest} = omit(this.props, 'onSelect')
+    const {children, className, validation, onSelect, ...rest} = this.props
     return (
       <label
-        style={style}
         className={className}
       >
         <input
