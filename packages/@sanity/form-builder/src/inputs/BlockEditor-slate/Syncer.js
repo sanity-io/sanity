@@ -1,26 +1,34 @@
 import React, {PropTypes} from 'react'
 import BlockEditor from './BlockEditor'
+import {Raw} from 'slate'
+import sanityToSlateRaw from './conversion/sanityToSlateRaw'
+import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
-import SimpleSlateValueContainer from './SimpleSlateValueContainer'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
+function deserialize(value, type) {
+  return Raw.deserialize(sanityToSlateRaw(value, type))
+}
+function serialize(state) {
+  return slateRawToSanity(Raw.serialize(state))
+}
+
 export default class Syncer extends React.PureComponent {
-  static valueContainer = SimpleSlateValueContainer;
   static propTypes = {
-    value: PropTypes.instanceOf(SimpleSlateValueContainer).isRequired,
+    value: PropTypes.array.isRequired,
+    type: PropTypes.object.isRequired,
     onChange: PropTypes.func
   }
 
   constructor(props) {
     super()
     this.state = {
-      value: props.value
+      value: deserialize(props.value, props.type)
     }
   }
 
   handleChange = nextSlateState => {
-    const {value} = this.state
-    this.setState({value: value.setState(nextSlateState)}, this.emitSet)
+    this.setState({value: nextSlateState}, this.emitSet)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,7 +47,7 @@ export default class Syncer extends React.PureComponent {
     const {onChange} = this.props
     // const onChange = event => console.log(event.patch.type, event.patch.value)
     const {value} = this.state
-    const nextVal = value.serialize()
+    const nextVal = serialize(value)
 
     onChange(PatchEvent.from(nextVal ? set(nextVal) : unset()))
 
@@ -47,6 +55,6 @@ export default class Syncer extends React.PureComponent {
 
   render() {
     const {value} = this.state
-    return <BlockEditor {...this.props} onChange={this.handleChange} value={value.state} />
+    return <BlockEditor {...this.props} onChange={this.handleChange} value={value} />
   }
 }

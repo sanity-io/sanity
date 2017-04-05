@@ -19,9 +19,8 @@ function formBuilderNodeOnPaste(formBuilder, editorFields) {
       }
       // This is a formBuilder type. Clone its structure and value.
       const value = node.data.get('value')
-      const nodeValue = formBuilder.createFieldValue(value, ofField)
       return new Block({
-        data: Data.create({value: nodeValue}),
+        data: Data.create({value}),
         isVoid: node.get('isVoid'),
         key: node.get('key'),
         nodes: node.get('nodes'),

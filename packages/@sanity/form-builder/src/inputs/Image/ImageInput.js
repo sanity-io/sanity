@@ -299,7 +299,7 @@ export default class ImageInput extends React.PureComponent {
     const {value, validation, level} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value[field.name]
+    const fieldValue = value && value[field.name]
 
     return (
       <RenderField

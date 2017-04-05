@@ -3,6 +3,10 @@ import applyArrayPatch from './array'
 import applyObjectPatch from './object'
 import applyPrimitivePatch from './primitive'
 
+export function applyAll(value, patches) {
+  return patches.reduce(_apply, value)
+}
+
 function applyPatch(value, patch) {
   if (Array.isArray(value)) {
     return applyArrayPatch(value, patch)
