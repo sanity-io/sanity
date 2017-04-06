@@ -35,7 +35,7 @@
     "ease-component": "^1.0.0",
     "element-resize-detector": "^1.1.10",
     "eslint": "^3.18.0",
-    "eslint-config-sanity": "^2.1.2",
+    "eslint-config-sanity": "^2.1.4",
     "eslint-plugin-react": "^6.10.0",
     "exif-component": "^1.0.1",
     "fuse.js": "^2.4.1",

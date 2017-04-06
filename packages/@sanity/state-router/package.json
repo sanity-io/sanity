@@ -22,7 +22,7 @@
     "nano-pubsub": "^1.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.23.0",
+    "babel-cli": "^6.24.0",
     "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-comments": "^6.22.0",
@@ -30,7 +30,7 @@
     "browserify": "^13.3.0",
     "error-capture-middleware": "0.0.2",
     "eslint": "^3.18.0",
-    "eslint-config-sanity": "^2.1.2",
+    "eslint-config-sanity": "^2.1.4",
     "eslint-plugin-flowtype": "^2.30.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.0",

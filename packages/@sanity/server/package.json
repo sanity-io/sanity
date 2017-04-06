@@ -30,7 +30,7 @@
     "@sanity/extract-text-webpack-plugin": "^0.103.13",
     "@sanity/resolver": "^0.104.30",
     "@sanity/webpack-loader": "^0.104.30",
-    "babel-core": "^6.21.0",
+    "babel-core": "^6.24.0",
     "babel-loader": "^6.2.10",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.23.0",
