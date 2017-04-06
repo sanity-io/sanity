@@ -67,16 +67,15 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     isLoading: PropTypes.bool,
     isSaving: PropTypes.bool,
     isDeleting: PropTypes.bool,
-
-    snapshot: PropTypes.object,
+    deletedSnapshot: PropTypes.object
   }
 
   static defaultProps = {
-    snapshot: null,
     isLoading: false,
     isSaving: false,
     isDeleting: false,
     isDeleted: false,
+    deletedSnapshot: null,
     onDelete() {},
     onCreate() {},
     onChange() {},
@@ -149,8 +148,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleRestore = () => {
-    const {snapshot} = this.props
-    this.props.onCreate(snapshot)
+    const {deletedSnapshot} = this.props
+    this.props.onCreate(deletedSnapshot)
   }
 
   handleMenuToggle = () => {
@@ -176,7 +175,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   render() {
-    const {value, type, snapshot, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
+    const {value, type, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
 
     const {inspect, referringDocuments, showSavingStatus} = this.state
 
@@ -206,7 +205,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     }
 
     const titleProp = dataAspects.getItemDisplayField(type.name)
-
 
     return (
       <div className={styles.root}>
@@ -267,7 +265,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
         {inspect && (
           <InspectView
-            value={snapshot}
+            value={value}
             onClose={() => this.setState({inspect: false})}
           />
         )}

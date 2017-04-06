@@ -52,14 +52,12 @@ export default class WithFormBuilderValue extends React.PureComponent {
       case 'snapshot': {
         this.setState({
           isLoading: false,
-          snapshot: event.document,
           value: event.document ? event.document : null
         })
         break
       }
       case 'rebase': {
         this.setState({
-          snapshot: event.document,
           value: event.document
         })
         break
@@ -70,7 +68,6 @@ export default class WithFormBuilderValue extends React.PureComponent {
       }
       case 'create': {
         this.setState({
-          snapshot: event.document,
           value: event.document
         })
         break
@@ -107,7 +104,12 @@ export default class WithFormBuilderValue extends React.PureComponent {
       snapshot: event.document
     })
 
-    this.setState({value: event.document})
+    const isDeleted = (event.document === null || event.document === undefined)
+    this.setState({
+      isDeleted,
+      deletedSnapshot: isDeleted ? this.state.value : null,
+      value: event.document
+    })
   }
   commit = throttle(() => {
     this.setState({isSaving: true})
