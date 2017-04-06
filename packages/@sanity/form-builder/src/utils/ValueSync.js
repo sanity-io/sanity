@@ -53,6 +53,7 @@ export default SubscribePatchHOC(class SubscribePatch extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe()
+    this.checkDiff.cancel()
   }
 
   receivePatches(patches: Array<Patch>) {
