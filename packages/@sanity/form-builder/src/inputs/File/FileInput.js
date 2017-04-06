@@ -4,7 +4,7 @@ import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import React, {PropTypes} from 'react'
-import PatchEvent, {set, setIfMissing} from '../../PatchEvent'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import FileSelect from './FileSelect'
 import styles from './styles/FileInput.css'
 
@@ -101,6 +101,12 @@ export default class FileInput extends React.PureComponent {
     })
   }
 
+  handleRemoveButtonClick = event => {
+    this.props.onChange(
+      PatchEvent.from(unset())
+    )
+  }
+
   render() {
     // TODO: Render additional fields
     const {status, progress, uploadingFile} = this.state
@@ -149,6 +155,11 @@ export default class FileInput extends React.PureComponent {
         {
           value && value.asset && (
             <Button>Download</Button>
+          )
+        }
+        {
+          value && value.asset && (
+            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )
         }
         {uploadingFile && (
