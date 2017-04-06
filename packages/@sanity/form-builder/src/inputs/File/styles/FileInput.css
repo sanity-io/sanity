@@ -1,0 +1,28 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+}
+
+.progressBar {
+  height: 2.5em;
+  opacity: 1;
+  overflow: hidden;
+  transition: all 0.3s linear;
+}
+
+.progressBarIdle {
+  height: 0;
+  transition-delay: 0;
+}
+
+.progressBarCompleted {
+  composes: progressBar;
+  height: 0;
+  opacity: 0;
+  transition-delay: 2s;
+}
+
+.button {
+  display: inline-block;
+}

@@ -1,9 +1,12 @@
 // @flow weak
-import React, {PropTypes} from 'react'
-import FileSelect from './FileSelect'
+import Button from 'part:@sanity/components/buttons/default'
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
+import ProgressBar from 'part:@sanity/components/progress/bar'
+import React, {PropTypes} from 'react'
 import PatchEvent, {set, setIfMissing} from '../../PatchEvent'
+import FileSelect from './FileSelect'
+import styles from './styles/FileInput.css'
 
 export default class FileInput extends React.PureComponent {
   static propTypes = {
@@ -93,7 +96,7 @@ export default class FileInput extends React.PureComponent {
     this.setState({
       status: 'cancelled',
       error: null,
-      progress: null,
+      progress: {},
       uploadingFile: null
     })
   }
@@ -110,19 +113,55 @@ export default class FileInput extends React.PureComponent {
       ...rest
     } = this.props
 
+    let progressClasses = ''
+
+    if (status === 'complete') {
+      progressClasses = styles.progressBarCompleted
+    } else if (status === 'pending') {
+      progressClasses = styles.progressBar
+    } else {
+      progressClasses = styles.progressBarIdle
+    }
+
     return (
       <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
-        {status && <h2>{status}</h2>}
-        {uploadingFile && <b>Uploading {uploadingFile.name}</b>}
-        {progress && <pre>{JSON.stringify(progress)}</pre>}
-        {value && <pre>{JSON.stringify(value)}</pre>}
-        <FileSelect
-          onSelect={this.handleSelect}
-          {...rest}
-        >
-          Upload {uploadingFile ? 'another' : 'a'} file…
-        </FileSelect>
-        {uploadingFile && <button onClick={this.handleCancel}>Cancel</button>}
+        <div className={progressClasses}>
+          {
+            ((progress && uploadingFile) || (status === 'complete')) && (
+              <ProgressBar
+                percent={progress.percent}
+                text={status === 'complete' ? 'Complete' : `Uploading "${uploadingFile.name}"`}
+                showPercent
+                animation
+                completed={status === 'complete'}
+              />
+            )
+          }
+        </div>
+        <Button ripple={false} className={styles.button}>
+          <FileSelect
+            onSelect={this.handleSelect}
+            {...rest}
+          >
+            Select file…
+          </FileSelect>
+        </Button>
+        {
+          value && value.asset && (
+            <Button>Download</Button>
+          )
+        }
+        {uploadingFile && (
+          <Button
+            kind="simple"
+            color="danger"
+            onClick={this.handleCancel}
+            className={styles.button}
+          >
+            Cancel
+          </Button>
+        )
+        }
       </FormField>
     )
   }
