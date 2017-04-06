@@ -79,7 +79,7 @@ export default createSchema({
         },
         {
           name: 'file',
-          title: 'Plain file uplaod',
+          title: 'Plain file upload',
           type: 'file'
         },
         {
@@ -131,11 +131,6 @@ export default createSchema({
             hotspot: true,
             accept: 'image/png'
           }
-        },
-        {
-          name: 'attachment',
-          title: 'File',
-          type: 'file'
         },
         {
           name: 'slug',
