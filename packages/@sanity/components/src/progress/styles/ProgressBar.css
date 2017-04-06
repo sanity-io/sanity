@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 :root {
   --progress-bar-height: 1em;
 }
@@ -10,6 +8,7 @@
   border: 1px solid #000;
   height: var(--progress-bar-height);
   width: 100%;
+  clear: both;
 }
 
 .inner {
@@ -19,6 +18,7 @@
 
 .completed {
   composes: root;
+  border-color: var(--brand-success);
 }
 
 .uncompleted {
@@ -40,6 +40,10 @@
   transition-duration: 0.1s;
   transition-timing-function: linear;
   max-width: 100%;
+
+  @nest .completed & {
+    background-color: var(--brand-success);
+  }
 }
 
 .percent {

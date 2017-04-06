@@ -16,6 +16,7 @@ storiesOf('Progress')
         percent={number('Percentage', 10, {range: true, min: 0, max: 100, step: 1})}
         showPercent={boolean('Show percent', false)}
         text={text('text', 'Downloaded 5.1 of 8.2Mb')}
+        completed={boolean('completed', false)}
       />
     </Sanity>
   )
