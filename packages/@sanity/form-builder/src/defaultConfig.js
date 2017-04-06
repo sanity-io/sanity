@@ -66,7 +66,7 @@ function resolveInputComponent(type) {
     return isSearchable(type) ? SearchableStringSelect : StringSelect
   }
 
-  return typeNameToInputMap[type.name]
+  return typeNameToInputMap[type.name] || typeNameToInputMap[type.jsonType]
 }
 
 function resolvePreviewComponent(type) {
