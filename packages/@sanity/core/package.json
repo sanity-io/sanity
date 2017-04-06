@@ -19,7 +19,7 @@
     "@sanity/resolver": "^0.104.30",
     "@sanity/server": "^0.104.30",
     "@sanity/util": "^0.104.30",
-    "batch-stream-operation": "^1.0.1",
+    "batch-stream-operation": "^1.0.2",
     "debug": "^2.6.3",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.5.6",
