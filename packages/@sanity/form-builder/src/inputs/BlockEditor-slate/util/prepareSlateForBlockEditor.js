@@ -1,5 +1,6 @@
 import React from 'react'
 import {Block} from 'slate'
+import {get} from 'lodash'
 import createBlockNode from '../createBlockNode'
 import createSpanNode from '../createSpanNode'
 import mapToObject from './mapToObject'
@@ -91,15 +92,13 @@ export default function prepareSlateForBlockEditor(blockEditor) {
       && listField.type.options.list.filter(listStyle => listStyle.value)
   }
 
-  const allowedMarks = blockType.fields.find(btField => btField.name === 'spans')
-    .type.of.find(of => of.name === 'span')
+  const marksField = getSpanType(type)
     .fields.find(field => field.name === 'marks')
-    .type
-    .options
-    .list.map(mark => mark.value)
+
+  const allowedMarks = (get(marksField, 'type.options.list') || []).map(mark => mark.value)
 
   const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
-  const spanType = getSpanType(type).type
+  const spanType = getSpanType(type)
   const customSpanFields = spanType.fields.filter(field => {
     return !['text', 'marks'].includes(field.name)
   })
