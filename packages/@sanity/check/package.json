@@ -1,6 +1,6 @@
 {
   "name": "@sanity/check",
-  "version": "0.104.30",
+  "version": "0.104.34",
   "description": "Sanity check Sanity plugins and projects",
   "main": "src/sanityCheck.js",
   "bin": {
@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "@sanity/generate-help-url": "^0.104.23",
-    "@sanity/resolver": "^0.104.30",
+    "@sanity/resolver": "^0.104.34",
     "chalk": "^1.1.3",
     "fs-promise": "^2.0.0",
     "in-publish": "^2.0.0",
