@@ -48,6 +48,8 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
+    // todo: reiterate how we deal with incrementing levels
+
     const {value, hasFocus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
@@ -90,7 +92,7 @@ export default class ObjectInput extends React.PureComponent {
 
   getRenderedFields(type, level) {
     if (!type.fieldsets) {
-      return type.fields.map((field, i) => this.renderField(field, isRoot ? level : level + 1, i))
+      return type.fields.map((field, i) => this.renderField(field, level === 0 ? level : level + 1, i))
     }
 
     return type.fieldsets.map((fieldset, i) => {
