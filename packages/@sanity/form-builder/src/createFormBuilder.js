@@ -41,10 +41,7 @@ export default function createFormBuilder(config = {}) {
       value: PropTypes.any,
       type: PropTypes.object,
       children: PropTypes.any,
-      onChange: PropTypes.func,
-      patchChannel: PropTypes.shape({
-        subscribe: PropTypes.func
-      })
+      onChange: PropTypes.func
     };
 
     static childContextTypes = {

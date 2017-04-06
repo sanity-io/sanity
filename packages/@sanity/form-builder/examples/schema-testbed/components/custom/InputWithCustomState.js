@@ -2,7 +2,7 @@
 import React from 'react'
 import {Map} from 'immutable'
 import PatchEvent, {set, setIfMissing, unset} from '../../../../src/PatchEvent'
-import SyncPath from '../../../../src/SyncPath'
+import ValueSync from '../../../../src/utils/ValueSync'
 
 type Deserialized = Map<string, string>
 
@@ -90,7 +90,7 @@ export default class InputWithCustomState extends React.Component {
         <h2>{type.title}</h2>
         <h3>Raw value</h3>
         <pre>{JSON.stringify(rawValue, null, 2)}</pre>
-        <SyncPath
+        <ValueSync
           value={rawValue}
           serialize={serialize}
           deserialize={deserialize}
@@ -120,7 +120,7 @@ export default class InputWithCustomState extends React.Component {
               </div>
             </div>
           )}
-        </SyncPath>
+        </ValueSync>
       </div>
     )
   }

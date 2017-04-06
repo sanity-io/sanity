@@ -87,13 +87,12 @@ export default class Main extends React.Component {
   }
 
   receivePatches(patches) {
-    FormBuilder.receivePatches(patches)
-    this.setState(currentState => {
-      const nextValue = patches.reduce((prev, patch) => applyPatch(prev, patch), currentState.value)
-      return ({
-        value: nextValue,
-        saved: false
-      })
+    const nextValue = patches.reduce((prev, patch) => applyPatch(prev, patch), this.state.value)
+    FormBuilder.receivePatches({patches, snapshot: nextValue})
+
+    this.setState({
+      value: nextValue,
+      saved: false
     })
 
   }

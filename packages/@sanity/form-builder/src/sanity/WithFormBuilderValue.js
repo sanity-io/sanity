@@ -4,10 +4,9 @@ import React, {PropTypes} from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
 import FormBuilder from 'part:@sanity/form-builder'
 import {throttle} from 'lodash'
-import {Patcher} from '@sanity/mutator'
 import subscriptionManager from '../utils/subscriptionManager'
 import schema from 'part:@sanity/base/schema'
-import toGradientPatch from './utils/toGradientPatch'
+import gradientPatchAdapter from './utils/gradientPatchAdapter'
 import PatchEvent from '../PatchEvent'
 
 function getInitialState() {
@@ -21,7 +20,7 @@ function getInitialState() {
 }
 
 export default class WithFormBuilderValue extends React.PureComponent {
-  document: any
+  document: Object
 
   static propTypes = {
     documentId: PropTypes.string,
@@ -99,37 +98,17 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }
 
   handleIncomingMutationEvent(event) {
-    const {mutations, document} = event
-    const operations = []
-    mutations.forEach(mutation => {
-      if (mutation.create) {
-        operations.push(prev => {
-          if (prev) {
-            throw new Error('Had an unexpected existing document when receiving a create mutation')
-          }
-          return mutation.create
-        })
-      } else if (mutation.delete) {
-        operations.push(() => null)
-      } else if (mutation.patch) {
-        operations.push(previous => new Patcher(mutation.patch).apply(previous))
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(new Error(`Received unsupported mutation ${JSON.stringify(mutation, null, 2)}`))
-      }
+    const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
+
+    // Broadcast incoming patches to input components that applies patches on their own
+    // Note: This is *experimental*
+    FormBuilder.receivePatches({
+      patches: gradientPatchAdapter.toFormBuilder(patches),
+      snapshot: event.document
     })
 
-    const previousValue = this.state.value
-    const nextValue = operations.reduce((prev, operation) => operation(prev), previousValue)
-
-    const isDeleted = nextValue === null
-    this.setState({
-      isDeleted: isDeleted,
-      snapshot: document,
-      value: nextValue
-    })
+    this.setState({value: event.document})
   }
-
   commit = throttle(() => {
     this.setState({isSaving: true})
     this.subscriptions.replace('commit', this.document.commit().subscribe({
@@ -147,7 +126,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }, 1000, {leading: true, trailing: true})
 
   handleChange = (event : PatchEvent) => {
-    this.document.patch(event.patches.map(toGradientPatch))
+    this.document.patch(gradientPatchAdapter.fromFormBuilder(event.patches))
     this.commit()
   }
 

@@ -5,7 +5,7 @@ import sanityToSlateRaw from './conversion/sanityToSlateRaw'
 import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import SubscribePathHOC from '../../SubscribePatchHOC'
+import SubscribePatchHOC from '../../utils/SubscribePatchHOC'
 
 function deserialize(value, type) {
   return Raw.deserialize(sanityToSlateRaw(value, type))
@@ -14,7 +14,7 @@ function serialize(state) {
   return slateRawToSanity(Raw.serialize(state))
 }
 
-export default SubscribePathHOC(class Syncer extends React.PureComponent {
+export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   static propTypes = {
     value: PropTypes.array.isRequired,
     type: PropTypes.object.isRequired,
@@ -34,17 +34,17 @@ export default SubscribePathHOC(class Syncer extends React.PureComponent {
     this.setState({value: nextSlateState}, this.emitSet)
   }
 
-  receivePatches = ({shouldResync, patches}) => {
-    console.log('TODO: Apply patches on state', patches)
-    this.shouldResync = shouldResync
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.shouldResync) {
-      this.setState({value: deserialize(nextProps.value, nextProps.type)})
-      this.shouldResync = false
+  receivePatches = ({snapshot, shouldReset, patches}) => {
+    if (shouldReset) {
+      // eslint-disable-next-line no-console
+      console.log('Reset state due to set patch that targeted ancestor path:', patches)
+      this.setState({value: deserialize(snapshot, this.props.type)})
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('TODO: Apply patches:', patches)
     }
   }
+
   componentWillUnmount() {
     // This is a defensive workaround for an issue causing content to be overwritten
     // It cancels any pending saves, so if the component gets unmounted within the

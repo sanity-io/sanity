@@ -19,6 +19,6 @@ function applyPatch(value, patch) {
 
 export default function _apply(value, patch) {
   const res = applyPatch(value, patch)
-  console.log('applyPatch(%o, %o) : %o (noop? %o)', value, patch, res, value === res)
+  // console.log('applyPatch(%o, %o) : %o (noop? %o)', value, patch, res, value === res)
   return res
 }

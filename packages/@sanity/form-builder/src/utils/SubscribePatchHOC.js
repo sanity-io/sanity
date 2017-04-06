@@ -1,7 +1,8 @@
 // @flow
 import React, {PropTypes} from 'react'
-import type {Patch} from './utils/patches'
+import type {Patch} from '../utils/patches'
 import shallowEquals from 'shallow-equals'
+import {get, find} from 'lodash'
 
 declare var __DEV__: boolean
 
@@ -38,13 +39,23 @@ function isAncestor(path1, path2) {
   return path1.length === 0 || (startsWith(path2, path1) && !startsWith(path1, path2))
 }
 
-function shouldResync(path, patches) {
+function shouldReset(path, patches) {
   return patches.some(patch => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset'))
+}
+
+function getValueAtPath(value, path) {
+  return path.reduce((result, segment) => {
+    if (typeof segment === 'object') {
+      return find(result, segment)
+    }
+    return get(result, segment)
+  }, value)
 }
 
 type SubscriberArg = {
   patches: Array<Patch>,
-  shouldResync: boolean
+  shouldReset: boolean,
+  snapshot: any
 }
 
 type Subscriber = (SubscriberArg) => void
@@ -59,16 +70,16 @@ export default function SubscribePatchHOC(ComposedComponent: any) {
     }
 
     subscribe = (subscriber: Subscriber) => {
-      return this.context.formBuilder.onPatch(patches => {
+      return this.context.formBuilder.onPatch(({snapshot, patches}) => {
 
         const selfPath = this.context.getValuePath()
-
         const filtered = patches
           .filter(patch => startsWith(patch.path, selfPath))
           .map(patch => ({...patch, path: patch.path.slice(selfPath.length)}))
 
         subscriber({
-          shouldResync: shouldResync(selfPath, patches),
+          shouldReset: shouldReset(selfPath, patches),
+          snapshot: getValueAtPath(snapshot, selfPath),
           patches: filtered
         })
       })

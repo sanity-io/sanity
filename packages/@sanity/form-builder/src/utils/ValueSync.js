@@ -1,6 +1,6 @@
 // @flow
 import React, {PropTypes} from 'react'
-import type {Patch} from './utils/patches'
+import type {Patch} from '../utils/patches'
 import {debounce} from 'lodash'
 import whyNotEqual from 'is-equal/why'
 import SubscribePatchHOC from './SubscribePatchHOC'
@@ -20,6 +20,7 @@ type Props = {
   children: (ChildProps) => ?React$Element<any>
 }
 
+
 export default SubscribePatchHOC(class SubscribePatch extends React.Component {
   props: Props
 
@@ -33,15 +34,18 @@ export default SubscribePatchHOC(class SubscribePatch extends React.Component {
   }
 
   unsubscribe: () => void
-  shouldResync: boolean
 
   constructor(props: Props) {
     super()
     this.state = {
       value: props.deserialize(props.value)
     }
-    this.unsubscribe = props.subscribe(({patches, shouldResync}) => {
-      this.shouldResync = shouldResync
+    this.unsubscribe = props.subscribe(({snapshot, patches, shouldReset}) => {
+      if (shouldReset) {
+        // eslint-disable-next-line no-console
+        console.warn('Serialized local input value was reset due to a patch that targeted an ancestor')
+        this.setState({value: props.deserialize(snapshot)})
+      }
       this.receivePatches(patches)
     })
   }
@@ -49,15 +53,6 @@ export default SubscribePatchHOC(class SubscribePatch extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe()
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    if (this.shouldResync) {
-      // eslint-disable-next-line no-console
-      console.warn('Serialized local input value was reset')
-      this.setState({value: nextProps.deserialize(nextProps.value)})
-      this.shouldResync = false
-    }
   }
 
   receivePatches(patches: Array<Patch>) {
