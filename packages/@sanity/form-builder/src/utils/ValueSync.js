@@ -70,7 +70,7 @@ export default SubscribePatchHOC(class SubscribePatch extends React.Component {
       // eslint-disable-next-line no-console
       console.warn('Serialized local input value (%o) out of sync with actual value (%o): %s', propsVal, stateVal, notEqual)
     }
-  }, 200)
+  }, 5000)
 
   componentDidUpdate() {
     if (__DEV__) {
