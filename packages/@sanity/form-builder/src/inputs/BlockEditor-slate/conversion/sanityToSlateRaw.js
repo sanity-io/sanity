@@ -1,7 +1,4 @@
-// Converts a persisted array to a slate compatible json document
-import {createMemberValue} from '../../../state/FormBuilderState'
-import {getSpanType} from '../util/spanHelpers'
-
+// @flow
 function hasKeys(obj) {
   for (const key in obj) { // eslint-disable-line guard-for-in
     return true
@@ -16,7 +13,7 @@ function toRawMark(markName) {
   }
 }
 
-function sanitySpanToRawSlateBlockNode(span, context) {
+function sanitySpanToRawSlateBlockNode(span) {
   const {text, _type, marks = [], ...rest} = span
 
   const range = {
@@ -33,26 +30,21 @@ function sanitySpanToRawSlateBlockNode(span, context) {
     kind: 'inline',
     isVoid: false,
     type: 'span',
-    data: {value: createMemberValue({_type, ...rest}, context)},
+    data: {value: {_type, ...rest}},
     nodes: [
       {kind: 'text', ranges: [range]}
     ]
   }
 }
 
-function sanityBlockToRawNode(sanityBlock, context) {
+function sanityBlockToRawNode(sanityBlock, type) {
   // eslint-disable-next-line no-unused-vars
   const {spans, _type, ...rest} = sanityBlock
 
   // todo: refactor
-  const spanType = context.type.fields
+  const spanType = type.fields
     .find(field => field.name === 'spans').type.of
     .find(spanMemberType => spanMemberType.name === 'span')
-
-  const spanContext = {
-    ...context,
-    type: spanType
-  }
 
   const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
 
@@ -61,47 +53,44 @@ function sanityBlockToRawNode(sanityBlock, context) {
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: spans.map(span => sanitySpanToRawSlateBlockNode(span, spanContext))
+    nodes: spans.map(span => sanitySpanToRawSlateBlockNode(span, spanType))
   }
 }
 
-function sanityBlockItemToRaw(blockItem, context) {
+function sanityBlockItemToRaw(blockItem, type) {
   return {
     kind: 'block',
-    type: context.type.name,
+    type: type.name,
     isVoid: true,
-    data: {value: createMemberValue(blockItem, context)},
+    data: {value: blockItem},
     nodes: []
   }
 }
 
-function sanityBlockItemToRawNode(blockItem, context) {
-  if (context.type.name === 'block') {
-    return sanityBlockToRawNode(blockItem, context)
+function sanityBlockItemToRawNode(blockItem, type) {
+  if (type.name === 'block') {
+    return sanityBlockToRawNode(blockItem, type)
   }
-  return sanityBlockItemToRaw(blockItem, context)
+  return sanityBlockItemToRaw(blockItem, type)
 }
 
-function sanityBlocksArrayToRawNodes(blockArray, context) {
+function sanityBlocksArrayToRawNodes(blockArray, type) {
   return blockArray
     .filter(Boolean) // this is a temporary guard against null values, @todo: remove
     .map(item => {
-      const memberType = context.type.of.find(ofType => ofType.name === item._type)
-      return sanityBlockItemToRawNode(item, {
-        ...context,
-        type: memberType
-      })
+      const memberType = type.of.find(ofType => ofType.name === item._type)
+      return sanityBlockItemToRawNode(item, memberType)
     })
 }
 
 const EMPTY_NODE = {kind: 'block', type: 'contentBlock', data: {style: 'normal'}, nodes: []}
 
-export default function sanityToSlateRaw(array, context) {
+export default function sanityToSlateRaw(array, type) {
   return {
     kind: 'state',
     document: {
       kind: 'document',
-      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, context) : [EMPTY_NODE]
+      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : [EMPTY_NODE]
     }
   }
 }

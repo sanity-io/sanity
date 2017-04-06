@@ -54,13 +54,12 @@ export default class ReferenceSelect extends React.Component {
   syncValue(value) {
     const {fetchValueFn, type} = this.props
 
-    if (value.isEmpty()) {
+    if (!value || !value._ref) {
       this.setState({materializedValue: null})
       return
     }
 
-    const serialized = value.serialize()
-    this.subscriptions.replace('fetchValue', fetchValueFn(serialized, type)
+    this.subscriptions.replace('fetchValue', fetchValueFn(value, type)
       .subscribe(materializedValue => {
         this.setState({materializedValue})
       }))

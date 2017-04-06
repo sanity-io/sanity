@@ -2,14 +2,13 @@
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import RenderField from './RenderField'
-import ObjectContainer from './ObjectContainer'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {setIfMissing} from '../../PatchEvent'
+import PatchEvent, {unset, setIfMissing} from '../../PatchEvent'
+import MemberValue from '../../Member'
+import isEmpty from '../../utils/isEmpty'
 
 export default class ObjectInput extends React.PureComponent {
   static displayName = 'Object'
-
-  static valueContainer = ObjectContainer;
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
@@ -26,6 +25,13 @@ export default class ObjectInput extends React.PureComponent {
     onEnter() {},
     level: 0
   };
+
+  handleBlur() {
+    const {onChange, value} = this.props
+    if (isEmpty(value)) {
+      onChange(PatchEvent.from(unset()))
+    }
+  }
 
   handleFieldChange = (event : PatchEvent, field) => {
     const {onChange, type} = this.props
@@ -45,19 +51,21 @@ export default class ObjectInput extends React.PureComponent {
     const {value, hasFocus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value && value.getAttribute(field.name)
+    const fieldValue = value && value[field.name]
 
     return (
-      <RenderField
-        key={field.name}
-        hasFocus={hasFocus && index === 0}
-        field={field}
-        value={fieldValue}
-        onChange={this.handleFieldChange}
-        onEnter={this.handleFieldEnter}
-        validation={fieldValidation}
-        level={level}
-      />
+      <MemberValue path={field.name}>
+        <RenderField
+          key={field.name}
+          hasFocus={hasFocus && index === 0}
+          field={field}
+          value={fieldValue}
+          onChange={this.handleFieldChange}
+          onEnter={this.handleFieldEnter}
+          validation={fieldValidation}
+          level={level}
+        />
+      </MemberValue>
     )
   }
 

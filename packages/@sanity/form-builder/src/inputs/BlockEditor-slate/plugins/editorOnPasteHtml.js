@@ -1,25 +1,11 @@
 import HtmlDeserializer from '../conversion/slateHTMLDeserializer'
-import {getSpanType} from '../util/spanHelpers'
 
 function onPasteHtml(blockEditor) {
 
-  function createSpanValue(value) {
-    const spanField = getSpanType(blockEditor.props.type)
-    const spanValue = blockEditor.context.formBuilder
-      .createFieldValue(value, spanField.type)
-    return spanValue
-  }
-
   function createFieldValueFromHtml(element) {
-    let value
-    switch (element.tagName) {
-      case 'a':
-        value = createSpanValue({link: {href: element.attribs.href}})
-        break
-      default:
-        value = undefined
-    }
-    return value
+    return element.tagName.toLowerCase() === 'a'
+      ? {link: {href: element.attribs.href}}
+      : undefined
   }
 
   function resolveEnabledStyles() {

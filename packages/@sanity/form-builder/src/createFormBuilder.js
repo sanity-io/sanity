@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'
 import {FormBuilderInput} from './FormBuilderInput'
-import {createFormBuilderState, createMemberValue} from './state/FormBuilderState'
 import defaultConfig from './defaultConfig'
 import Schema from '@sanity/schema'
+import pubsub from 'nano-pubsub'
 
 const NOOP = () => {}
 
@@ -33,48 +33,22 @@ export default function createFormBuilder(config = {}) {
     return resolve(type, config.resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
   }
 
-  function _createFieldValue(value, type) {
-    return createMemberValue(value, {
-      type,
-      schema,
-      resolveInputComponent,
-      resolvePreviewComponent
-    })
-  }
-
-  function createValue(value, typeName) {
-    if (value && value._type !== typeName) {
-      throw new Error(`Type mismatch: Trying to edit data of type ${value._type} as ${typeName}`)
-    }
-
-    return createFormBuilderState(value, {
-      type: schema.get(typeName),
-      schema: schema,
-      resolveInputComponent: resolveInputComponent,
-      resolvePreviewComponent: resolvePreviewComponent
-    })
-  }
-
-  function createEmpty(typeName) {
-    if (!typeName) {
-      throw new TypeError('You must pass a type name as first parameter')
-    }
-    return createValue(undefined, typeName)
-  }
+  const patchChannel = pubsub()
 
   return class FormBuilder extends React.Component {
-    static createEmpty = createEmpty;
-    static deserialize = createValue;
+    static receivePatches = patchChannel.publish
     static propTypes = {
-      value: PropTypes.any, // todo: fix
+      value: PropTypes.any,
+      type: PropTypes.object,
       children: PropTypes.any,
       onChange: PropTypes.func
     };
 
     static childContextTypes = {
+      getValuePath: PropTypes.func,
+      onPatch: PropTypes.func,
       formBuilder: PropTypes.shape({
         schema: PropTypes.instanceOf(Schema),
-        createFieldValue: PropTypes.func,
         resolveInputComponent: PropTypes.func,
         document: PropTypes.any
       })
@@ -86,9 +60,10 @@ export default function createFormBuilder(config = {}) {
 
     getChildContext() {
       return {
+        getValuePath: () => ([]),
         formBuilder: {
+          onPatch: patchChannel.subscribe,
           schema: config.schema,
-          createFieldValue: _createFieldValue,
           resolveInputComponent: resolveInputComponent,
           resolvePreviewComponent: resolvePreviewComponent,
           getDocument: this.getDocument
@@ -97,11 +72,11 @@ export default function createFormBuilder(config = {}) {
     }
 
     render() {
-      const {value, onChange, children} = this.props
+      const {value, type, onChange, children} = this.props
       return children || (
         <FormBuilderInput
           value={value}
-          type={value.context.type}
+          type={type}
           onChange={onChange}
           level={0}
         />

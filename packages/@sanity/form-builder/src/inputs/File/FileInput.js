@@ -3,7 +3,6 @@ import React, {PropTypes} from 'react'
 import FileSelect from './FileSelect'
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
-import ObjectValueContainer from '../Object/ObjectContainer'
 import PatchEvent, {set, setIfMissing} from '../../PatchEvent'
 
 export default class FileInput extends React.PureComponent {
@@ -14,7 +13,6 @@ export default class FileInput extends React.PureComponent {
     onChange: PropTypes.func,
     upload: PropTypes.func.isRequired,
   }
-  static valueContainer = ObjectValueContainer
 
   state = {
     status: 'ready',

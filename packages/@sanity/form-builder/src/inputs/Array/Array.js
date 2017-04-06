@@ -13,10 +13,23 @@ import GridList from 'part:@sanity/components/lists/grid'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import ItemForm from './ItemForm'
 import ItemPreview from './ItemPreview'
-import ArrayContainer from './ArrayContainer'
 import styles from './styles/Array.css'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
+import MemberValue from '../../Member'
+
+function hasKeys(object, exclude = []) {
+  for (const key in object) {
+    if (!exclude.includes(key)) {
+      return true
+    }
+  }
+  return false
+}
+
+function isEmpty(value) {
+  return value === undefined || !hasKeys(value, ['_key', '_type', 'index'])
+}
 
 function createProtoValue(type) {
   if (type.jsonType !== 'object') {
@@ -28,13 +41,12 @@ function createProtoValue(type) {
   }
 }
 
-export default class Arr extends React.Component {
+export default class ArrayInput extends React.Component {
   static displayName = 'Array';
-  static valueContainer = ArrayContainer;
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    value: PropTypes.instanceOf(ArrayContainer),
+    value: PropTypes.array,
     level: PropTypes.number,
     onChange: PropTypes.func
   }
@@ -73,8 +85,8 @@ export default class Arr extends React.Component {
   insert(itemValue, position, atIndex) {
     const {onChange} = this.props
     onChange(PatchEvent.from(
-      insert([itemValue], position, [atIndex]),
-      setIfMissing([itemValue])
+      setIfMissing([]),
+      insert([itemValue], position, [atIndex])
     ))
   }
 
@@ -88,19 +100,19 @@ export default class Arr extends React.Component {
 
   handleRemoveItem = item => {
     const {onChange, value} = this.props
-    if (item.key === this.state.editItemKey) {
+    if (item._key === this.state.editItemKey) {
       this.setState({editItemKey: null})
     }
     onChange(
       PatchEvent.from(
-        unset(item.key ? [{_key: item.key}] : [value.indexOf(item)])
+        unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
       )
     )
   }
 
   handleClose = () => {
     const itemValue = this.getEditItem()
-    if (itemValue.isEmpty()) {
+    if (isEmpty(itemValue)) {
       this.handleRemoveItem(itemValue)
     }
     this.setState({
@@ -136,43 +148,43 @@ export default class Arr extends React.Component {
   handleItemChange = (event : PatchEvent, item) => {
     const {onChange, value} = this.props
 
-    const key = item.key || randomKey(12)
+    const key = item._key || randomKey(12)
     onChange(
       event
         .prefixAll({_key: key})
-        .prepend(item.key ? [] : set(key, [value.indexOf(item), '_key']))
+        .prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
     )
   }
 
   handleItemEdit = item => {
     this.setState({
       editItem: item,
-      editItemKey: item.key || this.props.value.indexOf(item)
+      editItemKey: item._key || this.props.value.indexOf(item)
     })
   }
 
   handleMove = event => {
     const {value, onChange} = this.props
-    const item = value.at(event.oldIndex)
-    const refItem = value.at(event.newIndex)
+    const item = value[event.oldIndex]
+    const refItem = value[event.newIndex]
 
     // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
-    if (!item.key || !refItem.key) {
+    if (!item._key || !refItem._key) {
       // eslint-disable-next-line no-console
       console.error('Neither the item you are moving nor the item you are moving to have a key. Cannot continue.')
       return
     }
 
-    if (event.oldIndex === event.newIndex || item.key === refItem.key) {
+    if (event.oldIndex === event.newIndex || item._key === refItem._key) {
       return
     }
 
     onChange(PatchEvent.from(
-      unset([{_key: item.key}]),
+      unset([{_key: item._key}]),
       insert(
-        [item.get()],
+        [item],
         event.oldIndex > event.newIndex ? 'before' : 'after',
-        [{_key: refItem.key}]
+        [{_key: refItem._key}]
       )
     ))
   }
@@ -185,16 +197,18 @@ export default class Arr extends React.Component {
     const itemField = this.getItemType(item)
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
-        <ItemForm
-          focus
-          itemKey={item.key || this.props.value.indexOf(item)}
-          type={itemField}
-          level={this.props.level + 1}
-          value={item}
-          onChange={this.handleItemChange}
-          onEnter={this.handleItemEnter}
-          onRemove={this.handleRemoveItem}
-        />
+        <MemberValue path={{_key: item._key}}>
+          <ItemForm
+            focus
+            itemKey={item._key || this.props.value.indexOf(item)}
+            type={itemField}
+            level={this.props.level + 1}
+            value={item}
+            onChange={this.handleItemChange}
+            onEnter={this.handleItemEnter}
+            onRemove={this.handleRemoveItem}
+          />
+        </MemberValue>
       </EditItemPopOver>
     )
   }
@@ -203,13 +217,13 @@ export default class Arr extends React.Component {
     const {editItemKey} = this.state
     const {value} = this.props
     return typeof editItemKey === 'number'
-    ? value.at(editItemKey)
-    : value.byKey(editItemKey)
+    ? value[editItemKey]
+    : value.find(item => item._key === editItemKey)
   }
 
   getItemType(item) {
     const {type} = this.props
-    return type.of.find(member => member === item.context.type)
+    return type.of.find(memberType => memberType.name === item._type)
   }
 
   renderItem = (item, index) => {
@@ -219,7 +233,7 @@ export default class Arr extends React.Component {
       return (
         <div className={styles.warning}>
           <h3>Warning</h3>
-          <div>Array item has an invalid type: <pre>{item.serialize()._type}</pre></div>
+          <div>Array item has an invalid type: <pre>{item._type}</pre></div>
           <div>The only allowed item types are: <pre>{humanizeList(type.of.map(ofType => ofType.name))}</pre></div>
         </div>
       )
@@ -250,7 +264,7 @@ export default class Arr extends React.Component {
       return (
         <GridList
           renderItem={this.renderItem}
-          items={value.value}
+          items={value}
           onSelect={this.handleItemEdit}
           onSortEnd={this.handleMove}
           focusedItem={this.state.lastEditedItem}
@@ -261,7 +275,7 @@ export default class Arr extends React.Component {
 
     return (
       <DefaultList
-        items={value.value}
+        items={value}
         renderItem={this.renderItem}
         onSelect={this.handleItemEdit}
         sortable={sortable}
@@ -280,7 +294,7 @@ export default class Arr extends React.Component {
       <Fieldset legend={type.title} description={type.description} level={level} transparent>
         <div className={styles.root}>
           {
-            value.value && value.value.length > 0 && (
+            value && value.length > 0 && (
               <div className={styles.list}>
                 {this.renderList()}
               </div>

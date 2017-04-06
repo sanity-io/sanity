@@ -1,29 +1,48 @@
 import React, {PropTypes} from 'react'
 import BlockEditor from './BlockEditor'
+import {Raw} from 'slate'
+import sanityToSlateRaw from './conversion/sanityToSlateRaw'
+import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
-import SimpleSlateValueContainer from './SimpleSlateValueContainer'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import SubscribePatchHOC from '../../utils/SubscribePatchHOC'
 
-export default class Syncer extends React.PureComponent {
-  static valueContainer = SimpleSlateValueContainer;
+function deserialize(value, type) {
+  return Raw.deserialize(sanityToSlateRaw(value, type))
+}
+function serialize(state) {
+  return slateRawToSanity(Raw.serialize(state))
+}
+
+export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   static propTypes = {
-    value: PropTypes.instanceOf(SimpleSlateValueContainer).isRequired,
-    onChange: PropTypes.func
+    value: PropTypes.array.isRequired,
+    type: PropTypes.object.isRequired,
+    onChange: PropTypes.func,
+    subscribe: PropTypes.func
   }
 
   constructor(props) {
     super()
     this.state = {
-      value: props.value
+      value: deserialize(props.value, props.type)
     }
+    this.unsubscribe = props.subscribe(this.receivePatches)
   }
 
   handleChange = nextSlateState => {
-    const {value} = this.state
-    this.setState({value: value.setState(nextSlateState)}, this.emitSet)
+    this.setState({value: nextSlateState}, this.emitSet)
   }
 
-  componentWillReceiveProps(nextProps) {
+  receivePatches = ({snapshot, shouldReset, patches}) => {
+    if (shouldReset) {
+      // eslint-disable-next-line no-console
+      console.log('Reset state due to set patch that targeted ancestor path:', patches)
+      this.setState({value: deserialize(snapshot, this.props.type)})
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('TODO: Apply patches:', patches)
+    }
   }
 
   componentWillUnmount() {
@@ -33,13 +52,15 @@ export default class Syncer extends React.PureComponent {
     // This is by no means ideal, but preferable to overwriting content in other documents
     // Should be fixed by making the block editor "real" realtime
     this.emitSet.cancel()
+
+    this.unsubscribe()
   }
 
   emitSet = throttle(() => {
     const {onChange} = this.props
     // const onChange = event => console.log(event.patch.type, event.patch.value)
     const {value} = this.state
-    const nextVal = value.serialize()
+    const nextVal = serialize(value)
 
     onChange(PatchEvent.from(nextVal ? set(nextVal) : unset()))
 
@@ -47,6 +68,8 @@ export default class Syncer extends React.PureComponent {
 
   render() {
     const {value} = this.state
-    return <BlockEditor {...this.props} onChange={this.handleChange} value={value.state} />
+    return (
+      <BlockEditor {...this.props} onChange={this.handleChange} value={value} />
+    )
   }
-}
+})

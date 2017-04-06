@@ -33,7 +33,9 @@
     "humanize-list": "^1.0.1",
     "immutable": "^3.8.1",
     "is-empty": "^1.0.0",
+    "is-equal": "^1.5.5",
     "lodash": "^4.17.4",
+    "nano-pubsub": "^1.0.1",
     "object-inspect": "^1.2.1",
     "proptypes": "^0.14.3",
     "prosemirror": "^0.10.1",
@@ -88,10 +90,7 @@
     "tap": "^10.3.0",
     "zen-observable": "^0.4.0"
   },
-  "peerDependencies": {
-    "react": "^15.x",
-    "react-dom": "^15.x"
-  },
+  "peerDependencies": {},
   "directories": {
     "example": "example",
     "test": "test"

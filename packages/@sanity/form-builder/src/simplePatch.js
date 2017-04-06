@@ -1,10 +1,2 @@
-import {Patcher} from '@sanity/mutator'
-import toGradientPatch from './sanity/utils/toGradientPatch'
-import arrify from 'arrify'
-
-export default function applyPatches(value, patches) {
-  return arrify(patches)
-    .map(toGradientPatch)
-    .map(patch => new Patcher(patch))
-    .reduce((next, patch) => patch.applyViaAccessor(next), value)
-}
+export {default} from './patch/applyPatch'
+export {applyAll} from './patch/applyPatch'

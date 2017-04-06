@@ -1,5 +1,6 @@
 import {SLATE_DEFAULT_STYLE, SLATE_SPAN_TYPE} from './constants'
 import {getSpanType} from './util/spanHelpers'
+import {createProtoValue} from './createProtoValue'
 
 export default function createBlockEditorOperations(blockEditor) {
 
@@ -70,13 +71,9 @@ export default function createBlockEditorOperations(blockEditor) {
       //   .createFieldValue({text: selecetedText}, spanField.type)
 
 
-      // Create empty value
-      const spanValue = blockEditor.context.formBuilder
-        .createFieldValue(undefined, spanField.type)
-
       // Update the span with new data
       const finalState = transform
-        .setInline({data: {value: spanValue}})
+        .setInline({data: {value: createProtoValue(spanField.type)}})
         .apply()
 
       return onChange(finalState)
@@ -85,9 +82,7 @@ export default function createBlockEditorOperations(blockEditor) {
     resetSpan(spanNode) {
       const state = getState()
       const spanField = getSpanType(blockEditor.props.type)
-      const spanValue = blockEditor.context.formBuilder
-        .createFieldValue(undefined, spanField.type)
-      const data = {value: spanValue}
+      const data = {value: createProtoValue(spanField.type)}
       let nextState
       if (Array.isArray(spanNode)) {
         nextState = state.transform()
@@ -215,12 +210,13 @@ export default function createBlockEditorOperations(blockEditor) {
 
     insertBlock(item) {
       const state = getState()
-      const addItemValue = blockEditor.context.formBuilder.createFieldValue(undefined, item)
 
       const props = {
         type: item.type.name,
         isVoid: true,
-        data: {value: addItemValue}
+        data: {
+          value: createProtoValue(item.type)
+        }
       }
 
       const nextState = state.transform().insertBlock(props).apply()

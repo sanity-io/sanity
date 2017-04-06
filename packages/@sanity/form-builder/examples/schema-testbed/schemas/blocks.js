@@ -1,248 +1,160 @@
-import React from 'react'
+import SlateInput from '../../../src/inputs/BlockEditor-slate'
 
 export default {
-  name: 'blocks',
   types: [
     {
       name: 'blogpost',
+      title: 'Blocks test',
       type: 'object',
       fields: [
         {
           name: 'title',
           title: 'Title',
           type: 'string',
-          required: true
-        },
-        {
-          name: 'slug',
-          title: 'Slug',
-          type: 'slug',
-          options: {
-            source: 'title',
-            maxLength: 96
-          }
-        },
-        {
-          name: 'priority',
-          title: 'Priority',
-          type: 'number'
-        },
-        {
-          name: 'checked',
-          title: 'Published',
-          type: 'boolean'
         },
         {
           name: 'content',
+          title: 'Content',
           type: 'array',
-          title: 'Blocks',
-          editor: 'slate',
+          inputComponent: SlateInput,
           of: [
             {
-              title: 'Paragraph',
-              type: 'paragraph',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'overline',
-                'line-through',
-                'code'
-              ]
+              type: 'block',
+              title: 'Block'
             },
             {
-              title: 'Header 1',
-              type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
-              level: 1
-            },
-            {
-              title: 'Header 2',
-              type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
-              level: 2
-            },
-            {
-              title: 'Header 3',
-              type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
-              level: 3
-            },
-            {
-              title: 'Header 4',
-              type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
-              level: 4
-            },
-            {
-              title: 'Numbered list',
-              type: 'list',
-              listStyle: 'number'
-            },
-            {
-              title: 'Bullet list',
-              type: 'list',
-              listStyle: 'bullet'
-            },
-            {
-              title: 'Roman list',
-              type: 'list',
-              listStyle: 'roman'
-            },
-            {
-              title: 'List item',
-              type: 'listItem',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ]
-            },
-            {
-              title: 'Link',
-              type: 'link',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ]
-            },
-            {
-              title: 'String',
-              type: 'string'
-            },
-            {
-              title: 'Image',
-              type: 'simpleImage'
-            },
-            {
-              title: 'Author',
-              type: 'author'
-            },
-            {
-              title: 'Location',
-              type: 'geopoint'
+              type: 'address',
+              title: 'Address'
             }
-          ]
-        },
-        {
-          name: 'minimal',
-          type: 'array',
-          title: 'Blocks',
-          editor: 'slate',
-          of: [
-            {
-              title: 'Paragraph',
-              type: 'paragraph',
-            }
-          ]
+          ],
         }
       ]
     },
     {
-      name: 'simpleImage',
+      name: 'address',
       type: 'object',
+      preview: {
+        select: {
+          title: 'street',
+          subtitle: 'zip'
+        }
+      },
       fields: [
         {
-          title: 'Image address (url)',
-          name: 'url',
-          type: 'url'
+          name: 'street',
+          type: 'string',
+          title: 'Street'
         },
         {
-          title: 'Caption',
-          name: 'caption',
-          type: 'string'
+          name: 'zip',
+          type: 'string',
+          title: 'Zip'
         }
-      ],
-
-      options: {
-        preview: value => {
+      ]
+    },
+    {
+      name: 'block',
+      type: 'object',
+      preview: {
+        select: {
+          style: 'style',
+          spans: 'spans'
+        },
+        prepare({style, spans}) {
           return {
-            title: value ? value.caption : '',
-            mediaRender: () => {
-              return value && value.url ? <img src={value.url} /> : null
-            }
+            title: `${style ? `${style}: ` : ''} ${(spans || []).map(span => span.text).join(' ')}`
           }
         }
-      }
-    },
-    {
-      name: 'geopoint',
-      type: 'object',
+      },
       fields: [
         {
-          name: 'lat',
-          title: 'Latitude',
-          type: 'number',
-          required: true
+          name: 'style',
+          title: 'Style',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Normal', value: 'normal'},
+              {title: 'H1', value: 'h1'},
+              {title: 'H2', value: 'h2'},
+              {title: 'H3', value: 'h3'},
+              {title: 'H4', value: 'h4'},
+              {title: 'H5', value: 'h5'},
+              {title: 'H6', value: 'h6'},
+              {title: 'Quote', value: 'blockquote'}
+            ]
+          }
         },
         {
-          name: 'lon',
-          title: 'Longitude',
-          type: 'number',
-          required: true
+          name: 'list',
+          title: 'List type',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'None', value: ''},
+              {title: 'Bullet', value: 'bullet'},
+              {title: 'Numbered', value: 'number'}
+            ]
+          }
+        },
+        {
+          name: 'indentation',
+          title: 'Indentation',
+          type: 'number'
+        },
+        {
+          name: 'spans',
+          type: 'array',
+          title: 'Content',
+          of: [
+            {
+              type: 'span',
+              title: 'Span'
+            }
+          ]
         }
       ]
     },
     {
-      name: 'author',
+      name: 'span',
       type: 'object',
       fields: [
         {
-          name: 'name',
-          title: 'Title',
-          type: 'string'
+          type: 'text',
+          name: 'text',
+          title: 'Text'
         },
         {
-          name: 'awards',
-          title: 'Awards',
-          type: 'array',
-          of: [
-            {
-              type: 'string'
-            }
-          ]
-        },
-        {
-          name: 'homestead',
-          title: 'Homestead',
           type: 'object',
+          name: 'link',
+          title: 'Link',
           fields: [
             {
-              name: 'lat',
-              title: 'Latitude',
-              type: 'number',
-              required: true
-            },
-            {
-              name: 'lon',
-              title: 'Longitude',
-              type: 'number',
-              required: true
+              type: 'url',
+              name: 'href',
             }
           ]
+        },
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'reference',
+          to: [{type: 'author'}]
+        },
+        {
+          type: 'array',
+          name: 'marks',
+          title: 'Marks',
+          of: [{type: 'string'}],
+          options: {
+            direction: 'vertical',
+            list: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+              {title: 'Code', value: 'code'},
+              {title: 'Underline', value: 'underline'},
+              {title: 'Strike', value: 'strike-through'}
+            ]
+          }
         }
       ]
     }

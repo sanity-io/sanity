@@ -6,7 +6,7 @@ function removeSchemaPrefix(type) {
 }
 
 function resolveRefTypeName(value) {
-  if (value._type.includes(':')) {
+  if (value._type && value._type.includes(':')) {
     return Observable.of(value._type.split(':').pop())
   }
   return Observable.from(client.observable.fetch('*[_id == $id]{_type}', {id: value._ref}))

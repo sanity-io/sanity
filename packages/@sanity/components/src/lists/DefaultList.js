@@ -9,8 +9,8 @@ import {item as itemPropType} from './PropTypes'
 
 const DragHandle = SortableHandle(() => <span className={itemStyles.dragHandle}><DragBarsIcon /></span>)
 
-const SortableItem = SortableElement(({renderListItem, value}) => {
-  return renderListItem(value, value.index)
+const SortableItem = SortableElement(({renderListItem, value, idx}) => {
+  return renderListItem(value, idx)
 })
 
 const SortableList = SortableContainer(({sortableItems, renderListItem, getItemKey, className, ref}) => {
@@ -18,10 +18,10 @@ const SortableList = SortableContainer(({sortableItems, renderListItem, getItemK
     <ul className={`${styles.sortableList} ${className}`} ref={ref}>
       {
         sortableItems.map((value, index) => {
-          value.index = index
           return (
             <SortableItem
               key={getItemKey(value, index)}
+              idx={index}
               index={index}
               value={value}
               renderListItem={renderListItem}

@@ -4,5 +4,3 @@
 defs
 [ignore]
 .*/examples/.*
-.*/node_modules/.*
-.*/../mutator/.*

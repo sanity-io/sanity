@@ -231,7 +231,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           </div>
           <h1 className={styles.heading}>
-            {titleProp && String(value.getAttribute(titleProp).serialize() || 'Untitled…')}
+            {titleProp && String(value[titleProp] || 'Untitled…')}
           </h1>
 
           {
@@ -260,6 +260,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <FormBuilder
             key={documentId}
             value={value}
+            type={type}
             onChange={onChange}
           />
         </form>

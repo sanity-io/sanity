@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
-import applySanityPatches from './applySanityPatches'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
 import RenderField from '../Object/RenderField'
 import styles from './styles/FormBuilderSpan.css'
-import arrify from 'arrify'
+import {applyAll} from '../../simplePatch'
+
 
 export default class FormBuilderSpan extends React.Component {
   static propTypes = {
@@ -67,10 +67,6 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   handleCloseInput = () => {
-    if (this.isEmpty()) {
-      this.handleRemove()
-      return
-    }
     // Let it happen after focus is set in the editor (state may be out of sync)
     this.props.editor.focus()
     setTimeout(() => {
@@ -119,7 +115,7 @@ export default class FormBuilderSpan extends React.Component {
       .transform()
       .setNodeByKey(node.key, {
         data: {
-          value: applySanityPatches(node.data.get('value'), event.prefixAll(field.name).patches)
+          value: applyAll(node.data.get('value'), event.prefixAll(field.name).patches)
         }
       })
       .apply()
@@ -129,7 +125,7 @@ export default class FormBuilderSpan extends React.Component {
 
   renderInput() {
     const value = this.getValue()
-    const type = value.context.type
+    const {type} = this.props
     const ignoredFields = ['text', 'marks']
     const memberFields = type.fields.filter(field => {
       return !ignoredFields.includes(field.name)
@@ -153,12 +149,12 @@ export default class FormBuilderSpan extends React.Component {
           }
 
           {
-            memberFields.map(eField => {
-              const fieldValue = value.getAttribute(eField.name)
+            memberFields.map(memberField => {
+              const fieldValue = value && value[memberField.name]
               return (
                 <RenderField
-                  key={eField.name}
-                  field={eField}
+                  key={memberField.name}
+                  field={memberField}
                   level={0}
                   value={fieldValue}
                   onChange={this.handleFieldChange}
@@ -179,10 +175,11 @@ export default class FormBuilderSpan extends React.Component {
   renderPreview() {
     if (this.shouldPreview()) {
       const value = this.getValue()
+      const {type} = this.props
       return (
         <Preview
-          value={value.serialize()}
-          type={value.context.type}
+          value={value}
+          type={type}
         />
       )
     }

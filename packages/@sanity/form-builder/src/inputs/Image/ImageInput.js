@@ -8,7 +8,6 @@ import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 
 import RenderField from '../Object/RenderField'
-import ObjectValueContainer from '../Object/ObjectContainer'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
@@ -56,7 +55,6 @@ export default class ImageInput extends React.PureComponent {
     level: PropTypes.number,
     validation: PropTypes.object
   }
-  static valueContainer = ObjectValueContainer
 
   state = getInitialState()
 
@@ -64,15 +62,16 @@ export default class ImageInput extends React.PureComponent {
 
   componentDidMount() {
     const {value} = this.props
-    const imageReference = value.getAttribute('asset')
-    this.syncImageRef(imageReference)
+    if (value) {
+      this.syncImageRef(value.asset)
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    const currentRef = this.props.value.getAttribute('asset')
-    const nextRef = nextProps.value.getAttribute('asset')
+    const currentRef = get(this.props, 'value.asset')
+    const nextRef = get(nextProps, 'value.asset')
 
-    const shouldUpdate = currentRef !== nextRef && currentRef.refId !== nextRef.refId
+    const shouldUpdate = currentRef !== nextRef && get(currentRef, '_ref') !== get(nextRef, '_ref')
 
     if (shouldUpdate) {
       this.setState(omit(getInitialState(), 'materializedImage', 'uploadingImage'))
@@ -91,16 +90,16 @@ export default class ImageInput extends React.PureComponent {
     }))
   }
 
-  syncImageRef(ref) {
-    if (ref.isEmpty()) {
+  syncImageRef(reference) {
+    if (!reference) {
       this.setState({materializedImage: null})
       return
     }
-    if (this.state.materializedImage && this.state.materializedImage._id === ref.refId) {
+    if (this.state.materializedImage && this.state.materializedImage._id === reference._id) {
       return
     }
     const {materializeReferenceFn} = this.props
-    this.subscriptions.replace('materialize', materializeReferenceFn(ref.refId).subscribe(materialized => {
+    this.subscriptions.replace('materialize', materializeReferenceFn(reference._ref).subscribe(materialized => {
       this.setState({materializedImage: materialized})
     }))
   }
@@ -236,8 +235,8 @@ export default class ImageInput extends React.PureComponent {
 
   renderImageTool() {
     const {value} = this.props
-    const hotspot = value.getAttribute('hotspot').toJSON() || DEFAULT_HOTSPOT
-    const crop = value.getAttribute('crop').toJSON() || DEFAULT_CROP
+    const hotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
+    const crop = (value && value.crop) || DEFAULT_CROP
 
     const {uploadingImage, materializedImage} = this.state
 
@@ -300,7 +299,7 @@ export default class ImageInput extends React.PureComponent {
     const {value, validation, level} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
-    const fieldValue = value.getAttribute(field.name)
+    const fieldValue = value && value[field.name]
 
     return (
       <RenderField
@@ -323,14 +322,18 @@ export default class ImageInput extends React.PureComponent {
 
   render() {
     const {status, progress, isAdvancedEditOpen} = this.state
-    const {type, level, value} = omit(this.props,
-      'uploadFn',
-      'materializeReferenceFn',
-      'onChange',
-      'onEnter',
-      'validation',
-      'focus'
-    )
+    const {
+      type,
+      level,
+      value,
+      uploadFn,
+      materializeReferenceFn,
+      onChange,
+      onEnter,
+      validation,
+      hasFocus,
+    } = this.props
+
     const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
       if (field.name === 'asset') {
         return 'asset'
@@ -364,8 +367,8 @@ export default class ImageInput extends React.PureComponent {
         multiple={false}
         accept={accept || 'image/*'}
         hotspotImage={{
-          hotspot: isImageToolEnabled ? value.getAttribute('hotspot').get() : DEFAULT_HOTSPOT,
-          crop: isImageToolEnabled ? value.getAttribute('crop').get() : DEFAULT_CROP,
+          hotspot: isImageToolEnabled ? (value && value.hotspot) : DEFAULT_HOTSPOT,
+          crop: isImageToolEnabled ? (value && value.crop) : DEFAULT_CROP,
           imageUrl: imageUrl
         }}
       >

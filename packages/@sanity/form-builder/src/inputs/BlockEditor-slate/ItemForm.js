@@ -35,11 +35,9 @@ export default class ItemForm extends React.PureComponent {
       )
     }
 
-    const passSerialized = value.constructor.passSerialized
-
     return (
       <InputComponent
-        value={passSerialized ? value.serialize() : value}
+        value={value}
         type={type}
         level={level}
         hasFocus={hasFocus}

@@ -1,12 +1,10 @@
 import React from 'react'
 import ReferenceBrowser from './browser/ReferenceBrowser'
-import ValueContainer from './common/ValueContainer'
 import FormField from 'part:@sanity/components/formfields/default'
 
 export default function createReferenceBrowser({searchFn, fetchValueFn}) {
 
   ReferenceInput.propTypes = ReferenceBrowser.propTypes
-  ReferenceInput.valueContainer = ValueContainer
 
   return ReferenceInput
 
