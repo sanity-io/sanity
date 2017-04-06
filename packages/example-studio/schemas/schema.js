@@ -78,6 +78,11 @@ export default createSchema({
           }
         },
         {
+          name: 'file',
+          title: 'Plain file uplaod',
+          type: 'file'
+        },
+        {
           name: 'mainImage',
           title: 'Main image',
           type: 'image',
