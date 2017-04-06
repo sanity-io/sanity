@@ -101,16 +101,7 @@ class GeopointSelect extends React.Component {
   }
 
   setValue(geoPoint) {
-    this.props.onChange({
-      patch: {
-        type: 'set',
-        path: [],
-        value: {
-          lat: geoPoint.lat(),
-          lng: geoPoint.lng()
-        }
-      }
-    })
+    this.props.onChange(geoPoint)
   }
 
   componentDidUpdate() {

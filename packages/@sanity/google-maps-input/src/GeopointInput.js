@@ -6,6 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import styles from '../styles/GeopointInput.css'
+import PatchEvent, {set} from '@sanity/form-builder/PatchEvent'
 
 
 const getLocale = context => {
@@ -50,6 +51,15 @@ class GeopointInput extends React.Component {
 
   handleToggleModal() {
     this.setState({modalOpen: !this.state.modalOpen})
+  }
+
+  handleChange = latLng => {
+    const {type, onChange} = this.props
+    onChange(PatchEvent.from(set({
+      _type: type.name,
+      lat: latLng.lat(),
+      lng: latLng.lng()
+    })))
   }
 
   handleCloseModal() {
@@ -123,13 +133,12 @@ class GeopointInput extends React.Component {
             <GoogleMapsLoadProxy
               value={value}
               apiKey={config.apiKey}
-              onChange={this.props.onChange}
+              onChange={this.handleChange}
               defaultLocation={config.defaultLocation}
               defaultZoom={config.defaultZoom}
               locale={getLocale(this.context)}
               component={GeopointSelect}
             />
-
           </Dialog>
         )}
       </Fieldset>

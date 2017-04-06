@@ -4,22 +4,19 @@ import React, {PropTypes} from 'react'
 import Kronos from 'react-kronos'
 import FormField from 'part:@sanity/components/formfields/default'
 import styles from './Date.css'
-const kronosStyles = {
+import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
+
+const KRONOS_STYLES = {
   input: styles.datepicker,
   kronos: styles.kronos
 }
 
 export default class DateInput extends React.PureComponent {
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
   // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
-    if (!newMoment) {
+    if (!newMoment || !newMoment.isValid()) {
       return null
     }
     if (this.optionsWithDefaults().inputUtc) {
@@ -35,14 +32,10 @@ export default class DateInput extends React.PureComponent {
     }
   }
 
-  handleChange(localMoment) {
-    this.props.onChange({
-      patch: {
-        type: (localMoment && localMoment.isValid()) ? 'set' : 'unset',
-        path: [],
-        value: this.assembleOutgoingValue(localMoment)
-      }
-    })
+  handleChange = nextValue => {
+    const {onChange} = this.props
+    const assembledValue = this.assembleOutgoingValue(nextValue)
+    onChange(PatchEvent.from(assembledValue ? set(assembledValue) : unset()))
   }
 
   editableMoment(currentValue) {
@@ -105,7 +98,7 @@ export default class DateInput extends React.PureComponent {
         <div className={styles.root}>
           {options.inputDate && (
             <Kronos
-              classes={kronosStyles}
+              classes={KRONOS_STYLES}
               date={editableMoment}
               format={options.dateFormat}
               onChangeDateTime={this.handleChange}
@@ -115,7 +108,7 @@ export default class DateInput extends React.PureComponent {
           )}
           {options.inputTime && (
             <Kronos
-              classes={kronosStyles}
+              classes={KRONOS_STYLES}
               time={editableMoment}
               format={options.timeFormat}
               onChangeDateTime={this.handleChange}
