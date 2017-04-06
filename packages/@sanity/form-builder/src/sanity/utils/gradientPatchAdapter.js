@@ -60,14 +60,11 @@ function toFormBuilder(patches: GradientPatches): Array<Patch> {
               value: patch[type][path]
             }
           }
-          if (type === 'setIfMissing') {
-            return {
-              type: 'setIfMissing',
-              path: path.split('.'),
-              value: patch[type][path]
-            }
+          return {
+            type,
+            path: path.split('.'),
+            value: patch[type][path]
           }
-          throw new Error(`Unknown patch type "${type}"`)
         })
       }))
   }))
