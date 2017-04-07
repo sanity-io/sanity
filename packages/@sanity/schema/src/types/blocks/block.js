@@ -1,10 +1,11 @@
 import {pick} from 'lodash'
 import {lazyGetter} from '../utils'
 import createPreviewGetter from '../../preview/createPreviewGetter'
+
 import {
   BLOCK_STYLES,
-  DEFAULT_BLOCK_STYLES,
-  DEFAULT_LIST,
+  DEFAULT_BLOCK_STYLES, DEFAULT_LINK_FIELD,
+  DEFAULT_LIST_TYPES,
   DEFAULT_TEXT_FIELD
 } from './defaults'
 
@@ -100,7 +101,6 @@ function createStylesField(styles) {
   }
 }
 
-
 function createMarksField(marks) {
   return {
     name: 'marks',
@@ -120,14 +120,29 @@ function createListsField(lists) {
     title: 'List type',
     type: 'string',
     options: {
-      list: lists || DEFAULT_LIST
+      list: lists || DEFAULT_LIST_TYPES
     }
   }
 }
 
+const DEFAULT_FIELDS = [
+  DEFAULT_LINK_FIELD
+]
+
+function ensureTextField(fields) {
+  return fields.some(style => style.value === 'text')
+    ? fields
+    : [DEFAULT_TEXT_FIELD, ...fields]
+}
+
 function createSpansField(config = {}) {
   const marksField = createMarksField(config.marks)
-  const extraFields = config.fields || []
+
+  const fields = [
+    marksField,
+    ...(config.fields ? config.fields : DEFAULT_FIELDS)
+  ]
+
   return {
     name: 'spans',
     title: 'Content',
@@ -135,11 +150,7 @@ function createSpansField(config = {}) {
     of: [
       {
         type: 'span',
-        fields: [
-          DEFAULT_TEXT_FIELD, // required, non-optional
-          marksField,
-          ...extraFields
-        ]
+        fields: ensureTextField(fields)
       }
     ]
   }

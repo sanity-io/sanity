@@ -5,9 +5,15 @@ export const DEFAULT_INDENTATION_FIELD = {
 }
 
 export const DEFAULT_LINK_FIELD = {
-  type: 'url',
+  type: 'object',
   name: 'link',
-  title: 'Url'
+  fields: [
+    {
+      name: 'href',
+      type: 'url',
+      title: 'Url'
+    }
+  ]
 }
 
 export const DEFAULT_TEXT_FIELD = {
@@ -17,13 +23,11 @@ export const DEFAULT_TEXT_FIELD = {
 }
 
 export const LIST_TYPES = {
-  none: {title: 'None', value: ''},
   bullet: {title: 'Bullet', value: 'bullet'},
   numbered: {title: 'Numbered', value: 'number'}
 }
 
-export const DEFAULT_LIST = [
-  LIST_TYPES.none,
+export const DEFAULT_LIST_TYPES = [
   LIST_TYPES.bullet,
   LIST_TYPES.numbered,
 ]
