@@ -1,5 +1,3 @@
-import {SlateInput} from '@sanity/form-builder'
-
 export default [
   {
     name: 'blocksTest',
@@ -13,15 +11,17 @@ export default [
       },
       {
         name: 'defaults',
-        title: 'Defaults',
-        inputComponent: SlateInput,
+        title: 'Content',
         type: 'array',
-        of: [{type: 'block'}]
+        of: [
+          {type: 'image', title: 'Image'},
+          {type: 'author', title: 'Author'},
+          {type: 'block'}
+        ]
       },
       {
         name: 'minimal',
         title: 'Reset all options',
-        inputComponent: SlateInput,
         type: 'array',
         of: [
           {
@@ -38,7 +38,6 @@ export default [
       {
         name: 'customized',
         title: 'Customized with block types',
-        inputComponent: SlateInput,
         type: 'array',
         of: [
           {type: 'image', title: 'Image'},

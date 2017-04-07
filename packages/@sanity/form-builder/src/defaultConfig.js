@@ -17,6 +17,7 @@ import ArrayOfStrings from './inputs/Array/ArrayOfStrings'
 import SearchableStringSelect from './inputs/SearchableStringSelect'
 import StringSelect from './inputs/StringSelect'
 import ArrayOfStringsSelect from './inputs/Array/ArrayOfStringsSelect'
+import BlockEditor from './inputs/BlockEditor-slate'
 
 const typeNameToInputMap = {
   object: ObjectInput,
@@ -35,6 +36,11 @@ const typeNameToInputMap = {
 
 function isArrayOfStrings(type) {
   return type.name === 'array' && type.of.every(ofType => ofType.name === 'string')
+}
+
+function hasBlockMember(type) {
+  return type.name === 'array'
+    && type.of.find(memberType => memberType.name === 'block')
 }
 
 function hasListInOptions(type) {
@@ -59,6 +65,11 @@ function resolveInputComponent(type) {
   // Special component for array of strings
   if (isArrayOfStrings(type)) {
     return ArrayOfStrings
+  }
+
+  // Special component for array of strings
+  if (hasBlockMember(type)) {
+    return BlockEditor
   }
 
   // String input with a select

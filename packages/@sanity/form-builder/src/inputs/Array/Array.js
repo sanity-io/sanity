@@ -99,15 +99,7 @@ export default class ArrayInput extends React.Component {
   }
 
   handleRemoveItem = item => {
-    const {onChange, value} = this.props
-    if (item._key === this.state.editItemKey) {
-      this.setState({editItemKey: null})
-    }
-    onChange(
-      PatchEvent.from(
-        unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
-      )
-    )
+    this.removeItem(item)
   }
 
   handleClose = () => {
@@ -125,6 +117,18 @@ export default class ArrayInput extends React.Component {
     const item = createProtoValue(menuItem.type)
     this.setState({editItemKey: item._key})
     this.append(item)
+  }
+
+  removeItem(item) {
+    const {onChange, value} = this.props
+    if (item._key === this.state.editItemKey) {
+      this.setState({editItemKey: null})
+    }
+    onChange(
+      PatchEvent.from(
+        unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
+      )
+    )
   }
 
   renderSelectType() {
@@ -226,6 +230,12 @@ export default class ArrayInput extends React.Component {
     return type.of.find(memberType => memberType.name === item._type)
   }
 
+  handleRemoveInvalidItem = event => {
+    const index = Number(event.target.getAttribute('data-item-index'))
+    this.props.onChange(PatchEvent.from(unset([index])))
+    this.setState({editItemKey: null})
+  }
+
   renderItem = (item, index) => {
     const {type} = this.props
     const itemType = this.getItemType(item)
@@ -235,6 +245,7 @@ export default class ArrayInput extends React.Component {
           <h3>Warning</h3>
           <div>Array item has an invalid type: <pre>{item._type}</pre></div>
           <div>The only allowed item types are: <pre>{humanizeList(type.of.map(ofType => ofType.name))}</pre></div>
+          <Button type="button" data-item-index={item._key} onMouseUp={this.handleRemoveInvalidItem}>Remove</Button>
         </div>
       )
     }

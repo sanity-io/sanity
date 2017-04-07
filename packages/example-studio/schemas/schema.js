@@ -1,5 +1,4 @@
 import createSchema from 'part:@sanity/base/schema-creator'
-import {SlateInput} from '@sanity/form-builder'
 import blockArray from './block-array'
 import moment from 'moment'
 
@@ -164,7 +163,6 @@ export default createSchema({
           name: 'body',
           type: 'array',
           title: 'Blocks',
-          inputComponent: SlateInput,
           of: [
             {
               title: 'Block',
@@ -314,9 +312,6 @@ export default createSchema({
       name: 'author',
       type: 'object',
       title: 'Author',
-      preview: {
-        select: {title: 'name', imageUrl: 'image.asset.url'}
-      },
       fields: [
         {
           name: 'name',
