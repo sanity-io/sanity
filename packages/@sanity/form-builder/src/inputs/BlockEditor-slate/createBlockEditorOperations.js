@@ -28,7 +28,7 @@ export default function createBlockEditorOperations(blockEditor) {
       const state = getState()
       const {startOffset} = state
 
-      const spanField = getSpanType(blockEditor.props.type)
+      const spanType = getSpanType(blockEditor.props.type)
 
       let transform
 
@@ -67,13 +67,12 @@ export default function createBlockEditorOperations(blockEditor) {
       //     nextState.selection.focusOffset
       //   )
 
-      // const spanValue = blockEditor.context.formBuilder
-      //   .createFieldValue({text: selecetedText}, spanField.type)
+      // const spanNode = {data: {value: {text: selectedText}}}
 
 
       // Update the span with new data
       const finalState = transform
-        .setInline({data: {value: createProtoValue(spanField.type)}})
+        .setInline({data: {value: createProtoValue(spanType.type)}})
         .apply()
 
       return onChange(finalState)

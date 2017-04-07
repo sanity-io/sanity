@@ -1,42 +1,36 @@
 import {pick} from 'lodash'
-import {lazyGetter} from './utils'
-import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
-import createPreviewGetter from '../preview/createPreviewGetter'
+import {lazyGetter} from '../utils'
+import createPreviewGetter from '../../preview/createPreviewGetter'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
+const INHERITED_FIELDS = [
   'type',
   'name',
   'title',
+  'jsonType',
   'description',
   'options',
   'fieldsets'
 ]
 
-const IMAGE_CORE = {
-  name: 'image',
+const SPAN_CORE = {
+  name: 'span',
   type: null,
   jsonType: 'object'
 }
 
 const DEFAULT_OPTIONS = {}
 
-export const ImageType = {
+export const SpanType = {
   get() {
-    return IMAGE_CORE
+    return SPAN_CORE
   },
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || []).concat([
-      options.hotspot && HOTSPOT_FIELD,
-      options.hotspot && CROP_FIELD,
-      ASSET_FIELD
-    ])
-      .filter(Boolean)
+    const fields = subTypeDef.fields || []
 
-    const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: IMAGE_CORE,
+    const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
+      type: SPAN_CORE,
       options: options
     })
 
@@ -61,9 +55,9 @@ export const ImageType = {
         },
         extend: extensionDef => {
           if (extensionDef.fields) {
-            throw new Error('Cannot override `fields` of subtypes of "image"')
+            throw new Error('Cannot override `fields` of subtypes of "span"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {type: parent})
           return subtype(current)
         }
       }
