@@ -1,4 +1,5 @@
 // @flow
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Button from 'part:@sanity/components/buttons/default'
 import {uniqueId, get, omit} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -187,7 +188,7 @@ export default class FileInput extends React.PureComponent {
             )
           }
         </div>
-        <Button ripple={false} className={styles.button}>
+        <Button ripple={false}>
           <FileSelect
             onSelect={this.handleSelect}
             {...rest}
@@ -196,9 +197,7 @@ export default class FileInput extends React.PureComponent {
           </FileSelect>
         </Button>
         {materializedFile && (
-          <a className={styles.anchorButton} href={materializedFile.url} download>
-            <span className={styles.anchorButtonInner}>Download</span>
-          </a>
+          <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
         )}
         {
           value && value.asset && (
@@ -210,7 +209,6 @@ export default class FileInput extends React.PureComponent {
             kind="simple"
             color="danger"
             onClick={this.handleCancel}
-            className={styles.button}
           >
             Cancel
           </Button>
