@@ -12,12 +12,37 @@ export default [
         type: 'string',
       },
       {
-        name: 'content',
-        title: 'Content',
+        name: 'defaults',
+        title: 'Defaults',
+        inputComponent: SlateInput,
+        type: 'array',
+        of: [{type: 'block'}]
+      },
+      {
+        name: 'minimal',
+        title: 'Reset all options',
+        inputComponent: SlateInput,
+        type: 'array',
+        of: [
+          {
+            type: 'block',
+            styles: [],
+            lists: [],
+            span: {
+              marks: [],
+              fields: []
+            }
+          }
+        ]
+      },
+      {
+        name: 'customized',
+        title: 'Customized with block types',
         inputComponent: SlateInput,
         type: 'array',
         of: [
           {type: 'image', title: 'Image'},
+          {type: 'author', title: 'Author'},
           {
             type: 'block',
             styles: [
@@ -27,7 +52,6 @@ export default [
               {title: 'Quote', value: 'blockquote'}
             ],
             lists: [
-              {title: 'None', value: ''},
               {title: 'Bullet', value: 'bullet'},
               {title: 'Numbered', value: 'number'}
             ],
@@ -37,37 +61,11 @@ export default [
                 {title: 'Emphasis', value: 'em'}
               ],
               fields: [
-                {name: 'link', type: 'url', title: 'Link'}
+                {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
               ]
             }
           }
         ]
-      },
-      {
-        name: 'other',
-        title: 'Other content (limited)',
-        inputComponent: SlateInput,
-        type: 'array',
-        of: [
-          {
-            type: 'block',
-            styles: [],
-            lists: [],
-            span: {
-              marks: [
-                {title: 'Strong', value: 'strong'},
-                {title: 'Emphasis', value: 'em'}
-              ]
-            }
-          }
-        ]
-      },
-      {
-        name: 'defaults',
-        title: 'Defaults',
-        inputComponent: SlateInput,
-        type: 'array',
-        of: [{type: 'block'}]
       }
     ]
   }

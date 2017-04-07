@@ -97,9 +97,12 @@ export default class Toolbar extends React.Component {
             icon={fullscreen ? CloseIcon : FullscreenIcon}
           />
         </div>
-        <div className={styles.insertContainer}>
-          <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
-        </div>
+
+        {insertBlocks.length > 0 && (
+          <div className={styles.insertContainer}>
+            <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
+          </div>
+        )}
       </div>
     )
   }

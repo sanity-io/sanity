@@ -95,16 +95,6 @@ export default class FormBuilderSpan extends React.Component {
     this._isMarkingText = false
   }
 
-  handleReset = () => {
-    this.props.editor.props.blockEditor
-      .operations
-      .resetSpan(this.props.node)
-  }
-
-  handleCancelEvent = event => {
-    event.preventDefault()
-  }
-
   handleFieldChange = (event, field) => {
     const {node, editor} = this.props
     const next = editor.getState()
@@ -168,6 +158,11 @@ export default class FormBuilderSpan extends React.Component {
     return false
   }
 
+  getCustomFields() {
+    return this.props.type.fields
+      .filter(field => field.name !== 'text' && field.name !== 'marks')
+  }
+
   renderPreview() {
     if (this.shouldPreview()) {
       const value = this.getValue()
@@ -191,16 +186,10 @@ export default class FormBuilderSpan extends React.Component {
         <div className={styles.manageButtons}>
           <DefaultButton
             kind="simple"
-            onClick={this.handleReset}
-          >
-            Reset
-          </DefaultButton>
-          <DefaultButton
-            kind="simple"
             color="danger"
             onClick={this.handleRemove}
           >
-            Remove
+            Clear {this.getCustomFields().length > 1 ? 'all' : ''}
           </DefaultButton>
         </div>
       </div>
