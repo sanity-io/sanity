@@ -196,10 +196,9 @@ export default class FileInput extends React.PureComponent {
           </FileSelect>
         </Button>
         {materializedFile && (
-          <div>
-            <pre>{JSON.stringify(materializedFile, null, 2)}</pre>
-            <a href={materializedFile.url} download>Download</a>
-          </div>
+          <a className={styles.anchorButton} href={materializedFile.url} download>
+            <span className={styles.anchorButtonInner}>Download</span>
+          </a>
         )}
         {
           value && value.asset && (

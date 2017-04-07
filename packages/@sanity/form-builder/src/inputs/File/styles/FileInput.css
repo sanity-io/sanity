@@ -26,3 +26,13 @@
 .button {
   display: inline-block;
 }
+
+.anchorButton {
+  composes: default from 'part:@sanity/components/buttons/default-style';
+  composes: button;
+  text-decoration: inherit;
+}
+
+.anchorButtonInner {
+  composes: content from 'part:@sanity/components/buttons/default-style';
+}
