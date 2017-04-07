@@ -44,7 +44,12 @@ export default class MediaRender extends React.Component {
   }
 
   getAssetUrl() {
-    return assetUrlBuilder({...this.props.size, url: this.props.item.imageUrl})
+    const devicePixelRatio = window.devicePixelRatio || 1
+    const size = {
+      height: this.props.size.height * devicePixelRatio,
+      width: this.props.size.width * devicePixelRatio
+    }
+    return assetUrlBuilder({...size, url: this.props.item.imageUrl})
   }
 
   renderImage = url => {
