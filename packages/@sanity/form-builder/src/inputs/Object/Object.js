@@ -92,7 +92,7 @@ export default class ObjectInput extends React.PureComponent {
 
   getRenderedFields(type, level) {
     if (!type.fieldsets) {
-      return type.fields.map((field, i) => this.renderField(field, level === 0 ? level : level + 1, i))
+      return (type.fields || []).map((field, i) => this.renderField(field, level === 0 ? level : level + 1, i))
     }
 
     return type.fieldsets.map((fieldset, i) => {
