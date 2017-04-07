@@ -1,4 +1,5 @@
-export const DEFAULT_INDENTATION_FIELD = {
+// todo:
+const DEFAULT_INDENTATION_FIELD = {  // eslint-disable-line no-console
   name: 'indentation',
   title: 'Indentation',
   type: 'number'

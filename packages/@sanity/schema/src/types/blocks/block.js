@@ -4,7 +4,8 @@ import createPreviewGetter from '../../preview/createPreviewGetter'
 
 import {
   BLOCK_STYLES,
-  DEFAULT_BLOCK_STYLES, DEFAULT_LINK_FIELD,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_LINK_FIELD,
   DEFAULT_LIST_TYPES,
   DEFAULT_TEXT_FIELD
 } from './defaults'
