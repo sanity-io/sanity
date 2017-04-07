@@ -1,6 +1,7 @@
 // @flow
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Button from 'part:@sanity/components/buttons/default'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
 import {uniqueId, get, omit} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
@@ -188,14 +189,9 @@ export default class FileInput extends React.PureComponent {
             )
           }
         </div>
-        <Button ripple={false}>
-          <FileSelect
-            onSelect={this.handleSelect}
-            {...rest}
-          >
-            Select file…
-          </FileSelect>
-        </Button>
+        <FileInputButton ripple={false} onSelect={this.handleSelect} {...rest}>
+          Select file…
+        </FileInputButton>
         {materializedFile && (
           <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
         )}
