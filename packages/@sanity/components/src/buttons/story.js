@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Button from 'part:@sanity/components/buttons/default'
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Fab from 'part:@sanity/components/buttons/fab'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
@@ -33,6 +34,27 @@ storiesOf('Buttons', module)
           >
             {text('Text', 'Touch Me!')}
           </Button>
+        </Sanity>
+      )
+    }
+  )
+  .add(
+    'Anchor <a>',
+    () => {
+      return (
+        <Sanity part="part:@sanity/components/buttons/anchor" propTables={[Button]}>
+          <AnchorButton
+            kind={getButtonKinds()}
+            onClick={action('clicked')}
+            disabled={boolean('Disabled', false)}
+            inverted={boolean('Inverted', false)}
+            color={getColorKinds()}
+            loading={boolean('Loading', false)}
+            icon={boolean('icon', false) ? SanityLogoIcon : false}
+            href={text('href', 'http://example.org')}
+          >
+            {text('Text', 'Touch Me!')}
+          </AnchorButton>
         </Sanity>
       )
     }

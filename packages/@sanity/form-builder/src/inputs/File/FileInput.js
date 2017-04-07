@@ -1,35 +1,70 @@
-// @flow weak
+// @flow
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Button from 'part:@sanity/components/buttons/default'
-import {uniqueId} from 'lodash'
+import {uniqueId, get, omit} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import React, {PropTypes} from 'react'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import FileSelect from './FileSelect'
 import styles from './styles/FileInput.css'
+import subscriptionManager from '../../utils/subscriptionManager'
+
+function getInitialState() {
+  return {
+    status: 'ready',
+    error: null,
+    progress: null,
+    uploadingFile: null,
+    materializedFile: null
+  }
+}
 
 export default class FileInput extends React.PureComponent {
+  _unmounted: boolean
   static propTypes = {
     value: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired,
     level: PropTypes.number,
     onChange: PropTypes.func,
+    materializeReference: PropTypes.func.isRequired,
     upload: PropTypes.func.isRequired,
   }
 
-  state = {
-    status: 'ready',
-    error: null,
-    progress: null,
-    uploadingFile: null,
-  }
+  state = getInitialState()
 
-  subscription = null
+  subscriptions = subscriptionManager('upload', 'materialize')
 
   _inputId = uniqueId('FileInput')
 
+  componentDidMount() {
+    const {value} = this.props
+    if (value) {
+      this.syncFileRef(value.asset)
+    }
+  }
+
+  componentWillUnmount() {
+    this.subscriptions.unsubscribe('materialize')
+    // todo: fix this properly by unsubscribing to upload observable without cancelling it
+    this._unmounted = true
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const currentRef = get(this.props, 'value.asset')
+    const nextRef = get(nextProps, 'value.asset')
+
+    const shouldUpdate = currentRef !== nextRef && get(currentRef, '_ref') !== get(nextRef, '_ref')
+
+    if (shouldUpdate) {
+      this.setState(omit(getInitialState(), 'materializedFile', 'uploadingFile'))
+      this.cancelCurrent()
+      this.syncFileRef(nextRef)
+    }
+  }
+
   upload(file) {
-    this.cancel()
+    this.cancelCurrent()
     this.setState({uploadingFile: file})
 
     this.subscription = this.props.upload(file).subscribe({
@@ -38,13 +73,22 @@ export default class FileInput extends React.PureComponent {
     })
   }
 
-  componentWillUnmount() {
-    this.cancel()
+  cancelCurrent() {
+    this.subscriptions.unsubscribe('upload')
   }
-  cancel() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
+
+  syncFileRef(reference) {
+    if (!reference) {
+      this.setState({materializedFile: null})
+      return
     }
+    if (this.state.materializedFile && this.state.materializedFile._id === reference._id) {
+      return
+    }
+    const {materializeReference} = this.props
+    this.subscriptions.replace('materialize', materializeReference(reference._ref).subscribe(materialized => {
+      this.setState({materializedFile: materialized})
+    }))
   }
 
   setRef(id) {
@@ -92,7 +136,7 @@ export default class FileInput extends React.PureComponent {
   }
 
   handleCancel = () => {
-    this.cancel()
+    this.cancelCurrent()
     this.setState({
       status: 'cancelled',
       error: null,
@@ -109,7 +153,7 @@ export default class FileInput extends React.PureComponent {
 
   render() {
     // TODO: Render additional fields
-    const {status, progress, uploadingFile} = this.state
+    const {status, progress, uploadingFile, materializedFile} = this.state
     const {
       type,
       level,
@@ -135,7 +179,7 @@ export default class FileInput extends React.PureComponent {
           {
             ((progress && uploadingFile) || (status === 'complete')) && (
               <ProgressBar
-                percent={progress.percent}
+                percent={status === 'complete' ? 100 : progress.percent}
                 text={status === 'complete' ? 'Complete' : `Uploading "${uploadingFile.name}"`}
                 showPercent
                 animation
@@ -144,7 +188,7 @@ export default class FileInput extends React.PureComponent {
             )
           }
         </div>
-        <Button ripple={false} className={styles.button}>
+        <Button ripple={false}>
           <FileSelect
             onSelect={this.handleSelect}
             {...rest}
@@ -152,11 +196,9 @@ export default class FileInput extends React.PureComponent {
             Select file…
           </FileSelect>
         </Button>
-        {
-          value && value.asset && (
-            <Button>Download</Button>
-          )
-        }
+        {materializedFile && (
+          <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
+        )}
         {
           value && value.asset && (
             <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
@@ -167,7 +209,6 @@ export default class FileInput extends React.PureComponent {
             kind="simple"
             color="danger"
             onClick={this.handleCancel}
-            className={styles.button}
           >
             Cancel
           </Button>
