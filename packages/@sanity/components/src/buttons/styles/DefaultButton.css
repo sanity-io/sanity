@@ -18,7 +18,6 @@
   position: relative;
   display: inline-block;
   margin-right: var(--extra-small-padding);
-  padding: 0.8em 0.9em;
   outline: none;
   border: none;
   color: inherit;
@@ -28,6 +27,7 @@
   cursor: default;
   user-select: none;
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+  padding: 0.8em 0.9em;
 
   @nest &.notRecentlyHovered:focus:not(:hover) {
     overflow: hidden;
