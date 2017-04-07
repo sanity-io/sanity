@@ -2,6 +2,7 @@ import {pick} from 'lodash'
 import {lazyGetter} from './utils'
 import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
 import createPreviewGetter from '../preview/createPreviewGetter'
+import guessPreviewConfig from '../preview/guessPreviewConfig'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -50,7 +51,15 @@ export const ImageType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
+    lazyGetter(parsed, 'preview', () => {
+      const guessedConfig = guessPreviewConfig(subTypeDef.fields || [])
+      return {
+        select: {
+          ...guessedConfig.select,
+          imageUrl: 'asset.url'
+        }
+      }
+    })
 
     return subtype(parsed)
 

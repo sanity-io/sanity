@@ -1,11 +1,10 @@
+import {omitBy, isUndefined} from 'lodash'
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
 
-function defaultPrepare(obj) {
-  return obj
-}
-
 export default function guessPreviewFields(fields) {
+
+  const imageField = fields.find(field => field.type.name === 'image')
 
   const stringFieldNames = fields
     .filter(field => field.type.name === 'string')
@@ -22,10 +21,10 @@ export default function guessPreviewFields(fields) {
     // Pick first defined string field
     titleField = stringFieldNames[0]
     // Pick next as desc
-    descField = stringFieldNames.find(field => field !== titleField)
+    descField = stringFieldNames[1]
   }
 
-  if (!titleField) {
+  if (!titleField && !imageField) {
     // last resort, pick all fields and concat them
     const fieldNames = fields.map(field => field.name)
     const fieldMapping = fieldNames.reduce((acc, fieldName) => {
@@ -43,15 +42,14 @@ export default function guessPreviewFields(fields) {
     }
   }
 
-  const config = {
-    select: {
-      title: titleField,
-    },
-    prepare: defaultPrepare
+  const select = omitBy({
+    title: titleField,
+    description: descField,
+    imageUrl: imageField && `${imageField.name}.asset.url`
+  }, isUndefined)
+
+  return {
+    select: select
   }
-  if (descField) {
-    // Only set this if we have found a description field
-    config.select.description = descField
-  }
-  return config
+
 }
