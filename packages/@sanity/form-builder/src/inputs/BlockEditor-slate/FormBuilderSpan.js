@@ -55,11 +55,7 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   isEmpty() {
-    const valueContainer = this.getValue()
-    if (!valueContainer) {
-      return true
-    }
-    return !valueContainer.value || valueContainer.isEmpty()
+    return !this.getValue()
   }
 
   getValue() {
