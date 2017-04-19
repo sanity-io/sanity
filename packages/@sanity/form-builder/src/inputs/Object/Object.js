@@ -33,14 +33,15 @@ export default class ObjectInput extends React.PureComponent {
     }
   }
 
-  handleFieldChange = (event : PatchEvent, field) => {
-    const {onChange, type} = this.props
+  handleFieldChange = (fieldEvent : PatchEvent, field) => {
+    const {onChange, type, level} = this.props
 
-    onChange(
-      event
-        .prefixAll(field.name)
-        .prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
-    )
+    let event = fieldEvent.prefixAll(field.name)
+
+    if (level > 0) {
+      event = event.prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
+    }
+    onChange(event)
   }
 
   handleFieldEnter = (event, field) => {
