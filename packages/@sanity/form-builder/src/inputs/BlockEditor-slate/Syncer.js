@@ -31,7 +31,12 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   }
 
   handleChange = nextSlateState => {
-    this.setState({value: nextSlateState}, this.emitSet)
+    this.setState(currState => {
+      if (nextSlateState.get('document') !== currState.value.get('document')) {
+        this.emitSet()
+      }
+      return {value: nextSlateState}
+    })
   }
 
   receivePatches = ({snapshot, shouldReset, patches}) => {
