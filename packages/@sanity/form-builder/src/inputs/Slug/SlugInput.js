@@ -26,11 +26,13 @@ const makeCancelable = promise => {
   let hasCanceled_ = false
 
   const wrappedPromise = new Promise((resolve, reject) => {
+    const cancelError = new Error('Promise was canceled')
+    cancelError.isCanceled = true
     promise.then(val => {
-      return hasCanceled_ ? reject({isCanceled: true}) : resolve(val)
+      return hasCanceled_ ? reject(cancelError) : resolve(val)
     })
     promise.catch(error => {
-      return hasCanceled_ ? reject({isCanceled: true}) : reject(error)
+      return hasCanceled_ ? reject(cancelError) : reject(error)
     })
   })
 
@@ -163,7 +165,6 @@ export default class SlugInput extends React.Component {
       const newFromSource = document[type.options.source]
       newCurrent = this.slugify(newFromSource)
     }
-
     if (newCurrent && newCurrent !== value.current) {
       const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
@@ -177,16 +178,22 @@ export default class SlugInput extends React.Component {
 
   handleChange = event => {
     const {checkValidityFn, value} = this.props
-    const newCurrent = event.target.value
-      ? this.slugify(event.target.value.toString())
-      : undefined
-    this.setState({inputText: newCurrent})
-    const newVal = {current: newCurrent, auto: value.auto}
-    if (checkValidityFn) {
-      this.updateValueWithUniquenessCheck(newVal)
-      return
+    if (this.finalizeSlugTimeout) {
+      clearTimeout(this.finalizeSlugTimeout)
     }
-    this.updateValue(newVal)
+    this.setState({inputText: event.target.value.toString()})
+    this.finalizeSlugTimeout = setTimeout(() => {
+      const newCurrent = typeof this.state.inputText === 'undefined'
+        ? undefined
+        : this.slugify(this.state.inputText)
+      this.setState({inputText: newCurrent})
+      const newVal = {current: newCurrent, auto: value.auto}
+      if (checkValidityFn) {
+        this.updateValueWithUniquenessCheck(newVal)
+        return
+      }
+      this.updateValue(newVal)
+    }, 500)
   }
 
   handleChangeButtonClick = event => {
@@ -202,6 +209,7 @@ export default class SlugInput extends React.Component {
 
   render() {
     const {value, type, validation, level} = this.props
+    const hasSourceField = type.options.source
     const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
@@ -222,21 +230,21 @@ export default class SlugInput extends React.Component {
             disabled={value.auto}
             placeholder={type.placeholder}
             onChange={this.handleChange}
-            value={inputText || value.current}
+            value={typeof inputText === 'string' ? inputText : value.current}
           />
           <div className={InInputStyles.container}>
             { loading && (
               <Spinner inline message="Loading…" />
             )}
             {
-              value.auto && (
+              hasSourceField && value.auto && (
                 <InInputButton onClick={this.handleChangeButtonClick}>
                   Edit
                 </InInputButton>
               )
             }
             {
-              !value.auto && (
+              hasSourceField && !value.auto && (
                 <InInputButton onClick={this.handleAutoButtonClicked}>
                   Auto
                 </InInputButton>

@@ -4,8 +4,13 @@ import client from 'part:@sanity/base/client'
 import {SlugInput} from '../../index'
 
 // Default slugify for Sanity
-export function sanitySlugify(type, slug) {
-  return slug ? slugify(slug, {symbols: true}) : undefined
+export function sanitySlugify(type, slugSourceText, finalize = false) {
+  const maxLength = type.options.maxLength || 200
+  const slugifyOpts = {truncate: maxLength, symbols: true}
+  if (slugSourceText) {
+    return slugify(slugSourceText, slugifyOpts)
+  }
+  return undefined
 }
 
 export function validateSlug(type, slug, myDocId) {
