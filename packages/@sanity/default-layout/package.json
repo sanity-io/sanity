@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "0.104.38",
+  "version": "0.104.39",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -31,9 +31,9 @@
     "@sanity/base": "^0.104.38",
     "@sanity/check": "^0.104.34",
     "@sanity/cli": "^0.104.38",
-    "@sanity/components": "^0.104.38",
+    "@sanity/components": "^0.104.39",
     "@sanity/core": "^0.104.34",
-    "@sanity/form-builder": "^0.104.38",
+    "@sanity/form-builder": "^0.104.39",
     "babel-plugin-lodash": "^3.2.11",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",

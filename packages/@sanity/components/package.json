@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.104.38",
+  "version": "0.104.39",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "^0.104.38",
+    "@sanity/date-input": "^0.104.39",
     "@sanity/imagetool": "^0.104.34",
     "@sanity/observable": "^0.104.30",
     "attr-accept": "^1.1.0",
