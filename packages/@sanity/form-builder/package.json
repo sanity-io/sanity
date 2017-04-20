@@ -34,7 +34,7 @@
     "object-inspect": "^1.2.1",
     "react-portal": "^3.0.0",
     "shallow-equals": "^1.0.0",
-    "slate": "^0.19.3",
+    "slate": "^0.19.20",
     "slate-insert-block-on-enter": "0.0.3",
     "slate-soft-break": "^0.3.0",
     "speakingurl": "^13.0.0"
