@@ -4,7 +4,7 @@
   margin-bottom: 1rem;
   box-sizing: border-box;
   max-width: 100%;
-  background-color: #fff;
+  background-color: var(--component-bg);
   border: 1px solid var(--gray-lighter);
   padding: 1rem;
 }
