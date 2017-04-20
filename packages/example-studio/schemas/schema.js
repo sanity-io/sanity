@@ -303,6 +303,9 @@ export default createSchema({
           title: 'Additional authors',
           description: 'Note: This is an inline array of authors',
           type: 'array',
+          options: {
+            editModal: 'fold'
+          },
           of: [{type: 'author'}],
           required: true
         }
