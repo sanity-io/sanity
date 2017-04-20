@@ -94,7 +94,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: #eee;
+    background-color: var(--gray-lighter);
   }
 
   &:active {
