@@ -14,6 +14,11 @@
   left: 2em;
 }
 
+.popupAnchorRelative {
+  margin-left: calc(var(--medium-padding) * -1);
+  margin-right: calc(var(--medium-padding) * -1);
+}
+
 .warning {
   composes: root from 'part:@sanity/components/fieldsets/default-style';
   padding: var(--medium-padding);

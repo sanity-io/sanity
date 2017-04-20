@@ -7,6 +7,7 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import EditItemFold from 'part:@sanity/components/edititem/fold'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 
@@ -198,21 +199,35 @@ export default class ArrayInput extends React.Component {
   }
 
   renderEditItemForm(item) {
+    const {type} = this.props
     const itemField = this.getItemType(item)
+
+    const content = (
+      <MemberValue path={{_key: item._key}}>
+        <ItemForm
+          focus
+          itemKey={item._key || this.props.value.indexOf(item)}
+          type={itemField}
+          level={this.props.level + 1}
+          value={item}
+          onChange={this.handleItemChange}
+          onEnter={this.handleItemEnter}
+          onRemove={this.handleRemoveItem}
+        />
+      </MemberValue>
+    )
+
+    if (type.options && type.options.editModal == 'fold') {
+      return (
+        <EditItemFold title={itemField.title} onClose={this.handleClose}>
+          {content}
+        </EditItemFold>
+      )
+    }
+
     return (
       <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
-        <MemberValue path={{_key: item._key}}>
-          <ItemForm
-            focus
-            itemKey={item._key || this.props.value.indexOf(item)}
-            type={itemField}
-            level={this.props.level + 1}
-            value={item}
-            onChange={this.handleItemChange}
-            onEnter={this.handleItemEnter}
-            onRemove={this.handleRemoveItem}
-          />
-        </MemberValue>
+        {content}
       </EditItemPopOver>
     )
   }
@@ -252,15 +267,17 @@ export default class ArrayInput extends React.Component {
 
     const layout = type.options && type.options.layout == 'grid' ? 'media' : 'default'
 
+    const isRelative = type.options && type.options.editModal == 'fold'
+
     return (
-      <div>
+      <div style={{position: 'relative'}}>
         <ItemPreview
           type={itemType}
           value={item}
           layout={layout}
           onRemove={this.handleRemoveItem}
         />
-        <div className={styles.popupAnchor}>
+        <div className={isRelative ? styles.popupAnchorRelative : styles.popupAnchor}>
           {this.getEditItem() === item && this.renderEditItemForm(item)}
         </div>
       </div>
