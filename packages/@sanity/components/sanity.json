@@ -315,6 +315,10 @@
       "description": "Edit item. Popover that points to the element"
     },
     {
+      "name": "part:@sanity/components/edititem/fold",
+      "description": "Edit item. Folds out and wraps around nearest relative container horizontally."
+    },
+    {
       "name": "part:@sanity/components/previews/default",
       "description": "Default preview item"
     },
@@ -502,6 +506,10 @@
     {
       "implements": "part:@sanity/components/edititem/popover",
       "path": "edititem/PopOver.js"
+    },
+    {
+      "implements": "part:@sanity/components/edititem/fold",
+      "path": "edititem/FoldOut.js"
     },
     {
       "implements": "part:@sanity/components/previews/default",
@@ -706,6 +714,10 @@
     {
       "implements": "part:@sanity/components/edititem/popover-style",
       "path": "edititem/styles/PopOver.css"
+    },
+    {
+      "implements": "part:@sanity/components/edititem/fold-style",
+      "path": "edititem/styles/FoldOut.css"
     },
     {
       "implements": "part:@sanity/components/previews/default-style",

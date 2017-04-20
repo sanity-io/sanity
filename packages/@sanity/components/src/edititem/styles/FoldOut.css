@@ -1,0 +1,75 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --edit-item-fold-border-color: var(--brand-primary);
+  --edit-item-fold-dark-color: color(var(--edit-item-fold-border-color) lightness(-20%));
+  --edit-item-fold-padding: var(--small-padding);
+}
+
+.root {
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  position: relative;
+  border: 1px solid var(--edit-item-fold-border-color);
+  box-sizing: border-box;
+  margin-left: calc(var(--edit-item-fold-padding) * -1);
+  margin-right: calc(var(--edit-item-fold-padding) * -1);
+  background-color: var(--component-bg);
+  z-index: var(--zindex-popover);
+
+  @nest &::after {
+    content: '';
+    box-sizing: content-box;
+    display: block;
+    position: absolute;
+    top: calc(var(--edit-item-fold-padding) * -1);
+    left: 0;
+    height: 0;
+    width: 0;
+    margin-left: -1px;
+    margin-top: -1px;
+    border-color: transparent;
+    border-bottom: var(--edit-item-fold-padding) solid var(--edit-item-fold-dark-color);
+    border-left: var(--edit-item-fold-padding) solid transparent;
+  }
+
+  @nest &::before {
+    content: '';
+    box-sizing: content-box;
+    display: block;
+    position: absolute;
+    top: calc(var(--edit-item-fold-padding) * -1);
+    right: 0;
+    height: 0;
+    width: 0;
+    margin-right: -1px;
+    margin-top: -1px;
+    border-color: transparent;
+    border-bottom: var(--edit-item-fold-padding) solid var(--edit-item-fold-dark-color);
+    border-right: var(--edit-item-fold-padding) solid transparent;
+  }
+}
+
+.head {
+  background-color: var(--edit-item-fold-border-color);
+  padding: var(--small-padding);
+  height: 1.5em;
+  color: var(--brand-white);
+}
+
+.close {
+  outline: none;
+  color: var(--brand-white);
+  display: block;
+  border: none;
+  background-color: transparent;
+  float: right;
+}
+
+.closeDark {
+  composes: close;
+  color: var(--brand-black);
+}
+
+.content {
+  padding: var(--medium-padding);
+}
