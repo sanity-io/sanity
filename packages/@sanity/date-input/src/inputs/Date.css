@@ -19,7 +19,7 @@
 }
 
 :global(.react-datepicker) {
-  background-color: #fff;
+  background-color: var(--component-bg);
   font-size: 0.85rem;
   color: var(--react-datepicker-text-color);
   border-radius: var(--react-datepicker-border-radius);

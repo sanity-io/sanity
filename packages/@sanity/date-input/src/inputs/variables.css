@@ -1,15 +1,13 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --react-datepicker-border-color: #aeaeae;
-  --react-datepicker-background-color: #f0f0f0;
-  --react-datepicker-selected-color: #216ba5;
-  --react-datepicker-muted-color: #ccc;
-  --react-datepicker-text-color: #000;
-
+  --react-datepicker-border-color: var(--gray-light);
+  --react-datepicker-background-color: var(--component-bg);
+  --react-datepicker-selected-color: var(--brand-primary);
+  --react-datepicker-muted-color: var(--gray-light);
+  --react-datepicker-text-color: var(--brand-black);
   --react-datepicker-header-background-color: var(--brand-primary);
-  --react-datepicker-header-text-color: #fff;
-
+  --react-datepicker-header-text-color: var(--brand-white);
   --react-datepicker-border-radius: 0;
   --react-datepicker-item-size: 24px;
   --react-datepicker-day-margin: 2px;
