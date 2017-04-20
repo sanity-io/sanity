@@ -1,7 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --blockEditorFullscreenBackground: #eee;
+  --blockEditorFullscreenBackground: var(--gray-lighter);
 }
 
 .root {
@@ -61,7 +61,7 @@
 
 .input {
   border-radius: var(--input-border-radius);
-  background-color: #fff;
+  background-color: var(--component-bg);
   overflow: hidden;
   width: 100%;
   appearance: none;
