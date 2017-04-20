@@ -2,7 +2,6 @@ import React from 'react'
 
 import Button from 'part:@sanity/components/buttons/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
-import Fab from 'part:@sanity/components/buttons/fab'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
@@ -182,16 +181,6 @@ storiesOf('Buttons', module)
     </form>
   )
 )
-.add(
-    'Fab (Floating Action Button)',
-    () => {
-      return (
-        <Sanity part="part:@sanity/components/buttons/fab" propTables={[Fab]}>
-          <Fab onClick={action('onClick')} fixed={false} colored />
-        </Sanity>
-      )
-    }
-  )
 .add(
     'DropDownButton',
     () => {
