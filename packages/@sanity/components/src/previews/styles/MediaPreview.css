@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: #fff;
+  background-color: var(--component-bg);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -23,7 +23,7 @@
 .description {
   composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
   max-width: 80%;
-  color: #fff;
+  color: var(--brand-white);
   font-weight: 100;
   margin: 1em auto;
   opacity: 0.5;

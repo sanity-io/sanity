@@ -36,12 +36,12 @@
   user-select: none;
   max-height: 18rem;
   overflow: hidden;
-  background-color: #eee;
+  background-color: var(--gray-lighter);
   background-image:
-    linear-gradient(45deg, #fff 25%, transparent 25%),
-    linear-gradient(-45deg, #fff 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #fff 75%),
-    linear-gradient(-45deg, transparent 75%, #fff 75%);
+    linear-gradient(45deg, var(--component-bg) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--component-bg) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--component-bg) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--component-bg) 75%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0;
 
@@ -171,7 +171,7 @@
 
 .errorMessage {
   composes: cancel;
-  color: #fff;
+  color: var(--component-bg);
   cursor: default;
 
   @nest & span {
@@ -188,7 +188,7 @@
   transform: translateX(-50%) translateY(-50%);
 
   @nest .imageSelectReplace & {
-    filter: drop-shadow(0 0 5px #000);
+    filter: drop-shadow(0 0 5px var(--brand-black));
   }
 }
 

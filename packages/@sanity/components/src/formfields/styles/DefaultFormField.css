@@ -56,8 +56,8 @@
 .wrapped {
   composes: root;
   padding: 1rem;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--component-bg);
+  border: 1px solid var(--gray-light);
   overflow: hidden;
   max-width: 100%;
 }

@@ -388,10 +388,6 @@
       "path": "progress/ProgressCircle.js"
     },
     {
-      "implements": "part:@sanity/components/buttons/fab",
-      "path": "buttons/Fab.js"
-    },
-    {
       "implements": "part:@sanity/components/buttons/dropdown",
       "path": "buttons/DropDownButton.js"
     },
@@ -538,10 +534,6 @@
     {
       "implements": "part:@sanity/components/buttons/default-style",
       "path": "buttons/styles/DefaultButton.css"
-    },
-    {
-      "implements": "part:@sanity/components/buttons/fab-style",
-      "path": "buttons/styles/Fab.css"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",

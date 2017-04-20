@@ -29,25 +29,25 @@
 
 .info {
   composes: root;
-  color: #fff;
+  color: var(--state-info-color--text);
   background-color: color(var(--state-info-color) a(95%));
 }
 
 .danger {
   composes: root;
-  color: #fff;
+  color: var(--state-danger-color--text);
   background-color: color(var(--state-danger-color) a(95%));
 }
 
 .success {
   composes: root;
-  color: #fff;
+  color: var(--state-success-color--text);
   background-color: color(var(--state-success-color) a(95%));
 }
 
 .warning {
   composes: root;
-  color: #fff;
+  color: var(--state-warning-color--text);
   background-color: color(var(--state-warning-color) a(95%));
 }
 
@@ -82,14 +82,14 @@
   width: 1em;
   background-color: transparent;
   border: none;
-  color: #fff;
+  color: var(--brand-white);
   outline: none;
 
   @nest .default & {
     color: var(--text-color);
 
     @nest &:hover {
-      color: var(--black);
+      color: var(--brand-black);
     }
   }
 }

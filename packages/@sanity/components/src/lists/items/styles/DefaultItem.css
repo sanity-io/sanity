@@ -6,7 +6,7 @@
 }
 
 .root {
-
+  display: block;
 }
 
 .link {
@@ -26,7 +26,7 @@
 
   @nest &:active {
     background-color: color(var(--default-item-selected-color) a(100%));
-    color: #fff;
+    color: var(--brand-white);
   }
 }
 

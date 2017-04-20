@@ -2,6 +2,7 @@
 
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
+  position: relative;
 }
 
 .inner {
@@ -14,8 +15,8 @@
     border-color: color(var(--gray-base) a(8%));
 
     @nest &:hover {
-      background-color: #fff;
-      border-color: #ccc;
+      background-color: var(--brand-white);
+      border-color: var(--gray-light);
     }
   }
 }
@@ -35,14 +36,15 @@
   composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
   box-sizing: border-box;
   transform: translateY(-1px);
-  background-color: color(var(--body-bg) a(90%));
+  background-color: color(var(--component-bg) a(90%));
   height: auto;
   width: auto;
   overflow-y: auto;
+  z-index: var(--zindex-dropdown);
 
   @supports (backdrop-filter: blur(5px)) {
     backdrop-filter: blur(5px);
-    background-color: color(var(--body-bg) a(70%));
+    background-color: color(var(--component-bg) a(70%));
   }
 }
 
@@ -68,7 +70,7 @@
 .item {
   display: block;
   position: relative;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--gray-light);
   white-space: nowrap;
   overflow: hidden;
   min-height: 2em;
@@ -80,7 +82,7 @@
   }
 
   &:hover {
-    background-color: var(--gray-lighter--transparent);
+    background-color: var(--selectable-item-color-hover);
   }
 
   &:active {
@@ -95,7 +97,13 @@
 
 .itemSelected {
   composes: item;
-  background-color: var(--gray-light--transparent);
+  background-color: var(--selected-item-color);
+  color: var(--selected-item-color--inverted);
+
+  @nest &:hover {
+    background-color: var(--selected-item-color);
+    color: var(--selected-item-color--inverted);
+  }
 }
 
 .itemIcon {

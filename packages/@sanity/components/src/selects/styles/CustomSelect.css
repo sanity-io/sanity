@@ -1,7 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@use postcss-cssnext;
-
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
 }
@@ -16,8 +14,8 @@
     border-color: transparent;
 
     @nest &:hover {
-      background-color: #fff;
-      border-color: #ccc;
+      background-color: var(--gray-lighter);
+      border-color: var(--gray-light);
     }
   }
 }

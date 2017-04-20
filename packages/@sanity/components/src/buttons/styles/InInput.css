@@ -34,7 +34,7 @@
 .colored {
   composes: root;
   background-color: var(--brand-primary);
-  color: #fff;
+  color: var(--brand-white);
 }
 
 .small {

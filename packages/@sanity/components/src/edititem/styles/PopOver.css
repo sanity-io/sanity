@@ -57,7 +57,7 @@
   height: 100vh;
   width: 100vw;
 
-  /*@media (--screen-medium) {
+  /* @media (--screen-medium) {
     position: absolute;
     top: 0;
     left: 0;
@@ -65,7 +65,7 @@
     width: 100%;
     overflow: hidden;
     background-color: transparent;
-  }*/
+  } */
 }
 
 .autoWidth {
@@ -109,14 +109,14 @@
     position: absolute;
     height: 1em;
     width: 1em;
-    background-color: #fff;
+    background-color: var(--component-bg);
     transform: rotate(45deg);
   }
 }
 
 .portalModal {
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
-  background-color: #fff;
+  background-color: var(--component-bg);
   z-index: calc(var(--zindex-popover) + 3);
   padding: 0;
   margin-bottom: var(--large-padding);
@@ -175,7 +175,7 @@
     right: 0;
 
     @nest &:hover {
-      color: #000;
+      color: var(--brand-black);
     }
   }
 }
@@ -198,7 +198,7 @@
   padding: 0.5em;
   overflow: hidden;
   background-color: var(--array--add-item-color);
-  color: #fff;
+  color: var(--component-bg);
   position: fixed;
   top: 0;
   width: 100%;
@@ -219,8 +219,7 @@
   margin-top: 1em;
 }
 
-
 .paddingDummy {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }

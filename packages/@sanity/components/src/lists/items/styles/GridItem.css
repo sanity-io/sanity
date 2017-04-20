@@ -3,14 +3,14 @@
 :root {
   --default-item-selected-color: var(--brand-primary);
   --default-item-active-color: var(--brand-primary);
-  --default-item-background-color: #fff;
-  --default-item-background-color-hover: #f0f0f0;
+  --default-item-background-color: var(--gray);
+  --default-item-background-color-hover: var(--gray-lighter);
 }
 
 .root {
   width: 100%;
   height: auto;
-  background-color: #fafafa;
+  background-color: var(--default-item-background-color);
   cursor: default;
   box-sizing: border-box;
 }
@@ -32,7 +32,7 @@
   }
 
   @nest .selected & {
-    color: #fff;
+    color: var(--brand-white);
   }
 }
 

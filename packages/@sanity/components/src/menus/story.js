@@ -43,10 +43,8 @@ const itemsWithIcons = [
     key: '3'
   },
   {
-    kind: 'divider'
-  },
-  {
     title: 'Extra item',
+    divider: true,
     key: '4',
     icon: SanityIcon
   }
