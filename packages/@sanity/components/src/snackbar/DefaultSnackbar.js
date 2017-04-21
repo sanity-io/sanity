@@ -86,14 +86,14 @@ export default class DefaultSnackbar extends React.PureComponent {
     return (
       <div className={style}>
         <div className={styles.inner} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
-          <div className={styles.content}>
-            {children}
-          </div>
           {action && (
             <div className={styles.action}>
               <Button inverted color="white" onClick={this.handleAction}>{action.title}</Button>
             </div>
           )}
+          <div className={styles.content}>
+            {children}
+          </div>
         </div>
       </div>
     )

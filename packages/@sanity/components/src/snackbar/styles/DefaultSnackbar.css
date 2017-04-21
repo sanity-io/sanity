@@ -25,8 +25,9 @@
 
 .inner {
   position: relative;
-  display: inline-block;
-  width: 100%;
+  display: block;
+  padding: var(--medium-padding);
+  min-height: 1rem;
 
   @nest .info & {
     background-color: color(var(--brand-info) a(90%));
@@ -55,13 +56,13 @@
 }
 
 .content {
-  padding: 1em;
-  float: left;
+
 }
 
 .action {
-  padding: 1em;
   float: right;
+  font-size: 0.8em;
+  transform: translate(0.5rem, -0.5em);
 }
 
 .info {
