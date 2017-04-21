@@ -83,8 +83,14 @@ const AppLoadingScreenStyles = `
 }
 
 .sanity-app-loading-screen__logo {
+  height: 100%;
   font-size: 5em;
   color: #383838;
+}
+
+.sanity-app-loading-screen__logo svg {
+  position: relative;
+  height: 1em;
 }
 
 .sanity-app-loading-screen__logo .sanityIconAnimate path:nth-child(odd) {
@@ -150,7 +156,8 @@ const AppLoadingScreenStyles = `
 
 export default class AppLoadingScreen extends React.PureComponent {
   static propTypes = {
-    text: PropTypes.string
+    text: PropTypes.string,
+    logo: PropTypes.node
   }
 
   static defaultProps = {
@@ -158,12 +165,15 @@ export default class AppLoadingScreen extends React.PureComponent {
   }
 
   render() {
+    const Logo = this.props.logo
     return (
       <div className="sanity-app-loading-screen">
         <style type="text/css">{AppLoadingScreenStyles}</style>
         <div className="sanity-app-loading-screen__inner">
           <div className="sanity-app-loading-screen__logo">
-            <SanityLogo />
+            {
+              Logo ? <Logo /> : <SanityLogo />
+            }
           </div>
           <div className="sanity-app-loading-screen__text">
             {this.props.text}

@@ -200,10 +200,17 @@
       "name": "part:@sanity/base/theme/typography/forms",
       "description": "Typography for the forms. Levels, headings, label, legends. etc"
     },
-
     {
       "name": "part:@sanity/base/theme/typography/code-style",
       "description": "Styling for code"
+    },
+    {
+      "name": "part:@sanity/base/app-loading-screen",
+      "description": "Loading screen when sanity is initializing. Only static html and css. No javascript."
+    },
+    {
+      "implements": "part:@sanity/base/app-loading-screen",
+      "path": "components/AppLoadingScreen.js"
     },
     {
       "implements": "part:@sanity/base/root",
