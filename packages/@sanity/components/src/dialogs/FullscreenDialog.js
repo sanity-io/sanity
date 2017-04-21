@@ -50,7 +50,7 @@ export default class FullScreenDialog extends React.PureComponent {
       .join(' ')
 
     return (
-      <Portal closeOnEsc={this.isClosable()} isOpened={isOpen} onClose={onClose}>
+      <Portal closeOnEsc={this.isClosable()} isOpened={isOpen}>
         <div className={classNames}>
           {
             onClose && (

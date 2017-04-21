@@ -6,8 +6,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: var(--zindex-modal-background);
+  z-index: var(--zindex-portal);
   backdrop-filter: blur(3px);
+  overflow: auto;
 }
 
 .heading {
@@ -19,7 +20,7 @@
 }
 
 .content {
-  margin: var(--medium-padding);
+  padding: var(--medium-padding);
 }
 
 .default {
