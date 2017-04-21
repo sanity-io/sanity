@@ -29,6 +29,8 @@ import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import ArrowDropDownIcon from 'part:@sanity/base/arrow-drop-down'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import UndoIcon from 'part:@sanity/base/undo-icon'
+import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 
 function createIconPreview(title, Icon, role) {
   return (
@@ -71,6 +73,8 @@ storiesOf('Icons')
         {createIconPreview('Plus', PlusIcon, 'part:@sanity/base/plus-icon')}
         {createIconPreview('Arrow Drop Down', ArrowDropDownIcon, 'part:@sanity/base/arrow-drop-down')}
         {createIconPreview('Trash', TrashIcon, 'part:@sanity/base/trash-icon')}
+        {createIconPreview('Undo', UndoIcon, 'part:@sanity/base/undo-icon')}
+        {createIconPreview('Unpublish', UnpublishIcon, 'part:@sanity/base/unpublish-icon')}
 
       </ul>
     )

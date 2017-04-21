@@ -444,6 +444,14 @@
       "description": "Upload icon"
     },
     {
+      "name": "part:@sanity/base/undo-icon",
+      "description": "Undo icon"
+    },
+    {
+      "name": "part:@sanity/base/unpublish-icon",
+      "description": "Unpublish icon"
+    },
+    {
       "name": "part:@sanity/base/format-bold-icon",
       "description": "Format bold icon"
     },
@@ -534,6 +542,14 @@
     {
       "implements": "part:@sanity/base/hamburger-icon",
       "path": "components/icons/Hamburger.js"
+    },
+    {
+      "implements": "part:@sanity/base/undo-icon",
+      "path": "components/icons/Undo.js"
+    },
+    {
+      "implements": "part:@sanity/base/unpublish-icon",
+      "path": "components/icons/Unpublish.js"
     },
     {
       "implements": "part:@sanity/base/sort-alpha-desc-icon",
