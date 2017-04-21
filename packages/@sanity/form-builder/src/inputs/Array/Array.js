@@ -8,6 +8,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultList from 'part:@sanity/components/lists/default'
 import GridList from 'part:@sanity/components/lists/grid'
 
@@ -216,6 +217,16 @@ export default class ArrayInput extends React.Component {
         />
       </MemberValue>
     )
+
+    if (type.options && type.options.editModal == 'fullscreen') {
+      return (
+        <div>
+          <FullscreenDialog title={itemField.title || ' '} onClose={this.handleClose} isOpen>
+            {content}
+          </FullscreenDialog>
+        </div>
+      )
+    }
 
     if (type.options && type.options.editModal == 'fold') {
       return (
