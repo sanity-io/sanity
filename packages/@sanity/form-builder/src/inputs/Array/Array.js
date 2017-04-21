@@ -203,13 +203,16 @@ export default class ArrayInput extends React.Component {
     const {type} = this.props
     const itemField = this.getItemType(item)
 
+    // Reset level if a full screen modal
+    const level = (type.options && type.options.editModal == 'fullscreen') ? 0 : this.props.level + 1
+
     const content = (
       <MemberValue path={{_key: item._key}}>
         <ItemForm
           focus
           itemKey={item._key || this.props.value.indexOf(item)}
           type={itemField}
-          level={this.props.level + 1}
+          level={level}
           value={item}
           onChange={this.handleItemChange}
           onEnter={this.handleItemEnter}
@@ -220,11 +223,9 @@ export default class ArrayInput extends React.Component {
 
     if (type.options && type.options.editModal == 'fullscreen') {
       return (
-        <div>
-          <FullscreenDialog title={itemField.title || ' '} onClose={this.handleClose} isOpen>
-            {content}
-          </FullscreenDialog>
-        </div>
+        <FullscreenDialog title={itemField.title} onClose={this.handleClose} isOpen>
+          {content}
+        </FullscreenDialog>
       )
     }
 
@@ -265,6 +266,7 @@ export default class ArrayInput extends React.Component {
   renderItem = (item, index) => {
     const {type} = this.props
     const itemType = this.getItemType(item)
+
     if (!itemType) {
       return (
         <div className={styles.warning}>
