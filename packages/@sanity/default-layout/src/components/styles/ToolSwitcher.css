@@ -39,7 +39,7 @@
   display: block;
 
   @nest &:hover {
-    color: var(--selectable-item-color-hover);
+    color: color(var(--selectable-item-color) lightness(-20%));
   }
 
   @nest &:active {
