@@ -294,7 +294,10 @@ export default createSchema({
           type: 'array',
           of: [{
             type: 'reference',
-            to: {type: 'author'}
+            title: 'Reference to co-author',
+            to: {
+              type: 'author'
+            }
           }],
           required: true
         },
@@ -306,7 +309,28 @@ export default createSchema({
           options: {
             editModal: 'fold'
           },
-          of: [{type: 'author'}],
+          of: [
+            {
+              title: 'Additional author reference',
+              type: 'author'
+            }
+          ],
+          required: true
+        },
+        {
+          name: 'extraSuperAuthors',
+          title: 'Additional super authors',
+          description: 'Note: This is an inline array of authors',
+          type: 'array',
+          options: {
+            editModal: 'fullscreen'
+          },
+          of: [
+            {
+              title: 'Additional super author reference',
+              type: 'author'
+            }
+          ],
           required: true
         },
         {
@@ -317,8 +341,11 @@ export default createSchema({
             editModal: 'fullscreen'
           },
           of: [{
+            title: 'Reference to super author',
             type: 'reference',
-            to: {type: 'author'}
+            to: {
+              type: 'author'
+            }
           }],
           required: true
         },
