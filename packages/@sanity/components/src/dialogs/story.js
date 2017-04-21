@@ -83,7 +83,7 @@ storiesOf('Dialogs')
           <FullscreenDialog
             title={text('title', 'This is the title')}
             onClose={action('onClose')}
-            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning'])}
             centered={boolean('Centered', false)}
             isOpen={boolean('is Open', true)}
           >

@@ -15,6 +15,7 @@
   font-weight: 100;
   margin-bottom: 0.5em;
   margin-left: var(--medium-padding);
+  height: 1em;
 }
 
 .content {

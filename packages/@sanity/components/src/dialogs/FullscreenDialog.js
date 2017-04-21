@@ -41,7 +41,7 @@ export default class FullScreenDialog extends React.PureComponent {
     const {kind, title, className, onClose, centered, isOpen} = this.props
 
     const classNames = [
-      styles[kind],
+      styles[kind] || styles.default,
       isOpen ? styles.isOpen : styles.isClosed,
       className,
       centered && styles.centered
@@ -60,9 +60,7 @@ export default class FullScreenDialog extends React.PureComponent {
             )
           }
           <div className={styles.inner}>
-            {
-              title && <h1 className={styles.heading}>{title}</h1>
-            }
+            <h1 className={styles.heading}>{title}</h1>
             <div className={styles.content}>
               {this.props.children}
             </div>
