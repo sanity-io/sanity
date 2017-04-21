@@ -308,7 +308,20 @@ export default createSchema({
           },
           of: [{type: 'author'}],
           required: true
-        }
+        },
+        {
+          name: 'superAuthors',
+          title: 'Super authors',
+          type: 'array',
+          options: {
+            editModal: 'fullscreen'
+          },
+          of: [{
+            type: 'reference',
+            to: {type: 'author'}
+          }],
+          required: true
+        },
       ]
     },
     {

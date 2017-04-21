@@ -1,6 +1,0 @@
-{
-  "#": "Used by Sanity to keep track of configuration file checksums, do not delete or modify!",
-  "@sanity/default-layout": "bb034f391ba508a6ca8cd971967cbedeb131c4d19b17b28a0895f32db5d568ea",
-  "@sanity/data-aspects": "ba5c2649cc1b1c39ae92b7daf2661f95fa79d7325073ffd410245d2717b240e9",
-  "@sanity/storybook": "526dea3b461fda217e7150d12395d0ec639cba0155c05a084b85bcf2c44995a3"
-}
