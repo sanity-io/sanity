@@ -2,58 +2,79 @@ import React, {PropTypes} from 'react'
 import styles from 'part:@sanity/components/snackbar/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 
-export default class DefaultSnackbar extends React.Component {
+export default class DefaultSnackbar extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
     children: PropTypes.node.isRequired,
-    className: PropTypes.string,
-    time: PropTypes.number,
+    timeout: PropTypes.number,
+    onAction: PropTypes.func,
     action: PropTypes.shape({
-      title: PropTypes.string,
-      action: PropTypes.func
+      title: PropTypes.string
     })
   }
 
   static defaultProps = {
     kind: 'info',
-    time: 4,
+    timeout: 0,
   }
 
   constructor(props, context) {
     super(props, context)
     this.state = {
       visible: true,
-      mouseOver: false,
-      timeLeft: this.props.time
     }
   }
 
   componentDidMount() {
-    this.timeOut = setTimeout(() => {
-      this.setState({
-        visible: false
-      })
-    }, this.props.time * 1000)
+    this.scheduleHide()
+  }
+
+  hide = () => {
+    this.setState({visible: false})
+  }
+
+  show = () => {
+    this.setState({visible: true})
+  }
+
+  cancelHide() {
+    clearTimeout(this._timerId)
+  }
+
+  scheduleHide() {
+    const {timeout} = this.props
+    this.cancelHide()
+    if (timeout > 0) {
+      this._timerId = setTimeout(this.hide, timeout * 1000)
+    }
   }
 
   componentWillUnmount() {
-    clearTimeout(this.timeOut)
+    this.cancelHide()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.timeout !== this.props.timeout) {
+      this.scheduleHide()
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.timeout !== this.props.timeout) {
+      this.show()
+    }
   }
 
   handleAction = () => {
-    this.props.action.action()
+    this.props.onAction(this.props.action)
   }
 
   handleMouseOver = () => {
-    clearTimeout(this.timeOut)
+    this.cancelHide()
   }
 
   handleMouseLeave = () => {
-    this.timeOut = setTimeout(() => {
-      this.setState({
-        visible: false
-      })
-    }, this.props.time * 1000)
+    this.scheduleHide()
   }
 
   render() {
@@ -68,11 +89,11 @@ export default class DefaultSnackbar extends React.Component {
           <div className={styles.content}>
             {children}
           </div>
-          <div className={styles.action}>
-            {
-              action && <Button inverted color="white" onClick={this.handleAction}>{action.title}</Button>
-            }
-          </div>
+          {action && (
+            <div className={styles.action}>
+              <Button inverted color="white" onClick={this.handleAction}>{action.title}</Button>
+            </div>
+          )}
         </div>
       </div>
     )
