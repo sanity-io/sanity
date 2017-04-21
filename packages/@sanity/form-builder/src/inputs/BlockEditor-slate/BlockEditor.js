@@ -9,12 +9,20 @@ import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
 import initializeSlatePlugins from './util/initializeSlatePlugins'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import {openSpanDialog} from './util/spanHelpers'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
 
-
+// todo: remove
+const DISABLE_WARN_KEY = 'sanity.blockeditor.disable-warn-no-realtime'
+let disableWarning = window.localStorage.getItem(DISABLE_WARN_KEY)
+function setDisableWarning(event) {
+  disableWarning = event.target.checked
+  window.localStorage.setItem(DISABLE_WARN_KEY, disableWarning)
+}
+// ----
 export default class BlockEditor extends React.Component {
 
   static propTypes = {
@@ -35,7 +43,10 @@ export default class BlockEditor extends React.Component {
     formBuilder: PropTypes.object
   }
 
-  state = {fullscreen: false}
+  state = {
+    fullscreen: false,
+    showWarning: false
+  }
 
   _inputId = uniqueId('SlateBlockEditor')
 
@@ -168,13 +179,21 @@ export default class BlockEditor extends React.Component {
   }
 
   handleToggleFullscreen = () => {
-    this.setState({
-      fullscreen: !this.state.fullscreen
-    })
+    this.setState(prevState => ({fullscreen: !prevState.fullscreen}))
   }
 
   handleEditorChange = nextState => {
     this.props.onChange(nextState)
+
+    // todo: remove when realtime is in place
+    if (this.props.value.get('document') !== nextState.get('document')) {
+      if (disableWarning || this._didShowWarning) {
+        return
+      }
+      this._didShowWarning = true
+      this.setState({showWarning: true})
+    }
+    // -------
   }
 
   refEditor = editor => {
@@ -224,8 +243,14 @@ export default class BlockEditor extends React.Component {
     this.editor.focus()
   }
 
+  handleHideWarning = () => {
+    this.setState({showWarning: false})
+  }
+
   renderBlockEditor() {
     const {validation, value, type, level} = this.props
+    const {showWarning, fullscreen} = this.state
+
     const hasError = validation && validation.messages && validation.messages.length > 0
     const showLinkButton = this.customSpans.length > 0
     return (
@@ -233,12 +258,25 @@ export default class BlockEditor extends React.Component {
         label={type.title}
         labelHtmlFor={this._inputId}
         level={level}
-        className={this.state.fullscreen ? styles.formFieldFullscreen : styles.formField}
+        className={fullscreen ? styles.formFieldFullscreen : styles.formField}
       >
+        {showWarning && (
+          <Snackbar action={{title: 'Got it!'}} kind="warning" onAction={this.handleHideWarning}>
+            Heads up! This field will not receive changes from other people that may be working on it simultaneously.
+            Make sure to let your co-workers know that you are working on this part of the document!
+            <br />
+            We're sorry for the inconvenience and working hard to get it working properly.
+            {/*<p>*/}
+              {/*<label>*/}
+                {/*<input type="checkbox" onClick={setDisableWarning} /> Never show this warning again.*/}
+              {/*</label>*/}
+            {/*</p>*/}
+          </Snackbar>
+        )}
         <div
           className={`
             ${hasError ? styles.error : styles.root}
-            ${this.state.fullscreen ? styles.fullscreen : ''}
+            ${fullscreen ? styles.fullscreen : ''}
           `}
         >
           <Toolbar
@@ -288,13 +326,11 @@ export default class BlockEditor extends React.Component {
 
   render() {
     const {fullscreen} = this.state
-    if (fullscreen) {
-      return (
-        <Portal isOpened>
-          {this.renderBlockEditor()}
-        </Portal>
-      )
-    }
-    return this.renderBlockEditor()
+    const blockEditor = this.renderBlockEditor()
+    return (
+      <div>
+        {fullscreen ? (<Portal isOpened>{blockEditor}</Portal>) : blockEditor}
+      </div>
+    )
   }
 }
