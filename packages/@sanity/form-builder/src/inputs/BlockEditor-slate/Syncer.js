@@ -14,6 +14,10 @@ function serialize(state) {
   return slateRawToSanity(Raw.serialize(state))
 }
 
+function isDocumentEqual(slateState, otherSlateState) {
+  return slateState.get('document') === otherSlateState.get('document')
+}
+
 export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   static propTypes = {
     value: PropTypes.array.isRequired,
@@ -31,12 +35,7 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   }
 
   handleChange = nextSlateState => {
-    this.setState(currState => {
-      if (nextSlateState.get('document') !== currState.value.get('document')) {
-        this.emitSet()
-      }
-      return {value: nextSlateState}
-    })
+    this.setState({value: nextSlateState})
   }
 
   receivePatches = ({snapshot, shouldReset, patches}) => {
@@ -58,6 +57,12 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
     this.emitSet.cancel()
 
     this.unsubscribe()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!isDocumentEqual(prevState.value, this.state.value)) {
+      this.emitSet()
+    }
   }
 
   emitSet = throttle(() => {
