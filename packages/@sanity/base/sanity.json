@@ -188,10 +188,6 @@
       "description": "Styling for <textarea>"
     },
     {
-      "name": "part:@sanity/base/theme/buttons/default-style",
-      "description": "Styling for default button"
-    },
-    {
       "name": "part:@sanity/base/theme/forms/clear-button-style",
       "description": "Styling for for clear button connected to a form control"
     },
@@ -369,10 +365,6 @@
     {
       "implements": "part:@sanity/base/theme/layout/helpers",
       "path": "styles/layout/helpers.css"
-    },
-    {
-      "implements": "part:@sanity/base/theme/buttons/default-style",
-      "path": "styles/buttons/default.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/text-input-style",
