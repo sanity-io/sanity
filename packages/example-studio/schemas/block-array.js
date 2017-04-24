@@ -71,9 +71,11 @@ export default [
         title: 'Blocks deep down',
         type: 'object',
         fields: [
+          {name: 'something', title: 'Something', type: 'string'},
           {
             name: 'blocks',
             type: 'array',
+            title: 'Blocks',
             of: [
               {type: 'image', title: 'Image'},
               {type: 'author', title: 'Author'},

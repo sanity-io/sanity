@@ -50,8 +50,6 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
-    // todo: reiterate how we deal with incrementing levels
-
     const {value, hasFocus, validation} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
@@ -71,7 +69,8 @@ export default class ObjectInput extends React.PureComponent {
     )
   }
 
-  renderFieldset(fieldset, level, index) {
+  renderFieldset(fieldset, fieldsetIndex) {
+    const {level} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsable = fieldset.options && fieldset.options.collapsable
     return (
@@ -79,26 +78,29 @@ export default class ObjectInput extends React.PureComponent {
         key={fieldset.name}
         legend={fieldset.title}
         description={fieldset.description}
-        level={level}
+        level={level + 1}
         columns={columns}
         collapsable={collapsable}
       >
         {fieldset.fields.map((field, fieldIndex) => {
-          return this.renderField(field, level + 1, index + fieldIndex)
+          return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
         })}
       </Fieldset>
     )
   }
 
-  getRenderedFields(type, level) {
+  getRenderedFields() {
+    const {type, level} = this.props
+
     if (!type.fieldsets) {
-      return (type.fields || []).map((field, i) => this.renderField(field, level === 0 ? level : level + 1, i))
+      // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
+      return (type.fields || []).map((field, i) => this.renderField(field, level + 1, i))
     }
 
     return type.fieldsets.map((fieldset, i) => {
       return fieldset.single
-        ? this.renderField(fieldset.field, level === 0 ? level : level + 1, i)
-        : this.renderFieldset(fieldset, level, i)
+        ? this.renderField(fieldset.field, level + 1, i)
+        : this.renderFieldset(fieldset, i)
     })
 
   }
@@ -106,7 +108,7 @@ export default class ObjectInput extends React.PureComponent {
 
     const {type, level} = this.props
 
-    const renderedFields = this.getRenderedFields(type, level)
+    const renderedFields = this.getRenderedFields()
 
     if (level === 0) {
       return <div>{renderedFields}</div>
