@@ -1,7 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --blockEditorFullscreenBackground: var(--gray-lighter);
+  --blockEditorFullscreenBackground: var(--component-bg);
 }
 
 .root {
@@ -56,6 +56,8 @@
     overflow: hidden;
     max-height: none;
     border: none;
+    background-color: var(--brand-lightest);
+    color: var(--brand-darkest);
   }
 }
 
@@ -72,6 +74,8 @@
     padding: 2em;
     border: 0;
     max-height: none;
+    background-color: var(--brand-lightest);
+    color: var(--brand-darkest);
   }
 }
 

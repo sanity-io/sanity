@@ -12,7 +12,7 @@
     border: none;
 
     @nest &:focus {
-      background-color: var(--brand-white);
+      background-color: var(--white);
     }
   }
 }

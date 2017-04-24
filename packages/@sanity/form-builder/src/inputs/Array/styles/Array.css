@@ -22,9 +22,9 @@
 .warning {
   composes: root from 'part:@sanity/components/fieldsets/default-style';
   padding: var(--medium-padding);
-  border: 5px dashed var(--brand-warning);
+  border: 5px dashed var(--state-warning-color);
 
   @nest & > h3 {
-    color: var(--brand-warning);
+    color: var(--state-warning-color);
   }
 }
