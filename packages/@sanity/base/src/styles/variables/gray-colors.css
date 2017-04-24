@@ -2,6 +2,8 @@
 
 :root {
   --black: #000;
+  --white: #fff;
+
   --gray-darkest: color(var(--gray-base) lightness(+5%));
   --gray-darkest--transparent: color(var(--gray-base) lightness(+5%) a(95%));
 
@@ -22,6 +24,4 @@
 
   --gray-lightest: color(var(--gray-base) lightness(+78%));
   --gray-lightest--transparent: color(var(--gray-base) lightness(+77%) a(50%));
-
-  --white: #fff;
 }

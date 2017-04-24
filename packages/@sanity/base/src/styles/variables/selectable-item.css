@@ -3,11 +3,11 @@
 
 :root {
   --selectable-item-color: var(--gray-darker);
-  --selectable-item-color--inverted: var(--brand-white);
+  --selectable-item-color--inverted: var(--white);
   --selectable-item-color-hover: var(--gray-lighter);
-  --selectable-item-color-hover--inverted: var(--brand-white);
+  --selectable-item-color-hover--inverted: var(--white);
   --selected-item-color: var(--brand-primary);
-  --selected-item-color--inverted: var(--brand-white);
+  --selected-item-color--inverted: var(--white);
   --selected-item-color-hover: color(var(--brand-primary) lightness(+10%));
-  --selected-item-color-hover--inverted: var(--brand-white);
+  --selected-item-color-hover--inverted: var(--white);
 }

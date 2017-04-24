@@ -4,14 +4,14 @@
 :root {
 
   --default-button-color: var(--gray-lighter);
-  --default-button-color--text: var(--brand-black);
+  --default-button-color--text: var(--black);
   --default-button-color--hover: var(--gray-light);
   --default-button-color--active: var(--gray);
 
-  --input-bg: #fff;
+  --input-bg: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
-  --input-color: var(--gray-light);
-  --input-border-color: var(--gray-light);
+  --input-color: var(--text-color);
+  --input-border-color: var(--component-border-color);
   --input-border-size: 1px;
   --input-line-height: 2em;
   --input-padding-vertical: 0.5em;
@@ -36,7 +36,7 @@
   --cursor-disabled: not-allowed;
 
   --clear-cross-color: var(--gray-light);
-  --clear-cross-color-hover: var(--brand-danger);
+  --clear-cross-color-hover: var(--state-danger-color);
 
   --form-builder-block-border-color: color(var(--gray-light) alpha(80%));
   --form-builder-block-border-color-focus: var(--brand-primary);

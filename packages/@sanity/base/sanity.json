@@ -48,6 +48,10 @@
       "description": "Global generic variables"
     },
     {
+      "name": "part:@sanity/base/theme/variables/override-style",
+      "description": "A placeholder to override variables"
+    },
+    {
       "name": "part:@sanity/base/theme/responsive-style",
       "description": "Responsive breakpoints"
     },
@@ -227,6 +231,10 @@
     {
       "implements": "part:@sanity/base/theme/variables/globals-style",
       "path": "styles/variables/globals.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "styles/variables/override.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/brand-colors-style",

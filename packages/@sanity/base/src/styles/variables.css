@@ -10,3 +10,6 @@
 @import 'part:@sanity/base/theme/variables/selectable-item-style';
 @import 'part:@sanity/base/theme/variables/state-colors-style';
 @import 'part:@sanity/base/theme/variables/typography-style';
+
+/* custom */
+@import 'part:@sanity/base/theme/variables/override-style';
