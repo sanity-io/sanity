@@ -30,10 +30,6 @@
   }
 }
 
-.selected {
-  composes: selected from './Pane.css';
-}
-
 .listContainer {
   composes: listContainer from './Pane.css';
   height: 100%;

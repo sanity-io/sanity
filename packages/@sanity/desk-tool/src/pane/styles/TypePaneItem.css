@@ -17,7 +17,5 @@
 }
 
 .selected {
-  composes: item;
-  font-weight: 500;
-  color: var(--black);
+  composes: selected from './PaneItem.css';
 }
