@@ -83,8 +83,8 @@
   lost-utility: clearfix;
   display: none;
   background-color: var(--component-bg);
-  border: 1px solid #ddd;
-  box-shadow: 0 1px 3px #ddd;
+  border: 1px solid var(--component-border-color);
+  box-shadow: var(--component-box-shadow);
 
   @nest &.isOpen {
     display: block;

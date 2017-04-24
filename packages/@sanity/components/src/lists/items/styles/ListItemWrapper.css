@@ -18,7 +18,7 @@
 
 .selected {
   background-color: color(var(--default-item-selected-color) a(80%));
-  color: var(--brand-white);
+  color: var(--white);
 }
 
 .highlighted {

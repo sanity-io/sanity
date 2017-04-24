@@ -4,10 +4,6 @@
   position: relative;
 }
 
-.hasError {
-
-}
-
 .input {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   position: relative;

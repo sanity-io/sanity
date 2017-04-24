@@ -22,17 +22,17 @@
   text-decoration: inherit;
 
   @nest &:hover {
-    color: var(--brand-black);
+    color: var(--black);
     background-color: var(--default-item-background-color-hover);
   }
 
   @nest &:active {
-    color: var(--brand-white);
+    color: var(--white);
     background-color: var(--default-item-active-color);
   }
 
   @nest .selected & {
-    color: var(--brand-white);
+    color: var(--white);
   }
 }
 

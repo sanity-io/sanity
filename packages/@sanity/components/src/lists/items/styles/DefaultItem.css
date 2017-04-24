@@ -26,7 +26,7 @@
 
   @nest &:active {
     background-color: color(var(--default-item-selected-color) a(100%));
-    color: var(--brand-white);
+    color: var(--white);
   }
 }
 

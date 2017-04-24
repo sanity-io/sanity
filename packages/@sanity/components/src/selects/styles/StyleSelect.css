@@ -15,7 +15,7 @@
     border-color: color(var(--gray-base) a(8%));
 
     @nest &:hover {
-      background-color: var(--brand-white);
+      background-color: var(--white);
       border-color: var(--gray-light);
     }
   }

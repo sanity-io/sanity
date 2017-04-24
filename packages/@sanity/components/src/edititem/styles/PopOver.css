@@ -175,7 +175,7 @@
     right: 0;
 
     @nest &:hover {
-      color: var(--brand-black);
+      color: var(--black);
     }
   }
 }

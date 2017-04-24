@@ -70,8 +70,8 @@
 }
 
 .items {
-  background-color: color(var(--brand-white) a(90%));
-  color: var(--brand-black);
+  background-color: color(var(--component-bg) a(90%));
+  color: var(--black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
 }
 
@@ -97,7 +97,7 @@
 .topItem {
   composes: item;
   background-color: var(--gray-darker-transparent);
-  color: var(--brand-white);
+  color: var(--component-bg);
 
   @nest &:hover {
     background-color: var(--gray-darkest--transparent);

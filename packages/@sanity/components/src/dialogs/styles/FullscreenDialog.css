@@ -84,14 +84,14 @@
   width: 1em;
   background-color: transparent;
   border: none;
-  color: var(--brand-white);
+  color: inherit;
   outline: none;
 
   @nest .default & {
     color: var(--text-color);
 
     @nest &:hover {
-      color: var(--brand-black);
+      color: var(--black);
     }
   }
 }

@@ -2,7 +2,7 @@
 
 .selected {
   background-color: var(--selected-item-color);
-  color: var(--brand-white);
+  color: var(--white);
 
   &:hover {
     background-color: var(--selected-item-color-hover);

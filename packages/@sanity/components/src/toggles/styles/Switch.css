@@ -25,15 +25,15 @@
   --switch-thumb-top: 0;
   --switch-thumb-size: 1.25rem;
   --switch-thumb-color: var(--switch-color);
-  --switch-off-thumb-color: var(--brand-white);
+  --switch-off-thumb-color: var(--white);
   --switch-on-thumb-color: var(--switch-color);
-  --switch-disabled-thumb-color: var(--brand-white);
+  --switch-disabled-thumb-color: var(--white);
 
   /* Track */
   --switch-track-top: 0.35rem;
   --switch-track-height: 0.6rem;
   --switch-track-length: 2rem;
-  --switch-disabled-track-color: var(--brand-danger);
+  --switch-disabled-track-color: var(--state-danger-color);
   --switch-track-color: var(--gray-light);
   --switch-off-track-color: var(--gray-light);
   --switch-on-track-color: var(--focus-color);

@@ -39,7 +39,7 @@
   text-align: center;
 
   &:hover {
-    color: var(--brand-black);
+    color: var(--black);
   }
 }
 

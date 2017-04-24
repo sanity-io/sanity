@@ -23,7 +23,7 @@
 .description {
   composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
   max-width: 80%;
-  color: var(--brand-white);
+  color: var(--white);
   font-weight: 100;
   margin: 1em auto;
   opacity: 0.5;

@@ -30,28 +30,28 @@
   min-height: 1rem;
 
   @nest .info & {
-    background-color: color(var(--brand-info) a(90%));
-    color: var(--brand-white);
+    background-color: color(var(--state-info-color) a(90%));
+    color: var(--state-info-color--text);
   }
 
   @nest .warning & {
     background-color: color(var(--state-warning-color) a(90%));
-    color: var(--brand-white);
+    color: var(--state-warning-color--text);
   }
 
   @nest .success & {
     background-color: color(var(--state-success-color) a(90%));
-    color: var(--brand-white);
+    color: var(--state-success-color--text);
   }
 
   @nest .error & {
-    background-color: color(var(--brand-danger) a(90%));
-    color: var(--brand-white);
+    background-color: color(var(--state-danger-color) a(90%));
+    color: var(--state-danger-color--text);
   }
 
   @nest .danger & {
-    background-color: color(var(--brand-danger) a(90%));
-    color: var(--brand-white);
+    background-color: color(var(--state-danger-color) a(90%));
+    color: var(--state-danger-color--text);
   }
 }
 

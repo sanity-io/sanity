@@ -36,7 +36,7 @@
   user-select: none;
   max-height: 18rem;
   overflow: hidden;
-  background-color: var(--gray-lighter);
+  background-color: var(--body-bg);
   background-image:
     linear-gradient(45deg, var(--component-bg) 25%, transparent 25%),
     linear-gradient(-45deg, var(--component-bg) 25%, transparent 25%),
@@ -188,7 +188,7 @@
   transform: translateX(-50%) translateY(-50%);
 
   @nest .imageSelectReplace & {
-    filter: drop-shadow(0 0 5px var(--brand-black));
+    filter: drop-shadow(0 0 5px var(--black));
   }
 }
 

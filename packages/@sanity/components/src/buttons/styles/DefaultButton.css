@@ -130,114 +130,114 @@
 }
 
 .color__danger {
-  border-color: var(--brand-danger);
-  background-color: var(--brand-danger);
-  color: var(--brand-danger--text);
+  border-color: var(--state-danger-color);
+  background-color: var(--state-danger-color);
+  color: var(--state-danger-color--text);
 
   @nest &:hover, &:focus {
-    background-color: color(var(--brand-danger) lightness(-10%));
+    background-color: color(var(--state-danger-color) lightness(-10%));
   }
 
   @nest &.secondary {
-    color: var(--brand-danger);
+    color: var(--state-danger-color);
 
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-danger) a(10%));
-      color: var(--brand-danger);
-      border-color: var(--brand-danger);
+      background-color: color(var(--state-danger-color) a(10%));
+      color: var(--state-danger-color);
+      border-color: var(--state-danger-color);
     }
   }
 
   @nest &.inverted {
-    border-color: var(--brand-danger);
+    border-color: var(--state-danger-color);
     background-color: transparent;
-    color: var(--brand-danger);
+    color: var(--state-danger-color);
 
     @nest &:hover {
-      background-color: color(var(--brand-danger) a(10%));
-      border-color: var(--brand-danger);
+      background-color: color(var(--state-danger-color) a(10%));
+      border-color: var(--state-danger-color);
     }
 
     @nest &:focus {
-      background-color: color(var(--brand-danger) a(10%));
-      border-color: var(--brand-danger);
+      background-color: color(var(--state-danger-color) a(10%));
+      border-color: var(--state-danger-color);
     }
   }
 
   @nest &.simple {
     background-color: transparent;
-    color: var(--brand-danger);
+    color: var(--state-danger-color);
 
     @nest &:hover {
-      background-color: color(var(--brand-danger) a(10%));
+      background-color: color(var(--state-danger-color) a(10%));
     }
 
     @nest &:focus {
-      background-color: color(var(--brand-danger) a(10%));
-      border-color: var(--brand-danger);
+      background-color: color(var(--state-danger-color) a(10%));
+      border-color: var(--state-danger-color);
     }
   }
 }
 
 .color__success {
-  border-color: var(--brand-success);
-  background-color: var(--brand-success);
-  color: var(--brand-success--text);
+  border-color: var(--state-success-color);
+  background-color: var(--state-success-color);
+  color: var(--state-success-color--text);
 
   @nest &:hover, &:focus {
-    background-color: color(var(--brand-success) lightness(-5%));
+    background-color: color(var(--state-success-color) lightness(-5%));
   }
 
   @nest &.secondary {
-    color: var(--brand-success);
+    color: var(--state-success-color);
 
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-success) a(10%));
-      color: var(--brand-success);
-      border-color: var(--brand-success);
+      background-color: color(var(--state-success-color) a(10%));
+      color: var(--state-success-color);
+      border-color: var(--state-success-color);
     }
   }
 
   @nest &.inverted {
-    border-color: var(--brand-success);
+    border-color: var(--state-success-color);
     background-color: transparent;
-    color: var(--brand-success);
+    color: var(--state-success-color);
 
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-success) a(10%));
-      border-color: var(--brand-success);
+      background-color: color(var(--state-success-color) a(10%));
+      border-color: var(--state-success-color);
     }
   }
 
   @nest &.simple {
     background-color: transparent;
-    color: var(--brand-success);
+    color: var(--state-success-color);
 
     @nest &:hover {
-      background-color: color(var(--brand-success) a(10%));
+      background-color: color(var(--state-success-color) a(10%));
     }
 
     @nest &:focus {
-      border-color: var(--brand-success);
+      border-color: var(--state-success-color);
     }
   }
 }
 
 .color__white {
-  background-color: var(--brand-white);
+  background-color: var(--white);
 
   @nest &:hover, &:focus {
-    background-color: color(var(--brand-white) lightness(-5%));
+    background-color: color(var(--white) lightness(-5%));
   }
 
   @nest &.inverted,
   &.simple {
-    border-color: var(--brand-white);
+    border-color: var(--white);
     background-color: transparent;
-    color: var(--brand-white);
+    color: var(--white);
 
     @nest &:hover. &:focus {
-      background-color: color(var(--brand-white) lightness(-5%));
+      background-color: color(var(--white) lightness(-5%));
     }
   }
 }

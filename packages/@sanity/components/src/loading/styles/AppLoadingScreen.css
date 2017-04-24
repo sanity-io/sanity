@@ -17,7 +17,7 @@
   }
 
   90% {
-    fill: var(--brand-danger);
+    fill: var(--state-danger-color);
     opacity: 10%;
   }
 }

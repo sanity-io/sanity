@@ -34,7 +34,7 @@
 .colored {
   composes: root;
   background-color: var(--brand-primary);
-  color: var(--brand-white);
+  color: var(--white);
 }
 
 .small {
@@ -43,11 +43,11 @@
 
 .danger {
   composes: root;
-  color: var(--brand-danger);
+  color: var(--state-danger-color);
 
   &:hover {
-    background-color: var(--brand-danger);
-    border-color: var(--brand-danger);
+    background-color: var(--state-danger-color);
+    border-color: var(--state-danger-color);
     color: var(--input-bg);
   }
 }

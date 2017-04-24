@@ -18,6 +18,6 @@
 
 .errorLabel {
   composes: label;
-  color: var(--brand-danger);
+  color: var(--state-danger-color);
   font-weight: bold;
 }

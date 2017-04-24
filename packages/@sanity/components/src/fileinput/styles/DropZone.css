@@ -30,7 +30,7 @@
   background-color: var(--focus-color);
 
   @nest .hasUnAcceptedFiles & {
-    background-color: color(var(--brand-danger) a(50%));
+    background-color: color(var(--state-danger-color) a(50%));
   }
 
   @nest & .passiveText {
@@ -49,7 +49,7 @@
   box-sizing: border-box;
 
   @nest .hasError & {
-    border-color: var(--brand-danger);
+    border-color: var(--state-danger-color);
   }
 }
 
@@ -113,7 +113,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
-  color: var(--brand-danger);
+  color: var(--state-danger-color);
   font-weight: 600;
 }
 
@@ -124,5 +124,5 @@
 }
 
 .hasError {
-  background-color: color(var(--brand-danger) a(50%));
+  background-color: color(var(--state-danger-color) a(50%));
 }

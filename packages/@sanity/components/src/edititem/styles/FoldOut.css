@@ -53,12 +53,12 @@
   background-color: var(--edit-item-fold-border-color);
   padding: var(--small-padding);
   height: 1.5em;
-  color: var(--brand-white);
+  color: var(--white);
 }
 
 .close {
   outline: none;
-  color: var(--brand-white);
+  color: var(--white);
   display: block;
   border: none;
   background-color: transparent;
@@ -67,7 +67,7 @@
 
 .closeDark {
   composes: close;
-  color: var(--brand-black);
+  color: var(--black);
 }
 
 .content {

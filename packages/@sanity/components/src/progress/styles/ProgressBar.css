@@ -18,7 +18,7 @@
 
 .completed {
   composes: root;
-  border-color: var(--brand-success);
+  border-color: var(--state-success-color);
 }
 
 .uncompleted {
@@ -42,7 +42,7 @@
   max-width: 100%;
 
   @nest .completed & {
-    background-color: var(--brand-success);
+    background-color: var(--state-success-color);
   }
 }
 

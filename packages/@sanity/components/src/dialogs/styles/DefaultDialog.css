@@ -91,23 +91,23 @@
   background-color: var(--body-bg);
 
   @nest .danger & {
-    background-color: var(--brand-danger);
-    color: var(--brand-danger--text);
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--text);
   }
 
   @nest .success & {
-    background-color: var(--brand-success);
-    color: var(--brand-success--text);
+    background-color: var(--state-success-color);
+    color: var(--state-success-color--text);
   }
 
   @nest .warning & {
-    background-color: var(--brand-warning);
-    color: var(--brand-warning--text);
+    background-color: var(--state-warning-color);
+    color: var(--state-warning-color--text);
   }
 
   @nest .warning & {
-    background-color: var(--brand-warning);
-    color: var(--brand-warning--text);
+    background-color: var(--state-warning-color);
+    color: var(--state-warning-color--text);
   }
 
   @media (--screen-medium) {
@@ -139,7 +139,7 @@
   border-bottom: 1px solid var(--gray-light);
 
   @nest .danger & {
-    border-bottom: 1px solid var(--brand-danger--text);
+    border-bottom: 1px solid var(--state-danger-color--text);
   }
 }
 

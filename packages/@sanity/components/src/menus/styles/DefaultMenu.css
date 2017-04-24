@@ -54,7 +54,7 @@
 
 .dangerLink {
   composes: link;
-  color: var(--brand-danger);
+  color: var(--state-danger-color);
 }
 
 .divider {
