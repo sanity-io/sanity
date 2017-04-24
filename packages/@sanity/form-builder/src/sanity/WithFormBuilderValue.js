@@ -100,7 +100,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
     // Broadcast incoming patches to input components that applies patches on their own
     // Note: This is *experimental*
     FormBuilder.receivePatches({
-      patches: gradientPatchAdapter.toFormBuilder(patches),
+      patches: gradientPatchAdapter.toFormBuilder(event.origin, patches),
       snapshot: event.document
     })
 

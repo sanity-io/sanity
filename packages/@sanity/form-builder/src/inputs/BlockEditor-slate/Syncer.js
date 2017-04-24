@@ -6,6 +6,8 @@ import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import SubscribePatchHOC from '../../utils/SubscribePatchHOC'
+import Button from 'part:@sanity/components/buttons/default'
+import styles from './styles/Syncer.css'
 
 function deserialize(value, type) {
   return Raw.deserialize(sanityToSlateRaw(value, type))
@@ -29,16 +31,22 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   constructor(props) {
     super()
     this.state = {
+      isOutOfSync: false,
       value: deserialize(props.value, props.type)
     }
     this.unsubscribe = props.subscribe(this.receivePatches)
   }
 
   handleChange = nextSlateState => {
-    this.setState({value: nextSlateState})
+    this.setState(prevState => (prevState.isOutOfSync ? {} : {value: nextSlateState}))
   }
 
   receivePatches = ({snapshot, shouldReset, patches}) => {
+
+    if (patches.some(patch => patch.origin === 'remote')) {
+      this.setState({isOutOfSync: true})
+    }
+
     if (shouldReset) {
       // eslint-disable-next-line no-console
       console.warn('[BlockEditor] Reset state due to set patch that targeted ancestor path:', patches)
@@ -60,9 +68,17 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!isDocumentEqual(prevState.value, this.state.value)) {
+    const didSync = prevState.isOutOfSync && !this.state.isOutOfSync
+    if (!didSync && !isDocumentEqual(prevState.value, this.state.value)) {
       this.emitSet()
     }
+  }
+
+  handleSynchronize = () => {
+    this.setState({
+      value: deserialize(this.props.value, this.props.type),
+      isOutOfSync: false
+    })
   }
 
   emitSet = throttle(() => {
@@ -76,9 +92,22 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   }, 1000, {trailing: true})
 
   render() {
-    const {value} = this.state
+    const {value, isOutOfSync} = this.state
     return (
-      <BlockEditor {...this.props} onChange={this.handleChange} value={value} />
+      <div className={styles.root}>
+        <BlockEditor {...this.props} disabled={isOutOfSync} onChange={this.handleChange} value={value} />
+        {isOutOfSync && (
+          <div className={styles.isOutOfSyncWarning}>
+            Heads up! Someone else edited this field.
+            Make sure to let your co-workers know that you are working on this part of the document!
+            <br />
+            We're sorry for the inconvenience and working hard to get it working properly.
+            <p>
+              <Button inverted primary onClick={this.handleSynchronize}>Load remote changes</Button>
+            </p>
+          </div>
+        )}
+      </div>
     )
   }
 })

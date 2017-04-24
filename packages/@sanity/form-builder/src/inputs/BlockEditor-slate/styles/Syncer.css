@@ -1,0 +1,15 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  position: relative;
+}
+
+.isOutOfSyncWarning {
+  position: absolute;
+  padding: 2em;
+  top: 2em;
+  bottom: 0em;
+  background-color: color(var(--state-warning-color) a(90%));
+  color: var(--brand-white);
+}
+

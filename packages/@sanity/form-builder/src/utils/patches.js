@@ -32,7 +32,9 @@ type InsertPatch = HasPath & {
   items: any[]
 }
 
-export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch
+export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch & {
+  origin: 'remote' | 'local'
+}
 
 export function setIfMissing(value : any, path : Path = []) : SetIfMissingPatch {
   return {

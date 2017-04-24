@@ -4,10 +4,11 @@ import {arrayToJSONMatchPath} from '@sanity/mutator'
 import assert from 'assert'
 import {flatten} from 'lodash'
 import type {Patch} from '../../utils/patches'
+type GradientPatch = Object
 
 type Adapter = {
-  fromFormBuilder: (patches: Array<Patch>) => any,
-  toFormBuilder: (patches: any) => Array<Patch>
+  fromFormBuilder: (patches: Array<Patch>) => Array<GradientPatch>,
+  toFormBuilder: (origin: string, patches: Array<GradientPatch>) => Array<Patch>
 }
 
 const adapter: Adapter = {
@@ -19,8 +20,6 @@ const adapter: Adapter = {
 
 export default adapter
 
-type GradientPatch = Object
-type GradientPatches = Array<GradientPatch>
 
 /**
  *
@@ -30,7 +29,7 @@ type GradientPatches = Array<GradientPatch>
  * to be revised.
  */
 
-function toFormBuilder(patches: GradientPatches): Array<Patch> {
+function toFormBuilder(origin, patches: Array<GradientPatch>): Array<Patch> {
   return flatten(patches.map(patch => {
     return flatten(Object.keys(patch)
       .filter(key => key !== 'id')
@@ -39,7 +38,8 @@ function toFormBuilder(patches: GradientPatches): Array<Patch> {
           return patch.unset.map(path => {
             return {
               type: 'unset',
-              path: path.split('.')
+              path: path.split('.'),
+              origin
             }
           })
         }
@@ -50,20 +50,23 @@ function toFormBuilder(patches: GradientPatches): Array<Patch> {
               type: 'insert',
               position: position,
               path: path.split('.'),
-              items: patch[type][path]
+              items: patch[type][path],
+              origin
             }
           }
           if (type === 'set') {
             return {
               type: 'set',
               path: path.split('.'),
-              value: patch[type][path]
+              value: patch[type][path],
+              origin
             }
           }
           return {
             type,
             path: path.split('.'),
-            value: patch[type][path]
+            value: patch[type][path],
+            origin
           }
         })
       }))
