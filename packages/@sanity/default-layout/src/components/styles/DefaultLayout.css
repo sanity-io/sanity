@@ -52,7 +52,7 @@
 
 .desktopNavigation {
   display: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--component-border-color);
   lost-utility: clearfix;
   @media (--screen-medium) {
     display: block;
@@ -92,7 +92,7 @@
 
 .createButton {
   display: block;
-  color: var(--brand-danger);
+  color: var(--state-danger-color);
   text-align: center;
   margin-bottom: var(--medium-padding);
 }
