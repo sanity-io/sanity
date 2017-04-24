@@ -160,6 +160,23 @@ export default createSchema({
           type: 'boolean'
         },
         {
+          name: 'someObject',
+          title: 'An object',
+          type: 'object',
+          fields: [
+            {
+              name: 'first',
+              type: 'string',
+              title: 'First field'
+            },
+            {
+              name: 'second',
+              type: 'string',
+              title: 'Second field'
+            }
+          ]
+        },
+        {
           name: 'body',
           type: 'array',
           title: 'Blocks',
