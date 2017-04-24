@@ -204,7 +204,7 @@ export default class ArrayInput extends React.Component {
     const itemField = this.getItemType(item)
 
     // Reset level if a full screen modal
-    const level = (type.options && type.options.editModal == 'fullscreen') ? 0 : this.props.level + 1
+    const level = (type.options && type.options.editModal == 'fullscreen') ? 1 : this.props.level + 1
 
     const content = (
       <MemberValue path={{_key: item._key}}>

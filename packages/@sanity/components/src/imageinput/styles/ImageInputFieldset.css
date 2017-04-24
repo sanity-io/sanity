@@ -20,7 +20,7 @@
   flex-direction: column;
   justify-content: flex-start;
 
-  @nest .level0 & {
+  @nest .level1 & {
     margin: calc(var(--medium-padding) * -1) !important;
   }
 

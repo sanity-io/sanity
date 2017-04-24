@@ -97,12 +97,6 @@
     box-shadow: none;
   }
 
-  @nest .level1 & {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-  }
-
   @nest .level2 & {
     background-color: transparent;
     border: none;
@@ -120,6 +114,12 @@
     border: none;
     padding: 0;
   }
+
+  @nest .level5 & {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
 }
 
 .inner {
@@ -131,7 +131,7 @@
 }
 
 .legend {
-  composes: headingLevel_0 from 'part:@sanity/base/theme/typography/forms-style';
+  composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
   display: block;
   width: 100%;
   margin: 0;
@@ -155,6 +155,11 @@
   }
 
   @nest .level4 & {
+    font-size: var(--font-size-h4);
+    text-transform: none;
+  }
+
+  @nest .level5 & {
     font-size: var(--font-size-h4);
     text-transform: none;
   }

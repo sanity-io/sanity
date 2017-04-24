@@ -1,17 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.headingLevel_0 {
-  font-size: var(--font-size-h4);
-  font-weight: 400;
-}
-
 .headingLevel_1 {
   font-size: var(--font-size-h4);
   font-weight: 400;
 }
 
 .headingLevel_2 {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-h4);
+  font-weight: 400;
 }
 
 .headingLevel_3 {
@@ -19,6 +15,10 @@
 }
 
 .headingLevel_4 {
+  font-size: var(--font-size-base);
+}
+
+.headingLevel_5 {
   font-size: var(--font-size-base);
 }
 

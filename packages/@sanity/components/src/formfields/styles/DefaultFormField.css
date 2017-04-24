@@ -67,10 +67,6 @@
   }
 }
 
-.level_0 {
-  composes: root;
-}
-
 .level_1 {
   composes: root;
 }
@@ -80,5 +76,9 @@
 }
 
 .level_3 {
+  composes: root;
+}
+
+.level_4 {
   composes: root;
 }
