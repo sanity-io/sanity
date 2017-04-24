@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.root + .root {
+  margin-top: var(--extra-large-padding);
+}

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import Preview from '../../Preview'
-import RenderField from '../Object/RenderField'
+import Field from '../Object/Field'
 import styles from './styles/FormBuilderSpan.css'
 import {applyAll} from '../../simplePatch'
 
