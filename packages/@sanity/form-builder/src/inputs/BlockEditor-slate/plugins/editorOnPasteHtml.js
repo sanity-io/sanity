@@ -24,7 +24,6 @@ function onPasteHtml(blockEditor) {
   })
 
   function onPaste(event, data, state, editor) {
-    console.log(data)
     if (data.type != 'html') {
       return null
     }
