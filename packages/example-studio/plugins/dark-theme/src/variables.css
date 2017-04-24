@@ -1,0 +1,13 @@
+:root {
+  --body-bg: #333;
+  --text-color: #eee;
+
+  --brand-primary: #81A76D;
+  --brand-secondary: #95BF6F;
+
+  --component-bg: #555;
+  --component-border-color: #777;
+  --component-box-shadow: 0 1px 3px color(var(--black) a(50%));
+
+  --state-danger-color: #F8495F;
+}
