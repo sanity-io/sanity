@@ -3,10 +3,13 @@ import React, {PropTypes} from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {resolveJSType} from '../../utils/resolveJSType'
 import ManageInvalidValue from './ManageInvalidValue'
+import MemberValue from '../../Member'
+
+import styles from './styles/Field.css'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
-export default class RenderField extends React.Component {
+export default class Field extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
@@ -52,15 +55,19 @@ export default class RenderField extends React.Component {
     }
 
     return (
-      <FormBuilderInput
-        value={value}
-        type={field.type}
-        validation={validation}
-        onChange={this.handleChange}
-        onEnter={this.handleEnter}
-        level={level}
-        hasFocus={hasFocus}
-      />
+      <div className={styles.root}>
+        <MemberValue path={field.name}>
+          <FormBuilderInput
+            value={value}
+            type={field.type}
+            validation={validation}
+            onChange={this.handleChange}
+            onEnter={this.handleEnter}
+            level={level}
+            hasFocus={hasFocus}
+          />
+        </MemberValue>
+      </div>
     )
   }
 }

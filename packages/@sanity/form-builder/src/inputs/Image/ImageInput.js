@@ -7,7 +7,7 @@ import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 
-import RenderField from '../Object/RenderField'
+import Field from '../Object/Field'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
@@ -302,7 +302,7 @@ export default class ImageInput extends React.PureComponent {
     const fieldValue = value && value[field.name]
 
     return (
-      <RenderField
+      <Field
         key={field.name}
         field={field}
         value={fieldValue}

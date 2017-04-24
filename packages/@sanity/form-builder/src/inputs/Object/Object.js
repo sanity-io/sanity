@@ -1,10 +1,9 @@
 //@flow weak
 import React, {PropTypes} from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import RenderField from './RenderField'
+import Field from './Field'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {unset, setIfMissing} from '../../PatchEvent'
-import MemberValue from '../../Member'
 import isEmpty from '../../utils/isEmpty'
 
 export default class ObjectInput extends React.PureComponent {
@@ -59,18 +58,16 @@ export default class ObjectInput extends React.PureComponent {
     const fieldValue = value && value[field.name]
 
     return (
-      <MemberValue path={field.name}>
-        <RenderField
-          key={field.name}
-          hasFocus={hasFocus && index === 0}
-          field={field}
-          value={fieldValue}
-          onChange={this.handleFieldChange}
-          onEnter={this.handleFieldEnter}
-          validation={fieldValidation}
-          level={level}
-        />
-      </MemberValue>
+      <Field
+        key={field.name}
+        hasFocus={hasFocus && index === 0}
+        field={field}
+        value={fieldValue}
+        onChange={this.handleFieldChange}
+        onEnter={this.handleFieldEnter}
+        validation={fieldValidation}
+        level={level}
+      />
     )
   }
 
