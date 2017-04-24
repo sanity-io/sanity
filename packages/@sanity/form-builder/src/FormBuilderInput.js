@@ -6,7 +6,8 @@ export class FormBuilderInput extends React.Component {
     type: PropTypes.object.isRequired,
     validation: PropTypes.object,
     onChange: PropTypes.func.isRequired,
-    level: PropTypes.number.isRequired
+    level: PropTypes.number.isRequired,
+    isRoot: PropTypes.boolean
   };
 
   static contextTypes = {
@@ -15,7 +16,8 @@ export class FormBuilderInput extends React.Component {
 
   static defaultProps = {
     onChange() {},
-    validation: {messages: [], fields: {}}
+    validation: {messages: [], fields: {}},
+    isRoot: false
   }
 
   resolveInputComponent(type) {
@@ -23,7 +25,7 @@ export class FormBuilderInput extends React.Component {
   }
 
   render() {
-    const {onChange, value, type, level, validation} = this.props
+    const {onChange, value, type, level, validation, isRoot} = this.props
 
     const InputComponent = this.resolveInputComponent(type)
     if (!InputComponent) {
@@ -40,6 +42,7 @@ export class FormBuilderInput extends React.Component {
         validation={validation}
         {...docProps}
         level={level}
+        isRoot={isRoot}
       />
     )
   }

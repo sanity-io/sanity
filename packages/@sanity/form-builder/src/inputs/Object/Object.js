@@ -17,13 +17,15 @@ export default class ObjectInput extends React.PureComponent {
     hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
-    level: PropTypes.number
+    level: PropTypes.number,
+    isRoot: PropTypes.boolean
   };
 
   static defaultProps = {
     onChange() {},
     onEnter() {},
-    level: 0
+    level: 0,
+    isRoot: false
   };
 
   handleBlur() {
@@ -34,11 +36,11 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   handleFieldChange = (fieldEvent : PatchEvent, field) => {
-    const {onChange, type, level} = this.props
+    const {onChange, type, isRoot} = this.props
 
     let event = fieldEvent.prefixAll(field.name)
 
-    if (level > 0) {
+    if (!isRoot) {
       event = event.prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
     }
     onChange(event)

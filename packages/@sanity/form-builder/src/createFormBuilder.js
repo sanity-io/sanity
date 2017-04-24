@@ -79,6 +79,7 @@ export default function createFormBuilder(config = {}) {
           type={type}
           onChange={onChange}
           level={0}
+          isRoot
         />
       )
     }
