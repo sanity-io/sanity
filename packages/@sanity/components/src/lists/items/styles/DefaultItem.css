@@ -34,6 +34,11 @@
   composes: link;
 }
 
+.dragHandle + .link {
+  box-sizing: border-box;
+  padding-left: 2.5rem;
+}
+
 .sortableHelper {
   background-color: inherit;
   color: inherit;
@@ -50,8 +55,7 @@
 }
 
 .dragHandle {
-  position: relative;
-  float: left;
+  position: absolute;
   cursor: row-resize;
   font-size: 1em;
   height: 2.5em;
