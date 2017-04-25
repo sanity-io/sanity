@@ -5,6 +5,7 @@ import React from 'react'
 import {get, uniqueId} from 'lodash'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import DefaultList from 'part:@sanity/components/lists/default'
+import SortableList from 'part:@sanity/components/lists/sortable'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
@@ -126,13 +127,23 @@ export default class ArrayOfStrings extends React.PureComponent {
       return {title: item, value: item, index: i}
     })
 
+    if (sortable) {
+      return (
+        <SortableList
+          items={items}
+          renderItem={this.renderItem}
+          onSortEnd={this.handleMove}
+          useDragHandle
+          decoration="divider"
+          focusedItem={this.state.lastEditedItem}
+        />
+      )
+    }
+
     return (
       <DefaultList
         items={items}
         renderItem={this.renderItem}
-        sortable={sortable}
-        onSortEnd={this.handleMove}
-        useDragHandle
         decoration="divider"
         focusedItem={this.state.lastEditedItem}
       />

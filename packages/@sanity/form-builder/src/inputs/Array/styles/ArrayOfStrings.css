@@ -5,8 +5,6 @@
 }
 
 .item {
-  margin-left: 2rem;
-
   @nest & input {
     background-color: transparent;
     border: none;
