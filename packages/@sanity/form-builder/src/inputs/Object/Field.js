@@ -42,6 +42,7 @@ export default class Field extends React.Component {
       // todo: we should consider removing this, and not allow aliasing native types
       // + ensure custom object types always gets annotated with _type
       const isCompatible = actualType === field.type.jsonType
+        || expectedType !== '<any>'
 
       if (expectedType !== actualType && !isCompatible) {
         return (

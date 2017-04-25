@@ -1,0 +1,32 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  overflow: hidden;
+}
+
+.deleteButton {
+  font-size: 0.9em;
+  margin-right: 0;
+  box-sizing: border-box;
+
+  @nest .media & {
+    padding: var(--small-padding);
+    background-color: color(var(--black) a(50%));
+  }
+}
+
+.functions {
+  float: right;
+
+  @nest .media & {
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  @nest .default & {
+    display: block;
+  }
+}

@@ -1,0 +1,30 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+}
+
+.list + .functions {
+  padding-top: var(--medium-padding);
+}
+
+.popupAnchor {
+  position: absolute;
+  top: 75%;
+  left: 2em;
+}
+
+.popupAnchorRelative {
+  margin-left: calc(var(--medium-padding) * -1);
+  margin-right: calc(var(--medium-padding) * -1);
+}
+
+.warning {
+  composes: root from 'part:@sanity/components/fieldsets/default-style';
+  padding: var(--medium-padding);
+  border: 5px dashed var(--state-warning-color);
+
+  @nest & > h3 {
+    color: var(--state-warning-color);
+  }
+}
