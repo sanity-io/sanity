@@ -34,6 +34,10 @@
   /*display: block;*/
 }
 
+.list-layout--detail {
+  width: 20rem;
+}
+
 .list-layout--card {
   width: 30rem;
   max-width: 80vw;
@@ -50,11 +54,13 @@
   padding: 0;
   width: 100%;
   box-sizing: border-box;
+  overflow: scroll;
 
   @media (--screen-medium) {
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
     max-height: calc(100% - 3rem);
+    height: 100%;
   }
 }
 

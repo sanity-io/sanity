@@ -15,10 +15,6 @@ export default class StateLinkItem extends React.Component {
     this._stateLink = stateLink
   }
 
-  setElement = domElement => {
-    this._domElement = domElement
-  }
-
   componentDidUpdate(prevProps) {
     if (!prevProps.hasFocus && this.props.hasFocus) {
       this._stateLink.focus()
@@ -28,16 +24,14 @@ export default class StateLinkItem extends React.Component {
   render() {
     const {children, state} = this.props
     return (
-      <div ref={this.setElement}>
-        <StateLink
-          ref={this.setStateLink}
-          tabIndex="0"
-          className={styles.link}
-          state={state}
-        >
-          {children}
-        </StateLink>
-      </div>
+      <StateLink
+        ref={this.setStateLink}
+        tabIndex="0"
+        className={styles.link}
+        state={state}
+      >
+        {children}
+      </StateLink>
     )
   }
 }

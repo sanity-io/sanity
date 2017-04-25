@@ -19,14 +19,6 @@
   }
 }
 
-.selected {
-  composes: item;
-  color: var(--selected-item-color);
-  &:hover {
-    color: var(--selected-item-color-hover);
-  }
-}
-
 .stateLink {
   color: inherit;
   text-decoration: inherit;

@@ -4,7 +4,7 @@ import Moment from 'moment'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
-import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
+import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
 
@@ -79,23 +79,8 @@ export default class CardPreview extends React.Component {
 
 
     if (!item || isPlaceholder) {
-      const itemStyle = getPlaceholderItemStyles(this.index)
       return (
-        <div className={`${styles.placeholder}`}>
-          <div className={styles.inner} ref={this.setInnerElement}>
-            <div className={styles.media}>
-              <div style={{paddingTop: `${100 / containerAspect}%`}} />
-            </div>
-            <div className={styles.meta} ref="meta">
-              <div className={styles.heading}>
-                <p className={styles.date} style={itemStyle.date} />
-                <h2 className={styles.title} style={itemStyle.title} />
-                <h3 className={styles.subtitle} style={itemStyle.subtitle} />
-              </div>
-              <p className={styles.description} style={itemStyle.description} />
-            </div>
-          </div>
-        </div>
+        <SvgPlaceholder styles={styles} />
       )
     }
 

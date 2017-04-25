@@ -28,6 +28,8 @@
     "hashlru": "^2.1.0",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
+    "react-click-outside": "^2.2.0",
+    "react-infinite": "^0.10.0",
     "react-json-inspector": "^7.0.0"
   },
   "devDependencies": {

@@ -7,6 +7,8 @@ import styles from './styles/Pane.css'
 import PaneMenuContainer from './PaneMenuContainer'
 import {find} from 'lodash'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
+import Infinite from 'react-infinite'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 export default withRouterHOC(class Pane extends React.PureComponent {
 
@@ -17,17 +19,43 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     getItemKey: PropTypes.func,
     onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func,
-    listLayout: PropTypes.string,
-    type: PropTypes.object,
+    listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
+    type: PropTypes.shape({
+      title: PropTypes.string
+    }),
     onSelect: PropTypes.func,
     router: PropTypes.shape({
-      state: PropTypes.object
+      state: PropTypes.shape({
+        selectType: PropTypes.string
+      })
     })
   }
 
   static defaultProps = {
     listLayout: 'default',
-    onSelect() {}
+    loading: false,
+    items: [],
+    type: {},
+    router: {},
+    onSetSorting() {
+      return false
+    },
+    onSetListLayout() {
+      return false
+    },
+    getItemKey() {
+      return false
+    },
+    renderItem() {
+      return <div>Empty</div>
+    },
+    onSelect() {
+      return false
+    }
+  }
+
+  state = {
+    isInfiniteLoading: false
   }
 
   handleSelect = item => {
@@ -35,53 +63,51 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     return false
   }
 
-  renderListView() {
-    const {items, renderItem, router, listLayout, getItemKey} = this.props
-    const {selectedDocumentId} = router.state
+  componentWillMount() {
+    this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
+  }
 
-    const selectedItem = find(items, item => item._id == selectedDocumentId)
+  componentWillReceiveProps(nextProps) {
+    if (this.props.items !== nextProps.items) {
 
+      const elements = nextProps.items.map((item, i) => {
+        return this.createListElement(item, i)
+      })
 
-    switch (listLayout) { // eslint-disable-line default-case
-      case 'media':
-        return (
-          <GridList
-            overrideItemRender
-            items={items}
-            getItemKey={getItemKey}
-            renderItem={renderItem}
-            selectedItem={selectedItem}
-            onSelect={this.handleSelect}
-          />
-        )
-
-      case 'card':
-        return (
-          <GridList
-            overrideItemRender
-            items={items}
-            getItemKey={getItemKey}
-            layout="masonry"
-            renderItem={renderItem}
-            selectedItem={selectedItem}
-            onSelect={this.handleSelect}
-          />
-        )
-
-      case 'detail':
-      case 'default':
-      default:
-        if (listLayout !== 'detail' && listLayout !== 'default') {
-          console.error(new Error(`Invalid list view option: ${listLayout}`)) // eslint-disable-line no-console
-        }
-        return items.map((item, i) => {
-          return (
-            <div key={i}>
-              {renderItem(item, i, {})}
-            </div>
-          )
-        })
+      this.setState({
+        elements: elements
+      })
     }
+  }
+
+  componentWillUnmount() {
+    this.erd.removeAllListeners(this._rootElement)
+    this.erd.uninstall(this._rootElement)
+  }
+
+  createListElement = (item, i) => {
+    return (
+      <div className="infinite-list-item" key={item._id}>
+        {this.props.renderItem(item, i, {})}
+      </div>
+    )
+  }
+
+  handleInfiniteLoad = () => {
+    return false
+  }
+
+  setRootElement = element => {
+    const {height} = this.state
+    this._rootElement = element
+    this.erd.listenTo(this._rootElement, el => {
+      const newHeight = this._rootElement.offsetHeight
+      if (height !== newHeight) {
+        this.setState({
+          height: newHeight
+        })
+      }
+    })
   }
 
   render() {
@@ -92,11 +118,14 @@ export default withRouterHOC(class Pane extends React.PureComponent {
       type,
       router,
       onSetListLayout,
-      onSetSorting
+      onSetSorting,
+      renderItem,
+      getItemKey
     } = this.props
 
     const {selectedType, action, selectedDocumentId} = router.state
 
+    const selectedItem = find(items, item => item._id == selectedDocumentId)
     const isActive = selectedType && !action && !selectedDocumentId
     const paneClasses = cls([
       isActive ? styles.isActive : styles.isInactive,
@@ -104,7 +133,8 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     ])
 
     return (
-      <div className={paneClasses}>
+
+      <div className={paneClasses} ref={this.setRootElement}>
         <div className={styles.top}>
           <div className={styles.heading}>
             {type.title}
@@ -137,9 +167,49 @@ export default withRouterHOC(class Pane extends React.PureComponent {
           )
         }
 
-        <div className={styles.listContainer}>
-          {this.renderListView()}
-        </div>
+        {
+          listLayout == 'card' && items && items.length > 0 && (
+            <div className={styles.listContainer}>
+              <GridList
+                overrideItemRender
+                items={items}
+                getItemKey={getItemKey}
+                layout="masonry"
+                renderItem={renderItem}
+                selectedItem={selectedItem}
+                onSelect={this.handleSelect}
+              />
+            </div>
+          )
+        }
+
+        {
+          (listLayout === 'media' && items && items.length > 0) && (
+            <div className={styles.listContainer}>
+              <GridList
+                overrideItemRender
+                items={items}
+                getItemKey={getItemKey}
+                renderItem={renderItem}
+                selectedItem={selectedItem}
+                onSelect={this.handleSelect}
+              />
+            </div>
+          )
+        }
+        {
+          (listLayout === 'default' || listLayout === 'detail')
+            && <Infinite
+              className={styles.listContainer}
+              elementHeight={listLayout === 'default' ? 40 : 80}
+              containerHeight={this.state.height || 250}
+              infiniteLoadBeginEdgeOffset={200}
+              onInfiniteLoad={this.handleInfiniteLoad}
+              isInfiniteLoading={this.state.isInfiniteLoading}
+               >
+              {this.state.elements}
+            </Infinite>
+        }
       </div>
     )
   }

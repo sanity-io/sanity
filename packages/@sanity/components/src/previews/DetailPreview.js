@@ -4,6 +4,7 @@ import styles from 'part:@sanity/components/previews/detail-style'
 import {truncate} from 'lodash'
 import MediaRender from './common/MediaRender.js'
 import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
+import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
 
@@ -37,19 +38,10 @@ export default class DetailPreview extends React.Component {
   render() {
     const {item, emptyText, assetSize, children, isPlaceholder} = this.props
 
-    if ((!item || isPlaceholder)) {
-      const itemStyle = getPlaceholderItemStyles(this.index)
+    if (!item || isPlaceholder) {
       return (
-        <div className={`${styles.placeholder}`}>
-          <div className={`${styles.media}`} />
-          <div className={styles.content}>
-            <div className={styles.heading}>
-              <h2 className={styles.title} style={itemStyle.title} />
-              <h3 className={styles.subtitle} style={itemStyle.subtitle} />
-            </div>
-            <p className={styles.description} style={{width: '100%'}} />
-            <p className={styles.description} style={itemStyle.description} />
-          </div>
+        <div className={`${styles.root}`}>
+          <SvgPlaceholder styles={styles} />
         </div>
       )
     }

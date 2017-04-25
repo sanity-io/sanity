@@ -3,6 +3,7 @@ import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
 import MediaRender from './common/MediaRender'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import SvgPlaceholder from './common/SvgPlaceholder'
 
 export default class MediaPreview extends React.Component {
   static propTypes = {
@@ -36,9 +37,10 @@ export default class MediaPreview extends React.Component {
 
     if (!item || isPlaceholder) {
       return (
-        <div className={`${styles.placeholder}`}>
+        <div className={styles.root}>
+          <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
           <div className={styles.mediaContainer}>
-            <Spinner center />
+            <SvgPlaceholder styles={styles} />
           </div>
         </div>
       )
