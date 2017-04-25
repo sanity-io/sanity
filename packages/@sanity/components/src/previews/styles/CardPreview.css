@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: inherit;
+  background-color: var(--white);
   composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
 }
 
@@ -73,32 +73,47 @@
 
 .placeholder {
   composes: root;
+  position: relative;
+  height: 16.5rem;
 
   @nest & .media {
     width: 100%;
-    background-color: var(--preview-placeholder-text-color);
+    height: 10rem;
   }
 
   @nest & .title {
+    x: 1rem;
+    y: 11rem;
     height: 1em;
-    background-color: var(--preview-placeholder-text-color);
+    width: 70%;
+    word-break: break-word;
   }
 
   @nest & .subtitle {
+    x: 1rem;
+    y: 12.5rem;
     height: 1em;
-    margin-top: 0.2em;
-    background-color: var(--preview-placeholder-text-color);
   }
 
   @nest & .date {
+    x: calc(100% - 5rem);
+    y: 11rem;
     height: 1em;
+    width: 4rem;
     margin-top: 0.2em;
-    background-color: var(--preview-placeholder-text-color);
   }
 
-  @nest & .description {
-    height: 1em;
-    margin-top: 1.2em;
-    background-color: var(--preview-placeholder-text-color);
+  @nest & .description_1 {
+    x: 1rem;
+    y: 14rem;
+    width: calc(100% - 2rem);
+    height: 0.5rem;
+  }
+
+  @nest & .description_2 {
+    x: 1rem;
+    y: 15rem;
+    width: calc(50% - 2rem);
+    height: 0.5rem;
   }
 }

@@ -2,72 +2,74 @@
 
 .root {
   display: block;
-  padding: 0.5em;
+  padding: 0;
   user-select: none;
   overflow: hidden;
-  height: 1.5em;
+  height: 2.5em;
   position: relative;
 }
 
 .heading {
-  vertical-align: baseline;
+  position: absolute;
+  top: 0.25em;
+  left: 2.5em;
+  right: 0.25em;
+  height: 2em;
+  box-sizing: border-box;
+}
+
+.ellipsis {
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .title {
-  position: absolute;
+  composes: ellipsis;
   font-size: 1em;
-  line-height: 1.5em;
+  line-height: 2em;
   color: inherit;
   font-weight: 500;
   text-transform: none;
   margin: 0;
   padding: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  margin-top: -0.25em;
   width: calc(100% - 1em);
 
   @nest .hasSubtitle & {
+    line-height: 1em;
     top: 0.25em;
   }
 }
 
 .subtitle {
+  composes: ellipsis;
   color: inherit;
   margin: 0;
   padding: 0;
+  padding-bottom: 0.25em;
   height: 1em;
-  margin-top: -0.2em;
   font-size: 0.7em;
   font-weight: 300;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1em;
   width: calc(100% - 1em);
-  position: absolute;
-  top: 2.5em;
-}
-
-.description {
-  padding: 0;
-  margin: 0;
-  font-size: 0.75em;
 }
 
 .media {
-  float: left;
-  height: 1.75em;
-  width: 1.75em;
-  margin-right: 0.5em;
+  position: absolute;
+  top: 0.25em;
+  left: 0.25em;
+  height: 2em;
+  width: 2em;
   overflow: hidden;
-  position: relative;
+  background-color: var(--preview-placeholder-text-color);
 
   @nest & div {
     position: relative;
-    height: 2.5em;
-    width: 2.5em;
+    height: 2em;
+    width: 2em;
     overflow: hidden;
   }
 
@@ -78,21 +80,26 @@
 }
 
 .placeholder {
-  composes: root;
+  height: 100%;
+  width: 100%;
 
   @nest & .title {
-    background-color: var(--preview-placeholder-text-color);
-    height: 1em;
+    height: 1.2rem;
+    width: calc(100% - 3rem);
+    x: 2.5rem;
+    y: 0.25rem;
   }
 
   @nest & .subtitle {
-    background-color: var(--preview-placeholder-text-color);
-    height: 0.8em;
+    height: 0.5rem;
+    width: 40%;
+    x: 2.5rem;
+    y: 1.7rem;
   }
 
   @nest & .media {
-    background-color: var(--preview-placeholder-text-color);
-    fill: var(--preview-placeholder-text-color);
+    x: 0.25rem;
+    y: 0.25rem;
   }
 }
 

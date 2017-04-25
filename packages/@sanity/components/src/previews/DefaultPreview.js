@@ -2,9 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/default-style'
 import MediaRender from './common/MediaRender.js'
-import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
+import SvgPlaceholder from './common/SvgPlaceholder'
 
-let index = 0
+const PLACEHOLDER = (
+  <div className={styles.root}>
+    <SvgPlaceholder styles={styles} />
+  </div>
+)
 
 export default class DefaultPreview extends React.Component {
   static propTypes = {
@@ -31,23 +35,11 @@ export default class DefaultPreview extends React.Component {
     assetSize: {width: 40, height: 40}
   }
 
-  index = index++
-
   render() {
     const {item, assetSize, emptyText, children, isPlaceholder} = this.props
 
     if (!item || isPlaceholder) {
-      const itemStyle = getPlaceholderItemStyles(this.index)
-      return (
-        <div className={`${styles.placeholder}`}>
-          <div className={`${styles.media}`} />
-          <div className={styles.heading}>
-            <h2 className={styles.title} style={itemStyle.title} />
-            <h3 className={styles.subtitle} style={itemStyle.subtitle} />
-          </div>
-          <div className={styles.animation} />
-        </div>
-      )
+      return PLACEHOLDER
     }
 
     return (
@@ -57,11 +49,13 @@ export default class DefaultPreview extends React.Component {
           ${item.subtitle ? styles.hasSubtitle : ''}
         `}
       >
-        {
-          (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
-            <MediaRender size={assetSize} item={item} />
-          </div>
-        }
+        <div className={`${styles.media}`}>
+          {
+            (item.media || item.sanityImage || item.imageUrl) && (
+              <MediaRender size={assetSize} item={item} />
+            )
+          }
+        </div>
         <div className={styles.heading}>
           <h2 className={styles.title}>
             {item.title || emptyText}

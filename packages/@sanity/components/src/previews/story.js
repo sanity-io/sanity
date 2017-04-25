@@ -6,7 +6,7 @@ import DetailPreview from 'part:@sanity/components/previews/detail'
 import InlinePreview from 'part:@sanity/components/previews/inline'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import CardPreview from 'part:@sanity/components/previews/card'
-import {withKnobs, object, boolean, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, object, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const style = {
@@ -45,11 +45,11 @@ storiesOf('Previews')
   'Default',
   () => {
     const item = {
-      title: boolean('title', true) ? 'This is the title' : false,
-      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
-      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
-      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
-      date: boolean('date', true) ? new Date() : false
+      title: text('title', 'This is the title'),
+      subtitle: text('subtitle', 'This is the subtitle'),
+      description: text('description', 'This is the long the descriptions that should no be to long, beacuse we will cap it'),
+      imageUrl: 'http://www.fillmurray.com/500/300',
+      date: new Date()
     }
     return (
       <Sanity part="part:@sanity/components/previews/default" propTables={[DefaultPreview]}>
@@ -84,12 +84,13 @@ storiesOf('Previews')
 .add(
   'Detail',
   () => {
+    const width = number('width', 500)
     const item = {
-      title: boolean('title', true) ? 'This is the title' : false,
-      subtitle: boolean('subtitle', true) ? 'This is the subtitle' : false,
-      description: boolean('description', true) ? 'This is the long the descriptions that should no be to long, beacuse we will cap it' : false,
-      imageUrl: boolean('imageUrl', true) ? 'http://www.fillmurray.com/500/300' : false,
-      date: boolean('date', true) ? new Date() : false
+      title: text('title', 'This is the title'),
+      subtitle: text('subtitle', 'This is the subtitle'),
+      description: text('description', 'This is the long the descriptions that should no be to long, beacuse we will cap it'),
+      imageUrl: 'http://www.fillmurray.com/500/300',
+      date: new Date()
     }
     return (
       <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>

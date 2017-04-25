@@ -81,7 +81,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, false)
     this.erd.removeAllListeners(this.navigationElement)
-    // this.erd.uninstall(this.navigationElement)
+    this.erd.uninstall(this.navigationElement)
   }
 
   componentWillMount() {
@@ -152,7 +152,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   getDocumentsPane(schemaType) {
-    const query = `*[is $type] | order(${this.state.sorting}) [0...2000] {_id, _type}`
+    const query = `*[is $type] | order(${this.state.sorting}) [0...3000] {_id, _type}`
     // const query = '*[is $type] [0...2000] {_id, _type}'
     const params = {type: schemaType.name}
 

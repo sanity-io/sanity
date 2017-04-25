@@ -1,0 +1,43 @@
+import React, {PropTypes} from 'react'
+
+const svgStyles = {
+  position: 'relative',
+  width: '100%',
+  height: '100%'
+}
+
+const SvgPlaceholder = ({styles}) => {
+  return (
+    <div className={styles.placeholder}>
+      <svg x="0" y="0" className={styles.svg} style={svgStyles}>
+        <linearGradient id="loader_gradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
+          <stop offset="0.5" style={{stopColor: '#eee'}} />
+          <stop offset="1" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
+          <animate attributeName="x1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />
+          <animate attributeName="y1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />
+          <animate attributeName="x2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />
+          <animate attributeName="y2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />
+        </linearGradient>
+        <g fill="url(#loader_gradient)" className={styles.placeholderG}>
+          <rect className={styles.media} />
+          <rect className={styles.date} width="80%" />
+          <rect className={styles.title} width="80%" />
+          <rect className={styles.subtitle} width="50%" />
+          <rect className={styles.description_1} width="100%" />
+          <rect className={styles.description_2} width="50%" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
+SvgPlaceholder.propTypes = {
+  styles: PropTypes.object
+}
+
+SvgPlaceholder.defaultProps = {
+  styles: {}
+}
+
+export default SvgPlaceholder

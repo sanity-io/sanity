@@ -3,6 +3,7 @@ import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultList from 'part:@sanity/components/lists/default'
+import SortableList from 'part:@sanity/components/lists/sortable'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 
 import {arrayMove} from 'react-sortable-hoc'
@@ -74,7 +75,7 @@ class SortableComponent extends React.Component {
     // TODO onSortStart={onSortStart} crashes chrome. Investigate this?
 
     return (
-      <DefaultList
+      <SortableList
         items={items}
         sortable
         renderItem={defaultRenderItem}
@@ -117,7 +118,7 @@ storiesOf('List (default)')
   'Sortable',
   () => {
     return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+      <Sanity part="part:@sanity/components/lists/sortable" propTables={[SortableList]}>
         <div style={containerStyle}>
           <SortableComponent
             items={detailedItems}
@@ -143,7 +144,7 @@ storiesOf('List (default)')
   // `,
   () => {
     return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
+      <Sanity part="part:@sanity/components/lists/sortable" propTables={[SortableList]}>
         <SortableComponent
           items={detailedItems}
           useDragHandle

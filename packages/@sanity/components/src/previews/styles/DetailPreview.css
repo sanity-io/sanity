@@ -5,7 +5,8 @@
   padding: 0.5em;
   user-select: none;
   overflow: hidden;
-  height: 4em;
+  height: 5em;
+  box-sizing: border-box;
 }
 
 .heading {
@@ -17,15 +18,19 @@
   margin-left: 4.5em;
 }
 
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .title {
   composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
+  composes: ellipsis;
   color: inherit;
   text-transform: none;
   margin: 0;
   padding: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .subtitle {
@@ -58,27 +63,27 @@
 }
 
 .placeholder {
-  composes: root;
-
-  @nest & .media {
-    background-color: var(--preview-placeholder-text-color);
-  }
-
   @nest & .title {
-    background-color: var(--preview-placeholder-text-color);
+    x: 4.5em;
     height: 1em;
-    margin-bottom: 0.5em;
   }
 
   @nest & .subtitle {
-    background-color: var(--preview-placeholder-text-color);
+    x: 5.7em;
+    y: 1.7em;
     height: 0.5em;
     margin-bottom: 0.5em;
   }
 
-  @nest & .description {
-    background-color: var(--preview-placeholder-text-color);
+  @nest & .description_1 {
+    x: 4.5em;
+    y: 2.2em;
     height: 0.75em;
-    margin-top: 0.4em;
+  }
+
+  @nest & .description_2 {
+    x: 4.5em;
+    y: 3.2em;
+    height: 0.75em;
   }
 }

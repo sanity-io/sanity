@@ -11,6 +11,7 @@ import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultList from 'part:@sanity/components/lists/default'
+import SortableList from 'part:@sanity/components/lists/sortable'
 import GridList from 'part:@sanity/components/lists/grid'
 
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
@@ -315,14 +316,26 @@ export default class ArrayInput extends React.Component {
       )
     }
 
+    if (sortable) {
+      return (
+        <SortableList
+          items={value}
+          renderItem={this.renderItem}
+          onSelect={this.handleItemEdit}
+          sortable={sortable}
+          onSortEnd={this.handleMove}
+          useDragHandle
+          decoration="divider"
+          focusedItem={this.state.lastEditedItem}
+        />
+      )
+    }
+
     return (
       <DefaultList
         items={value}
         renderItem={this.renderItem}
         onSelect={this.handleItemEdit}
-        sortable={sortable}
-        onSortEnd={this.handleMove}
-        useDragHandle
         decoration="divider"
         focusedItem={this.state.lastEditedItem}
       />
