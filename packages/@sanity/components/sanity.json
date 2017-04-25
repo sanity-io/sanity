@@ -565,11 +565,11 @@
     },
     {
       "implements": "part:@sanity/components/fileinput/default",
-      "path": "fileinput/common/FileInput.js"
+      "path": "fileinput/DefaultFileInput.js"
     },
     {
       "implements": "part:@sanity/components/fileinput/button",
-      "path": "fileinput/Button.js"
+      "path": "fileinput/FileInputButton.js"
     },
     {
       "implements": "part:@sanity/components/utilities/image-loader",
@@ -581,11 +581,11 @@
     },
     {
       "implements": "part:@sanity/components/fileinput/dropzone",
-      "path": "fileinput/DropZone.js"
+      "path": "fileinput/FileInputDropZone.js"
     },
     {
       "implements": "part:@sanity/components/fileinput/dropzone-style",
-      "path": "fileinput/styles/DropZone.css"
+      "path": "fileinput/styles/FileInputDropZone.css"
     },
     {
       "implements": "part:@sanity/components/imageinput/fieldset-style",
