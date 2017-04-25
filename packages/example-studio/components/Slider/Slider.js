@@ -9,6 +9,7 @@ export default class Slider extends React.Component {
     type: PropTypes.shape({
       title: PropTypes.string
     }).isRequired,
+    level: PropTypes.number,
     value: PropTypes.number,
     onChange: PropTypes.func.isRequired
   };
@@ -20,10 +21,10 @@ export default class Slider extends React.Component {
   }
 
   render() {
-    const {type, value} = this.props
+    const {type, value, level} = this.props
     const {min, max, step} = type.options.range
     return (
-      <FormField label={type.title} description={type.description}>
+      <FormField label={type.title} level={level} description={type.description}>
         <input
           type="range"
           className={styles.slider}

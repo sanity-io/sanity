@@ -30,6 +30,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     placeholder: PropTypes.string,
 
     isLoading: PropTypes.bool,
+    level: PropTypes.number,
 
     isOpen: PropTypes.bool,
     onOpen: PropTypes.func,
@@ -47,6 +48,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     onChange: noop,
     onOpen: noop,
     onClose: noop,
+    level: 0,
     onInputChange: noop,
     hasError: false,
     hasFocus: false,
@@ -129,6 +131,7 @@ class StatelessSearchableSelect extends React.PureComponent {
       isLoading,
       value,
       description,
+      level,
       items,
       renderItem,
       hasFocus,
@@ -142,6 +145,7 @@ class StatelessSearchableSelect extends React.PureComponent {
       <DefaultFormField
         className={styles.root}
         description={description}
+        level={level}
         labelHtmlFor={this._inputId}
         label={label}
       >

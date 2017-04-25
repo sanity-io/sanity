@@ -20,7 +20,8 @@ export default class ReferenceSearchableSelect extends React.Component {
     value: PropTypes.object,
     searchFn: PropTypes.func,
     valueToString: PropTypes.func,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    level: PropTypes.number
   };
 
   static defaultProps = {
@@ -130,7 +131,7 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   render() {
-    const {type, value} = this.props
+    const {type, value, level} = this.props
     const {valueAsString, fetching, hits} = this.state
 
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
@@ -138,6 +139,7 @@ export default class ReferenceSearchableSelect extends React.Component {
     return (
       <SearchableSelect
         label={type.title}
+        level={level}
         description={type.description}
         placeholder="Type to search…"
         onBlur={this.handleBlur}

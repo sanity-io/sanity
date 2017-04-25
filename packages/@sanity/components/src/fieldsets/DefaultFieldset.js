@@ -27,7 +27,7 @@ export default class Fieldset extends React.Component {
   }
 
   static defaultProps = {
-    level: 0,
+    level: 1,
     fieldset: {},
     className: ''
   }

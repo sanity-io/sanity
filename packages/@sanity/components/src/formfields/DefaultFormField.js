@@ -18,7 +18,7 @@ export default class DefaultFormField extends React.Component {
   }
 
   static defaultProps = {
-    level: 0
+    level: 1
   }
 
   componentWillMount() {

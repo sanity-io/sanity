@@ -43,7 +43,7 @@ export default class ImageInputFieldset extends React.PureComponent {
   }
 
   static defaultProps = {
-    level: 0,
+    level: 1,
     status: 'ready',
     showContent: true
   }
