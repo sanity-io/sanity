@@ -23,7 +23,7 @@ function isDocumentEqual(slateState, otherSlateState) {
 
 export default SubscribePatchHOC(class Syncer extends React.PureComponent {
   static propTypes = {
-    value: PropTypes.array.isRequired,
+    value: PropTypes.array,
     type: PropTypes.object.isRequired,
     onChange: PropTypes.func,
     subscribe: PropTypes.func
