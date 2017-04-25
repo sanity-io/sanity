@@ -17,7 +17,7 @@ export default class ObjectInput extends React.PureComponent {
     onChange: PropTypes.func,
     onEnter: PropTypes.func,
     level: PropTypes.number,
-    isRoot: PropTypes.boolean
+    isRoot: PropTypes.bool
   };
 
   static defaultProps = {

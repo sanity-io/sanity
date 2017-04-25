@@ -7,7 +7,6 @@ import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import React, {PropTypes} from 'react'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import FileSelect from './FileSelect'
 import styles from './styles/FileInput.css'
 import subscriptionManager from '../../utils/subscriptionManager'
 
@@ -24,7 +23,7 @@ function getInitialState() {
 export default class FileInput extends React.PureComponent {
   _unmounted: boolean
   static propTypes = {
-    value: PropTypes.object.isRequired,
+    value: PropTypes.object,
     type: PropTypes.object.isRequired,
     level: PropTypes.number,
     onChange: PropTypes.func,

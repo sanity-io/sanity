@@ -7,7 +7,7 @@ export class FormBuilderInput extends React.Component {
     validation: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     level: PropTypes.number.isRequired,
-    isRoot: PropTypes.boolean
+    isRoot: PropTypes.bool
   };
 
   static contextTypes = {
