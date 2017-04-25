@@ -20,6 +20,7 @@ import slugs from './slugs'
 import geopoint from './geopoint'
 import customInputs from './customInputs'
 import notitle from './notitle'
+import any from './any'
 
 export default createSchema({
   name: 'test-examples',
@@ -32,6 +33,7 @@ export default createSchema({
     objects,
     dates,
     arrays,
+    any,
     code,
     images,
     files,
