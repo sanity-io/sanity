@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import FormatListBulletedIcon from 'part:@sanity/base/format-list-bulleted-icon'
 import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'

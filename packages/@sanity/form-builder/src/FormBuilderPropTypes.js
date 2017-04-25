@@ -1,4 +1,4 @@
-import {PropTypes} from 'react'
+import PropTypes from 'prop-types'
 
 // todo: fix issue with type being a cicular proptype. Should probably replace all this with flowtypes
 

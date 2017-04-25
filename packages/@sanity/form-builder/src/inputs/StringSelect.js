@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/progress/circle-style'
 
 const radiusFactor = 1.3
@@ -13,10 +14,10 @@ export default class ProgressCircle extends React.Component {
     text: PropTypes.string,
     style: PropTypes.object,
     showPercent: PropTypes.bool,
-    radius: React.PropTypes.number,
-    strokeWidth: React.PropTypes.number,
-    status: React.PropTypes.string,
-    completed: React.PropTypes.bool
+    radius: PropTypes.number,
+    strokeWidth: PropTypes.number,
+    status: PropTypes.string,
+    completed: PropTypes.bool
   }
 
   static defaultProps = {

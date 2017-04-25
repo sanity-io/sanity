@@ -1,5 +1,6 @@
 import cls from 'classnames'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import GridList from 'part:@sanity/components/lists/grid'
 import styles from './styles/Pane.css'

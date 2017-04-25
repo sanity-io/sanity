@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import styles from './styles/ActionModal.css'

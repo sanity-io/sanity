@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import customResolver from 'part:@sanity/base/preview-resolver?'
 import SanityDefaultPreview from './SanityDefaultPreview'
 

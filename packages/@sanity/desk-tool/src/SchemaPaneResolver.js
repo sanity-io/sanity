@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Pane from 'part:@sanity/desk-tool/pane'
 import TypePane from './pane/TypePane'
 import EditorPane from './pane/EditorPane'

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow weak
-import React, {PropTypes} from 'react'
+import React from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import subscriptionManager from '../../../utils/subscriptionManager'

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import tools from 'all:part:@sanity/base/tool'
 
 function RenderTool(props) {

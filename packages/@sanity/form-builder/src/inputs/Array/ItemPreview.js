@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import equals from 'shallow-equals'
 import styles from './styles/ItemPreview.css'

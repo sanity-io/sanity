@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'

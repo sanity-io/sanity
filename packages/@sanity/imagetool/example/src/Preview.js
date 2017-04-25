@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp, react/prop-types */
-import React, {PropTypes} from 'react'
+import React from 'react'
 import HotspotImage from '../../src/HotspotImage'
 import createImageLoadProxy from '../../src/createImageLoadProxy'
 

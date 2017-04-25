@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import GlobalSearch from 'part:@sanity/components/globalsearch/default'
 import globalSearchStyles from 'part:@sanity/components/globalsearch/default-style'
 import schema from 'part:@sanity/base/schema?'

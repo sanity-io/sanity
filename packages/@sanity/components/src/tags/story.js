@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import TagsTextField from 'part:@sanity/components/tags/textfield'
 import {withKnobs, array, text} from 'part:@sanity/storybook/addons/knobs'

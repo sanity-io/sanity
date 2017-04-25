@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow
-import React, {PropTypes, Element} from 'react'
+import React, { Element } from 'react';
 import Link from './Link'
 import type {RouterProviderContext} from './types'
 

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
-import React, {PropTypes} from 'react'
+import React from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultList from 'part:@sanity/components/lists/default'
 import styles from './styles/ReferringDocumentsHelper.css'

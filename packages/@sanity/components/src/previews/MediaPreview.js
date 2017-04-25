@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
 import MediaRender from './common/MediaRender'
 import Spinner from 'part:@sanity/components/loading/spinner'

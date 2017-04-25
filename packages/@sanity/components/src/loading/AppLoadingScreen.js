@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import SanityLogo from 'part:@sanity/base/sanity-logo-icon'
 import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 

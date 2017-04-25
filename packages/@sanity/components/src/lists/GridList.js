@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/lists/grid-style'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import {ContainerQuery} from 'react-container-query'

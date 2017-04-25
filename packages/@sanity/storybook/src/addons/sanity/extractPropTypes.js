@@ -1,4 +1,4 @@
-import {PropTypes} from 'react'
+import PropTypes from 'prop-types'
 
 const PropTypesMap = new Map()
 for (const typeName in PropTypes) {

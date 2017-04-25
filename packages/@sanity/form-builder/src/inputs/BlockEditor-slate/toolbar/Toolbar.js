@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from './styles/Toolbar.css'
 import InsertBlocks, {insertBlockShape} from './InsertBlocks'
 import Marks, {mark} from './Marks'

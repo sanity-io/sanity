@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import resolvePreview from 'part:@sanity/base/preview-resolver'
 
 export default class Preview extends React.Component {

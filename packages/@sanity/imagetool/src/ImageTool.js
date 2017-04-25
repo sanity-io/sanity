@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import getBackingStoreRatio from './getBackingStoreRatio'
 import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'

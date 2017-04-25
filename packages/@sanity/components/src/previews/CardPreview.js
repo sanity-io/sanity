@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Moment from 'moment'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'

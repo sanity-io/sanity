@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from './styles/PaneItem.css'
 
 export default class PaneItem extends React.Component {

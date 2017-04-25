@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow
-import React, {PropTypes, Element} from 'react'
+import React, { Element } from 'react';
 import type {Router} from '../types'
 import type {RouterProviderContext, NavigateOptions, InternalRouter, RouterState} from './types'
 import pubsub from 'nano-pubsub'

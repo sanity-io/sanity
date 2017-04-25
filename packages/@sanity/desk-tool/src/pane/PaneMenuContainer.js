@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import PaneMenu from './PaneMenu.js'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
-import React, {PropTypes} from 'react'
+import React from 'react'
 import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'

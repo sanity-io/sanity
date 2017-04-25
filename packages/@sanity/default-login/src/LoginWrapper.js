@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import userStore from 'part:@sanity/base/user'
 import LoginDialog from 'part:@sanity/base/login-dialog'
 import UnauthorizedUser from './UnauthorizedUser'

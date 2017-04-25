@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import PatchEvent, {set, unset} from '../../../../src/PatchEvent'
 
 function defaultGeneratePatch(inputValue) {

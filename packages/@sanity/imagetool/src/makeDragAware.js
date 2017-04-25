@@ -1,5 +1,6 @@
 import {on, off} from 'dom-event'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Debug from 'debug'
 import {omit} from 'lodash'
 

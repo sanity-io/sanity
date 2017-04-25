@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/selects/radio-style'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RadioButton from 'part:@sanity/components/radiobutton/default'

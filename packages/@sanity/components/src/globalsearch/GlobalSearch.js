@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/globalsearch/default-style'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow weak
-import React, {PropTypes} from 'react'
+import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'

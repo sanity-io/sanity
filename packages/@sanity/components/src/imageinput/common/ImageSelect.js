@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FileInput from 'part:@sanity/components/fileinput/default'
 import readExif from '../utils/readExif'
 import rotateImage from '../utils/rotateImage'

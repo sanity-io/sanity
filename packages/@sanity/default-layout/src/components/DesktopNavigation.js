@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import LoginStatus from './LoginStatus'
 import styles from './styles/DesktopNavigation.css'
 import Branding from './Branding'

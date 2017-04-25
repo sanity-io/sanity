@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/selects/style-style'
 import {uniqueId, includes} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'

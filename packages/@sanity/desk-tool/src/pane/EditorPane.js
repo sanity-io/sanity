@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
-import React, {PropTypes} from 'react'
+import React from 'react'
 import styles from './styles/EditorPane.css'
 import Editor from './Editor'
 import {WithFormBuilderValue} from 'part:@sanity/form-builder'

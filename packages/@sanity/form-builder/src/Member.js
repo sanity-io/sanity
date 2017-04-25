@@ -1,5 +1,6 @@
 import type {PathSegment} from './utils/patches'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 export default class MemberValue extends React.Component {
   props: {

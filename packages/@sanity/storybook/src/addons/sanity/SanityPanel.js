@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
-import React, {PropTypes, PureComponent} from 'react'
+import React from 'react'
 import addons from '@kadira/storybook-addons'
 import PropTable from './PropTable'
 import styles from './styles/SanityPanel.css'
@@ -13,7 +14,7 @@ addons.register('sanity/info', api => {
   })
 })
 
-class SanityPanel extends PureComponent {
+class SanityPanel extends React.PureComponent {
   constructor(props) {
     super(props)
 

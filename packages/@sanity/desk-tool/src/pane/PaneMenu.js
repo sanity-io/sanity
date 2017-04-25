@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Menu from 'part:@sanity/components/menus/default'
 
 import IconSortAlphaDesc from 'part:@sanity/base/sort-alpha-desc-icon'

@@ -1,7 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 
 import styles from 'part:@sanity/components/fieldsets/default-style'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 
 export default class Fieldset extends React.Component {

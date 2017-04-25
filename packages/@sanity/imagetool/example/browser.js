@@ -1,5 +1,6 @@
 import 'babel-polyfill'
 import Debug from 'debug'
+import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ImageToolDemo from './src/ImageToolDemo'
@@ -21,7 +22,7 @@ const routes = createRoute('/*', [
 
 class Root extends React.Component {
   static contextTypes = {
-    router: React.PropTypes.object
+    router: PropTypes.object
   }
   renderDemo(demoName) {
     const routerState = this.context.router.state

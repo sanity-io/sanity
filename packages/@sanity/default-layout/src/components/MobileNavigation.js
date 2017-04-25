@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import LoginStatus from './LoginStatus'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import styles from './styles/MobileNavigation.css'

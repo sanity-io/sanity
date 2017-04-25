@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 
 import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'

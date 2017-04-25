@@ -1,5 +1,6 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {resolveJSType} from '../../utils/resolveJSType'
 import ManageInvalidValue from './ManageInvalidValue'

@@ -1,4 +1,5 @@
-import React, {PureComponent, PropTypes} from 'react' // eslint-disable-line no-unused-vars
+import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'; // eslint-disable-line no-unused-vars
 import addons from '@kadira/storybook-addons'
 import parts from 'sanity:debug'
 import extractPropTypes from './extractPropTypes'
@@ -21,7 +22,7 @@ export default class Sanity extends PureComponent {
 }
 
 Sanity.propTypes = {
-  propTables: PropTypes.arrayOf(React.PropTypes.func),
+  propTables: PropTypes.arrayOf(PropTypes.func),
   children: PropTypes.node,
   part: PropTypes.string
 }

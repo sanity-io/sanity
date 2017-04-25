@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
 import userStore from 'part:@sanity/base/user'
 import Menu from 'part:@sanity/components/menus/default'

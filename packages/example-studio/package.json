@@ -23,8 +23,9 @@
     "@sanity/desk-tool": "^0.104.42",
     "@sanity/form-builder": "^0.104.42",
     "@sanity/storybook": "^0.104.34",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "sanity-plugin-vision": "^2.0.2"
   },
   "devDependencies": {

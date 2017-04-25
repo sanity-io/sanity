@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import jsonMarkup from 'json-markup'
 
 import styles from './styles/Inspector.css'

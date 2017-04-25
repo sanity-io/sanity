@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 export default function createImageLoadProxy(Component, {error: ErrorComponent, loader: LoaderComponent} = {}) {
   return class ImageLoadProxy extends React.Component {

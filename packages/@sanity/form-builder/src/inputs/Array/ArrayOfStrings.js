@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types'
 // @flow weak
 /* eslint-disable import/no-extraneous-dependencies */
-import React, {PropTypes} from 'react'
+import React from 'react'
 import {get, uniqueId} from 'lodash'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import DefaultList from 'part:@sanity/components/lists/default'

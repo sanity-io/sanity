@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'

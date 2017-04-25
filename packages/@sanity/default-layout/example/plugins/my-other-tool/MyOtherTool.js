@@ -1,6 +1,7 @@
 /* eslint-disable max-len, react/display-name, react/no-multi-comp */
 import {route, StateLink} from 'part:@sanity/base/router'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 class WithRouterState extends React.Component {
   static propTypes = {

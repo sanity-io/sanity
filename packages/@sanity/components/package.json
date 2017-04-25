@@ -69,6 +69,7 @@
     "stylelint-config-standard": "^14.0.0"
   },
   "peerDependencies": {
+    "prop-types": ">=15.0.0",
     "react": ">=15.0.0",
     "react-dom": ">=15.0.0"
   },

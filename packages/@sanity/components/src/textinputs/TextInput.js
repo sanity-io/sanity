@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
 import warnOnNativeBoolProps from '../utilities/warnOnNativeBoolProps'

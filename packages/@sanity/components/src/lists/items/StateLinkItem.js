@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/lists/items/default-style'
 import {StateLink} from 'part:@sanity/base/router'
 

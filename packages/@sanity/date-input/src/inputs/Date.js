@@ -1,6 +1,7 @@
 import moment from 'moment-timezone'
 import {uniqueId} from 'lodash'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Kronos from 'react-kronos'
 import FormField from 'part:@sanity/components/formfields/default'
 import styles from './Date.css'

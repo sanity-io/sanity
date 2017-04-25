@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Observable from '@sanity/observable/minimal'
 
 // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever

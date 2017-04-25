@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'

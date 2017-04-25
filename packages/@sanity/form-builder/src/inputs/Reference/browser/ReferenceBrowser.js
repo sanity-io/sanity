@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Preview from '../../../Preview'
 import InInputButton from 'part:@sanity/components/buttons/in-input' //eslint-disable-line

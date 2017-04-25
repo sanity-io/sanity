@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow
-import React, {PropTypes} from 'react'
+import React from 'react'
 import {omit} from 'lodash'
 import type {RouterProviderContext} from './types'
 

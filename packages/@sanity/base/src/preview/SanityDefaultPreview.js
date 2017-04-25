@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
 import PreviewComponentDefault from 'part:@sanity/components/previews/default'

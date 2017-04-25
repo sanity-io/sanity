@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {throttle, union} from 'lodash'
 import store from 'part:@sanity/base/datastore/document'
 import shallowEquals from 'shallow-equals'

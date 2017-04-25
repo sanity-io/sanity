@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/textareas/default-style'
 import IoAndroidClose from 'part:@sanity/base/close-icon'
 

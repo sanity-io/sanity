@@ -1,5 +1,6 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import styles from './styles/ManageInvalidValue.css'
 import PatchEvent, {unset} from '../../PatchEvent'

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import styles from './MediaRender.css'
 

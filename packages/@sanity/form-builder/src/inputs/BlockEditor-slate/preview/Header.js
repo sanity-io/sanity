@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from '../styles/contentStyles/Header.css'
 
 function Header(props) {

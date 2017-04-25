@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 
 export default class ItemForm extends React.PureComponent {

@@ -28,7 +28,6 @@
     "hashlru": "^2.1.0",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
-    "react-click-outside": "^2.2.0",
     "react-json-inspector": "^7.0.0"
   },
   "devDependencies": {
@@ -40,9 +39,9 @@
     "babel-plugin-lodash": "^3.2.11",
     "history": "^4.5.1",
     "postcss-cssnext": "^2.10.0",
-    "react": "^15.4.2",
-    "react-click-outside": "^2.2.0",
-    "react-dom": "^15.4.2",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "rimraf": "^2.6.1"
   },
   "repository": {

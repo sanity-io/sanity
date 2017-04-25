@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import {uniqueId} from 'lodash'
 import PatchEvent, {set, unset} from '../../PatchEvent'

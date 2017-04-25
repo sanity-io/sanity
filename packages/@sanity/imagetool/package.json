@@ -30,9 +30,10 @@
     "history": "^4.5.1",
     "mocha": "^3.2.0",
     "node-sass": "^3.10.0",
+    "prop-types": "^15.5.8",
     "quickreload": "^2.1.2",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
     "rimraf": "^2.6.1",
@@ -40,7 +41,8 @@
     "staticr": "^4.0.2"
   },
   "peerDependencies": {
-    "react": "^15.3"
+    "prop-types": ">=15.3",
+    "react": ">=15.3"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'

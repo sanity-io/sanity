@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 /* eslint-disable import/no-extraneous-dependencies */
-import React, {PropTypes} from 'react'
+import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'

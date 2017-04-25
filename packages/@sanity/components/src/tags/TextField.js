@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {uniqueId} from 'lodash'
 
 import styles from 'part:@sanity/components/tags/textfield-style'

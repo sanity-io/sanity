@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styles from 'part:@sanity/components/edititem/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import CloseIcon from 'part:@sanity/base/close-icon'

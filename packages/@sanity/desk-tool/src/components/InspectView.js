@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import './styles/JSONInspector.css'
 import styles from './styles/InspectView.css'
 import JSONInspector from 'react-json-inspector'

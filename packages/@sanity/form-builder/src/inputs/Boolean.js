@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'

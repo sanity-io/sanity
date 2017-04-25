@@ -19,7 +19,8 @@
     "@sanity/google-maps-input": "^0.104.42",
     "@sanity/server": "^0.104.34",
     "@sanity/storybook": "^0.104.34",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.0"
   }
 }

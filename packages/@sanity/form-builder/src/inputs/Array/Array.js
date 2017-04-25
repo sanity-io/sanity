@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 //@flow weak
-import React, {PropTypes} from 'react'
+import React from 'react'
 import {get} from 'lodash'
 import humanizeList from 'humanize-list'
 

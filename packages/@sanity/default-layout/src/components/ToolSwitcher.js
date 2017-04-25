@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {StateLink} from 'part:@sanity/base/router'
 import styles from './styles/ToolSwitcher.css'
 import PluginIcon from 'part:@sanity/base/plugin-icon'

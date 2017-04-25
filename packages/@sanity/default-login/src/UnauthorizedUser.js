@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import userStore from 'part:@sanity/base/user'
 import Button from 'part:@sanity/components/buttons/default'

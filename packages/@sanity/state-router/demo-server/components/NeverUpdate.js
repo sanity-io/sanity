@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import ProductCounter from './ProductCounter'
 
 export default class NeverUpdate extends React.Component {

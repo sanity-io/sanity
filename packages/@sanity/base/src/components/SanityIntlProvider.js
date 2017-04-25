@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import {addLocaleData, IntlProvider} from 'part:@sanity/base/locale/intl'
 import {IntlWrapper} from 'part:@sanity/base/locale/formatters'
@@ -74,8 +75,8 @@ class SanityIntlProvider extends React.Component {
 }
 
 SanityIntlProvider.propTypes = {
-  children: React.PropTypes.node,
-  supportedLanguages: React.PropTypes.arrayOf(React.PropTypes.string)
+  children: PropTypes.node,
+  supportedLanguages: PropTypes.arrayOf(PropTypes.string)
 }
 
 export default SanityIntlProvider

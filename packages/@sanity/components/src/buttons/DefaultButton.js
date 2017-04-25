@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Ink from 'react-ink'
 import styles from 'part:@sanity/components/buttons/default-style'
 import Spinner from 'part:@sanity/components/loading/spinner'

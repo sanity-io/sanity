@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'

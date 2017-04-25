@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import PatchEvent, {set} from '../../PatchEvent'
 
 export default class GeopointInput extends React.Component {

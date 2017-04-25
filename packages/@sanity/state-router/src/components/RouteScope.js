@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types'
 // @flow
-import React, {PropTypes, Element} from 'react'
+import React, { Element } from 'react';
 import isEmpty from '../utils/isEmpty'
 
 import type {RouterProviderContext, NavigateOptions, InternalRouter} from './types'
