@@ -158,10 +158,7 @@ export default class FileInput extends React.PureComponent {
     const {
       type,
       level,
-      value,
-      upload,
-      onChange,
-      ...rest
+      value
     } = this.props
 
     let progressClasses = ''
