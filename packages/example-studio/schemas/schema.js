@@ -142,8 +142,23 @@ export default createSchema({
         },
         {
           name: 'arrayOfStrings',
-          title: 'Array of strings',
+          title: 'Array of strings (sortable)',
           type: 'array',
+          options: {
+            sortable: true
+          },
+          of: [
+            {type: 'string'}
+          ]
+        },
+
+        {
+          name: 'arrayOfStringsNonSortable',
+          title: 'Array of strings (not sortable)',
+          type: 'array',
+          options: {
+            sortable: false
+          },
           of: [
             {type: 'string'}
           ]
