@@ -15,7 +15,3 @@
   }
 
 }
-
-.selected {
-  composes: selected from './PaneItem.css';
-}
