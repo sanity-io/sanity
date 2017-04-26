@@ -40,7 +40,6 @@
   top: 0;
   right: var(--small-padding);
   position: absolute;
-  z-index: 1;
   font-size: var(--font-size-small);
 }
 
