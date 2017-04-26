@@ -150,13 +150,13 @@ module.exports = function createDocumentStore({serverConnection}) {
     patch: patchDoc,
     delete: deleteDoc,
     createOrReplace: TODO('Not implemented yet'),
-    createIfNotExists: TODO('Not implemented yet'),
+    createIfNotExists: createIfNotExists,
   }
 
   function patchDoc(documentId, patches) {
-    return checkout(documentId)
-      .patch(patches)
-      .commit()
+    const doc = checkout(documentId)
+    doc.patch(patches)
+    return doc.commit()
   }
 
   function deleteDoc(documentId) {
@@ -190,5 +190,8 @@ module.exports = function createDocumentStore({serverConnection}) {
 
   function create(document) {
     return Observable.from(serverConnection.create(document))
+  }
+  function createIfNotExists(document) {
+    return Observable.from(serverConnection.createIfNotExists(document))
   }
 }

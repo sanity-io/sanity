@@ -51,6 +51,9 @@ const serverConnection = {
 
   create(doc) {
     return Observable.from(client.observable.create(doc))
+  },
+  createIfNotExists(doc) {
+    return Observable.from(client.observable.createIfNotExists(doc))
   }
 }
 

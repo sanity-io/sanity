@@ -9,6 +9,8 @@ import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import UndoIcon from 'part:@sanity/base/undo-icon'
+import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 import styles from './styles/Editor.css'
 import copyDocument from '../utils/copyDocument'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
@@ -16,6 +18,7 @@ import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import dataAspects from '../utils/dataAspects'
 import {debounce} from 'lodash'
+import gradientPatchAdapter from '@sanity/form-builder/src/sanity/utils/gradientPatchAdapter'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -31,26 +34,47 @@ function getInitialState() {
   return {
     inspect: false,
     isMenuOpen: false,
+    isCreatingDraft: false,
     showSavingStatus: false
   }
 }
 
-const menuItems = [
-  {
-    title: 'Duplicate',
-    icon: ContentCopyIcon,
-    action: 'duplicate',
-    key: 'duplicate'
-  },
-  {
-    title: 'Delete',
-    icon: TrashIcon,
-    action: 'delete',
-    key: 'delete',
-    divider: true,
-    danger: true
-  }
-]
+function isDraft(document) {
+  return document._id.startsWith('drafts.')
+}
+const MENU_ITEM_DUPLICATE = {
+  action: 'duplicate',
+  title: 'Duplicate',
+  icon: ContentCopyIcon,
+}
+
+const MENU_ITEM_DISCARD = {
+  action: 'discard',
+  title: 'Discard changes…',
+  icon: UndoIcon,
+  divider: true
+}
+const MENU_ITEM_UNPUBLISH = {
+  action: 'unpublish',
+  title: 'Unpublish…',
+  icon: UnpublishIcon,
+  divider: true
+}
+
+const MENU_ITEM_DELETE = {
+  action: 'delete',
+  title: 'Delete…',
+  icon: TrashIcon,
+  divider: true,
+  danger: true
+}
+
+const getMenuItems = document => ([
+  MENU_ITEM_DUPLICATE,
+  isDraft(document) && MENU_ITEM_DISCARD,
+  MENU_ITEM_UNPUBLISH,
+  MENU_ITEM_DELETE
+]).filter(Boolean)
 
 export default withRouterHOC(class Editor extends React.PureComponent {
   static propTypes = {
@@ -83,10 +107,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   state = getInitialState()
-
-  serialize(value) {
-    return value.serialize()
-  }
 
   componentDidMount() {
     this.unlistenForKey = listen(window, 'keypress', event => {
@@ -143,9 +163,60 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
   handleCreateCopy = () => {
     const {router, value} = this.props
-    documentStore.create(copyDocument(value.serialize())).subscribe(copied => {
+    documentStore.create(copyDocument(value)).subscribe(copied => {
       router.navigate({...router.state, action: 'edit', selectedDocumentId: copied._id})
     })
+  }
+
+  createDraft = () => {
+    const {value} = this.props
+    return {
+      _id: `drafts.${value._id}`,
+      ...copyDocument(value)
+    }
+  }
+
+  discardDraft = () => {
+    const {value} = this.props
+    return {
+      _id: `drafts.${value._id}`,
+      ...copyDocument(value)
+    }
+  }
+
+  deletePublished = () => {
+    const {value} = this.props
+    return {
+      _id: `drafts.${value._id}`,
+      ...copyDocument(value)
+    }
+  }
+
+  unpublish = () => {
+    const {value} = this.props
+    return {
+      _id: `drafts.${value._id}`,
+      ...copyDocument(value)
+    }
+  }
+
+  handleChange = changeEvent => {
+    const {value, router, onChange} = this.props
+    if (isDraft(value)) {
+      onChange(changeEvent)
+      return
+    }
+    const draftDocument = this.createDraft()
+    this.setState({isCreatingDraft: true})
+    documentStore.createIfNotExists(draftDocument)
+      .mergeMap(result => {
+        return documentStore.patch(draftDocument._id, gradientPatchAdapter.fromFormBuilder(changeEvent.patches))
+      })
+      .subscribe(copied => {
+        router.navigate({...router.state, action: 'edit', selectedDocumentId: draftDocument._id})
+        this.setState({isCreatingDraft: false})
+      })
+
   }
 
   handleRestore = () => {
@@ -176,9 +247,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   render() {
-    const {value, type, documentId, onChange, isLoading, isDeleted, isDeleting} = this.props
+    const {value, type, isLoading, isDeleted, isDeleting} = this.props
 
-    const {inspect, referringDocuments, showSavingStatus} = this.state
+    const {inspect, referringDocuments, isCreatingDraft, showSavingStatus} = this.state
 
     if (isLoading) {
       return (
@@ -206,9 +277,15 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     }
 
     const titleProp = dataAspects.getItemDisplayField(type.name)
+    const _isDraft = isDraft(value)
 
     return (
       <div className={styles.root}>
+        {isCreatingDraft && (
+          <div className={styles.creatingDraftOverlay}>
+            <Spinner fullscreen message="Making changes..." />
+          </div>
+        )}
         <div className={styles.top}>
           <div className={styles.functions}>
             <div className={styles.menuContainer}>
@@ -223,7 +300,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
                   opened={this.state.isMenuOpen}
                   onClose={this.handleMenuClose}
                   onClickOutside={this.handleMenuClose}
-                  items={menuItems}
+                  items={getMenuItems(value)}
                   origin="top-right"
                 />
               </div>
@@ -232,13 +309,20 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <h1 className={styles.heading}>
             {titleProp && String(value[titleProp] || 'Untitled…')}
           </h1>
-
+          <div>
+            <div>Created {value._createdAt}</div>
+            <div>{_isDraft ? `Draft last saved ${value._updatedAt}` : `Last published ${value._updatedAt}`}</div>
+          </div>
+          <div>
+            {_isDraft && (
+              <Button>Publish</Button>
+            )}
+          </div>
           {
             isDeleting && (
               <div className={styles.savingStatus}>Deleting…</div>
             )
           }
-
           {
             showSavingStatus && (
               <div className={styles.savingStatus}>
@@ -254,13 +338,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             )
           }
         </div>
-
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
-            key={documentId}
             value={value}
             type={type}
-            onChange={onChange}
+            onChange={this.handleChange}
           />
         </form>
 

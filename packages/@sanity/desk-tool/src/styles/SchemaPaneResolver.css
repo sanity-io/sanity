@@ -106,6 +106,10 @@
   }
 }
 
+.draftItem {
+  background-color: #fefbcf;
+}
+
 .editorContainer {
   max-width: 100%;
   box-sizing: border-box;

@@ -11,20 +11,8 @@
 
   "parts": [
     {
-      "name": "part:@sanity/desk-tool/pane-resolver",
-      "description": "Function that resolves the different panes in the desk tool"
-    },
-    {
-      "implements": "part:@sanity/desk-tool/pane-resolver",
-      "path": "SchemaPaneResolver.js"
-    },
-    {
       "implements": "part:@sanity/base/tool",
       "path": "index.js"
-    },
-    {
-      "name": "part:@sanity/desk-tool/pane",
-      "path": "pane/Pane.js"
     }
   ]
 }
