@@ -9,7 +9,7 @@
   font-size: var(--font-size-small);
   user-select: none;
   text-align: left;
-  z-index: 1;
+  z-index: var(--zindex-dropdown);
 }
 
 .fullWidth {
