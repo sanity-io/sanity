@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Pane from 'part:@sanity/desk-tool/pane'
+import DocumentsPane from './pane/DocumentsPane'
 import TypePane from './pane/TypePane'
 import EditorPane from './pane/EditorPane'
 import TypePaneItem from './pane/TypePaneItem.js'
@@ -15,6 +15,8 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import {DRAFTS_FOLDER, getPublishedId, isDraft, newDraftFrom} from './utils/draftUtils'
+import {keyBy} from 'lodash'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -29,6 +31,14 @@ function debounceRAF(fn) {
     scheduled = args
   }
 }
+
+// Removes published documents that also has a draft
+// Todo: this is an ugly hack we should get rid of as it requires the whole set of documents to be in memory to work
+function removePublishedWithDrafts(documents) {
+  const drafts = keyBy(documents.filter(isDraft), draft => getPublishedId(draft._id))
+  return documents.filter(doc => !(doc._id in drafts))
+}
+
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -47,8 +57,8 @@ function isCreate(routerState) {
   return routerState.action === 'create' && !routerState.selectedDocumentId
 }
 
-function getListItemKey(item) {
-  return item._id
+function getDocumentKey(document) {
+  return document._id
 }
 
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {
@@ -107,10 +117,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   doCreate(router) {
     const {selectedType} = router.state
-    documentStore.create({_type: selectedType})
+    documentStore.create(newDraftFrom({_type: selectedType}))
       .subscribe(document => {
         router.navigate({
-          selectedDocumentId: document._id,
+          selectedDocumentId: getPublishedId(document._id),
           selectedType: selectedType,
           action: 'edit'
         }, {replace: true})
@@ -130,12 +140,16 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     )
   }
 
-  renderDocumentPaneItem = (item, index, options) => {
+  renderDocumentPaneItem = (item, index, options = {}) => {
     const {selectedType} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
-    const linkState = {selectedDocumentId: item._id, selectedType: type.name, action: 'edit'}
-    return (
+    const linkState = {
+      selectedDocumentId: getPublishedId(item._id),
+      selectedType: type.name,
+      action: 'edit'
+    }
+    const element = (
       <StateLinkListItem
         state={linkState}
         highlighted={options.isHighlighted}
@@ -149,13 +163,17 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
         />
       </StateLinkListItem>
     )
+    return item.isDraft ? <div className={styles.draftItem}>{element}</div> : element
   }
 
   getDocumentsPane(schemaType) {
-    const query = `*[is $type] | order(${this.state.sorting}) [0...3000] {_id, _type}`
-    // const query = '*[is $type] [0...2000] {_id, _type}'
-    const params = {type: schemaType.name}
-
+    const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
+    const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {
+  _id,
+  _type,
+  "isDraft": (_id in path($draftsPath)),
+  "isPublished": !(_id in path($draftsPath))
+}`
     return (
       <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
         {({result, loading, error, type, listLayout}) => {
@@ -174,14 +192,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
             this.handleResize()
           }
 
-          const items = result ? result.documents : []
+          const documents = removePublishedWithDrafts(result ? result.documents : [])
           return (
-            <Pane
-              contentType="documents"
+            <DocumentsPane
               type={type}
               loading={loading}
-              items={items}
-              getItemKey={getListItemKey}
+              items={documents}
+              getItemKey={getDocumentKey}
               renderItem={this.renderDocumentPaneItem}
               onSetListLayout={this.handleSetListLayout}
               onSetSorting={this.handleSetSort}
@@ -192,7 +209,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
       </QueryContainer>
     )
   }
-
 
   handleSetListLayout = listLayout => {
     const {selectedType} = this.props.router.state
@@ -395,8 +411,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           {selectedType && !schemaType && (
             <h2 className={styles.emptyText}>
               Could not find any type
-               named <strong><em>{selectedType}</em></strong> in
-               schema <strong><em>{schema.name}</em></strong>…
+              named <strong><em>{selectedType}</em></strong> in
+              schema <strong><em>{schema.name}</em></strong>…
             </h2>
           )}
           {!selectedType && (

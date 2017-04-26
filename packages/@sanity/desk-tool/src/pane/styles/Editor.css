@@ -3,6 +3,14 @@
 .root {
 }
 
+.overlay {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  height: 100%;
+  width: 100%;
+  z-index: 200;
+}
+
 .editor {
   display: block;
 
@@ -10,7 +18,7 @@
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
     position: absolute;
-    top: 4rem;
+    top: 6rem;
     left: 0;
     padding-left: var(--large-padding);
     padding-right: var(--large-padding);
@@ -24,11 +32,15 @@
 }
 
 .savingStatus {
+  opacity: 0.5;
+}
+
+.publishButton {
   position: absolute;
   top: 0.3rem;
-  right: 4rem;
-  line-height: 2.3rem;
-  opacity: 0.5;
+  right: 3rem;
+  font-size: 0.9rem;
+  line-height: 2rem;
 }
 
 .spinner {
@@ -38,14 +50,12 @@
 }
 
 .functions {
-  top: 0;
-  right: var(--small-padding);
-  position: absolute;
   font-size: var(--font-size-small);
 }
 
 .top {
   composes: top from './Pane.css';
+  margin-bottom: 0;
   margin-left: var(--medium-padding);
 }
 
@@ -59,4 +69,16 @@
 
 .menuButton {
   composes: menuButton from './Pane.css';
+}
+
+.dates {
+  color: #aaaaaa;
+  margin-left: 1rem;
+  padding-right: 1rem;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
 }
