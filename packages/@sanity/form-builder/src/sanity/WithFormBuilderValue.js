@@ -2,13 +2,12 @@ import PropTypes from 'prop-types'
 // @flow weak
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
-import documentStore from 'part:@sanity/base/datastore/document'
 import FormBuilder from 'part:@sanity/form-builder'
 import {throttle} from 'lodash'
 import subscriptionManager from '../utils/subscriptionManager'
 import schema from 'part:@sanity/base/schema'
-import gradientPatchAdapter from './utils/gradientPatchAdapter'
 import PatchEvent from '../PatchEvent'
+import {checkout} from './formBuilderValueStore'
 
 function getInitialState() {
   return {
@@ -16,7 +15,7 @@ function getInitialState() {
     isSaving: false,
     isDeleted: false,
     value: null,
-    snapshot: null
+    deletedSnapshot: null
   }
 }
 
@@ -37,10 +36,16 @@ export default class WithFormBuilderValue extends React.PureComponent {
 
   state = getInitialState();
 
-  checkoutDocument(documentId) {
-    this.document = documentStore.checkout(documentId)
+  getChildContext() {
+    return {
+      formBuilder: FormBuilder.context
+    }
+  }
 
-    this.subscriptions.replace('documentEvents', this.document.events
+  checkoutDocument(documentId) {
+    this.document = checkout(documentId)
+
+    this.subscriptions.replace('documentEvents', document.events
       .subscribe({
         next: this.handleDocumentEvent,
         // error: this.handleDocumentError
@@ -96,12 +101,10 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }
 
   handleIncomingMutationEvent(event) {
-    const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
-
     // Broadcast incoming patches to input components that applies patches on their own
     // Note: This is *experimental*
     FormBuilder.receivePatches({
-      patches: gradientPatchAdapter.toFormBuilder(event.origin, patches),
+      patches: event.patches,
       snapshot: event.document
     })
 
@@ -112,6 +115,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
       value: event.document
     })
   }
+
   commit = throttle(() => {
     this.setState({isSaving: true})
     this.subscriptions.replace('commit', this.document.commit().subscribe({
@@ -129,7 +133,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }, 1000, {leading: true, trailing: true})
 
   handleChange = (event : PatchEvent) => {
-    this.document.patch(gradientPatchAdapter.fromFormBuilder(event.patches))
+    this.document.patch(event.patches)
     this.commit()
   }
 
@@ -141,12 +145,6 @@ export default class WithFormBuilderValue extends React.PureComponent {
   handleCreate = document => {
     this.document.create(document)
     this.commit()
-  }
-
-  getChildContext() {
-    return {
-      formBuilder: FormBuilder.context
-    }
   }
 
   render() {

@@ -139,8 +139,6 @@ function createBufferedDocument(documentId, server) {
 
 module.exports = function createDocumentStore({serverConnection}) {
 
-  const RECORDS_CACHE = createCache()
-
   return {
     byId,
     byIds,
@@ -150,13 +148,13 @@ module.exports = function createDocumentStore({serverConnection}) {
     patch: patchDoc,
     delete: deleteDoc,
     createOrReplace: TODO('Not implemented yet'),
-    createIfNotExists: TODO('Not implemented yet'),
+    createIfNotExists: createIfNotExists,
   }
 
   function patchDoc(documentId, patches) {
-    return checkout(documentId)
-      .patch(patches)
-      .commit()
+    const doc = checkout(documentId)
+    doc.patch(patches)
+    return doc.commit()
   }
 
   function deleteDoc(documentId) {
@@ -170,7 +168,7 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function checkout(documentId) {
-    return RECORDS_CACHE.fetch(documentId, () => createBufferedDocument(documentId, serverConnection))
+    return createBufferedDocument(documentId, serverConnection)
   }
 
   function byIds(documentIds) {
@@ -190,5 +188,8 @@ module.exports = function createDocumentStore({serverConnection}) {
 
   function create(document) {
     return Observable.from(serverConnection.create(document))
+  }
+  function createIfNotExists(document) {
+    return Observable.from(serverConnection.createIfNotExists(document))
   }
 }
