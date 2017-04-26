@@ -1,6 +1,6 @@
 {
   "name": "@sanity/state-router",
-  "version": "0.104.43",
+  "version": "0.104.44",
   "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
@@ -39,8 +39,8 @@
     "history": "^4.5.1",
     "in-publish": "^2.0.0",
     "object-inspect": "^1.2.1",
-    "quickreload": "^2.1.2",
     "prop-types": "^15.5.8",
+    "quickreload": "^2.1.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "rebundler": "^0.3.0",

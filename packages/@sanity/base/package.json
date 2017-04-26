@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.104.43",
+  "version": "0.104.44",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -25,11 +25,11 @@
   },
   "homepage": "https://github.com/sanity-io/base#readme",
   "dependencies": {
-    "@sanity/client": "^0.104.40",
-    "@sanity/document-store": "^0.104.34",
-    "@sanity/observable": "^0.104.30",
-    "@sanity/schema": "^0.104.43",
-    "@sanity/state-router": "^0.104.43",
+    "@sanity/client": "^0.104.44",
+    "@sanity/document-store": "^0.104.44",
+    "@sanity/observable": "^0.104.44",
+    "@sanity/schema": "^0.104.44",
+    "@sanity/state-router": "^0.104.44",
     "history": "^4.5.1",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
@@ -42,14 +42,14 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.104.34",
+    "@sanity/check": "^0.104.44",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "eslint": "^3.18.0",
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
-    "proxyquire": "^1.7.10",
     "prop-types": "^15.5.8",
+    "proxyquire": "^1.7.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "rimraf": "^2.6.1"
