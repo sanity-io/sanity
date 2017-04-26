@@ -12,11 +12,12 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
 function defaultSlugify(type, text) {
+  const maxLength = (type.options && type.options.maxLength) || 200
   return (text || '').toString().toLowerCase()
     .replace(/\s+/g, '-')           // Replace spaces with -
     .replace(/[^\w-]+/g, '')       // Remove all non-word chars
     .replace(/--+/g, '-')         // Replace multiple - with single -
-    .substring(0, type.options.maxLength)
+    .substring(0, maxLength)
 }
 
 function tryPromise(fn) {
@@ -138,7 +139,7 @@ export default class SlugInput extends React.Component {
       return text
     }
     const {type, slugifyFn} = this.props
-    if (type.options.slugifyFn) {
+    if (type.options && type.options.slugifyFn) {
       return type.options.slugifyFn(type, text, slugifyFn)
     }
     if (slugifyFn) {
@@ -162,7 +163,7 @@ export default class SlugInput extends React.Component {
     // If slug is set to auto and the source field has changed,
     // verify and set the new slug if it is different from the current one
     let newCurrent
-    if (value.auto) {
+    if (value.auto && type.options && type.options.source) {
       const newFromSource = document[type.options.source]
       newCurrent = this.slugify(newFromSource)
     }
@@ -210,7 +211,7 @@ export default class SlugInput extends React.Component {
 
   render() {
     const {value, type, validation, level} = this.props
-    const hasSourceField = type.options.source
+    const hasSourceField = type.options && type.options.source
     const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
@@ -220,6 +221,7 @@ export default class SlugInput extends React.Component {
     }
 
     const inputId = uniqueId('FormBuilderSlug')
+    const isAuto = type.options && type.options.source && value.auto
     return (
       <DefaultFormField {...formFieldProps}>
         { validationError && (
@@ -228,7 +230,7 @@ export default class SlugInput extends React.Component {
         <div className={InInputStyles.wrapper}>
           <DefaultTextInput
             id={inputId}
-            disabled={value.auto}
+            isDisabled={isAuto}
             placeholder={type.placeholder}
             onChange={this.handleChange}
             value={typeof inputText === 'string' ? inputText : value.current}

@@ -5,7 +5,7 @@ import {SlugInput} from '../../index'
 
 // Default slugify for Sanity
 export function sanitySlugify(type, slugSourceText, finalize = false) {
-  const maxLength = type.options.maxLength || 200
+  const maxLength = (type.options && type.options.maxLength) || 200
   const slugifyOpts = {truncate: maxLength, symbols: true}
   if (slugSourceText) {
     return slugify(slugSourceText, slugifyOpts)
