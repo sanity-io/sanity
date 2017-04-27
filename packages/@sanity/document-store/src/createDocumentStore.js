@@ -139,8 +139,6 @@ function createBufferedDocument(documentId, server) {
 
 module.exports = function createDocumentStore({serverConnection}) {
 
-  const RECORDS_CACHE = createCache()
-
   return {
     byId,
     byIds,
@@ -170,7 +168,7 @@ module.exports = function createDocumentStore({serverConnection}) {
   }
 
   function checkout(documentId) {
-    return RECORDS_CACHE.fetch(documentId, () => createBufferedDocument(documentId, serverConnection))
+    return createBufferedDocument(documentId, serverConnection)
   }
 
   function byIds(documentIds) {

@@ -112,20 +112,10 @@
   }
 }
 
-.listContainer {
-  composes: listContainer from './Pane.css';
-  height: 100%;
-}
-
-.item {
-  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
-}
-
 .top {
-  composes: top from './Pane.css';
-  display: flex;
-}
-
-.heading {
-  composes: heading from './Pane.css';
+  height: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--component-border-color);
+  margin-bottom: var(--medium-padding);
 }

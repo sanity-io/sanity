@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
-import documentStore from 'part:@sanity/base/datastore/document'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
+import ConfirmPublish from '../components/ConfirmPublish'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
@@ -17,8 +17,8 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import dataAspects from '../utils/dataAspects'
-import {debounce} from 'lodash'
-import gradientPatchAdapter from '@sanity/form-builder/src/sanity/utils/gradientPatchAdapter'
+import {debounce, truncate} from 'lodash'
+import moment from 'moment'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -35,13 +35,11 @@ function getInitialState() {
     inspect: false,
     isMenuOpen: false,
     isCreatingDraft: false,
-    showSavingStatus: false
+    showSavingStatus: false,
+    showConfirmPublish: false
   }
 }
 
-function isDraft(document) {
-  return document._id.startsWith('drafts.')
-}
 const MENU_ITEM_DUPLICATE = {
   action: 'duplicate',
   title: 'Duplicate',
@@ -69,17 +67,17 @@ const MENU_ITEM_DELETE = {
   danger: true
 }
 
-const getMenuItems = document => ([
+const getMenuItems = (draft, published) => ([
   MENU_ITEM_DUPLICATE,
-  isDraft(document) && MENU_ITEM_DISCARD,
-  MENU_ITEM_UNPUBLISH,
-  MENU_ITEM_DELETE
+  draft && MENU_ITEM_DISCARD,
+  published && MENU_ITEM_UNPUBLISH,
+  published && MENU_ITEM_DELETE
 ]).filter(Boolean)
 
 export default withRouterHOC(class Editor extends React.PureComponent {
   static propTypes = {
-    documentId: PropTypes.string.isRequired,
-    value: PropTypes.object,
+    draft: PropTypes.object,
+    published: PropTypes.object,
     type: PropTypes.object.isRequired,
     router: PropTypes.shape({
       state: PropTypes.object
@@ -87,7 +85,13 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     onDelete: PropTypes.func,
     onCreate: PropTypes.func,
     onChange: PropTypes.func,
+    onDiscardDraft: PropTypes.func,
 
+    isCreatingDraft: PropTypes.bool,
+    isUnpublishing: PropTypes.bool,
+    isPublishing: PropTypes.bool,
+    onPublish: PropTypes.bool,
+    onUnpublish: PropTypes.bool,
     isDeleted: PropTypes.bool,
     isLoading: PropTypes.bool,
     isSaving: PropTypes.bool,
@@ -98,7 +102,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   static defaultProps = {
     isLoading: false,
     isSaving: false,
-    isDeleting: false,
+    isUnpublishing: false,
+    isPublishing: false,
+    isCreatingDraft: false,
     isDeleted: false,
     deletedSnapshot: null,
     onDelete() {},
@@ -150,11 +156,12 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleRequestDelete = () => {
-    this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId})
-      .subscribe({
-        next: this.handleReferenceResult,
-        error: this.handleReferenceError
-      })
+
+    // this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId})
+    //   .subscribe({
+    //     next: this.handleReferenceResult,
+    //     error: this.handleReferenceError
+    //   })
   }
 
   handleCancelDeleteRequest = () => {
@@ -162,61 +169,23 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleCreateCopy = () => {
-    const {router, value} = this.props
-    documentStore.create(copyDocument(value)).subscribe(copied => {
+    const {router, draft, published} = this.props
+    documentStore.create(copyDocument(draft || published)).subscribe(copied => {
       router.navigate({...router.state, action: 'edit', selectedDocumentId: copied._id})
     })
   }
 
   createDraft = () => {
-    const {value} = this.props
+    const {published} = this.props
     return {
-      _id: `drafts.${value._id}`,
-      ...copyDocument(value)
-    }
-  }
-
-  discardDraft = () => {
-    const {value} = this.props
-    return {
-      _id: `drafts.${value._id}`,
-      ...copyDocument(value)
-    }
-  }
-
-  deletePublished = () => {
-    const {value} = this.props
-    return {
-      _id: `drafts.${value._id}`,
-      ...copyDocument(value)
-    }
-  }
-
-  unpublish = () => {
-    const {value} = this.props
-    return {
-      _id: `drafts.${value._id}`,
-      ...copyDocument(value)
+      _id: `drafts.${published._id}`,
+      ...copyDocument(published)
     }
   }
 
   handleChange = changeEvent => {
-    const {value, router, onChange} = this.props
-    if (isDraft(value)) {
-      onChange(changeEvent)
-      return
-    }
-    const draftDocument = this.createDraft()
-    this.setState({isCreatingDraft: true})
-    documentStore.createIfNotExists(draftDocument)
-      .mergeMap(result => {
-        return documentStore.patch(draftDocument._id, gradientPatchAdapter.fromFormBuilder(changeEvent.patches))
-      })
-      .subscribe(copied => {
-        router.navigate({...router.state, action: 'edit', selectedDocumentId: draftDocument._id})
-        this.setState({isCreatingDraft: false})
-      })
-
+    const {onChange} = this.props
+    onChange(changeEvent)
   }
 
   handleRestore = () => {
@@ -235,10 +204,29 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isMenuOpen: false
     })
   }
+  handlePublishButtonClick = () => {
+    this.setState({showConfirmPublish: true})
+  }
+
+  handleCancelConfirmPublish = () => {
+    this.setState({showConfirmPublish: false})
+  }
+
+  handleConfirmPublish = () => {
+    const {onPublish, draft} = this.props
+    onPublish(draft)
+    this.setState({showConfirmPublish: false})
+  }
 
   handleMenuClick = item => {
     if (item.action === 'delete') {
       this.handleRequestDelete()
+    }
+    if (item.action === 'discard') {
+      this.props.onDiscardDraft()
+    }
+    if (item.action === 'unpublish') {
+      this.props.onUnpublish()
     }
 
     if (item.action === 'duplicate') {
@@ -247,9 +235,20 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   render() {
-    const {value, type, isLoading, isDeleted, isDeleting} = this.props
+    const {
+      draft,
+      published,
+      type,
+      isLoading,
+      isDeleted,
+      isPublishing,
+      isUnpublishing,
+      isDeleting,
+      isCreatingDraft
+    } = this.props
 
-    const {inspect, referringDocuments, isCreatingDraft, showSavingStatus} = this.state
+    const {inspect, referringDocuments, showSavingStatus, showConfirmPublish} = this.state
+    const value = draft || published
 
     if (isLoading) {
       return (
@@ -277,16 +276,38 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     }
 
     const titleProp = dataAspects.getItemDisplayField(type.name)
-    const _isDraft = isDraft(value)
 
     return (
       <div className={styles.root}>
         {isCreatingDraft && (
-          <div className={styles.creatingDraftOverlay}>
-            <Spinner fullscreen message="Making changes..." />
+          <div className={styles.overlay}>
+            <Spinner fullscreen message="Making changes…" />
+          </div>
+        )}
+        {isDeleting && (
+          <div className={styles.overlay}>
+            <Spinner fullscreen message="Deleting…" />
+          </div>
+        )}
+        {isPublishing && (
+          <div className={styles.overlay}>
+            <Spinner fullscreen message="Publishing…" />
+          </div>
+        )}
+        {isUnpublishing && (
+          <div className={styles.overlay}>
+            <Spinner fullscreen message="Unpublishing…" />
           </div>
         )}
         <div className={styles.top}>
+          <h1 className={styles.heading}>
+            {titleProp && truncate(String(value[titleProp] || 'Untitled…'), {length: 50})}
+          </h1>
+          {draft && (
+            <div className={styles.publishButton}>
+              <Button onClick={this.handlePublishButtonClick} color="primary">Publish</Button>
+            </div>
+          )}
           <div className={styles.functions}>
             <div className={styles.menuContainer}>
               <div className={styles.menuButton}>
@@ -300,47 +321,30 @@ export default withRouterHOC(class Editor extends React.PureComponent {
                   opened={this.state.isMenuOpen}
                   onClose={this.handleMenuClose}
                   onClickOutside={this.handleMenuClose}
-                  items={getMenuItems(value)}
+                  items={getMenuItems(draft, published)}
                   origin="top-right"
                 />
               </div>
             </div>
           </div>
-          <h1 className={styles.heading}>
-            {titleProp && String(value[titleProp] || 'Untitled…')}
-          </h1>
-          <div>
-            <div>Created {value._createdAt}</div>
-            <div>{_isDraft ? `Draft last saved ${value._updatedAt}` : `Last published ${value._updatedAt}`}</div>
-          </div>
-          <div>
-            {_isDraft && (
-              <Button>Publish</Button>
-            )}
-          </div>
-          {
-            isDeleting && (
-              <div className={styles.savingStatus}>Deleting…</div>
-            )
-          }
-          {
-            showSavingStatus && (
-              <div className={styles.savingStatus}>
-                <span className={styles.spinner}><Spinner /></span> Saving…
-              </div>
-            )
-          }
-          {
-            !showSavingStatus && (
-              <div className={styles.savingStatus}>
-                ✓ Saved
-              </div>
-            )
-          }
+        </div>
+        <div className={styles.dates}>
+          <div>Created {moment((published || draft)._createdAt).fromNow()}</div>
+          <div>{published ? `Published ${moment(published._updatedAt).fromNow()}` : 'Not published'}</div>
+          {showSavingStatus && (
+            <div className={styles.savingStatus}>
+              <span className={styles.spinner}><Spinner /></span> Saving…
+            </div>
+          )}
+          {!showSavingStatus && (
+            <div className={styles.savingStatus}>
+              ✓ Saved {/*{moment(value._updatedAt).fromNow()} */}
+            </div>
+          )}
         </div>
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
-            value={value}
+            value={draft || published}
             type={type}
             onChange={this.handleChange}
           />
@@ -358,6 +362,14 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             documents={referringDocuments}
             currentValue={value}
             onCancel={this.handleCancelDeleteRequest}
+          />
+        )}
+        {showConfirmPublish && (
+          <ConfirmPublish
+            draft={draft}
+            published={published}
+            onCancel={this.handleCancelConfirmPublish}
+            onConfirm={this.handleConfirmPublish}
           />
         )}
       </div>
