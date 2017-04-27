@@ -25,7 +25,7 @@ export function search(textTerm, referenceType) {
     .map(fieldName => `${fieldName} match $term`)
 
   // todo: see if its possible to use selection from previews here
-  const query = `*[(${typeConstraints.join(' || ')}) && (${stringConstraints.join(' || ')})]`
+  const query = `*[!(_id in path('drafts.**')) && (${typeConstraints.join(' || ')}) && (${stringConstraints.join(' || ')})]`
 
   return client.observable.fetch(query, {term: textTerm.trim()})
 }
