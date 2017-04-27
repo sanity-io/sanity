@@ -15,6 +15,7 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import {getPublishedId} from './utils/draftUtils'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -110,7 +111,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     documentStore.create({_id: 'drafts.', _type: selectedType})
       .subscribe(document => {
         router.navigate({
-          selectedDocumentId: document._id,
+          selectedDocumentId: getPublishedId(document._id),
           selectedType: selectedType,
           action: 'edit'
         }, {replace: true})
@@ -134,7 +135,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const {selectedType} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
-    const linkState = {selectedDocumentId: item._id, selectedType: type.name, action: 'edit'}
+    const linkState = {
+      selectedDocumentId: getPublishedId(item._id),
+      selectedType: type.name,
+      action: 'edit'
+    }
     const element = (
       <StateLinkListItem
         state={linkState}

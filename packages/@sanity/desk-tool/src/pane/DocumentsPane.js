@@ -100,7 +100,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
             listLayout={listLayout}
           />
         )}
-        </div>
+      </div>
     )
   }
 })
