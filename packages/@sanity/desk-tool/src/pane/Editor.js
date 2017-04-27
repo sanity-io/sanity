@@ -16,6 +16,7 @@ import copyDocument from '../utils/copyDocument'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
+import documentStore from 'part:@sanity/base/datastore/document'
 import dataAspects from '../utils/dataAspects'
 import {debounce, truncate} from 'lodash'
 import moment from 'moment'
@@ -52,6 +53,13 @@ const MENU_ITEM_DISCARD = {
   icon: UndoIcon,
   divider: true
 }
+const MENU_ITEM_DELETE_DRAFT = {
+  action: 'discard', // technically its the same as discard, but branded as a "delete"
+  title: 'Delete…',
+  icon: TrashIcon,
+  divider: true,
+  danger: true
+}
 const MENU_ITEM_UNPUBLISH = {
   action: 'unpublish',
   title: 'Unpublish…',
@@ -69,7 +77,8 @@ const MENU_ITEM_DELETE = {
 
 const getMenuItems = (draft, published) => ([
   MENU_ITEM_DUPLICATE,
-  draft && MENU_ITEM_DISCARD,
+  draft && published && MENU_ITEM_DISCARD,
+  draft && !published && MENU_ITEM_DELETE_DRAFT,
   published && MENU_ITEM_UNPUBLISH,
   published && MENU_ITEM_DELETE
 ]).filter(Boolean)
@@ -204,6 +213,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isMenuOpen: false
     })
   }
+
   handlePublishButtonClick = () => {
     this.setState({showConfirmPublish: true})
   }
@@ -303,11 +313,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <h1 className={styles.heading}>
             {titleProp && truncate(String(value[titleProp] || 'Untitled…'), {length: 50})}
           </h1>
-          {draft && (
-            <div className={styles.publishButton}>
-              <Button onClick={this.handlePublishButtonClick} color="primary">Publish</Button>
-            </div>
-          )}
+          <div className={styles.publishButton}>
+            <Button disabled={!draft} onClick={this.handlePublishButtonClick} color="primary">
+              Publish
+            </Button>
+          </div>
           <div className={styles.functions}>
             <div className={styles.menuContainer}>
               <div className={styles.menuButton}>
