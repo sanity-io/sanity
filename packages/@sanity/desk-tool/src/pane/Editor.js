@@ -5,6 +5,9 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
 import ConfirmPublish from '../components/ConfirmPublish'
+import ConfirmDiscard from '../components/ConfirmDiscard'
+import ConfirmDelete from '../components/ConfirmDelete'
+import ConfirmUnpublish from '../components/ConfirmUnpublish'
 import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
@@ -20,6 +23,7 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import dataAspects from '../utils/dataAspects'
 import {debounce, truncate} from 'lodash'
 import moment from 'moment'
+import {newDraftFrom} from '../utils/draftUtils'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -28,16 +32,6 @@ function listen(target, eventType, callback, useCapture = false) {
   target.addEventListener(eventType, callback, useCapture)
   return function unlisten() {
     target.removeEventListener(eventType, callback, useCapture)
-  }
-}
-
-function getInitialState() {
-  return {
-    inspect: false,
-    isMenuOpen: false,
-    isCreatingDraft: false,
-    showSavingStatus: false,
-    showConfirmPublish: false
   }
 }
 
@@ -53,13 +47,7 @@ const MENU_ITEM_DISCARD = {
   icon: UndoIcon,
   divider: true
 }
-const MENU_ITEM_DELETE_DRAFT = {
-  action: 'discard', // technically its the same as discard, but branded as a "delete"
-  title: 'Delete…',
-  icon: TrashIcon,
-  divider: true,
-  danger: true
-}
+
 const MENU_ITEM_UNPUBLISH = {
   action: 'unpublish',
   title: 'Unpublish…',
@@ -77,11 +65,21 @@ const MENU_ITEM_DELETE = {
 
 const getMenuItems = (draft, published) => ([
   MENU_ITEM_DUPLICATE,
-  draft && published && MENU_ITEM_DISCARD,
-  draft && !published && MENU_ITEM_DELETE_DRAFT,
+  published && draft && MENU_ITEM_DISCARD,
   published && MENU_ITEM_UNPUBLISH,
-  published && MENU_ITEM_DELETE
+  MENU_ITEM_DELETE
 ]).filter(Boolean)
+
+const INITIAL_STATE = {
+  inspect: false,
+  isMenuOpen: false,
+  isCreatingDraft: false,
+  showSavingStatus: false,
+  showConfirmPublish: false,
+  showConfirmDiscard: false,
+  showConfirmDelete: false,
+  showConfirmUnpublish: false
+}
 
 export default withRouterHOC(class Editor extends React.PureComponent {
   static propTypes = {
@@ -91,16 +89,17 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     router: PropTypes.shape({
       state: PropTypes.object
     }).isRequired,
+
     onDelete: PropTypes.func,
     onCreate: PropTypes.func,
     onChange: PropTypes.func,
     onDiscardDraft: PropTypes.func,
+    onPublish: PropTypes.func,
+    onUnpublish: PropTypes.func,
 
     isCreatingDraft: PropTypes.bool,
     isUnpublishing: PropTypes.bool,
     isPublishing: PropTypes.bool,
-    onPublish: PropTypes.bool,
-    onUnpublish: PropTypes.bool,
     isDeleted: PropTypes.bool,
     isLoading: PropTypes.bool,
     isSaving: PropTypes.bool,
@@ -121,7 +120,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     onChange() {},
   }
 
-  state = getInitialState()
+  state = INITIAL_STATE
 
   componentDidMount() {
     this.unlistenForKey = listen(window, 'keypress', event => {
@@ -165,12 +164,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleRequestDelete = () => {
-
-    // this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId})
-    //   .subscribe({
-    //     next: this.handleReferenceResult,
-    //     error: this.handleReferenceError
-    //   })
+    this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId})
+      .subscribe({
+        next: this.handleReferenceResult,
+        error: this.handleReferenceError
+      })
   }
 
   handleCancelDeleteRequest = () => {
@@ -179,17 +177,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
   handleCreateCopy = () => {
     const {router, draft, published} = this.props
-    documentStore.create(copyDocument(draft || published)).subscribe(copied => {
+    documentStore.create(newDraftFrom(copyDocument(draft || published))).subscribe(copied => {
       router.navigate({...router.state, action: 'edit', selectedDocumentId: copied._id})
     })
-  }
-
-  createDraft = () => {
-    const {published} = this.props
-    return {
-      _id: `drafts.${published._id}`,
-      ...copyDocument(published)
-    }
   }
 
   handleChange = changeEvent => {
@@ -222,26 +212,61 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     this.setState({showConfirmPublish: false})
   }
 
+  handleCancelUnpublish = () => {
+    this.setState({showConfirmUnpublish: false})
+  }
+
+  handleCancelDelete= () => {
+    this.setState({showConfirmDelete: false})
+  }
+
+  handleCancelDiscard= () => {
+    this.setState({showConfirmDiscard: false})
+  }
+
   handleConfirmPublish = () => {
     const {onPublish, draft} = this.props
     onPublish(draft)
     this.setState({showConfirmPublish: false})
   }
 
+  handleConfirmUnpublish = () => {
+    const {onUnpublish} = this.props
+    onUnpublish()
+    this.setState({showConfirmUnpublish: false})
+  }
+
+  handleConfirmDiscard = () => {
+    const {onDiscardDraft, draft} = this.props
+    onDiscardDraft(draft)
+    this.setState({showConfirmDiscard: false})
+  }
+
+  handleConfirmDelete = () => {
+    const {onDelete, onDiscardDraft, draft, published} = this.props
+    if (published) {
+      onDelete()
+    } else {
+      onDiscardDraft()
+    }
+    this.setState({showConfirmDelete: false})
+  }
+
   handleMenuClick = item => {
     if (item.action === 'delete') {
-      this.handleRequestDelete()
+      this.setState({showConfirmDelete: true})
     }
     if (item.action === 'discard') {
-      this.props.onDiscardDraft()
+      this.setState({showConfirmDiscard: true})
     }
     if (item.action === 'unpublish') {
-      this.props.onUnpublish()
+      this.setState({showConfirmUnpublish: true})
     }
 
     if (item.action === 'duplicate') {
       this.handleCreateCopy()
     }
+    this.setState({isMenuOpen: false})
   }
 
   render() {
@@ -257,7 +282,15 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isCreatingDraft
     } = this.props
 
-    const {inspect, referringDocuments, showSavingStatus, showConfirmPublish} = this.state
+    const {inspect,
+      referringDocuments,
+      showSavingStatus,
+      showConfirmPublish,
+      showConfirmDelete,
+      showConfirmDiscard,
+      showConfirmUnpublish
+    } = this.state
+
     const value = draft || published
 
     if (isLoading) {
@@ -380,6 +413,30 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             published={published}
             onCancel={this.handleCancelConfirmPublish}
             onConfirm={this.handleConfirmPublish}
+          />
+        )}
+        {showConfirmDiscard && (
+          <ConfirmDiscard
+            draft={draft}
+            published={published}
+            onCancel={this.handleCancelDiscard}
+            onConfirm={this.handleConfirmDiscard}
+          />
+        )}
+        {showConfirmDelete && (
+          <ConfirmDelete
+            draft={draft}
+            published={published}
+            onCancel={this.handleCancelDelete}
+            onConfirm={this.handleConfirmDelete}
+          />
+        )}
+        {showConfirmUnpublish && (
+          <ConfirmUnpublish
+            draft={draft}
+            published={published}
+            onCancel={this.handleCancelUnpublish}
+            onConfirm={this.handleConfirmUnpublish}
           />
         )}
       </div>

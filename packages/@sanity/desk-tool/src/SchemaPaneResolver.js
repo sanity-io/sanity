@@ -15,7 +15,7 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import {getPublishedId, isDraft} from './utils/draftUtils'
+import {DRAFTS_FOLDER, getPublishedId, isDraft, newDraftFrom} from './utils/draftUtils'
 import {keyBy} from 'lodash'
 
 // Debounce function on requestAnimationFrame
@@ -117,7 +117,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   doCreate(router) {
     const {selectedType} = router.state
-    documentStore.create({_id: 'drafts.', _type: selectedType})
+    documentStore.create(newDraftFrom({_type: selectedType}))
       .subscribe(document => {
         router.navigate({
           selectedDocumentId: getPublishedId(document._id),
@@ -167,12 +167,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   getDocumentsPane(schemaType) {
-    const params = {type: schemaType.name}
+    const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
     const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {
   _id,
   _type,
-  "isDraft": (_id in path('drafts.**')),
-  "isPublished": !(_id in path('drafts.**'))
+  "isDraft": (_id in path($draftsPath)),
+  "isPublished": !(_id in path($draftsPath))
 }`
     return (
       <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>

@@ -9,12 +9,11 @@ import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 import documentStore from 'part:@sanity/base/datastore/document'
 
-function getInitialDocumentState() {
-  return {
-    isLoading: true,
-    isDeleted: false,
-    snapshot: null
-  }
+const INITIAL_DOCUMENT_STATE = {
+  isSaving: true,
+  isLoading: true,
+  isDeleted: false,
+  snapshot: null
 }
 
 function documentEventToState(currentState, event) {
@@ -53,8 +52,8 @@ export default class EditorPane extends React.PureComponent {
   state = {
     isSaving: false,
     isCreatingDraft: false,
-    draft: getInitialDocumentState(),
-    published: getInitialDocumentState()
+    draft: INITIAL_DOCUMENT_STATE,
+    published: INITIAL_DOCUMENT_STATE
   }
 
   setup(documentId) {
@@ -79,7 +78,7 @@ export default class EditorPane extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.documentId !== this.props.documentId) {
-      this.setState(getInitialDocumentState())
+      this.setState(INITIAL_DOCUMENT_STATE)
       this.setup(nextProps.documentId)
     }
   }
@@ -104,9 +103,18 @@ export default class EditorPane extends React.PureComponent {
     })
   }
 
+  handleDelete = () => {
+    this.setState({isDeleting: true})
+    this.draft.delete()
+    this.published.delete()
+    this.draft.commit().merge(this.published.commit())
+      .subscribe(() => {
+        this.setState({isDeleting: false})
+      })
+  }
+
   handleUnpublish = () => {
     const {draft, published} = this.state
-
 
     const del = () => {
       this.published.delete()
@@ -139,7 +147,7 @@ export default class EditorPane extends React.PureComponent {
         return this.draft.commit()
       })
       .subscribe(() =>
-          this.setState({isPublishing: false})
+        this.setState({isPublishing: false})
       )
   }
 
@@ -210,12 +218,16 @@ export default class EditorPane extends React.PureComponent {
   }
 
   commit = throttle(() => {
+    this.setState({isSaving: true})
     this.draft.commit().subscribe({
       next: () => {
         // todo
       },
       error: error => {
         // todo
+      },
+      complete: () => {
+        this.setState({isSaving: false})
       }
     })
 
@@ -223,7 +235,7 @@ export default class EditorPane extends React.PureComponent {
 
   render() {
     const {typeName} = this.props
-    const {draft, published, isCreatingDraft, isUnpublishing, isPublishing} = this.state
+    const {draft, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
     const isLoading = draft.isLoading || published.isLoading
     return (
       <div className={styles.root}>
@@ -232,9 +244,11 @@ export default class EditorPane extends React.PureComponent {
           published={published.snapshot}
           draft={draft.snapshot}
           isLoading={isLoading}
+          isSaving={isSaving}
           isPublishing={isPublishing}
           isUnpublishing={isUnpublishing}
           isCreatingDraft={isCreatingDraft}
+          onDelete={this.handleDelete}
           onDiscardDraft={this.handleDiscardDraft}
           onPublish={this.handlePublish}
           onUnpublish={this.handleUnpublish}

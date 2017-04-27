@@ -135,6 +135,7 @@ export default class DefaultDialog extends React.Component {
                             onClick={this.handleActionClick}
                             data-action-index={i}
                             kind={action.kind}
+                            disabled={action.disabled}
                             className={styles[`button_${action.kind}`] || styles.button}
                           >
                             {action.title}
