@@ -15,7 +15,8 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import {getPublishedId} from './utils/draftUtils'
+import {getPublishedId, isDraft} from './utils/draftUtils'
+import {keyBy} from 'lodash'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -30,6 +31,14 @@ function debounceRAF(fn) {
     scheduled = args
   }
 }
+
+// Removes published documents that also has a draft
+// Todo: this is an ugly hack we should get rid of as it requires the whole set of documents to be in memory to work
+function removePublishedWithDrafts(documents) {
+  const drafts = keyBy(documents.filter(isDraft), draft => getPublishedId(draft._id))
+  return documents.filter(doc => !(doc._id in drafts))
+}
+
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -159,9 +168,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   getDocumentsPane(schemaType) {
     const params = {type: schemaType.name}
-    const query = `{
-"drafts": *[_type == $type && (_id in path("drafts.*"))] | order(_updatedAt desc) [0...3000] {_id,_type, "isDraft": true},
-"published": *[_type == $type && !(_id in path("drafts.*") && !(_id in ^.drafts))] | order(${this.state.sorting}) [0...3000] {_id,_type}
+    const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {
+  _id,
+  _type,
+  "isDraft": (_id in path('drafts.**')),
+  "isPublished": !(_id in path('drafts.**'))
 }`
     return (
       <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
@@ -181,13 +192,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
             this.handleResize()
           }
 
-          const documents = result ? result.documents : {}
-          const items = (documents.drafts || []).concat(documents.published || [])
+          const documents = removePublishedWithDrafts(result ? result.documents : [])
           return (
             <DocumentsPane
               type={type}
               loading={loading}
-              items={items}
+              items={documents}
               getItemKey={getDocumentKey}
               renderItem={this.renderDocumentPaneItem}
               onSetListLayout={this.handleSetListLayout}
