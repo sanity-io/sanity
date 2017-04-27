@@ -5,17 +5,18 @@ import Dialog from 'part:@sanity/components/dialogs/default'
 import moment from 'moment'
 
 const ACTIONS = [
-  {name: 'confirm', title: 'Yes, publish now'},
+  {name: 'confirm', title: 'Yes, discard changes'},
   {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 ]
 
-export default class ConfirmPublish extends React.PureComponent {
+export default class ConfirmDiscard extends React.PureComponent {
   static propTypes = {
     onCancel: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
     published: PropTypes.object,
     draft: PropTypes.object
   }
+
   handleAction = action => {
     const {onCancel, onConfirm} = this.props
     if (action.name === 'confirm') {
@@ -33,20 +34,20 @@ export default class ConfirmPublish extends React.PureComponent {
       <Dialog
         isOpen
         showHeader
-        title="Confirm publish"
+        title="Confirm discard changes"
         onClose={onCancel}
         onAction={this.handleAction}
         actions={ACTIONS}>
         <div style={{padding: 10}}>
           <p>
-            Are you sure you would like to publish <strong>{title}</strong>?
+            Are you sure you would like to discard changes in <strong>{title}</strong>?
           </p>
           <p>
-            {published && `It was last published ${moment(published._updatedAt).fromNow()}`}
+            It will revert to the latest published version of this document
+            {published && ` (as published ${moment(published._updatedAt).fromNow()})`}
           </p>
         </div>
       </Dialog>
     )
   }
 }
-
