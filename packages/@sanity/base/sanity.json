@@ -455,8 +455,20 @@
       "description": "Undo icon"
     },
     {
-      "name": "part:@sanity/base/unpublish-icon",
-      "description": "Unpublish icon"
+      "name": "part:@sanity/base/visibility-off-icon",
+      "description": "Visibility off icon"
+    },
+    {
+      "implements": "part:@sanity/base/visibility-off-icon",
+      "path": "components/icons/VisibilityOff.js"
+    },
+    {
+      "name": "part:@sanity/base/visibility-icon",
+      "description": "Visibility icon"
+    },
+    {
+      "implements": "part:@sanity/base/visibility-icon",
+      "path": "components/icons/Visibility.js"
     },
     {
       "name": "part:@sanity/base/format-bold-icon",
@@ -553,10 +565,6 @@
     {
       "implements": "part:@sanity/base/undo-icon",
       "path": "components/icons/Undo.js"
-    },
-    {
-      "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish.js"
     },
     {
       "implements": "part:@sanity/base/sort-alpha-desc-icon",
