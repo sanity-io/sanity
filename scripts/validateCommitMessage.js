@@ -2,15 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 const boxen = require('boxen')
-const childProc = require('child_process')
+const semver = require('semver')
 
 const commitMsgPath = path.join(__dirname, '..', process.env.GIT_PARAMS)
 const msg = fs.readFileSync(commitMsgPath, 'utf8').trim()
 
 const template = /^\[[a-z-\/]+]\s[A-Z0-9]\w+/
-const versionTemplate = /^v\d+\.\d+.\d+(-[a-z0-9-]+)?$/
 
-if (!template.test(msg) && !versionTemplate.test(msg)) {
+if (!template.test(msg) && !semver.valid(msg)) {
   console.error(boxen([
     chalk.yellow('No, your commit message should look like this:'),
     chalk.green('[package] Description of the change'), '',
