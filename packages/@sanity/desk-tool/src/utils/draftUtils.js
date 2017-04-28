@@ -1,4 +1,4 @@
-const DRAFTS_FOLDER = 'drafts'
+export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
 export function isDraft(document) {
