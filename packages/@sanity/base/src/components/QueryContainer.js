@@ -33,7 +33,9 @@ function keysEqual(object, otherObject, excludeKeys = []) {
   return union(objectKeys, otherObjectKeys).every(key => object[key] === otherObject[key])
 }
 
-const RESPOND_TO_TRANSITIONS = ['appear', 'disappear']
+const RESPOND_TO_TRANSITIONS = ['appear', 'disappear',
+  'update' // todo: remove this
+]
 
 export default class QueryContainer extends React.Component {
 
@@ -90,7 +92,7 @@ export default class QueryContainer extends React.Component {
   }
 
   receiveMutations(event) {
-    // todo: apply mutations on this.state.collection. Need to figure out how to do this with previews
+    // todo: apply mutations on this.state.collection
     // just resubcribing for now.
     /*
     const exampleEvent = {
@@ -112,7 +114,17 @@ export default class QueryContainer extends React.Component {
       timestamp: '2016-12-22T12:24:02.433897Z'
     }
      */
-    this.refresh()
+    const {result} = this.state
+
+    const hasCreateOrDelete = event.type === 'mutation'
+      && event.mutations.some(mut => (
+        mut.create || (mut.delete && (result.documents || []).some(doc => doc._id === mut.delete.id)))
+      )
+
+    if (hasCreateOrDelete) {
+      this.refresh()
+      this.refresh() // invoke on both ends to make sure we get the refreshed result
+    }
   }
 
   refresh = throttle(() => {
