@@ -32,7 +32,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   componentWillReceiveProps(nextProps) {
     if (this.props.items !== nextProps.items) {
       this.setState({
-        elements: this.props.items.map(this.createListElement)
+        elements: nextProps.items.map(this.createListElement)
       })
     }
   }
