@@ -13,7 +13,8 @@ import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
-import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
+import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
+import VisibilityOnIcon from 'part:@sanity/base/visibility-icon'
 import styles from './styles/Editor.css'
 import copyDocument from '../utils/copyDocument'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
@@ -39,19 +40,25 @@ const MENU_ITEM_DUPLICATE = {
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
+  divider: true
 }
 
 const MENU_ITEM_DISCARD = {
   action: 'discard',
   title: 'Discard changes…',
   icon: UndoIcon,
-  divider: true
 }
 
 const MENU_ITEM_UNPUBLISH = {
   action: 'unpublish',
   title: 'Unpublish…',
-  icon: UnpublishIcon,
+  icon: VisibilityOffIcon
+}
+
+const MENU_ITEM_PUBLISH = {
+  action: 'publish',
+  title: 'Publish…',
+  icon: VisibilityOnIcon,
   divider: true
 }
 
@@ -63,11 +70,13 @@ const MENU_ITEM_DELETE = {
   danger: true
 }
 
+
 const getMenuItems = (draft, published) => ([
-  MENU_ITEM_DUPLICATE,
   published && draft && MENU_ITEM_DISCARD,
+  draft && MENU_ITEM_PUBLISH,
   published && MENU_ITEM_UNPUBLISH,
-  MENU_ITEM_DELETE
+  MENU_ITEM_DUPLICATE,
+  MENU_ITEM_DELETE,
 ]).filter(Boolean)
 
 const INITIAL_STATE = {
@@ -153,23 +162,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     this.setState({
       showSavingStatus: false
     })
-  }, 2000, {trailing: true})
-
-  handleReferenceResult = event => {
-    if (event.documents.length === 0) {
-      this.props.onDelete()
-    } else {
-      this.setState({referringDocuments: event.documents})
-    }
-  }
-
-  handleRequestDelete = () => {
-    this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: this.props.documentId})
-      .subscribe({
-        next: this.handleReferenceResult,
-        error: this.handleReferenceError
-      })
-  }
+  }, 1500, {trailing: true})
 
   handleCancelDeleteRequest = () => {
     this.setState({referringDocuments: null})
@@ -243,7 +236,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   }
 
   handleConfirmDelete = () => {
-    const {onDelete, onDiscardDraft, draft, published} = this.props
+    const {onDelete, onDiscardDraft, published} = this.props
     if (published) {
       onDelete()
     } else {
@@ -259,8 +252,13 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     if (item.action === 'discard') {
       this.setState({showConfirmDiscard: true})
     }
+
     if (item.action === 'unpublish') {
       this.setState({showConfirmUnpublish: true})
+    }
+
+    if (item.action === 'publish') {
+      this.setState({showConfirmPublish: true})
     }
 
     if (item.action === 'duplicate') {
@@ -282,7 +280,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isCreatingDraft
     } = this.props
 
-    const {inspect,
+    const {
+      inspect,
       referringDocuments,
       showSavingStatus,
       showConfirmPublish,
