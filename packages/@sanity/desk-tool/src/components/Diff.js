@@ -1,3 +1,20 @@
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * HEADSUP: This is not in use, but keep for later reference
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+  */
 import PropTypes from 'prop-types'
 import React from 'react'
 import {diffJson} from 'diff'
