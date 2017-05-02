@@ -46,6 +46,7 @@
 
 .root {
   composes: root from 'part:@sanity/components/formfields/default-style';
+  user-select: none;
   position: relative;
 }
 

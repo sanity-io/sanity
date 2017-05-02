@@ -33,12 +33,6 @@ export default class DefaultDialog extends React.Component {
     kind: 'default'
   }
 
-  constructor(...args) {
-    super(...args)
-    this.handleActionClick = this.handleActionClick.bind(this)
-    this.handleCloseClick = this.handleCloseClick.bind(this)
-  }
-
   componentDidUpdate(prevProps) {
     const isOpen = this.props.isOpen
     const wasOpen = prevProps.isOpen
@@ -71,7 +65,7 @@ export default class DefaultDialog extends React.Component {
     this.props.onOpen()
   }
 
-  handleCloseClick() {
+  handleCloseClick = event => {
     this.props.onClose()
   }
 
@@ -79,7 +73,7 @@ export default class DefaultDialog extends React.Component {
     event.stopPropagation()
   }
 
-  handleActionClick(event) {
+  handleActionClick = event => {
     const actionIndex = event.currentTarget.getAttribute('data-action-index')
     this.props.onAction(this.props.actions[actionIndex])
   }
@@ -134,9 +128,14 @@ export default class DefaultDialog extends React.Component {
                             key={i}
                             onClick={this.handleActionClick}
                             data-action-index={i}
-                            kind={action.kind}
+                            color={action.color}
                             disabled={action.disabled}
-                            className={styles[`button_${action.kind}`] || styles.button}
+                            kind={action.kind}
+                            className={`
+                              ${styles.button}
+                              ${styles[`button_${action.kind}`] || styles.button}
+                            `
+                            }
                           >
                             {action.title}
                           </Button>

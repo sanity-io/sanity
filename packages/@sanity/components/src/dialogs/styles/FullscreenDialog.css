@@ -74,6 +74,10 @@
   display: none;
 }
 
+.actions {
+  padding-top: 2em;
+}
+
 .closeButton {
   display: block;
   position: absolute;
