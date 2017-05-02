@@ -19,6 +19,7 @@ export default class Mutation {
     timestamp: String
   }
   compiled: Function
+  _appliesToMissingDocument: boolean
   constructor(options: Object) {
     this.params = options
   }
@@ -89,6 +90,14 @@ export default class Mutation {
         )
       }
     })
+    if (typeof this.params.timestamp === 'string') {
+      operations.push(doc => {
+        if (typeof doc === 'object') {
+          return Object.assign(doc, {_updatedAt: this.params.timestamp})
+        }
+        return doc
+      })
+    }
     const prevRev = this.previousRev
     const rev = this.resultRev || this.transactionId
     this.compiled = doc => {
