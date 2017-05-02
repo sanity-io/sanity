@@ -1,6 +1,6 @@
 // @flow
 
-import {Patcher} from '../patch'
+import { Patcher } from '../patch'
 import luid from './luid'
 import debug from './debug'
 
@@ -9,39 +9,39 @@ import debug from './debug'
 // on first application, and any changes in properties will not effectively
 // change its behavior after that.
 export default class Mutation {
-  params : {
-    transactionId : string,
-    transition : string,
-    identity : string,
-    previousRev : string,
-    resultRev : string,
-    mutations : Array<Object>,
-    timestamp: String,
+  params: {
+    transactionId: string,
+    transition: string,
+    identity: string,
+    previousRev: string,
+    resultRev: string,
+    mutations: Array<Object>,
+    timestamp: String
   }
-  compiled : Function
-  constructor(options : Object) {
+  compiled: Function
+  constructor(options: Object) {
     this.params = options
   }
 
-  get transactionId() : string {
+  get transactionId(): string {
     return this.params.transactionId
   }
-  get transition() : string {
+  get transition(): string {
     return this.params.transition
   }
-  get identity() : string {
+  get identity(): string {
     return this.params.identity
   }
-  get previousRev() : string {
+  get previousRev(): string {
     return this.params.previousRev
   }
-  get resultRev() : string {
+  get resultRev(): string {
     return this.params.resultRev
   }
-  get mutations() : Array<Object> {
+  get mutations(): Array<Object> {
     return this.params.mutations
   }
-  get timestamp() : Date {
+  get timestamp(): Date {
     if (typeof this.params.timestamp == 'string') {
       return new Date(this.params.timestamp)
     }
@@ -57,7 +57,10 @@ export default class Mutation {
     // Only mutations starting with a create operation apply to documents that do not exist ...
     const firstMut = this.mutations[0]
     if (firstMut) {
-      this._appliesToMissingDocument = (firstMut.create || firstMut.createIfNotExist || firstMut.createOrReplace)
+      this._appliesToMissingDocument =
+        firstMut.create ||
+        firstMut.createIfNotExists ||
+        firstMut.createOrReplace
     } else {
       this._appliesToMissingDocument = true
     }
@@ -69,8 +72,10 @@ export default class Mutation {
     this.mutations.forEach(mutation => {
       if (mutation.create) {
         operations.push(doc => (doc === null ? mutation.create : doc))
-      } else if (mutation.createIfNotExist) {
-        operations.push(doc => (doc === null ? mutation.createIfNotExist : doc))
+      } else if (mutation.createIfNotExists) {
+        operations.push(
+          doc => (doc === null ? mutation.createIfNotExists : doc)
+        )
       } else if (mutation.createOrReplace) {
         operations.push(() => mutation.createOrReplace)
       } else if (mutation.delete) {
@@ -79,24 +84,33 @@ export default class Mutation {
         const patch = new Patcher(mutation.patch)
         operations.push(doc => patch.apply(doc))
       } else {
-        throw new Error(`Unsupported mutation ${JSON.stringify(mutation, null, 2)}`)
+        throw new Error(
+          `Unsupported mutation ${JSON.stringify(mutation, null, 2)}`
+        )
       }
     })
     const prevRev = this.previousRev
     const rev = this.resultRev || this.transactionId
     this.compiled = doc => {
       if (prevRev && prevRev != doc._rev) {
-        throw new Error(`Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`)
+        throw new Error(
+          `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`
+        )
       }
-      const result = operations.reduce((revision, operation) => operation(revision), doc)
+      const result = operations.reduce(
+        (revision, operation) => operation(revision),
+        doc
+      )
       if (result && rev) {
         result._rev = rev
       }
       return result
     }
   }
-  apply(document : Object) : Object {
-    debug(`Applying mutation ${JSON.stringify(this.mutations)} to document ${JSON.stringify(document)}`)
+  apply(document: Object): Object {
+    debug(
+      `Applying mutation ${JSON.stringify(this.mutations)} to document ${JSON.stringify(document)}`
+    )
     if (!this.compiled) {
       this.compile()
     }
@@ -104,15 +118,18 @@ export default class Mutation {
     debug(`  => ${JSON.stringify(result)}`)
     return result
   }
-  static applyAll(document : Object, mutations : Array<Mutation>) : Object {
+  static applyAll(document: Object, mutations: Array<Mutation>): Object {
     return mutations.reduce((doc, mutation) => mutation.apply(doc), document)
   }
   // Given a number of yet-to-be-committed mutation objects, collects them into one big mutation
   // any metadata like transactionId is ignored and must be submitted by the client. It is assumed
   // that all mutations are on the same document.
   // TOOO: Optimize mutations, eliminating mutations that overwrite themselves!
-  static squash(document : Object, mutations : Array<Mutation>) : Mutation {
-    const squashed = mutations.reduce((result, mutation) => result.concat(...mutation.mutations), [])
-    return new Mutation({mutations: squashed})
+  static squash(document: Object, mutations: Array<Mutation>): Mutation {
+    const squashed = mutations.reduce(
+      (result, mutation) => result.concat(...mutation.mutations),
+      []
+    )
+    return new Mutation({ mutations: squashed })
   }
 }
