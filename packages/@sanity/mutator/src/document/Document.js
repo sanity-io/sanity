@@ -292,7 +292,9 @@ export default class Document {
     const oldEdge = this.EDGE
     this.EDGE = Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending))
     // Copy over rev, since we don't care if it changed, we only care about the content
-    oldEdge._rev = this.EDGE._rev
+    if (oldEdge !== null && this.EDGE !== null) {
+      oldEdge._rev = this.EDGE._rev
+    }
     const changed = !isEqual(this.EDGE, oldEdge)
     if (changed && this.onRebase) {
       this.onRebase(this.EDGE)
