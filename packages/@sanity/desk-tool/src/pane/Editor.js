@@ -43,9 +43,9 @@ const getDuplicateItem = (draft, published) => ({
 
 const getDiscardItem = (draft, published) => ({
   action: 'discard',
-  title: published ? 'Discard changes…' : 'Discard…',
+  title: 'Discard changes…',
   icon: UndoIcon,
-  isDisabled: !draft
+  isDisabled: !draft || !published
 })
 
 const getUnpublishItem = (draft, published) => ({
