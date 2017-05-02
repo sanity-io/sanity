@@ -34,10 +34,13 @@
 .savingStatus {
   opacity: 0.5;
   padding: 0.75em;
+  padding-right: 0;
+  flex-basis: 5em;
 }
 
 .publishButton {
   padding: 0 1rem;
+  padding-right: 0;
   font-size: 0.8em;
   line-height: calc(2.75em / 0.8);
 }
@@ -79,7 +82,12 @@
 
 .dates {
   text-align: right;
+  flex-basis: 14em;
   color: #aaaaaa;
   font-size: 0.7rem;
   padding: 0.5rem;
+  display: none;
+  @media (--screen-medium) {
+    display: block;
+  }
 }

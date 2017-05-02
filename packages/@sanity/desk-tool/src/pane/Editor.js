@@ -334,7 +334,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <Spinner fullscreen message="Unpublishing…" />
         )}
         <div className={styles.top}>
-          <h1 className={styles.heading}>
+          <h1 className={styles.heading} title={String(value[titleProp])}>
             {titleProp && truncate(String(value[titleProp] || 'Untitled…'), {length: 50})}
           </h1>
 
