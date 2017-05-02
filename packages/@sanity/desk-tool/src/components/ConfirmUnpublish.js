@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 const ACTION_CANCEL = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
@@ -35,19 +35,20 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
 
     const hasReferringDocuments = referringDocuments.length > 0
     const actions = [
-      ACTION_CANCEL,
-      !isCheckingReferringDocuments && {name: 'confirm', title: 'Unpublish now', disabled: hasReferringDocuments}
+      !isCheckingReferringDocuments && {name: 'confirm', color: 'danger', title: 'Unpublish now', disabled: hasReferringDocuments},
+      ACTION_CANCEL
     ].filter(Boolean)
 
     return (
       <Dialog
         isOpen
         showHeader
-        kind="danger"
+        centered
         title={hasReferringDocuments ? 'Cannot unpublish document' : 'Confirm unpublish document'}
         onClose={onCancel}
         onAction={this.handleAction}
-        actions={actions}>
+        actions={actions}
+      >
         {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" /> }
         {hasReferringDocuments && (
           <div>

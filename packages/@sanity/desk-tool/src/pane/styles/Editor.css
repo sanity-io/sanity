@@ -18,12 +18,12 @@
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
     position: absolute;
-    top: 6rem;
+    top: 4rem;
     left: 0;
     padding-left: var(--large-padding);
     padding-right: var(--large-padding);
-    padding-bottom: 4rem;
-    max-width: 40em;
+    padding-bottom: 10rem;
+    /*max-width: 40em;*/
     width: 100%;
     clear: both;
     box-sizing: border-box;
@@ -33,14 +33,13 @@
 
 .savingStatus {
   opacity: 0.5;
+  padding: 0.75em;
 }
 
 .publishButton {
-  position: absolute;
-  top: 0.3rem;
-  right: 3rem;
-  font-size: 0.9rem;
-  line-height: 2rem;
+  padding: 0 1rem;
+  font-size: 0.8em;
+  line-height: calc(2.75em / 0.8);
 }
 
 .spinner {
@@ -51,16 +50,21 @@
 
 .functions {
   font-size: var(--font-size-small);
+  margin-right: 0.75em;
 }
 
 .top {
   composes: top from './Pane.css';
   margin-bottom: 0;
   margin-left: var(--medium-padding);
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .heading {
   composes: heading from './Pane.css';
+  flex-grow: 1;
 }
 
 .menu {
@@ -69,16 +73,13 @@
 
 .menuButton {
   composes: menuButton from './Pane.css';
+  position: relative;
+  right: 0;
 }
 
 .dates {
+  text-align: right;
   color: #aaaaaa;
-  margin-left: 1rem;
-  padding-right: 1rem;
-  line-height: 1.5rem;
-  font-size: 0.9rem;
-  display: flex;
-  justify-content: space-between;
-  box-sizing: border-box;
-  border-bottom: 1px solid #eee;
+  font-size: 0.7rem;
+  padding: 0.5rem;
 }

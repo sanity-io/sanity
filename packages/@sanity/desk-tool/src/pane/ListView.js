@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import GridList from 'part:@sanity/components/lists/grid'
-import styles from './styles/Pane.css'
+import styles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 
 export default class ListView extends React.PureComponent {
@@ -43,6 +43,7 @@ export default class ListView extends React.PureComponent {
       default: {
         return (
           <InfiniteList
+            className={styles.listContainer}
             items={items}
             getItemKey={getItemKey}
             renderItem={renderItem}
