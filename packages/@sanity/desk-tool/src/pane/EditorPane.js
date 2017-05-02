@@ -4,7 +4,7 @@ import React from 'react'
 import styles from './styles/EditorPane.css'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
 import FormBuilder, {checkout, patches} from 'part:@sanity/form-builder'
-import {throttle} from 'lodash'
+import {throttle, omit} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 
@@ -45,7 +45,13 @@ function mutationEventToState(currentState, event) {
   return {
     isDeleted,
     deletedSnapshot: isDeleted ? currentState.value : null,
-    snapshot: event.document
+    snapshot: event.document ? {
+      ...event.document,
+      // todo: The following line is a temporary workaround for a problem with the mutator not
+      // setting updatedAt on patches applied optimistic when they are received from server
+      // can be removed when this is fixed
+      _updatedAt: new Date().toISOString()
+    } : event.document
   }
 }
 
@@ -142,7 +148,7 @@ export default class EditorPane extends React.PureComponent {
     const {published} = this.state
     if (published.snapshot) {
       this.draft.createIfNotExists({
-        ...published.snapshot,
+        ...omit(published.snapshot, '_createdAt', '_updatedAt'),
         _id: this.getDraftId()
       })
       this.draft.commit().subscribe(() => {})
@@ -160,7 +166,7 @@ export default class EditorPane extends React.PureComponent {
 
     this.published.createIfNotExists({_type: this.props.typeName, _id: publishedId})
     this.published.patch([patches.set({
-      ...draft,
+      ...omit(draft, '_createdAt', '_updatedAt'),
       _id: publishedId
     })])
 
@@ -179,7 +185,7 @@ export default class EditorPane extends React.PureComponent {
 
     if (!draft.snapshot) {
       this.draft.createIfNotExists({
-        ...published.snapshot,
+        ...omit(published.snapshot, '_createdAt', '_updatedAt'),
         _id: this.getDraftId()
       })
     }
