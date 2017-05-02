@@ -3,11 +3,9 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
-const ACTION_CANCEL = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
-
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
-import renderReferringDocument from './renderReferringDocument'
+import renderReferringDocumentItem from './renderReferringDocumentItem'
 
 export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
   static propTypes = {
@@ -60,7 +58,7 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
             <DefaultList
               overrideItemRender
               items={referringDocuments}
-              renderItem={renderReferringDocument}
+              renderItem={renderReferringDocumentItem}
               decoration="divider"
             />
           </div>
