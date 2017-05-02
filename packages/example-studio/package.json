@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.105.0-drafts.3",
+  "version": "0.105.0-drafts.4",
   "description": "Just a sample Sanity studio project",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "@sanity/date-input": "^0.105.0-drafts.2",
     "@sanity/default-layout": "^0.105.0-drafts.2",
     "@sanity/default-login": "^0.105.0-drafts.2",
-    "@sanity/desk-tool": "^0.105.0-drafts.3",
+    "@sanity/desk-tool": "^0.105.0-drafts.4",
     "@sanity/form-builder": "^0.105.0-drafts.2",
     "@sanity/storybook": "^0.105.0-drafts.2",
     "prop-types": "^15.5.8",
