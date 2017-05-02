@@ -4,10 +4,7 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import moment from 'moment'
 
-const ACTIONS = [
-  {name: 'confirm', title: 'Yes, discard changes', color: 'danger'},
-  {name: 'cancel', title: 'Cancel', kind: 'secondary'}
-]
+const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 
 export default class ConfirmDiscard extends React.PureComponent {
   static propTypes = {
@@ -30,23 +27,31 @@ export default class ConfirmDiscard extends React.PureComponent {
   render() {
     const {draft, published, onCancel} = this.props
     const title = draft.title // todo
+    const confirmAction = {
+      name: 'confirm',
+      title: `Yes, discard ${published ? 'changes' : 'document'}`,
+      color: 'danger'
+    }
     return (
       <Dialog
         isOpen
         showHeader
-        title="Confirm discard changes"
+        title={`Confirm discard ${published ? 'changes' : 'document'}`}
         centered
         onClose={onCancel}
         onAction={this.handleAction}
-        actions={ACTIONS}
+        actions={[confirmAction, CANCEL_ACTION]}
       >
         <div style={{padding: 10}}>
           <p>
-            Are you sure you would like to discard changes in <strong>{title}</strong>?
+            Are you sure you would like to discard {published ? 'changes in' : 'the document'} <strong>{title}</strong>?
           </p>
           <p>
-            It will revert to the latest published version of this document
-            {published && ` (as published ${moment(published._updatedAt).fromNow()})`}
+            This will {
+            published
+              ? `revert to the latest published version of this document (published ${moment(published._updatedAt).fromNow()}).`
+              : 'delete it entirely and there is no going back.'
+          }
           </p>
         </div>
       </Dialog>

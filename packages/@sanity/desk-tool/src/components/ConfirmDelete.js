@@ -3,8 +3,6 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
-const ACTION_CANCEL = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
-
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import renderReferringDocument from './renderReferringDocument'
@@ -36,8 +34,8 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
 
     const hasReferringDocuments = referringDocuments.length > 0
     const actions = [
-      ACTION_CANCEL,
-      !isCheckingReferringDocuments && {name: 'confirm', title: 'Delete now', disabled: hasReferringDocuments}
+      !isCheckingReferringDocuments && {name: 'confirm', title: 'Delete now', disabled: hasReferringDocuments},
+      {name: 'cancel', title: hasReferringDocuments ? 'Close' : 'Cancel', kind: 'secondary'}
     ].filter(Boolean)
 
     return (
