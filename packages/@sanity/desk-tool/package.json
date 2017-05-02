@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.105.0-drafts.1",
+  "version": "0.105.0-drafts.2",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,9 +20,9 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "^0.105.0-drafts.0",
-    "@sanity/form-builder": "^0.105.0-drafts.1",
-    "@sanity/mutator": "^0.105.0-drafts.0",
+    "@sanity/data-aspects": "^0.105.0-drafts.2",
+    "@sanity/form-builder": "^0.105.0-drafts.2",
+    "@sanity/mutator": "^0.105.0-drafts.2",
     "classnames": "^2.2.5",
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.10",
@@ -35,11 +35,11 @@
     "react-json-inspector": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.105.0-drafts.1",
-    "@sanity/check": "^0.105.0-drafts.0",
-    "@sanity/client": "^0.105.0-drafts.0",
-    "@sanity/components": "^0.105.0-drafts.1",
-    "@sanity/core": "^0.105.0-drafts.0",
+    "@sanity/base": "^0.105.0-drafts.2",
+    "@sanity/check": "^0.105.0-drafts.2",
+    "@sanity/client": "^0.105.0-drafts.2",
+    "@sanity/components": "^0.105.0-drafts.2",
+    "@sanity/core": "^0.105.0-drafts.2",
     "babel-plugin-lodash": "^3.2.11",
     "history": "^4.5.1",
     "postcss-cssnext": "^2.10.0",
