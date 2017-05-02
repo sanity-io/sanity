@@ -95,7 +95,7 @@ export default class Mutation {
     })
     if (typeof this.params.timestamp === 'string') {
       operations.push(doc => {
-        if (typeof doc === 'object') {
+        if (doc) {
           return Object.assign(doc, {_updatedAt: this.params.timestamp})
         }
         return doc

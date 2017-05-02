@@ -135,6 +135,7 @@ export default class Document {
     }
 
     // Keep applying mutations as long as any apply
+    let protect = 0
     do {
       // Find next mutation that can be applied to HEAD (if any)
       if (this.HEAD) {
@@ -145,6 +146,9 @@ export default class Document {
         nextMut = this.incoming.find(mut => mut.appliesToMissingDocument())
       }
       mustRebase = mustRebase || this.applyIncoming(nextMut)
+      if (protect++ > 100) {
+        throw new Error('Mutator stuck flusing incoming mutations. Probably stuck here:', JSON.stringify(nextMut))
+      }
     } while (nextMut)
 
     if (this.incoming.length > 0) {
