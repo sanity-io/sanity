@@ -322,29 +322,36 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     return (
       <div className={styles.root}>
         {isCreatingDraft && (
-          <div className={styles.overlay}>
-            <Spinner fullscreen message="Making changes…" />
-          </div>
+          <Spinner fullscreen message="Making changes…" />
         )}
         {isDeleting && (
-          <div className={styles.overlay}>
-            <Spinner fullscreen message="Deleting…" />
-          </div>
+          <Spinner fullscreen message="Deleting…" />
         )}
         {isPublishing && (
-          <div className={styles.overlay}>
-            <Spinner fullscreen message="Publishing…" />
-          </div>
+          <Spinner fullscreen message="Publishing…" />
         )}
         {isUnpublishing && (
-          <div className={styles.overlay}>
-            <Spinner fullscreen message="Unpublishing…" />
-          </div>
+          <Spinner fullscreen message="Unpublishing…" />
         )}
         <div className={styles.top}>
           <h1 className={styles.heading}>
             {titleProp && truncate(String(value[titleProp] || 'Untitled…'), {length: 50})}
           </h1>
+
+          <div className={styles.dates}>
+            <div>Created {moment((published || draft)._createdAt).fromNow()}</div>
+            <div>{published ? `Published ${moment(published._updatedAt).fromNow()}` : 'Not published'}</div>
+          </div>
+          {showSavingStatus && (
+            <div className={styles.savingStatus}>
+              <span className={styles.spinner}><Spinner /></span> Saving…
+            </div>
+          )}
+          {!showSavingStatus && (
+            <div className={styles.savingStatus}>
+              ✓ Saved {/*{moment(value._updatedAt).fromNow()} */}
+            </div>
+          )}
           <div className={styles.publishButton}>
             <Button disabled={!draft} onClick={this.handlePublishButtonClick} color="primary">
               Publish
@@ -369,20 +376,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               </div>
             </div>
           </div>
-        </div>
-        <div className={styles.dates}>
-          <div>Created {moment((published || draft)._createdAt).fromNow()}</div>
-          <div>{published ? `Published ${moment(published._updatedAt).fromNow()}` : 'Not published'}</div>
-          {showSavingStatus && (
-            <div className={styles.savingStatus}>
-              <span className={styles.spinner}><Spinner /></span> Saving…
-            </div>
-          )}
-          {!showSavingStatus && (
-            <div className={styles.savingStatus}>
-              ✓ Saved {/*{moment(value._updatedAt).fromNow()} */}
-            </div>
-          )}
         </div>
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder

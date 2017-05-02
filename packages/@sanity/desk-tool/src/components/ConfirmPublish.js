@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import moment from 'moment'
 
 const ACTIONS = [
-  {name: 'confirm', title: 'Yes, publish now'},
+  {name: 'confirm', title: 'Yes, publish now', color: 'success'},
   {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 ]
 
@@ -34,9 +34,11 @@ export default class ConfirmPublish extends React.PureComponent {
         isOpen
         showHeader
         title="Confirm publish"
+        centered
         onClose={onCancel}
         onAction={this.handleAction}
-        actions={ACTIONS}>
+        actions={ACTIONS}
+      >
         <div style={{padding: 10}}>
           <p>
             Are you sure you would like to publish <strong>{title}</strong>?
@@ -49,4 +51,3 @@ export default class ConfirmPublish extends React.PureComponent {
     )
   }
 }
-
