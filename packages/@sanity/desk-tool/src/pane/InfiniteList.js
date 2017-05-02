@@ -47,10 +47,11 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   }
 
   render() {
-    const {listLayout, height} = this.props
+    const {listLayout, height, className} = this.props
     const {elements} = this.state
     return (
       <Infinite
+        className={className}
         elementHeight={listLayout === 'default' ? 40 : 80}
         containerHeight={height - 65}
         infiniteLoadBeginEdgeOffset={200}

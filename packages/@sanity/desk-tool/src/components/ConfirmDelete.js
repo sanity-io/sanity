@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 const ACTION_CANCEL = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
@@ -44,11 +44,13 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
       <Dialog
         isOpen
         showHeader
-        kind="danger"
+        color="danger"
+        centered
         title={hasReferringDocuments ? 'Cannot delete document' : 'Confirm delete document'}
         onClose={onCancel}
         onAction={this.handleAction}
-        actions={actions}>
+        actions={actions}
+      >
         {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" /> }
         {hasReferringDocuments && (
           <div>
