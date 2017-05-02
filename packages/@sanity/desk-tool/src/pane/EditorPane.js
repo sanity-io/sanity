@@ -7,7 +7,6 @@ import {checkout, patches} from 'part:@sanity/form-builder'
 import {throttle} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
-import documentStore from 'part:@sanity/base/datastore/document'
 
 const INITIAL_DOCUMENT_STATE = {
   isSaving: true,
@@ -72,6 +71,14 @@ export default class EditorPane extends React.PureComponent {
       })
   }
 
+  getDraftId() {
+    return getDraftId(this.props.documentId)
+  }
+
+  getPublishedId() {
+    return getPublishedId(this.props.documentId)
+  }
+
   componentDidMount() {
     this.setup(this.props.documentId)
   }
@@ -114,34 +121,32 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleUnpublish = () => {
-    const {draft, published} = this.state
-
-    const del = () => {
-      this.published.delete()
-      return this.published.commit()
+    const {published} = this.state
+    if (published.snapshot) {
+      this.draft.createIfNotExists({
+        ...published.snapshot,
+        _id: this.getDraftId()
+      })
+      this.draft.commit().subscribe(() => {})
     }
 
-    const restoringDraft = !draft.snapshot && this.createDraftFrom(published.snapshot)
-
-    this.setState({isUnpublishing: true})
-    return (restoringDraft
-      ? restoringDraft.mergeMap(() => del())
-      : del())
-      .subscribe(() => {
-        this.setState({isUnpublishing: false})
-      })
+    this.published.delete()
+    this.published.commit().subscribe(() => {})
   }
 
   handlePublish = draft => {
-    const {published} = this.state
 
     this.setState({isPublishing: true})
 
-    const publishing = published.snapshot
-      ? this.overWritePublishedWith(draft)
-      : this.createPublishedFrom(draft)
+    const publishedId = this.getPublishedId()
 
-    return publishing
+    this.published.createIfNotExists({_type: this.props.typeName, _id: publishedId})
+    this.published.patch([patches.set({
+      ...draft,
+      _id: publishedId
+    })])
+
+    return this.published.commit()
       .mergeMap(() => {
         this.draft.delete()
         return this.draft.commit()
@@ -151,70 +156,18 @@ export default class EditorPane extends React.PureComponent {
       )
   }
 
-  createPublishedFrom(draft) {
-    const publishedId = getPublishedId(draft._id)
-    const publishedDocument = {
-      ...draft,
-      _id: publishedId
-    }
-
-    // TODO: if buffered document would be able to handle starting with empty document, we could just do
-    // this.published.createIfNotExists(...), apply the patch and be done with it
-    // Currently the Squashing buffer fails when current snapshot is undefined
-    return documentStore.createIfNotExists(publishedDocument)
-      .do(result => this.setup(this.props.documentId))
-  }
-
-  overWritePublishedWith(draft) {
-    this.published.patch([patches.set({
-      ...draft,
-      _id: getPublishedId(draft._id)
-    })])
-    return this.published.commit()
-  }
-
-  createDraftFrom(document) {
-    const draftId = getDraftId(document._id)
-    const draftDocument = {
-      ...document,
-      _id: draftId
-    }
-
-    // TODO: if buffered document would be able to handle starting with empty document, we could just do
-    // this.published.createIfNotExists(...), apply the patch and be done with it
-    // Currently the Squashing buffer fails when current snapshot is undefined
-    return documentStore.createIfNotExists(draftDocument)
-      .do(result => this.setup(this.props.documentId))
-  }
-
-  overWriteDraftWith(document) {
-    this.draft.patch([patches.set({
-      ...document,
-      _id: getDraftId(document._id)
-    })])
-    return this.draft.commit()
-  }
-
   handleChange = event => {
-    const {draft, published} = this.state
+    const {published, draft} = this.state
 
-    if (draft.snapshot) {
-      // all good
-      this.draft.patch(event.patches)
-      this.commit()
-      return
+    if (!draft.snapshot) {
+      this.draft.createIfNotExists({
+        ...published.snapshot,
+        _id: this.getDraftId()
+      })
     }
 
-    this.setState({isCreatingDraft: true})
-
-    this.createDraftFrom(published.snapshot)
-      .mergeMap(() => {
-        this.draft.patch(event.patches)
-        return this.draft.commit()
-      })
-      .subscribe(() => {
-        this.setState({isCreatingDraft: false})
-      })
+    this.draft.patch(event.patches)
+    this.commit()
   }
 
   commit = throttle(() => {

@@ -4,8 +4,10 @@ import gradientPatchAdapter from './utils/gradientPatchAdapter'
 import PatchEvent from '../PatchEvent'
 
 export function checkout(documentId) {
-  const document = documentStore.checkout(documentId)
-  const events$ = document.events.map(event =>
+  const local = documentStore.checkout(documentId)
+
+
+  const events$ = local.events.map(event =>
     (event.type === 'mutation' ? prepareMutationEvent(event) : event)
   )
 
@@ -18,18 +20,10 @@ export function checkout(documentId) {
   }
 
   return {
+    ...local,
     events: events$,
-    patch(patches: Array<PatchEvent>) {
-      document.patch(gradientPatchAdapter.fromFormBuilder(patches))
-    },
-    delete() {
-      document.delete()
-    },
-    create() {
-      document.create(document)
-    },
-    commit() {
-      return document.commit()
+    patch(patches: Array<Patch>) {
+      local.patch(gradientPatchAdapter.fromFormBuilder(patches))
     }
   }
 }
