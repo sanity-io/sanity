@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.105.0-drafts.2",
+  "version": "0.105.0-drafts.3",
   "private": true,
   "description": "",
   "main": "config.js",
@@ -15,7 +15,7 @@
     "@sanity/core": "^0.105.0-drafts.2",
     "@sanity/default-layout": "^0.105.0-drafts.2",
     "@sanity/default-login": "^0.105.0-drafts.2",
-    "@sanity/desk-tool": "^0.105.0-drafts.2",
+    "@sanity/desk-tool": "^0.105.0-drafts.3",
     "@sanity/google-maps-input": "^0.105.0-drafts.2",
     "@sanity/server": "^0.105.0-drafts.2",
     "@sanity/storybook": "^0.105.0-drafts.2",
