@@ -6,6 +6,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import renderReferringDocumentItem from './renderReferringDocumentItem'
+import DocTitle from './DocTitle'
 
 export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
   static propTypes = {
@@ -29,13 +30,18 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
 
   render() {
     const {isCheckingReferringDocuments, referringDocuments, draft, published, onCancel} = this.props
-    const title = (draft || published).title // todo
 
     const hasReferringDocuments = referringDocuments.length > 0
     const actions = [
-      !isCheckingReferringDocuments && {name: 'confirm', color: 'danger', title: 'Unpublish now', disabled: hasReferringDocuments},
+      !isCheckingReferringDocuments && {
+        name: 'confirm',
+        color: 'danger',
+        title: 'Unpublish now',
+        disabled: hasReferringDocuments
+      },
       {name: 'cancel', title: hasReferringDocuments ? 'Close' : 'Cancel', kind: 'secondary'}
-    ].filter(Boolean)
+    ]
+      .filter(Boolean)
 
     return (
       <Dialog
@@ -66,10 +72,14 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <div style={{padding: 10}}>
             <p>
-              Are you sure you would like to unpublish the document <strong>{title}</strong>?
+              Are you sure you would like to unpublish the document{' '}
+              <strong>
+                <DocTitle document={(draft || published)} />
+              </strong>?
             </p>
             <p>
-              It will no longer be available for the public, but it will not be deleted and can be published again later if you change your mind.
+              It will no longer be available for the public, but it will not be deleted and can be published again later
+              if you change your mind.
             </p>
           </div>
         )}

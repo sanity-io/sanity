@@ -22,7 +22,7 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import dataAspects from '../utils/dataAspects'
 import {debounce, truncate} from 'lodash'
 import moment from 'moment'
-import {newDraftFrom} from '../utils/draftUtils'
+import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -161,7 +161,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   handleCreateCopy = () => {
     const {router, draft, published} = this.props
     documentStore.create(newDraftFrom(copyDocument(draft || published))).subscribe(copied => {
-      router.navigate({...router.state, action: 'edit', selectedDocumentId: copied._id})
+      router.navigate({...router.state, action: 'edit', selectedDocumentId: getPublishedId(copied._id)})
     })
   }
 
@@ -366,6 +366,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           </div>
         </div>
+
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
             value={draft || published}

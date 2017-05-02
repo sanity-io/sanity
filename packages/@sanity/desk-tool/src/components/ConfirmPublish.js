@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import moment from 'moment'
+import DocTitle from './DocTitle'
 
 const ACTIONS = [
   {name: 'confirm', title: 'Yes, publish now', color: 'success'},
@@ -28,7 +29,7 @@ export default class ConfirmPublish extends React.PureComponent {
 
   render() {
     const {draft, published, onCancel} = this.props
-    const title = draft.title // todo
+
     return (
       <Dialog
         isOpen
@@ -41,7 +42,10 @@ export default class ConfirmPublish extends React.PureComponent {
       >
         <div style={{padding: 10}}>
           <p>
-            Are you sure you would like to publish <strong>{title}</strong>?
+            Are you sure you would like to publish the document{' '}
+            <strong>
+              <DocTitle document={(draft || published)} />
+            </strong>?
           </p>
           <p>
             {published && `It was last published ${moment(published._updatedAt).fromNow()}`}

@@ -6,6 +6,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import renderReferringDocumentItem from './renderReferringDocumentItem'
+import DocTitle from './DocTitle'
 
 export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
   static propTypes = {
@@ -27,10 +28,8 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
     }
   }
 
-
   render() {
     const {isCheckingReferringDocuments, referringDocuments, draft, published, onCancel} = this.props
-    const title = (draft || published).title // todo
 
     const hasReferringDocuments = referringDocuments.length > 0
     const actions = [
@@ -68,7 +67,10 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <div style={{padding: 10}}>
             <p>
-              Are you sure you would like to delete the document <strong>{title}</strong>?
+              Are you sure you would like to delete the document{' '}
+              <strong>
+                <DocTitle document={(draft || published)} />
+              </strong>?
             </p>
             <h2>Warning!</h2>
             <p>
