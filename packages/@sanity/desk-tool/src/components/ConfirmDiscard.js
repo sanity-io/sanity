@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import moment from 'moment'
+import DocTitle from './DocTitle'
 
 const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 
@@ -26,7 +27,6 @@ export default class ConfirmDiscard extends React.PureComponent {
 
   render() {
     const {draft, published, onCancel} = this.props
-    const title = draft.title // todo
     const confirmAction = {
       name: 'confirm',
       title: `Yes, discard ${published ? 'changes' : 'document'}`,
@@ -44,7 +44,11 @@ export default class ConfirmDiscard extends React.PureComponent {
       >
         <div style={{padding: 10}}>
           <p>
-            Are you sure you would like to discard {published ? 'changes in' : 'the document'} <strong>{title}</strong>?
+            Are you sure you would like to discard {published ? 'changes in' : 'the document'}
+            {' '}
+            <strong>
+              <DocTitle document={(draft || published)} />
+            </strong>?
           </p>
           <p>
             This will {
