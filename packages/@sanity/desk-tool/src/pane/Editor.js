@@ -8,13 +8,11 @@ import ConfirmPublish from '../components/ConfirmPublish'
 import ConfirmDiscard from '../components/ConfirmDiscard'
 import ConfirmDelete from '../components/ConfirmDelete'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
-import ReferringDocumentsHelper from '../components/ReferringDocumentsHelper'
 import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
-import VisibilityOnIcon from 'part:@sanity/base/visibility-icon'
 import styles from './styles/Editor.css'
 import copyDocument from '../utils/copyDocument'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
@@ -36,48 +34,44 @@ function listen(target, eventType, callback, useCapture = false) {
   }
 }
 
-const MENU_ITEM_DUPLICATE = {
+const getDuplicateItem = (draft, published) => ({
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
   divider: true
-}
+})
 
-const MENU_ITEM_DISCARD = {
+const getDiscardItem = (draft, published) => ({
   action: 'discard',
-  title: 'Discard changes…',
+  title: published ? 'Discard changes…' : 'Discard…',
   icon: UndoIcon,
-}
+  isDisabled: !draft
+})
 
-const MENU_ITEM_UNPUBLISH = {
+const getUnpublishItem = (draft, published) => ({
   action: 'unpublish',
   title: 'Unpublish…',
-  icon: VisibilityOffIcon
-}
+  icon: VisibilityOffIcon,
+  divider: true,
+  isDisabled: !published
+})
 
-const MENU_ITEM_PUBLISH = {
-  action: 'publish',
-  title: 'Publish…',
-  icon: VisibilityOnIcon,
-  divider: true
-}
-
-const MENU_ITEM_DELETE = {
+const getDeleteItem = (draft, published) => ({
   action: 'delete',
   title: 'Delete…',
   icon: TrashIcon,
   divider: true,
   danger: true
-}
-
+})
 
 const getMenuItems = (draft, published) => ([
-  published && draft && MENU_ITEM_DISCARD,
-  draft && MENU_ITEM_PUBLISH,
-  published && MENU_ITEM_UNPUBLISH,
-  MENU_ITEM_DUPLICATE,
-  MENU_ITEM_DELETE,
-]).filter(Boolean)
+  getDiscardItem,
+  getUnpublishItem,
+  getDuplicateItem,
+  getDeleteItem,
+])
+  .map(fn => fn(draft, published))
+  .filter(Boolean)
 
 const INITIAL_STATE = {
   inspect: false,
@@ -164,10 +158,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     })
   }, 1500, {trailing: true})
 
-  handleCancelDeleteRequest = () => {
-    this.setState({referringDocuments: null})
-  }
-
   handleCreateCopy = () => {
     const {router, draft, published} = this.props
     documentStore.create(newDraftFrom(copyDocument(draft || published))).subscribe(copied => {
@@ -209,11 +199,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     this.setState({showConfirmUnpublish: false})
   }
 
-  handleCancelDelete= () => {
+  handleCancelDelete = () => {
     this.setState({showConfirmDelete: false})
   }
 
-  handleCancelDiscard= () => {
+  handleCancelDiscard = () => {
     this.setState({showConfirmDiscard: false})
   }
 
@@ -282,7 +272,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
     const {
       inspect,
-      referringDocuments,
       showSavingStatus,
       showConfirmPublish,
       showConfirmDelete,
@@ -348,13 +337,13 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           )}
           {!showSavingStatus && (
-            <div className={styles.savingStatus}>
-              ✓ Saved {/*{moment(value._updatedAt).fromNow()} */}
+            <div className={styles.savingStatus} title={`Last saved ${moment(value._updatedAt).fromNow()}`}>
+              ✓ Saved
             </div>
           )}
           <div className={styles.publishButton}>
             <Button disabled={!draft} onClick={this.handlePublishButtonClick} color="primary">
-              Publish
+              {(published && draft) ? 'Publish changes' : 'Publish'}
             </Button>
           </div>
           <div className={styles.functions}>
@@ -389,14 +378,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <InspectView
             value={value}
             onClose={() => this.setState({inspect: false})}
-          />
-        )}
-
-        {referringDocuments && (
-          <ReferringDocumentsHelper
-            documents={referringDocuments}
-            currentValue={value}
-            onCancel={this.handleCancelDeleteRequest}
           />
         )}
         {showConfirmPublish && (

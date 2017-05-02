@@ -36,7 +36,7 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
     const hasReferringDocuments = referringDocuments.length > 0
     const actions = [
       !isCheckingReferringDocuments && {name: 'confirm', color: 'danger', title: 'Unpublish now', disabled: hasReferringDocuments},
-      ACTION_CANCEL
+      {name: 'cancel', title: hasReferringDocuments ? 'Close' : 'Cancel', kind: 'secondary'}
     ].filter(Boolean)
 
     return (
@@ -71,7 +71,7 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
               Are you sure you would like to unpublish the document <strong>{title}</strong>?
             </p>
             <p>
-              It will no longer be available for the public, but it will not be deleted and can be published again later.
+              It will no longer be available for the public, but it will not be deleted and can be published again later if you change your mind.
             </p>
           </div>
         )}
