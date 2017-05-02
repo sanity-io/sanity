@@ -3,6 +3,7 @@ import React from 'react'
 import styles from 'part:@sanity/components/menus/default-style'
 import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
+import classNames from 'classnames'
 
 class DefaultMenu extends React.Component {
   static propTypes = {
@@ -118,13 +119,14 @@ class DefaultMenu extends React.Component {
               return (
                 <li
                   key={i}
-                  className={`
-                    ${item === focusedItem ? styles.focusedItem : styles.item}
-                    ${item.divider && styles.divider ? styles.divider : ''}
-                  `}
+                  className={classNames([
+                    item === focusedItem ? styles.focusedItem : styles.item,
+                    item.isDisabled && styles.isDisabled,
+                    item.divider && styles.divider
+                  ])}
                 >
                   <a
-                    onClick={this.handleItemClick}
+                    onClick={item.isDisabled ? null : this.handleItemClick}
                     data-action-id={i}
                     className={item.danger ? styles.dangerLink : styles.link}
                     onFocus={this.handleFocus}
@@ -132,7 +134,7 @@ class DefaultMenu extends React.Component {
                     onKeyPress={this.handleKeyPress}
                   >
                     {
-                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
+                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon}/></span>
                     }
                     {item.title}
                     {
