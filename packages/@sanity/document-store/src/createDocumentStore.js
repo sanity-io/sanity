@@ -1,5 +1,4 @@
 import Observable from '@sanity/observable'
-import createCache from './utils/createCache'
 import {omit} from 'lodash'
 import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
@@ -20,7 +19,7 @@ function createBufferedDocument(documentId, server) {
     .filter(event => event.type === 'snapshot')
     .map(event => event.document)
     .map(snapshot => {
-      const bufferedDocument = new BufferedDocument(snapshot)
+      const bufferedDocument = new BufferedDocument(snapshot || null)
 
       bufferedDocument.commitHandler = function commitHandler(opts) {
         const payload = opts.mutation.params
@@ -91,6 +90,9 @@ function createBufferedDocument(documentId, server) {
           }
           bufferedDocument.add(new Mutation({mutations: [mutation]}))
         },
+        createIfNotExists(document) {
+          bufferedDocument.add(new Mutation({mutations: [{createIfNotExists: document}]}))
+        },
         delete() {
           bufferedDocument.add(new Mutation({mutations: [{delete: {id: documentId}}]}))
         },
@@ -127,6 +129,9 @@ function createBufferedDocument(documentId, server) {
     },
     create(document) {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.create(document))
+    },
+    createIfNotExists(document) {
+      cachedBuffered.subscribe(bufferedDoc => bufferedDoc.createIfNotExists(document))
     },
     delete() {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
