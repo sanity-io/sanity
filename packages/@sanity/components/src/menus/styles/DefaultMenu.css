@@ -61,6 +61,10 @@
   border-top: 1px solid var(--gray-light);
 }
 
+.isDisabled {
+  opacity: 0.4;
+}
+
 .opened {
   composes: root;
   display: block;
