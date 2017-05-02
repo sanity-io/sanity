@@ -25,7 +25,12 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   static defaultProps = {
-    color: 'default'
+    color: 'default',
+    isOpen: false,
+    showHeader: false,
+    onAction() {},
+    onOpen() {},
+    actions: []
   }
 
   componentDidMount() {
