@@ -1,7 +1,6 @@
 // @flow weak
 import documentStore from 'part:@sanity/base/datastore/document'
 import gradientPatchAdapter from './utils/gradientPatchAdapter'
-import PatchEvent from '../PatchEvent'
 
 export function checkout(documentId) {
   const local = documentStore.checkout(documentId)

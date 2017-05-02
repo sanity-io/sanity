@@ -4,24 +4,7 @@ import React from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultList from 'part:@sanity/components/lists/default'
 import styles from './styles/ReferringDocumentsHelper.css'
-
-import schema from 'part:@sanity/base/schema'
-import Preview from 'part:@sanity/base/preview'
-import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
-
-function renderReferringDocumentItem(item, index, options) {
-  const type = schema.get(item._type)
-  const linkState = {
-    selectedDocumentId: item._id,
-    selectedType: type.name,
-    action: 'edit'
-  }
-  return (
-    <StateLinkListItem state={linkState}>
-      <Preview value={item} type={type} />
-    </StateLinkListItem>
-  )
-}
+import renderReferringDocumentItem from './renderReferringDocumentItem'
 
 export default function ReferringDocumentsHelper(props) {
   const docCount = (props.documents.length > 100)
