@@ -58,7 +58,7 @@ function isCreate(routerState) {
 }
 
 function getDocumentKey(document) {
-  return document._id
+  return getPublishedId(document._id)
 }
 
 export default withRouterHOC(class SchemaPaneResolver extends React.PureComponent {

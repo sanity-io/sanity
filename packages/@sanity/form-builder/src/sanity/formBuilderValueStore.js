@@ -3,14 +3,13 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 export function checkout(documentId) {
-  const local = documentStore.checkout(documentId)
+  const document = documentStore.checkout(documentId)
 
-
-  const events$ = local.events.map(event =>
-    (event.type === 'mutation' ? prepareMutationEvent(event) : event)
+  const events$ = document.events.map(event =>
+    (event.type === 'mutation' ? preparePatchEvent(event) : event)
   )
 
-  function prepareMutationEvent(event) {
+  function preparePatchEvent(event) {
     const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
     return {
       ...event,
@@ -19,10 +18,10 @@ export function checkout(documentId) {
   }
 
   return {
-    ...local,
+    ...document,
     events: events$,
     patch(patches: Array<Patch>) {
-      local.patch(gradientPatchAdapter.fromFormBuilder(patches))
+      document.patch(gradientPatchAdapter.fromFormBuilder(patches))
     }
   }
 }

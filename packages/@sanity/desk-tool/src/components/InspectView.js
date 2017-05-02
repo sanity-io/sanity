@@ -7,6 +7,7 @@ import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
+import {getPublishedId} from '../utils/draftUtils'
 
 const lru = HLRU(1000)
 
@@ -79,7 +80,7 @@ export default class InspectView extends React.PureComponent {
       <DefaultDialog
         isOpen
         showHeader
-        title={`Inspecting ${value._id}`}
+        title={`Inspecting ${getPublishedId(value._id)}`}
         className={styles.dialog}
         onClose={onClose}
       >

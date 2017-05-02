@@ -21,8 +21,8 @@ import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
 import dataAspects from '../utils/dataAspects'
 import {debounce, truncate} from 'lodash'
-import moment from 'moment'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
+import TimeAgo from '../components/TimeAgo'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -43,9 +43,9 @@ const getDuplicateItem = (draft, published) => ({
 
 const getDiscardItem = (draft, published) => ({
   action: 'discard',
-  title: published ? 'Discard changes…' : 'Discard…',
+  title: 'Discard changes…',
   icon: UndoIcon,
-  isDisabled: !draft
+  isDisabled: !draft || !published
 })
 
 const getUnpublishItem = (draft, published) => ({
@@ -328,16 +328,24 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           </h1>
 
           <div className={styles.dates}>
-            <div>Created {moment((published || draft)._createdAt).fromNow()}</div>
-            <div>{published ? `Published ${moment(published._updatedAt).fromNow()}` : 'Not published'}</div>
+            <div>
+              {published
+                ? <span>Last published <TimeAgo time={published._updatedAt} /></span>
+                : 'Not published'
+              }
+            </div>
+            <div>
+              <span>Last edited <TimeAgo time={(draft || published)._updatedAt} /></span>
+            </div>
           </div>
+
           {showSavingStatus && (
             <div className={styles.savingStatus}>
               <span className={styles.spinner}><Spinner /></span> Saving…
             </div>
           )}
           {!showSavingStatus && (
-            <div className={styles.savingStatus} title={`Last saved ${moment(value._updatedAt).fromNow()}`}>
+            <div className={styles.savingStatus}>
               ✓ Saved
             </div>
           )}
