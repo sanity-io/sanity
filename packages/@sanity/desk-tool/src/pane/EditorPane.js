@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/EditorPane.css'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
-import {checkout, patches} from 'part:@sanity/form-builder'
+import FormBuilder, {checkout, patches} from 'part:@sanity/form-builder'
 import {throttle} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
@@ -13,6 +13,13 @@ const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
   isDeleted: false,
   snapshot: null
+}
+
+const INITIAL_STATE = {
+  isSaving: false,
+  isCreatingDraft: false,
+  draft: INITIAL_DOCUMENT_STATE,
+  published: INITIAL_DOCUMENT_STATE
 }
 
 function documentEventToState(currentState, event) {
@@ -48,12 +55,7 @@ export default class EditorPane extends React.PureComponent {
     typeName: PropTypes.string.isRequired
   }
 
-  state = {
-    isSaving: false,
-    isCreatingDraft: false,
-    draft: INITIAL_DOCUMENT_STATE,
-    published: INITIAL_DOCUMENT_STATE
-  }
+  state = INITIAL_STATE
 
   setup(documentId) {
     this.dispose()
@@ -62,13 +64,29 @@ export default class EditorPane extends React.PureComponent {
 
     this.subscription = this.published
       .events.map(event => ({...event, status: 'published'}))
-      .merge(this.draft.events.map(event => ({...event, status: 'draft'})))
+      .merge(
+        this.draft.events
+          .do(this.receiveDraftEvent)
+          .map(event => ({...event, status: 'draft'}))
+      )
       .subscribe(event => {
         this.setState(currentState => {
           const key = event.status // either 'draft' or 'published'
           return {[key]: documentEventToState(currentState[key], event)}
         })
       })
+  }
+
+  receiveDraftEvent = event => {
+    if (event.type !== 'mutation') {
+      return
+    }
+    // Broadcast incoming patches to input components that applies patches on their own
+    // Note: This is *experimental*
+    FormBuilder.receivePatches({
+      patches: event.patches,
+      snapshot: event.document
+    })
   }
 
   getDraftId() {
@@ -85,7 +103,7 @@ export default class EditorPane extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.documentId !== this.props.documentId) {
-      this.setState(INITIAL_DOCUMENT_STATE)
+      this.setState(INITIAL_STATE)
       this.setup(nextProps.documentId)
     }
   }
@@ -183,7 +201,6 @@ export default class EditorPane extends React.PureComponent {
         this.setState({isSaving: false})
       }
     })
-
   }, 1000, {leading: true, trailing: true})
 
   render() {
