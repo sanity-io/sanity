@@ -63,6 +63,7 @@ storiesOf('Dialogs')
             showHeader={boolean('Show Header', false)}
             kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
             onClose={action('onClose')}
+            onAction={action('onAction')}
             actions={object('actions', dialogActions)}
           >
             {text('content', 'This is the content')}
@@ -76,6 +77,30 @@ storiesOf('Dialogs')
 .add(
   'Fullscreen',
   () => {
+    const actions = [
+      {
+        index: '1',
+        title: 'Default'
+      },
+      {
+        index: '2',
+        title: 'Finish',
+        color: 'success'
+      },
+      {
+        index: '3',
+        title: 'Cancel',
+        color: 'danger'
+      },
+      {
+        index: '4',
+        title: 'Secondary',
+        kind: 'secondary'
+      }
+    ]
+
+    const dialogActions = boolean('has actions', false) ? actions : false
+
     return (
       <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
         <div>
@@ -83,9 +108,11 @@ storiesOf('Dialogs')
           <FullscreenDialog
             title={text('title', 'This is the title')}
             onClose={action('onClose')}
-            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning'])}
+            color={select('Color', ['default', 'danger', 'success', 'info', 'warning'])}
             centered={boolean('Centered', false)}
             isOpen={boolean('is Open', true)}
+            actions={object('actions', dialogActions)}
+            onAction={action('onAction')}
           >
             {text('content', 'This is the content')}
           </FullscreenDialog>
