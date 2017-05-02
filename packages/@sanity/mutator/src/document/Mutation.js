@@ -72,13 +72,16 @@ export default class Mutation {
     const operations = []
     this.mutations.forEach(mutation => {
       if (mutation.create) {
-        operations.push(doc => (doc === null ? mutation.create : doc))
+        // TODO: Fail entire patch if document did exist
+        operations.push(
+          doc => (doc === null ? Object.assign(mutation.create, {_createdAt: this.params.timestamp}) : doc)
+        )
       } else if (mutation.createIfNotExists) {
         operations.push(
-          doc => (doc === null ? mutation.createIfNotExists : doc)
+          doc => (doc === null ? Object.assign(mutation.createIfNotExists, {_createdAt: this.params.timestamp}) : doc)
         )
       } else if (mutation.createOrReplace) {
-        operations.push(() => mutation.createOrReplace)
+        operations.push(() => Object.assign(mutation.createOrReplace, {_createdAt: this.params.timestamp}))
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {
