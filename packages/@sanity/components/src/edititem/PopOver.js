@@ -251,7 +251,7 @@ export default class EditItemPopOver extends React.Component {
     let modalTranslateY = 0
     let newScrollTop
 
-    const padding = 20
+    const padding = 80
 
     // Make sure the whole width is visible within the screen,
     // and move arrow to point to originating element
