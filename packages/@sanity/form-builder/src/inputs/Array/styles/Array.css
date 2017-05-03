@@ -17,6 +17,11 @@
 .popupAnchorRelative {
   margin-left: calc(var(--medium-padding) * -1);
   margin-right: calc(var(--medium-padding) * -1);
+
+  /* Hack for the draghandle */
+  @nest &.sortable {
+    margin-left: calc(var(--medium-padding) * -1 - 2.5rem);
+  }
 }
 
 .warning {

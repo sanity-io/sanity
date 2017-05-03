@@ -284,6 +284,8 @@ export default class ArrayInput extends React.Component {
 
     const isRelative = type.options && type.options.editModal == 'fold'
 
+    const isSortable = get(type, 'options.sortable') !== false
+
     return (
       <div style={{position: 'relative'}}>
         <ItemPreview
@@ -292,7 +294,12 @@ export default class ArrayInput extends React.Component {
           layout={layout}
           onRemove={this.handleRemoveItem}
         />
-        <div className={isRelative ? styles.popupAnchorRelative : styles.popupAnchor}>
+        <div
+          className={`
+            ${isRelative ? styles.popupAnchorRelative : styles.popupAnchor}
+            ${isSortable ? styles.sortable : styles.nonSortable}
+          `}
+        >
           {this.getEditItem() === item && this.renderEditItemForm(item)}
         </div>
       </div>
