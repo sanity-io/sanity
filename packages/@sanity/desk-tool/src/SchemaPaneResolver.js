@@ -15,8 +15,8 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraft, isDraftId, newDraftFrom} from './utils/draftUtils'
-import {uniqBy, partition} from 'lodash'
+import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId, newDraftFrom} from './utils/draftUtils'
+import {partition} from 'lodash'
 import {isPublishedId} from '../lib/utils/draftUtils'
 
 // Debounce function on requestAnimationFrame
@@ -190,10 +190,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   getDocumentsPane(schemaType) {
     const selectedDocumentId = this.props.router.state.selectedDocumentId
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {
-  _id,
-  _type
-}`
+    const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {_id, _type}`
     return (
       <QueryContainer
         query={query}
