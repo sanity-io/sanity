@@ -139,7 +139,7 @@ export default class QueryContainer extends React.Component {
 
   componentWillUpdate(nextProps) {
     const sameQuery = nextProps.query === this.props.query
-    const sameParams = nextProps.params === this.props.params
+    const sameParams = shallowEquals(nextProps.params, this.props.params)
 
     if (!sameQuery || !sameParams) {
       this.setState(createInitialState())
