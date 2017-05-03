@@ -143,3 +143,25 @@
     opacity: 0.5;
   }
 }
+.item {
+  position: relative;
+  padding-right: 1.5em;
+}
+
+.selectedItem {
+  composes: item;
+  background-color: var(--selected-item-color);
+  color: var(--selected-item-color--inverted);
+}
+
+.itemStatus {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  z-index: 1;
+  @nest .selectedItem & {
+    color: var(--selected-item-color--inverted);
+  }
+}

@@ -18,6 +18,8 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId, newDraftFrom} from './utils/draftUtils'
 import {partition} from 'lodash'
 import {isPublishedId} from '../lib/utils/draftUtils'
+import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
+import EditIcon from 'part:@sanity/base/edit-icon'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -171,18 +173,25 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
         highlighted={options.isHighlighted}
         hasFocus={options.hasFocus}
       >
-        <pre>
-          {JSON.stringify({
-            isSelected,
-            hasDraft: item.hasDraft,
-            hasPublished: item.hasPublished
-          }, null, 2)}
-        </pre>
-        <Preview
-          value={item}
-          layout={listLayout}
-          type={type}
-        />
+        <div className={isSelected ? styles.selectedItem : styles.item}>
+          <Preview
+            value={item}
+            layout={listLayout}
+            type={type}
+          />
+          <div className={styles.itemStatus}>
+            {
+              !item.hasPublished && (
+                <i title="Is unpublished"><VisibilityOffIcon /></i>
+              )
+            }
+            {
+              item.hasDraft && item.hasPublished && (
+                <i title="Unpublished changes"><EditIcon /></i>
+              )
+            }
+          </div>
+        </div>
       </StateLinkListItem>
     )
   }
