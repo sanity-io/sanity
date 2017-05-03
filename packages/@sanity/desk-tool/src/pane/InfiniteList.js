@@ -9,6 +9,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     height: PropTypes.number,
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
+    className: PropTypes.string,
     getItemKey: PropTypes.func,
     listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
   }
@@ -41,7 +42,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     const {getItemKey} = this.props
     return (
       <div className="infinite-list-item" key={getItemKey(item)}>
-        {this.props.renderItem(item, i, {})}
+        {this.props.renderItem(item, i)}
       </div>
     )
   }

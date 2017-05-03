@@ -9,6 +9,10 @@ export function isDraftId(id) {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
+export function isPublishedId(id) {
+  return !isDraftId(id)
+}
+
 export function getDraftId(id) {
   return isDraftId(id) ? id : DRAFTS_PREFIX + id
 }
