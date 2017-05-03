@@ -14,6 +14,7 @@
     left: 0;
     padding-left: var(--large-padding);
     padding-right: var(--large-padding);
+    padding-bottom: 4rem;
     max-width: 40em;
     width: 100%;
     clear: both;
