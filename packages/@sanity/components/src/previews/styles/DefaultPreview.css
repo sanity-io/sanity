@@ -12,10 +12,14 @@
 .heading {
   position: absolute;
   top: 0.25em;
-  left: 2.5em;
   right: 0.25em;
   height: 2em;
   box-sizing: border-box;
+  left: 0.25em;
+
+  @nest .hasMedia & {
+    left: 2.5em;
+  }
 }
 
 .ellipsis {
@@ -64,7 +68,7 @@
   height: 2em;
   width: 2em;
   overflow: hidden;
-  background-color: var(--preview-placeholder-text-color);
+  background-color: var(--gray-lighter);
 
   @nest & div {
     position: relative;
@@ -85,21 +89,35 @@
 
   @nest & .title {
     height: 1.2rem;
-    width: calc(100% - 3rem);
-    x: 2.5rem;
+    width: calc(100% - 0.5rem);
+    x: 0.25em;
     y: 0.25rem;
+
+    @nest .hasMedia & {
+      width: calc(100% - 3rem);
+      x: 2.5rem;
+    }
   }
 
   @nest & .subtitle {
     height: 0.5rem;
     width: 40%;
-    x: 2.5rem;
+    x: 0.25em;
     y: 1.7rem;
+
+    @nest .hasMedia & {
+      x: 2.5rem;
+    }
   }
 
   @nest & .media {
-    x: 0.25rem;
-    y: 0.25rem;
+    display: none;
+
+    @nest .hasMedia & {
+      display: block;
+      x: 0.25rem;
+      y: 0.25rem;
+    }
   }
 }
 
