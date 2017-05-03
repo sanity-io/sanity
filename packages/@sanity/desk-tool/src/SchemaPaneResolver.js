@@ -15,8 +15,9 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import {DRAFTS_FOLDER, getPublishedId, isDraft, newDraftFrom} from './utils/draftUtils'
-import {keyBy} from 'lodash'
+import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraft, isDraftId, newDraftFrom} from './utils/draftUtils'
+import {uniqBy, partition} from 'lodash'
+import {isPublishedId} from '../lib/utils/draftUtils'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -35,8 +36,20 @@ function debounceRAF(fn) {
 // Removes published documents that also has a draft
 // Todo: this is an ugly hack we should get rid of as it requires the whole set of documents to be in memory to work
 function removePublishedWithDrafts(documents) {
-  const drafts = keyBy(documents.filter(isDraft), draft => getPublishedId(draft._id))
-  return documents.filter(doc => !(doc._id in drafts))
+
+  const [draftIds, publishedIds] = partition(documents.map(doc => doc._id), isDraftId)
+
+  return documents
+    .map(doc => {
+      const publishedId = getPublishedId(doc._id)
+      const draftId = getDraftId(doc._id)
+      return ({
+        ...doc,
+        hasPublished: publishedIds.includes(publishedId),
+        hasDraft: draftIds.includes(draftId)
+      })
+    })
+    .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
 }
 
 
@@ -141,21 +154,30 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   renderDocumentPaneItem = (item, index, options = {}) => {
-    const {selectedType} = this.props.router.state
+    const {selectedType, selectedDocumentId} = this.props.router.state
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
     const linkState = {
-      selectedDocumentId: getPublishedId(item._id),
+      selectedDocumentId: item._id,
       selectedType: type.name,
       action: 'edit'
     }
-    const element = (
+
+    const isSelected = selectedDocumentId && getPublishedId(item._id) === getPublishedId(selectedDocumentId)
+
+    return (
       <StateLinkListItem
         state={linkState}
         highlighted={options.isHighlighted}
-        selected={options.isSelected}
         hasFocus={options.hasFocus}
       >
+        <pre>
+          {JSON.stringify({
+            isSelected,
+            hasDraft: item.hasDraft,
+            hasPublished: item.hasPublished
+          }, null, 2)}
+        </pre>
         <Preview
           value={item}
           layout={listLayout}
@@ -163,19 +185,23 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
         />
       </StateLinkListItem>
     )
-    return item.isDraft ? <div className={styles.draftItem}>{element}</div> : element
   }
 
   getDocumentsPane(schemaType) {
+    const selectedDocumentId = this.props.router.state.selectedDocumentId
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
     const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {
   _id,
-  _type,
-  "isDraft": (_id in path($draftsPath)),
-  "isPublished": !(_id in path($draftsPath))
+  _type
 }`
     return (
-      <QueryContainer query={query} params={params} type={schemaType} listLayout={this.getListLayoutForType(schemaType.name)}>
+      <QueryContainer
+        query={query}
+        params={params}
+        type={schemaType}
+        selectedId={selectedDocumentId}
+        listLayout={this.getListLayoutForType(schemaType.name)}
+      >
         {({result, loading, error, type, listLayout}) => {
           if (error) {
             return (
