@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.104.45",
+  "version": "0.105.1",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -14,11 +14,11 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/check": "^0.104.44",
-    "@sanity/mutator": "^0.104.45",
-    "@sanity/resolver": "^0.104.44",
-    "@sanity/server": "^0.104.44",
-    "@sanity/util": "^0.104.44",
+    "@sanity/check": "^0.105.1",
+    "@sanity/mutator": "^0.105.1",
+    "@sanity/resolver": "^0.105.1",
+    "@sanity/server": "^0.105.1",
+    "@sanity/util": "^0.105.1",
     "batch-stream-operation": "^1.0.2",
     "debug": "^2.6.3",
     "deep-sort-object": "^1.0.1",
