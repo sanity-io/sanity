@@ -330,12 +330,12 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <div className={styles.dates}>
             <div>
               {published
-                ? <span>Last published <TimeAgo time={published._updatedAt} /></span>
+                ? <span>Published <TimeAgo time={published._updatedAt} /></span>
                 : 'Not published'
               }
             </div>
             <div>
-              <span>Last edited <TimeAgo time={(draft || published)._updatedAt} /></span>
+              <span>Edited <TimeAgo time={(draft || published)._updatedAt} /></span>
             </div>
           </div>
 
