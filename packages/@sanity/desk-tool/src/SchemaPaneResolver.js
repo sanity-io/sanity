@@ -182,12 +182,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           <div className={styles.itemStatus}>
             {
               !item.hasPublished && (
-                <i title="Is unpublished"><VisibilityOffIcon /></i>
+                <i title="Not published"><VisibilityOffIcon /></i>
               )
             }
             {
               item.hasDraft && item.hasPublished && (
-                <i title="Unpublished changes"><EditIcon /></i>
+                <i title="Has changes not yet published"><EditIcon /></i>
               )
             }
           </div>
