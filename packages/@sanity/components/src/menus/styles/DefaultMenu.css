@@ -23,6 +23,18 @@
 .item {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   white-space: nowrap;
+
+  @nest &:not(.isDisabled) {
+    @nest & .link {
+      @nest &:hover {
+        background-color: var(--gray-lighter);
+      }
+    }
+
+    @nest &.focusedItem {
+      background-color: var(--gray-lighter);
+    }
+  }
 }
 
 .focusedItem {
@@ -42,14 +54,6 @@
   text-decoration: none;
   color: inherit;
   outline: none;
-
-  @nest .focusedItem & {
-    background-color: var(--gray-lighter);
-  }
-
-  @nest &:hover {
-    background-color: var(--gray-lighter);
-  }
 }
 
 .dangerLink {

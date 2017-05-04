@@ -134,11 +134,11 @@ class DefaultMenu extends React.Component {
                     onKeyPress={this.handleKeyPress}
                   >
                     {
-                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon}/></span>
+                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
                     }
                     {item.title}
                     {
-                      ripple && <Ink />
+                      ripple && !item.isDisabled && <Ink />
                     }
                   </a>
                 </li>

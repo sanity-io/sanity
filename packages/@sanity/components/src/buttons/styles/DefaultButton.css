@@ -50,17 +50,19 @@
   background-color: var(--default-button-color);
   color: var(--default-button-color--text);
 
-  @nest &:hover {
-    background-color: color(var(--default-button-color) lightness(-5%));
-  }
+  @nest &:not(.disabled) {
+    @nest &:hover {
+      background-color: color(var(--default-button-color) lightness(-5%));
+    }
 
-  @nest &:focus {
-    background-color: color(var(--default-button-color) lightness(-20%));
-  }
+    @nest &:focus {
+      background-color: color(var(--default-button-color) lightness(-20%));
+    }
 
-  @nest &:active {
-    background-color: color(var(--default-button-color) lightness(+10%));
-    outline: 0;
+    @nest &:active {
+      background-color: color(var(--default-button-color) lightness(+10%));
+      outline: 0;
+    }
   }
 }
 
@@ -71,17 +73,19 @@
   box-shadow: none;
   composes: default;
 
-  @nest &:hover {
-    background-color: color(var(--gray-base) a(10%));
-  }
+  @nest &:not(.disabled) {
+    @nest &:hover {
+      background-color: color(var(--gray-base) a(10%));
+    }
 
-  @nest &:focus {
-    border-style: dotted;
-    background-color: color(var(--gray-base) a(10%));
-  }
+    @nest &:focus {
+      border-style: dotted;
+      background-color: color(var(--gray-base) a(10%));
+    }
 
-  @nest &:active {
-    border-style: solid;
+    @nest &:active {
+      border-style: solid;
+    }
   }
 }
 
@@ -90,17 +94,21 @@
   background-color: var(--brand-primary);
   color: var(--brand-primary--text);
 
-  @nest &:hover, &:focus {
-    background-color: color(var(--brand-primary) lightness(-5%));
+  @nest &:not(.disabled) {
+    @nest &:hover, &:focus {
+      background-color: color(var(--brand-primary) lightness(-5%));
+    }
   }
 
   @nest &.secondary {
     color: var(--brand-primary);
 
-    @nest &:hover, &:focus {
-      background-color: color(var(--brand-primary) a(2%));
-      color: var(--brand-primary);
-      border-color: var(--brand-primary);
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--brand-primary) a(2%));
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+      }
     }
   }
 
@@ -109,9 +117,11 @@
     background-color: transparent;
     color: var(--brand-primary);
 
-    @nest &:hover, &:focus {
-      background-color: color(var(--brand-primary) a(10%));
-      border-color: var(--brand-primary);
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--brand-primary) a(10%));
+        border-color: var(--brand-primary);
+      }
     }
   }
 
@@ -119,12 +129,14 @@
     background-color: transparent;
     color: var(--brand-primary);
 
-    @nest &:hover {
-      background-color: color(var(--brand-primary) a(10%));
-    }
+    @nest &:not(.disabled) {
+      @nest &:hover {
+        background-color: color(var(--brand-primary) a(10%));
+      }
 
-    @nest &:focus {
-      border-color: var(--brand-primary);
+      @nest &:focus {
+        border-color: var(--brand-primary);
+      }
     }
   }
 }
@@ -134,17 +146,21 @@
   background-color: var(--state-danger-color);
   color: var(--state-danger-color--text);
 
-  @nest &:hover, &:focus {
-    background-color: color(var(--state-danger-color) lightness(-10%));
+  @nest &:not(.disabled) {
+    @nest &:hover, &:focus {
+      background-color: color(var(--state-danger-color) lightness(-10%));
+    }
   }
 
   @nest &.secondary {
     color: var(--state-danger-color);
 
-    @nest &:hover, &:focus {
-      background-color: color(var(--state-danger-color) a(10%));
-      color: var(--state-danger-color);
-      border-color: var(--state-danger-color);
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--state-danger-color) a(10%));
+        color: var(--state-danger-color);
+        border-color: var(--state-danger-color);
+      }
     }
   }
 
@@ -153,14 +169,16 @@
     background-color: transparent;
     color: var(--state-danger-color);
 
-    @nest &:hover {
-      background-color: color(var(--state-danger-color) a(10%));
-      border-color: var(--state-danger-color);
-    }
+    @nest &:not(.disabled) {
+      @nest &:hover {
+        background-color: color(var(--state-danger-color) a(10%));
+        border-color: var(--state-danger-color);
+      }
 
-    @nest &:focus {
-      background-color: color(var(--state-danger-color) a(10%));
-      border-color: var(--state-danger-color);
+      @nest &:focus {
+        background-color: color(var(--state-danger-color) a(10%));
+        border-color: var(--state-danger-color);
+      }
     }
   }
 
@@ -168,13 +186,15 @@
     background-color: transparent;
     color: var(--state-danger-color);
 
-    @nest &:hover {
-      background-color: color(var(--state-danger-color) a(10%));
-    }
+    @nest &:not(.disabled) {
+      @nest &:hover {
+        background-color: color(var(--state-danger-color) a(10%));
+      }
 
-    @nest &:focus {
-      background-color: color(var(--state-danger-color) a(10%));
-      border-color: var(--state-danger-color);
+      @nest &:focus {
+        background-color: color(var(--state-danger-color) a(10%));
+        border-color: var(--state-danger-color);
+      }
     }
   }
 }
@@ -184,17 +204,20 @@
   background-color: var(--state-success-color);
   color: var(--state-success-color--text);
 
-  @nest &:hover, &:focus {
-    background-color: color(var(--state-success-color) lightness(-5%));
+  @nest &:not(.disabled) {
+    @nest &:hover, &:focus {
+      background-color: color(var(--state-success-color) lightness(-5%));
+    }
   }
 
   @nest &.secondary {
     color: var(--state-success-color);
-
-    @nest &:hover, &:focus {
-      background-color: color(var(--state-success-color) a(10%));
-      color: var(--state-success-color);
-      border-color: var(--state-success-color);
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--state-success-color) a(10%));
+        color: var(--state-success-color);
+        border-color: var(--state-success-color);
+      }
     }
   }
 
@@ -203,9 +226,11 @@
     background-color: transparent;
     color: var(--state-success-color);
 
-    @nest &:hover, &:focus {
-      background-color: color(var(--state-success-color) a(10%));
-      border-color: var(--state-success-color);
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--state-success-color) a(10%));
+        border-color: var(--state-success-color);
+      }
     }
   }
 
@@ -213,12 +238,14 @@
     background-color: transparent;
     color: var(--state-success-color);
 
-    @nest &:hover {
-      background-color: color(var(--state-success-color) a(10%));
-    }
+    @nest &:not(.disabled) {
+      @nest &:hover {
+        background-color: color(var(--state-success-color) a(10%));
+      }
 
-    @nest &:focus {
-      border-color: var(--state-success-color);
+      @nest &:focus {
+        border-color: var(--state-success-color);
+      }
     }
   }
 }
@@ -226,8 +253,10 @@
 .color__white {
   background-color: var(--white);
 
-  @nest &:hover, &:focus {
-    background-color: color(var(--white) lightness(-5%));
+  @nest &:not(.disabled) {
+    @nest &:hover, &:focus {
+      background-color: color(var(--white) lightness(-5%));
+    }
   }
 
   @nest &.inverted,
@@ -236,8 +265,10 @@
     background-color: transparent;
     color: var(--white);
 
-    @nest &:hover. &:focus {
-      background-color: color(var(--white) lightness(-5%));
+    @nest &:not(.disabled) {
+      @nest &:hover. &:focus {
+        background-color: color(var(--white) lightness(-5%));
+      }
     }
   }
 }
@@ -296,13 +327,14 @@
   color: var(--black);
   opacity: 0.6;
 
-  @nest &:hover, &:focus {
-    opacity: 1;
-    background-color: color(var(--black) a(1%));
+  @nest &:not(.disabled) {
+    @nest &:hover, &:focus {
+      opacity: 1;
+      background-color: color(var(--black) a(1%));
+    }
   }
 }
 
 .disabled {
-  opacity: 0.3;
-  cursor: var(--cursor-disabled);
+  opacity: 0.2;
 }
