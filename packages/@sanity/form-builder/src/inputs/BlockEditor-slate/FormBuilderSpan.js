@@ -139,7 +139,7 @@ export default class FormBuilderSpan extends React.Component {
             memberFields.map(memberField => {
               const fieldValue = value && value[memberField.name]
               return (
-                <RenderField
+                <Field
                   key={memberField.name}
                   field={memberField}
                   level={0}
