@@ -45,7 +45,7 @@ export default class WithFormBuilderValue extends React.PureComponent {
   checkoutDocument(documentId) {
     this.document = checkout(documentId)
 
-    this.subscriptions.replace('documentEvents', document.events
+    this.subscriptions.replace('documentEvents', this.document.events
       .subscribe({
         next: this.handleDocumentEvent,
         // error: this.handleDocumentError
