@@ -351,7 +351,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           )}
           <div className={styles.publishButton}>
             <Button disabled={!draft} onClick={this.handlePublishButtonClick} color="primary">
-              {(published && draft) ? 'Publish changes' : 'Publish'}
+              {published ? 'Publish changes' : 'Publish'}
             </Button>
           </div>
           <div className={styles.functions}>
