@@ -37,7 +37,7 @@
     "observable-props": "^1.2.0",
     "postcss-cssnext": "^2.10.0",
     "promise-props": "^1.0.0",
-    "react-icons": "^2.2.3",
+    "react-icons": "^2.2.4",
     "react-intl": "^2.2.2",
     "shallow-equals": "^1.0.0"
   },
