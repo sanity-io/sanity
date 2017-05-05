@@ -199,7 +199,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   getDocumentsPane(schemaType) {
     const selectedDocumentId = this.props.router.state.selectedDocumentId
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${this.state.sorting}) [0...3000] {_id, _type}`
+    const query = `*[_type == $type] | order(${this.state.sorting}) [0...10000] {_id, _type}`
     return (
       <QueryContainer
         query={query}
