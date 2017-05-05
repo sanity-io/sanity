@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Infinite from 'react-infinite'
+import VirtualList from 'react-tiny-virtual-list'
+
 import enhanceWithAvailHeight from './enhanceWithAvailHeight'
+
 
 export default enhanceWithAvailHeight(class InfiniteList extends React.PureComponent {
 
@@ -21,45 +23,40 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   }
 
   state = {
-    elements: []
+    triggerUpdate: 0
   }
 
-  componentWillMount() {
-    this.setState({
-      elements: this.props.items.map(this.createListElement)
-    })
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.items !== nextProps.items) {
-      this.setState({
-        elements: nextProps.items.map(this.createListElement)
-      })
+  componentWillReceiveProps(prevProps) {
+    if (prevProps.items !== this.props.items) {
+      /* This is needed to break equality checks
+       in VirtualList's sCU in cases where itemCount has not changed,
+       but an elements has been removed or added
+       */
+      this.setState({triggerUpdate: Math.random()})
     }
   }
 
-  createListElement = (item, i) => {
-    const {getItemKey} = this.props
+  renderItem = ({index, style}) => {
+    const {renderItem, getItemKey, items} = this.props
+    const item = items[index]
     return (
-      <div className="infinite-list-item" key={getItemKey(item)}>
-        {this.props.renderItem(item, i)}
+      <div key={getItemKey(item)} style={style}>
+        {renderItem(item, index)}
       </div>
     )
   }
 
   render() {
-    const {listLayout, height, className} = this.props
-    const {elements} = this.state
+    const {listLayout, height, items, className} = this.props
+    const {triggerUpdate} = this.state
     return (
-      <Infinite
-        className={className}
-        elementHeight={listLayout === 'default' ? 40 : 80}
-        containerHeight={height - 65}
-        infiniteLoadBeginEdgeOffset={200}
-        onInfiniteLoad={this.handleInfiniteLoad}
-      >
-        {elements}
-      </Infinite>
+      <VirtualList
+        className={`${className || ''} _triggerUpdate_${triggerUpdate}`}
+        height={height - 65}
+        itemCount={items.length}
+        itemSize={listLayout === 'default' ? 40 : 80}
+        renderItem={this.renderItem}
+      />
     )
   }
 })

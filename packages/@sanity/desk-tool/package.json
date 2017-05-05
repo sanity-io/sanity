@@ -24,7 +24,6 @@
     "@sanity/form-builder": "^0.105.3",
     "@sanity/mutator": "^0.105.1",
     "classnames": "^2.2.5",
-    "shallow-equals": "^1.0.0",
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.10",
     "hashlru": "^2.1.0",
@@ -32,8 +31,9 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "react-click-outside": "^2.2.0",
-    "react-infinite": "^0.10.0",
-    "react-json-inspector": "^7.0.0"
+    "react-json-inspector": "^7.0.0",
+    "react-tiny-virtual-list": "^2.0.5",
+    "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "@sanity/base": "^0.105.1",
