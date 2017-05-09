@@ -7,7 +7,11 @@ const unwantedTags = [
 ]
 
 function isUnwanted(index, node) {
-  return unwantedTags.includes(node.tag)
+  return unwantedTags.includes(node.tagName)
+}
+
+function isEmpty(index, node) {
+  return node.children.length === 0
 }
 
 function findListTypeAndContent(element) {
@@ -35,6 +39,14 @@ export default function cleanUpWordDocument(doc) {
     .find('*')
     .contents()
     .filter(isUnwanted)
+    .remove()
+
+  doc('span')
+    .filter(isEmpty)
+    .remove()
+
+  doc('p')
+    .filter(isEmpty)
     .remove()
 
   // Check if there are any lists, and convert them to html

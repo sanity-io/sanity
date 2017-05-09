@@ -30,7 +30,9 @@ export function cleanupHtml(html) {
   if (isWordDocument) {
     doc = cleanUpWordDocument(doc)
   }
-  return doc.html().trim()
+  // Trim whitespace and remove newlines/carriage returns
+  const cleanHtml = doc.html().trim().replace(/[\r\n]+/g, ' ')
+  return cleanHtml
 }
 
 export function resolveListItem(listNodeTagName) {
