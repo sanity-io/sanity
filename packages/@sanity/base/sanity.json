@@ -30,6 +30,10 @@
       "description": "Function that resolves a preview component for a given type"
     },
     {
+      "name": "part:@sanity/base/configure-client",
+      "description": "Function that configures the default sanity client"
+    },
+    {
       "name": "part:@sanity/base/asset-url-builder-default",
       "implements": "part:@sanity/base/asset-url-builder",
       "description": "Function that generates or modifies asset URLs for display in various contexts",
