@@ -30,8 +30,10 @@ export function cleanupHtml(html) {
   if (isWordDocument) {
     doc = cleanUpWordDocument(doc)
   }
-  // Trim whitespace and remove newlines/carriage returns
-  const cleanHtml = doc.html().trim().replace(/[\r\n]+/g, ' ')
+  const cleanHtml = doc.html()
+    .trim()   // Trim whitespace
+    .replace(/[\r\n]+/g, ' ') // Remove newlines / carriage returns
+    .replace(/ {2,}/g, ' ') // Remove trailing spaces
   return cleanHtml
 }
 
