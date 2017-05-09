@@ -47,6 +47,7 @@ export default class ListView extends React.PureComponent {
             items={items}
             getItemKey={getItemKey}
             renderItem={renderItem}
+            layout={listLayout}
             selectedItem={selectedItem}
           />
         )

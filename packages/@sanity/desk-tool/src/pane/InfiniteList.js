@@ -13,11 +13,11 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     renderItem: PropTypes.func,
     className: PropTypes.string,
     getItemKey: PropTypes.func,
-    listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
+    layout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
   }
 
   static defaultProps = {
-    listLayout: 'default',
+    layout: 'default',
     items: [],
     height: 250
   }
@@ -47,14 +47,14 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   }
 
   render() {
-    const {listLayout, height, items, className} = this.props
+    const {layout, height, items, className} = this.props
     const {triggerUpdate} = this.state
     return (
       <VirtualList
         className={`${className || ''} _triggerUpdate_${triggerUpdate}`}
         height={height - 65}
         itemCount={items.length}
-        itemSize={listLayout === 'default' ? 40 : 80}
+        itemSize={layout === 'default' ? 40 : 80}
         renderItem={this.renderItem}
       />
     )
