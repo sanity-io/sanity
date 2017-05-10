@@ -93,6 +93,9 @@ function createBufferedDocument(documentId, server) {
         createIfNotExists(document) {
           bufferedDocument.add(new Mutation({mutations: [{createIfNotExists: document}]}))
         },
+        createOrReplace(document) {
+          bufferedDocument.add(new Mutation({mutations: [{createOrReplace: document}]}))
+        },
         delete() {
           bufferedDocument.add(new Mutation({mutations: [{delete: {id: documentId}}]}))
         },
@@ -133,6 +136,9 @@ function createBufferedDocument(documentId, server) {
     createIfNotExists(document) {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.createIfNotExists(document))
     },
+    createOrReplace(document) {
+      cachedBuffered.subscribe(bufferedDoc => bufferedDoc.createOrReplace(document))
+    },
     delete() {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
     },
@@ -152,7 +158,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     checkout,
     patch: patchDoc,
     delete: deleteDoc,
-    createOrReplace: TODO('Not implemented yet'),
+    createOrReplace: createOrReplace,
     createIfNotExists: createIfNotExists,
   }
 
@@ -194,7 +200,12 @@ module.exports = function createDocumentStore({serverConnection}) {
   function create(document) {
     return Observable.from(serverConnection.create(document))
   }
+
   function createIfNotExists(document) {
     return Observable.from(serverConnection.createIfNotExists(document))
+  }
+
+  function createOrReplace(document) {
+    return Observable.from(serverConnection.createOrReplace(document))
   }
 }
