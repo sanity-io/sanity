@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/EditorPane.css'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
-import FormBuilder, {checkout, patches} from 'part:@sanity/form-builder'
+import FormBuilder, {checkout} from 'part:@sanity/form-builder'
 import {throttle, omit} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
@@ -164,11 +164,10 @@ export default class EditorPane extends React.PureComponent {
 
     const publishedId = this.getPublishedId()
 
-    this.published.createIfNotExists({_type: this.props.typeName, _id: publishedId})
-    this.published.patch([patches.set({
+    this.published.createOrReplace({
       ...omit(draft, '_createdAt', '_updatedAt'),
       _id: publishedId
-    })])
+    })
 
     return this.published.commit()
       .mergeMap(() => {
