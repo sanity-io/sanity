@@ -2,14 +2,20 @@ import client from 'part:@sanity/base/client'
 import Observable from '@sanity/observable'
 import debounceCollect from './utils/debounceCollect'
 
-const globalListener = Observable
-  .from(client.listen('*[!(_id in path("_.**"))]', {}, {includeResult: false}))
-  .share()
+let _globalListener
+const getGlobalListener = () => {
+  if (!_globalListener) {
+    _globalListener = Observable
+      .from(client.listen('*[!(_id in path("_.**"))]', {}, {includeResult: false}))
+      .share()
+  }
+  return _globalListener
+}
 
 function listen(id) {
   return new Observable(observer => {
     observer.next({type: 'welcome', documentId: id})
-    return globalListener
+    return getGlobalListener()
       .filter(event => event.documentId === id)
       .debounceTime(2000)
       .subscribe(observer)
