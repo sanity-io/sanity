@@ -10,12 +10,35 @@ const Observable = require('./SanityObservable')
  */
 
 function Multicast() {
+  this._observer = null
   this._observable = new Observable(observer => {
-    this.next = val => observer.next(val)
-    this.complete = () => observer.complete()
-    this.error = err => observer.error(err)
+    if (this._observer) {
+      throw new Error('Duplicate observers. This should never happen!')
+    }
+    this._observer = observer
+    return () => {
+      this._observer = null
+    }
   })
     .share()
+}
+
+Multicast.prototype.next = function next(val) {
+  if (this._observer) {
+    this._observer.next(val)
+  }
+}
+
+Multicast.prototype.error = function error(err) {
+  if (this._observer) {
+    this._observer.error(err)
+  }
+}
+
+Multicast.prototype.complete = function complete() {
+  if (this._observer) {
+    this._observer.complete()
+  }
 }
 
 Multicast.prototype.asObservable = function asObservable() {
