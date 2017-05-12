@@ -2,7 +2,6 @@ import createPreviewObserver from './createPreviewObserver'
 import observeWithPaths from './observeWithPaths'
 import resolveRefType from './resolveRefType'
 import prepareForPreview from './prepareForPreview'
-import {pick} from 'lodash'
 import Observable from '@sanity/observable'
 
 const observe = createPreviewObserver(observeWithPaths)
@@ -28,5 +27,5 @@ export default function observeForPreview(value, type, fields) {
   const paths = targetFields.map(key => selection[key].split('.'))
 
   return observe(value, paths)
-    .map(snapshot => ({type: type, snapshot: pick(prepareForPreview(snapshot, type), targetFields)}))
+    .map(snapshot => ({type: type, snapshot: prepareForPreview(snapshot, type)}))
 }
