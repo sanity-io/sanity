@@ -104,6 +104,41 @@ export default [
             ]
           }
         ]
+      },
+    ]
+  },
+  {
+    name: 'typeWithBlocks',
+    title: 'Yo Dawg',
+    type: 'object',
+    fields: [
+      {
+        name: 'title',
+        title: 'Title',
+        type: 'string',
+      },
+      {
+        name: 'someBlocks',
+        type: 'object',
+        fields: [
+          {
+            name: 'blocks',
+            type: 'array',
+            title: 'Blocks',
+            of: [
+              {
+                type: 'block',
+                styles: [],
+                lists: [],
+                span: {}
+              },
+              {
+                type: 'typeWithBlocks',
+                title: 'Type with blocks!'
+              }
+            ]
+          }
+        ]
       }
     ]
   }

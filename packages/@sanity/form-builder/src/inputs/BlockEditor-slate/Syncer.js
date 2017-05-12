@@ -49,9 +49,10 @@ export default SubscribePatchHOC(class Syncer extends React.PureComponent {
     }
 
     if (shouldReset) {
+      // @todo
       // eslint-disable-next-line no-console
-      console.warn('[BlockEditor] Reset state due to set patch that targeted ancestor path:', patches)
-      this.setState({value: deserialize(snapshot, this.props.type)})
+      // console.warn('[BlockEditor] Reset state due to set patch that targeted ancestor path:', patches)
+      // this.setState({value: deserialize(snapshot, this.props.type)})
     }// else {
     //   // console.log('TODO: Apply patches:', patches)
     // }
