@@ -41,33 +41,6 @@ class DataAspectsResolver {
     })
   }
 
-  fallbackItemDisplayField(typeName) {
-    const type = this.getType(typeName)
-    if (!type) {
-      return null
-    }
-    const fieldsForType = type.fields || []
-    const field = fieldsForType.find(currField => {
-      return ['name', 'title', 'label'].includes(currField.name)
-    })
-    return field ? field.name : null
-  }
-
-  getItemDisplayField(typeName) {
-    const typeOption = this.config.typeOptions[typeName]
-    const displayField = typeOption && typeOption.itemDisplayField
-      ? typeOption.itemDisplayField
-      : this.fallbackItemDisplayField(typeName)
-
-    if (!this.getField(this.getType(typeName), displayField)[0]) {
-      throw new Error(
-        `resolved display field for type "${typeName}" to "${displayField}", but field does not exist in schema. check data-aspects config`
-      )
-    }
-
-    return displayField
-  }
-
   getDisplayName(typeName) {
     const typeOption = this.config.typeOptions[typeName] || {}
     const type = this.getType(typeName)

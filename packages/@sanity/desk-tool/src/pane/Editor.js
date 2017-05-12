@@ -19,10 +19,10 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
-import dataAspects from '../utils/dataAspects'
 import {debounce, truncate} from 'lodash'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
+import {PreviewFields} from 'part:@sanity/base/preview'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -306,8 +306,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       )
     }
 
-    const titleProp = dataAspects.getItemDisplayField(type.name)
-
     return (
       <div className={styles.root}>
         {isCreatingDraft && (
@@ -323,10 +321,13 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <Spinner fullscreen message="Unpublishing…" />
         )}
         <div className={styles.top}>
-          <h1 className={styles.heading} title={String(value[titleProp])}>
-            {titleProp && truncate(String(value[titleProp] || 'Untitled…'), {length: 50})}
-          </h1>
-
+          <PreviewFields document={value} type={type} fields={['title']}>
+            {({title}) => (
+              <h1 className={styles.heading} title={String(title)}>
+                {title && truncate(String(title || 'Untitled…'), {length: 50})}
+              </h1>
+            )}
+          </PreviewFields>
           <div className={styles.dates}>
             <div>
               {published

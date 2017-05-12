@@ -38,6 +38,7 @@ function inViewport(element) {
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
     type: PropTypes.object.isRequired,
+    fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
     value: PropTypes.any.isRequired,
     children: PropTypes.func
   };
@@ -49,7 +50,7 @@ export default class PreviewSubscriber extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.subscribe(this.props.value, this.props.type)
+    this.subscribe(this.props.value, this.props.type, this.props.fields)
   }
 
   componentWillUnmount() {
@@ -69,7 +70,7 @@ export default class PreviewSubscriber extends React.PureComponent {
     }
   }
 
-  subscribe(value, type) {
+  subscribe(value, type, fields) {
     this.unsubscribe()
 
     const visibilityOn$ = Observable.of(isVisible())
@@ -89,7 +90,7 @@ export default class PreviewSubscriber extends React.PureComponent {
       // .do(log('in viewport', value._id))
       .switchMap(isInViewport => {
         return isInViewport
-          ? observeForPreview(value, type)
+          ? observeForPreview(value, type, fields)
           : Observable.of(null)
       })
       .subscribe(result => {
@@ -103,7 +104,7 @@ export default class PreviewSubscriber extends React.PureComponent {
 
   render() {
     const {result, isLive, error} = this.state
-    const {children: Child, ...rest} = this.props
-    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} {...rest} />
+    const {children: Child} = this.props
+    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} />
   }
 }
