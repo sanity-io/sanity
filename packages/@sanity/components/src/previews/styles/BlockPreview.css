@@ -55,6 +55,16 @@
   font-size: var(--font-size-small);
 }
 
+.type {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--white);
+  background-color: var(--gray);
+  padding: 0.25em;
+  font-size: var(--font-size-small);
+}
+
 .media {
   float: left;
   height: 8em;

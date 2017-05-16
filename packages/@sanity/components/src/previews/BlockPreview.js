@@ -28,7 +28,7 @@ export default class BlockPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, assetSize, children} = this.props
+    const {item, emptyText, assetSize, children, type} = this.props
 
     if (!item) {
       return (
@@ -45,6 +45,9 @@ export default class BlockPreview extends React.Component {
           ${item.subtitle ? styles.hasSubtitle : ''}
         `}
       >
+        <div className={styles.type}>
+          {type.title || type.name}
+        </div>
         {
           (item.media || item.sanityImage || item.imageUrl) && <div className={`${styles.media}`}>
             <MediaRender size={assetSize} item={item} />
@@ -54,11 +57,9 @@ export default class BlockPreview extends React.Component {
           <h2 className={styles.title}>
             {item.title || emptyText}
           </h2>
-          {
-            item.subtitle && <h3 className={styles.subtitle}>
-              {item.subtitle}
-            </h3>
-          }
+          <h3 className={styles.subtitle}>
+            {item.subtitle || type.title || type.name}
+          </h3>
         </div>
         {
           children && <div className={styles.children}>{children}</div>
