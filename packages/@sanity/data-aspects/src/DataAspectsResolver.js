@@ -37,7 +37,7 @@ class DataAspectsResolver {
     return defaultTypes.filter(typeName => {
       const schemaType = this.getType(typeName)
       return schemaType.type !== null // this is the test for whether it is an toplevel type // todo: provide a better test
-        && schemaType.type.name === 'object'
+        && schemaType.jsonType === 'object'
     })
   }
 
