@@ -10,13 +10,13 @@ export default class LoginWrapper extends React.PureComponent {
     children: PropTypes.node.isRequired
   }
 
-  state = {user: null}
+  state = {isLoading: true, user: null}
 
   componentWillMount() {
     this.userSubscription = userStore.currentUser
       .map(ev => ev.user)
       .subscribe(user => {
-        this.setState({user: user})
+        this.setState({user: user, isLoading: false})
       })
   }
 
@@ -25,7 +25,12 @@ export default class LoginWrapper extends React.PureComponent {
   }
 
   render() {
-    const user = this.state.user
+    const {user, isLoading} = this.state
+
+    if (isLoading) {
+      return null
+    }
+
     if (!user) {
       return <LoginDialog />
     }
