@@ -3,26 +3,21 @@ import createActions from '../utils/createActions'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import client from 'part:@sanity/base/client'
-import {find} from 'lodash'
 
 const userChannel = pubsub()
 
+let _initialFetched = false
 let _currentUser = null
 
 userChannel.subscribe(val => {
   _currentUser = val
 })
 
-function refreshUser() {
-  return authenticationFetcher.getCurrentUser().then(user => {
+function fetchInitial() {
+  authenticationFetcher.getCurrentUser().then(user => {
     userChannel.publish(user)
-    return user
   })
 }
-
-// Set initial value for user
-refreshUser()
-
 
 function logout() {
   return authenticationFetcher.logout().then(() => {
@@ -30,18 +25,22 @@ function logout() {
   })
 }
 
-
 const currentUser = new Observable(observer => {
 
-  emitUser('snapshot', _currentUser)
+  if (_initialFetched) {
+    emitSnapshot(_currentUser)
+  } else {
+    _initialFetched = true
+    fetchInitial()
+  }
 
   return userChannel.subscribe(nextUser => {
-    emitUser('change', nextUser)
+    emitSnapshot(nextUser)
   })
 
-  function emitUser(type, user) {
+  function emitSnapshot(user) {
     observer.next({
-      type: type,
+      type: 'snapshot',
       user
     })
   }
