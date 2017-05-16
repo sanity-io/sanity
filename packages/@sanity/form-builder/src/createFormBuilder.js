@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {FormBuilderInput} from './FormBuilderInput'
-import defaultConfig from './defaultConfig'
+import * as defaultConfig from './defaultConfig'
 import Schema from '@sanity/schema'
 import pubsub from 'nano-pubsub'
 
@@ -21,13 +21,14 @@ export default function createFormBuilder(config = {}) {
       if (resolved) {
         return resolved
       }
-      itType = itType.type && schema.get(itType.type.name)
+      itType = itType.type
     }
     return undefined
   }
 
   const resolveInputComponent = type => {
     return resolve(type, config.resolveInputComponent, defaultConfig.resolveInputComponent)
+      || defaultConfig.jsonTypeFallbacks[type.jsonType]
   }
 
   const resolvePreviewComponent = type => {

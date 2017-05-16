@@ -21,6 +21,18 @@ export default createSchema({
   types: [
     ...blockArray,
     {
+      name: 'myImage',
+      title: 'Some image type',
+      type: 'image',
+      fields: [
+        {
+          name: 'caption',
+          title: 'Caption',
+          type: 'string'
+        }
+      ]
+    },
+    {
       name: 'blogpost',
       type: 'object',
       title: 'Blogpost',
@@ -45,6 +57,12 @@ export default createSchema({
           name: 'title',
           title: 'Title',
           type: 'string',
+          required: true
+        },
+        {
+          name: 'myImage',
+          title: 'My Image',
+          type: 'myImage',
           required: true
         },
         {

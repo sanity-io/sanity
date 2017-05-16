@@ -55,7 +55,7 @@ function isSearchable(type) {
   return type.options.searchable
 }
 
-function resolveInputComponent(type) {
+export function resolveInputComponent(type) {
 
   // Schema provides predefines list
   if (hasListInOptions(type) && isArrayOfStrings(type)) {
@@ -77,14 +77,17 @@ function resolveInputComponent(type) {
     return isSearchable(type) ? SearchableStringSelect : StringSelect
   }
 
-  return typeNameToInputMap[type.name] || typeNameToInputMap[type.jsonType]
+  return typeNameToInputMap[type.name]
 }
 
-function resolvePreviewComponent(type) {
+export function resolvePreviewComponent(type) {
   // leave empty for now
 }
 
-export default {
-  resolveInputComponent: resolveInputComponent,
-  resolvePreviewComponent: resolvePreviewComponent
+export const jsonTypeFallbacks = {
+  object: ObjectInput,
+  array: ArrayInput,
+  boolean: BooleanInput,
+  number: NumberInput,
+  string: TextInput
 }
