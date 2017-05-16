@@ -3,11 +3,6 @@ import {omit} from 'lodash'
 import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 
-function TODO(msg = 'TODO') {
-  return function todo() {
-    throw new Error(msg)
-  }
-}
 const NOOP = () => {}
 
 function createBufferedDocument(documentId, server) {
