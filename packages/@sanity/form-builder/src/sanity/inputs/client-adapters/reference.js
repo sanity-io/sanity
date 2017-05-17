@@ -1,5 +1,4 @@
 import client from 'part:@sanity/base/client'
-import {uniq, flatten, compact} from 'lodash'
 
 import {observeForPreview} from 'part:@sanity/base/preview'
 
@@ -8,24 +7,32 @@ export function valueToString(value, referenceType) {
     .map(result => result.snapshot.title)
 }
 
+function wrapIn(start, end = start) {
+  return value => start + value + end
+}
+
+function buildConstraintFromType(type) {
+  const typeConstraint = `_type == '${type.name}'`
+
+  const stringFields = type.fields
+    .filter(field => field.type.jsonType === 'string')
+
+  if (stringFields.length === 0) {
+    return typeConstraint
+  }
+
+  const stringFieldConstraints = stringFields
+    .map(field => `${field.name} match $term`)
+
+  return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
+}
+
 export function search(textTerm, referenceType) {
-  const textFields = uniq(compact(flatten(
-    referenceType.to.map(refType =>
-      refType.fields.map(field =>
-        (field.type.name === 'string' ? field.name : null)
-      )
-    )
-  )))
 
-  const typeConstraints = referenceType.to
-    .map(toField => toField.type.name)
-    .map(typeName => `is "${typeName}"`)
-
-  const stringConstraints = textFields
-    .map(fieldName => `${fieldName} match $term`)
+  const typeConstraints = referenceType.to.map(buildConstraintFromType)
 
   // todo: see if its possible to use selection from previews here
-  const query = `*[!(_id in path('drafts.**')) && (${typeConstraints.join(' || ')}) && (${stringConstraints.join(' || ')})]`
+  const query = `*[!(_id in path('drafts.**')) && ${typeConstraints.map(wrapIn('(', ')')).join('||')}]`
 
   return client.observable.fetch(query, {term: textTerm.trim()})
 }
