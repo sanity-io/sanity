@@ -32,25 +32,22 @@ export default class DefaultPreview extends React.Component {
 
   static defaultProps = {
     emptyText: 'Untitled',
-    assetSize: {width: 40, height: 40}
+    assetSize: {width: 40, height: 40},
+    item: {}
   }
 
   render() {
     const {item, assetSize, emptyText, children, isPlaceholder} = this.props
 
-    const hasMedia = item.media || item.sanityImage || item.imageUrl
-
     if (!item || isPlaceholder) {
       return (
-        <div
-          className={`
-            ${hasMedia ? styles.hasMedia : ''}
-          `}
-        >
+        <div>
           {PLACEHOLDER}
         </div>
       )
     }
+
+    const hasMedia = item.media || item.sanityImage || item.imageUrl
 
     return (
       <div
