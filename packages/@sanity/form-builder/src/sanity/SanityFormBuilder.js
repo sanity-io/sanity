@@ -4,7 +4,7 @@ import SanityPreview from 'part:@sanity/base/preview'
 import ValidationList from 'part:@sanity/form-builder/validation-list'
 import * as patches from '../utils/patches'
 
-import {createFormBuilder, defaultConfig} from '../index'
+import {createFormBuilder, defaultConfig} from '../'
 export {default as WithFormBuilderValue} from './WithFormBuilderValue'
 export {checkout} from './formBuilderValueStore'
 export {default as PatchEvent} from '../PatchEvent'

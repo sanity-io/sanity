@@ -18,13 +18,13 @@ function parsePreview(preview) {
   const select = preview.select || preview.fields
   if (Array.isArray(select)) {
     return {
-      ...pick(preview, ['prepare']),
+      ...pick(preview, ['prepare', 'component']),
       select: parseSelection(select)
     }
 
   }
   return {
-    ...pick(preview, ['prepare']),
+    ...pick(preview, ['prepare', 'component']),
     select
   }
 }

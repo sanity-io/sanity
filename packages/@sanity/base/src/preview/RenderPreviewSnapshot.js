@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import customResolver from 'part:@sanity/base/preview-resolver?'
+import {get} from 'lodash'
 import SanityDefaultPreview from './SanityDefaultPreview'
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
 
 function resolvePreview(type) {
+  const fromPreview = get(type, 'preview.component')
+  if (fromPreview) {
+    return fromPreview
+  }
   const custom = customResolver && customResolver(type)
   return custom || SanityDefaultPreview
 }

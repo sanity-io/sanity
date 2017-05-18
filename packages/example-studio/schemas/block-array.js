@@ -1,3 +1,5 @@
+import VideoEmbedPreview from '../components/VideoEmbedPreview'
+
 export default [
   {
     name: 'blocksTest',
@@ -16,7 +18,24 @@ export default [
         of: [
           {type: 'image', title: 'Image'},
           {type: 'author', title: 'Author'},
-          {type: 'block'}
+          {type: 'block'},
+          {
+            type: 'object',
+            title: 'Video',
+            preview: {
+              select: {
+                url: 'url'
+              },
+              component: VideoEmbedPreview
+            },
+            fields: [
+              {
+                type: 'url',
+                title: 'Video url',
+                name: 'url'
+              }
+            ]
+          }
         ]
       },
       {
