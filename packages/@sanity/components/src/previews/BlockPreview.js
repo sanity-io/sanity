@@ -19,11 +19,15 @@ export default class BlockPreview extends React.Component {
       fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
     }),
     emptyText: PropTypes.string,
-    children: PropTypes.node
+    children: PropTypes.node,
+    type: PropTypes.shape({
+      title: PropTypes.string,
+      name: PropTypes.string
+    })
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
+    emptyText: '',
     assetSize: {width: 140, height: 140},
   }
 
@@ -58,7 +62,7 @@ export default class BlockPreview extends React.Component {
             {item.title || emptyText}
           </h2>
           <h3 className={styles.subtitle}>
-            {item.subtitle || type.title || type.name}
+            {item.subtitle}
           </h3>
         </div>
         {
