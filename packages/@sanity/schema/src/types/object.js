@@ -22,8 +22,8 @@ export const ObjectType = {
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
       fields: subTypeDef.fields.map(fieldDef => {
-        const {name, ...rest} = fieldDef
-        const compiledField = {name: name}
+        const {name, fieldset, ...rest} = fieldDef
+        const compiledField = {name, fieldset}
         return lazyGetter(compiledField, 'type', () => {
           return createMemberType(rest)
         })
