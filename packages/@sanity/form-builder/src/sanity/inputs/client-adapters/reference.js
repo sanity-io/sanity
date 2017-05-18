@@ -7,9 +7,12 @@ export function valueToString(value, referenceType) {
     .map(result => result.snapshot.title)
 }
 
-function wrapIn(start, end = start) {
+function wrapIn(chars = '') {
+  const [start = '', end = start] = chars
   return value => start + value + end
 }
+
+const wrapInParens = wrapIn('()')
 
 function buildConstraintFromType(type) {
   const typeConstraint = `_type == '${type.name}'`
@@ -31,8 +34,7 @@ export function search(textTerm, referenceType) {
 
   const typeConstraints = referenceType.to.map(buildConstraintFromType)
 
-  // todo: see if its possible to use selection from previews here
-  const query = `*[!(_id in path('drafts.**')) && ${typeConstraints.map(wrapIn('(', ')')).join('||')}]`
+  const query = `*[!(_id in path('drafts.**')) && ${typeConstraints.map(wrapInParens).join('||')}]`
 
   return client.observable.fetch(query, {term: textTerm.trim()})
 }
