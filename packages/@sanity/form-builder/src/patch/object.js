@@ -12,16 +12,6 @@ export default function apply(value, patch) {
       return patch.value
     } else if (patch.type === 'unset') {
       return undefined
-    } else if (patch.type === 'merge') {
-      // Turn into a 'set' with paths
-      if (!isObject(patch.value)) { // eslint-disable-line max-depth
-        throw new Error('Non-object argument used with the "merge" patch type.')
-      }
-      const toMerge = Object.keys(patch.value).reduce((acc, property) => {
-        acc[property] = patch.value[property]
-        return acc
-      }, {})
-      return Object.assign(nextValue, toMerge)
     } else if (patch.type === 'setIfMissing') {
       // console.log('IS IT missing?', value)
       return value === undefined ? patch.value : value
