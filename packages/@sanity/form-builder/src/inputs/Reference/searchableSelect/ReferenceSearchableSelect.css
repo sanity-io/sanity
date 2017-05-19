@@ -1,0 +1,9 @@
+.createNew {
+  padding: 0.4em;
+  color: #404040;
+  background: #eee;
+  position: fixed;
+  top: 0;
+  right: 15px;
+  z-index: 100;
+}

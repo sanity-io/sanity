@@ -1,5 +1,5 @@
 import {once} from 'lodash'
-import ReferenceSearchableSelect from '../inputs/ReferenceSearchableSelect'
+import ReferenceInput from '../inputs/ReferenceInput'
 import ReferenceSelect from '../inputs/ReferenceSelect'
 import ReferenceBrowser from '../inputs/ReferenceBrowser'
 
@@ -8,10 +8,8 @@ const warnNoSearchYet = once(() => console.warn('Reference browser does not yet 
 
 export default function resolveReference(type) {
   const options = type.options || {}
-  if (options.inputType === 'select') {
-    return options.searchable
-      ? ReferenceSearchableSelect
-      : ReferenceSelect
+  if (options.inputType === 'select' && options.searchable === false) {
+    return ReferenceSelect
   }
 
   if (options.inputType === 'browser') {
@@ -21,5 +19,5 @@ export default function resolveReference(type) {
     return ReferenceBrowser
   }
 
-  return ReferenceSearchableSelect
+  return ReferenceInput
 }

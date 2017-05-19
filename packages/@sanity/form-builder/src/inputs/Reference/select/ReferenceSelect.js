@@ -9,21 +9,16 @@ import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 const EMPTY = {}
 
 export default class ReferenceSelect extends React.Component {
-
   static propTypes = {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
-    fetchAllFn: PropTypes.func,
-    fetchValueFn: PropTypes.func,
+    fetchAllFn: PropTypes.func.isRequired,
+    fetchValueFn: PropTypes.func.isRequired,
     onChange: PropTypes.func
   }
 
   static defaultProps = {
     onChange() {}
-  }
-
-  static contextTypes = {
-    formBuilder: PropTypes.object
   }
 
   state = {

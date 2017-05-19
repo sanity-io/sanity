@@ -2,6 +2,8 @@ import client from 'part:@sanity/base/client'
 
 import {observeForPreview} from 'part:@sanity/base/preview'
 
+export {observeForPreview}
+
 export function valueToString(value, referenceType) {
   return observeForPreview(value, referenceType)
     .map(result => result.snapshot.title)

@@ -2,37 +2,36 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
+import Button from 'part:@sanity/components/buttons/default'
+import styles from './ReferenceSearchableSelect.css'
 import Preview from '../../../Preview'
 import subscriptionManager from '../../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 
-const getInitialState = () => {
-  return {
-    fetching: false,
-    hits: [],
-    valueAsString: null,
-  }
+const INITIAL_STATE = {
+  fetching: false,
+  hits: [],
+  valueAsString: null,
 }
+
+const CREATE_NEW_ITEM = {}
 
 export default class ReferenceSearchableSelect extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.object,
-    searchFn: PropTypes.func,
-    valueToString: PropTypes.func,
+    onCreateNew: PropTypes.func,
+    searchFn: PropTypes.func.isRequired,
+    valueToStringFn: PropTypes.func.isRequired,
     onChange: PropTypes.func,
     level: PropTypes.number
-  };
+  }
 
   static defaultProps = {
     onChange() {}
   }
 
-  static contextTypes = {
-    formBuilder: PropTypes.object
-  }
-
-  state = getInitialState()
+  state = INITIAL_STATE
 
   subscriptions = subscriptionManager('search', 'valueToString')
 
@@ -46,18 +45,18 @@ export default class ReferenceSearchableSelect extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
-      this.setState(getInitialState())
+      this.setState(INITIAL_STATE)
       this.fetchValueAsString(nextProps.value)
     }
   }
 
   fetchValueAsString(value) {
-    const {valueToString, type} = this.props
+    const {valueToStringFn, type} = this.props
     if (!value || !value._ref) {
       return
     }
 
-    this.subscriptions.replace('valueToString', valueToString(value, type)
+    this.subscriptions.replace('valueToString', valueToStringFn(value, type)
       .subscribe(valueAsString => {
         this.setState({valueAsString})
       }))
@@ -73,6 +72,11 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   handleChange = item => {
+    if (item === CREATE_NEW_ITEM) {
+      const {onCreateNew, type} = this.props
+      onCreateNew({_type: type.to[0].name})
+      return
+    }
     this.props.onChange(PatchEvent.from(
       setIfMissing({
         _type: 'reference',
@@ -86,20 +90,21 @@ export default class ReferenceSearchableSelect extends React.Component {
     this.search(query)
   }
 
-  search = query => {
+  search = inputValue => {
     const {type, searchFn} = this.props
 
-    if (query === '') {
+    if (inputValue === '') {
       this.search('*')
       return
     }
 
-    this._lastQuery = query
+    this._lastQuery = inputValue
     this.setState({
+      inputValue: inputValue === '*' ? '' : inputValue,
       fetching: true
     })
 
-    this.subscriptions.replace('search', searchFn(query, type)
+    this.subscriptions.replace('search', searchFn(inputValue, type)
       .subscribe(items => {
         const updatedCache = items.reduce((cache, item) => {
           cache[item._id] = item
@@ -116,6 +121,15 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   renderItem = item => {
+    if (item === CREATE_NEW_ITEM) {
+      const {type} = this.props
+
+      return (
+        <Button className={styles.createNew}>
+          Create a new {type.to[0].title}…
+        </Button>
+      )
+    }
     const type = this.getMemberTypeFor(item._type)
     return (
       <Preview
@@ -135,7 +149,6 @@ export default class ReferenceSearchableSelect extends React.Component {
     const {valueAsString, fetching, hits} = this.state
 
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
-
     return (
       <SearchableSelect
         label={type.title}
@@ -151,7 +164,7 @@ export default class ReferenceSearchableSelect extends React.Component {
         valueAsString={valueAsString}
         renderItem={this.renderItem}
         loading={fetching}
-        items={hits}
+        items={[CREATE_NEW_ITEM, ...hits]}
       />
     )
   }

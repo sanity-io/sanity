@@ -7,11 +7,13 @@ import Dialog from 'part:@sanity/components/dialogs/default' //eslint-disable-li
 import styles from './styles/ReferenceBrowser.css'
 import DefaultList from 'part:@sanity/components/lists/default' //eslint-disable-line
 import subscriptionManager from '../../../utils/subscriptionManager'
+import FormField from 'part:@sanity/components/formfields/default'
 
 export default class ReferenceBrowser extends React.Component {
   static propTypes = {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
+    level: PropTypes.number,
     searchFn: PropTypes.func,
     fetchValueFn: PropTypes.func,
     onChange: PropTypes.func
@@ -212,25 +214,28 @@ export default class ReferenceBrowser extends React.Component {
   }
 
   render() {
+    const {type, level} = this.props
     const {showDialog, materializedValue} = this.state
     return (
-      <div className={styles.root}>
-        {showDialog && this.renderDialog()}
-        {!materializedValue && (
-          <div className={styles.buttons}>
-            <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
-          </div>
-        )}
-        {materializedValue && (
-          <div>
-            {this.renderValue(materializedValue)}
+      <FormField label={type.title} description={type.description} level={level}>
+        <div className={styles.root}>
+          {showDialog && this.renderDialog()}
+          {!materializedValue && (
             <div className={styles.buttons}>
-              <InInputButton onClick={this.handleClearValue} kind="danger">Clear</InInputButton>
-              <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
+              <InInputButton onClick={this.handleShowDialog}>Browse…</InInputButton>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+          {materializedValue && (
+            <div>
+              {this.renderValue(materializedValue)}
+              <div className={styles.buttons}>
+                <InInputButton onClick={this.handleClearValue} kind="danger">Clear</InInputButton>
+                <InInputButton onClick={this.handleShowDialog}>Change</InInputButton>
+              </div>
+            </div>
+          )}
+        </div>
+      </FormField>
     )
   }
 }

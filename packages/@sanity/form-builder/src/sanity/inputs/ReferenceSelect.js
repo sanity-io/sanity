@@ -1,7 +1,8 @@
+import React from 'react'
 import {search} from './client-adapters/reference'
 import {observeForPreview} from 'part:@sanity/base/preview'
 import Observable from '@sanity/observable'
-import {ReferenceInput} from '../..'
+import ReferenceSelect from '../../inputs/Reference/select/ReferenceSelect'
 
 function fetchAllForPreview(referenceType) {
   return Observable.from(search('*', referenceType))
@@ -15,7 +16,16 @@ function fetchAllForPreview(referenceType) {
     })
 }
 
-export default ReferenceInput.createSelect({
-  fetchAllFn: fetchAllForPreview,
-  fetchValueFn: (value, type) => observeForPreview(value, type).map(result => result.snapshot)
-})
+function fetchValue(value, type) {
+  return observeForPreview(value, type).map(result => result.snapshot)
+}
+
+export default function SanityReferenceSelect(props) {
+  return (
+    <ReferenceSelect
+      {...props}
+      fetchAllFn={fetchAllForPreview}
+      fetchValueFn={fetchValue}
+    />
+  )
+}
