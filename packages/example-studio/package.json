@@ -23,6 +23,7 @@
     "@sanity/desk-tool": "^0.105.15",
     "@sanity/form-builder": "^0.105.15",
     "@sanity/storybook": "^0.105.1",
+    "date-fns": "^1.28.4",
     "get-video-id": "^2.1.4",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
