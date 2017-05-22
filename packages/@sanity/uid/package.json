@@ -1,0 +1,16 @@
+{
+  "name": "@sanity/uid",
+  "version": "0.105.0",
+  "description": "Generate document ids",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base62": "^1.2.0",
+    "get-random-values": "^1.2.0"
+  }
+}
