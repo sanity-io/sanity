@@ -55,6 +55,21 @@ export default {
       type: 'file'
     },
     {
+      name: 'myCode',
+      title: 'Code editor (default)',
+      description: 'Choose syntax on input.',
+      type: 'code'
+    },
+    {
+      name: 'simpleCode',
+      title: 'Code editor simple (markdown)',
+      description: 'set syntax in schema',
+      type: 'code',
+      options: {
+        mode: 'markdown'
+      }
+    },
+    {
       name: 'mainImage',
       title: 'Main image',
       type: 'image',

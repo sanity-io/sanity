@@ -27,6 +27,7 @@
     "get-video-id": "^2.1.4",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
+    "react-ace": "^4.3.0",
     "react-dom": "^15.5.4",
     "sanity-plugin-vision": "^2.0.2"
   },

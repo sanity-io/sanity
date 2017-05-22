@@ -18,6 +18,7 @@ export const blocksTest = {
           {type: 'image', title: 'Image'},
           {type: 'reference', to: {type: 'author'}, title: 'Reference to author'},
           {type: 'author', title: 'Embedded author'},
+          {type: 'code', title: 'Code'},
           {type: 'block'},
         {
           type: 'object',
@@ -162,4 +163,3 @@ export const typeWithBlocks = {
     }
   ]
 }
-

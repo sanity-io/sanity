@@ -15,6 +15,7 @@
     "@sanity/date-input",
     "@sanity/desk-tool",
     "@sanity/storybook",
+    "code-editor",
     "vision"
   ],
   "parts": [
