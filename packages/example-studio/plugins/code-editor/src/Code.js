@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 // @flow weak
 import React from 'react'
-import FormBuilderPropTypes from 'part:@sanity/form-builder/PropTypes'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
@@ -32,7 +31,7 @@ const modes = [
 export default class Code extends React.PureComponent {
 
   static propTypes = {
-    type: FormBuilderPropTypes.type.isRequired,
+    type: PropTypes.object,
     level: PropTypes.number.isRequired,
     value: PropTypes.shape({
       code: PropTypes.string,
