@@ -7,6 +7,7 @@
   overflow: hidden;
   height: 8em;
   position: relative;
+  min-height: 1rem;
 }
 
 .heading {
@@ -15,7 +16,6 @@
 }
 
 .title {
-  position: absolute;
   font-size: var(--font-size-h2);
   line-height: 1.5em;
   color: inherit;
@@ -45,8 +45,6 @@
   text-overflow: ellipsis;
   line-height: 1em;
   width: calc(100% - 1em);
-  position: absolute;
-  top: 2.5em;
 }
 
 .description {

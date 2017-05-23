@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from 'part:@sanity/components/previews/default-style'
+import defaultStyles from 'part:@sanity/components/previews/default-style'
 import MediaRender from './common/MediaRender.js'
 import SvgPlaceholder from './common/SvgPlaceholder'
+import Styleable from '../utilities/Styleable'
 
 const PLACEHOLDER = (
-  <div className={styles.root}>
-    <SvgPlaceholder styles={styles} />
+  <div className={defaultStyles.root}>
+    <SvgPlaceholder styles={defaultStyles} />
   </div>
 )
 
-export default class DefaultPreview extends React.Component {
+class DefaultPreview extends React.Component {
   static propTypes = {
     item: PropTypes.shape({
       title: PropTypes.string,
@@ -27,7 +28,8 @@ export default class DefaultPreview extends React.Component {
     }),
     emptyText: PropTypes.string,
     isPlaceholder: PropTypes.bool,
-    children: PropTypes.node
+    children: PropTypes.node,
+    styles: PropTypes.object
   }
 
   static defaultProps = {
@@ -37,7 +39,7 @@ export default class DefaultPreview extends React.Component {
   }
 
   render() {
-    const {item, assetSize, emptyText, children, isPlaceholder} = this.props
+    const {item, assetSize, emptyText, children, isPlaceholder, styles} = this.props
 
     if (!item || isPlaceholder) {
       return (
@@ -81,3 +83,5 @@ export default class DefaultPreview extends React.Component {
     )
   }
 }
+
+export default Styleable(DefaultPreview, defaultStyles)

@@ -64,7 +64,15 @@ export default class BlockPreview extends React.Component {
           <h3 className={styles.subtitle}>
             {item.subtitle}
           </h3>
+          {
+            item.description && (
+              <p className={styles.description}>
+                {item.description}
+              </p>
+            )
+          }
         </div>
+
         {
           children && <div className={styles.children}>{children}</div>
         }
