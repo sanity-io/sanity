@@ -2,6 +2,20 @@ export default {
   name: 'author',
   type: 'object',
   title: 'Author',
+  preview: {
+    select: {
+      title: 'name',
+      awards: 'awards',
+      relatedAuthors: 'relatedAuthors',
+      imageUrl: 'image.asset.url'
+    },
+    prepare(value) {
+      return Object.assign({}, value, {
+        subtitle: `${value.awards.length} awards`,
+        description: `Related authors: ${value.relatedAuthors.length}`
+      })
+    }
+  },
   fields: [
     {
       name: 'name',
