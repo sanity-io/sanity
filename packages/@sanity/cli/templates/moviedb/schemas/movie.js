@@ -72,7 +72,7 @@ export default {
     prepare(selection) {
       const {date, imageUrl} = selection
       return Object.assign({}, selection, {
-        subtitle: date ? date.split('-')[0] : '',
+        subtitle: date ? date.utc.split('-')[0] : '',
         imageUrl: imageUrl ? `${imageUrl}?w=100` : imageUrl
       })
     }
