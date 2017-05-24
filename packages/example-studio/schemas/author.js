@@ -1,3 +1,5 @@
+import AuthorPreview from '../parts/AuthorPreview'
+
 export default {
   name: 'author',
   type: 'object',
@@ -7,14 +9,10 @@ export default {
       title: 'name',
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
-      imageUrl: 'image.asset.url'
+      imageUrl: 'image.asset.url',
+      lastUpdated: '_updatedAt'
     },
-    prepare(value) {
-      return Object.assign({}, value, {
-        subtitle: `${value.awards.length} awards`,
-        description: `Related authors: ${value.relatedAuthors.length}`
-      })
-    }
+    component: AuthorPreview
   },
   fields: [
     {
