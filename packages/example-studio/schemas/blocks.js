@@ -22,6 +22,7 @@ export const blocksTest = {
           {type: 'block'},
         {
           type: 'object',
+          name: 'video',
           title: 'Video',
           preview: {
             select: {
