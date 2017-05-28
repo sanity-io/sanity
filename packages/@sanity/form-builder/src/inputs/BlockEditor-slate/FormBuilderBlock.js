@@ -10,9 +10,13 @@ import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
+import {debounce} from 'lodash'
+import {resolveTypeName} from '../../utils/resolveType'
+import InvalidValue from './InvalidValue'
 
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
+    // Note: type refers to the array type, not the value type
     type: PropTypes.object,
     node: PropTypes.object,
     editor: PropTypes.object,
@@ -58,6 +62,17 @@ export default class FormBuilderBlock extends React.Component {
 
     editor.onChange(next)
   }
+
+  handleRemove = debounce(() => {
+    // debounced because there seems to be a race condition with clicks and state updates
+    const {node, editor} = this.props
+    const next = editor.getState()
+      .transform()
+      .removeNodeByKey(node.key)
+      .apply()
+
+    editor.onChange(next)
+  }, 0)
 
   handleDragStart = event => {
     const {editor} = this.props
@@ -215,14 +230,34 @@ export default class FormBuilderBlock extends React.Component {
     this.setState({isEditing: false})
   }
 
+  getMemberTypeOf(value) {
+    const typeName = resolveTypeName(value)
+    return this.props.type.of.find(memberType => memberType.name === typeName)
+  }
+
   renderPreview() {
-    const {type} = this.props
+    const value = this.getValue()
+    const memberType = this.getMemberTypeOf(value)
+    if (!memberType) {
+      const validMemberTypes = this.props.type.of.map(type => type.name)
+      const actualType = resolveTypeName(value)
+      return (
+        <InvalidValue
+          validTypes={validMemberTypes}
+          actualType={actualType}
+          value={value}
+          onRemove={this.handleRemove}
+        />
+      )
+    }
     return (
-      <Preview
-        type={type}
-        value={this.getValue()}
-        layout="block"
-      />
+      <div onClick={this.handleToggleEdit}>
+        <Preview
+          type={memberType}
+          value={this.getValue()}
+          layout="block"
+        />
+      </div>
     )
   }
 
@@ -235,7 +270,9 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   renderInput() {
-    const {type} = this.props
+    const value = this.getValue()
+    const memberType = this.getMemberTypeOf(value)
+
     return (
       <EditItemPopOver
         title={this.props.node.title}
@@ -243,7 +280,7 @@ export default class FormBuilderBlock extends React.Component {
       >
         <ItemForm
           onDrop={this.handleCancelEvent}
-          type={type}
+          type={memberType}
           level={0}
           value={this.getValue()}
           onChange={this.handleChange}
@@ -288,7 +325,6 @@ export default class FormBuilderBlock extends React.Component {
         <span
           ref={this.refPreview}
           className={styles.previewContainer}
-          onClick={this.handleToggleEdit}
         >
           {this.renderPreview()}
         </span>

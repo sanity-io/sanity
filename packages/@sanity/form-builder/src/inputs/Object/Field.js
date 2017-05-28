@@ -2,11 +2,11 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import {resolveJSType} from '../../utils/resolveJSType'
-import ManageInvalidValue from './ManageInvalidValue'
+import InvalidValue from './InvalidValue'
 import MemberValue from '../../Member'
 
 import styles from './styles/Field.css'
+import {resolveTypeName} from '../../utils/resolveType'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -38,21 +38,22 @@ export default class Field extends React.Component {
   }
 
   render() {
-    const {value, field, level, validation, hasFocus, onChange} = this.props
+    const {value, field, level, validation, hasFocus} = this.props
 
-    const expectedJSType = field.type.jsonType
-    const valueJSType = resolveJSType(value)
+    if (typeof value !== 'undefined') {
+      const expectedType = field.type.name
+      const actualType = resolveTypeName(value)
 
-    if (value && expectedJSType !== valueJSType) {
-      return (
-        <ManageInvalidValue
-          field={field}
-          value={value}
-          onChange={onChange}
-          expectedJSType={expectedJSType}
-          valueJSType={valueJSType}
-        />
-      )
+      if (expectedType !== actualType) {
+        return (
+          <InvalidValue
+            type={field.type}
+            value={value}
+            onChange={this.handleChange}
+            actualType={actualType}
+          />
+        )
+      }
     }
 
     return (

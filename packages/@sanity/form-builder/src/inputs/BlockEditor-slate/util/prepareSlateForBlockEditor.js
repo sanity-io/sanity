@@ -103,10 +103,12 @@ export default function prepareSlateForBlockEditor(blockEditor) {
     return !['text', 'marks'].includes(field.name)
   })
 
+  const FormBuilderBlock = createBlockNode(type)
 
   const schema = {
     nodes: {
-      ...mapToObject(memberTypesExceptBlock, ofType => [ofType.name, createBlockNode(ofType)]),
+      ...mapToObject(memberTypesExceptBlock, ofType => [ofType.name, FormBuilderBlock]),
+      __unknown: FormBuilderBlock,
       span: createSpanNode(spanType),
       contentBlock: createSlatePreviewNode,
     },

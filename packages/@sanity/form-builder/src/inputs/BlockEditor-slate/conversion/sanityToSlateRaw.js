@@ -1,4 +1,6 @@
 // @flow
+import {resolveTypeName} from '../../../utils/resolveType'
+
 function hasKeys(obj) {
   for (const key in obj) { // eslint-disable-line guard-for-in
     return true
@@ -60,7 +62,7 @@ function sanityBlockToRawNode(sanityBlock, type) {
 function sanityBlockItemToRaw(blockItem, type) {
   return {
     kind: 'block',
-    type: type.name,
+    type: type ? type.name : '__unknown', // __unknown is needed to map to component in slate schema, see prepareSlateForBlockEditor.js
     isVoid: true,
     data: {value: blockItem},
     nodes: []
@@ -68,19 +70,19 @@ function sanityBlockItemToRaw(blockItem, type) {
 }
 
 function sanityBlockItemToRawNode(blockItem, type) {
-  if (type.name === 'block') {
-    return sanityBlockToRawNode(blockItem, type)
-  }
-  return sanityBlockItemToRaw(blockItem, type)
+  const blockItemType = resolveTypeName(blockItem)
+
+  const memberType = type.of.find(ofType => ofType.name === blockItemType)
+
+  return blockItemType === 'block'
+    ? sanityBlockToRawNode(blockItem, memberType)
+    : sanityBlockItemToRaw(blockItem, memberType)
 }
 
 function sanityBlocksArrayToRawNodes(blockArray, type) {
   return blockArray
     .filter(Boolean) // this is a temporary guard against null values, @todo: remove
-    .map(item => {
-      const memberType = type.of.find(ofType => ofType.name === item._type)
-      return sanityBlockItemToRawNode(item, memberType)
-    })
+    .map(item => sanityBlockItemToRawNode(item, type))
 }
 
 const EMPTY_NODE = {kind: 'block', type: 'contentBlock', data: {style: 'normal'}, nodes: []}

@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: root from 'part:@sanity/components/fieldsets/default-style';
+  padding: var(--medium-padding);
+  border: 3px dashed var(--state-warning-color);
+
+  @nest & > h3 {
+    color: var(--state-warning-color);
+  }
+}
