@@ -25,10 +25,12 @@
     "@sanity/storybook": "^0.105.1",
     "date-fns": "^1.28.4",
     "get-video-id": "^2.1.4",
+    "humanize-list": "^1.0.1",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-ace": "^4.3.0",
     "react-dom": "^15.5.4",
+    "react-icons": "^2.2.5",
     "sanity-plugin-vision": "^2.0.2"
   },
   "devDependencies": {
