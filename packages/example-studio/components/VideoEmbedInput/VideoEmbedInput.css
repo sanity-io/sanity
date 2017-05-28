@@ -1,0 +1,11 @@
+.pasteBox {
+  width: 100%;
+}
+
+.errorMessage {
+  color: #b5322c;
+}
+
+.description {
+  font-size: 0.9em;
+}

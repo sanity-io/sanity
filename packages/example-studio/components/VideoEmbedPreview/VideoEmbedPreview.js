@@ -2,7 +2,6 @@
 import React from 'react'
 import humanizeList from 'humanize-list'
 import PropTypes from 'prop-types'
-import getVideoId from 'get-video-id'
 import FaFilm from 'react-icons/lib/fa/film'
 import FaYouTube from 'react-icons/lib/fa/youtube'
 import FaVimeo from 'react-icons/lib/fa/vimeo'
@@ -27,13 +26,16 @@ export const SUPPORTED_SERVICES = [
 
 export default class VideoEmbedPreview extends React.Component {
   static propTypes = {
-    value: PropTypes.object
+    value: PropTypes.shape({
+      service: PropTypes.string,
+      id: PropTypes.string
+    })
   }
 
   render() {
     const {value} = this.props
 
-    if (!value || !value.url) {
+    if (!value || !value.id) {
       return (
         <div className={styles.root}>
           <div />
@@ -42,9 +44,7 @@ export default class VideoEmbedPreview extends React.Component {
       )
     }
 
-    const videoId = (value && value.url) ? getVideoId(value.url) : ''
-
-    const service = videoId && SUPPORTED_SERVICES.find(s => s.id === videoId.service)
+    const service = value && SUPPORTED_SERVICES.find(s => s.id === value.service)
 
     if (!service) {
       return (
@@ -61,7 +61,7 @@ export default class VideoEmbedPreview extends React.Component {
     return (
       <div className={styles.root}>
         <iframe
-          src={service.url(videoId.id)}
+          src={service.url(value.id)}
           frameBorder="0"
           allowFullScreen
         />

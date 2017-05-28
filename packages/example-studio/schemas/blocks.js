@@ -1,5 +1,3 @@
-import VideoEmbedPreview, {SUPPORTED_SERVICES} from '../components/VideoEmbedPreview/VideoEmbedPreview'
-import humanizeList from 'humanize-list'
 
 export const blocksTest = {
   name: 'blocksTest',
@@ -21,25 +19,7 @@ export const blocksTest = {
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
         {type: 'block'},
-        {
-          type: 'object',
-          name: 'video',
-          title: 'Video',
-          preview: {
-            select: {
-              url: 'url'
-            },
-            component: VideoEmbedPreview
-          },
-          fields: [
-            {
-              name: 'url',
-              type: 'string',
-              title: 'Video url',
-              description: `Enter URL or embed code of any ${humanizeList(SUPPORTED_SERVICES.map(s => s.title), {conjunction: 'or'})} video`
-            }
-          ]
-        }
+        {type: 'videoEmbed', title: 'Video embed'}
       ]
     },
     {

@@ -55,6 +55,11 @@ export default {
       type: 'file'
     },
     {
+      name: 'video',
+      title: 'A video embed',
+      type: 'videoEmbed'
+    },
+    {
       name: 'myCode',
       title: 'Code editor (default)',
       description: 'Choose syntax on input.',

@@ -4,6 +4,7 @@ import myImage from './myImage'
 import author from './author'
 import blogpost from './blogpost'
 import code from './code'
+import videoEmbed from './videoEmbed'
 
 export default createSchema({
   name: 'example-blog',
@@ -13,6 +14,7 @@ export default createSchema({
     author,
     blocksTest,
     typeWithBlocks,
-    myImage
+    myImage,
+    videoEmbed
   ]
 })
