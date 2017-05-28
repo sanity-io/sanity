@@ -207,14 +207,14 @@ export default function createBlockEditorOperations(blockEditor) {
       onChange(nextState)
     },
 
-    insertBlock(item) {
+    insertBlock(type) {
       const state = getState()
 
       const props = {
-        type: item.type.name,
+        type: type.name,
         isVoid: true,
         data: {
-          value: createProtoValue(item.type)
+          value: createProtoValue(type)
         }
       }
 
