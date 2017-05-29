@@ -36,7 +36,7 @@ export default class Code extends React.PureComponent {
     value: PropTypes.shape({
       _type: PropTypes.string,
       code: PropTypes.string,
-      mode: PropTypes.string
+      language: PropTypes.string
     }),
     onChange: PropTypes.func
   }
@@ -103,7 +103,7 @@ export default class Code extends React.PureComponent {
       )
     }
 
-    const currentLanguage = (value && value.mode) ? SUPPORTED_LANGUAGES.find(item => item.value === value.mode) : null
+    const currentLanguage = (value && value.language) ? SUPPORTED_LANGUAGES.find(item => item.value === value.language) : null
 
     const languageField = type.fields.find(field => field.name === 'language')
     const languages = currentLanguage ? SUPPORTED_LANGUAGES : [{title: 'Select language'}].concat(SUPPORTED_LANGUAGES)
