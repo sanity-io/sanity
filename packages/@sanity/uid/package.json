@@ -1,6 +1,6 @@
 {
   "name": "@sanity/uid",
-  "version": "0.105.0",
+  "version": "0.106.0",
   "description": "Generate document ids",
   "main": "index.js",
   "scripts": {
