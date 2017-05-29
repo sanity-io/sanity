@@ -80,20 +80,18 @@ export default class VideoEmbedInput extends React.Component {
   render() {
     const {errorMessage, result} = this.state
     const {type, value, level} = this.props
+    const placeholder = `Paste URL or embed code from ${humanizeList(SUPPORTED_SERVICES.map(s => s.title), {conjunction: 'or'})}…`
     return (
       <FormField
         label={type.title}
         level={level}
         description={type.description}
       >
-        <div className={styles.description}>
-          Any video URL or embed code will do. Supports {humanizeList(SUPPORTED_SERVICES.map(s => s.title))}.
-        </div>
         <textarea
           className={styles.pasteBox}
           type="text"
           onFocus={select}
-          placeholder="Paste or enter…"
+          placeholder={placeholder}
           onChange={this.handleSourceChange}
         />
         {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
