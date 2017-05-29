@@ -13,9 +13,7 @@ function getInitialState() {
   return {
     isLoading: true,
     isSaving: false,
-    isDeleted: false,
-    value: null,
-    deletedSnapshot: null
+    value: null
   }
 }
 
@@ -102,16 +100,14 @@ export default class WithFormBuilderValue extends React.PureComponent {
 
   handleIncomingMutationEvent(event) {
     // Broadcast incoming patches to input components that applies patches on their own
-    // Note: This is *experimental*
+    // Note: This is *experimental* and likely to change in the near future
     FormBuilder.receivePatches({
       patches: event.patches,
       snapshot: event.document
     })
 
-    const isDeleted = (event.document === null || event.document === undefined)
     this.setState({
-      isDeleted,
-      deletedSnapshot: isDeleted ? this.state.value : null,
+      deletedSnapshot: event.deletedSnapshot,
       value: event.document
     })
   }
