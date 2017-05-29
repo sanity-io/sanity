@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import styles from './MediaRender.css'
+import ImageLoader from '../../utilities/ImageLoader'
 
 export default class MediaRender extends React.Component {
   static propTypes = {
@@ -23,25 +24,11 @@ export default class MediaRender extends React.Component {
   static defaultProps = {
     size: {width: 100},
     fallbackText: 'Nothing here…',
+    aspect: 1
   }
 
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      aspect: null
-    }
-  }
-
-  componentWillMount() {
-    // this._inputId = uniqueId('ImageInputFieldset')
-  }
-
-  componentDidMount() {
-    const {imageUrl, aspect} = this.props.item
-
-    if (imageUrl && !aspect) {
-      this.renderImage(this.getAssetUrl(imageUrl))
-    }
+  state = {
+    aspect: null
   }
 
   getAssetUrl() {
@@ -53,30 +40,21 @@ export default class MediaRender extends React.Component {
     return assetUrlBuilder({...size, url: this.props.item.imageUrl})
   }
 
-  renderImage = url => {
-    const image = new Image()
-    image.src = url
-    image.onload = i => {
-      this.setState({
-        aspect: image.width / image.height
-      })
-    }
-  }
-
   render() {
-    const {item, fallbackText} = this.props
+    const {item, fallbackText, aspect: containerAspect} = this.props
     const {media, imageUrl, sanityImage} = item
-
-    const containerAspect = this.props.aspect || 1
-    const imageAspect = this.props.item.aspect || this.state.aspect || 1
 
     if (imageUrl) {
       return (
         <div className={styles.root}>
-          <img
-            src={this.getAssetUrl(imageUrl)}
-            className={imageAspect > containerAspect ? styles.landscape : styles.portrait}
-          />
+          <ImageLoader src={this.getAssetUrl(imageUrl)}>
+            {({image}) => (
+              <img
+                src={image.src}
+                className={(item.aspect || image.width / image.height || 1) > containerAspect ? styles.landscape : styles.portrait}
+              />
+            )}
+          </ImageLoader>
         </div>
       )
     } else if (sanityImage) {
