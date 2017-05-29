@@ -8,8 +8,8 @@ export default {
       type: 'text'
     },
     {
-      name: 'mode',
-      title: 'Mode',
+      name: 'language',
+      title: 'Language',
       type: 'string'
     }
   ]

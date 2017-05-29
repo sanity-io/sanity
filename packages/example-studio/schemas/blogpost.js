@@ -71,7 +71,7 @@ export default {
       description: 'set syntax in schema',
       type: 'code',
       options: {
-        mode: 'markdown'
+        language: 'markdown'
       }
     },
     {

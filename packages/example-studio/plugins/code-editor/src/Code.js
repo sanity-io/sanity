@@ -5,9 +5,9 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import {uniqueId} from 'lodash'
-import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
+import PatchEvent, {set, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
 import AceEditor from 'react-ace'
-import {get} from 'lodash'
+import {get, has} from 'lodash'
 import fieldsetStyles from './Fieldset.css'
 
 import 'brace/mode/text'
@@ -19,7 +19,7 @@ import 'brace/mode/html'
 
 import 'brace/theme/tomorrow'
 
-const modes = [
+const SUPPORTED_LANGUAGES = [
   {title: 'JSX', value: 'jsx'},
   {title: 'JavaScript', value: 'javascript'},
   {title: 'Markdown', value: 'markdown'},
@@ -34,6 +34,7 @@ export default class Code extends React.PureComponent {
     type: PropTypes.object,
     level: PropTypes.number.isRequired,
     value: PropTypes.shape({
+      _type: PropTypes.string,
       code: PropTypes.string,
       mode: PropTypes.string
     }),
@@ -49,30 +50,35 @@ export default class Code extends React.PureComponent {
     hasFocus: false
   }
 
-  _inputId = uniqueId('Text')
+  _inputId = uniqueId('Code')
 
   handleCodeChange = code => {
-    const {value} = this.props
-    const newValue = Object.assign({}, value)
-    newValue.code = code
-    if (!value.mode) {
-      newValue.mode = modes[0].value
-    }
-    this.props.onChange(PatchEvent.from(code ? set(newValue) : unset()))
+    const {type, onChange} = this.props
+    const path = ['code']
+
+    const fixedLanguage = get(type, 'options.language')
+
+    onChange(PatchEvent.from([
+      setIfMissing({_type: type.name, language: fixedLanguage}),
+      code ? set(code, path) : unset(path)
+    ]))
   }
 
-  handleModeChange = item => {
-    const {value} = this.props
-    const newValue = Object.assign({}, value)
-    newValue.mode = item.value
-    this.props.onChange(PatchEvent.from(item.value ? set(newValue) : unset()))
+  handleLanguageChange = item => {
+    const {type, onChange} = this.props
+    const path = ['language']
+    onChange(PatchEvent.from([
+      setIfMissing({_type: type.name}),
+      item ? set(item.value, path) : unset(path)
+    ]))
   }
 
-  renderEditor = (editorTitle, level, type, mode, value) => {
+  renderEditor = () => {
+    const {value, type} = this.props
+    const fixedLanguage = get(type, 'options.language')
     return (
-
       <AceEditor
-        mode={mode}
+        mode={value.language || fixedLanguage || 'text'}
         theme="tomorrow"
         width="100%"
         onChange={this.handleCodeChange}
@@ -86,35 +92,34 @@ export default class Code extends React.PureComponent {
 
   render() {
     const {value, type, level} = this.props
-    const mode = value.mode || get(type, 'options.mode') || modes[0].value
 
-    const currentMode = modes.find(item => item.value === value.mode) || modes[0]
-
-    const modeTitle = type.fields.find(field => field.name === 'mode').type.title
-    const editorTitle = type.fields.find(field => field.name === 'code').type.title
-
-    if (get(type, 'options.mode')) {
+    if (has(type, 'options.language')) {
       return (
         <Fieldset styles={fieldsetStyles} legend={type.title} description={type.description}>
           {
-            this.renderEditor(type.title, level, type, mode, value)
+            this.renderEditor()
           }
         </Fieldset>
       )
     }
 
+    const currentLanguage = (value && value.mode) ? SUPPORTED_LANGUAGES.find(item => item.value === value.mode) : null
+
+    const languageField = type.fields.find(field => field.name === 'language')
+    const languages = currentLanguage ? SUPPORTED_LANGUAGES : [{title: 'Select language'}].concat(SUPPORTED_LANGUAGES)
+
     return (
       <Fieldset legend={type.title} description={type.description}>
         <DefaultSelect
-          label={modeTitle}
-          onChange={this.handleModeChange}
-          value={currentMode}
-          items={modes}
+          label={languageField.type.title}
+          onChange={this.handleLanguageChange}
+          value={currentLanguage}
+          items={languages}
           level={level + 1}
         />
-        <FormField label={editorTitle} level={level + 1}>
+        <FormField label={type.title} level={level + 1}>
           {
-            this.renderEditor(editorTitle, level, type, mode, value)
+            this.renderEditor()
           }
         </FormField>
       </Fieldset>
