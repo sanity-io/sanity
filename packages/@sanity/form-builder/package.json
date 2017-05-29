@@ -48,7 +48,7 @@
     "@sanity/core": "^0.105.1",
     "@sanity/plugin-loader": "^0.105.1",
     "@sanity/server": "^0.105.1",
-    "@sanity/uid": "^0.106.0",
+    "@sanity/uuid": "^0.106.0",
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.2.1",
     "babel-plugin-css-modules-transform": "^1.1.0",

@@ -1,5 +1,5 @@
 import Observable from '@sanity/observable'
-import Uid from '@sanity/uid'
+import Uid from '@sanity/uuid'
 import {omit} from 'lodash'
 import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'

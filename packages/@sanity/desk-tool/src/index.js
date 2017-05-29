@@ -1,6 +1,6 @@
 import DeskTool from './DeskTool'
 import Icon from 'part:@sanity/base/view-column-icon'
-import Uid from '@sanity/uid'
+import Uid from '@sanity/uuid'
 import {route} from 'part:@sanity/base/router'
 
 export default {

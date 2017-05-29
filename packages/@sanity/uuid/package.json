@@ -1,0 +1,12 @@
+{
+  "name": "@sanity/uuid",
+  "version": "0.106.0",
+  "description": "Simple generation of sanity document IDs",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "uuid": "^3.0.1"
+  }
+}

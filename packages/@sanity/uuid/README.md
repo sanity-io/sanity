@@ -4,9 +4,9 @@ Generate a valid Sanity document id
 
 ## Usage
 ```js
-const Uid = require('./')
-const uid = Uid()
+const UUID = require('./')
+const id = UUID()
 
 console.log(uid)
- //=> 35mbn3-34Py6Y-2Pt8qF-2vWpOp
+ //=> 76dc5edf-9c43-4bab-a62d-4a2cad650053
 ```

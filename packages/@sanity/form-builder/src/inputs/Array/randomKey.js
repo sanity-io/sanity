@@ -1,1 +1,1 @@
-export {default} from '@sanity/uid'
+export {default} from '@sanity/uuid'
