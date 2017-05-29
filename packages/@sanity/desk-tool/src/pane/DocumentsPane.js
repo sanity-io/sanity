@@ -85,7 +85,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
             <StateLink
               className={styles.emptyCreateNew}
               title={`Create new ${type.title}`}
-              state={{selectedType: type.name, action: 'create'}}
+              state={{selectedType: type.name}}
             >
               Create new {type.title}
             </StateLink>
