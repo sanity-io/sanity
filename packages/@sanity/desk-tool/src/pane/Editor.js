@@ -19,7 +19,7 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
-import {debounce, truncate} from 'lodash'
+import {debounce, truncate, capitalize, startCase} from 'lodash'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
 import {PreviewFields} from 'part:@sanity/base/preview'
@@ -38,7 +38,8 @@ const getDuplicateItem = (draft, published) => ({
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
-  divider: true
+  divider: true,
+  isDisabled: (!draft && !published)
 })
 
 const getDiscardItem = (draft, published) => ({
@@ -61,7 +62,8 @@ const getDeleteItem = (draft, published) => ({
   title: 'Delete…',
   icon: TrashIcon,
   divider: true,
-  danger: true
+  danger: true,
+  isDisabled: (!draft && !published)
 })
 
 const getMenuItems = (draft, published) => ([
@@ -298,14 +300,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       )
     }
 
-    if (!value) {
-      return (
-        <div className={styles.root}>
-          <p>Document does not exists</p>
-        </div>
-      )
-    }
-
     return (
       <div className={styles.root}>
         {isCreatingDraft && (
@@ -321,13 +315,16 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <Spinner fullscreen message="Unpublishing…" />
         )}
         <div className={styles.top}>
-          <PreviewFields document={value} type={type} fields={['title']}>
-            {({title}) => (
-              <h1 className={styles.heading} title={String(title)}>
-                {title && truncate(String(title || 'Untitled…'), {length: 50})}
-              </h1>
-            )}
-          </PreviewFields>
+          {value ? (
+            <PreviewFields document={value} type={type} fields={['title']}>
+              {({title}) => (
+                <h1 className={styles.heading} title={String(title)}>
+                  {capitalize(`Editing ${title && truncate(String(title || 'Untitled…'), {length: 50})}`)}
+                </h1>
+              )}
+            </PreviewFields>
+          ) : (<h1 className={styles.heading}>{capitalize(`Creating new ${type.title || startCase(type.name)}`)}</h1>)
+          }
           <div className={styles.dates}>
             <div>
               {published
@@ -336,7 +333,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               }
             </div>
             <div>
-              <span>Edited <TimeAgo time={(draft || published)._updatedAt} /></span>
+              {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
             </div>
           </div>
 
@@ -345,7 +342,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               <span className={styles.spinner}><Spinner /></span> Saving…
             </div>
           )}
-          {!showSavingStatus && (
+          {value && !showSavingStatus && (
             <div className={styles.savingStatus}>
               ✓ Saved
             </div>
@@ -375,10 +372,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           </div>
         </div>
-
         <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           <FormBuilder
-            value={draft || published}
+            value={draft || published || {_type: type.name}}
             type={type}
             onChange={this.handleChange}
           />

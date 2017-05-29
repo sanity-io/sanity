@@ -8,14 +8,13 @@ import QueryContainer from 'part:@sanity/base/query-container'
 
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
-import documentStore from 'part:@sanity/base/datastore/document'
 import styles from './styles/SchemaPaneResolver.css'
 import Preview from 'part:@sanity/base/preview'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId, newDraftFrom} from './utils/draftUtils'
+import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId} from './utils/draftUtils'
 import {partition} from 'lodash'
 import {isPublishedId} from '../lib/utils/draftUtils'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
@@ -68,10 +67,6 @@ function writeListLayoutSettings(settings) {
   window.localStorage.setItem('desk-tool.listlayout-settings', JSON.stringify(settings))
 }
 
-function isCreate(routerState) {
-  return routerState.action === 'create' && !routerState.selectedDocumentId
-}
-
 function getDocumentKey(document) {
   return getPublishedId(document._id)
 }
@@ -111,16 +106,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   componentWillMount() {
     this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
-    const {router} = this.props
-    if (isCreate(router.state)) {
-      this.doCreate(router)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!isCreate(this.props.router.state) && isCreate(nextProps.router.state)) {
-      this.doCreate(nextProps.router)
-    }
   }
 
   componentDidUpdate() {
@@ -128,18 +113,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     // Panes needs to be resized after the content is loaded
     // Look at this later
     this.handleResize()
-  }
-
-  doCreate(router) {
-    const {selectedType} = router.state
-    documentStore.create(newDraftFrom({_type: selectedType}))
-      .subscribe(document => {
-        router.navigate({
-          selectedDocumentId: getPublishedId(document._id),
-          selectedType: selectedType,
-          action: 'edit'
-        }, {replace: true})
-      })
   }
 
   renderTypePaneItem = item => {
@@ -282,8 +255,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   }
 
   canReposition = () => {
-    const {selectedType, selectedDocumentId} = this.props.router.state
-    return !!(this.navigationElement && this.editorPaneElement && this.containerElement && selectedType && selectedDocumentId)
+    const {selectedType} = this.props.router.state
+    return !!(this.navigationElement && this.editorPaneElement && this.containerElement && selectedType)
   }
 
   resetPosition = () => {
@@ -301,8 +274,8 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     //   return
     // }
 
-    const {selectedType, selectedDocumentId} = this.props.router.state
-    if (!selectedDocumentId || !selectedType) {
+    const {selectedType} = this.props.router.state
+    if (!selectedType) {
       this.resetPosition()
       return
     }
@@ -392,7 +365,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
 
   render() {
     const {router} = this.props
-    const {selectedType, selectedDocumentId} = router.state
+    const {selectedType, selectedDocumentId, action} = router.state
     const {navTranslateX, editorTranslateX, editorWidth, navIsMinimized, navIsClicked} = this.state
 
     const typesPane = (
@@ -433,9 +406,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           }}
         >
           {
-            schemaType && selectedDocumentId && (
+            schemaType && selectedDocumentId && action === 'edit' && (
               <EditorPane
-                documentId={selectedDocumentId && selectedDocumentId}
+                documentId={selectedDocumentId}
                 typeName={schemaType.name}
               />
             )
@@ -445,6 +418,12 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               Could not find any type
               named <strong><em>{selectedType}</em></strong> in
               schema <strong><em>{schema.name}</em></strong>…
+            </h2>
+          )}
+          {action && action !== 'edit' && (
+            // this would normally never happen
+            <h2 className={styles.emptyText}>
+              Invalid action: {action}
             </h2>
           )}
           {!selectedType && (

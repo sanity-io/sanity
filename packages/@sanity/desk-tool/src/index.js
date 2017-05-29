@@ -1,5 +1,6 @@
 import DeskTool from './DeskTool'
 import Icon from 'part:@sanity/base/view-column-icon'
+import UUID from '@sanity/uuid'
 import {route} from 'part:@sanity/base/router'
 
 export default {
@@ -15,8 +16,8 @@ export default {
   getIntentState(intentName, params) {
     return {
       selectedType: params.type,
-      action: intentName,
-      selectedDocumentId: params.id
+      action: 'edit',
+      selectedDocumentId: intentName === 'create' ? UUID() : params.id
     }
   },
   title: 'Desk',
