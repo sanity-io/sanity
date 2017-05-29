@@ -2,7 +2,6 @@ import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 
-const INHERITED_FIELDS = ['fields', 'fieldsets']
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
 const OBJECT_CORE = {
@@ -23,9 +22,17 @@ export const ObjectType = {
       options: options,
       fields: subTypeDef.fields.map(fieldDef => {
         const {name, fieldset, ...rest} = fieldDef
-        const compiledField = {name, fieldset}
+
+        const compiledField = {
+          name,
+          fieldset,
+        }
+
         return lazyGetter(compiledField, 'type', () => {
-          return createMemberType(rest)
+          return createMemberType({
+            ...rest,
+            title: fieldDef.title || startCase(name)
+          })
         })
       })
     })
