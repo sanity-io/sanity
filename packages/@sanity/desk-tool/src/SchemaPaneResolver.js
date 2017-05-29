@@ -133,7 +133,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     const listLayout = this.getListLayoutForType(selectedType)
     const type = schema.get(selectedType)
     const linkState = {
-      selectedDocumentId: item._id,
+      selectedDocumentId: getPublishedId(item._id),
       selectedType: type.name,
       action: 'edit'
     }
