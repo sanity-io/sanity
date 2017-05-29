@@ -2,7 +2,7 @@ import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import InvalidValue from './InvalidValue'
+import InvalidValue from '../InvalidValue'
 import MemberValue from '../../Member'
 
 import styles from './styles/Field.css'
@@ -44,12 +44,16 @@ export default class Field extends React.Component {
       const expectedType = field.type.name
       const actualType = resolveTypeName(value)
 
-      if (expectedType !== actualType) {
+      // todo: we should consider removing this, and not allow aliasing native types
+      // + ensure custom object types always gets annotated with _type
+      const isCompatible = actualType === field.type.jsonType
+
+      if (expectedType !== actualType && !isCompatible) {
         return (
           <InvalidValue
-            type={field.type}
             value={value}
             onChange={this.handleChange}
+            validTypes={[field.type.name]}
             actualType={actualType}
           />
         )

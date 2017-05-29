@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 //@flow weak
 import React from 'react'
 import {get} from 'lodash'
-import humanizeList from 'humanize-list'
 
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
@@ -16,7 +15,7 @@ import GridList from 'part:@sanity/components/lists/grid'
 
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import ItemForm from './ItemForm'
-import ItemPreview from './ItemPreview'
+import Item from './Item'
 import styles from './styles/Array.css'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
@@ -202,8 +201,9 @@ export default class ArrayInput extends React.Component {
   }
 
   renderEditItemForm(item) {
+    // todo: move this over to ./Item.js
     const {type} = this.props
-    const itemField = this.getItemType(item)
+    const memberType = this.getMemberTypeOfItem(item)
 
     // Reset level if a full screen modal
     const level = (type.options && type.options.editModal == 'fullscreen') ? 1 : this.props.level + 1
@@ -213,7 +213,7 @@ export default class ArrayInput extends React.Component {
         <ItemForm
           focus
           itemKey={item._key || this.props.value.indexOf(item)}
-          type={itemField}
+          type={memberType}
           level={level}
           value={item}
           onChange={this.handleItemChange}
@@ -225,7 +225,7 @@ export default class ArrayInput extends React.Component {
 
     if (type.options && type.options.editModal == 'fullscreen') {
       return (
-        <FullscreenDialog title={itemField.title} onClose={this.handleClose} isOpen>
+        <FullscreenDialog title={memberType.title} onClose={this.handleClose} isOpen>
           {content}
         </FullscreenDialog>
       )
@@ -233,14 +233,14 @@ export default class ArrayInput extends React.Component {
 
     if (type.options && type.options.editModal == 'fold') {
       return (
-        <EditItemFold title={itemField.title} onClose={this.handleClose}>
+        <EditItemFold title={memberType.title} onClose={this.handleClose}>
           {content}
         </EditItemFold>
       )
     }
 
     return (
-      <EditItemPopOver title={itemField.title} onClose={this.handleClose}>
+      <EditItemPopOver title={memberType.title} onClose={this.handleClose}>
         {content}
       </EditItemPopOver>
     )
@@ -254,7 +254,7 @@ export default class ArrayInput extends React.Component {
     : value.find(item => item._key === editItemKey)
   }
 
-  getItemType(item) {
+  getMemberTypeOfItem(item) {
     const {type} = this.props
     return type.of.find(memberType => memberType.name === item._type)
   }
@@ -267,18 +267,6 @@ export default class ArrayInput extends React.Component {
 
   renderItem = (item, index) => {
     const {type} = this.props
-    const itemType = this.getItemType(item)
-
-    if (!itemType) {
-      return (
-        <div className={styles.warning}>
-          <h3>Warning</h3>
-          <div>Array item has an invalid type: <pre>{item._type}</pre></div>
-          <div>The only allowed item types are: <pre>{humanizeList(type.of.map(ofType => ofType.name))}</pre></div>
-          <Button type="button" data-item-index={item._key} onMouseUp={this.handleRemoveInvalidItem}>Remove</Button>
-        </div>
-      )
-    }
 
     const layout = type.options && type.options.layout == 'grid' ? 'media' : 'default'
 
@@ -288,11 +276,13 @@ export default class ArrayInput extends React.Component {
 
     return (
       <div style={{position: 'relative'}}>
-        <ItemPreview
-          type={itemType}
+        <Item
+          type={type}
           value={item}
           layout={layout}
           onRemove={this.handleRemoveItem}
+          onChange={this.handleItemChange}
+          onStartEdit={this.handleItemEdit}
         />
         <div
           className={`
@@ -300,6 +290,7 @@ export default class ArrayInput extends React.Component {
             ${isSortable ? styles.sortable : styles.nonSortable}
           `}
         >
+          {/* todo: move this over to ./Item.js */}
           {this.getEditItem() === item && this.renderEditItemForm(item)}
         </div>
       </div>
@@ -315,7 +306,6 @@ export default class ArrayInput extends React.Component {
         <GridList
           renderItem={this.renderItem}
           items={value}
-          onSelect={this.handleItemEdit}
           onSortEnd={this.handleMove}
           focusedItem={this.state.lastEditedItem}
           sortable={sortable}
@@ -328,7 +318,6 @@ export default class ArrayInput extends React.Component {
         <SortableList
           items={value}
           renderItem={this.renderItem}
-          onSelect={this.handleItemEdit}
           sortable={sortable}
           onSortEnd={this.handleMove}
           useDragHandle
@@ -342,7 +331,6 @@ export default class ArrayInput extends React.Component {
       <DefaultList
         items={value}
         renderItem={this.renderItem}
-        onSelect={this.handleItemEdit}
         decoration="divider"
         focusedItem={this.state.lastEditedItem}
       />

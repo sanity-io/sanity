@@ -10,9 +10,8 @@ import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
-import {debounce} from 'lodash'
 import {resolveTypeName} from '../../utils/resolveType'
-import InvalidValue from './InvalidValue'
+import InvalidValue from '../InvalidValue'
 
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
@@ -63,16 +62,28 @@ export default class FormBuilderBlock extends React.Component {
     editor.onChange(next)
   }
 
-  handleRemove = debounce(() => {
-    // debounced because there seems to be a race condition with clicks and state updates
-    const {node, editor} = this.props
-    const next = editor.getState()
-      .transform()
-      .removeNodeByKey(node.key)
-      .apply()
+  handleInvalidValueChange = event => {
+    // the setimeout is a workaround because there seems to be a race condition with clicks and state updates
+    setTimeout(() => {
+      const {node, editor} = this.props
 
-    editor.onChange(next)
-  }, 0)
+      const nextValue = applyAll(node.data.get('value'), event.patches)
+
+      const nextState = (nextValue === undefined)
+        ? editor.getState()
+          .transform()
+          .removeNodeByKey(node.key)
+          .apply()
+        : editor.getState()
+          .transform()
+          .setNodeByKey(node.key, {
+            data: {value: nextValue}
+          })
+          .apply()
+
+      editor.onChange(nextState)
+    }, 0)
+  }
 
   handleDragStart = event => {
     const {editor} = this.props
@@ -246,7 +257,7 @@ export default class FormBuilderBlock extends React.Component {
           validTypes={validMemberTypes}
           actualType={actualType}
           value={value}
-          onRemove={this.handleRemove}
+          onChange={this.handleInvalidValueChange}
         />
       )
     }
