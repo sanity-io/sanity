@@ -3,3 +3,6 @@
 .root {
   /* The container is in SchemaPaneResolver */
 }
+.deletedMessage {
+  padding: 1em;
+}

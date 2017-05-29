@@ -15,6 +15,7 @@
   "dependencies": {
     "@sanity/mutator": "^0.105.1",
     "@sanity/observable": "^0.105.8",
+    "@sanity/uuid": "^0.106.0",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.1"
   },

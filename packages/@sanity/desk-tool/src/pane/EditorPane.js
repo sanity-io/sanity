@@ -7,30 +7,44 @@ import FormBuilder, {checkout} from 'part:@sanity/form-builder'
 import {throttle, omit} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
+import Button from 'part:@sanity/components/buttons/default'
 
 const INITIAL_DOCUMENT_STATE = {
   isSaving: true,
-  isLoading: true,
-  isDeleted: false,
+  deletedSnapshot: null,
   snapshot: null
 }
 
 const INITIAL_STATE = {
+  isLoading: true,
   isSaving: false,
   isCreatingDraft: false,
   draft: INITIAL_DOCUMENT_STATE,
   published: INITIAL_DOCUMENT_STATE
 }
 
-function documentEventToState(currentState, event) {
+function documentEventToState(event) {
   switch (event.type) {
     case 'rebase':
     case 'create':
+    case 'createIfNotExists':
     case 'snapshot': {
-      return {snapshot: event.document}
+      return {
+        deletedSnapshot: null,
+        snapshot: event.document
+      }
     }
     case 'mutation': {
-      return mutationEventToState(currentState, event)
+      return {
+        deletedSnapshot: event.deletedSnapshot,
+        snapshot: event.document ? {
+          ...event.document,
+          // todo: The following line is a temporary workaround for a problem with the mutator not
+          // setting updatedAt on patches applied optimistic when they are received from server
+          // can be removed when this is fixed
+          _updatedAt: new Date().toISOString()
+        } : event.document
+      }
     }
     default: {
       // eslint-disable-next-line no-console
@@ -40,19 +54,12 @@ function documentEventToState(currentState, event) {
   }
 }
 
-function mutationEventToState(currentState, event) {
-  const isDeleted = (event.document === null || event.document === undefined)
-  return {
-    isDeleted,
-    deletedSnapshot: isDeleted ? currentState.value : null,
-    snapshot: event.document ? {
-      ...event.document,
-      // todo: The following line is a temporary workaround for a problem with the mutator not
-      // setting updatedAt on patches applied optimistic when they are received from server
-      // can be removed when this is fixed
-      _updatedAt: new Date().toISOString()
-    } : event.document
-  }
+function exists(draft, published) {
+  return draft.snapshot || published.snapshot
+}
+
+function isRecoverable(draft, published) {
+  return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
 }
 
 export default class EditorPane extends React.PureComponent {
@@ -76,9 +83,15 @@ export default class EditorPane extends React.PureComponent {
           .map(event => ({...event, status: 'draft'}))
       )
       .subscribe(event => {
-        this.setState(currentState => {
+        this.setState(prevState => {
           const key = event.status // either 'draft' or 'published'
-          return {[key]: documentEventToState(currentState[key], event)}
+          return {
+            isLoading: false,
+            [key]: {
+              ...(prevState[key] || {}),
+              ...documentEventToState(event)
+            }
+          }
         })
       })
   }
@@ -181,11 +194,13 @@ export default class EditorPane extends React.PureComponent {
 
   handleChange = event => {
     const {published, draft} = this.state
+    const {typeName} = this.props
 
     if (!draft.snapshot) {
       this.draft.createIfNotExists({
         ...omit(published.snapshot, '_createdAt', '_updatedAt'),
-        _id: this.getDraftId()
+        _id: this.getDraftId(),
+        _type: typeName
       })
     }
 
@@ -208,10 +223,42 @@ export default class EditorPane extends React.PureComponent {
     })
   }, 1000, {leading: true, trailing: true})
 
+  handleRestoreDeleted = () => {
+    const {draft, published} = this.state
+
+    const commits = []
+    if (draft.deletedSnapshot) {
+      this.draft.createIfNotExists(draft.deletedSnapshot)
+      commits.push(this.draft.commit())
+    } else if (published.deletedSnapshot) {
+      this.published.createIfNotExists(published.deletedSnapshot)
+      commits.push(this.published.commit())
+    }
+    commits.forEach(c => {
+      c.subscribe({
+        next: () => {}
+      })
+    })
+  }
+
+  renderDeleted() {
+    return (
+      <div className={styles.deletedMessage}>
+        <h3>This document just got deleted</h3>
+        <p>You can undo deleting it until you close this window/tab</p>
+        <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
+      </div>
+    )
+  }
+
   render() {
     const {typeName} = this.props
-    const {draft, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
-    const isLoading = draft.isLoading || published.isLoading
+    const {draft, isLoading, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
+
+    if (isRecoverable(draft, published)) {
+      return this.renderDeleted()
+    }
+
     return (
       <div className={styles.root}>
         <Editor

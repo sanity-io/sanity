@@ -1,11 +1,12 @@
 import Observable from '@sanity/observable'
+import Uid from '@sanity/uuid'
 import {omit} from 'lodash'
 import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 
 const NOOP = () => {}
 
-function createBufferedDocument(documentId, server) {
+function createBufferedDocument(documentId = Uid(), server) {
 
   const serverEvents$ = Observable.from(server.byId(documentId)).share()
   const saves = pubsub()
