@@ -31,6 +31,10 @@
   }
 }
 
+.typeMisMatchMessage {
+  padding: 10em 3em;
+}
+
 .savingStatus {
   opacity: 0.5;
   padding: 0.75em;

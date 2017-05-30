@@ -148,13 +148,11 @@ export default class EditorPane extends React.PureComponent {
   }
 
   handleDelete = () => {
-    this.setState({isDeleting: true})
     this.draft.delete()
     this.published.delete()
-    this.draft.commit().merge(this.published.commit())
-      .subscribe(() => {
-        this.setState({isDeleting: false})
-      })
+    this.draft.commit()
+      .merge(this.published.commit())
+      .subscribe(() => {})
   }
 
   handleUnpublish = () => {

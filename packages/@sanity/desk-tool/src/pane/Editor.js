@@ -105,10 +105,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     isCreatingDraft: PropTypes.bool,
     isUnpublishing: PropTypes.bool,
     isPublishing: PropTypes.bool,
-    isDeleted: PropTypes.bool,
     isLoading: PropTypes.bool,
     isSaving: PropTypes.bool,
-    isDeleting: PropTypes.bool,
     deletedSnapshot: PropTypes.object
   }
 
@@ -118,7 +116,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     isUnpublishing: false,
     isPublishing: false,
     isCreatingDraft: false,
-    isDeleted: false,
     deletedSnapshot: null,
     onDelete() {},
     onCreate() {},
@@ -265,10 +262,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       published,
       type,
       isLoading,
-      isDeleted,
       isPublishing,
       isUnpublishing,
-      isDeleting,
       isCreatingDraft
     } = this.props
 
@@ -291,11 +286,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       )
     }
 
-    if (isDeleted) {
+    const hasTypeMismatch = value && value._type && value._type !== type.name
+    if (hasTypeMismatch) {
       return (
-        <div className={styles.root}>
-          <p>Document was deleted</p>
-          <Button onClick={this.handleRestore}>Restore</Button>
+        <div className={styles.typeMisMatchMessage}>
+          This document is of type <code>{value._type}</code> and cannot be edited as <code>{type.name}</code>
         </div>
       )
     }
@@ -304,9 +299,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       <div className={styles.root}>
         {isCreatingDraft && (
           <Spinner fullscreen message="Making changes…" />
-        )}
-        {isDeleting && (
-          <Spinner fullscreen message="Deleting…" />
         )}
         {isPublishing && (
           <Spinner fullscreen message="Publishing…" />
