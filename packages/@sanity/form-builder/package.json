@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.106.1",
+  "version": "0.106.2",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -20,10 +20,10 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@sanity/imagetool": "^0.105.1",
-    "@sanity/mutator": "^0.105.1",
-    "@sanity/observable": "^0.105.8",
-    "@sanity/schema": "^0.106.1",
+    "@sanity/imagetool": "^0.106.2",
+    "@sanity/mutator": "^0.106.2",
+    "@sanity/observable": "^0.106.2",
+    "@sanity/schema": "^0.106.2",
     "cheerio": "^0.22.0",
     "debug": "^2.6.3",
     "get-random-values": "^1.2.0",
@@ -41,13 +41,13 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.106.1",
-    "@sanity/check": "^0.105.1",
-    "@sanity/cli": "^0.105.16",
-    "@sanity/components": "^0.106.1",
-    "@sanity/core": "^0.105.1",
-    "@sanity/plugin-loader": "^0.105.1",
-    "@sanity/server": "^0.105.1",
+    "@sanity/base": "^0.106.2",
+    "@sanity/check": "^0.106.2",
+    "@sanity/cli": "^0.106.2",
+    "@sanity/components": "^0.106.2",
+    "@sanity/core": "^0.106.2",
+    "@sanity/plugin-loader": "^0.106.2",
+    "@sanity/server": "^0.106.2",
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.2.1",
     "babel-plugin-css-modules-transform": "^1.1.0",
