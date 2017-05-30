@@ -23,6 +23,7 @@
     "@sanity/data-aspects": "^0.105.11",
     "@sanity/form-builder": "^0.106.0",
     "@sanity/mutator": "^0.105.1",
+    "@sanity/uuid": "^0.106.0",
     "classnames": "^2.2.5",
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.10",
