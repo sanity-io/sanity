@@ -1,6 +1,16 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import slugifyWithPrefix from '../src/slugifyWithPrefix'
 
+const pickFirst = (obj, keys) => {
+  if (!obj) {
+    return obj
+  }
+  const found = keys.find(key => (key in obj))
+  return obj[found]
+}
+
+const LANGUAGE_PRIORITY = ['no', 'nn', 'en']
+
 export default {
   name: 'blogpost',
   type: 'object',
@@ -16,6 +26,7 @@ export default {
     prepare(value) {
       const timeSince = distanceInWordsToNow(value.createdAt, {addSuffix: true})
       return Object.assign({}, value, {
+        title: value.title ? pickFirst(value.title, LANGUAGE_PRIORITY) : '',
         subtitle: value.author ? `By ${value.author}, ${timeSince}` : timeSince,
         description: value.lead
       })
@@ -25,8 +36,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string',
-      required: true
+      type: 'localeString'
     },
     {
       name: 'slug',

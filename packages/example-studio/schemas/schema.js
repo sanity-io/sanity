@@ -5,6 +5,7 @@ import author from './author'
 import blogpost from './blogpost'
 import code from './code'
 import videoEmbed from './videoEmbed'
+import localeString from './localeString'
 
 export default createSchema({
   name: 'example-blog',
@@ -15,6 +16,7 @@ export default createSchema({
     blocksTest,
     typeWithBlocks,
     myImage,
-    videoEmbed
+    videoEmbed,
+    localeString
   ]
 })
