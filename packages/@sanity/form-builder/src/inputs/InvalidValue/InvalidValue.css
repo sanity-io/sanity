@@ -9,3 +9,13 @@
     color: var(--state-warning-color);
   }
 }
+
+textarea.currentValueDump {
+  border: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 0;
+  font-family: monospace;
+  overflow: hidden;
+}
