@@ -17,15 +17,19 @@ export default class DateInput extends React.PureComponent {
   // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
+    const {type} = this.props
+
     if (!newMoment || !newMoment.isValid()) {
-      return null
+      return undefined
     }
     if (this.optionsWithDefaults().inputUtc) {
       return {
+        _type: type.name,
         utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
       }
     }
     return {
+      _type: type.name,
       local: newMoment.format(), // e.g. 2017-02-21T10:15:00+01:00
       utc: newMoment.utc().format(), // e.g. 2017-02-12T09:15:00Z
       timezone: moment.tz.guess(), // e.g. Europe/Oslo
