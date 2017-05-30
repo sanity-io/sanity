@@ -29,6 +29,18 @@ export default {
       required: true
     },
     {
+      name: 'slug',
+      title: 'Slug',
+      description: 'The unique identifier for the blogpost in links and urls',
+      type: 'slug',
+      required: true,
+      options: {
+        source: document => pickFirst(document.title, LANGUAGE_PRIORITY),
+        maxLength: 64,
+        slugifyFn: slugifyWithPrefix('my-prefix')
+      }
+    },
+    {
       name: 'myImage',
       title: 'My Image',
       type: 'myImage',
@@ -122,18 +134,6 @@ export default {
       options: {
         hotspot: true,
         accept: 'image/png'
-      }
-    },
-    {
-      name: 'slug',
-      title: 'Slug',
-      description: 'The unique identifier for the blogpost in links and urls',
-      type: 'slug',
-      required: true,
-      options: {
-        source: 'title',
-        maxLength: 64,
-        slugifyFn: slugifyWithPrefix('creepy')
       }
     },
     {

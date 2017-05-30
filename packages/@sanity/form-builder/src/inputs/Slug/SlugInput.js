@@ -5,19 +5,14 @@ import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import {uniqueId, debounce} from 'lodash'
+import {uniqueId, debounce, deburr, kebabCase, get} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
-function defaultSlugify(type, text) {
-  const maxLength = (type.options && type.options.maxLength) || 200
-  return (text || '').toString().toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w-]+/g, '')       // Remove all non-word chars
-    .replace(/--+/g, '-')         // Replace multiple - with single -
-    .substring(0, maxLength)
+function defaultSlugify(value) {
+  return kebabCase(deburr(value))
 }
 
 function tryPromise(fn) {
@@ -74,7 +69,8 @@ export default class SlugInput extends React.Component {
   static defaultProps = {
     value: {current: undefined, auto: true},
     onChange() {},
-    onEnter() {}
+    onEnter() {},
+    slugifyFn: defaultSlugify
   };
 
   state = vanillaState
@@ -134,18 +130,15 @@ export default class SlugInput extends React.Component {
       })
   }
 
-  slugify(text) {
-    if (!text) {
-      return text
+  slugify(sourceValue) {
+    if (!sourceValue) {
+      return sourceValue
     }
     const {type, slugifyFn} = this.props
-    if (type.options && type.options.slugifyFn) {
-      return type.options.slugifyFn(type, text, slugifyFn)
-    }
-    if (slugifyFn) {
-      return this.props.slugifyFn(type, text)
-    }
-    return defaultSlugify(type, text)
+
+    const slugify = get(type, 'options.slugifyFn') || slugifyFn
+
+    return slugify(type, sourceValue)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -163,8 +156,9 @@ export default class SlugInput extends React.Component {
     // If slug is set to auto and the source field has changed,
     // verify and set the new slug if it is different from the current one
     let newCurrent
-    if (value.auto && type.options && type.options.source) {
-      const newFromSource = document[type.options.source]
+    const source = get(type, 'options.source')
+    if (value.auto && source) {
+      const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
       newCurrent = this.slugify(newFromSource)
     }
     if (newCurrent && newCurrent !== value.current) {
