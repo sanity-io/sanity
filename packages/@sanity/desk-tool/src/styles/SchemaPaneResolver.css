@@ -130,6 +130,25 @@
   }
 }
 
+.editorCreateNew {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-size-large);
+  width: 100%;
+  text-align: center;
+}
+
+.editorCreateNewLink {
+  text-decoration: none;
+  color: #bbb;
+  @nest &:hover {
+    color: #999;
+  }
+}
+
 .emptyText {
   display: none;
 

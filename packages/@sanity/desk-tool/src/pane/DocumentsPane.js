@@ -19,7 +19,8 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     onSetSorting: PropTypes.func,
     listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
     type: PropTypes.shape({
-      title: PropTypes.string
+      title: PropTypes.string,
+      name: PropTypes.string
     }),
     router: PropTypes.shape({
       state: PropTypes.shape({
@@ -35,6 +36,17 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     drafts: [],
     onSetSorting: NOOP,
     onSetListLayout: NOOP
+  }
+
+  static contextTypes = {
+    __internalRouter: PropTypes.object
+  }
+
+  handleGoToCreateNew = () => {
+    const url = this.context.__internalRouter.resolveIntentLink('create', {
+      type: this.props.type.name
+    })
+    this.context.__internalRouter.navigateUrl(url)
   }
 
   render() {
@@ -69,12 +81,13 @@ export default withRouterHOC(class Pane extends React.PureComponent {
           <PaneMenuContainer
             onSetListLayout={onSetListLayout}
             onSetSorting={onSetSorting}
+            onGoToCreateNew={this.handleGoToCreateNew}
           />
         </div>
 
         {loading && (
           <div className={styles.spinner}>
-            <Spinner center message="Loading items…"/>
+            <Spinner center message="Loading items…" />
           </div>
         )
         }

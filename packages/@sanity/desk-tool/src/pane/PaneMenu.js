@@ -7,7 +7,7 @@ import IconList from 'part:@sanity/base/bars-icon'
 import IconDetails from 'part:@sanity/base/th-list-icon'
 import IconThumbnails from 'part:@sanity/base/th-large-icon'
 import IconSettings from 'part:@sanity/base/cog-icon'
-
+import IconNew from 'part:@sanity/base/plus-circle-icon'
 const menuItems = [
   {
     title: 'Alphabetical',
@@ -55,7 +55,12 @@ const menuItems = [
     icon: IconThumbnails,
     action: 'setListLayout',
     key: 'card'
-
+  },
+  {
+    title: 'Create new…',
+    icon: IconNew,
+    action: 'createNew',
+    divider: true
   }
 ]
 

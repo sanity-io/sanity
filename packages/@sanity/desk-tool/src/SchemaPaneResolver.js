@@ -19,6 +19,7 @@ import {partition} from 'lodash'
 import {isPublishedId} from '../lib/utils/draftUtils'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import {IntentLink} from 'part:@sanity/base/router'
 
 // Debounce function on requestAnimationFrame
 function debounceRAF(fn) {
@@ -413,6 +414,20 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               />
             )
           }
+
+          {
+            !selectedDocumentId && (
+              <div className={styles.editorCreateNew}>
+                <IntentLink
+                  intent="create"
+                  params={{type: selectedType}}
+                  className={styles.editorCreateNewLink}
+                >
+                  Create new &quot;{schemaType.title}&quot;
+                </IntentLink>
+              </div>
+            )
+          }
           {selectedType && !schemaType && (
             <h2 className={styles.emptyText}>
               Could not find any type
@@ -426,6 +441,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               Invalid action: {action}
             </h2>
           )}
+
           {!selectedType && (
             <h2 className={styles.emptyText}>Select a type to begin…</h2>
           )}
