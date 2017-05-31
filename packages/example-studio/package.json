@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.106.4",
+  "version": "0.106.5",
   "description": "Just a sample Sanity studio project",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "@sanity/date-input": "^0.106.4",
     "@sanity/default-layout": "^0.106.4",
     "@sanity/default-login": "^0.106.2",
-    "@sanity/desk-tool": "^0.106.4",
+    "@sanity/desk-tool": "^0.106.5",
     "@sanity/form-builder": "^0.106.4",
     "@sanity/storybook": "^0.106.2",
     "date-fns": "^1.28.4",
