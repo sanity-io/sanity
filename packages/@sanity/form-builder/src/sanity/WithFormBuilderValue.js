@@ -129,6 +129,10 @@ export default class WithFormBuilderValue extends React.PureComponent {
   }, 1000, {leading: true, trailing: true})
 
   handleChange = (event : PatchEvent) => {
+    this.document.createIfNotExists({
+      _id: this.props.documentId,
+      _type: this.props.typeName
+    })
     this.document.patch(event.patches)
     this.commit()
   }
