@@ -3,24 +3,20 @@ import React from 'react'
 import styles from 'part:@sanity/components/selects/custom-style'
 import {uniqueId} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultList from 'part:@sanity/components/lists/default'
 import enhanceWithClickOutside from 'react-click-outside'
 
 class CustomSelect extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
-    description: PropTypes.string,
+    inputId: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     onOpen: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onClose: PropTypes.func,
     value: PropTypes.object,
-    error: PropTypes.bool,
     renderItem: PropTypes.func,
     className: PropTypes.string,
-    transparent: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -124,21 +120,11 @@ class CustomSelect extends React.Component {
   }
 
   render() {
-    const {label, error, value, description, items, className, transparent} = this.props
-    const {hasFocus, showList, arrowNavigationPosition} = this.state
+    const {inputId, value, items, className} = this.props
+    const {showList, arrowNavigationPosition} = this.state
 
     return (
-      <DefaultFormField
-        className={`
-          ${styles.root}
-          ${hasFocus && styles.focused}
-          ${error && styles.error}
-          ${transparent && styles.transparent}
-          ${className}`}
-        description={description}
-        labelHtmlFor={this._inputId}
-        label={label}
-      >
+      <div className={className}>
         <div className={styles.inner} onClick={this.handleInnerClick}>
           <div className={styles.selectContainer}>
             <span className={styles.text}>
@@ -161,7 +147,7 @@ class CustomSelect extends React.Component {
             />
           )}
         </div>
-      </DefaultFormField>
+      </div>
     )
   }
 }

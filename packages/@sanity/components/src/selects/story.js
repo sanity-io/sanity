@@ -5,6 +5,7 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import CustomSelect from 'part:@sanity/components/selects/custom'
+import CustomSelectField from 'part:@sanity/components/selects/customField'
 import {range} from 'lodash'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import RadioSelect from 'part:@sanity/components/selects/radio'
@@ -324,6 +325,33 @@ storiesOf('Selects')
       <Sanity part="part:@sanity/components/selects/custom" propTables={[CustomSelect]}>
         <div style={{padding: '2em', backgroundColor: '#eee'}}>
           <CustomSelect
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onOpen={action('onOpen')}
+            renderItem={renderItem}
+            value={items[2]}
+            items={items}
+          />
+        </div>
+      </Sanity>
+    )
+  }
+)
+
+.add(
+  'Custom select field',
+  () => {
+
+    const renderItem = function (item) {
+      return (
+        <div>Custom rendering of {item.title}</div>
+      )
+    }
+
+    return (
+      <Sanity part="part:@sanity/components/selects/customField" propTables={[CustomSelectField]}>
+        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+          <CustomSelectField
             label={text('label', 'This is the label')}
             placeholder={text('placeholder', 'This is the placeholder')}
             transparent={boolean('transparent', false)}
