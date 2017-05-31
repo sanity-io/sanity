@@ -4,7 +4,7 @@ import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
 import PaneMenuContainer from './PaneMenuContainer'
-import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
+import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import ListView from './ListView'
 
 const NOOP = () => {}
@@ -82,13 +82,14 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         {!loading && !hasDocuments && (
           <div className={styles.empty}>
             <h3>Nothing here. Yet…</h3>
-            <StateLink
+            <IntentLink
               className={styles.emptyCreateNew}
               title={`Create new ${type.title}`}
-              state={{selectedType: type.name}}
+              intent="create"
+              params={{type: type.name}}
             >
               Create new {type.title}
-            </StateLink>
+            </IntentLink>
           </div>
         )}
 
