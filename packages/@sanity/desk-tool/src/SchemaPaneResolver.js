@@ -416,7 +416,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           }
 
           {
-            !selectedDocumentId && (
+            schemaType && !selectedDocumentId && (
               <div className={styles.editorCreateNew}>
                 <IntentLink
                   intent="create"
