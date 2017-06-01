@@ -12,6 +12,7 @@ import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
+import BinaryIcon from 'react-icons/lib/go/file-binary'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import styles from './styles/Editor.css'
 import copyDocument from '../utils/copyDocument'
@@ -66,11 +67,20 @@ const getDeleteItem = (draft, published) => ({
   isDisabled: (!draft && !published)
 })
 
+const getInspectItem = (draft, published) => ({
+  action: 'inspect',
+  title: <span>Inspect <code className={styles.hotkey}>Ctrl+Alt+I</code></span>,
+  icon: BinaryIcon,
+  divider: true,
+  isDisabled: !(draft || published)
+})
+
 const getMenuItems = (draft, published) => ([
   getDiscardItem,
   getUnpublishItem,
   getDuplicateItem,
   getDeleteItem,
+  getInspectItem
 ])
   .map(fn => fn(draft, published))
   .filter(Boolean)
@@ -253,6 +263,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     if (item.action === 'duplicate') {
       this.handleCreateCopy()
     }
+
+    if (item.action === 'inspect') {
+      this.setState({inspect: true})
+    }
+
     this.setState({isMenuOpen: false})
   }
 

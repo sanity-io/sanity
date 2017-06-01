@@ -3,6 +3,12 @@
 .root {
 }
 
+.hotkey {
+  color: #888;
+  font-size: 0.8em;
+  margin-left: 0.6em
+}
+
 .overlay {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.8);
