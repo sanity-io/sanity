@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": "sanity",
+  "rules": {
+    "strict": 0
+  }
+}
