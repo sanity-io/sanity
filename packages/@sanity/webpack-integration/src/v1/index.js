@@ -1,3 +1,4 @@
+const path = require('path')
 const lost = require('lost')
 const postcssUrl = require('postcss-url')
 const postcssImport = require('postcss-import')
@@ -7,15 +8,30 @@ const resolveStyleImport = require('./resolveStyleImport')
 
 const partLoaderPath = require.resolve('@sanity/webpack-loader/lib/partLoader')
 
+const absolute = /^(\/|\w+:\/\/)/
+const isAbsolute = url => absolute.test(url)
+
+function resolveUrl(url, decl, from, dirname) {
+  return isAbsolute(url) ? url : path.resolve(dirname, url)
+}
+
+function getPartResolverPlugin(options) {
+  return new PartResolverPlugin({basePath: options.basePath})
+}
+
 function getPlugins(options) {
-  return [new PartResolverPlugin({basePath: options.basePath})]
+  return [getPartResolverPlugin(options)]
+}
+
+function getPartLoader(options) {
+  return {
+    test: /[?&]sanityPart=/,
+    loader: partLoaderPath
+  }
 }
 
 function getLoaders(options) {
-  return [{
-    test: /[?&]sanityPart=/,
-    loader: partLoaderPath
-  }]
+  return [getPartLoader(options)]
 }
 
 function getStyleResolver(options) {
@@ -28,9 +44,14 @@ function getPostcssImportPlugin(options) {
   return importer
 }
 
+function getPostcssUrlPlugin(options) {
+  return postcssUrl({url: resolveUrl})
+}
+
 function getPostcssPlugins(options) {
   const importer = getPostcssImportPlugin(options)
-  return [importer, postcssCssnext, postcssUrl({url: 'rebase'}), lost]
+  const urlPlugin = getPostcssUrlPlugin(options)
+  return [importer, postcssCssnext, urlPlugin, lost]
 }
 
 function getConfig(options) {
@@ -46,8 +67,11 @@ function getConfig(options) {
 module.exports = {
   getPlugins: getPlugins,
   getLoaders: getLoaders,
+  getPartLoader: getPartLoader,
   getStyleResolver: getStyleResolver,
+  getPartResolverPlugin: getPartResolverPlugin,
   getPostcssImportPlugin: getPostcssImportPlugin,
+  getPostcssUrlPlugin: getPostcssUrlPlugin,
   getPostcssPlugins: getPostcssPlugins,
   getConfig: getConfig
 }

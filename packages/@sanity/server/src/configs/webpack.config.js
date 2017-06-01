@@ -3,16 +3,15 @@ import path from 'path'
 import webpack from 'webpack'
 import parents from 'parents'
 import resolveFrom from 'resolve-from'
-import PartResolverPlugin from '@sanity/webpack-loader'
+import webpackIntegration from '@sanity/webpack-integration'
 import ExtractTextPlugin from '@sanity/extract-text-webpack-plugin'
 import postcssPlugins from './postcssPlugins'
 
 // Webpack 2 vs 1
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
 
-const partLoaderPath = require.resolve('@sanity/webpack-loader/src/partLoader')
-
 export default (config = {}) => {
+  const wpIntegrationOptions = {basePath: config.basePath}
   const basePath = config.basePath || process.cwd()
   const skipMinify = config.skipMinify || false
 
@@ -35,7 +34,6 @@ export default (config = {}) => {
   const sanityDev = typeof process.env.SANITY_DEV !== 'undefined' // eslint-disable-line no-process-env
 
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
-  const resolverOpts = Object.assign({basePath, env}, config.resolver || {})
 
   const cssExtractor = isProd
     && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
@@ -111,10 +109,7 @@ export default (config = {}) => {
         query: {
           name: 'assets/[name]-[hash].[ext]'
         }
-      }, {
-        test: /[?&]sanityPart=/,
-        loader: partLoaderPath
-      }]
+      }, webpackIntegration.getPartLoader(wpIntegrationOptions)]
     },
     profile: config.profile || false,
     plugins: [
@@ -122,7 +117,7 @@ export default (config = {}) => {
       new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|nb/),
       cssExtractor,
       new OccurrenceOrderPlugin(),
-      new PartResolverPlugin(resolverOpts),
+      webpackIntegration.getPartResolverPlugin(wpIntegrationOptions),
       commonChunkPlugin
     ].filter(Boolean),
     postcss: postcssPlugins({basePath})
