@@ -39,6 +39,12 @@ export default {
       type: 'localeString'
     },
     {
+      name: 'readonlyField',
+      title: 'A read only string',
+      type: 'string',
+      readOnly: true
+    },
+    {
       name: 'slug',
       title: 'Slug',
       description: 'The unique identifier for the blogpost in links and urls',

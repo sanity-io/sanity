@@ -29,7 +29,9 @@ export default class Field extends React.Component {
 
   handleChange = event => {
     const {field, onChange} = this.props
-    onChange(event, field)
+    if (!field.type.readOnly) {
+      onChange(event, field)
+    }
   }
 
   handleEnter = event => {
