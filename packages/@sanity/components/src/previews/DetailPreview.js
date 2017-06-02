@@ -3,7 +3,6 @@ import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
 import {truncate} from 'lodash'
 import MediaRender from './common/MediaRender.js'
-import getPlaceholderItemStyles from './common/getPlaceholderItemStyles'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0

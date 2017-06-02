@@ -21,6 +21,6 @@
     "@sanity/storybook": "^0.106.9",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
-    "react-dom": "^15.5.0"
+    "react-dom": "^15.5.4"
   }
 }
