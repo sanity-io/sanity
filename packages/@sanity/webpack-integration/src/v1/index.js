@@ -12,6 +12,10 @@ const absolute = /^(\/|\w+:\/\/)/
 const isAbsolute = url => absolute.test(url)
 
 function resolveUrl(url, decl, from, dirname) {
+  if (typeof url !== 'string') {
+    return url
+  }
+
   return isAbsolute(url) ? url : path.resolve(dirname, url)
 }
 
