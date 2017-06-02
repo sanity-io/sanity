@@ -10,13 +10,6 @@ import BrandLogo from 'part:@sanity/base/brand-logo?'
 
 const projectName = (config.project && config.project.name) || ''
 
-/* eslint-disable camelcase */
-const providerNames = {
-  google_oauth2: 'Google',
-  github: 'GitHub'
-}
-/* eslint-enable camelcase */
-
 /* eslint-disable max-len */
 const GithubLogo = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.55 438.55">
@@ -42,21 +35,20 @@ export default class LoginDialog extends React.Component {
 
   componentDidMount() {
     this.getProviders = cancelWrap(authenticationFetcher.getProviders())
-    this.getProviders.promise.then(providers => {
-      this.setState({providers: providers})
-    })
-    .catch(err => {
-      this.setState({error: err})
-    })
+    this.getProviders.promise
+      .then(providers => this.setState({providers: providers}))
+      .catch(err => this.setState({error: err}))
   }
+
   componentWillUnmount() {
     this.getProviders.cancel()
   }
-  handleLoginButtonClicked(providerName, evnt) {
+
+  handleLoginButtonClicked(provider, evnt) {
     evnt.preventDefault()
+    const projectId = client.config().projectId
     const currentUrl = encodeURIComponent(window.location.toString())
-    const url = client.getUrl(`/auth/login/${providerName}?target=${currentUrl}`)
-    window.location = url
+    window.location = `${provider.url}?origin=${currentUrl}&projectId=${projectId}`
   }
 
   renderLoginScreen() {
@@ -80,20 +72,20 @@ export default class LoginDialog extends React.Component {
           </h2>
           <ul className={styles.providers}>
             {this.state.providers.map(provider => {
-              const onLoginClick = this.handleLoginButtonClicked.bind(this, provider.name)
+              const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
               return (
                 <li key={provider.name} className={styles.provider}>
                   <button onClick={onLoginClick} className={styles.providerButton}>
                     <span className={styles.providerLogo}>
                       {
-                        provider.name === 'google_oauth2' && <GoogleLogo />
+                        provider.name === 'google' && <GoogleLogo />
                       }
                       {
                         provider.name === 'github' && <GithubLogo />
                       }
                     </span>
                     <span className={styles.providerName}>
-                      {providerNames[provider.name] || provider.name}
+                      {provider.title}
                     </span>
                   </button>
                 </li>

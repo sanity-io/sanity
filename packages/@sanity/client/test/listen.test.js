@@ -75,7 +75,7 @@ test('[listener] can listen for mutations', t => {
 test('[listener] listener sends auth token if given (node)', t => {
   let httpServer = null
   testSse(({request, channel}) => {
-    t.equal(request.headers['sanity-token'], 'foobar', 'should send token')
+    t.equal(request.headers.authorization, 'Bearer foobar', 'should send token')
     channel.send({event: 'disconnect'})
     process.nextTick(() => {
       channel.close()

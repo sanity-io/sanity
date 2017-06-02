@@ -1,13 +1,10 @@
-const tokenHeader = 'Sanity-Token'
-const projectHeader = 'Sanity-Project-ID'
+const projectHeader = 'X-Sanity-Project-ID'
 
 module.exports = config => {
   const headers = {}
 
-  if (config.token && config.gradientMode) {
+  if (config.token) {
     headers.Authorization = `Bearer ${config.token}`
-  } else if (config.token) {
-    headers[tokenHeader] = config.token
   }
 
   if (!config.useProjectHostname && config.projectId) {

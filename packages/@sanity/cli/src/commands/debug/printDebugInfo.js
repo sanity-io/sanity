@@ -17,7 +17,7 @@ export default async (args, context) => {
   // User info
   context.output.print('\nUser:')
   if (user instanceof Error) {
-    context.output.print(chalk.red(user.message))
+    context.output.print(`  ${chalk.red(user.message)}\n`)
   } else {
     printKeyValue({ID: user.id, Name: user.name, Email: user.email}, context)
   }
@@ -82,9 +82,12 @@ function printKeyValue(obj, context) {
 
 async function gatherInfo(context) {
   const baseInfo = await promiseProps({
-    user: gatherUserInfo(context),
     globalConfig: gatherGlobalConfigInfo(context),
     projectConfig: gatherProjectConfigInfo(context),
+  })
+
+  baseInfo.user = await gatherUserInfo(context, {
+    projectBased: Boolean(baseInfo.projectConfig && baseInfo.projectConfig.api)
   })
 
   return promiseProps(Object.assign({
@@ -131,7 +134,7 @@ async function gatherProjectInfo(context, baseInfo) {
     return new Error(`Project specified in configuration (${projectId}) does not exist in API`)
   }
 
-  const member = (projectInfo.members || []).find(proj => proj.id === baseInfo.user.id)
+  const member = (projectInfo.members || []).find(user => user.id === baseInfo.user.id)
   const hostname = projectInfo.studioHostname && `https://${projectInfo.studioHostname}.sanity.studio/`
   return {
     id: projectId,
@@ -141,8 +144,8 @@ async function gatherProjectInfo(context, baseInfo) {
   }
 }
 
-async function gatherUserInfo(context) {
-  const client = context.apiClient({requireUser: false, requireProject: false})
+async function gatherUserInfo(context, info = {}) {
+  const client = context.apiClient({requireUser: false, requireProject: info.projectBased})
   const hasToken = Boolean(client.config().token)
   if (!hasToken) {
     return new Error('Not logged in')

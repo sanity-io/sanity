@@ -26,12 +26,11 @@ module.exports = function listen(query, params, opts = {}) {
   const options = defaults(opts, defaultOptions)
   const listenOpts = pick(options, possibleOptions)
   const qs = encodeQueryString({query, params, options: listenOpts})
-  const {gradientMode, url, token} = this.clientConfig
+  const {url, token} = this.clientConfig
 
   const authHeaders = {}
   if (token) {
-    const header = gradientMode ? 'Authorization' : 'Sanity-Token'
-    authHeaders[header] = gradientMode ? `Bearer ${token}` : token
+    authHeaders.Authorization = `Bearer ${token}`
   }
 
   const uri = `${url}${this.getDataUrl('listen', qs)}`

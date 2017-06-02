@@ -5,6 +5,6 @@ export default (client, dataset) => {
   // with same API. We're just using it here to get hold of URLs and tokens.
   const url = client.getUrl(`/data/export/${dataset}`)
   return got.stream(url, {
-    headers: {'Sanity-Token': client.config().token}
+    headers: {Authorization: `Bearer: ${client.config().token}`}
   })
 }

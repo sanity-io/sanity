@@ -17,7 +17,30 @@ const defaults = {
   requireProject: true
 }
 
+const authErrors = () => ({
+  onError: err => {
+    if (!err || !err.response) {
+      return err
+    }
+
+    const body = err.response.body
+    if (!body || body.statusCode !== 401) {
+      return err
+    }
+
+    const cfg = getUserConfig()
+    cfg.delete('authType')
+    cfg.delete('authToken')
+
+    // @todo Trigger re-authentication?
+    return err
+  }
+})
+
 export default function clientWrapper(manifest, configPath) {
+  const requester = client.requester.clone()
+  requester.use(authErrors())
+
   return function (opts = {}) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
@@ -50,7 +73,8 @@ export default function clientWrapper(manifest, configPath) {
       ...apiConfig,
       dataset: apiConfig.dataset || 'dummy',
       token: token,
-      useProjectHostname: requireProject
+      useProjectHostname: requireProject,
+      requester: requester
     })
   }
 }

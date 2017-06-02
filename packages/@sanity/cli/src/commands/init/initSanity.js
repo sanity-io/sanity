@@ -168,8 +168,8 @@ export default async function initSanity(args, context) {
     debug(`User has ${projects.length} project(s) already, showing list of choices`)
 
     const projectChoices = projects.map(project => ({
-      value: project.projectId,
-      name: `${project.displayName} [${project.projectId}]`
+      value: project.id,
+      name: `${project.displayName} [${project.id}]`
     }))
 
     const selected = await prompt.single({
@@ -192,7 +192,7 @@ export default async function initSanity(args, context) {
     debug(`Returning selected project (${selected})`)
     return {
       projectId: selected,
-      displayName: projects.find(proj => proj.projectId === selected).displayName
+      displayName: projects.find(proj => proj.id === selected).displayName
     }
   }
 

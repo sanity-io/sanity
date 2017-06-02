@@ -42,7 +42,7 @@ export default {
       const client = apiClient({requireUser: false, requireProject: false})
       if (token) {
         try {
-          await client.request({uri: '/auth/logout'})
+          await client.request({uri: '/auth/logout', method: 'POST'})
         } catch (err) {
           output.error(chalk.red(`Failed to communicate with the Sanity API:\n${err.message}`))
           return

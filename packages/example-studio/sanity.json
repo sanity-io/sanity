@@ -37,6 +37,11 @@
       "api": {
         "projectId": "exx11uqh"
       }
+    },
+    "development": {
+      "api": {
+        "projectId": "q5v474fo"
+      }
     }
   }
 }

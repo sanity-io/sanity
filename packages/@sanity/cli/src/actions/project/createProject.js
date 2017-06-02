@@ -7,7 +7,7 @@ export default function createProject(apiClient, options) {
     uri: '/projects',
     body: options
   }).then(response => ({
-    projectId: response.projectId,
+    projectId: response.projectId || response.id,
     displayName: options.displayName || ''
   }))
 }

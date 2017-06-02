@@ -1,9 +1,10 @@
-import fsp from 'fs-promise'
+import os from 'os'
+import url from 'url'
 import path from 'path'
 import http from 'http'
-import url from 'url'
 import open from 'opn'
 import chalk from 'chalk'
+import fsp from 'fs-promise'
 import {parseJson} from '@sanity/util/lib/safeJson'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
@@ -37,8 +38,9 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
     debug('Webserver listening, opening browser')
 
     const providerUrl = url.parse(provider.url, true)
-    providerUrl.query.target = generateUrl('/return')
+    providerUrl.query.origin = generateUrl('/return')
     providerUrl.query.type = 'token'
+    providerUrl.query.label = `${os.hostname()} / ${os.platform()}`
 
     const loginUrl = url.format(providerUrl)
     output.print(`\nOpening browser at ${loginUrl}\n`)
@@ -64,7 +66,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
   function exchangeToken(req, res) {
     const returnUrl = url.parse(req.url, true)
     const query = returnUrl.query || {}
-    const tmpToken = query.fetcher
+    const fetchUrl = query.url
     const error = query.error ? parseJson(query.error, {}) : null
 
     if (error) {
@@ -73,7 +75,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
       return onTokenExchangeError(err, req, res)
     }
 
-    if (!tmpToken) {
+    if (!query.sid) {
       debug(
         'Response did not contain temporary token. Query params: %s',
         JSON.stringify(returnUrl.query || {}, null, 2)
@@ -82,7 +84,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
       return onTokenExchangeError(new Error('OAuth exchange failed because of a missing token', req, res))
     }
 
-    return client.request({uri: `/auth/tokens/fetch/${tmpToken}`})
+    return client.request({uri: fetchUrl.replace(/.*?\/v\d+/, '')})
       .then(httpRes => onTokenExchanged(httpRes, req, res))
       .catch(err => onTokenExchangeError(err, req, res))
   }

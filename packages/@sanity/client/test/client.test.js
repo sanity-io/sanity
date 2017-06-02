@@ -1210,7 +1210,7 @@ test('can retrieve user by id', t => {
 test('includes token if set', t => {
   const qs = '?query=foo.bar'
   const token = 'abcdefghijklmnopqrstuvwxyz'
-  const reqheaders = {'Sanity-Token': token}
+  const reqheaders = {Authorization: `Bearer ${token}`}
   nock(projectHost(), {reqheaders}).get(`/v1/data/query/foo${qs}`).reply(200, {result: []})
 
   getClient({token}).fetch('foo.bar')
