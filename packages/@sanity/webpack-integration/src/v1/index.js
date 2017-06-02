@@ -20,7 +20,7 @@ function resolveUrl(url, decl, from, dirname) {
 }
 
 function getPartResolverPlugin(options) {
-  return new PartResolverPlugin({basePath: options.basePath})
+  return new PartResolverPlugin(options)
 }
 
 function getPlugins(options) {

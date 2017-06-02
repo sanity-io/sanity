@@ -1,6 +1,6 @@
 # @sanity/webpack-integration
 
-Tools and modules required for making partisan (the part system) work with webpack
+Tools and modules required for making partisan (the part system) work with webpack. Note: currently only works with Webpack 1.
 
 ## Installing
 
@@ -11,8 +11,11 @@ npm install --save @sanity/webpack-integration
 ## Usage
 
 ```js
-const sanityWebpack = require('@sanity/webpack-integration')
-const options = {basePath: '/path/to/project'}
+const sanityWebpack = require('@sanity/webpack-integration/v1')
+const options = {
+  basePath: '/path/to/project',
+  env: 'production'
+}
 
 // Get array of plugins required for part loading
 sanityWebpack.getPlugins(options)
