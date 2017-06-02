@@ -11,7 +11,8 @@ import postcssPlugins from './postcssPlugins'
 const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
 
 export default (config = {}) => {
-  const wpIntegrationOptions = {basePath: config.basePath}
+  const env = config.env || 'development'
+  const wpIntegrationOptions = {basePath: config.basePath, env: config.env}
   const basePath = config.basePath || process.cwd()
   const skipMinify = config.skipMinify || false
 
@@ -28,7 +29,6 @@ export default (config = {}) => {
   }
 
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
-  const env = config.env || 'development'
   const isProd = env === 'production'
   const bundleEnv = process.env.BUNDLE_ENV || 'development' // eslint-disable-line no-process-env
   const sanityDev = typeof process.env.SANITY_DEV !== 'undefined' // eslint-disable-line no-process-env
