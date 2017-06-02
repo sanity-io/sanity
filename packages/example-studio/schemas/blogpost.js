@@ -2,7 +2,7 @@ import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import slugifyWithPrefix from '../src/slugifyWithPrefix'
 
 const pickFirst = (obj, keys) => {
-  if (!obj) {
+  if (!obj || typeof obj !== 'object') {
     return obj
   }
   const found = keys.find(key => (key in obj))
