@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.106.7",
+  "version": "0.106.8",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,7 +17,7 @@
     "@sanity/check": "^0.106.2",
     "@sanity/mutator": "^0.106.2",
     "@sanity/resolver": "^0.106.2",
-    "@sanity/server": "^0.106.7",
+    "@sanity/server": "^0.106.8",
     "@sanity/util": "^0.106.2",
     "batch-stream-operation": "^1.0.2",
     "debug": "^2.6.3",

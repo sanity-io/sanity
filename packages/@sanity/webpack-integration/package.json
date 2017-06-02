@@ -1,6 +1,6 @@
 {
   "name": "@sanity/webpack-integration",
-  "version": "0.106.7",
+  "version": "0.106.8",
   "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
   "scripts": {
