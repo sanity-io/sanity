@@ -58,7 +58,7 @@ export default class Item extends React.PureComponent {
     this.props.onStartEdit(this.props.value)
   }
   render() {
-    const {value, layout} = this.props
+    const {value, layout, type} = this.props
 
     const memberType = this.getMemberType(value)
     if (!memberType) {
@@ -67,7 +67,7 @@ export default class Item extends React.PureComponent {
     return (
       <div className={`${styles.root} ${styles[layout]}`}>
         <div className={styles.functions}>
-          <Button
+          {!type.readOnly && <Button
             kind="simple"
             className={styles.deleteButton}
             color="danger"
@@ -75,7 +75,7 @@ export default class Item extends React.PureComponent {
             title="Delete"
             onClick={this.handleRemove}
             onMouseDown={this.handleMouseDown}
-          />
+          />}
         </div>
         <div className={styles.content} onClick={this.handleClick}>
           <Preview layout={layout} value={value} type={memberType} />

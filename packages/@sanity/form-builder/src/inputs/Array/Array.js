@@ -153,7 +153,12 @@ export default class ArrayInput extends React.Component {
   }
 
   handleItemChange = (event : PatchEvent, item) => {
-    const {onChange, value} = this.props
+    const {onChange, value, type} = this.props
+
+    const memberType = this.getMemberTypeOfItem(item)
+    if (memberType.readOnly) {
+      return
+    }
 
     const key = item._key || randomKey(12)
     onChange(
@@ -299,9 +304,9 @@ export default class ArrayInput extends React.Component {
 
   renderList() {
     const {value, type} = this.props
-    const sortable = get(type, 'options.sortable') !== false
+    const sortable = !type.readOnly && get(type, 'options.sortable') !== false
 
-    if (type.options && type.options.layout == 'grid') {
+    if (type.options && type.options.layout === 'grid') {
       return (
         <GridList
           renderItem={this.renderItem}
@@ -350,17 +355,19 @@ export default class ArrayInput extends React.Component {
               </div>
             )
           }
-          <div className={styles.functions}>
-            {
-              this.props.type.of.length == 1
-              && <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-                Add
-              </Button>
-            }
-            {
-              this.props.type.of.length > 1 && this.renderSelectType()
-            }
-          </div>
+          {!type.readOnly && (
+            <div className={styles.functions}>
+              {
+                this.props.type.of.length === 1
+                && <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+                  Add
+                </Button>
+              }
+              {
+                this.props.type.of.length > 1 && this.renderSelectType()
+              }
+            </div>
+          )}
         </div>
       </Fieldset>
     )

@@ -60,7 +60,8 @@ export default {
       name: 'myImage',
       title: 'My Image',
       type: 'myImage',
-      required: true
+      required: true,
+      readOnly: true
     },
     {
       name: 'publishAt',
@@ -333,6 +334,34 @@ export default {
         {
           title: 'String',
           type: 'string'
+        }
+      ]
+    },
+    {
+      name: 'arrayOfReadOnly',
+      title: 'ReadOnly test',
+      description: 'Test readOnly on members of arrays',
+      type: 'array',
+      readOnly: true, // toggle comment to test readOnly array values
+      of: [
+        {
+          title: 'Stuff',
+          type: 'object',
+          name: 'stuff',
+          fields: [
+            {name: 'something', type: 'string'},
+            {name: 'otherThing', type: 'string'}
+          ]
+        },
+        {
+          title: 'Read only stuff',
+          type: 'object',
+          name: 'readOnlyStuff',
+          readOnly: true,
+          fields: [
+            {name: 'something', type: 'string'},
+            {name: 'otherThing', type: 'string'}
+          ]
         }
       ]
     },

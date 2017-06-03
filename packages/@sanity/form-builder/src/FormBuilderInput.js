@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+const NOOP = () => {}
+
 export class FormBuilderInput extends React.Component {
   static propTypes = {
     value: PropTypes.any,
@@ -39,7 +41,7 @@ export class FormBuilderInput extends React.Component {
       <InputComponent
         value={value}
         type={type}
-        onChange={onChange}
+        onChange={type.readOnly ? NOOP : onChange}
         validation={validation}
         {...docProps}
         level={level}
