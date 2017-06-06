@@ -10,9 +10,15 @@ export default {
     },
     {
       name: 'myDateField',
+      type: 'richDate',
+      title: 'Rich date with default config',
+      description: 'A plain richDate field'
+    },
+    {
+      name: 'myDeprecatedDateField',
       type: 'date',
-      title: 'Plain date (default config)',
-      description: 'A plain date field'
+      title: 'A field with type: date',
+      description: 'Should still work, but display a deprecation warning'
     }
   ]
 }

@@ -78,15 +78,14 @@ export default class InvalidValue extends React.PureComponent {
             onFocus={e => e.target.select()}
             value={(value && typeof value === 'object') ? JSON.stringify(value, null, 2) : value}
           />
-          <DefaultButton onClick={this.handleClearClick} color="danger">
-            Clear
-          </DefaultButton>
-          {}
           {converters.map(converter => (
-            <DefaultButton onClick={() => this.handleConvertTo(converter.convert(value))} color="danger">
-              Convert to {converter.to}: <code>{JSON.stringify(converter.convert(value))}</code>
+            <DefaultButton onClick={() => this.handleConvertTo(converter.convert(value))} color="primary">
+              Convert value to {converter.to}
             </DefaultButton>
           ))}
+          <DefaultButton onClick={this.handleClearClick} color="danger">
+            Remove value
+          </DefaultButton>
         </Details>
       </div>
     )
