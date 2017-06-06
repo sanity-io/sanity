@@ -56,7 +56,7 @@ class Search extends React.Component {
       isSearching: true
     })
 
-    client.fetch(query, {term: q})
+    client.fetch(query, {term: `${q}*`})
       .then(hits => {
         this.setState({
           isSearching: false,
