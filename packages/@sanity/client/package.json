@@ -33,7 +33,7 @@
     "eslint-config-sanity": "^2.1.4",
     "gzip-size": "^3.0.0",
     "hard-rejection": "^1.0.0",
-    "nock": "git://github.com/rexxars/nock.git#fix-socket-event-scope",
+    "nock": "^9.0.5",
     "nyc": "^10.1.2",
     "pretty-bytes": "^4.0.2",
     "rimraf": "^2.6.1",
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/client.git"
+    "url": "git+ssh://git@github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
@@ -56,9 +56,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/client/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/client#readme",
+  "homepage": "https://github.com/sanity-io/sanity/tree/master/packages/%40sanity/client",
   "nyc": {
     "include": [
       "src/**/*.js"
