@@ -451,6 +451,10 @@
       "description": "Link icon"
     },
     {
+      "name": "part:@sanity/base/binary-icon",
+      "description": "Binary icon"
+    },
+    {
       "name": "part:@sanity/base/upload-icon",
       "description": "Upload icon"
     },
@@ -601,6 +605,10 @@
     {
       "implements": "part:@sanity/base/link-icon",
       "path": "components/icons/Link.js"
+    },
+    {
+      "implements": "part:@sanity/base/binary-icon",
+      "path": "components/icons/Binary.js"
     },
     {
       "implements": "part:@sanity/base/upload-icon",
