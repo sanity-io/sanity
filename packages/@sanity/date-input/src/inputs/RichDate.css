@@ -18,6 +18,15 @@
   user-select: none;
 }
 
+.deprecationWarning {
+  padding: var(--medium-padding);
+  border: 3px dashed var(--state-warning-color);
+
+  @nest & > code {
+    font-weight: bold;
+  }
+}
+
 :global(.react-datepicker) {
   background-color: var(--component-bg);
   font-size: 0.85rem;

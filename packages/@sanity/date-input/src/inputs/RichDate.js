@@ -1,18 +1,35 @@
 import moment from 'moment-timezone'
 import {uniqueId} from 'lodash'
+import generateHelpUrl from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 import React from 'react'
 import Kronos from 'react-kronos'
 import FormField from 'part:@sanity/components/formfields/default'
-import styles from './Date.css'
+import styles from './RichDate.css'
 import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
 
 const KRONOS_STYLES = {
   input: styles.datepicker,
   kronos: styles.kronos
 }
+const DEPRECATION_WARNING = (
+  <div className={styles.deprecationWarning}>
+    This field has <code>type: {'date'}</code>, which is deprecated and should be changed to
+    {' '}<code>type: {'richDate'}</code>.
+    Please update your schema and migrate your data. {' '}
+    <a
+      href={generateHelpUrl('migrate-to-rich-date')}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      More info
+    </a>
+  </div>
+)
 
-export default class DateInput extends React.PureComponent {
+export default class RichDateInput extends React.PureComponent {
+
+  inputId = uniqueId('RichDateInput')
 
   // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
@@ -23,6 +40,7 @@ export default class DateInput extends React.PureComponent {
       return undefined
     }
     if (this.optionsWithDefaults().inputUtc) {
+      // Only store non-localized data
       return {
         _type: type.name,
         utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
@@ -46,16 +64,6 @@ export default class DateInput extends React.PureComponent {
   editableMoment(currentValue) {
     if (!currentValue) {
       return null
-    }
-    if (typeof currentValue === 'string') {
-      // Backwards compatibility
-      if (currentValue.match(/\d\d\d\d-\d\d-\d\d/)) {
-        return moment(currentValue, 'YYYY-MM-DD')
-      }
-      if (currentValue.match(/\d\d\/\d\d\/\d\d\d\d/)) {
-        return moment(currentValue, 'MM/DD/YYYY')
-      }
-      return moment() // sorry pal, can't help you
     }
     if (this.optionsWithDefaults().inputUtc) {
       return currentValue.utc ? moment.utc(currentValue.utc) : moment.utc()
@@ -81,7 +89,6 @@ export default class DateInput extends React.PureComponent {
     const {value, type, level} = this.props
     const {title, description} = type
     const options = this.optionsWithDefaults()
-    const inputId = uniqueId('FormBuilderText')
     const editableMoment = this.editableMoment(value)
     const kronosProps = {
       options: {
@@ -99,7 +106,8 @@ export default class DateInput extends React.PureComponent {
     }
 
     return (
-      <FormField labelFor={inputId} label={title} level={level} description={description}>
+      <FormField labelFor={this.inputId} label={title} level={level} description={description}>
+        {type.name === 'date' && DEPRECATION_WARNING}
         <div className={styles.root}>
           {options.inputDate && (
             <Kronos
@@ -127,7 +135,7 @@ export default class DateInput extends React.PureComponent {
   }
 }
 
-DateInput.propTypes = {
+RichDateInput.propTypes = {
   value: PropTypes.shape({
     utc: PropTypes.string,
     local: PropTypes.string,
@@ -142,7 +150,7 @@ DateInput.propTypes = {
   level: PropTypes.number
 }
 
-DateInput.contextTypes = {
+RichDateInput.contextTypes = {
   resolveInputComponent: PropTypes.func,
   schema: PropTypes.object,
   intl: PropTypes.shape({

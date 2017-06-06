@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "@sanity/form-builder": "^0.112.2",
+    "@sanity/generate-help-url": "^0.112.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.11",
