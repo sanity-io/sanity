@@ -30,7 +30,6 @@ export default (config = {}) => {
 
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const isProd = env === 'production'
-  const bundleEnv = process.env.BUNDLE_ENV || 'development' // eslint-disable-line no-process-env
   const sanityDev = typeof process.env.SANITY_DEV !== 'undefined' // eslint-disable-line no-process-env
 
   const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
@@ -113,7 +112,7 @@ export default (config = {}) => {
     },
     profile: config.profile || false,
     plugins: [
-      new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'}),
+      webpackIntegration.getEnvPlugin(wpIntegrationOptions),
       new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|nb/),
       cssExtractor,
       new OccurrenceOrderPlugin(),

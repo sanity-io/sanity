@@ -32,5 +32,8 @@
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4"
+  },
+  "peerDependencies": {
+    "webpack": ">= 1.0.0"
   }
 }

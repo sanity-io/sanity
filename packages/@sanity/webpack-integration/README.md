@@ -31,7 +31,16 @@ sanityWebpack.getConfig(options)
 
 
 
-// Less common, but if you need more fine-grained access to postcss plugin stuff:
+// Less common, but if you need more fine-grained access to internals:
+
+// Get a preconfigured `DefinePlugin` that exposes `__DEV__`
+sanityWebpack.getEnvPlugin(options)
+
+// Get the part resolver plugin required for part imports
+sanityWebpack.getPartResolverPlugin(options)
+
+// Get the part loader (requires the PartResolverPlugin)
+sanityWebpack.getPartLoader(options)
 
 // Get the resolving function required for postcss-import
 sanityWebpack.getStyleResolver(options)

@@ -1,5 +1,6 @@
 const path = require('path')
 const lost = require('lost')
+const webpack = require('webpack')
 const postcssUrl = require('postcss-url')
 const postcssImport = require('postcss-import')
 const postcssCssnext = require('postcss-cssnext')
@@ -23,8 +24,20 @@ function getPartResolverPlugin(options) {
   return new PartResolverPlugin(options)
 }
 
+function getEnvPlugin(options) {
+  // eslint-disable-next-line no-process-env
+  const bundleEnv = options.bundleEnv || process.env.BUNDLE_ENV || 'development'
+  const env = options.env || 'development'
+  const isProd = env === 'production'
+
+  return new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'})
+}
+
 function getPlugins(options) {
-  return [getPartResolverPlugin(options)]
+  return [
+    getPartResolverPlugin(options),
+    getEnvPlugin(options)
+  ]
 }
 
 function getPartLoader(options) {
@@ -71,6 +84,7 @@ function getConfig(options) {
 module.exports = {
   getPlugins: getPlugins,
   getLoaders: getLoaders,
+  getEnvPlugin: getEnvPlugin,
   getPartLoader: getPartLoader,
   getStyleResolver: getStyleResolver,
   getPartResolverPlugin: getPartResolverPlugin,
