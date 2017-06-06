@@ -10,6 +10,10 @@
       "path": "inputs/Date"
     },
     {
+      "implements": "part:@sanity/form-builder/input/rich-date",
+      "path": "inputs/RichDate"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "inputs/story.js"
     }

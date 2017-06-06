@@ -12,16 +12,28 @@ const KRONOS_STYLES = {
   kronos: styles.kronos
 }
 
-export default class DateInput extends React.PureComponent {
+export default class RichDateInput extends React.PureComponent {
 
   assembleOutgoingValue(newMoment) {
+    const {type} = this.props
+
     if (!newMoment || !newMoment.isValid()) {
       return undefined
     }
     if (this.optionsWithDefaults().inputUtc) {
-      return newMoment.utc().format() // e.g. 2017-02-12T09:15:00Z
+      // Only store non-localized data
+      return {
+        _type: type.name,
+        utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
+      }
     }
-    return newMoment.format() // e.g. 2017-02-21T10:15:00+01:00
+    return {
+      _type: type.name,
+      local: newMoment.format(), // e.g. 2017-02-21T10:15:00+01:00
+      utc: newMoment.utc().format(), // e.g. 2017-02-12T09:15:00Z
+      timezone: moment.tz.guess(), // e.g. Europe/Oslo
+      offset: moment().utcOffset() // e.g. 60 (utc offset in minutes)
+    }
   }
 
   handleChange = nextValue => {
@@ -35,9 +47,9 @@ export default class DateInput extends React.PureComponent {
       return null
     }
     if (this.optionsWithDefaults().inputUtc) {
-      return moment.utc(currentValue)
+      return currentValue.utc ? moment.utc(currentValue.utc) : moment.utc()
     }
-    return moment(currentValue)
+    return currentValue.local ? moment(currentValue.local) : moment()
   }
 
   optionsWithDefaults() { // eslint-disable-line complexity
@@ -76,27 +88,27 @@ export default class DateInput extends React.PureComponent {
     }
 
     return (
-      <FormField labelFor={inputId} label={title} level={level} description={description}>
+      <FormField labelHtmlFor={inputId} label={title} level={level} description={description}>
         <div className={styles.root}>
           {options.inputDate && (
-            <Kronos
-              classes={KRONOS_STYLES}
-              date={editableMoment}
-              format={options.dateFormat}
-              onChangeDateTime={this.handleChange}
-              placeholder={options.placeholderDate}
-              {...kronosProps}
-            />
+          <Kronos
+            classes={KRONOS_STYLES}
+            date={editableMoment}
+            format={options.dateFormat}
+            onChangeDateTime={this.handleChange}
+            placeholder={options.placeholderDate}
+            {...kronosProps}
+          />
           )}
           {options.inputTime && (
-            <Kronos
-              classes={KRONOS_STYLES}
-              time={editableMoment}
-              format={options.timeFormat}
-              onChangeDateTime={this.handleChange}
-              placeholder={options.placeholderTime}
-              {...kronosProps}
-            />
+          <Kronos
+            classes={KRONOS_STYLES}
+            time={editableMoment}
+            format={options.timeFormat}
+            onChangeDateTime={this.handleChange}
+            placeholder={options.placeholderTime}
+            {...kronosProps}
+          />
           )}
         </div>
       </FormField>
@@ -104,8 +116,13 @@ export default class DateInput extends React.PureComponent {
   }
 }
 
-DateInput.propTypes = {
-  value: PropTypes.string,
+RichDateInput.propTypes = {
+  value: PropTypes.shape({
+    utc: PropTypes.string,
+    local: PropTypes.string,
+    timezone: PropTypes.string,
+    offset: PropTypes.number
+  }),
   type: PropTypes.shape({
     title: PropTypes.string.isRequired,
     options: PropTypes.object
@@ -114,7 +131,7 @@ DateInput.propTypes = {
   level: PropTypes.number
 }
 
-DateInput.contextTypes = {
+RichDateInput.contextTypes = {
   resolveInputComponent: PropTypes.func,
   schema: PropTypes.object,
   intl: PropTypes.shape({
