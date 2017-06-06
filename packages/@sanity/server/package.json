@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "0.106.10",
+  "version": "0.106.11",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
@@ -29,7 +29,7 @@
   "dependencies": {
     "@sanity/extract-text-webpack-plugin": "^0.106.10",
     "@sanity/resolver": "^0.106.10",
-    "@sanity/webpack-integration": "^0.106.10",
+    "@sanity/webpack-integration": "^0.106.11",
     "@sanity/webpack-loader": "^0.106.10",
     "babel-core": "^6.24.0",
     "babel-loader": "^6.2.10",
