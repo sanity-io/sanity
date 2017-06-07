@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook",
-  "version": "0.106.12",
+  "version": "0.106.13",
   "description": "Sanity plugin for running react-storybook in a Sanity studio",
   "main": "./lib/index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "@kadira/storybook": "^2.35.3",
     "@kadira/storybook-addon-knobs": "^1.7.1",
     "@kadira/storybook-addons": "^1.6.1",
-    "@sanity/server": "^0.106.12",
+    "@sanity/server": "^0.106.13",
     "normalize.css": "^5.0.0",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6"
