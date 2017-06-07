@@ -65,6 +65,7 @@
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4",
     "eslint-import-resolver-webpack": "^0.8.0",
+    "eslint-plugin-flowtype": "^2.34.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.0",
     "flow-bin": "^0.42.0",
