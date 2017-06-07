@@ -40,7 +40,7 @@ module.exports = {
   fetch(query, params, options = {}) {
     const mapResponse = options.filterResponse === false
       ? res => res
-      : res => res.result || []
+      : res => res.result
 
     const observable = this._dataRequest('query', {query, params}).map(mapResponse)
     return this.isPromiseAPI()

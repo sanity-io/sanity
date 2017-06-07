@@ -1211,7 +1211,7 @@ test('includes token if set', t => {
   const qs = '?query=foo.bar'
   const token = 'abcdefghijklmnopqrstuvwxyz'
   const reqheaders = {'Sanity-Token': token}
-  nock(projectHost(), {reqheaders}).get(`/v1/data/query/foo${qs}`).reply(200, {})
+  nock(projectHost(), {reqheaders}).get(`/v1/data/query/foo${qs}`).reply(200, {result: []})
 
   getClient({token}).fetch('foo.bar')
     .then(docs => {
