@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client",
-  "version": "0.106.10",
+  "version": "0.106.12",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/sanityClient.js",
   "umd": "umd/sanityClient.min.js",
@@ -16,8 +16,8 @@
     "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
   },
   "dependencies": {
-    "@sanity/eventsource": "^0.106.10",
-    "@sanity/observable": "^0.106.10",
+    "@sanity/eventsource": "^0.106.12",
+    "@sanity/observable": "^0.106.12",
     "create-error-class": "^3.0.2",
     "deep-assign": "^2.0.0",
     "get-it": "^1.0.3",
