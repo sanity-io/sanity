@@ -34,13 +34,16 @@ const typeNameToInputMap = {
   slug: Slug
 }
 
+function is(typeName, type) {
+  return type.name === typeName || (type.type && is(typeName, type.type))
+}
+
 function isArrayOfStrings(type) {
-  return type.name === 'array' && type.of.every(ofType => ofType.name === 'string')
+  return is('array', type) && type.of.every(memberType => is('string', memberType))
 }
 
 function hasBlockMember(type) {
-  return type.name === 'array'
-    && type.of.find(memberType => memberType.name === 'block')
+  return is('array', type) && type.of.find(memberType => is('block', memberType))
 }
 
 function hasListInOptions(type) {
@@ -73,7 +76,7 @@ export function resolveInputComponent(type) {
   }
 
   // String input with a select
-  if (type.name === 'string' && isList(type)) {
+  if (isList(type) && is('string', type)) {
     return isSearchable(type) ? SearchableStringSelect : StringSelect
   }
 
