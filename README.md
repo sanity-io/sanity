@@ -10,6 +10,11 @@ This repository contains the core Sanity front-end modules. It uses [Lerna](http
 
 Unless you want to modify/contribute to the core Sanity components, you're probably better off having a look at the [Sanity documentation](http://sanity.io/docs/) that explains how to quickly get started using our hosted backend.
 
+# Want to contribute?
+Contributions are always welcome, no matter how large or small.
+
+Make sure you have *Node.js* version 4 or newer and *npm* version 5 or newer.
+
 ## Installing
 
 ```
