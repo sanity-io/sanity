@@ -1,0 +1,29 @@
+{
+  "name": "@sanity/sanity-type-bundle-block-editor",
+  "version": "0.104.16",
+  "description": "Type bundle for the Sanity block editor",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib",
+    "prepublish": "in-publish && sanity-check || not-in-publish",
+    "test": "eslint ."
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin",
+    "sanity-type-bundle"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@sanity/check": "^0.104.0",
+    "in-publish": "^2.0.0",
+    "rimraf": "^2.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/sanity.git"
+  }
+}
