@@ -14,7 +14,7 @@ Unless you want to modify/contribute to the core Sanity components, you're proba
 Contributions are always welcome, no matter how large or small. Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/master/CODE_OF_CONDUCT.md).
 
 
-Make sure you have *Node.js* version 4 or newer and *npm* version 5 or newer.
+Make sure you have *Node.js version 4 or newer* and *npm version 5 or newer*.
 
 ## Installing
 
