@@ -2,7 +2,7 @@ import {uniq, isObject, isArray} from 'lodash'
 import Observable from '@sanity/observable'
 import {configure} from 'observable-props'
 
-const props = configure(Observable, {wait: true})
+const props = configure({Observable})
 
 function resolveMissingHeads(value, paths) {
   return paths.filter(path => !(path[0] in value))
@@ -56,7 +56,7 @@ export default function createPreviewObserver(observeWithPaths) {
       leads[head].push(tail)
     })
 
-    return props(Object.keys(leads).reduce((res, head) => {
+    return props(Observable.of(Object.keys(leads).reduce((res, head) => {
       const tails = leads[head]
       if (tails.every(tail => tail.length === 0)) {
         res[head] = value[head]
@@ -64,7 +64,7 @@ export default function createPreviewObserver(observeWithPaths) {
         res[head] = follow(value[head], tails)
       }
       return res
-    }, {...value}))
+    }, {...value})), {wait: true})
   }
 
   return follow
