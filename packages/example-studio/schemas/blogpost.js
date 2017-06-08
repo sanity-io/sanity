@@ -9,7 +9,7 @@ const pickFirst = (obj, keys) => {
   return obj[found]
 }
 
-const LANGUAGE_PRIORITY = ['no', 'nn', 'en']
+const LANGUAGE_PRIORITY = ['nb', 'nn', 'en']
 
 export default {
   name: 'blogpost',
