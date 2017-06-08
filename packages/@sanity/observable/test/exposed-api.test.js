@@ -19,7 +19,8 @@ function run(t) {
     t.same(staticFunctions, [
       'of',
       'from',
-      'forkJoin'
+      'forkJoin',
+      'combineLatest'
     ])
     t.end()
   })
@@ -54,6 +55,7 @@ function run(t) {
       'withLatestFrom',
       'takeUntil',
       'do',
+      'catch',
       'toPromise',
       'lift',
       'subscribe',

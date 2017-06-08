@@ -1,5 +1,6 @@
 const {Observable} = require('rxjs/Observable')
 const {of} = require('rxjs/observable/of')
+const {combineLatest} = require('rxjs/observable/combinelatest')
 const {forkJoin} = require('rxjs/observable/forkJoin')
 const {from} = require('rxjs/observable/from')
 const {map} = require('rxjs/operator/map')
@@ -14,6 +15,7 @@ const {withLatestFrom} = require('rxjs/operator/withLatestFrom')
 const {merge} = require('rxjs/operator/merge')
 const {share} = require('rxjs/operator/share')
 const {mergeMap} = require('rxjs/operator/mergeMap')
+const {_catch} = require('rxjs/operator/catch')
 const {switchMap} = require('rxjs/operator/switchMap')
 const {_do} = require('rxjs/operator/do')
 const {concatMap} = require('rxjs/operator/concatMap')
@@ -58,6 +60,7 @@ Object.assign(SanityObservable.prototype, {
   withLatestFrom,
   takeUntil,
   do: _do,
+  catch: _catch,
   toPromise,
   lift
 })
@@ -72,6 +75,9 @@ SanityObservable.from = function SanityObservableFrom(...args) {
 
 SanityObservable.forkJoin = function SanityObservableForkJoin(...args) {
   return new SanityObservable(observer => forkJoin(...args).subscribe(observer))
+}
+SanityObservable.combineLatest = function SanityObservableCombineLatest(...args) {
+  return new SanityObservable(observer => combineLatest(...args).subscribe(observer))
 }
 
 module.exports = SanityObservable
