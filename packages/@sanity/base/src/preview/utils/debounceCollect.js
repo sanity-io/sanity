@@ -31,12 +31,13 @@ export default function debounceCollect(fn, wait) {
     queue = {}
 
     const queueItemIds = Object.keys(currentlyFlushingQueue)
-      .map(id => {
-        if (currentlyFlushingQueue[id].completed) {
-          console.log('Dropped', currentlyFlushingQueue[id].args)
-        }
-        return id
-      })
+      // Todo: use debug
+      // .map(id => {
+      //   if (currentlyFlushingQueue[id].completed) {
+      //     console.log('Dropped', currentlyFlushingQueue[id].args)
+      //   }
+      //   return id
+      // })
       .filter(id => !currentlyFlushingQueue[id].completed)
 
     if (queueItemIds.length === 0) {
