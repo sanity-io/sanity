@@ -11,6 +11,7 @@ import ReferenceInput from 'part:@sanity/form-builder/input/reference?'
 import StringInput from 'part:@sanity/form-builder/input/string?'
 import TextInput from 'part:@sanity/form-builder/input/text?'
 import UrlInput from 'part:@sanity/form-builder/input/url?'
+import codeInput from 'part:@sanity/form-builder/input/code?'
 import SlugInput from '../inputs/Slug'
 import FileInput from '../inputs/File'
 import ImageInput from '../inputs/Image'
@@ -31,6 +32,7 @@ const typeInputMap = {
   image: ImageInput,
   slug: SlugInput,
   geopoint: GeoPointInput,
+  code: codeInput,
   url: UrlInput
 }
 

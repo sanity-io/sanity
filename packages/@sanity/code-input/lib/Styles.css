@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.highlight {
+  position: absolute;
+  background-color: var(--brand-primary);
+  opacity: 0.2;
+  width: 100% !important;
+  border-radius: 0 !important;
+}
