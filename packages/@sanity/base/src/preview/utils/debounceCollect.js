@@ -4,8 +4,6 @@ import Observable from '@sanity/observable'
 // collects arguments until wait time has passed without receiving new calls.
 // When wait period is over, calls the original function with the collected arguments
 
-const cancelled = Symbol('cancelled')
-
 export default function debounceCollect(fn, wait) {
   let timer
   let queue = {}
@@ -28,19 +26,20 @@ export default function debounceCollect(fn, wait) {
   }
 
   function flush() {
-    const _queue = queue
+    const currentlyFlushingQueue = queue
     queue = {}
 
-    const queueItemIds = Object.keys(_queue).filter(id => !_queue[id].cancelled)
+    const queueItemIds = Object.keys(currentlyFlushingQueue)
+      .filter(id => !currentlyFlushingQueue[id].cancelled)
     if (queueItemIds.length === 0) {
       // nothing to do
       return
     }
-    const collectedArgs = queueItemIds.map(id => _queue[id].args)
+    const collectedArgs = queueItemIds.map(id => currentlyFlushingQueue[id].args)
     fn(collectedArgs).subscribe({
-      next: results => {
+      next(results) {
         results.forEach((result, i) => {
-          const entry = _queue[queueItemIds[i]]
+          const entry = currentlyFlushingQueue[queueItemIds[i]]
           if (!entry.cancelled) {
             entry.observer.next(results[i])
             entry.observer.complete()
@@ -49,7 +48,7 @@ export default function debounceCollect(fn, wait) {
       },
       complete() {
         queueItemIds.forEach(id => {
-          const entry = _queue[id]
+          const entry = currentlyFlushingQueue[id]
           if (!entry.cancelled) {
             entry.observer.complete()
           }
@@ -57,7 +56,7 @@ export default function debounceCollect(fn, wait) {
       },
       error(err) {
         queueItemIds.forEach(id => {
-          const entry = _queue[id]
+          const entry = currentlyFlushingQueue[id]
           if (!entry.cancelled) {
             entry.observer.error(err)
           }
