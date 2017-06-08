@@ -56,15 +56,17 @@ export default function createPreviewObserver(observeWithPaths) {
       leads[head].push(tail)
     })
 
-    return props(Observable.of(Object.keys(leads).reduce((res, head) => {
+    const next = Object.keys(leads).reduce((res, head) => {
       const tails = leads[head]
       if (tails.every(tail => tail.length === 0)) {
         res[head] = value[head]
-      } else if (value[head]) {
+      } else {
         res[head] = follow(value[head], tails)
       }
       return res
-    }, {...value})), {wait: true})
+    }, {...value})
+
+    return props(Observable.of(next), {wait: true})
   }
 
   return follow
