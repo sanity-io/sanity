@@ -2,7 +2,7 @@ import {uniq, isObject, isArray} from 'lodash'
 import Observable from '@sanity/observable'
 import {configure} from 'observable-props'
 
-const props = configure(Observable)
+const props = configure(Observable, {wait: true})
 
 function resolveMissingHeads(value, paths) {
   return paths.filter(path => !(path[0] in value))

@@ -4,40 +4,65 @@ import Observable from '@sanity/observable'
 // collects arguments until wait time has passed without receiving new calls.
 // When wait period is over, calls the original function with the collected arguments
 
+const cancelled = Symbol('cancelled')
+
 export default function debounceCollect(fn, wait) {
   let timer
-  let pendingArgs = []
-  let observers = []
+  let queue = {}
+  let idx = 0
   return function (...args) {
-    const observable = new Observable(obs => {
-      const index = pendingArgs.push(args) - 1
-      observers[index] = obs
+    return new Observable(obs => {
+      clearTimeout(timer)
+      timer = setTimeout(flush, wait)
+      const queueItem = {
+        args: args,
+        observer: obs,
+        cancelled: false
+      }
+      const id = idx++
+      queue[id] = queueItem
       return () => {
-        observers[index] = null
+        queueItem.cancelled = true
       }
     })
-
-    clearTimeout(timer)
-    timer = setTimeout(flush, wait)
-    return observable
   }
 
   function flush() {
-    const _args = pendingArgs
-    const _observers = observers
-    pendingArgs = []
-    observers = []
+    const _queue = queue
+    queue = {}
 
-    const observerCount = _observers.reduce((len, observer) => (observer ? len + 1 : len), 0)
-    if (observerCount === 0) {
+    const queueItemIds = Object.keys(_queue).filter(id => !_queue[id].cancelled)
+    if (queueItemIds.length === 0) {
+      // nothing to do
       return
     }
-    fn(_args).subscribe(results => {
-      results.forEach((result, i) => {
-        if (_observers[i]) {
-          _observers[i].next(results[i])
-        }
-      })
+    const collectedArgs = queueItemIds.map(id => _queue[id].args)
+    fn(collectedArgs).subscribe({
+      next: results => {
+        results.forEach((result, i) => {
+          const entry = _queue[queueItemIds[i]]
+          if (!entry.cancelled) {
+            entry.observer.next(results[i])
+            entry.observer.complete()
+          }
+        })
+      },
+      complete() {
+        queueItemIds.forEach(id => {
+          const entry = _queue[id]
+          if (!entry.cancelled) {
+            entry.observer.complete()
+          }
+        })
+      },
+      error(err) {
+        queueItemIds.forEach(id => {
+          const entry = _queue[id]
+          if (!entry.cancelled) {
+            entry.observer.error(err)
+          }
+        })
+      }
     })
   }
 }
