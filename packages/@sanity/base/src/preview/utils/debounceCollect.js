@@ -15,12 +15,13 @@ export default function debounceCollect(fn, wait) {
       const queueItem = {
         args: args,
         observer: obs,
-        cancelled: false
+        completed: false
       }
       const id = idx++
       queue[id] = queueItem
       return () => {
-        queueItem.cancelled = true
+        // console.log('completed', queueItem.args)
+        queueItem.completed = true
       }
     })
   }
@@ -30,7 +31,14 @@ export default function debounceCollect(fn, wait) {
     queue = {}
 
     const queueItemIds = Object.keys(currentlyFlushingQueue)
-      .filter(id => !currentlyFlushingQueue[id].cancelled)
+      .map(id => {
+        if (currentlyFlushingQueue[id].completed) {
+          console.log('Dropped', currentlyFlushingQueue[id].args)
+        }
+        return id
+      })
+      .filter(id => !currentlyFlushingQueue[id].completed)
+
     if (queueItemIds.length === 0) {
       // nothing to do
       return
@@ -39,17 +47,16 @@ export default function debounceCollect(fn, wait) {
     fn(collectedArgs).subscribe({
       next(results) {
         results.forEach((result, i) => {
-          const entry = currentlyFlushingQueue[queueItemIds[i]]
-          if (!entry.cancelled) {
-            entry.observer.next(results[i])
-            entry.observer.complete()
+          const queueItem = currentlyFlushingQueue[queueItemIds[i]]
+          if (!queueItem.completed) {
+            queueItem.observer.next(results[i])
           }
         })
       },
       complete() {
         queueItemIds.forEach(id => {
           const entry = currentlyFlushingQueue[id]
-          if (!entry.cancelled) {
+          if (!entry.completed) {
             entry.observer.complete()
           }
         })
@@ -57,7 +64,7 @@ export default function debounceCollect(fn, wait) {
       error(err) {
         queueItemIds.forEach(id => {
           const entry = currentlyFlushingQueue[id]
-          if (!entry.cancelled) {
+          if (!entry.completed) {
             entry.observer.error(err)
           }
         })
