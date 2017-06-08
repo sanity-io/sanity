@@ -1,0 +1,20 @@
+{
+  "name": "code-editor",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Ace editor for editing code. Needs to be has type: text and options.editor = 'code'",
+  "main": "src/plugin.js",
+  "author": "Kristoffer Sivertsen",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "react-ace": "^4.3.0"
+  },
+  "devDependencies": {}
+}

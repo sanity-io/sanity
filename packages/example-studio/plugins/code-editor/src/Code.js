@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types'
+// @flow weak
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
+import {uniqueId} from 'lodash'
 import PatchEvent, {set, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
 import AceEditor from 'react-ace'
-import {get, has, xor} from 'lodash'
+import {get, has} from 'lodash'
 import fieldsetStyles from './Fieldset.css'
-import styles from './Styles.css'
 
 import 'brace/mode/text'
 import 'brace/mode/javascript'
@@ -18,10 +19,6 @@ import 'brace/mode/html'
 
 import 'brace/theme/tomorrow'
 
-function compareNumbers(a, b) { // eslint-disable-line id-length
-  return a - b
-}
-
 const SUPPORTED_LANGUAGES = [
   {title: 'JSX', value: 'jsx'},
   {title: 'JavaScript', value: 'javascript'},
@@ -31,7 +28,7 @@ const SUPPORTED_LANGUAGES = [
   {title: 'text', value: 'text'}
 ]
 
-class CodeInput extends React.Component {
+export default class Code extends React.PureComponent {
 
   static propTypes = {
     type: PropTypes.object,
@@ -39,8 +36,7 @@ class CodeInput extends React.Component {
     value: PropTypes.shape({
       _type: PropTypes.string,
       code: PropTypes.string,
-      language: PropTypes.string,
-      highlightedLines: PropTypes.array
+      language: PropTypes.string
     }),
     onChange: PropTypes.func
   }
@@ -54,6 +50,7 @@ class CodeInput extends React.Component {
     hasFocus: false
   }
 
+  _inputId = uniqueId('Code')
 
   handleCodeChange = code => {
     const {type, onChange} = this.props
@@ -67,31 +64,6 @@ class CodeInput extends React.Component {
     ]))
   }
 
-  handleToggleSelectLine = line => {
-    const {type, onChange} = this.props
-    const path = ['highlightedLines']
-
-    const highlightedLines = xor(this.props.value.highlightedLines, [line]).sort(compareNumbers)
-
-    onChange(PatchEvent.from([
-      setIfMissing({_type: type.name, highlightedLines: []}),
-      line ? set(highlightedLines, path) : unset(path)
-    ]))
-
-  }
-
-  handleEditorLoad = editor => {
-    editor.focus()
-    editor.on('guttermousedown', event => {
-      const target = event.domEvent.target
-      if (target.className.indexOf('ace_gutter-cell') == -1) {
-        return
-      }
-      const row = event.getDocumentPosition().row
-      this.handleToggleSelectLine(`${row}`)
-    })
-  }
-
   handleLanguageChange = item => {
     const {type, onChange} = this.props
     const path = ['language']
@@ -99,21 +71,6 @@ class CodeInput extends React.Component {
       setIfMissing({_type: type.name}),
       item ? set(item.value, path) : unset(path)
     ]))
-  }
-
-  createMarkers = rows => {
-    const markers = rows.map(row => {
-      return {
-        startRow: Number(row),
-        startCol: 0,
-        endRow: Number(row),
-        endCol: 500,
-        className: styles.highlight,
-        type: 'background',
-        inFront: true
-      }
-    })
-    return markers
   }
 
   renderEditor = () => {
@@ -127,11 +84,7 @@ class CodeInput extends React.Component {
         onChange={this.handleCodeChange}
         name={`${this._inputId}__aceEditor`}
         value={value.code || ''}
-        markers={value.highlightedLines ? this.createMarkers(value.highlightedLines) : null}
-        onLoad={this.handleEditorLoad}
-        editorProps={{
-          $blockScrolling: true,
-        }}
+        editorProps={{$blockScrolling: true}}
       />
 
     )
@@ -173,5 +126,3 @@ class CodeInput extends React.Component {
     )
   }
 }
-
-export default CodeInput
