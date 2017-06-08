@@ -1,0 +1,24 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/form-builder/input/code",
+      "description": "An editor for code in sanity"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input/code",
+      "path": "CodeInput.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/code/schema",
+      "description": "An editor for code in sanity"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input/code/schema",
+      "path": "Schema.js"
+    }
+  ]
+}

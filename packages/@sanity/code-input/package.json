@@ -1,0 +1,32 @@
+{
+  "name": "@sanity/code-input",
+  "version": "0.106.13",
+  "description": "Ace editor for editing code. Needs to be has type: text and options.editor = 'code'",
+  "main": "src/plugin.js",
+  "author": "Kristoffer Sivertsen",
+  "license": "UNLICENSED",
+  "keywords": [
+    "sanity",
+    "sanity-plugin",
+    "code-editor"
+  ],
+  "dependencies": {
+    "@sanity/form-builder": "^0.106.13",
+    "react-ace": "^4.3.0"
+  },
+  "devDependencies": {
+    "@sanity/base": "^0.106.13",
+    "@sanity/check": "^0.106.13",
+    "@sanity/cli": "^0.106.13",
+    "@sanity/components": "^0.106.13",
+    "@sanity/core": "^0.106.13",
+    "@sanity/form-builder": "^0.106.13",
+    "babel-plugin-lodash": "^3.2.11",
+    "lodash": "^4.17.4",
+    "rimraf": "^2.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/code-input.git"
+  }
+}
