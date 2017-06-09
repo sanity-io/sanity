@@ -1,7 +1,7 @@
 {
   "name": "@sanity/observable",
   "description": "A small-ish RxJS based Observable implementation for Sanity",
-  "version": "0.106.14",
+  "version": "0.106.16",
   "main": "index.js",
   "scripts": {
     "clean": "rimraf lib",
