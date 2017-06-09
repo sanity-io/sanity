@@ -24,6 +24,7 @@ export default class ImageInputFieldset extends React.PureComponent {
   static propTypes = {
     status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
     legend: PropTypes.string,
+    description: PropTypes.string,
     level: PropTypes.number,
     percent: PropTypes.number,
     fieldName: PropTypes.string,
@@ -56,7 +57,18 @@ export default class ImageInputFieldset extends React.PureComponent {
   }
 
   render() {
-    const {legend, level, hotspotImage, fieldName, percent, status, onCancel, onEdit, children} = this.props
+    const {
+      legend,
+      description,
+      level,
+      hotspotImage,
+      fieldName,
+      percent,
+      status,
+      onCancel,
+      onEdit,
+      children
+    } = this.props
     let {showContent} = this.props
 
     if (!children) {
@@ -64,7 +76,7 @@ export default class ImageInputFieldset extends React.PureComponent {
     }
 
     return (
-      <Fieldset legend={legend} level={level} className={`${styles[`level${level}`] || ''}`}>
+      <Fieldset legend={legend} description={description} level={level} className={`${styles[`level${level}`] || ''}`}>
         <div className={`${styles.grid} ${showContent ? styles.hasContent : styles.noContent}`}>
           <div
             className={`
