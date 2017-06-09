@@ -1,0 +1,62 @@
+{
+  "name": "@sanity/vision",
+  "version": "0.106.13",
+  "description": "React-based data management tool for Sanity projects",
+  "main": "lib/InsanityVision.js",
+  "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build:umd && npm run build:prod && npm run build:demo:prod",
+    "build:demo": "webpack --config webpack.config.demo.js",
+    "build:demo:watch": "npm run build:demo -- --watch",
+    "build:demo:prod": "NODE_ENV=production webpack -p --config webpack.config.demo.js",
+    "build:prod": "NODE_ENV=production webpack -p src/Lowlight.js umd/Lowlight.min.js",
+    "compile": "babel src --copy-files --out-dir lib",
+    "compile:watch": "npm run compile -- --watch",
+    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
+    "postpublish": "rimraf lib",
+    "start": "react-scripts start",
+    "test": "eslint ."
+  },
+  "keywords": [
+    "sanity",
+    "sanity-plugin",
+    "gui",
+    "admin"
+  ],
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "in-publish": "^2.0.0",
+    "json-lexer": "^1.1.1",
+    "moment": "^2.17.1",
+    "query-string": "^4.3.2",
+    "react-codemirror": "^0.3.0",
+    "react-icon-base": "^2.0.4",
+    "react-json-inspector": "^7.0.0",
+    "react-spinner": "^0.2.6",
+    "react-split-pane": "^0.1.63",
+    "react-textarea-autosize": "^4.0.5"
+  },
+  "devDependencies": {
+    "@sanity/check": "^0.103.6",
+    "@sanity/client": "^0.103.6",
+    "babel-cli": "^6.23.0",
+    "babel-eslint": "^7.1.0",
+    "babel-loader": "^6.3.2",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.23.0",
+    "eslint": "^3.16.1",
+    "eslint-config-sanity": "^2.0.2",
+    "eslint-plugin-react": "^6.10.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-scripts": "^0.9.0",
+    "rimraf": "^2.6.1",
+    "webpack": "^1.13.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/vision.git"
+  }
+}

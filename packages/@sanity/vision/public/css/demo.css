@@ -1,0 +1,266 @@
+.home-menu {
+  padding: 0.5em;
+  text-align: center;
+  box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+  background: #2d3e50;
+}
+
+.home-menu .pure-menu-heading {
+  color: white;
+  font-weight: 400;
+  font-size: 120%;
+  text-transform: none;
+}
+
+.vision {
+  padding: 1em;
+}
+
+.vision pre code {
+  display: block;
+  padding: 1em;
+}
+
+.vision code {
+  padding: 0.2em 0 0.2em 0;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 85%;
+}
+
+.vision .vision_dataset-select label {
+  width: auto;
+}
+
+.vision .vision_query-editor, .vision .vision_params-editor {
+  min-height: 75px;
+  resize: none;
+  margin-bottom: 1em;
+  font-family: Consolas, monospace;
+}
+
+.vision .inputLabels h3 {
+  display: inline-block;
+  margin: 0 0 0.25em 0;
+}
+
+.vision .vision_query-editor, .vision .inputLabels .query {
+  width: 70%;
+}
+
+.vision .vision_params-editor, .vision .inputLabels .params {
+  width: 30%;
+}
+
+.vision .vision_params-editor-invalid {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.vision .vision_query-error {
+  background: #e74c3c;
+  color: #fff;
+  padding: 10px;
+}
+
+.vision .vision_query-error h2 {
+  margin-top: 0;
+}
+
+.vision .vision_result-table {
+  width: 100%;
+}
+
+.vision .vision_result-list {
+  width: 95%;
+  margin-left: 16px;
+}
+
+.vision .vision_result-table tbody td {
+  cursor: pointer;
+}
+
+.vision .vision_execute-query-button {
+  float: right;
+  transition: padding-left 0.4s ease;
+}
+
+.vision .vision_execute-query-button.loading {
+  background-size: 25px;
+  background-position: 5px 50%;
+  background-repeat: no-repeat;
+  background-image: url('loading.gif');
+  padding-left: 40px;
+}
+
+.vision .vision-gui .react-spinner {
+  margin-top: 2em;
+  width: 64px;
+  height: 64px;
+}
+
+.vision .queryTiming {
+  margin: -10px 0 0 0;
+  padding: 0 5px;
+  font-size: 0.8em;
+}
+
+/* Json inspector */
+.json-inspector,
+.json-inspector__selection {
+  font: 14px/1.4 Consolas, monospace;
+}
+
+.json-inspector__leaf {
+  padding-left: 10px;
+}
+
+/* Highlight each document when hovering */
+.json-inspector__leaf_root > .json-inspector__leaf:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.json-inspector__leaf_root > .json-inspector__leaf:nth-child(even) {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+/* Add a tiny bit of margin between each document */
+.json-inspector__leaf_root > .json-inspector__leaf {
+  margin-bottom: 1em;
+}
+
+.json-inspector__line {
+  display: block;
+  position: relative;
+
+  cursor: default;
+}
+
+.json-inspector__line:after {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: -200px;
+  right: -50px;
+  bottom: 0;
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+.json-inspector__line:hover:after {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.json-inspector__leaf_composite > .json-inspector__line {
+  cursor: pointer;
+}
+
+.json-inspector__leaf_composite > .json-inspector__line:before {
+  content: '▶ ';
+  margin-left: -16px;
+}
+
+.json-inspector__leaf_composite.json-inspector__leaf_expanded > .json-inspector__line:before {
+  content: '▼ ';
+}
+
+.json-inspector__radio,
+.json-inspector__flatpath {
+  display: none;
+}
+
+.json-inspector__value {
+  margin-left: 5px;
+}
+
+.json-inspector__search {
+  min-width: 300px;
+  margin: 0 10px 10px 0;
+  padding: 2px;
+}
+
+.json-inspector__key {
+  color: #881391;
+}
+
+.json-inspector__value_helper,
+.json-inspector__value_null,
+.json-inspector__not-found {
+  color: #808080;
+}
+
+.json-inspector__value_string {
+  color: #C41A16;
+}
+
+.json-inspector__value_boolean {
+  color: #75b5aa;
+}
+
+.json-inspector__value_number {
+  color: #1C00CF;
+}
+
+.json-inspector__hl {
+  background: #ff0;
+  box-shadow: 0 -1px 0 2px #ff0;
+  border-radius: 2px;
+}
+
+.json-inspector__show-original {
+  display: inline-block;
+  padding: 0 6px;
+
+  color: #666;
+  cursor: pointer;
+}
+
+.json-inspector__show-original:hover {
+  color: #111;
+}
+
+.json-inspector__show-original:before {
+  content: '⥂';
+}
+
+.json-inspector__show-original:hover:after {
+  content: ' expand'
+}
+
+/* React spinner */
+.react-spinner {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  top: 50%;
+  left: 50%;
+}
+
+.react-spinner_bar {
+  -webkit-animation: react-spinner_spin 1.2s linear infinite;
+  -moz-animation: react-spinner_spin 1.2s linear infinite;
+  animation: react-spinner_spin 1.2s linear infinite;
+  border-radius: 5px;
+  background-color: #2d3e50;
+  position: absolute;
+  width: 20%;
+  height: 7.8%;
+  top: -3.9%;
+  left: -10%;
+}
+
+@keyframes react-spinner_spin {
+ 0% { opacity: 1; }
+ 100% { opacity: 0.15; }
+}
+
+@-moz-keyframes react-spinner_spin {
+ 0% { opacity: 1; }
+ 100% { opacity: 0.15; }
+}
+
+@-webkit-keyframes react-spinner_spin {
+ 0% { opacity: 1; }
+ 100% { opacity: 0.15; }
+}
