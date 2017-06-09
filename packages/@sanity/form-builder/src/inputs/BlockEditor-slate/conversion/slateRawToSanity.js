@@ -32,7 +32,7 @@ function toSanitySpan(blockNode) {
 
 function toSanityBlock(block) {
   // debugger
-  if (block.type === 'contentBlock') {
+  if (block.type === 'contentBlock' /*<-- hack should probably be fixed better */ || block.type === 'paragraph' /* -->*/) {
     return {
       ...block.data,
       _type: 'block',
