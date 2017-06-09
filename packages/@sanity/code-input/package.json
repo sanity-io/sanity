@@ -4,7 +4,7 @@
   "description": "Ace editor for editing code. Needs to be has type: text and options.editor = 'code'",
   "main": "src/plugin.js",
   "author": "Kristoffer Sivertsen",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": [
     "sanity",
     "sanity-plugin",

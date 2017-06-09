@@ -31,7 +31,7 @@ const SUPPORTED_LANGUAGES = [
   {title: 'text', value: 'text'}
 ]
 
-class CodeInput extends React.Component {
+export default class CodeInput extends React.Component {
 
   static propTypes = {
     type: PropTypes.object,
@@ -54,6 +54,11 @@ class CodeInput extends React.Component {
     hasFocus: false
   }
 
+  componentWillUnmount() {
+    console.log('removing listener', this.gutterEventListener)
+    this.gutterEventListener.removeEventListener()
+  }
+
 
   handleCodeChange = code => {
     const {type, onChange} = this.props
@@ -67,24 +72,24 @@ class CodeInput extends React.Component {
     ]))
   }
 
-  handleToggleSelectLine = line => {
+  handleToggleSelectLine = lineNumber => {
     const {type, onChange} = this.props
     const path = ['highlightedLines']
+    const {highlightedLines} = this.props.value
 
-    const highlightedLines = xor(this.props.value.highlightedLines, [line]).sort(compareNumbers)
+    const highlightedLinesCleaned = xor(highlightedLines, [lineNumber]).sort(compareNumbers)
 
     onChange(PatchEvent.from([
       setIfMissing({_type: type.name, highlightedLines: []}),
-      line ? set(highlightedLines, path) : unset(path)
+      lineNumber ? set(highlightedLinesCleaned, path) : unset(path)
     ]))
-
   }
 
   handleEditorLoad = editor => {
     editor.focus()
-    editor.on('guttermousedown', event => {
+    this.gutterEventListener = editor.on('guttermousedown', event => {
       const target = event.domEvent.target
-      if (target.className.indexOf('ace_gutter-cell') == -1) {
+      if (target.classList.contains('ace_gutter-cell') == -1) {
         return
       }
       const row = event.getDocumentPosition().row
@@ -102,7 +107,7 @@ class CodeInput extends React.Component {
   }
 
   createMarkers = rows => {
-    const markers = rows.map(row => {
+    return rows.map(row => {
       return {
         startRow: Number(row),
         startCol: 0,
@@ -113,7 +118,6 @@ class CodeInput extends React.Component {
         inFront: true
       }
     })
-    return markers
   }
 
   renderEditor = () => {
@@ -173,5 +177,3 @@ class CodeInput extends React.Component {
     )
   }
 }
-
-export default CodeInput
