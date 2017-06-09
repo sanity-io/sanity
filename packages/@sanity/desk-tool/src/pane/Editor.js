@@ -137,7 +137,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   componentDidMount() {
     this.unlistenForKey = listen(window, 'keyup', event => {
       const shouldToggle = event.ctrlKey
-        && event.key === 'i'
+        && (event.key === 'i' || event.key === 'ı' /* alt + i becomes ı on macos */)
         && event.altKey
         && !event.shiftKey
 
