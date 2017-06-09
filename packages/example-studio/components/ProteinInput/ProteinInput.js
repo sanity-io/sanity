@@ -69,7 +69,7 @@ export default class ProteinInput extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: (props.value && props.value.pdb),
+      isLoading: (props.value && props.value.pdb),
       pdb: (props.value && props.value.pdb) || '1R6A',
       newPdb: false
     }
@@ -82,6 +82,11 @@ export default class ProteinInput extends React.Component {
     this.viewer = new Viewer(this._viewerElement, options)
     this._viewerElement.addEventListener('mousemove', this.mouseMoveHandler)
     this._viewerElement.addEventListener('mousewheel', this.mouseWheelHandler)
+  }
+
+  componentWillUnmount() {
+    this._viewerElement.removeEventListener('mousemove', this.mouseMoveHandler)
+    this._viewerElement.removeEventListener('mousewheel', this.mouseWheelHandler)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -114,7 +119,7 @@ export default class ProteinInput extends React.Component {
     const url = `http://www.rcsb.org/pdb/files/${id}.pdb`
 
     this.setState({
-      loading: true
+      isLoading: true
     })
 
     io.fetchPdb(url, struct => {
@@ -127,7 +132,7 @@ export default class ProteinInput extends React.Component {
           viewer.autoZoom()
         }
         this.setState({
-          loading: false
+          isLoading: false
         })
       })
     })
@@ -238,7 +243,7 @@ export default class ProteinInput extends React.Component {
 
   render() {
     const {type, level} = this.props
-    const {loading, pdb} = this.state
+    const {isLoading, pdb} = this.state
 
     return (
       <Fieldset
@@ -250,7 +255,7 @@ export default class ProteinInput extends React.Component {
         <TextField label="PDB" value={pdb} onChange={this.handlePdbStringChange} />
         <div style={{height: '500px', width: '100%', position: 'relative', overflow: 'hidden'}}>
           {
-            loading && <div style={{zIndex: 100, backgroundColor: 'rgba(255,255,255,0.8)', width: '100%', height: '100%'}}>
+            isLoading && <div style={{zIndex: 100, backgroundColor: 'rgba(255,255,255,0.8)', width: '100%', height: '100%'}}>
               <Spinner center />
             </div>
           }
