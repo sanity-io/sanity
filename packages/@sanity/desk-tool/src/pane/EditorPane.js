@@ -10,14 +10,13 @@ import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 
 const INITIAL_DOCUMENT_STATE = {
-  isSaving: true,
+  isLoading: true,
   deletedSnapshot: null,
   snapshot: null
 }
 
 const INITIAL_STATE = {
-  isLoading: true,
-  isSaving: false,
+  isSaving: true,
   isCreatingDraft: false,
   draft: INITIAL_DOCUMENT_STATE,
   published: INITIAL_DOCUMENT_STATE
@@ -76,20 +75,20 @@ export default class EditorPane extends React.PureComponent {
     this.draft = checkout(getDraftId(documentId))
 
     this.subscription = this.published
-      .events.map(event => ({...event, status: 'published'}))
+      .events.map(event => ({...event, version: 'published'}))
       .merge(
         this.draft.events
           .do(this.receiveDraftEvent)
-          .map(event => ({...event, status: 'draft'}))
+          .map(event => ({...event, version: 'draft'}))
       )
       .subscribe(event => {
         this.setState(prevState => {
-          const key = event.status // either 'draft' or 'published'
+          const version = event.version // either 'draft' or 'published'
           return {
-            isLoading: false,
-            [key]: {
-              ...(prevState[key] || {}),
-              ...documentEventToState(event)
+            [version]: {
+              ...(prevState[version] || {}),
+              ...documentEventToState(event),
+              isLoading: false
             }
           }
         })
@@ -251,7 +250,7 @@ export default class EditorPane extends React.PureComponent {
 
   render() {
     const {typeName} = this.props
-    const {draft, isLoading, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
+    const {draft, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
 
     if (isRecoverable(draft, published)) {
       return this.renderDeleted()
@@ -263,7 +262,7 @@ export default class EditorPane extends React.PureComponent {
           type={schema.get(typeName)}
           published={published.snapshot}
           draft={draft.snapshot}
-          isLoading={isLoading}
+          isLoading={draft.isLoading || published.isLoading}
           isSaving={isSaving}
           isPublishing={isPublishing}
           isUnpublishing={isUnpublishing}
