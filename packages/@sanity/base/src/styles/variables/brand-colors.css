@@ -4,7 +4,7 @@
 
   --gray-base:      #323232;
 
-  --brand-primary:              #2097ac;
+  --brand-primary:              #1aa0ca;
   --brand-primary--text:        #fff;
   --brand-primary-light:        color(var(--brand-primary) lightness(+15%) saturation(-10%));
   --brand-primary-light--text:  #fff;
