@@ -27,7 +27,7 @@ import {PreviewFields} from 'part:@sanity/base/preview'
 
 const preventDefault = ev => ev.preventDefault()
 
-// Want a nicer api for listen/ulinsten
+// Want a nicer api for listen/unlisten
 function listen(target, eventType, callback, useCapture = false) {
   target.addEventListener(eventType, callback, useCapture)
   return function unlisten() {
@@ -135,9 +135,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   state = INITIAL_STATE
 
   componentDidMount() {
-    this.unlistenForKey = listen(window, 'keypress', event => {
+    this.unlistenForKey = listen(window, 'keyup', event => {
       const shouldToggle = event.ctrlKey
-        && event.charCode === 9
+        && event.code === 'KeyI'
         && event.altKey
         && !event.shiftKey
 
