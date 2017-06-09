@@ -1,6 +1,6 @@
 const {Observable} = require('rxjs/Observable')
 const {of} = require('rxjs/observable/of')
-const {combineLatest} = require('rxjs/observable/combinelatest')
+const {combineLatest} = require('rxjs/observable/combineLatest')
 const {forkJoin} = require('rxjs/observable/forkJoin')
 const {from} = require('rxjs/observable/from')
 const {map} = require('rxjs/operator/map')
