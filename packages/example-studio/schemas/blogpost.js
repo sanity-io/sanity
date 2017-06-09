@@ -57,6 +57,11 @@ export default {
       }
     },
     {
+      name: 'Protein',
+      title: 'Protein',
+      type: 'protein'
+    },
+    {
       name: 'myImage',
       title: 'My Image',
       type: 'myImage',
