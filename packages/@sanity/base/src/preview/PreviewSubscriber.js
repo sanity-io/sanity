@@ -15,25 +15,26 @@ function isVisible() {
 
 function getViewport() {
   return {
-    height: window.innerHeight,
-    width: window.innerWidth
+    left: 0,
+    right: window.innerWidth,
+    top: 0,
+    bottom: window.innerHeight
   }
 }
 
-const MARGIN = 60
-function contains(rect, viewport) {
+const MARGIN = 150
+function intersects(rect, viewport) {
   return (
-    rect.top + rect.height >= MARGIN
-    && rect.left + rect.width >= MARGIN
-    && rect.bottom - rect.height - MARGIN <= viewport.height
-    && rect.right - rect.width - MARGIN <= viewport.width
+    rect.left <= viewport.right + MARGIN
+    && rect.right >= viewport.left - MARGIN
+    && rect.top <= viewport.bottom + MARGIN
+    && rect.bottom >= viewport.top - MARGIN
   )
 }
 
 function inViewport(element) {
-  return () => contains(element.getBoundingClientRect(), getViewport())
+  return () => intersects(element.getBoundingClientRect(), getViewport())
 }
-
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
@@ -41,7 +42,7 @@ export default class PreviewSubscriber extends React.PureComponent {
     fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
     value: PropTypes.any.isRequired,
     children: PropTypes.func
-  };
+  }
 
   state = {
     error: null,
@@ -87,7 +88,7 @@ export default class PreviewSubscriber extends React.PureComponent {
         return on ? Observable.of(checkViewport()).merge(inViewport$) : Observable.of(false)
       })
       .distinctUntilChanged()
-      // .do(log('in viewport', value._id))
+      // .do(isInViewport => console.log({isInViewport}))
       .switchMap(isInViewport => {
         return isInViewport
           ? observeForPreview(value, type, fields)
