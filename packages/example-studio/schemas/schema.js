@@ -7,6 +7,7 @@ import author from './author'
 import blogpost from './blogpost'
 import videoEmbed from './videoEmbed'
 import localeString from './localeString'
+import protein from './protein'
 
 export default createSchema({
   name: 'example-blog',
@@ -18,6 +19,7 @@ export default createSchema({
     typeWithBlocks,
     myImage,
     videoEmbed,
-    localeString
+    localeString,
+    protein
   ]
 })
