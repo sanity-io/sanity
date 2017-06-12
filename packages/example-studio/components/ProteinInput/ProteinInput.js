@@ -84,9 +84,11 @@ export default class ProteinInput extends React.Component {
     this._viewerElement.addEventListener('mousewheel', this.mouseWheelHandler)
   }
 
+
   componentWillUnmount() {
     this._viewerElement.removeEventListener('mousemove', this.mouseMoveHandler)
     this._viewerElement.removeEventListener('mousewheel', this.mouseWheelHandler)
+    this.viewer.destroy()
   }
 
   componentWillReceiveProps(nextProps) {
