@@ -55,7 +55,7 @@ export default class CodeInput extends React.Component {
   }
 
   componentWillUnmount() {
-    this.gutterEventListener.removeEventListener()
+    this.editor.removeListener('guttermousedown', this.handleGutterMouseDown)
   }
 
 
@@ -84,16 +84,18 @@ export default class CodeInput extends React.Component {
     ]))
   }
 
-  handleEditorLoad = editor => {
-    editor.focus()
-    this.gutterEventListener = editor.on('guttermousedown', event => {
-      const target = event.domEvent.target
-      if (target.classList.contains('ace_gutter-cell') == -1) {
-        return
-      }
+  handleGutterMouseDown = event => {
+    const target = event.domEvent.target
+    if (target.classList.contains('ace_gutter-cell')) {
       const row = event.getDocumentPosition().row
       this.handleToggleSelectLine(`${row}`)
-    })
+    }
+  }
+
+  handleEditorLoad = editor => {
+    this.editor = editor
+    this.editor.focus()
+    this.editor.on('guttermousedown', this.handleGutterMouseDown)
   }
 
   handleLanguageChange = item => {

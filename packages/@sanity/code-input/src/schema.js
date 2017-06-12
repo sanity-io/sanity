@@ -17,7 +17,7 @@ export default {
       name: 'highlightedLines',
       type: 'array',
       of: [{
-        type: 'string',
+        type: 'number',
         title: 'Highlighted line'
       }]
     }
