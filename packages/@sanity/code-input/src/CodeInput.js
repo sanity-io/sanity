@@ -55,7 +55,6 @@ export default class CodeInput extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('removing listener', this.gutterEventListener)
     this.gutterEventListener.removeEventListener()
   }
 
