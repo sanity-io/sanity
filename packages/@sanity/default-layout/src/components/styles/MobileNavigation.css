@@ -9,7 +9,7 @@
   left: 0;
   width: 100%;
   height: 3rem;
-
+  border-bottom: 1px solid #ccc;
 }
 
 .searchContainer {
