@@ -13,9 +13,9 @@
     "@sanity/default-layout",
     "@sanity/default-login",
     "@sanity/date-input",
+    "@sanity/code-input",
     "@sanity/desk-tool",
     "@sanity/storybook",
-    "code-editor",
     "vision"
   ],
   "parts": [

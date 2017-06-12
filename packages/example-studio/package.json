@@ -24,6 +24,7 @@
     "@sanity/desk-tool": "^0.106.19",
     "@sanity/form-builder": "^0.106.19",
     "@sanity/storybook": "^0.106.13",
+    "@sanity/code-input": "^0.106.13",
     "date-fns": "^1.28.4",
     "get-video-id": "^2.1.4",
     "humanize-list": "^1.0.1",
