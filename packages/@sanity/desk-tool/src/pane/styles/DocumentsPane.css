@@ -48,20 +48,9 @@
   max-width: 80vw;
 }
 
-.listContainer {
-  display: block;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: scroll;
-
-  @media (--screen-medium) {
-    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-    max-height: calc(100% - 3rem);
-    height: 100%;
-  }
+.listViewContainer {
+  height: calc(100vh - 8rem);
+  clear: both;
 }
 
 .menuButton {

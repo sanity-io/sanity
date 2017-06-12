@@ -399,7 +399,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           {documentsPane}
         </div>
         <div
-          className={styles.editorContainer}
+          className={`
+            ${selectedDocumentId ? styles.editorContainerWithDocument : styles.editorContainer}
+          `}
           ref={this.setEditorPaneElement}
           style={{
             width: editorWidth,

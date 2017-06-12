@@ -63,16 +63,25 @@
 
 .functions {
   font-size: var(--font-size-small);
-  margin-right: 0.75em;
+  @media (--screen-medium) {
+    margin-right: 0.75em;
+  }
 }
 
 .top {
   composes: top from './Pane.css';
-  margin-bottom: 0;
-  margin-left: var(--medium-padding);
+  display: block;
+  position: relative;
+  margin-top: 3rem;
   display: flex;
-  flex-wrap: nowrap;
   justify-content: space-between;
+
+  @media (--screen-medium) {
+    margin-top: 0;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    margin-left: var(--medium-padding);
+  }
 }
 
 .heading {

@@ -107,13 +107,16 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         )}
 
         {hasDocuments && (
-          <ListView
-            items={items}
-            getItemKey={getItemKey}
-            renderItem={renderItem}
-            listLayout={listLayout}
-          />
+          <div className={styles.listViewContainer}>
+            <ListView
+              items={items}
+              getItemKey={getItemKey}
+              renderItem={renderItem}
+              listLayout={listLayout}
+            />
+          </div>
         )}
+
       </div>
     )
   }

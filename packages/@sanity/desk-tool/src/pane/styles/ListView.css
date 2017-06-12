@@ -7,6 +7,7 @@
   width: 100%;
   box-sizing: border-box;
   overflow: scroll;
+  position: relative;
 
   @media (--screen-medium) {
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";

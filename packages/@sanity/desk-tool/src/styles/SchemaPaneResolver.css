@@ -53,7 +53,7 @@
 
 .navigationPanesContainer {
   width: 100%;
-
+  z-index: 1;
   @media (--screen-medium) {
     z-index: var(--zindex-pane);
     position: absolute;
@@ -109,10 +109,12 @@
 .editorContainer {
   max-width: 100%;
   box-sizing: border-box;
-  padding-top: 2rem;
   min-height: 100vh;
+  z-index: 2;
+  display: none;
 
   @media (--screen-medium) {
+    padding-top: 2rem;
     min-height: auto;
     box-sizing: border-box;
     height: 100%;
@@ -130,6 +132,11 @@
   }
 }
 
+.editorContainerWithDocument {
+  composes: editorContainer;
+  display: block;
+}
+
 .editorCreateNew {
   display: block;
   position: absolute;
@@ -144,6 +151,7 @@
 .editorCreateNewLink {
   text-decoration: none;
   color: #bbb;
+
   @nest &:hover {
     color: #999;
   }

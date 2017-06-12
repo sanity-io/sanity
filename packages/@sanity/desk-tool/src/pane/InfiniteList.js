@@ -52,7 +52,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     return (
       <VirtualList
         className={`${className || ''} _triggerUpdate_${triggerUpdate}`}
-        height={height - 65}
+        height={height}
         itemCount={items.length}
         itemSize={layout === 'default' ? 40 : 80}
         renderItem={this.renderItem}
