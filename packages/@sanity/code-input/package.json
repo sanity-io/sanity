@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "0.106.13",
+  "version": "0.106.20",
   "description": "Ace editor for editing code. Needs to be has type: text and options.editor = 'code'",
   "main": "src/plugin.js",
   "author": "Kristoffer Sivertsen",
@@ -11,10 +11,10 @@
     "code-editor"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.106.13",
-    "@sanity/components": "^0.106.13",
-    "react-ace": "^4.3.0",
-    "lodash": "^4.17.4"
+    "@sanity/components": "^0.106.20",
+    "@sanity/form-builder": "^0.106.20",
+    "lodash": "^4.17.4",
+    "react-ace": "^4.3.0"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11"
