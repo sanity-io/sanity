@@ -16,6 +16,7 @@
     "code-editor"
   ],
   "dependencies": {
+    "@sanity/check": "^0.106.21",
     "@sanity/components": "^0.106.21",
     "@sanity/form-builder": "^0.106.21",
     "lodash": "^4.17.4",
