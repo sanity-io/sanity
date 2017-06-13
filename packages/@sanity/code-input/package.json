@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "0.106.21",
+  "version": "0.106.22",
   "description": "Ace editor for editing code. Needs to be has type: text and options.editor = 'code'",
   "main": "lib/index.js",
   "author": "Kristoffer Sivertsen",
