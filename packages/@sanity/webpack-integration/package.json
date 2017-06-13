@@ -1,6 +1,6 @@
 {
   "name": "@sanity/webpack-integration",
-  "version": "0.106.13",
+  "version": "0.106.21",
   "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
   "scripts": {
@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/sanity-io/sanity#readme",
   "dependencies": {
-    "@sanity/resolver": "^0.106.13",
-    "@sanity/webpack-loader": "^0.106.13",
+    "@sanity/resolver": "^0.106.21",
+    "@sanity/webpack-loader": "^0.106.21",
     "lost": "^8.0.0",
     "postcss-cssnext": "2.10.0",
     "postcss-import": "^9.1.0",
