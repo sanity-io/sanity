@@ -1,4 +1,4 @@
-import {pick, omit} from 'lodash'
+import {pick} from 'lodash'
 import assert from 'assert'
 import arrify from 'arrify'
 import {lazyGetter} from './utils'
@@ -11,6 +11,26 @@ const REFERENCE_CORE = {
   jsonType: 'object'
 }
 
+function humanize(arr, conjunction) {
+  const len = arr.length
+  if (len === 1) {
+    return arr[0]
+  }
+  const first = arr.slice(0, len - 1)
+  const last = arr[len - 1]
+  return `${first.join(', ')} ${conjunction} ${last}`
+}
+
+function buildTitle(type) {
+  if (type.title) {
+    return type.title
+  }
+  if (!type.to || type.to.length === 0) {
+    return 'Reference'
+  }
+  return `Reference to ${humanize(arrify(type.to).map(toType => (toType.title || toType.name || toType.type || '').toLowerCase()), 'or')}`
+}
+
 export const ReferenceType = {
   get() {
     return REFERENCE_CORE
@@ -21,6 +41,7 @@ export const ReferenceType = {
     }
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
+      title: subTypeDef.title || buildTitle(subTypeDef),
     })
 
     lazyGetter(parsed, 'to', () => {

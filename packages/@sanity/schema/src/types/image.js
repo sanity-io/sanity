@@ -1,7 +1,6 @@
-import {pick} from 'lodash'
+import {pick, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
-import createPreviewGetter from '../preview/createPreviewGetter'
 import guessPreviewConfig from '../preview/guessPreviewConfig'
 
 const OVERRIDABLE_FIELDS = [
@@ -38,6 +37,7 @@ export const ImageType = {
 
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
+      title: subTypeDef.title || startCase(subTypeDef.name || subTypeDef.type || ''),
       options: options
     })
 
