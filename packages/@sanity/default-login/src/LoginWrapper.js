@@ -3,6 +3,8 @@ import React from 'react'
 import userStore from 'part:@sanity/base/user'
 import LoginDialog from 'part:@sanity/base/login-dialog'
 import UnauthorizedUser from './UnauthorizedUser'
+import ErrorDialog from './ErrorDialog'
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 export default class LoginWrapper extends React.PureComponent {
 
@@ -10,13 +12,13 @@ export default class LoginWrapper extends React.PureComponent {
     children: PropTypes.node.isRequired
   }
 
-  state = {isLoading: true, user: null}
+  state = {isLoading: true, user: null, error: null}
 
   componentWillMount() {
     this.userSubscription = userStore.currentUser
-      .map(ev => ev.user)
-      .subscribe(user => {
-        this.setState({user: user, isLoading: false})
+      .subscribe({
+        next: evt => this.setState({user: evt.user, error: evt.error, isLoading: false}),
+        error: error => this.setState({error, isLoading: false})
       })
   }
 
@@ -24,11 +26,20 @@ export default class LoginWrapper extends React.PureComponent {
     this.userSubscription.unsubscribe()
   }
 
+  handleRetry = () => {
+    this.setState({error: null, isLoading: true})
+    userStore.actions.retry()
+  }
+
   render() {
-    const {user, isLoading} = this.state
+    const {error, user, isLoading} = this.state
 
     if (isLoading) {
-      return null
+      return <Spinner fullscreen />
+    }
+
+    if (error) {
+      return <ErrorDialog onRetry={this.handleRetry} error={error} />
     }
 
     if (!user) {
