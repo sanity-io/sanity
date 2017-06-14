@@ -21,11 +21,6 @@
       "path": "tool/StorybookTool.js"
     },
     {
-      "name": "part:@sanity/storybook/addons/part",
-      "description": "Part addon for storybook",
-      "path": "addons/Part.js"
-    },
-    {
       "name": "part:@sanity/storybook/addons/knobs",
       "description": "Knobs addon for storybook",
       "path": "addons/Knobs.js"
