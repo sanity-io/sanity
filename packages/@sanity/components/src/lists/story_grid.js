@@ -173,11 +173,12 @@ storiesOf('List (grid)')
     const renderItem = function (item, i) {
       return <CardPreview item={item} />
     }
+
     return (
       <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
         <GridList
           items={items}
-          layout={select('layoyt', ['masonry', false], 'masonry')}
+          layout={select('Layout', ['masonry', false], 'masonry')}
           onSelect={action('Select')}
           onSortEnd={action('onSortEnd')}
           renderItem={renderItem}

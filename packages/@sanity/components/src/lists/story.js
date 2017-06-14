@@ -11,7 +11,7 @@ import {range, random} from 'lodash'
 import Chance from 'chance'
 const chance = new Chance()
 
-import {withKnobs, boolean, select} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, select, number} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const containerStyle = {
@@ -52,7 +52,7 @@ const detailedItems = range(100).map((item, i) => {
 })
 
 class SortableComponent extends React.Component {
-  static propTypes = DefaultList.propTypes
+  static propTypes = DefaultList.propTypes //eslint-disable-line
   constructor(props, args) {
     super(props, args)
     this.state = {
@@ -90,11 +90,13 @@ class SortableComponent extends React.Component {
 }
 
 
-storiesOf('List (default)')
+storiesOf('List')
 .addDecorator(withKnobs)
 .add(
   'Default',
   () => {
+    const selectedItem = defaultItems[number('Selected item', 3)]
+    const highlightedItem = defaultItems[number('Highlighted item item', 3)]
     return (
       <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
         <div style={containerStyle}>
@@ -102,6 +104,8 @@ storiesOf('List (default)')
             renderItem={defaultRenderItem}
             items={defaultItems}
             decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+            selectedItem={boolean('Has selected item', false) ? selectedItem : undefined}
+            highlightedItem={boolean('Has selected item', false) ? highlightedItem : undefined}
             scrollable={boolean('scrollable', false)}
             onSelect={action('onSelect')}
             onSortStart={action('onSortStart')}
@@ -117,6 +121,8 @@ storiesOf('List (default)')
 .add(
   'Sortable',
   () => {
+    const selectedItem = defaultItems[number('Selected item', 3)]
+    const highlightedItem = defaultItems[number('Highlighted item item', 3)]
     return (
       <Sanity part="part:@sanity/components/lists/sortable" propTables={[SortableList]}>
         <div style={containerStyle}>
@@ -125,152 +131,12 @@ storiesOf('List (default)')
             scrollable={boolean('scrollable', false)}
             decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
             useDragHandle={boolean('Use Drag Handle', false)}
+            selectedItem={boolean('Has selected item', false) ? selectedItem : undefined}
+            highlightedItem={boolean('Has selected item', false) ? highlightedItem : undefined}
             onSelect={action('onSelect')}
             onSortStart={action('onSortStart')}
             onSortMove={action('onSortMove')}
             onSortEnd={action('onSortEnd')}
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-
-.add(
-  'Detailed',
-  // `
-  //   Sortable DefaultList
-  // `,
-  () => {
-    return (
-      <Sanity part="part:@sanity/components/lists/sortable" propTables={[SortableList]}>
-        <SortableComponent
-          items={detailedItems}
-          useDragHandle
-          onSelect={action('onSelect')}
-          onSortStart={action('onSortStart')}
-          onSortMove={action('onSortMove')}
-          onSortEnd={action('onSortEnd')}
-          decoration="divider"
-        />
-      </Sanity>
-    )
-  }
-)
-
-
-.add(
-  'Scrollable, selected item',
-  // `
-  //   The default fieldset is used to gather a collection of fields.
-  // `,
-  () => {
-    const selectedItem = defaultItems[3]
-    return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
-        <div style={containerStyle}>
-          <DefaultList
-            items={defaultItems}
-            renderItem={defaultRenderItem}
-            selectedItem={selectedItem}
-            onSelect={action('onSelect')}
-            scrollable
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Scrollable, selected item,highlighted item',
-  // `
-  //   The default fieldset is used to gather a collection of fields.
-  // `,
-  () => {
-    const selectedItem = defaultItems[3]
-    const highlightedItem = defaultItems[5]
-    return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
-        <div style={containerStyle}>
-          <DefaultList
-            items={defaultItems}
-            renderItem={defaultRenderItem}
-            selectedItem={selectedItem}
-            highlightedItem={highlightedItem}
-            onSelect={action('Select')}
-            scrollable
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-
-.add(
-  'Selected item outside view',
-  // `
-  //   The default fieldset is used to gather a collection of fields.
-  // `,
-  () => {
-    const selectedItem = defaultItems[50]
-    return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
-        <div style={containerStyle}>
-          <DefaultList
-            items={defaultItems}
-            renderItem={defaultRenderItem}
-            selectedItem={selectedItem}
-            onSelect={action('Select')}
-            scrollable
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Highlighted item outside view',
-  // `
-  //   The default fieldset is used to gather a collection of fields.
-  // `,
-  () => {
-    const highlightedItem = defaultItems[50]
-    return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
-        <div style={containerStyle}>
-          <DefaultList
-            items={defaultItems}
-            renderItem={defaultRenderItem}
-            highlightedItem={highlightedItem}
-            onSelect={action('Select')}
-            scrollable
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Selected item outside view (bottom)',
-  // `
-  //   The default fieldset is used to gather a collection of fields.
-  // `,
-  () => {
-    const selectedItem = defaultItems[defaultItems.length - 1]
-    return (
-      <Sanity part="part:@sanity/components/lists/default" propTables={[DefaultList]}>
-        <div style={containerStyle}>
-          <DefaultList
-            items={defaultItems}
-            renderItem={defaultRenderItem}
-            selectedItem={selectedItem}
-            onSelect={action('Select')}
-            scrollable
           />
         </div>
       </Sanity>

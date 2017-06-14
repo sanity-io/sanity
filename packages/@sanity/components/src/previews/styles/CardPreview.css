@@ -1,8 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: var(--white);
-  composes: shadow-3dp from 'part:@sanity/base/theme/shadows-style';
+  display: block;
 }
 
 .title {
