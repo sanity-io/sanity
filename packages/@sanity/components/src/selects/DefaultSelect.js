@@ -64,7 +64,7 @@ export default class DefaultSelect extends React.Component {
             onChange={this.handleChange}
             onFocus={onFocus}
             onBlur={onBlur}
-            value={(value && items.indexOf(value)) || 'Undefined…'}
+            value={value && items.indexOf(value)}
             autoComplete="off"
           >
             {!value && <option />}
