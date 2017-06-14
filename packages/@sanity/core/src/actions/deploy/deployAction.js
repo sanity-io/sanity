@@ -6,7 +6,7 @@ import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 export default async (args, context) => {
   const {apiClient, workDir, chalk, output, prompt} = context
-  const flags = args.extOptions
+  const flags = Object.assign({build: true}, args.extOptions)
   const sourceDir = path.resolve(
     process.cwd(),
     args.argsWithoutOptions[0] || path.join(workDir, 'dist')
@@ -37,13 +37,8 @@ export default async (args, context) => {
     })
   }
 
-  // Ask user if we should build the project first
-  const shouldBuild = flags.build || await prompt.single({
-    type: 'confirm',
-    message: 'Do you want to build the project first?',
-    default: true
-  })
-
+  // Always build the project, unless --no-build is passed
+  const shouldBuild = flags.build
   if (shouldBuild) {
     const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
     await buildStaticAssets({extOptions: {}, argsWithoutOptions: []}, context)
