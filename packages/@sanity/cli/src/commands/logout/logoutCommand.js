@@ -41,7 +41,12 @@ export default {
     async function logout() {
       const client = apiClient({requireUser: false, requireProject: false})
       if (token) {
-        await client.request({uri: '/auth/logout'})
+        try {
+          await client.request({uri: '/auth/logout'})
+        } catch (err) {
+          output.error(chalk.red(`Failed to communicate with the Sanity API:\n${err.message}`))
+          return
+        }
       }
 
       cfg.delete('authType')
