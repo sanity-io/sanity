@@ -47,7 +47,6 @@ export default class DefaultSelect extends React.Component {
 
   render() {
     const {label, error, items, value, level, onFocus, onBlur, hasFocus} = this.props
-
     return (
       <FormField
         className={`
@@ -65,9 +64,10 @@ export default class DefaultSelect extends React.Component {
             onChange={this.handleChange}
             onFocus={onFocus}
             onBlur={onBlur}
-            value={items.indexOf(value)}
+            value={(value && items.indexOf(value)) || 'Undefined…'}
             autoComplete="off"
           >
+            {!value && <option />}
             {
               items.map((item, i) => {
                 return (
