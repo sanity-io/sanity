@@ -5,44 +5,56 @@ import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import client from 'part:@sanity/base/client'
 
 const userChannel = pubsub()
+const errorChannel = pubsub()
 
 let _initialFetched = false
 let _currentUser = null
+let _currentError = null
 
 userChannel.subscribe(val => {
   _currentUser = val
 })
 
+errorChannel.subscribe(val => {
+  _currentError = val
+})
+
 function fetchInitial() {
-  authenticationFetcher.getCurrentUser().then(user => {
-    userChannel.publish(user)
-  })
+  return authenticationFetcher.getCurrentUser()
+    .then(user => userChannel.publish(user))
+    .catch(err => errorChannel.publish(err))
 }
 
 function logout() {
-  return authenticationFetcher.logout().then(() => {
-    userChannel.publish(null)
-  })
+  return authenticationFetcher.logout()
+    .then(() => userChannel.publish(null))
+    .catch(err => errorChannel.publish(err))
 }
 
 const currentUser = new Observable(observer => {
-
   if (_initialFetched) {
-    emitSnapshot(_currentUser)
+    const emitter = _currentError ? emitError : emitSnapshot
+    emitter(_currentError || _currentUser)
   } else {
     _initialFetched = true
     fetchInitial()
   }
 
-  return userChannel.subscribe(nextUser => {
-    emitSnapshot(nextUser)
-  })
+  const unsubUser = userChannel.subscribe(nextUser => emitSnapshot(nextUser))
+  const unsubError = errorChannel.subscribe(err => emitError(err))
+  const unsubscribe = () => {
+    unsubUser()
+    unsubError()
+  }
+
+  return unsubscribe
+
+  function emitError(error) {
+    observer.next({type: 'error', error})
+  }
 
   function emitSnapshot(user) {
-    observer.next({
-      type: 'snapshot',
-      user
-    })
+    observer.next({type: 'snapshot', user})
   }
 })
 
@@ -65,9 +77,7 @@ const getUser = id => {
 
 export default function createUserStore(options = {}) {
   return {
-    actions: createActions({
-      logout
-    }),
+    actions: createActions({logout, retry: fetchInitial}),
     currentUser,
     getUser
   }
