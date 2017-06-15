@@ -45,11 +45,11 @@
   position: absolute;
   top: 0;
   left: 0;
-  transition: all 0.2s linear;
-  opacity: 0.9;
+  transition: opacity 0.1s linear;
+  opacity: 0;
 
-  @nest &:hover {
-    opacity: 0.6;
+  @nest .noFocus:hover & {
+    opacity: 0.9;
   }
 
   @nest .hasFocus & {
@@ -67,10 +67,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   user-select: none;
-  transition: opacity 0.2s linear;
-  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.1s linear;
+  opacity: 0;
 
-  @nest .overlay:hover + & {
+  @nest .noFocus:hover & {
     opacity: 1;
   }
 
