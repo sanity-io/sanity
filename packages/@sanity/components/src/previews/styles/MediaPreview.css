@@ -40,7 +40,6 @@
 .meta {
   composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   display: flex;
-  display: none;
   position: absolute;
   opacity: 0;
   top: 0;
