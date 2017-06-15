@@ -80,12 +80,7 @@ export default {
         {
           name: 'myImage',
           title: 'My Image',
-          type: 'myImage',
-          preview: {
-            select: {
-              title: 'caption'
-            }
-          }
+          type: 'myImage'
         }
       ]
     },
