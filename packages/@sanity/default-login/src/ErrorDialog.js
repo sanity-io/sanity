@@ -6,14 +6,13 @@ import CorsCheck from './CorsCheck'
 
 export default function ErrorDialog(props) {
   const isNetworkError = props.error.isNetworkError
-  const errorType = isNetworkError ? 'Network error' : 'Error'
 
   return (
-    <FullscreenDialog kind="danger" title={errorType} isOpen centered>
+    <FullscreenDialog color="danger" title="Error" isOpen centered>
       {!isNetworkError && <p>{props.error.message}</p>}
       {isNetworkError && (
         <div>
-          <p>While attempting to reach the Sanity API, a network error was detected.</p>
+          <p>An error occured while attempting to reach the Sanity API.</p>
           <CorsCheck />
         </div>
       )}
