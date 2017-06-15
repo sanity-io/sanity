@@ -772,6 +772,14 @@
       "path": "globalsearch/styles/GlobalSearch.css"
     },
     {
+      "name": "part:@sanity/components/utilities/activate-on-focus",
+      "description": "Prevents scrolling, click and other mouseevents before the area is activated"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/activate-on-focus",
+      "path": "utilities/ActivateOnFocus.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
@@ -870,6 +878,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "fileinput/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "utilities/story.js"
     }
 
   ]
