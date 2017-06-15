@@ -11,7 +11,7 @@
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
-    "prepublish": "in-publish && npm run build || not-in-publish",
+    "prepublishOnly": "npm run build",
     "posttest": "eslint ."
   },
   "engines": {
@@ -46,7 +46,6 @@
     "git-user-info": "^1.0.1",
     "gitconfiglocal": "^2.0.1",
     "github-url-to-object": "^3.0.0",
-    "in-publish": "^2.0.0",
     "inquirer": "^2.0.0",
     "is-git-url": "^0.2.3",
     "leven": "^2.0.0",
