@@ -1,7 +1,6 @@
 import {pick, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
-import guessPreviewConfig from '../preview/guessPreviewConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
 
 const OVERRIDABLE_FIELDS = [
