@@ -46,6 +46,7 @@
     "gulp-watch": "^4.3.11",
     "husky": "^0.13.4",
     "lerna": "2.0.0-rc.5",
+    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",
     "through2": "^2.0.3",
