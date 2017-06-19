@@ -11,6 +11,7 @@ import styles from './Styles.css'
 
 import 'brace/mode/text'
 import 'brace/mode/javascript'
+import 'brace/mode/json'
 import 'brace/mode/jsx'
 import 'brace/mode/markdown'
 import 'brace/mode/css'
@@ -25,6 +26,7 @@ function compareNumbers(a, b) { // eslint-disable-line id-length
 const SUPPORTED_LANGUAGES = [
   {title: 'JSX', value: 'jsx'},
   {title: 'JavaScript', value: 'javascript'},
+  {title: 'JSON', value: 'json'},
   {title: 'Markdown', value: 'markdown'},
   {title: 'CSS', value: 'css'},
   {title: 'HTML', value: 'html'},
