@@ -17,20 +17,21 @@ assign(AssetsClient.prototype, {
 
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
+    const {id, label, filename, meta} = options
+    const query = {id, label, filename, meta}
 
     const observable = this.client._requestObservable({
       method: 'POST',
       timeout: options.timeout || 0,
-      query: options.label ? {label: options.label} : {},
       url: `/assets/${assetEndpoint}/${dataset}`,
       headers: options.contentType ? {'Content-Type': options.contentType} : {},
+      query,
       body
     })
 
     return this.client.isPromiseAPI()
       ? toPromise(observable)
       : observable
-
   },
 
   delete(type, id) {
