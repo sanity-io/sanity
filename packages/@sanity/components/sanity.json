@@ -788,6 +788,22 @@
       "path": "utilities/ActivateOnFocus.js"
     },
     {
+      "name": "part:@sanity/components/panes/default",
+      "description": "Default Pane"
+    },
+    {
+      "implements": "part:@sanity/components/panes/default",
+      "path": "panes/DefaultPane.js"
+    },
+    {
+      "name": "part:@sanity/components/panes/controller",
+      "description": "Panes controller"
+    },
+    {
+      "implements": "part:@sanity/components/panes/controller",
+      "path": "panes/Controller.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
@@ -890,6 +906,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "utilities/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "panes/story.js"
     }
 
   ]

@@ -1,0 +1,109 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  margin-right: 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.collapsed {
+  composes: root;
+  margin-right: 0;
+  border-color: #ccc;
+  padding: 0;
+  overflow: hidden;
+
+  @nest &:hover {
+    background-color: #eee;
+  }
+}
+
+.header {
+  display: block;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
+  line-height: 2.5rem;
+  width: 100%;
+  height: 2.5rem;
+  transition: width 1s linear, border 1s linear;
+  user-select: none;
+
+  @nest .collapsed & {
+    width: 2rem;
+    border-color: transparent;
+  }
+}
+
+.functions {
+  display: block;
+  float: right;
+  text-align: right;
+  opacity: 1;
+  transition: opacity 1s linear;
+  margin-right: 2.5rem;
+
+  @nest .collapsed & {
+    opacity: 0;
+    display: inline-block;
+    float: none;
+    margin-left: 1em;
+    text-align: left;
+  }
+}
+
+.menuButtonContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  @nest .collapsed & {
+    right: -0.5rem;
+  }
+}
+
+.headerContent {
+  transition: transform 1s linear;
+  transform-origin: bottom left;
+  transform: rotate(0);
+  display: block;
+
+  @nest .collapsed & {
+    width: 100vh;
+    transform: rotate(90deg);
+    transition: transform 0.2s linear;
+  }
+}
+
+.title {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  user-select: none;
+  cursor: default;
+
+  @nest .isActive & {
+    color: green;
+  }
+}
+
+.main {
+  flex-grow: 1;
+  display: block;
+  width: 100%;
+  opacity: 1;
+  transition: width 1s linear;
+  overflow: hidden;
+
+  @nest .collapsed & {
+    /*display: none;*/
+    opacity: 0;
+  }
+}
+
+.content {
+  @nest .collapsed & {
+    /*display: none;*/
+  }
+}
