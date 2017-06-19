@@ -33,6 +33,12 @@ const SUPPORTED_LANGUAGES = [
   {title: 'text', value: 'text'}
 ]
 
+const ACE_SET_OPTIONS = {
+  useSoftTabs: true,
+  navigateWithinSoftTabs: true /* note only supported by ace v1.2.7 or higher */
+}
+const ACE_EDITOR_PROPS = {$blockScrolling: true}
+
 export default class CodeInput extends React.Component {
 
   static propTypes = {
@@ -136,9 +142,9 @@ export default class CodeInput extends React.Component {
         value={value.code || ''}
         markers={value.highlightedLines ? this.createMarkers(value.highlightedLines) : null}
         onLoad={this.handleEditorLoad}
-        editorProps={{
-          $blockScrolling: true,
-        }}
+        tabSize={2}
+        setOptions={ACE_SET_OPTIONS}
+        editorProps={ACE_EDITOR_PROPS}
       />
 
     )
