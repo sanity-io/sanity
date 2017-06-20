@@ -18,7 +18,6 @@ export default class DefaultDialog extends React.Component {
     showHeader: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string.isRequired,
-      index: PropTypes.string.isRequired,
       tooltip: PropTypes.string,
       kind: PropTypes.string,
       autoFocus: PropTypes.bool
