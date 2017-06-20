@@ -96,6 +96,23 @@ const INITIAL_STATE = {
   showConfirmUnpublish: false
 }
 
+function getToggleKeyState(event) {
+
+  if (event.ctrlKey
+    && event.code === 'KeyI'
+    && event.altKey
+    && !event.shiftKey) {
+    return 'inspect'
+  }
+
+  if (event.ctrlKey
+    && event.code === 'KeyP'
+    && event.altKey
+    && !event.shiftKey) {
+    return 'showConfirmPublish'
+  }
+}
+
 export default withRouterHOC(class Editor extends React.PureComponent {
   static propTypes = {
     draft: PropTypes.object,
@@ -136,13 +153,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
   componentDidMount() {
     this.unlistenForKey = listen(window, 'keyup', event => {
-      const shouldToggle = event.ctrlKey
-        && event.code === 'KeyI'
-        && event.altKey
-        && !event.shiftKey
-
-      if (shouldToggle) {
-        this.setState({inspect: !this.state.inspect})
+      const toggleKey = getToggleKeyState(event)
+      if (toggleKey) {
+        this.setState(prevState => ({[toggleKey]: !prevState[toggleKey]}))
       }
     })
   }

@@ -6,8 +6,11 @@ import moment from 'moment'
 import DocTitle from './DocTitle'
 
 const ACTIONS = [
-  {name: 'confirm', title: 'Yes, publish now', color: 'success'},
+  {name: 'confirm', title: 'Yes, publish now', color: 'success', autoFocus: true},
   {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+]
+const NOTHING_TO_PUBLISH_ACTIONS = [
+  {name: 'cancel', title: 'Close', color: 'success', autoFocus: true},
 ]
 
 export default class ConfirmPublish extends React.PureComponent {
@@ -30,6 +33,20 @@ export default class ConfirmPublish extends React.PureComponent {
   render() {
     const {draft, published, onCancel} = this.props
 
+    if (!draft) {
+      return (
+        <Dialog
+          isOpen
+          centered
+          showHeader
+          title="No changes"
+          actions={NOTHING_TO_PUBLISH_ACTIONS}
+          onAction={this.handleAction}
+        >
+          Nothing to publish!
+        </Dialog>
+      )
+    }
     return (
       <Dialog
         isOpen
