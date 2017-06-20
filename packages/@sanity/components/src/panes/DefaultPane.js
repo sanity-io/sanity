@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/DefaultPane.css'
-import {debounce} from 'lodash'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import Button from 'part:@sanity/components/buttons/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 

@@ -8,67 +8,59 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 
 export default class PanesController extends React.Component {
   static propTypes = {
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
     selectedIndex: PropTypes.number,
     onChange: PropTypes.func
   }
 
-  // onResize = debounce(() => {
-  //  console.log('resize')
-  // }, 1000 / 60)
-
-  state = {
-    currentSelectedIndex: this.props.selectedIndex,
-    updateId: 0
-  }
-
-  width = 0
-
-  panesStatus = React.Children.toArray(this.props.children).map((pane, i) => {
-    return {
-      isCollapsed: false,
-      minWidth: pane.props.minWidth,
-      width: 0,
-      isSelected: this.props.selectedIndex === i
+  constructor(props) {
+    super()
+    this.state = {
+      currentSelectedIndex: props.selectedIndex,
+      updateId: 0,
+      panesState: []
     }
-  })
+
+    this.width = 0
+
+    this.panesStatus = React.Children.toArray(props.children).map((pane, i) => {
+      return {
+        isCollapsed: false,
+        minWidth: pane.props.minWidth,
+        width: pane.props.minWidth + 1,
+        element: null,
+        isSelected: props.selectedIndex === i
+      }
+    })
+  }
 
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
 
   componentDidMount() {
-    console.log('componentDidMount')
-    this.setWidth()
-    const panes = React.Children.toArray(this.props.children)
-    this.checkPanes(panes)
-
-    this._elementResizeDetector.listenTo(
-      this._rootElement,
-      this.handleResize
-    )
+    // this.setWidth()
+    // this._elementResizeDetector.listenTo(
+    //   this._rootElement,
+    //   this.handleResize
+    // )
   }
 
-  updatePaneStatus = children => {
-    const newPanesStatus = React.Children.toArray(children).map((pane, i) => {
-      return {
-        isCollapsed: false,
-        minWidth: pane.props.minWidth,
-        width: 0,
-        isSelected: this.props.selectedIndex === i
-      }
-    })
+  componentDidUpdate() {
+    console.log('Component Did Update') // eslint-disable-line
+    // this.checkPanes(this.props.children)
+  }
 
-    this.panesStatus = newPanesStatus
+  shouldComponentUpdate(nextProps, nextState) {
+    // this.updatePanesStatus(nextProps.children)
 
-
-    // if (newPanesStatus.length < this.panesStatus.length) {
-    //   this.panesStatus = this.panesStatus.slice(0, newPanesStatus.length)
-    //   console.log('remove pane', this.panesStatus)
-    // } else {
-    //   this.panesStatus = this.panesStatus.concat(newPanesStatus)
-    //   console.log('new pane', this.panesStatus)
+    // if (nextProps.children.length !== this.props.children.length) {
+    //   return true
     // }
-
+    //
+    // if (nextState.panesState !== this.state.panesState) {
+    //   return true
+    // }
+    // return false
   }
 
   componentWillUnmount() {
@@ -79,11 +71,60 @@ export default class PanesController extends React.Component {
     this.setState({
       currentSelectedIndex: nextProps.selectedIndex
     })
-    if (nextProps.children.length !== this.props.children.length) {
-      this.updatePaneStatus(nextProps.children)
-      this.checkPanes(nextProps.children)
-    }
+    // if (nextProps.children.length !== this.props.children.length) {
+      //this.updatePanesStatus(nextProps.children)
+      // this.checkPanes(nextProps.children)
+    // }
   }
+  // onResize = debounce(() => {
+  //  console.log('resize')
+  // }, 1000 / 60)
+
+  updatePanesStatus = children => {
+    console.log('Update Panes Status') // eslint-disable-line
+
+    const newPanesStatus = React.Children.toArray(children).map((pane, i) => {
+      const minWidth = pane.props.minWidth
+      const width = this.panesStatus[i] && this.panesStatus[i].element && this.panesStatus[i].element.offsetWidth
+      let isCollapsed = (this.panesStatus[i] && this.panesStatus[i].isCollapsed)
+
+      if (width < minWidth) {
+        isCollapsed = true
+      }
+      return {
+        isCollapsed: isCollapsed,
+        minWidth: minWidth,
+        width: width || null,
+        element: this.panesStatus[i] && this.panesStatus[i].element,
+        isSelected: this.props.selectedIndex === i
+      }
+    })
+
+    console.log('old', this.panesStatus) // eslint-disable-line
+    this.panesStatus = newPanesStatus
+    console.log('new', this.panesStatus) // eslint-disable-line
+
+    // if (newPanesStatus.length < this.panesStatus.length) {
+    //   this.panesStatus = this.panesStatus.slice(0, newPanesStatus.length)
+    //   console.log('remove pane', this.panesStatus)
+    // } else {
+    //   this.panesStatus = this.panesStatus.concat(
+    //     newPanesStatus.slice()
+    //   )
+    //   console.log('new pane', this.panesStatus)
+    // }
+  }
+
+  applyPanesStatusToState = () => {
+    console.log('Applying PanesStatus To State') // eslint-disable-line
+    // const panesState = this.panesStatus(pane => {
+    //   return {isCollapsed: pane.isCollapsed}
+    // })
+    // this.setState({
+    //   panesState: panesState
+    // })
+  }
+
 
   handleResize = debounce(event => {
     // this.setWidth()
@@ -95,98 +136,85 @@ export default class PanesController extends React.Component {
   }
 
   setRootElement = element => {
+    console.log('Set root elment') // eslint-disable-line
     this._rootElement = element
   }
 
   checkPanes = panes => {
-    console.log('checkpanes')
-    let totalMinWidth = 0
+    console.log('Check panes') // eslint-disable-line
 
-    panes.forEach(pane => {
-      console.log('minWidthPane', pane.props.minWidth)
-      totalMinWidth += pane.props.minWidth
-    })
+    // this.updatePanesStatus(panes)
+    // let totalMinWidth = 0
 
-    if (totalMinWidth < this.width) {
-      console.log('totalMinWidth', totalMinWidth)
-      // this.expandAll()
-    } else {
-      console.log('collapse some', totalMinWidth, '<', this.width)
-      this.collapseSome()
-    }
+    // panes.forEach(pane => {
+    //   totalMinWidth = totalMinWidth + pane.props.minWidth
+    // })
+
+    // panes.forEach(pane => {
+    //   if (pane.element) {
+    //     pane.width = pane.element.offsetWidth
+    //   } else {
+    //     console.log('no element') // eslint-disable-line
+    //   }
+    //   totalMinWidth += pane.props.minWidth
+    //   this.render()
+    // })
+
+    // if (totalMinWidth < this.width) {
+    //   console.log('totalMinWidth', totalMinWidth) //eslint-disable-line
+    //   this.expandAll()
+    // } else {
+    //   console.log('collapse some', totalMinWidth, '<', this.width) // eslint-disable-line
+    //   this.collapseSome(panes)
+    // }
   }
 
-  collapseSome() {
-    const minimizedWidth = 30
-
-    // const panesStatus = this.state.panesStatus.map((pane, i) => {
-    //
-    //   const remainingPanes = this.state.panesStatus.splice(i)
-    //
-    //   const remainingSpace = 0
-    //
-    //
-    //   console.log('remainingSpace', remainingSpace)
-    //
-    //   // if (i === 0 && pane) {
-    //   //   pane.isCollapsed = true
-    //   //   return pane
-    //   // }
+  expandAll = panes => {
+    console.log('Expand All Panes') // eslint-disable-line
+    // this.panesStatus = this.panesStatus.map(pane => {
+    //   pane.isCollapsed = false
     //   return pane
     // })
-    // this.setState({
-    //   panesStatus: panesStatus
-    // })
   }
 
+  collapseSome = panes => {
+    console.log('Collapse some') // eslint-disable-line
+    // this.applyPanesStatusToState()
+  }
+
+  // Handle click
   handleClick(index, pane, event) {
-    const panes = React.Children.toArray(this.props.children)
-    if (index === this.state.currentSelectedIndex) {
-      if (index === panes.length) {
-        console.error('Last pane can not close if active')
-        return
-      }
-
-      this.setState({
-        currentSelectedIndex: index + 1,
-        updateId: this.state.updateId + 1
-      })
-    } else {
-      this.setState({
-        currentSelectedIndex: index,
-        updateId: this.state.updateId + 1
-      })
-    }
-
     if (pane.props.onActive) {
       pane.props.onActive(pane)
     }
-
-    // onChange callback
     if (this.props.onChange) {
       this.props.onChange(index, pane.props.value, pane, event)
     }
   }
 
+  // Set panes element to panesStatus
   setPaneElement = (element, i) => {
-    if (element && i) {
-      this.panesStatus[i] = element.offsetWidth
+    if (element) {
+      this.panesStatus[i].element = element
     }
   }
 
   render() {
     const {children} = this.props
     const {currentSelectedIndex} = this.state
-    const {panesStatus} = this
 
     const panes = React.Children.toArray(children)
-
+    console.log('Render panes', panes) // eslint-disable-line
     const paneElements = panes.map((pane, i) => {
-      const isCollapsed = panesStatus[i].isCollapsed
-      const width = panesStatus[i].width
+      const isCollapsed = this.panesStatus[i].isCollapsed
+      const width = this.panesStatus[i].width
       const isSelected = i === currentSelectedIndex
       return (
-        <div className={isCollapsed ? styles.paneCollapsed : styles.pane} key={pane.props.title} ref={element => this.setPaneElement(element, i)}>
+        <div
+          className={isCollapsed ? styles.paneCollapsed : styles.pane}
+          key={pane.props.title}
+          ref={element => this.setPaneElement(element, i)}
+        >
           <Pane
             {...pane.props}
             index={i}
