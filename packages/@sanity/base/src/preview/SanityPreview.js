@@ -7,7 +7,7 @@ export default class SanityPreview extends React.PureComponent {
 
   static propTypes = {
     layout: PropTypes.string,
-    value: PropTypes.object,
+    value: PropTypes.any,
     type: PropTypes.object.isRequired
   }
 

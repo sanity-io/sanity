@@ -1,7 +1,7 @@
 import createPreviewObserver from './createPreviewObserver'
 import observeWithPaths from './observeWithPaths'
 import resolveRefType from './resolveRefType'
-import prepareForPreview from './prepareForPreview'
+import prepareForPreview, {invokePrepare} from './prepareForPreview'
 import Observable from '@sanity/observable'
 
 const observe = createPreviewObserver(observeWithPaths)
@@ -22,10 +22,12 @@ export default function observeForPreview(value, type, fields) {
   }
 
   const selection = type.preview.select
-  const configFields = Object.keys(selection)
-  const targetFields = fields ? configFields.filter(fieldName => fields.includes(fieldName)) : configFields
-  const paths = targetFields.map(key => selection[key].split('.'))
-
-  return observe(value, paths)
-    .map(snapshot => ({type: type, snapshot: prepareForPreview(snapshot, type)}))
+  if (selection) {
+    const configFields = Object.keys(selection)
+    const targetFields = fields ? configFields.filter(fieldName => fields.includes(fieldName)) : configFields
+    const paths = targetFields.map(key => selection[key].split('.'))
+    return observe(value, paths)
+      .map(snapshot => ({type: type, snapshot: prepareForPreview(snapshot, type)}))
+  }
+  return Observable.of({type: type, snapshot: invokePrepare(type, value)})
 }

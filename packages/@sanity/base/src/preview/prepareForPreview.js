@@ -55,7 +55,7 @@ function invokePrepareUnchecked(type, value) {
   return (type.preview.prepare || pass)(value)
 }
 
-const invokePrepare = __DEV__ ? invokePrepareChecked : invokePrepareUnchecked
+export const invokePrepare = __DEV__ ? invokePrepareChecked : invokePrepareUnchecked
 
 export default function prepareForPreview(rawValue, type) {
   const selection = type.preview.select
