@@ -17,7 +17,7 @@ class DefaultMenu extends React.Component {
     onClose: PropTypes.func,
     items: PropTypes.arrayOf(
       PropTypes.shape({
-        title: PropTypes.string.isRequired,
+        title: PropTypes.node.isRequired,
         icon: PropTypes.func
       })
     )
