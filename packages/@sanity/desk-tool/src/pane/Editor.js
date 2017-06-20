@@ -368,7 +368,12 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             </div>
           )}
           <div className={styles.publishButton}>
-            <Button disabled={!draft} onClick={this.handlePublishButtonClick} color="primary">
+            <Button
+              title="Ctrl+Alt+P"
+              disabled={!draft}
+              onClick={this.handlePublishButtonClick}
+              color="primary"
+            >
               {published ? 'Publish changes' : 'Publish'}
             </Button>
           </div>
