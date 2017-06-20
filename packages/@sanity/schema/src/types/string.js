@@ -1,5 +1,6 @@
 import {pick} from 'lodash'
 import assert from 'assert'
+import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
 
@@ -15,7 +16,8 @@ export const StringType = {
   },
   extend(subTypeDef) {
     const parsed = Object.assign(pick(STRING_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: STRING_CORE
+      type: STRING_CORE,
+      preview: primitivePreview
     })
 
     return subtype(parsed)

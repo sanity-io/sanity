@@ -1,4 +1,5 @@
 import {pick} from 'lodash'
+import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
@@ -14,7 +15,8 @@ export const BooleanType = {
   },
   extend(subTypeDef) {
     const parsed = Object.assign(pick(BOOLEAN_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: BOOLEAN_CORE
+      type: BOOLEAN_CORE,
+      preview: primitivePreview
     })
 
     return subtype(parsed)

@@ -1,4 +1,5 @@
 import {pick} from 'lodash'
+import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
@@ -15,7 +16,8 @@ export const UrlType = {
   },
   extend(subTypeDef) {
     const parsed = Object.assign(pick(URL_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: URL_CORE
+      type: URL_CORE,
+      preview: primitivePreview
     })
     return subtype(parsed)
 

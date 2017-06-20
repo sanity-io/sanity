@@ -1,4 +1,5 @@
 import {pick} from 'lodash'
+import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
@@ -15,7 +16,8 @@ export const EmailType = {
   },
   extend(subTypeDef) {
     const parsed = Object.assign(pick(EMAIL_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: EMAIL_CORE
+      type: EMAIL_CORE,
+      preview: primitivePreview
     })
     return subtype(parsed)
 
