@@ -18,7 +18,7 @@
   "dependencies": {
     "@sanity/form-builder": "^0.106.26",
     "lodash": "^4.17.4",
-    "react-ace": "^4.3.0"
+    "react-ace": "^5.0.1"
   },
   "devDependencies": {
     "@sanity/check": "^0.106.21",
