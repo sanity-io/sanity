@@ -20,7 +20,8 @@ export default class DefaultDialog extends React.Component {
       title: PropTypes.string.isRequired,
       index: PropTypes.string.isRequired,
       tooltip: PropTypes.string,
-      kind: PropTypes.string
+      kind: PropTypes.string,
+      autoFocus: PropTypes.bool
     }))
   }
 
@@ -131,6 +132,7 @@ export default class DefaultDialog extends React.Component {
                             color={action.color}
                             disabled={action.disabled}
                             kind={action.kind}
+                            autoFocus={action.autoFocus}
                             className={`
                               ${styles.button}
                               ${styles[`button_${action.kind}`] || styles.button}

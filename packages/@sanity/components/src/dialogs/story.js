@@ -38,7 +38,8 @@ storiesOf('Dialogs')
     const actions = [
       {
         index: '1',
-        title: 'Finish'
+        title: 'Finish',
+        autoFocus: true
       },
       {
         index: '2',
@@ -85,7 +86,8 @@ storiesOf('Dialogs')
       {
         index: '2',
         title: 'Finish',
-        color: 'success'
+        color: 'success',
+        autoFocus: true
       },
       {
         index: '3',
