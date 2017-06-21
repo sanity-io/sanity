@@ -84,7 +84,7 @@ test('should be able to load config for a plugin', t => {
 test('should be able to load sanity plugin versions', t => {
   pluginLoader({basePath: path.join(__dirname, 'versionsFixture')})
 
-  const versions = require('config:sanity/versions')
+  const versions = require('sanity:versions')
   t.deepEqual(versions, {
     '@sanity/base': '0.999.99',
     '@sanity/components': '0.777.77'

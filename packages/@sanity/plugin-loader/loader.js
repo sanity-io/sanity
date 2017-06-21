@@ -66,18 +66,18 @@ function registerLoader(options) {
       return request
     }
 
+    if (request === 'sanity:versions') {
+      const versions = getSanityVersions(basePath)
+      require.cache[request] = getModule(request, versions)
+      return request
+    }
+
     const configMatch = request.match(configMatcher)
     if (configMatch) {
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
         require.cache[request] = getModule(request, reduceConfig(sanityConfig, env))
-        return request
-      }
-
-      if (configFor === 'sanity/versions') {
-        const versions = getSanityVersions(basePath)
-        require.cache[request] = getModule(request, versions)
         return request
       }
 
