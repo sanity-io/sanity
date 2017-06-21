@@ -8,15 +8,6 @@ const EventSource = typeof window !== 'undefined' && window.EventSource
   ? window.EventSource // Native browser EventSource
   : require('@sanity/eventsource') // Node.js, IE etc
 
-// Temporarily(?) needed because the node eventsource doesn't expose removeEventListener
-const removeListener = (evtSrc, evt, handler) => {
-  if (evtSrc.removeEventListener) {
-    evtSrc.removeEventListener(evt, handler, false)
-  } else {
-    evtSrc.removeListener(evt, handler)
-  }
-}
-
 const possibleOptions = ['includePreviousRevision', 'includeResult']
 const defaultOptions = {
   includeResult: true
@@ -73,10 +64,10 @@ module.exports = function listen(query, params, opts = {}) {
     }
 
     function unsubscribe() {
-      listenFor.forEach(type => removeListener(es, type, onMessage))
-      removeListener(es, 'error', onError)
-      removeListener(es, 'channelError', onChannelError)
-      removeListener(es, 'disconnect', onDisconnect)
+      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
+      es.removeEventListener('error', onError, false)
+      es.removeEventListener('channelError', onChannelError, false)
+      es.removeEventListener('disconnect', onDisconnect, false)
       es.close()
     }
 
