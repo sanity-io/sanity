@@ -93,5 +93,7 @@ function httpRequest(options, requester = request) {
 }
 
 httpRequest.defaultRequester = request
+httpRequest.ClientError = ClientError
+httpRequest.ServerError = ServerError
 
 module.exports = httpRequest

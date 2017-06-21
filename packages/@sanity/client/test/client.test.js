@@ -1253,6 +1253,22 @@ test('can use alternative http requester', t => {
     })
 })
 
+test('exposes ClientError', t => {
+  t.equal(typeof sanityClient.ClientError, 'function')
+  const error = new SanityClient.ClientError({statusCode: 400, headers: {}, body: {}})
+  t.ok(error instanceof Error)
+  t.ok(error instanceof sanityClient.ClientError)
+  t.end()
+})
+
+test('exposes ServerError', t => {
+  t.equal(typeof sanityClient.ServerError, 'function')
+  const error = new SanityClient.ServerError({statusCode: 500, headers: {}, body: {}})
+  t.ok(error instanceof Error)
+  t.ok(error instanceof sanityClient.ServerError)
+  t.end()
+})
+
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('exposes default requester', t => {
   t.equal(typeof sanityClient.requester, 'function')

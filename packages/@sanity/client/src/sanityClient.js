@@ -92,6 +92,8 @@ function mergeOptions(...opts) {
 
 SanityClient.Patch = Patch
 SanityClient.Transaction = Transaction
+SanityClient.ClientError = httpRequest.ClientError
+SanityClient.ServerError = httpRequest.ServerError
 SanityClient.requester = httpRequest.defaultRequester
 
 module.exports = SanityClient
