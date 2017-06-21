@@ -17,7 +17,7 @@ export default {
     return {
       selectedType: params.type,
       action: 'edit',
-      selectedDocumentId: intentName === 'create' ? UUID() : params.id
+      selectedDocumentId: params.id || UUID()
     }
   },
   title: 'Desk',
