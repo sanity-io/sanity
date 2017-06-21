@@ -3,14 +3,16 @@ const Module = require('module')
 const interopRequire = require('interop-require')
 const cssHook = require('css-modules-require-hook')
 const resolver = require('@sanity/resolver')
-const reduceConfig = require('@sanity/util').reduceConfig
+const util = require('@sanity/util')
+const reduceConfig = util.reduceConfig
+const getSanityVersions = util.getSanityVersions
 
 /* eslint-disable no-process-env */
 const sanityEnv = process.env.SANITY_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
-const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
+const configMatcher = /^config:@?([A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveParts = resolver.resolveParts
 const defaultResult = {
   definitions: {},
@@ -23,17 +25,16 @@ function registerLoader(options) {
     throw new Error('`registerLoader()` requires an options object')
   }
 
+  const basePath = options.basePath || process.cwd()
+
   // Resolve actual parts only if basePath is set,
   // otherwise use empty defaults
   const parts = options.basePath
-    ? resolveParts({basePath: options.basePath, sync: true})
+    ? resolveParts({basePath, sync: true})
     : Object.assign({}, defaultResult)
 
   // Configuration files are loaded with a custom prefix
-  const configPath = path.join(
-    options.basePath || process.cwd(),
-    'config'
-  )
+  const configPath = path.join(basePath, 'config')
 
   // Turn {"partName": [{path: "/foo/bar.js"}]} into {"partName": ["/foo/bar.js"]}
   parts.implementations = Object.keys(parts.implementations).reduce((implementations, part) => {
@@ -60,8 +61,8 @@ function registerLoader(options) {
   Module._resolveFilename = (request, parent) => {
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {
-      const debug = Object.assign({}, parts, {basePath: options.basePath})
-      require.cache['sanity:debug'] = getModule('sanity:debug', debug)
+      const debug = Object.assign({}, parts, {basePath})
+      require.cache[request] = getModule(request, debug)
       return request
     }
 
@@ -69,8 +70,14 @@ function registerLoader(options) {
     if (configMatch) {
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
-        const sanityConfig = require(path.join(options.basePath, 'sanity.json'))
+        const sanityConfig = require(path.join(basePath, 'sanity.json'))
         require.cache[request] = getModule(request, reduceConfig(sanityConfig, env))
+        return request
+      }
+
+      if (configFor === 'sanity/versions') {
+        const versions = getSanityVersions(basePath)
+        require.cache[request] = getModule(request, versions)
         return request
       }
 

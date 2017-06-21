@@ -81,6 +81,16 @@ test('should be able to load config for a plugin', t => {
   t.true(config.superduper)
 })
 
+test('should be able to load sanity plugin versions', t => {
+  pluginLoader({basePath: path.join(__dirname, 'versionsFixture')})
+
+  const versions = require('config:sanity/versions')
+  t.deepEqual(versions, {
+    '@sanity/base': '0.999.99',
+    '@sanity/components': '0.777.77'
+  })
+})
+
 test('should be able to load CSS files through PostCSS', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
