@@ -129,7 +129,7 @@ test('can request project by id', t => {
     _id: 'projects.n1f7y',
     projectId: 'n1f7y',
     displayName: 'Movies Unlimited',
-    studioHostname: 'movies',
+    studioHost: 'movies',
     members: [{
       id: 'someuserid',
       role: 'administrator'
