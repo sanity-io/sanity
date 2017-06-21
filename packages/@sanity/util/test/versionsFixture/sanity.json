@@ -1,0 +1,6 @@
+{
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+  ]
+}

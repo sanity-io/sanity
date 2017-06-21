@@ -1,6 +1,7 @@
+import path from 'path'
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
-import reduceConfig from '../src/reduceConfig'
+import {reduceConfig, getSanityVersions} from '../src'
 
 describe('util', () => {
   describe('reduceConfig', () => {
@@ -46,6 +47,16 @@ describe('util', () => {
 
       expect(reduced.root, true)
       expect(reduced.plugins).to.deep.equal(['@sanity/base', '@sanity/components', 'vision'])
+    })
+  })
+
+  describe('getSanityVersions', () => {
+    it('extracts correct versions', () => {
+      const versions = getSanityVersions(path.join(__dirname, 'versionsFixture'))
+      expect(versions).to.deep.equal({
+        '@sanity/base': '0.999.99',
+        '@sanity/components': '0.777.77'
+      })
     })
   })
 })
