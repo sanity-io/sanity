@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/sanity-io/eventsource#readme",
   "dependencies": {
-    "eventsource": "^0.2.1",
+    "eventsource": "^1.0.4",
     "eventsource-polyfill": "^0.9.6"
   }
 }
