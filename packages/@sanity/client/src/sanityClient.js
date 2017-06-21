@@ -9,12 +9,15 @@ const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
-const omit = require('./util/omit')
 const {defaultConfig, initConfig} = require('./config')
 
 const toPromise = observable => observable.toPromise()
 
 function SanityClient(config = defaultConfig) {
+  if (!(this instanceof SanityClient)) {
+    return new SanityClient(config)
+  }
+
   this.config(config)
 
   this.assets = new AssetsClient(this)
@@ -23,8 +26,9 @@ function SanityClient(config = defaultConfig) {
   this.users = new UsersClient(this)
   this.auth = new AuthClient(this)
 
-  if (config.isPromiseAPI) {
-    this.observable = new SanityClient(omit(config, ['isPromiseAPI']))
+  if (this.clientConfig.isPromiseAPI) {
+    const observableConfig = assign({}, this.clientConfig, {isPromiseAPI: false})
+    this.observable = new SanityClient(observableConfig)
   }
 }
 
@@ -40,7 +44,8 @@ assign(SanityClient.prototype, {
     }
 
     if (this.observable) {
-      this.observable.config(omit(newConfig, ['isPromiseAPI']))
+      const observableConfig = assign({}, newConfig, {isPromiseAPI: false})
+      this.observable.config(observableConfig)
     }
 
     this.clientConfig = initConfig(newConfig, this.clientConfig || {})
@@ -85,12 +90,8 @@ function mergeOptions(...opts) {
   return assign(...opts, headers ? {headers} : {})
 }
 
-function createClient(config) {
-  return new SanityClient(assign({}, config, {isPromiseAPI: true}))
-}
+SanityClient.Patch = Patch
+SanityClient.Transaction = Transaction
+SanityClient.requester = httpRequest.defaultRequester
 
-createClient.Patch = Patch
-createClient.Transaction = Transaction
-createClient.requester = httpRequest.defaultRequester
-
-module.exports = createClient
+module.exports = SanityClient

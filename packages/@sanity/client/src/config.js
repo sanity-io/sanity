@@ -4,7 +4,8 @@ const validate = require('./validators')
 const defaultConfig = {
   apiHost: 'https://api.sanity.io',
   useProjectHostname: true,
-  gradientMode: false
+  gradientMode: false,
+  isPromiseAPI: true
 }
 
 exports.defaultConfig = defaultConfig

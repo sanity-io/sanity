@@ -10,9 +10,10 @@ const nock = require('nock')
 const assign = require('xtend')
 const path = require('path')
 const fs = require('fs')
-const sanityClient = require('../src/sanityClient')
 const validators = require('../src/validators')
 const sanityObservable = require('@sanity/observable')
+const sanityClient = require('../src/sanityClient')
+const SanityClient = sanityClient
 const noop = () => {} // eslint-disable-line no-empty-function
 
 const apiHost = 'api.sanity.url'
@@ -31,6 +32,18 @@ const ifError = t => err => {
 /*****************
  * BASE CLIENT   *
  *****************/
+test('can construct client with new keyword', t => {
+  const client = new SanityClient({projectId: 'abc123'})
+  t.equal(client.config().projectId, 'abc123', 'constructor opts are set')
+  t.end()
+})
+
+test('can construct client without new keyword', t => {
+  const client = sanityClient({projectId: 'abc123'})
+  t.equal(client.config().projectId, 'abc123', 'constructor opts are set')
+  t.end()
+})
+
 test('can get and set config', t => {
   const client = sanityClient({projectId: 'abc123'})
   t.equal(client.config().projectId, 'abc123', 'constructor opts are set')
