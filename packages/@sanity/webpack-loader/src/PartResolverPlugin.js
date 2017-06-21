@@ -7,7 +7,7 @@ const emptyPart = require.resolve('./emptyPart')
 const debugPart = require.resolve('./debugPart')
 const unimplementedPart = require.resolve('./unimplementedPart')
 const partMatcher = /^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
-const configMatcher = /^config:(@[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
+const configMatcher = /^config:(@?[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 
 const isSanityPart = request =>
   partMatcher.test(request.request) || configMatcher.test(request.request)
@@ -50,6 +50,14 @@ PartResolverPlugin.prototype.apply = function (compiler) {
 
     // The debug part should return the whole part/plugin tree
     if (request.request === 'sanity:debug') {
+      return this.doResolve(['file'], getResolveOptions({
+        resolveTo: debugPart,
+        request: request,
+      }), callback)
+    }
+
+    // The versions part should return a list of module versions
+    if (request.request === 'sanity:versions') {
       return this.doResolve(['file'], getResolveOptions({
         resolveTo: debugPart,
         request: request,
