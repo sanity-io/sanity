@@ -51,11 +51,12 @@ const locationChange$ = new Observable(observer => {
 
 export default function createLocationStore(options = {}) {
   const eventStream = new Observable(observer => {
+    const subscription = locationChange$.subscribe(observer)
     observer.next({
       type: 'snapshot',
       location: readLocation()
     })
-    return locationChange$.subscribe(observer)
+    return subscription
   })
 
   return {
