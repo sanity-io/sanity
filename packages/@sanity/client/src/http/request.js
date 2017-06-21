@@ -3,7 +3,6 @@ const getIt = require('get-it')
 const assign = require('object-assign')
 const createErrorClass = require('create-error-class')
 const observable = require('get-it/lib/middleware/observable')
-const retry = require('get-it/lib/middleware/retry')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
 const SanityObservable = require('@sanity/observable/minimal')
@@ -23,19 +22,6 @@ const httpError = ({
     return res
   }
 })
-
-function retry5xx(err, attempt, options) {
-  // Retry low-level network errors
-  if (retry.shouldRetry(err)) {
-    return true
-  }
-
-  if (options.method === 'HEAD' || options.method === 'GET') {
-    return err.response && err.response.statusCode >= 500
-  }
-
-  return false
-}
 
 function extractError(res) {
   const body = res.body
@@ -76,8 +62,7 @@ const middleware = [
   jsonResponse(),
   progress(),
   httpError,
-  observable({implementation: SanityObservable}),
-  retry({maxRetries: 5, shouldRetry: retry5xx})
+  observable({implementation: SanityObservable})
 ]
 
 // Don't include debug middleware in browsers
