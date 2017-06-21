@@ -30,7 +30,7 @@
     "@sanity/observable": "^0.106.21",
     "@sanity/schema": "^0.106.27",
     "@sanity/state-router": "^0.106.21",
-    "history": "^4.5.1",
+    "history": "^4.6.3",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.1",
