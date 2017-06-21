@@ -10,6 +10,11 @@
       "description": "The document component wrapping the root component. Statically built for production, Rendered dynamically on the server in development."
     },
     {
+      "name": "part:@sanity/base/sanity-root",
+      "description": "The very root of any Sanity application. Used to load layout-agnostic behaviour",
+      "path": "components/SanityRoot.js"
+    },
+    {
       "name": "part:@sanity/base/root",
       "description": "The root component in the DOM-tree. Usually a layout."
     },
