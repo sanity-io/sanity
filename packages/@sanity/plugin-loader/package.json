@@ -30,9 +30,9 @@
     ]
   },
   "devDependencies": {
-    "ava": "^0.16.0",
-    "eslint": "^3.19.0",
-    "nyc": "^10.1.2"
+    "ava": "^0.19.1",
+    "eslint": "^4.0.0",
+    "nyc": "^11.0.2"
   },
   "dependencies": {
     "@sanity/resolver": "^0.106.21",

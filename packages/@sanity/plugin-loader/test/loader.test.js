@@ -85,8 +85,8 @@ test('should be able to load CSS files through PostCSS', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const styles = require('part:date/datepicker-style')
-  t.is(styles.something, 'datepicker__something___2XYYD base__base___2r-NO')
-  t.is(styles.zebra, 'datepicker__zebra___3-rtJ')
+  t.is(styles.something, 'datepicker__something___2IJMX base__base___3XsAc')
+  t.is(styles.zebra, 'datepicker__zebra___1_qke')
 })
 
 test('should resolve correctly when using optional role requires (?-postfix)', t => {
