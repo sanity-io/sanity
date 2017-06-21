@@ -28,7 +28,7 @@ export default async (args, context) => {
     printKeyValue({
       ID: project.id,
       'Display name': project.displayName,
-      'Studio URL': project.studioHostname,
+      'Studio URL': project.studioHostname || project.studioHost,
       'User role': project.userRole
     }, context)
   }
@@ -134,8 +134,9 @@ async function gatherProjectInfo(context, baseInfo) {
     return new Error(`Project specified in configuration (${projectId}) does not exist in API`)
   }
 
+  const host = projectInfo.studioHostname || projectInfo.studioHost
   const member = (projectInfo.members || []).find(user => user.id === baseInfo.user.id)
-  const hostname = projectInfo.studioHostname && `https://${projectInfo.studioHostname}.sanity.studio/`
+  const hostname = host && `https://${host}.sanity.studio/`
   return {
     id: projectId,
     displayName: projectInfo.displayName,
