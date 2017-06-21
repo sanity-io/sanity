@@ -22,7 +22,7 @@ export default class Pane extends React.Component {
   static defaultProps = {
     title: 'Untitled',
     isCollapsed: false,
-    minWidth: 300,
+    minWidth: 0,
     width: 0,
     Functions: <div />,
     menu: <div />,
@@ -92,23 +92,6 @@ export default class Pane extends React.Component {
         </div>
         <div className={styles.main}>
           <div className={styles.content}>
-            <div>
-              <div>
-                prop:
-                {
-                  this.props.isCollapsed ? 'isCollapsed' : 'unCollapsed'
-                }
-              </div>
-            </div>
-            <div>
-              {isSelected && 'isSelected'}
-            </div>
-            <div>
-              Width: {width}
-            </div>
-            <div>
-              minWidth: {minWidth}
-            </div>
             <div>
               {children}
             </div>

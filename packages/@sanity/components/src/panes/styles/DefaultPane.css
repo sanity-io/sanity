@@ -1,8 +1,6 @@
 .root {
   display: flex;
   flex-direction: column;
-  margin-right: 0.5rem;
-  padding: 0 0.5rem;
 }
 
 .collapsed {
