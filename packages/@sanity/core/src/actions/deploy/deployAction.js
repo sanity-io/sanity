@@ -20,7 +20,7 @@ export default async (args, context) => {
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
   const project = await client.projects.getById(client.config().projectId)
-  let studioHostname = project && project.studioHostname
+  let studioHostname = project && (project.studioHostname || project.studioHost)
   spinner.succeed()
 
   if (!studioHostname) {
@@ -105,7 +105,7 @@ async function checkDir(sourceDir) {
   }
 }
 
-async function validateHostname(value, client) {
+function validateHostname(value, client) {
   const projectId = client.config().projectId
   const uri = `/projects/${projectId}/host`
   const host = value || ''
