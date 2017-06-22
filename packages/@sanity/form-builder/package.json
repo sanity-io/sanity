@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.106.31",
+  "version": "0.106.32",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -44,10 +44,10 @@
     "@sanity/base": "^0.106.29",
     "@sanity/check": "^0.106.21",
     "@sanity/cli": "^0.106.30",
-    "@sanity/components": "^0.106.31",
-    "@sanity/core": "^0.106.31",
+    "@sanity/components": "^0.106.32",
+    "@sanity/core": "^0.106.32",
     "@sanity/plugin-loader": "^0.106.21",
-    "@sanity/server": "^0.106.31",
+    "@sanity/server": "^0.106.32",
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.2.1",
     "babel-plugin-css-modules-transform": "^1.1.0",
