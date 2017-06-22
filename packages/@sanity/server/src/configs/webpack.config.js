@@ -48,6 +48,9 @@ export default (config = {}) => {
     || config.commonChunkPlugin
   ) && new webpack.optimize.CommonsChunkPlugin('vendor', 'js/vendor.bundle.js')
 
+  const cssConfigPath = path.join(__dirname, 'postcss.config.js')
+  const cssConfig = JSON.stringify({config: {path: cssConfigPath}})
+
   return {
     entry: {
       app: [
@@ -100,7 +103,7 @@ export default (config = {}) => {
         loader: require.resolve('json-loader')
       }, {
         test: /\.css(\?|$)/,
-        loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
+        loader: isProd && cssExtractor.extract([cssLoader, `postcss-loader?${cssConfig}`]),
         loaders: !isProd && [require.resolve('style-loader'), cssLoader, require.resolve('postcss-loader')]
       }, {
         test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot)$/,
