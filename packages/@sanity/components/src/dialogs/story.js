@@ -108,7 +108,7 @@ storiesOf('Dialogs')
         <div>
           <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
           <FullscreenDialog
-            title={text('title', 'This is the title')}
+            title={text('title', 'This is the title and it is very long. In fact it is so long that it will break and make a magic new line')}
             onClose={action('onClose')}
             color={select('Color', ['default', 'danger', 'success', 'info', 'warning'])}
             centered={boolean('Centered', false)}
