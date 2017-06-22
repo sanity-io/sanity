@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/DefaultPane.css'
-import Button from 'part:@sanity/components/buttons/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
+import ElementQuery from 'react-element-query'
 
 export default class Pane extends React.Component {
   static propTypes = {
     title: PropTypes.string,
-    isCollapsed: PropTypes.string,
+    isCollapsed: PropTypes.bool,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
     minWidth: PropTypes.number,
@@ -39,7 +39,8 @@ export default class Pane extends React.Component {
     showMenu: false
   }
 
-  handleClick = event => {
+  handleToggle = event => {
+    console.log('handleClick')
     if (!this.state.isCollapsed) {
       this.props.onExpand(event)
     }
@@ -56,39 +57,49 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {title, minWidth, children, isSelected, renderFunctions, renderMenu, isCollapsed, width} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed} = this.props
     const {showMenu} = this.state
 
     return (
       <div
         className={`
-          ${(isCollapsed) ? styles.collapsed : styles.root}
+          ${(isCollapsed) ? styles.isCollapsed : styles.root}
           ${isSelected ? styles.isActive : ''}
         `}
-        onClick={this.handleClick}
         ref={this.setRootElement}
       >
         <div className={styles.header}>
-          {
-            renderMenu && <div className={styles.menuContainer}>
-              <div className={styles.menuButtonContainer}>
-                <Button kind="simple" icon={IconMoreVert} onClick={this.handleToggleMenu} />
-                {
-                  showMenu && renderMenu()
-                }
-              </div>
-            </div>
-          }
           <div className={styles.headerContent}>
-            <h2 className={styles.title}>
+            <h2 className={styles.title} onClick={this.handleToggle}>
               {title}
             </h2>
-            <div className={styles.functions}>
+            <ElementQuery
+              sizes={[
+                {name: styles.functionsSmall, width: 150},
+                {name: styles.functionsLarge, width: 400}
+              ]}
+            >
               {
                 renderFunctions()
               }
-            </div>
+            </ElementQuery>
           </div>
+          {
+            renderMenu && <div className={styles.menuWrapper}>
+              <div className={styles.menuButtonContainer}>
+                <div className={styles.menuButton} onClick={this.handleToggleMenu}>
+                  <IconMoreVert />
+                </div>
+              </div>
+              {
+                showMenu && (
+                  <div className={styles.menuContainer}>
+                    {renderMenu(isCollapsed)}
+                  </div>
+                )
+              }
+            </div>
+          }
         </div>
         <div className={styles.main}>
           <div className={styles.content}>

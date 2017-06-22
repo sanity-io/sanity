@@ -71,7 +71,7 @@
   opacity: 0.4;
 }
 
-.opened {
+.isOpen {
   composes: root;
   display: block;
 }

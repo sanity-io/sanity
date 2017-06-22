@@ -8,77 +8,51 @@ import {sumBy, debounce} from 'lodash'
 export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
-    selectedIndex: PropTypes.number,
-    onChange: PropTypes.func
-  }
-
-  constructor(props) {
-    super()
-    this.state = {
-      collapsedPanes: []
-    }
+    onCollapse: PropTypes.func,
+    onUnCollapse: PropTypes.func
   }
 
   handleSplitPaneChange = debounce((size, pane) => {
-    const {collapsedPanes} = this.state
     if (size <= pane.props.minWidth) {
-      collapsedPanes.push(pane)
-      this.setState({
-        collapsedPanes: collapsedPanes
-      })
-      console.log('collapse')
+      this.props.onCollapse(pane)
     } else {
-      this.setState({
-        collapsedPanes: collapsedPanes.filter(collapsedPane => {
-          return collapsedPane !== pane
-        })
-      })
+      this.props.onUnCollapse(pane)
     }
   }, 100)
 
   renderSplitPane = (pane1, pane2, restMinWidth, restDefaultWidth) => {
+    const isCollapsed = pane1.props.isCollapsed
     return (
       <SplitPane
-        primary="first"
-        minSize={restMinWidth || pane1.props.minWidth}
-        defaultSize={restDefaultWidth || pane1.props.defaultWidth}
-        split="vertical"
-        resizerClassName={styles.Resizer}
+        minSize={!isCollapsed && pane1.props.minWidth}
+        defaultSize={!isCollapsed && pane1.props.defaultWidth}
+        size={isCollapsed ? 52 : undefined}
+        resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
+        allowResize={!pane1.props.isCollapsed}
         onChange={size => this.handleSplitPaneChange(size, pane1)}
       >
-        <div className={styles.paneInSplitted}>{pane1}</div>
+        <div className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}>{pane1}</div>
         <div className={styles.paneInSplitted}>{pane2}</div>
       </SplitPane>
     )
   }
 
-  renderPaneElement = (pane, collapsedPanes) => {
-    const isCollapsed = collapsedPanes.find(collapsedPane => pane === collapsedPane)
-    console.log('compare', collapsedPanes[0], pane, collapsedPanes[0] === pane)
-    return (
-      <Pane {...pane.props} isCollapsed={isCollapsed} />
-    )
-  }
-
-  renderRecursivePanes = (panes, collapsedPanes) => {
+  renderRecursivePanes = panes => {
     // only 1 pane left
     if (panes.length === 1) {
-      return this.renderPaneElement(panes[0], collapsedPanes)
+      return panes[0]
     }
 
     // only 2 panes left
     if (panes.length === 2) {
-      return this.renderSplitPane(
-        this.renderPaneElement(panes[0], collapsedPanes),
-        this.renderPaneElement(panes[1], collapsedPanes)
-      )
+      return this.renderSplitPane(panes[0], panes[1])
     }
 
     // Recursive
     const remainingPanes = panes.slice(1)
     return this.renderSplitPane(
-      this.renderPaneElement(panes[0], collapsedPanes),
-      this.renderRecursivePanes(remainingPanes, collapsedPanes),
+      panes[0],
+      this.renderRecursivePanes(remainingPanes),
       sumBy(remainingPanes, 'props.minWidth'),
       sumBy(remainingPanes, 'props.defaultWidth')
     )
@@ -87,10 +61,9 @@ export default class PanesSplitController extends React.Component {
   render() {
     const {children} = this.props
     const panes = React.Children.toArray(children)
-    const {collapsedPanes} = this.state
     return (
       <div className={styles.vertical}>
-        {this.renderRecursivePanes(panes, collapsedPanes)}
+        {this.renderRecursivePanes(panes)}
       </div>
     )
   }

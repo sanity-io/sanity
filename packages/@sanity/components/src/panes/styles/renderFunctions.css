@@ -1,0 +1,7 @@
+.button {
+  composes: functionsButton from './DefaultPane.css';
+}
+
+.text {
+  composes: functionsButtonText from './DefaultPane.css';
+}

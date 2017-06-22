@@ -1,78 +1,94 @@
 .root {
   display: flex;
   flex-direction: column;
+  position: relative;
+  height: 100%;
 }
 
-.collapsed {
+.isCollapsed {
   composes: root;
   margin-right: 0;
   border-color: #ccc;
   padding: 0;
-  overflow: hidden;
-
-  @nest &:hover {
-    background-color: #eee;
-  }
+  width: 3rem;
+  height: 100%;
+  flex-direction: row;
 }
 
 .header {
-  display: block;
+  display: flex;
+  justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 1px solid #ccc;
-  line-height: 2.5rem;
+  line-height: 3em;
   width: 100%;
-  height: 2.5rem;
+  border: 1px solid red;
   transition: width 1s linear, border 1s linear;
   user-select: none;
 
-  @nest .collapsed & {
-    width: 2rem;
+  @nest .isCollapsed & {
+    flex-direction: row;
+    flex-grow: 1;
     border-color: transparent;
   }
 }
 
-.functions {
-  display: block;
-  float: right;
-  text-align: right;
-  opacity: 1;
-  transition: opacity 1s linear;
-  margin-right: 2.5rem;
+.menuButtonContainer {
+  font-size: 1rem;
+}
 
-  @nest .collapsed & {
-    opacity: 0;
-    display: inline-block;
-    float: none;
-    margin-left: 1em;
-    text-align: left;
+.menuWrapper {
+  align-self: flex-end;
+  flex: 0 1 3rem;
+  display: block;
+
+  @nest .isCollapsed & {
+    order: -1;
+    align-self: flex-start;
   }
 }
 
-.menuButtonContainer {
+.menuContainer {
   position: absolute;
-  top: 0;
+  top: 3em;
   right: 0;
 
-  @nest .collapsed & {
-    right: -0.5rem;
+  @nest .isCollapsed & {
+    /*right: none;
+    left: 0;*/
   }
+}
+
+.menuButton {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
 }
 
 .headerContent {
-  transition: transform 1s linear;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-self: flex-start;
+  transition: all 1s linear;
   transform-origin: bottom left;
   transform: rotate(0);
-  display: block;
+  box-sizing: border-box;
+  height: 3rem;
 
-  @nest .collapsed & {
-    width: 100vh;
-    transform: rotate(90deg);
-    transition: transform 0.2s linear;
+  @nest .isCollapsed & {
+    justify-content: flex-start;
+    transform: rotate(90deg) translateY(3rem);
   }
 }
 
 .title {
-  display: inline-block;
+  box-sizing: border-box;
+  position: relative;
+  z-index: -1;
+  display: block;
   margin: 0;
   padding: 0;
   font-size: 1rem;
@@ -80,10 +96,30 @@
   text-transform: uppercase;
   user-select: none;
   cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
 
-  @nest .isActive & {
-    color: green;
-  }
+.functions {
+  display: flex;
+  align-items: flex-end;
+  flex-grow: 1;
+  flex-wrap: nowrap;
+  opacity: 1;
+  transition: opacity 1s linear;
+  z-index: 1;
+}
+
+.functionsLarge {
+  composes: functions;
+  border: 1px solid red;
+}
+
+.functionsSmall {
+  composes: functions;
+  border: 1px solid green;
 }
 
 .main {
@@ -92,16 +128,33 @@
   width: 100%;
   opacity: 1;
   transition: width 1s linear;
-  overflow: hidden;
 
-  @nest .collapsed & {
-    /*display: none;*/
-    opacity: 0;
+  @nest .isCollapsed & {
+    display: none;
   }
 }
 
 .content {
-  @nest .collapsed & {
-    /*display: none;*/
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.functionsButton {
+  @nest .isCollapsed & {
+    transform: rotate(-90deg);
+  }
+}
+
+.functionsButtonText {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  @nest .functionsSmall & {
+    display: none;
+  }
+
+  @nest .isCollapsed & {
+    display: none;
   }
 }

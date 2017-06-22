@@ -8,17 +8,16 @@
   composes: root;
 }
 
-.splitPane {
-  position: relative;
-  box-sizing: border-box;
-}
-
 .paneInSplitted {
   position: relative;
-  height: 100%;
-  padding: 0 0.5rem;
-  overflow: hidden;
   box-sizing: border-box;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+.paneInSplittedCollapsed {
+  composes: paneInSplitted;
+  padding: 0;
 }
 
 .Resizer {
@@ -65,5 +64,20 @@
     @nest &:hover {
       border-color: transparent;
     }
+  }
+}
+
+.ResizerIsCollapsed {
+  composes: Resizer;
+
+  @nest .vertical & {
+    border: none !important;
+    width: 1px !important;
+    cursor: default !important;
+  }
+
+  @nest &:hover {
+    cursor: default !important;
+    border-color: transparent !important;
   }
 }
