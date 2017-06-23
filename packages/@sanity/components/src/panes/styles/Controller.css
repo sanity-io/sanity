@@ -15,6 +15,11 @@
   transition: all 1s linear;
   position: relative;
   border-right: 1px solid transparent;
+  padding: 0 1rem;
+}
+
+.pane:not(.paneCollapsed) + .paneCollapsed {
+  border-left: 1px solid #ccc;
 }
 
 .paneCollapsed {
@@ -23,4 +28,6 @@
   flex-basis: 2.5rem;
   border-right: 1px solid #ccc;
   overflow: hidden;
+  padding: 0 0.5rem;
+  padding-left: 0;
 }

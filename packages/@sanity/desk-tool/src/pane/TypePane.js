@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/TypePane.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import Pane from 'part:@sanity/components/panes/default'
 
 export default withRouterHOC(class Pane extends React.PureComponent {
 
@@ -17,15 +18,10 @@ export default withRouterHOC(class Pane extends React.PureComponent {
     const {items, renderItem, router} = this.props
     const {selectedType, action, selectedDocumentId} = router.state
 
-    const isActive = !selectedType && !action && !selectedDocumentId
+    // const isActive = !selectedType && !action && !selectedDocumentId
 
     return (
-      <div className={`${isActive ? styles.isActive : styles.isInactive}`}>
-        <div className={styles.top}>
-          <div className={styles.heading}>
-            Content
-          </div>
-        </div>
+      <Pane title="Content">
         <ul className={styles.listContainer}>
           {
             items.map((item, i) => {
@@ -37,7 +33,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
             })
           }
         </ul>
-      </div>
+      </Pane>
     )
   }
 })

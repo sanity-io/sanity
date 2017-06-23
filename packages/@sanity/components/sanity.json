@@ -804,6 +804,14 @@
       "path": "panes/Controller.js"
     },
     {
+      "name": "part:@sanity/components/panes/split-controller",
+      "description": "Resizeable split controller for panes"
+    },
+    {
+      "implements": "part:@sanity/components/panes/split-controller",
+      "path": "panes/SplitController.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },

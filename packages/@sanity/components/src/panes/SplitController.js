@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/SplitController.css'
-import Pane from './DefaultPane'
 import SplitPane from 'react-split-pane'
 import {sumBy, debounce} from 'lodash'
 
@@ -61,6 +60,11 @@ export default class PanesSplitController extends React.Component {
   render() {
     const {children} = this.props
     const panes = React.Children.toArray(children)
+
+    if (panes.length === 0) {
+      return <div>No panes</div>
+    }
+
     return (
       <div className={styles.vertical}>
         {this.renderRecursivePanes(panes)}

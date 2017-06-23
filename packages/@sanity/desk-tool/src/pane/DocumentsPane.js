@@ -56,8 +56,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
       items,
       type,
       router,
-      onSetListLayout,
-      onSetSorting,
       renderItem,
       getItemKey
     } = this.props
@@ -74,17 +72,6 @@ export default withRouterHOC(class Pane extends React.PureComponent {
 
     return (
       <div className={paneClasses}>
-        <div className={styles.top}>
-          <div className={styles.heading}>
-            {type.title}
-          </div>
-          <PaneMenuContainer
-            onSetListLayout={onSetListLayout}
-            onSetSorting={onSetSorting}
-            onGoToCreateNew={this.handleGoToCreateNew}
-          />
-        </div>
-
         {loading && (
           <div className={styles.spinner}>
             <Spinner center message="Loading items…" />
@@ -107,14 +94,12 @@ export default withRouterHOC(class Pane extends React.PureComponent {
         )}
 
         {hasDocuments && (
-          <div className={styles.listViewContainer}>
-            <ListView
-              items={items}
-              getItemKey={getItemKey}
-              renderItem={renderItem}
-              listLayout={listLayout}
-            />
-          </div>
+          <ListView
+            items={items}
+            getItemKey={getItemKey}
+            renderItem={renderItem}
+            listLayout={listLayout}
+          />
         )}
 
       </div>

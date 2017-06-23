@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
-import ElementQuery from 'react-element-query'
 
 export default class Pane extends React.Component {
   static propTypes = {
@@ -16,12 +15,14 @@ export default class Pane extends React.Component {
     renderFunctions: PropTypes.func,
     children: PropTypes.node,
     isSelected: PropTypes.bool,
-    updateId: PropTypes.number
+    updateId: PropTypes.number,
+    isScrollable: PropTypes.bool
   }
 
   static defaultProps = {
     title: 'Untitled',
     isCollapsed: false,
+    isScrollable: true,
     minWidth: 0,
     width: 0,
     Functions: <div />,
@@ -57,13 +58,14 @@ export default class Pane extends React.Component {
   }
 
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable} = this.props
     const {showMenu} = this.state
 
     return (
       <div
         className={`
-          ${(isCollapsed) ? styles.isCollapsed : styles.root}
+          ${isCollapsed ? styles.isCollapsed : styles.root}
+          ${isScrollable ? styles.isScrollable : ''}
           ${isSelected ? styles.isActive : ''}
         `}
         ref={this.setRootElement}
@@ -73,16 +75,9 @@ export default class Pane extends React.Component {
             <h2 className={styles.title} onClick={this.handleToggle}>
               {title}
             </h2>
-            <ElementQuery
-              sizes={[
-                {name: styles.functionsSmall, width: 150},
-                {name: styles.functionsLarge, width: 400}
-              ]}
-            >
-              {
-                renderFunctions()
-              }
-            </ElementQuery>
+            {
+              renderFunctions()
+            }
           </div>
           {
             renderMenu && <div className={styles.menuWrapper}>

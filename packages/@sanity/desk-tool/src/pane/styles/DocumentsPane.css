@@ -2,20 +2,6 @@
 
 .root {
   display: block;
-  height: 100%;
-  position: relative;
-  max-width: 100%;
-  width: 100%;
-  padding-top: 2rem;
-
-  @media (--screen-medium) {
-    min-width: 14rem;
-    float: left;
-    width: auto;
-    padding-top: 0;
-    padding-left: var(--medium-padding);
-    max-width: 25em;
-  }
 }
 
 .isActive {
@@ -99,11 +85,6 @@
   @media (--screen-medium) {
     padding-left: 0;
   }
-}
-
-.listContainer {
-  composes: listContainer from './Pane.css';
-  height: 100%;
 }
 
 .item {

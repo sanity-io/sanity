@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  display: block;
 }
 
 .hotkey {
@@ -15,26 +16,6 @@
   height: 100%;
   width: 100%;
   z-index: 200;
-}
-
-.editor {
-  display: block;
-
-  @media (--screen-medium) {
-    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-    position: absolute;
-    top: 4rem;
-    left: 0;
-    padding-left: var(--large-padding);
-    padding-right: var(--large-padding);
-    padding-bottom: 10rem;
-    /*max-width: 40em;*/
-    width: 100%;
-    clear: both;
-    box-sizing: border-box;
-    height: calc(100% - 4rem);
-  }
 }
 
 .typeMisMatchMessage {
@@ -59,44 +40,6 @@
   position: absolute;
   left: -1.5em;
   font-size: 0.9em;
-}
-
-.functions {
-  font-size: var(--font-size-small);
-  @media (--screen-medium) {
-    margin-right: 0.75em;
-  }
-}
-
-.top {
-  composes: top from './Pane.css';
-  display: block;
-  position: relative;
-  margin-top: 3rem;
-  display: flex;
-  justify-content: space-between;
-
-  @media (--screen-medium) {
-    margin-top: 0;
-    margin-bottom: 0;
-    flex-wrap: nowrap;
-    margin-left: var(--medium-padding);
-  }
-}
-
-.heading {
-  composes: heading from './Pane.css';
-  flex-grow: 1;
-}
-
-.menu {
-  composes: menu from './Pane.css';
-}
-
-.menuButton {
-  composes: menuButton from './Pane.css';
-  position: relative;
-  right: 0;
 }
 
 .dates {

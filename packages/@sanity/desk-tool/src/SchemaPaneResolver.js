@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import DocumentsPane from './pane/DocumentsPane'
-import TypePane from './pane/TypePane'
 import EditorPane from './pane/EditorPane'
 import TypePaneItem from './pane/TypePaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
@@ -13,27 +12,15 @@ import Preview from 'part:@sanity/base/preview'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId} from './utils/draftUtils'
 import {partition} from 'lodash'
 import {isPublishedId} from '../lib/utils/draftUtils'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import {IntentLink} from 'part:@sanity/base/router'
-
-// Debounce function on requestAnimationFrame
-function debounceRAF(fn) {
-  let scheduled
-  return function debounced(...args) {
-    if (!scheduled) {
-      requestAnimationFrame(() => {
-        fn.call(this, ...scheduled)
-        scheduled = null
-      })
-    }
-    scheduled = args
-  }
-}
+import SplitController from 'part:@sanity/components/panes/split-controller'
+import Pane from 'part:@sanity/components/panes/default'
+import typePaneStyles from './pane/styles/TypePane.css'
 
 // Removes published documents that also has a draft
 // Todo: this is an ugly hack we should get rid of as it requires the whole set of documents to be in memory to work
@@ -82,38 +69,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   state = {
     listLayoutSettings: readListLayoutSettings(),
     sorting: '_updatedAt desc',
-    navTranslateX: 0,
-    editorWidth: '100%',
-    editorTranslateX: 0,
-    navIsMinimized: false,
-    navIsHovered: false,
-    navIsClicked: false
-  }
-
-  hasBeenResized = false
-  oldNavTranslateX = 0
-  lastNavOffsetWidth = 0
-
-  componentDidMount() {
-    this.handleResize()
-    window.addEventListener('resize', this.handleResize, false)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize, false)
-    this.erd.removeAllListeners(this.navigationElement)
-    this.erd.uninstall(this.navigationElement)
-  }
-
-  componentWillMount() {
-    this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
-  }
-
-  componentDidUpdate() {
-    // Hack
-    // Panes needs to be resized after the content is loaded
-    // Look at this later
-    this.handleResize()
   }
 
   renderTypePaneItem = item => {
@@ -196,13 +151,6 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
             )
           }
 
-          // Hack
-          // Panes needs to be resized after the content is loaded
-          // Look at this later
-          if (!this.hasBeenResized) {
-            this.handleResize()
-          }
-
           const documents = removePublishedWithDrafts(result ? result.documents : [])
           return (
             <DocumentsPane
@@ -244,216 +192,94 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.containerElement = element
   }
 
-  setNavigationElement = element => {
-    this.navigationElement = element
-    if (this.navigationElement) {
-      this.erd.listenTo(this.navigationElement, el => {
-        if (el.offsetWidth != this.lastNavOffsetWidth) {
-          this.lastNavOffsetWidth = el.offsetWidth
-          this.handleResize()
-        }
-      })
-    }
-  }
-
-  setEditorPaneElement = element => {
-    this.editorPaneElement = element
-  }
-
-  canReposition = () => {
-    const {selectedType} = this.props.router.state
-    return !!(this.navigationElement && this.editorPaneElement && this.containerElement && selectedType)
-  }
-
-  resetPosition = () => {
-    this.setState({
-      navTranslateX: 0,
-      editorWidth: '100%',
-      navIsMinimized: false,
-      editorTranslateX: 0
-    })
-  }
-
-  handleResize = debounceRAF(() => {
-    // Todo optimize later so that we dont resize when we dont need to
-    // if (this.initialWindowWidth === window.innerWidth) {
-    //   return
-    // }
-
-    const {selectedType} = this.props.router.state
-    if (!selectedType) {
-      this.resetPosition()
-      return
-    }
-
-    // Uses the css the determine if it should reposition with an Media Query
-    // check if the window has resized
-    const computedStyle = window.getComputedStyle(this.containerElement, '::before')
-    const contentValue = computedStyle.getPropertyValue('content')
-    this.shouldReposition = contentValue === '"shouldReposition"' || contentValue === 'shouldReposition' // Is quoted
-
-    if (!this.shouldReposition || this.state.navIsHovered) {
-      return
-    }
-
-    // Setup
-    this.navWidth = this.navigationElement.offsetWidth
-    const editorPaneWidth = this.editorPaneElement.offsetWidth
-    const containerWidth = this.containerElement.offsetWidth
-    let navTranslateX = 0
-    let editorWidth = `${containerWidth - this.navWidth}px`
-
-    // Setting dimensions based on font-size.
-    this.padding = parseInt(window.getComputedStyle(document.body).fontSize, 10) * 3
-    const editorPaneMinWidth = parseInt(window.getComputedStyle(this.editorPaneElement, null).minWidth, 10)
-
-    const diff = containerWidth - editorPaneWidth - this.navWidth
-
-    // Check if we need to push the navbar outside view
-    if (diff <= 0) {
-      navTranslateX = Math.min(containerWidth - editorPaneMinWidth - this.navWidth, 0)
-      editorWidth = `${containerWidth - navTranslateX - this.navWidth}px`
-    }
-
-    // Set states that triggers re-render
-    this.setState({
-      navTranslateX: navTranslateX,
-      navIsMinimized: navTranslateX < 0,
-      editorWidth: editorWidth
-    })
-  })
-
-  handlePanesMouseEnter = event => {
-    const {navTranslateX} = this.state
-    this.oldNavTranslateX = navTranslateX
-
-    if (!this.state.navIsMinimized || !this.shouldReposition) {
-      return
-    }
-
-    if (!this.canReposition() || !this.shouldReposition || navTranslateX == 0) {
-      this.resetPosition()
-      return
-    }
-
-    const x = 20
-
-    this.setState({
-      navTranslateX: navTranslateX + x,
-      editorTranslateX: x,
-      navIsHovered: true
-    })
-
-  }
-
-  handlePanesMouseLeave = event => {
-    if (this.shouldReposition) {
-      this.setState({
-        navTranslateX: Math.min(this.oldNavTranslateX, 0),
-        editorTranslateX: 0,
-        navIsHovered: false
-      })
-    }
-  }
-
-  handlePanesClick = event => {
-    const {navWidth, oldNavTranslateX} = this
-    const navVisibleWidth = navWidth + oldNavTranslateX
-    if (this.shouldReposition) {
-      this.setState({
-        navTranslateX: 0,
-        editorTranslateX: navWidth - navVisibleWidth,
-        navIsMinimized: false,
-        navIsClicked: true
-      })
-    }
+  renderDocumentsPaneMenu = () => {
+    return (<PaneMenuContainer
+      onSetListLayout={onSetListLayout}
+      onSetSorting={onSetSorting}
+      onGoToCreateNew={this.handleGoToCreateNew}
+            />
+    )
   }
 
   render() {
     const {router} = this.props
     const {selectedType, selectedDocumentId, action} = router.state
-    const {navTranslateX, editorTranslateX, editorWidth, navIsMinimized, navIsClicked} = this.state
 
-    const typesPane = (
-      <TypePane
-        items={TYPE_ITEMS}
-        renderItem={this.renderTypePaneItem}
-      />
-    )
 
     const schemaType = schema.get(router.state.selectedType)
 
-    const documentsPane = schemaType ? this.getDocumentsPane(schemaType) : schemaType
+    const documentsPaneContent = schemaType ? this.getDocumentsPane(schemaType) : schemaType
 
     return (
       <div className={styles.container} ref={this.setContainerElement}>
-        <div
-          className={`
-            ${navIsMinimized ? styles.navigationPanesContainerIsMinimized : styles.navigationPanesContainer}
-            ${navIsClicked ? styles.navigationPanesContainerIsClicked : ''}
-          `}
-          ref={this.setNavigationElement}
-          onClick={this.handlePanesClick}
-          onMouseEnter={this.handlePanesMouseEnter}
-          onMouseLeave={this.handlePanesMouseLeave}
-          style={{
-            transform: `translateX(${navTranslateX}px)`
-          }}
-        >
-          {typesPane}
-          {documentsPane}
-        </div>
-        <div
-          className={`
-            ${selectedDocumentId ? styles.editorContainerWithDocument : styles.editorContainer}
-          `}
-          ref={this.setEditorPaneElement}
-          style={{
-            width: editorWidth,
-            transform: `translateX(${editorTranslateX}px)`
-          }}
-        >
-          {
-            schemaType && selectedDocumentId && action === 'edit' && (
-              <EditorPane
-                documentId={selectedDocumentId}
-                typeName={schemaType.name}
-              />
-            )
-          }
+        <SplitController>
+          <Pane title="Content" defaultWidth={200}>
+            <ul className={typePaneStyles.listContainer}>
+              {
+                TYPE_ITEMS.map((item, i) => {
+                  return (
+                    <li key={i} className={typePaneStyles.item}>
+                      {this.renderTypePaneItem(item)}
+                    </li>
+                  )
+                })
+              }
+            </ul>
+          </Pane>
+          <Pane title={router.state.selectedType} renderMenu={this.renderDocumentsPaneMenu} defaultWidth={200}>
+            {documentsPaneContent}
+          </Pane>
 
-          {
-            schemaType && !selectedDocumentId && (
-              <div className={styles.editorCreateNew}>
-                <IntentLink
-                  intent="create"
-                  params={{type: selectedType}}
-                  className={styles.editorCreateNewLink}
-                >
-                  Create new &quot;{schemaType.title}&quot;
-                </IntentLink>
-              </div>
-            )
-          }
-          {selectedType && !schemaType && (
-            <h2 className={styles.emptyText}>
-              Could not find any type
-              named <strong><em>{selectedType}</em></strong> in
-              schema <strong><em>{schema.name}</em></strong>…
-            </h2>
-          )}
-          {action && action !== 'edit' && (
-            // this would normally never happen
-            <h2 className={styles.emptyText}>
-              Invalid action: {action}
-            </h2>
-          )}
+          <Pane title="Editor. You can read title under this header">
+            {
+              schemaType && selectedDocumentId && action === 'edit' && (
+                <div>
+                  <EditorPane
+                    documentId={selectedDocumentId}
+                    typeName={schemaType.name}
+                  />
+                  {
+                    schemaType && !selectedDocumentId && (
+                      <div className={styles.editorCreateNew}>
+                        <IntentLink
+                          intent="create"
+                          params={{type: selectedType}}
+                          className={styles.editorCreateNewLink}
+                        >
+                          Create new &quot;{schemaType.title}&quot;
+                        </IntentLink>
+                      </div>
+                    )
+                  }
 
-          {!selectedType && (
-            <h2 className={styles.emptyText}>Select a type to begin…</h2>
-          )}
-          <div>&nbsp;</div>
-        </div>
+                  {
+                    selectedType && !schemaType && (
+                    <h2 className={styles.emptyText}>
+                      Could not find any type
+                      named <strong><em>{selectedType}</em></strong> in
+                      schema <strong><em>{schema.name}</em></strong>…
+                    </h2>
+                    )
+                  }
+                  {
+                    action && action !== 'edit' && (
+                    // this would normally never happen
+                    <h2 className={styles.emptyText}>
+                      Invalid action: {action}
+                    </h2>
+                    )
+                  }
+
+                  {
+                    !selectedType && (
+                    <h2 className={styles.emptyText}>Select a type to begin…</h2>
+                    )
+                  }
+                </div>
+              )
+            }
+          </Pane>
+        </SplitController>
       </div>
     )
   }

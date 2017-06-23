@@ -1,22 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: block;
-  float: left;
-  height: 100%;
-  position: relative;
-  padding-top: 2rem;
 
-  @media (--max-screen-medium) {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  @media (--screen-medium) {
-    padding-top: 0;
-    min-width: 14rem;
-    height: 100%;
-  }
 }
 
 .isActive {
@@ -28,11 +13,6 @@
   @media (--max-screen-medium) {
     display: none;
   }
-}
-
-.listContainer {
-  composes: listContainer from './ListView.css';
-  height: 100%;
 }
 
 .item {

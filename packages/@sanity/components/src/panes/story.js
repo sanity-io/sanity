@@ -39,19 +39,21 @@ const handleMenuAction = menuAction => {
 
 const renderMenu = isCollapsed => {
   return (
-    <Menu items={menuItems} origin={isCollapsed ? 'top-left' : 'top-right'} onAction={handleMenuAction} isOpen />
+    <Menu
+      items={menuItems}
+      origin={isCollapsed ? 'top-left' : 'top-right'}
+      onAction={handleMenuAction}
+      isOpen
+      onClickOutside={action('Close menu')}
+    />
   )
 }
 
 const renderFunctions = isCollapsed => {
   return (
-    <div>
-      <Button kind="simple" icon={PlusIcon} color="primary" title="Add" className={renderFunctionsStyles.button}>
-        <span className={renderFunctionsStyles.text}>Add something</span>
-      </Button>
-      <Button kind="simple" icon={TrashIcon} color="danger" title="Delete" className={renderFunctionsStyles.button}>
-        <span className={renderFunctionsStyles.text}>Delete something</span>
-      </Button>
+    <div className={renderFunctionsStyles.root}>
+      <Button kind="simple" icon={PlusIcon} color="primary" title="Add" className={renderFunctionsStyles.button} />
+      <Button kind="simple" icon={TrashIcon} color="danger" title="Delete" className={renderFunctionsStyles.button} />
     </div>
   )
 }
