@@ -153,10 +153,10 @@ export default class ArrayInput extends React.Component {
   }
 
   handleItemChange = (event : PatchEvent, item) => {
-    const {onChange, value, type} = this.props
+    const {onChange, value} = this.props
 
     const memberType = this.getMemberTypeOfItem(item)
-    if (memberType.readOnly) {
+    if (memberType && memberType.readOnly) {
       return
     }
 
@@ -264,12 +264,6 @@ export default class ArrayInput extends React.Component {
     return type.of.find(memberType => memberType.name === item._type)
   }
 
-  handleRemoveInvalidItem = event => {
-    const index = Number(event.target.getAttribute('data-item-index'))
-    this.props.onChange(PatchEvent.from(unset([index])))
-    this.setState({editItemKey: null})
-  }
-
   renderItem = (item, index) => {
     const {type} = this.props
 
@@ -280,7 +274,7 @@ export default class ArrayInput extends React.Component {
     const isSortable = get(type, 'options.sortable') !== false
 
     return (
-      <div style={{position: 'relative'}}>
+      <div style={{position: 'relative'}} key={item._key || `item-${index}`}>
         <Item
           type={type}
           value={item}

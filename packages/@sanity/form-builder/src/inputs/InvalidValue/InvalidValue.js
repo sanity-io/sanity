@@ -3,7 +3,8 @@ import React from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import Details from './Details'
 import styles from './InvalidValue.css'
-import PatchEvent, {unset} from '../../PatchEvent'
+import PatchEvent, {set, unset} from '../../PatchEvent'
+import CONVERTERS from './converters'
 
 const setAutoHeight = el => {
   if (el) {
@@ -11,6 +12,20 @@ const setAutoHeight = el => {
     el.style.padding = 4 + 'px'
     el.style.overflow = 'auto'
   }
+}
+
+function getConverters(value, actualType, validTypes) {
+  if (!(actualType in CONVERTERS)) {
+    return []
+  }
+  return Object.keys(CONVERTERS[actualType])
+    .filter(targetType => validTypes.includes(targetType))
+    .map(targetType => ({
+      from: actualType,
+      to: targetType,
+      ...CONVERTERS[actualType][targetType]
+    }))
+    .filter(converter => converter.test(value))
 }
 
 export default class InvalidValue extends React.PureComponent {
@@ -23,6 +38,10 @@ export default class InvalidValue extends React.PureComponent {
 
   handleClearClick = () => {
     this.props.onChange(PatchEvent.from(unset()))
+  }
+
+  handleConvertTo = converted => {
+    this.props.onChange(PatchEvent.from(set(converted)))
   }
 
   renderValidTypes() {
@@ -44,7 +63,8 @@ export default class InvalidValue extends React.PureComponent {
   }
 
   render() {
-    const {value, actualType} = this.props
+    const {value, actualType, validTypes} = this.props
+    const converters = getConverters(value, actualType, validTypes)
     return (
       <div className={styles.root}>
         <h3>Content has invalid type: <code>{actualType}</code></h3>
@@ -61,6 +81,12 @@ export default class InvalidValue extends React.PureComponent {
           <DefaultButton onClick={this.handleClearClick} color="danger">
             Clear
           </DefaultButton>
+          {}
+          {converters.map(converter => (
+            <DefaultButton onClick={() => this.handleConvertTo(converter.convert(value))} color="danger">
+              Convert to {converter.to}: <code>{JSON.stringify(converter.convert(value))}</code>
+            </DefaultButton>
+          ))}
         </Details>
       </div>
     )
