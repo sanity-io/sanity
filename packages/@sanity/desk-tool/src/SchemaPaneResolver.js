@@ -214,7 +214,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
       <div className={styles.container} ref={this.setContainerElement}>
         <SplitController>
           <Pane title="Content" defaultWidth={200}>
-            <ul className={typePaneStyles.listContainer}>
+            <ul className={typePaneStyles.list}>
               {
                 TYPE_ITEMS.map((item, i) => {
                   return (

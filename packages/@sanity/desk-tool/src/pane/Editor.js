@@ -335,16 +335,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           <Spinner fullscreen message="Unpublishing…" />
         )}
         <div className={styles.top}>
-          {value ? (
-            <PreviewFields document={value} type={type} fields={['title']}>
-              {({title}) => (
-                <h1 className={styles.heading} title={String(title)}>
-                  {capitalize(`Editing ${title && truncate(String(title || 'Untitled…'), {length: 50})}`)}
-                </h1>
-              )}
-            </PreviewFields>
-          ) : (<h1 className={styles.heading}>{capitalize(`Creating new ${type.title || startCase(type.name)}`)}</h1>)
-          }
           <div className={styles.dates}>
             <div>
               {published

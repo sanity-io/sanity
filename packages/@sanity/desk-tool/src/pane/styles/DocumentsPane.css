@@ -4,18 +4,6 @@
   display: block;
 }
 
-.isActive {
-  composes: root;
-}
-
-.isInactive {
-  composes: root;
-  display: none;
-  @media (--screen-medium) {
-    display: block;
-  }
-}
-
 .list-layout--default {
   /*display: block;*/
 }
@@ -34,24 +22,6 @@
   max-width: 80vw;
 }
 
-.listViewContainer {
-  height: calc(100vh - 8rem);
-  clear: both;
-}
-
-.menuButton {
-  font-size: 1rem;
-  position: absolute;
-  top: 0;
-  right: -0.25rem;
-}
-
-.menu {
-  position: absolute;
-  top: 2em;
-  right: 0.5em;
-  width: 100%;
-}
 
 .spinner {
   height: 100vh;
@@ -70,32 +40,6 @@
   color: var(--link-color);
 }
 
-.heading {
-  line-height: 3rem;
-  padding-left: var(--small-padding);
-  font-size: 1em;
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-  lost-utility: clearfix;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-
-  @media (--screen-medium) {
-    padding-left: 0;
-  }
-}
-
 .item {
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
-}
-
-.top {
-  composes: top from './Pane.css';
-  display: flex;
-}
-
-.heading {
-  composes: heading from './Pane.css';
 }
