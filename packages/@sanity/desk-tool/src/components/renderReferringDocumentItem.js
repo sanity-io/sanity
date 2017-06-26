@@ -18,5 +18,5 @@ export default function renderReferringDocumentItem(item, index, options) {
         <Preview value={item} type={schemaType} />
       </StateLinkListItem>
     )
-    : <div>A document of an of the unknown type <em>{item._type}</em></div>
+    : <div>A document of the unknown type <em>{typeName}</em></div>
 }
