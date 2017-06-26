@@ -59,7 +59,15 @@ export default class PanesSplitController extends React.Component {
 
   render() {
     const {children} = this.props
-    const panes = React.Children.toArray(children)
+    const panes = React.Children.toArray(children).map(pane => {
+
+      // Find wrapped pane until react 16
+      if (pane.type == 'div' && typeof (pane.props.children) === 'object' && pane.props.children.length === undefined) {
+        return pane.props.children
+      }
+
+      return pane
+    })
 
     if (panes.length === 0) {
       return <div>No panes</div>
@@ -67,7 +75,7 @@ export default class PanesSplitController extends React.Component {
 
     return (
       <div className={styles.vertical}>
-        {this.renderRecursivePanes(panes)}
+        {this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
       </div>
     )
   }

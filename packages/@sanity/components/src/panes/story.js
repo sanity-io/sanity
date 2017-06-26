@@ -144,6 +144,25 @@ storiesOf('Panes')
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
         <SplitController selectedIndex={selectedPaneIndex} onCollapse={handleControllerCollapse} onUnCollapse={handleControllerUnCollapse}>
+          <div>
+            <DefaultPane
+              title="Pane inside div"
+              key="divpane"
+              minWidth="100"
+              defaultWidth="400"
+              renderFunctions={renderFunctions}
+              renderMenu={renderMenu}
+              onExpand={action('expand')}
+              onCollapse={action('onCollapse')}
+              isCollapsed
+            >
+              This pane is inside a div
+            </DefaultPane>
+          </div>
+          <div>
+            <div>This is not valid</div>
+            <div>This is not valid 2</div>
+          </div>
           {
             knobsPanes.map((pane, i) => {
               return (

@@ -1,3 +1,5 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .root {
   display: flex;
   flex-direction: column;
@@ -149,12 +151,12 @@
     overflow: scroll;
     position: relative;
 
-    @media (--screen-medium) {
+    /*@media (--screen-medium) {
       composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
       composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
       max-height: calc(100% - 3rem);
       height: 100%;
-    }
+    }*/
   }
 }
 

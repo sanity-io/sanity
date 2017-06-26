@@ -8,6 +8,8 @@ import {throttle, omit} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
+import Pane from 'part:@sanity/components/panes/default'
+import {PreviewFields} from 'part:@sanity/base/preview'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -248,6 +250,18 @@ export default class EditorPane extends React.PureComponent {
     )
   }
 
+  getTitle(value) {
+    const {typeName} = this.props
+    const type = schema.get(typeName)
+    if (!value) {
+      return `Creating new ${type.title || type.name}`
+    }
+    return (<PreviewFields document={value} type={type} fields={['title']}>
+      {({title}) => <span>{title}</span>}
+    </PreviewFields>
+    )
+  }
+
   render() {
     const {typeName} = this.props
     const {draft, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
@@ -257,7 +271,7 @@ export default class EditorPane extends React.PureComponent {
     }
 
     return (
-      <div className={styles.root}>
+      <Pane title={this.getTitle(draft || published)}>
         <Editor
           type={schema.get(typeName)}
           published={published.snapshot}
@@ -273,7 +287,7 @@ export default class EditorPane extends React.PureComponent {
           onUnpublish={this.handleUnpublish}
           onChange={this.handleChange}
         />
-      </div>
+      </Pane>
     )
   }
 }

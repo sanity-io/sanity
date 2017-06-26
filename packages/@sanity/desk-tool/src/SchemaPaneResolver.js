@@ -230,55 +230,53 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
             {documentsPaneContent}
           </Pane>
 
-          <Pane title="Editor. You can read title under this header">
-            {
-              schemaType && selectedDocumentId && action === 'edit' && (
-                <div>
-                  <EditorPane
-                    documentId={selectedDocumentId}
-                    typeName={schemaType.name}
-                  />
-                  {
-                    schemaType && !selectedDocumentId && (
-                      <div className={styles.editorCreateNew}>
-                        <IntentLink
-                          intent="create"
-                          params={{type: selectedType}}
-                          className={styles.editorCreateNewLink}
-                        >
-                          Create new &quot;{schemaType.title}&quot;
-                        </IntentLink>
-                      </div>
-                    )
-                  }
+          {
+            schemaType && selectedDocumentId && action === 'edit' && (
+              <EditorPane
+                documentId={selectedDocumentId}
+                typeName={schemaType.name}
+                schemaType={schemaType}
+              />
+            )
+          }
+          {/* {
+            schemaType && !selectedDocumentId && (
+              <div className={styles.editorCreateNew}>
+                <IntentLink
+                  intent="create"
+                  params={{type: selectedType}}
+                  className={styles.editorCreateNewLink}
+                >
+                  Create new &quot;{schemaType.title}&quot;
+                </IntentLink>
+              </div>
+            )
+          }
 
-                  {
-                    selectedType && !schemaType && (
-                    <h2 className={styles.emptyText}>
-                      Could not find any type
-                      named <strong><em>{selectedType}</em></strong> in
-                      schema <strong><em>{schema.name}</em></strong>…
-                    </h2>
-                    )
-                  }
-                  {
-                    action && action !== 'edit' && (
-                    // this would normally never happen
-                    <h2 className={styles.emptyText}>
-                      Invalid action: {action}
-                    </h2>
-                    )
-                  }
+          {
+            selectedType && !schemaType && (
+            <h2 className={styles.emptyText}>
+              Could not find any type
+              named <strong><em>{selectedType}</em></strong> in
+              schema <strong><em>{schema.name}</em></strong>…
+            </h2>
+            )
+          }
+          {
+            action && action !== 'edit' && (
+            // this would normally never happen
+            <h2 className={styles.emptyText}>
+              Invalid action: {action}
+            </h2>
+            )
+          }
 
-                  {
-                    !selectedType && (
-                    <h2 className={styles.emptyText}>Select a type to begin…</h2>
-                    )
-                  }
-                </div>
-              )
-            }
-          </Pane>
+          {
+            !selectedType && (
+            <h2 className={styles.emptyText}>Select a type to begin…</h2>
+            )
+          } */}
+
         </SplitController>
       </div>
     )

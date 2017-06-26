@@ -214,6 +214,11 @@ export default class PanesController extends React.Component {
     const {currentSelectedIndex} = this.state
 
     const panes = React.Children.toArray(children)
+
+    panes.forEach(pane => {
+      console.log('pane', pane)
+    })
+
     console.log('Render panes', panes) // eslint-disable-line
     const paneElements = panes.map((pane, i) => {
       const width = this.panesStatus[i].width
