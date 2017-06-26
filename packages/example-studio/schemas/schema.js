@@ -9,6 +9,7 @@ import videoEmbed from './videoEmbed'
 import localeString from './localeString'
 import protein from './protein'
 import proteinTest from './proteinTest'
+import referenceTest from './referenceTest'
 
 export default createSchema({
   name: 'example-blog',
@@ -22,6 +23,7 @@ export default createSchema({
     videoEmbed,
     localeString,
     proteinTest,
-    protein
+    protein,
+    referenceTest
   ]
 })

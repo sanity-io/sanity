@@ -7,16 +7,9 @@ function isImageField(field) {
   return field.type.name === 'image'
 }
 
-function isImageAssetField(field) {
-  return field.type.name === 'reference'
-    && field.type.to.some(
-      toType => toType.type.name === 'imageAsset'
-    )
-}
-
 function resolveImageAssetPath(fields) {
-  const found = fields.find(field => isImageAssetField(field) || isImageField(field))
-  return found && (isImageField(found) ? `${found.name}.asset.url` : `${found.name}.url`)
+  const found = fields.find(field => isImageField(field))
+  return found && `${found.name}.url`
 }
 
 export default function guessPreviewFields(fields) {
