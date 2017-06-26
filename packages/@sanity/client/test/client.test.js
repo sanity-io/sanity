@@ -1189,7 +1189,7 @@ test('can retrieve auth providers', t => {
 
 test('can logout', t => {
   nock(projectHost())
-    .get('/v1/auth/logout')
+    .post('/v1/auth/logout')
     .reply(200)
 
   getClient().auth.logout().then(() => t.end(), ifError(t))

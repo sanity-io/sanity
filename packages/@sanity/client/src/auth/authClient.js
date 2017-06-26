@@ -11,7 +11,7 @@ assign(AuthClient.prototype, {
   },
 
   logout() {
-    return this.client.request({uri: '/auth/logout'})
+    return this.client.request({uri: '/auth/logout', method: 'POST'})
   }
 
 })
