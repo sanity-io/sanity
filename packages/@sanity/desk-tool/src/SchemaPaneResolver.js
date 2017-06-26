@@ -19,6 +19,7 @@ import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import SplitController from 'part:@sanity/components/panes/split-controller'
+import SplitPaneWrapper 'part:@sanity/components/panes/split-pane-wrapper'
 import Pane from 'part:@sanity/components/panes/default'
 import typePaneStyles from './pane/styles/TypePane.css'
 import DocumentsPaneMenu from './pane/DocumentsPaneMenu'
@@ -228,36 +229,44 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     return (
       <div className={styles.container} ref={this.setContainerElement}>
         <SplitController>
-          <Pane title="Content" defaultWidth={200}>
-            <ul className={typePaneStyles.list}>
-              {
-                TYPE_ITEMS.map((item, i) => {
-                  return (
-                    <li key={i} className={typePaneStyles.item}>
-                      {this.renderTypePaneItem(item)}
-                    </li>
-                  )
-                })
-              }
-            </ul>
-          </Pane>
+          <SplitPaneWrapper defaultWidth={200}>
+            <Pane title="Content">
+              <ul className={typePaneStyles.list}>
+                {
+                  TYPE_ITEMS.map((item, i) => {
+                    return (
+                      <li key={i} className={typePaneStyles.item}>
+                        {this.renderTypePaneItem(item)}
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+            </Pane>
+          </SplitPaneWrapper>
 
-          <Pane
-            title={router.state.selectedType}
-            renderMenu={this.renderDocumentsPaneMenu}
-            defaultWidth={200}
-            onMenuToggle={this.handleToggleDocumentsPaneMenu}
-          >
-            {documentsPaneContent}
-          </Pane>
+
+          <SplitPaneWrapper defaultWidth={200}>
+            <Pane
+              title={router.state.selectedType}
+              renderMenu={this.renderDocumentsPaneMenu}
+              defaultWidth={200}
+              onMenuToggle={this.handleToggleDocumentsPaneMenu}
+            >
+              {documentsPaneContent}
+            </Pane>
+          </SplitPaneWrapper>
+
 
           {
             schemaType && selectedDocumentId && action === 'edit' && (
-              <EditorPane
-                documentId={selectedDocumentId}
-                typeName={schemaType.name}
-                schemaType={schemaType}
-              />
+              <SplitPaneWrapper>
+                <EditorPane
+                  documentId={selectedDocumentId}
+                  typeName={schemaType.name}
+                  schemaType={schemaType}
+                />
+              </SplitPaneWrapper>
             )
           }
           {/* {

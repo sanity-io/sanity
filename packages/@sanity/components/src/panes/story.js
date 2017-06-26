@@ -141,6 +141,19 @@ storiesOf('Panes')
 
     const selectedPaneIndex = number('Selected pane', 1)
     const knobsPanes = object('Panes', panes)
+    const showMenu = boolean('Show menu', false)
+
+    const renderSplitMenu = isCollapsed => {
+      return (
+        <Menu
+          items={menuItems}
+          origin={isCollapsed ? 'top-left' : 'top-right'}
+          onAction={handleMenuAction}
+          isOpen={showMenu}
+          onClickOutside={action('Close menu')}
+        />
+      )
+    }
 
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
@@ -152,7 +165,7 @@ storiesOf('Panes')
               minWidth="100"
               defaultWidth="400"
               renderFunctions={renderFunctions}
-              renderMenu={renderMenu}
+              renderMenu={renderSplitMenu}
               onMenuToggle={action('onMenuToggle')}
               onExpand={action('expand')}
               onCollapse={action('onCollapse')}
@@ -174,7 +187,7 @@ storiesOf('Panes')
                   minWidth={pane.minWidth}
                   defaultWidth={pane.defaultWidth}
                   renderFunctions={renderFunctions}
-                  renderMenu={renderMenu}
+                  renderMenu={renderSplitMenu}
                   onExpand={action('expand')}
                   onCollapse={action('onCollapse')}
                   isCollapsed={pane.isCollapsed}

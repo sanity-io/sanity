@@ -63,7 +63,7 @@ function isRecoverable(draft, published) {
   return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
 }
 
-export default class EditorPane extends React.PureComponent {
+export default class EditorPane extends React.Component {
   static propTypes = {
     documentId: PropTypes.string.isRequired,
     typeName: PropTypes.string.isRequired
@@ -256,9 +256,10 @@ export default class EditorPane extends React.PureComponent {
     if (!value) {
       return `Creating new ${type.title || type.name}`
     }
-    return (<PreviewFields document={value} type={type} fields={['title']}>
-      {({title}) => <span>{title}</span>}
-    </PreviewFields>
+    return (
+      <PreviewFields document={value} type={type} fields={['title']}>
+        {({title}) => <span>{title}</span>}
+      </PreviewFields>
     )
   }
 

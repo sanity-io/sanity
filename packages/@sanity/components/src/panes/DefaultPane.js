@@ -3,7 +3,7 @@ import React from 'react'
 import styles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 
-export default class Pane extends React.Component {
+export default class Pane extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
     isCollapsed: PropTypes.bool,

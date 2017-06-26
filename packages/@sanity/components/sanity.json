@@ -812,6 +812,14 @@
       "path": "panes/SplitController.js"
     },
     {
+      "name": "part:@sanity/components/panes/split-pane-wrapper",
+      "description": "Resizeable split pane wrapper"
+    },
+    {
+      "implements": "part:@sanity/components/panes/split-pane-wrapper",
+      "path": "panes/SplitPaneWrapper.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
