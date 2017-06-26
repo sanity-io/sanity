@@ -50,9 +50,10 @@ export default class Pane extends React.PureComponent {
   }
 
   handleToggle = event => {
-    console.log('handleClick')
-    if (!this.props.isCollapsed) {
-      this.props.onExpand(event)
+    if (this.props.isCollapsed) {
+      this.props.onExpand(this)
+    } else {
+      this.props.onCollapse(this)
     }
   }
 

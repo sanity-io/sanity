@@ -4,41 +4,45 @@ import styles from './styles/SplitController.css'
 import SplitPane from 'react-split-pane'
 import {sumBy, debounce} from 'lodash'
 
+const COLLAPSED_WIDTH = 54
+
 export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onSholdCollapse: PropTypes.func,
-    sholdUnCollapse: PropTypes.func
+    onSholdExpand: PropTypes.func
   }
 
   static defaultProps = {
     onSholdCollapse() {},
-    onSholdUnCollapse() {}
+    onSholdExpand() {}
   }
 
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
       this.props.onSholdCollapse(pane)
     } else {
-      this.props.onSholdUnCollapse(pane)
+      this.props.onSholdExpand(pane)
     }
-  }, 100)
+  }, 200)
 
   renderSplitPane = (pane1, pane2, restMinWidth, restDefaultWidth) => {
     const isCollapsed = pane1.props.isCollapsed
-    console.log('isCollapsed?', pane1.props.isCollapsed)
     return (
       <SplitPane
-        minSize={!isCollapsed && pane1.props.minWidth}
-        defaultSize={!isCollapsed && pane1.props.defaultWidth}
-        size={isCollapsed ? 54 : undefined}
+        minSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.minWidth}
+        defaultSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.defaultWidth}
+        size={isCollapsed ? COLLAPSED_WIDTH : undefined}
         resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
         allowResize
         className={styles.splitPane}
         onChange={size => this.handleSplitPaneChange(size, pane1)}
-        pane1class={styles.pane1}
       >
-        <div className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}>{pane1}</div>
+        <div
+          className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}
+        >
+          {pane1}
+        </div>
         <div className={styles.paneInSplitted}>{pane2}</div>
       </SplitPane>
     )

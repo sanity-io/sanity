@@ -68,8 +68,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
     })
   }
 
-  handleShouldUnCollapse = pane => {
-    const collapsedPanes = this.state.collapsedPanes
+  handleShouldExpand = pane => {
     this.setState({
       collapsedPanes: this.state.collapsedPanes.filter(p => p !== pane.props.paneId)
     })
@@ -83,7 +82,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
 
     return (
       <div className={styles.container} ref={this.setContainerElement}>
-        <SplitController onSholdCollapse={this.handleShouldCollapse} onSholdUnCollapse={this.handleShouldUnCollapse}>
+        <SplitController
+          onSholdCollapse={this.handleShouldCollapse}
+          onSholdExpand={this.handleShouldExpand}
+        >
           <SplitPaneWrapper
             defaultWidth={200}
             minWidth={100}
@@ -92,7 +94,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
           >
             <Pane
               title="Content"
+              paneId="contentPane"
               isCollapsed={!!collapsedPanes.find(pane => pane === 'contentPane')}
+              onExpand={this.handleShouldExpand}
+              onCollapse={this.handleShouldCollapse}
             >
               <ul className={typePaneStyles.list}>
                 {
@@ -123,6 +128,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                   selectedDocumentId={selectedDocumentId}
                   schemaType={schemaType}
                   router={this.props.router}
+                  paneId="documentsPane"
+                  onExpand={this.handleShouldExpand}
+                  onCollapse={this.handleShouldCollapse}
                 />
               </SplitPaneWrapper>
             )
