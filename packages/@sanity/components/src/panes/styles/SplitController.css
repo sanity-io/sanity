@@ -8,10 +8,25 @@
   composes: root;
 }
 
-.paneInSplitted {
+.splitPane {
   position: relative;
+  height: 100%;
+}
+
+.pane1 {
+  border: 5px solid green;
+}
+
+.paneInSplitted {
+  /*position: relative;
   box-sizing: border-box;
   height: 100%;
+  padding: 0 0.5rem;*/
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 0 0.5rem;
 }
 
@@ -70,7 +85,7 @@
 .ResizerIsCollapsed {
   composes: Resizer;
 
-  @nest .vertical & {
+  /*@nest .vertical & {
     border: none !important;
     width: 1px !important;
     cursor: default !important;
@@ -79,5 +94,5 @@
   @nest &:hover {
     cursor: default !important;
     border-color: transparent !important;
-  }
+  }*/
 }

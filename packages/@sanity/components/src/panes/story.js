@@ -6,7 +6,8 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {range} from 'lodash'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import PanesController from 'part:@sanity/components/panes/controller'
-import SplitController from './SplitController'
+import SplitController from 'part:@sanity/components/panes/split-controller'
+import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Menu from 'part:@sanity/components/menus/default'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import TrashIcon from 'part:@sanity/base/trash-outline-icon'
@@ -158,48 +159,32 @@ storiesOf('Panes')
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
         <SplitController selectedIndex={selectedPaneIndex} onCollapse={handleControllerCollapse} onUnCollapse={handleControllerUnCollapse}>
-          <div>
-            <DefaultPane
-              title="Pane inside div"
-              key="divpane"
-              minWidth="100"
-              defaultWidth="400"
-              renderFunctions={renderFunctions}
-              renderMenu={renderSplitMenu}
-              onMenuToggle={action('onMenuToggle')}
-              onExpand={action('expand')}
-              onCollapse={action('onCollapse')}
-              isCollapsed
-            >
-              This pane is inside a div
-            </DefaultPane>
-          </div>
-          <div>
-            <div>This is not valid</div>
-            <div>This is not valid 2</div>
-          </div>
           {
             knobsPanes.map((pane, i) => {
               return (
-                <DefaultPane
-                  title={pane.title}
-                  key={pane.key}
+                <SplitPaneWrapper
                   minWidth={pane.minWidth}
                   defaultWidth={pane.defaultWidth}
-                  renderFunctions={renderFunctions}
-                  renderMenu={renderSplitMenu}
-                  onExpand={action('expand')}
-                  onCollapse={action('onCollapse')}
+                  key={pane.key}
                   isCollapsed={pane.isCollapsed}
-                  onMenuToggle={action('onMenuToggle')}
                 >
-                  <div>
-                    defaultWidth: {pane.defaultWidth}
-                  </div>
-                  <div>
-                    minWidth: {pane.minWidth}
-                  </div>
-                </DefaultPane>
+                  <DefaultPane
+                    title={pane.title}
+                    renderFunctions={renderFunctions}
+                    renderMenu={renderSplitMenu}
+                    onExpand={action('expand')}
+                    onCollapse={action('onCollapse')}
+                    isCollapsed={pane.isCollapsed}
+                    onMenuToggle={action('onMenuToggle')}
+                  >
+                    <div>
+                      defaultWidth: {pane.defaultWidth}
+                    </div>
+                    <div>
+                      minWidth: {pane.minWidth}
+                    </div>
+                  </DefaultPane>
+                </SplitPaneWrapper>
               )
             })
           }

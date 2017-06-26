@@ -7,33 +7,36 @@ import {sumBy, debounce} from 'lodash'
 export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
-    onCollapse: PropTypes.func,
-    onUnCollapse: PropTypes.func
+    onSholdCollapse: PropTypes.func,
+    sholdUnCollapse: PropTypes.func
   }
 
   static defaultProps = {
-    onCollapse() {},
-    onUnCollapse() {}
+    onSholdCollapse() {},
+    onSholdUnCollapse() {}
   }
 
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
-      this.props.onCollapse(pane)
+      this.props.onSholdCollapse(pane)
     } else {
-      this.props.onUnCollapse(pane)
+      this.props.onSholdUnCollapse(pane)
     }
   }, 100)
 
   renderSplitPane = (pane1, pane2, restMinWidth, restDefaultWidth) => {
     const isCollapsed = pane1.props.isCollapsed
+    console.log('isCollapsed?', pane1.props.isCollapsed)
     return (
       <SplitPane
         minSize={!isCollapsed && pane1.props.minWidth}
         defaultSize={!isCollapsed && pane1.props.defaultWidth}
-        size={isCollapsed ? 52 : undefined}
+        size={isCollapsed ? 54 : undefined}
         resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
-        allowResize={!pane1.props.isCollapsed}
+        allowResize
+        className={styles.splitPane}
         onChange={size => this.handleSplitPaneChange(size, pane1)}
+        pane1class={styles.pane1}
       >
         <div className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}>{pane1}</div>
         <div className={styles.paneInSplitted}>{pane2}</div>
@@ -65,8 +68,6 @@ export default class PanesSplitController extends React.Component {
   render() {
     const {children} = this.props
     const panes = React.Children.toArray(children)
-
-    console.log(panes)
 
     if (panes.length === 0) {
       return <div>No panes</div>

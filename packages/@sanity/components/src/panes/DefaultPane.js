@@ -30,7 +30,9 @@ export default class Pane extends React.PureComponent {
     children: <div />,
     onCollapse() {},
     onExpand() {},
-    renderMenu: false,
+    renderMenu() {
+      return false
+    },
     renderFunctions() {},
     isActive: false,
     updateId: 0,
@@ -39,20 +41,23 @@ export default class Pane extends React.PureComponent {
     }
   }
 
+  handleMenuToggle = event => {
+    if (this.props.isCollapsed) {
+      this.props.onExpand(event)
+    } else {
+      this.props.onMenuToggle(event)
+    }
+  }
 
   handleToggle = event => {
     console.log('handleClick')
-    if (!this.state.isCollapsed) {
+    if (!this.props.isCollapsed) {
       this.props.onExpand(event)
     }
   }
 
-  setRootElement = element => {
-    this._rootElement = element
-  }
-
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, showMenu} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable} = this.props
 
     return (
       <div
@@ -69,21 +74,23 @@ export default class Pane extends React.PureComponent {
               {title}
             </h2>
             {
-              renderFunctions()
+              renderFunctions(isCollapsed)
             }
           </div>
-          {
-            renderMenu && <div className={styles.menuWrapper}>
-              <div className={styles.menuButtonContainer}>
-                <div className={styles.menuButton} onClick={this.props.onMenuToggle}>
-                  <IconMoreVert />
-                </div>
-              </div>
-              <div className={styles.menuContainer}>
-                {renderMenu(isCollapsed)}
+          <div className={styles.menuWrapper}>
+            <div className={styles.menuButtonContainer}>
+              <div className={styles.menuButton} onClick={this.handleMenuToggle}>
+                {
+                  renderMenu(isCollapsed) && (
+                    <IconMoreVert />
+                  )
+                }
               </div>
             </div>
-          }
+            <div className={styles.menuContainer}>
+              {renderMenu(isCollapsed)}
+            </div>
+          </div>
         </div>
         <div className={styles.main}>
           <div className={styles.content}>

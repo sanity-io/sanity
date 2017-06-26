@@ -306,6 +306,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           disabled={!draft}
           onClick={this.handlePublishButtonClick}
           color="primary"
+          kind="simple"
         >
           {published ? 'Publish changes' : 'Publish'}
         </Button>
@@ -318,7 +319,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     return (
       <Menu
         onAction={this.handleMenuClick}
-        opened={this.state.isMenuOpen}
+        isOpen={this.state.isMenuOpen}
         onClose={this.handleMenuClose}
         onClickOutside={this.handleMenuClose}
         items={getMenuItems(draft, published)}
@@ -368,7 +369,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
     return (
       <Pane
-        title="No title"
+        title={this.getTitle(value)}
         renderMenu={this.renderMenu}
         renderFunctions={this.renderFunctions}
         onMenuToggle={this.handleMenuToggle}

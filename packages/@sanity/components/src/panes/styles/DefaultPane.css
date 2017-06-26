@@ -41,7 +41,7 @@
   flex-grow: 1;
   justify-content: space-between;
   align-self: flex-start;
-  transition: all 1s linear;
+  transition: all 0.2s linear;
   transform-origin: bottom left;
   transform: rotate(0);
   box-sizing: border-box;
