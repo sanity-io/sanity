@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
-import PaneMenuContainer from './PaneMenuContainer'
 import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import ListView from './ListView'
 
@@ -41,6 +40,7 @@ export default withRouterHOC(class Pane extends React.PureComponent {
   static contextTypes = {
     __internalRouter: PropTypes.object
   }
+
 
   handleGoToCreateNew = () => {
     const url = this.context.__internalRouter.resolveIntentLink('create', {

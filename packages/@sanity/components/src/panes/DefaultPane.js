@@ -15,8 +15,8 @@ export default class Pane extends React.Component {
     renderFunctions: PropTypes.func,
     children: PropTypes.node,
     isSelected: PropTypes.bool,
-    updateId: PropTypes.number,
-    isScrollable: PropTypes.bool
+    isScrollable: PropTypes.bool,
+    onMenuToggle: PropTypes.func
   }
 
   static defaultProps = {
@@ -33,12 +33,12 @@ export default class Pane extends React.Component {
     renderMenu: false,
     renderFunctions() {},
     isActive: false,
-    updateId: 0
+    updateId: 0,
+    onMenuToggle() {
+      return true
+    }
   }
 
-  state = {
-    showMenu: false
-  }
 
   handleToggle = event => {
     console.log('handleClick')
@@ -51,15 +51,8 @@ export default class Pane extends React.Component {
     this._rootElement = element
   }
 
-  handleToggleMenu = () => {
-    this.setState({
-      showMenu: !this.state.showMenu
-    })
-  }
-
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable} = this.props
-    const {showMenu} = this.state
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, showMenu} = this.props
 
     return (
       <div
@@ -82,17 +75,13 @@ export default class Pane extends React.Component {
           {
             renderMenu && <div className={styles.menuWrapper}>
               <div className={styles.menuButtonContainer}>
-                <div className={styles.menuButton} onClick={this.handleToggleMenu}>
+                <div className={styles.menuButton} onClick={this.props.onMenuToggle}>
                   <IconMoreVert />
                 </div>
               </div>
-              {
-                showMenu && (
-                  <div className={styles.menuContainer}>
-                    {renderMenu(isCollapsed)}
-                  </div>
-                )
-              }
+              <div className={styles.menuContainer}>
+                {renderMenu(isCollapsed)}
+              </div>
             </div>
           }
         </div>

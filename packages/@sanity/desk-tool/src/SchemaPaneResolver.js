@@ -21,7 +21,7 @@ import {IntentLink} from 'part:@sanity/base/router'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import Pane from 'part:@sanity/components/panes/default'
 import typePaneStyles from './pane/styles/TypePane.css'
-
+import DocumentsPaneMenu from './pane/DocumentsPaneMenu'
 // Removes published documents that also has a draft
 // Todo: this is an ugly hack we should get rid of as it requires the whole set of documents to be in memory to work
 function removePublishedWithDrafts(documents) {
@@ -69,6 +69,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
   state = {
     listLayoutSettings: readListLayoutSettings(),
     sorting: '_updatedAt desc',
+    documentPaneMenuIsOpen: false
   }
 
   renderTypePaneItem = item => {
@@ -192,20 +193,34 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
     this.containerElement = element
   }
 
+  handleToggleDocumentsPaneMenu = () => {
+    this.setState({
+      documentPaneMenuIsOpen: !this.state.documentPaneMenuIsOpen
+    })
+  }
+
+  handleCloseDocumentsPaneMenu = () => {
+    this.setState({
+      documentPaneMenuIsOpen: false
+    })
+  }
+
   renderDocumentsPaneMenu = () => {
-    return (<PaneMenuContainer
-      onSetListLayout={onSetListLayout}
-      onSetSorting={onSetSorting}
-      onGoToCreateNew={this.handleGoToCreateNew}
-            />
+    return (
+      <DocumentsPaneMenu
+        onSetListLayout={this.handleSetListLayout}
+        onSetSorting={this.handleSetSorting}
+        onGoToCreateNew={this.handleGoToCreateNew}
+        onMenuClose={this.handleCloseDocumentsPaneMenu}
+        onClickOutside={this.handleCloseDocumentsPaneMenu}
+        isOpen={this.state.documentPaneMenuIsOpen}
+      />
     )
   }
 
   render() {
     const {router} = this.props
     const {selectedType, selectedDocumentId, action} = router.state
-
-
     const schemaType = schema.get(router.state.selectedType)
 
     const documentsPaneContent = schemaType ? this.getDocumentsPane(schemaType) : schemaType
@@ -226,7 +241,13 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
               }
             </ul>
           </Pane>
-          <Pane title={router.state.selectedType} renderMenu={this.renderDocumentsPaneMenu} defaultWidth={200}>
+
+          <Pane
+            title={router.state.selectedType}
+            renderMenu={this.renderDocumentsPaneMenu}
+            defaultWidth={200}
+            onMenuToggle={this.handleToggleDocumentsPaneMenu}
+          >
             {documentsPaneContent}
           </Pane>
 

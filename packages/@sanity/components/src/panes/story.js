@@ -105,6 +105,7 @@ storiesOf('Panes')
                   renderMenu={renderMenu}
                   onExpand={action('expand')}
                   onCollapse={action('onCollapse')}
+                  onMenuToggle={action('onMenuToggle')}
                   minWidth={300}
                 />
               )
@@ -152,6 +153,7 @@ storiesOf('Panes')
               defaultWidth="400"
               renderFunctions={renderFunctions}
               renderMenu={renderMenu}
+              onMenuToggle={action('onMenuToggle')}
               onExpand={action('expand')}
               onCollapse={action('onCollapse')}
               isCollapsed
@@ -176,6 +178,7 @@ storiesOf('Panes')
                   onExpand={action('expand')}
                   onCollapse={action('onCollapse')}
                   isCollapsed={pane.isCollapsed}
+                  onMenuToggle={action('onMenuToggle')}
                 >
                   <div>
                     defaultWidth: {pane.defaultWidth}

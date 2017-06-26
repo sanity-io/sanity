@@ -11,6 +11,11 @@ export default class PanesSplitController extends React.Component {
     onUnCollapse: PropTypes.func
   }
 
+  static defaultProps = {
+    onCollapse() {},
+    onUnCollapse() {}
+  }
+
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
       this.props.onCollapse(pane)
@@ -61,7 +66,7 @@ export default class PanesSplitController extends React.Component {
     const {children} = this.props
     const panes = React.Children.toArray(children).map(pane => {
 
-      // Find wrapped pane until react 16
+      // Find pane wrapped in <div> until react 16
       if (pane.type == 'div' && typeof (pane.props.children) === 'object' && pane.props.children.length === undefined) {
         return pane.props.children
       }
