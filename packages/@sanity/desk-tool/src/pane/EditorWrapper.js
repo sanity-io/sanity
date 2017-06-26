@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
-import styles from './styles/EditorPane.css'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
 import FormBuilder, {checkout} from 'part:@sanity/form-builder'
 import {throttle, omit} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
-import Pane from 'part:@sanity/components/panes/default'
-import {PreviewFields} from 'part:@sanity/base/preview'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -242,24 +239,11 @@ export default class EditorPane extends React.Component {
 
   renderDeleted() {
     return (
-      <div className={styles.deletedMessage}>
+      <div>
         <h3>This document just got deleted</h3>
         <p>You can undo deleting it until you close this window/tab</p>
         <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
       </div>
-    )
-  }
-
-  getTitle(value) {
-    const {typeName} = this.props
-    const type = schema.get(typeName)
-    if (!value) {
-      return `Creating new ${type.title || type.name}`
-    }
-    return (
-      <PreviewFields document={value} type={type} fields={['title']}>
-        {({title}) => <span>{title}</span>}
-      </PreviewFields>
     )
   }
 
@@ -272,23 +256,21 @@ export default class EditorPane extends React.Component {
     }
 
     return (
-      <Pane title={this.getTitle(draft || published)}>
-        <Editor
-          type={schema.get(typeName)}
-          published={published.snapshot}
-          draft={draft.snapshot}
-          isLoading={draft.isLoading || published.isLoading}
-          isSaving={isSaving}
-          isPublishing={isPublishing}
-          isUnpublishing={isUnpublishing}
-          isCreatingDraft={isCreatingDraft}
-          onDelete={this.handleDelete}
-          onDiscardDraft={this.handleDiscardDraft}
-          onPublish={this.handlePublish}
-          onUnpublish={this.handleUnpublish}
-          onChange={this.handleChange}
-        />
-      </Pane>
+      <Editor
+        type={schema.get(typeName)}
+        published={published.snapshot}
+        draft={draft.snapshot}
+        isLoading={draft.isLoading || published.isLoading}
+        isSaving={isSaving}
+        isPublishing={isPublishing}
+        isUnpublishing={isUnpublishing}
+        isCreatingDraft={isCreatingDraft}
+        onDelete={this.handleDelete}
+        onDiscardDraft={this.handleDiscardDraft}
+        onPublish={this.handlePublish}
+        onUnpublish={this.handleUnpublish}
+        onChange={this.handleChange}
+      />
     )
   }
 }

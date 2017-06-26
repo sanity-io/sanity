@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import DocumentsPane from './pane/DocumentsPane'
-import EditorPane from './pane/EditorPane'
+import EditorWrapper from './pane/EditorWrapper'
 import TypePaneItem from './pane/TypePaneItem.js'
 import QueryContainer from 'part:@sanity/base/query-container'
 
@@ -19,7 +19,7 @@ import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import SplitController from 'part:@sanity/components/panes/split-controller'
-import SplitPaneWrapper 'part:@sanity/components/panes/split-pane-wrapper'
+import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Pane from 'part:@sanity/components/panes/default'
 import typePaneStyles from './pane/styles/TypePane.css'
 import DocumentsPaneMenu from './pane/DocumentsPaneMenu'
@@ -261,7 +261,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
           {
             schemaType && selectedDocumentId && action === 'edit' && (
               <SplitPaneWrapper>
-                <EditorPane
+                <EditorWrapper
                   documentId={selectedDocumentId}
                   typeName={schemaType.name}
                   schemaType={schemaType}

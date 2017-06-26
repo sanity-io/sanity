@@ -64,15 +64,9 @@ export default class PanesSplitController extends React.Component {
 
   render() {
     const {children} = this.props
-    const panes = React.Children.toArray(children).map(pane => {
+    const panes = React.Children.toArray(children)
 
-      // Find pane wrapped in <div> until react 16
-      if (pane.type == 'div' && typeof (pane.props.children) === 'object' && pane.props.children.length === undefined) {
-        return pane.props.children
-      }
-
-      return pane
-    })
+    console.log(panes)
 
     if (panes.length === 0) {
       return <div>No panes</div>

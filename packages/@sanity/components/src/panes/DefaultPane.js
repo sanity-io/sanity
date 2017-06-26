@@ -5,7 +5,7 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 
 export default class Pane extends React.PureComponent {
   static propTypes = {
-    title: PropTypes.string,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isCollapsed: PropTypes.bool,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,

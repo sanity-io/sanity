@@ -24,6 +24,7 @@ import {debounce, truncate, capitalize, startCase} from 'lodash'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
 import {PreviewFields} from 'part:@sanity/base/preview'
+import Pane from 'part:@sanity/components/panes/default'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -284,6 +285,48 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     this.setState({isMenuOpen: false})
   }
 
+  getTitle(value) {
+    const {type} = this.props
+    if (!value) {
+      return `Creating new ${type.title || type.name}`
+    }
+    return (
+      <PreviewFields document={value} type={type} fields={['title']}>
+        {({title}) => <span>{title}</span>}
+      </PreviewFields>
+    )
+  }
+
+  renderFunctions = () => {
+    const {draft, published} = this.props
+    return (
+      <div className={styles.publishButton}>
+        <Button
+          title="Ctrl+Alt+P"
+          disabled={!draft}
+          onClick={this.handlePublishButtonClick}
+          color="primary"
+        >
+          {published ? 'Publish changes' : 'Publish'}
+        </Button>
+      </div>
+    )
+  }
+
+  renderMenu = () => {
+    const {draft, published} = this.props
+    return (
+      <Menu
+        onAction={this.handleMenuClick}
+        opened={this.state.isMenuOpen}
+        onClose={this.handleMenuClose}
+        onClickOutside={this.handleMenuClose}
+        items={getMenuItems(draft, published)}
+        origin="top-right"
+      />
+    )
+  }
+
   render() {
     const {
       draft,
@@ -324,116 +367,94 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     }
 
     return (
-      <div className={styles.root}>
-        {isCreatingDraft && (
-          <Spinner fullscreen message="Making changes…" />
-        )}
-        {isPublishing && (
-          <Spinner fullscreen message="Publishing…" />
-        )}
-        {isUnpublishing && (
-          <Spinner fullscreen message="Unpublishing…" />
-        )}
-        <div className={styles.top}>
-          <div className={styles.dates}>
-            <div>
-              {published
-                ? <span>Published <TimeAgo time={published._updatedAt} /></span>
-                : 'Not published'
-              }
+      <Pane
+        title="No title"
+        renderMenu={this.renderMenu}
+        renderFunctions={this.renderFunctions}
+        onMenuToggle={this.handleMenuToggle}
+      >
+        <div className={styles.root}>
+          {isCreatingDraft && (
+            <Spinner fullscreen message="Making changes…" />
+          )}
+          {isPublishing && (
+            <Spinner fullscreen message="Publishing…" />
+          )}
+          {isUnpublishing && (
+            <Spinner fullscreen message="Unpublishing…" />
+          )}
+          <div className={styles.top}>
+            <div className={styles.dates}>
+              <div>
+                {published
+                  ? <span>Published <TimeAgo time={published._updatedAt} /></span>
+                  : 'Not published'
+                }
+              </div>
+              <div>
+                {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
+              </div>
             </div>
-            <div>
-              {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
-            </div>
-          </div>
 
-          {showSavingStatus && (
-            <div className={styles.savingStatus}>
-              <span className={styles.spinner}><Spinner /></span> Saving…
-            </div>
-          )}
-          {value && !showSavingStatus && (
-            <div className={styles.savingStatus}>
-              ✓ Saved
-            </div>
-          )}
-          <div className={styles.publishButton}>
-            <Button
-              title="Ctrl+Alt+P"
-              disabled={!draft}
-              onClick={this.handlePublishButtonClick}
-              color="primary"
-            >
-              {published ? 'Publish changes' : 'Publish'}
-            </Button>
-          </div>
-          <div className={styles.functions}>
-            <div className={styles.menuContainer}>
-              <div className={styles.menuButton}>
-                <Button kind="simple" onClick={this.handleMenuToggle}>
-                  <IconMoreVert />
-                </Button>
+            {showSavingStatus && (
+              <div className={styles.savingStatus}>
+                <span className={styles.spinner}><Spinner /></span> Saving…
               </div>
-              <div className={styles.menu}>
-                <Menu
-                  onAction={this.handleMenuClick}
-                  opened={this.state.isMenuOpen}
-                  onClose={this.handleMenuClose}
-                  onClickOutside={this.handleMenuClose}
-                  items={getMenuItems(draft, published)}
-                  origin="top-right"
-                />
+            )}
+            {value && !showSavingStatus && (
+              <div className={styles.savingStatus}>
+                ✓ Saved
               </div>
-            </div>
+            )}
           </div>
+          <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
+            <FormBuilder
+              value={draft || published || {_type: type.name}}
+              type={type}
+              onChange={this.handleChange}
+            />
+          </form>
+
+          {inspect && (
+            <InspectView
+              value={value}
+              onClose={() => this.setState({inspect: false})}
+            />
+          )}
+          {showConfirmPublish && (
+            <ConfirmPublish
+              draft={draft}
+              published={published}
+              onCancel={this.handleCancelConfirmPublish}
+              onConfirm={this.handleConfirmPublish}
+            />
+          )}
+          {showConfirmDiscard && (
+            <ConfirmDiscard
+              draft={draft}
+              published={published}
+              onCancel={this.handleCancelDiscard}
+              onConfirm={this.handleConfirmDiscard}
+            />
+          )}
+          {showConfirmDelete && (
+            <ConfirmDelete
+              draft={draft}
+              published={published}
+              onCancel={this.handleCancelDelete}
+              onConfirm={this.handleConfirmDelete}
+            />
+          )}
+          {showConfirmUnpublish && (
+            <ConfirmUnpublish
+              draft={draft}
+              published={published}
+              onCancel={this.handleCancelUnpublish}
+              onConfirm={this.handleConfirmUnpublish}
+            />
+          )}
         </div>
-        <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
-          <FormBuilder
-            value={draft || published || {_type: type.name}}
-            type={type}
-            onChange={this.handleChange}
-          />
-        </form>
-
-        {inspect && (
-          <InspectView
-            value={value}
-            onClose={() => this.setState({inspect: false})}
-          />
-        )}
-        {showConfirmPublish && (
-          <ConfirmPublish
-            draft={draft}
-            published={published}
-            onCancel={this.handleCancelConfirmPublish}
-            onConfirm={this.handleConfirmPublish}
-          />
-        )}
-        {showConfirmDiscard && (
-          <ConfirmDiscard
-            draft={draft}
-            published={published}
-            onCancel={this.handleCancelDiscard}
-            onConfirm={this.handleConfirmDiscard}
-          />
-        )}
-        {showConfirmDelete && (
-          <ConfirmDelete
-            draft={draft}
-            published={published}
-            onCancel={this.handleCancelDelete}
-            onConfirm={this.handleConfirmDelete}
-          />
-        )}
-        {showConfirmUnpublish && (
-          <ConfirmUnpublish
-            draft={draft}
-            published={published}
-            onCancel={this.handleCancelUnpublish}
-            onConfirm={this.handleConfirmUnpublish}
-          />
-        )}
-      </div>
+      </Pane>
     )
   }
 })
