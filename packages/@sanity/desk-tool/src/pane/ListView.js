@@ -10,7 +10,7 @@ export default class ListView extends React.PureComponent {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
     getItemKey: PropTypes.func,
-    listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
+    listLayout: PropTypes.oneOf(['default', 'detail', 'cards', 'media']),
     selectedItem: PropTypes.object
   }
 
@@ -32,7 +32,7 @@ export default class ListView extends React.PureComponent {
             <GridList
               overrideItemRender
               items={items}
-              layout={listLayout === 'card' ? 'masonry' : 'default'}
+              layout={listLayout === 'cards' ? 'masonry' : 'default'}
               getItemKey={getItemKey}
               renderItem={renderItem}
               selectedItem={selectedItem}

@@ -146,6 +146,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
   renderDocumentPaneItem = (item, index, options = {}) => {
     const {selectedType, selectedDocumentId} = this.props
     const listLayout = this.getListLayoutForType(selectedType)
+    console.log('listLayout', listLayout)
     const type = schema.get(selectedType)
     const linkState = {
       selectedDocumentId: getPublishedId(item._id),

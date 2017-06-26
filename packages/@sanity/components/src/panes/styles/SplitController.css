@@ -37,13 +37,14 @@
 
 .Resizer {
   background: #000;
-  opacity: 0.1;
+  opacity: 0;
   z-index: 1;
   box-sizing: border-box;
   background-clip: padding-box;
 
   @nest &:hover {
-    transition: border 2s ease;
+    opacity: 0.1;
+    transition: border 0.2s ease, opacity 0.1s ease;
   }
 
   @nest .horizontal & {
@@ -84,6 +85,7 @@
 
 .ResizerIsCollapsed {
   composes: Resizer;
+  opacity: 0.1;
 
   /*@nest .vertical & {
     border: none !important;
