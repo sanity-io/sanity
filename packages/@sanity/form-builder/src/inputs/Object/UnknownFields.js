@@ -4,6 +4,7 @@ import Details from '../common/Details'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import PatchEvent, {unset} from '../../PatchEvent'
 import styles from './styles/UnknownFields.css'
+import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 
 export default class UnknownFields extends React.Component {
   props: {
@@ -29,9 +30,11 @@ export default class UnknownFields extends React.Component {
               return (
                 <div key={fieldName}>
                   <h4>{fieldName}</h4>
-                  <pre style={{border: '1px solid #aaa', maxHeight: 200, overflowY: 'scroll', backgroundColor: 'white'}}>
-                    {JSON.stringify(value[fieldName], null, 2)}
-                  </pre>
+                  <ActivateOnFocus>
+                    <pre className={styles.inspectValue}>
+                      {JSON.stringify(value[fieldName], null, 2)}
+                    </pre>
+                  </ActivateOnFocus>
                   <DefaultButton onClick={() => this.handleUnsetClick(fieldName)} color="danger">
                     Unset {fieldName}
                   </DefaultButton>

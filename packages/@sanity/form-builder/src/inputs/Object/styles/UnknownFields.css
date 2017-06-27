@@ -8,6 +8,13 @@
   color: var(--state-warning-color);
 }
 
+.inspectValue {
+  border: 1px solid #aaa;
+  max-height: 200px;
+  overflow-y: scroll;
+  background-color: white
+}
+
 .content {
   border-top: 1px solid var(--state-warning-color);
   border-bottom: 1px solid var(--state-warning-color);
