@@ -9,7 +9,7 @@
 
 .selected {
   composes: item;
-  color: red;
+  color: #000;
 }
 
 .link {

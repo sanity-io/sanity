@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import DocumentsPane from './pane/DocumentsPane'
-import EditorWrapper from './pane/EditorWrapper'
-import TypePaneItem from './pane/TypePaneItem.js'
 
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import styles from './styles/SchemaPaneResolver.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
+
+import TypePane from './pane/TypePane'
+import DocumentsPane from './pane/DocumentsPane'
+import EditorWrapper from './pane/EditorWrapper'
+
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
-import Pane from 'part:@sanity/components/panes/default'
-import typePaneStyles from './pane/styles/TypePane.css'
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -19,33 +19,15 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   title: dataAspects.getDisplayName(typeName)
 }))
 
-
 export default withRouterHOC(class SchemaPaneResolver extends React.Component {
   static propTypes = {
     router: PropTypes.shape({
       state: PropTypes.object
-    })
+    }).isRequired
   }
 
   state = {
     collapsedPanes: []
-  }
-
-  renderTypePaneItem = item => {
-    const {selectedType} = this.props.router.state
-    const selected = item.name === selectedType
-    return (
-      <TypePaneItem
-        key={item.key}
-        selected={selected}
-        type={item}
-        onClick={this.handleItemClick}
-      />
-    )
-  }
-
-  setContainerElement = element => {
-    this.containerElement = element
   }
 
   handleToggleDocumentsPaneMenu = () => {
@@ -70,7 +52,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
 
   handleShouldExpand = pane => {
     this.setState({
-      collapsedPanes: this.state.collapsedPanes.filter(p => p !== pane.props.paneId)
+      collapsedPanes: this.state.collapsedPanes.filter(p => p !== pane.props.paneId) //eslint-disable-line id-length
     })
   }
 
@@ -81,7 +63,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
     const schemaType = schema.get(router.state.selectedType)
 
     return (
-      <div className={styles.container} ref={this.setContainerElement}>
+      <div className={styles.container}>
         <SplitController
           onSholdCollapse={this.handleShouldCollapse}
           onSholdExpand={this.handleShouldExpand}
@@ -89,28 +71,20 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
           <SplitPaneWrapper
             defaultWidth={200}
             minWidth={100}
-            paneId="contentPane"
-            isCollapsed={!!collapsedPanes.find(pane => pane === 'contentPane')}
+            paneId="typePane"
+            isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
           >
-            <Pane
+            <TypePane
+              isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
               title="Content"
-              paneId="contentPane"
-              isCollapsed={!!collapsedPanes.find(pane => pane === 'contentPane')}
+              paneId="typePane"
+              items={TYPE_ITEMS}
+              router={router}
               onExpand={this.handleShouldExpand}
               onCollapse={this.handleShouldCollapse}
             >
-              <ul className={typePaneStyles.list}>
-                {
-                  TYPE_ITEMS.map((item, i) => {
-                    return (
-                      <li key={i} className={typePaneStyles.item}>
-                        {this.renderTypePaneItem(item)}
-                      </li>
-                    )
-                  })
-                }
-              </ul>
-            </Pane>
+              test
+            </TypePane>
           </SplitPaneWrapper>
 
 
@@ -127,7 +101,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                   selectedType={selectedType}
                   selectedDocumentId={selectedDocumentId}
                   schemaType={schemaType}
-                  router={this.props.router}
+                  router={router}
                   paneId="documentsPane"
                   onExpand={this.handleShouldExpand}
                   onCollapse={this.handleShouldCollapse}
