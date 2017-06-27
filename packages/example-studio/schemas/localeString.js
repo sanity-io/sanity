@@ -1,3 +1,5 @@
+import LocaleStringInput from '../components/LocaleStringInput'
+
 const SUPPORTED_LANGUAGES = [
   {id: 'nb', title: 'Norwegian (Bokmål)', default: true},
   {id: 'nn', title: 'Norwegian (Nynorsk)'},
@@ -18,5 +20,6 @@ export default {
       title: lang.title,
       fieldset: lang.default ? null : 'translations'
     }
-  ))
+  )),
+  inputComponent: LocaleStringInput
 }

@@ -1,0 +1,6 @@
+.root {
+  margin-left: 1em;
+}
+.root:focus {
+  background: #edee79;
+}

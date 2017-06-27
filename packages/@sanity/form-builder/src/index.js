@@ -10,6 +10,7 @@ export {defaultConfig}
 
 export {default as createFormBuilder} from './createFormBuilder'
 export {default as SlateInput} from './inputs/BlockEditor-slate'
+export {default as ObjectInput} from './inputs/Object'
 
 // Input component factories
 export {ReferenceInput}
