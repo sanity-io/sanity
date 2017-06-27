@@ -17,7 +17,7 @@ export default {
     {
       name: 'externalId',
       title: 'External ID',
-      type: 'string'
+      type: 'number'
     },
     {
       name: 'externalCreditId',
