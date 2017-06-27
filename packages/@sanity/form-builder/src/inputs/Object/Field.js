@@ -7,6 +7,8 @@ import MemberValue from '../../Member'
 
 import styles from './styles/Field.css'
 import {resolveTypeName} from '../../utils/resolveType'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -52,12 +54,14 @@ export default class Field extends React.Component {
 
       if (expectedType !== actualType && !isCompatible) {
         return (
-          <InvalidValue
-            value={value}
-            onChange={this.handleChange}
-            validTypes={[field.type.name]}
-            actualType={actualType}
-          />
+          <Fieldset legend={field.type.title} level={level}>
+            <InvalidValue
+              value={value}
+              onChange={this.handleChange}
+              validTypes={[field.type.name]}
+              actualType={actualType}
+            />
+          </Fieldset>
         )
       }
     }
