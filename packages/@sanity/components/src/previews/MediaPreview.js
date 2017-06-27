@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
 import MediaRender from './common/MediaRender'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 export default class MediaPreview extends React.Component {
@@ -28,7 +27,6 @@ export default class MediaPreview extends React.Component {
 
   static defaultProps = {
     assetSize: {width: 120, height: 120},
-    emptyText: 'Nothing here…',
     aspect: 1
   }
 
@@ -54,9 +52,13 @@ export default class MediaPreview extends React.Component {
         </div>
         <div className={`${styles.meta}`}>
           <div className={`${styles.metaInner}`}>
-            <h2 className={styles.title}>
-              {item.title || emptyText}
-            </h2>
+            {
+              item.title && (
+                <h2 className={styles.title}>
+                  {item.title}
+                </h2>
+              )
+            }
             {
               item.subtitle && <h3 className={styles.subtitle}>
                 {item.subtitle}

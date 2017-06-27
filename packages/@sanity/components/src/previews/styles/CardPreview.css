@@ -2,6 +2,7 @@
 
 .root {
   display: block;
+  max-width: 100%;
 }
 
 .title {
@@ -9,6 +10,7 @@
   color: inherit;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .subtitle {
