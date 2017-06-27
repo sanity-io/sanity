@@ -5,11 +5,11 @@
 }
 
 .heading {
-  color: var(--state-danger-color);
+  color: var(--state-warning-color);
 }
 
 .content {
-  border-top: 1px solid var(--state-danger-color);
-  border-bottom: 1px solid var(--state-danger-color);
+  border-top: 1px solid var(--state-warning-color);
+  border-bottom: 1px solid var(--state-warning-color);
   padding: 1rem 0.5rem;
 }
