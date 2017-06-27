@@ -1,0 +1,22 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin-top: 3rem;
+}
+
+.heading {
+  color: var(--state-warning-color);
+}
+
+.inspectValue {
+  border: 1px solid #aaa;
+  max-height: 200px;
+  overflow-y: scroll;
+  background-color: white
+}
+
+.content {
+  border-top: 1px solid var(--state-warning-color);
+  border-bottom: 1px solid var(--state-warning-color);
+  padding: 1rem 0.5rem;
+}

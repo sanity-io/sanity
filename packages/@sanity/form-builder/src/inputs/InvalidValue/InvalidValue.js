@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
-import Details from './Details'
+import Details from '../common/Details'
 import styles from './InvalidValue.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import CONVERTERS from './converters'

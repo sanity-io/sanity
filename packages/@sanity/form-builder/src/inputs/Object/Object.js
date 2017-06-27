@@ -6,6 +6,7 @@ import Field from './Field'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {unset, setIfMissing} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
+import UnknownFields from './UnknownFields'
 
 export default class ObjectInput extends React.PureComponent {
   static displayName = 'Object'
@@ -19,14 +20,14 @@ export default class ObjectInput extends React.PureComponent {
     onEnter: PropTypes.func,
     level: PropTypes.number,
     isRoot: PropTypes.bool
-  };
+  }
 
   static defaultProps = {
     onChange() {},
     onEnter() {},
     level: 0,
     isRoot: false
-  };
+  }
 
   handleBlur() {
     const {onChange, value} = this.props
@@ -35,7 +36,7 @@ export default class ObjectInput extends React.PureComponent {
     }
   }
 
-  handleFieldChange = (fieldEvent : PatchEvent, field) => {
+  handleFieldChange = (fieldEvent: PatchEvent, field) => {
     const {onChange, type, isRoot} = this.props
 
     let event = fieldEvent.prefixAll(field.name)
@@ -105,14 +106,44 @@ export default class ObjectInput extends React.PureComponent {
     })
 
   }
+
+  renderUnknownFields() {
+    const {value, type, onChange} = this.props
+    if (!type.fields) {
+      return null
+    }
+
+    const knownFieldNames = type.fields.map(field => field.name)
+    const unknownFields = Object.keys(value || {})
+      .filter(key => !key.startsWith('_') && !knownFieldNames.includes(key))
+
+    if (unknownFields.length === 0) {
+      return null
+    }
+
+    return (
+      <UnknownFields
+        fieldNames={unknownFields}
+        value={value}
+        onChange={onChange}
+      />
+    )
+  }
+
   render() {
 
     const {type, level} = this.props
 
     const renderedFields = this.getRenderedFields()
+    const renderedUnknownFields = this.renderUnknownFields()
 
     if (level === 0) {
-      return <div>{renderedFields}</div>
+      return (
+        <div>
+          {renderedFields}
+          {renderedUnknownFields}
+        </div>
+      )
     }
 
     const columns = type.options && type.options.columns
@@ -127,6 +158,7 @@ export default class ObjectInput extends React.PureComponent {
         collapsable={collapsable}
       >
         {renderedFields}
+        {renderedUnknownFields}
       </Fieldset>
     )
   }
