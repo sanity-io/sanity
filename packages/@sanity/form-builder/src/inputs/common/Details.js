@@ -8,6 +8,13 @@ const ARROW_STYLE = {
   marginRight: '0.4em'
 }
 
+const CONTAINER_STYLE = {
+  cursor: 'default',
+  userSelect: 'none',
+  webkitUserSelect: 'none',
+  outline: 'none'
+}
+
 export default class Details extends React.Component {
   static propTypes = {
     children: PropTypes.node,
@@ -36,7 +43,7 @@ export default class Details extends React.Component {
     const {title, children} = this.props
     return (
       <div>
-        <div tabIndex="0" onClick={this.handleToggle}>
+        <div tabIndex="0" onClick={this.handleToggle} style={CONTAINER_STYLE}>
           <span style={ARROW_STYLE}>
             {isOpen ? '▼' : '▶'}
           </span>

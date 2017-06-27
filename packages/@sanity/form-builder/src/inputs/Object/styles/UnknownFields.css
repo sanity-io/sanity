@@ -1,0 +1,15 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin-top: 3rem;
+}
+
+.heading {
+  color: var(--state-danger-color);
+}
+
+.content {
+  border-top: 1px solid var(--state-danger-color);
+  border-bottom: 1px solid var(--state-danger-color);
+  padding: 1rem 0.5rem;
+}
