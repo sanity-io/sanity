@@ -4,25 +4,6 @@
   display: block;
 }
 
-.list-layout--default {
-  /*display: block;*/
-}
-
-.list-layout--detail {
-  width: 20rem;
-}
-
-.list-layout--card {
-  width: 30rem;
-  max-width: 80vw;
-}
-
-.list-layout--media {
-  width: 30rem;
-  max-width: 80vw;
-}
-
-
 .spinner {
   height: 100vh;
   transform: translateY(-30%);
@@ -42,7 +23,6 @@
 
 .item {
   position: relative;
-  padding-right: 1.5em;
 }
 
 .selectedItem {
@@ -54,7 +34,6 @@
 .item {
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
 }
-
 
 .itemStatus {
   position: absolute;

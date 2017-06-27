@@ -2,7 +2,6 @@
 
 .root {
   display: block;
-  padding: 1rem;
 }
 
 .hotkey {
@@ -13,6 +12,28 @@
 
 .top {
   display: flex;
+  align-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dates {
+  flex-basis: 14em;
+  color: #aaaaaa;
+  font-size: 0.7rem;
+  display: none;
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.editor {
+  padding: 1rem;
+}
+
+.savingStatus {
+  opacity: 0.5;
+  flex-basis: 5em;
+  align-self: flex-end;
 }
 
 .overlay {
@@ -27,13 +48,6 @@
   padding: 10em 3em;
 }
 
-.savingStatus {
-  opacity: 0.5;
-  padding: 0.75em;
-  padding-right: 0;
-  flex-basis: 5em;
-}
-
 .publishButton {
   padding: 0 1rem;
   padding-right: 0;
@@ -45,15 +59,4 @@
   position: absolute;
   left: -1.5em;
   font-size: 0.9em;
-}
-
-.dates {
-  flex-basis: 14em;
-  color: #aaaaaa;
-  font-size: 0.7rem;
-  padding: 0.5rem;
-  display: none;
-  @media (--screen-medium) {
-    display: block;
-  }
 }

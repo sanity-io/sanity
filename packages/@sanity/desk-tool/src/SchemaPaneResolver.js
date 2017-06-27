@@ -93,6 +93,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
               <SplitPaneWrapper
                 defaultWidth={300}
                 minWidth={100}
+                maxWidth={400}
                 paneId="documentsPane"
                 isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
               >
