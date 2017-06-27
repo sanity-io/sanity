@@ -95,9 +95,7 @@ export default class Pane extends React.PureComponent {
         </div>
         <div className={styles.main}>
           <div className={styles.content}>
-            <div>
-              {children}
-            </div>
+            {children}
           </div>
         </div>
       </div>

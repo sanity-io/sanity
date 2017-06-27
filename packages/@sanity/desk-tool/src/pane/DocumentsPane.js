@@ -1,4 +1,3 @@
-import cls from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -56,10 +55,6 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     selectedType: PropTypes.string,
     selectedDocumentId: PropTypes.string,
     schemaType: PropTypes.object,
-    type: PropTypes.shape({
-      title: PropTypes.string,
-      name: PropTypes.string
-    }),
     isCollapsed: PropTypes.bool,
     router: PropTypes.shape({
       state: PropTypes.shape({
@@ -241,19 +236,10 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
               )
             }
 
-            const {selectedType, action} = router.state
-
-            const isActive = selectedType && !action && !selectedDocumentId
-
-            const paneClasses = cls([
-              isActive ? styles.isActive : styles.isInactive,
-              styles[`list-layout--${listLayout}`]
-            ])
-
             const items = removePublishedWithDrafts(result ? result.documents : [])
 
             return (
-              <div className={paneClasses}>
+              <div className={styles.root}>
                 {loading && (
                   <div className={styles.spinner}>
                     <Spinner center message="Loading items…" />
