@@ -5,6 +5,20 @@ import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
 
+// Debounce function on requestAnimationFrame
+function debounceRAF(fn) {
+  let scheduled
+  return function debounced(...args) {
+    if (!scheduled) {
+      requestAnimationFrame(() => {
+        fn.call(this, ...scheduled)
+        scheduled = null
+      })
+    }
+    scheduled = args
+  }
+}
+
 class DefaultMenu extends React.Component {
   static propTypes = {
     onAction: PropTypes.func.isRequired,
@@ -22,6 +36,8 @@ class DefaultMenu extends React.Component {
       })
     )
   }
+
+  lastWindowHeight = 0
 
   static defaultProps = {
     menuOpened: false,
@@ -46,11 +62,22 @@ class DefaultMenu extends React.Component {
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
+    window.addEventListener('resize', this.handleResize, false)
+    this.constrainHeight(this._rootElement)
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize, false)
     window.removeEventListener('keydown', this.handleKeyDown, false)
   }
+
+  componentDidUpdate() {
+    this.constrainHeight(this._rootElement)
+  }
+
+  handleResize = debounceRAF(() => {
+    this.constrainHeight(this._rootElement)
+  })
 
   handleKeyDown = event => {
     const {items} = this.props
@@ -98,6 +125,32 @@ class DefaultMenu extends React.Component {
     }
   }
 
+  constrainHeight = element => {
+    const margin = 10
+    if (element) {
+      const clientRects = element.getBoundingClientRect()
+
+      // Change maxheight if window resizes
+      if (element.style.maxHeight) {
+        const diff = this.lastWindowHeight - window.innerHeight
+        element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff}px`
+      }
+
+      // Set initial maxHeight
+      if ((clientRects.top + clientRects.height) > (window.innerHeight - margin)) {
+        const newMaxHeight = window.innerHeight - clientRects.top - margin
+        element.style.maxHeight = `${newMaxHeight}px`
+      }
+
+      this.lastWindowHeight = window.innerHeight
+    }
+  }
+
+  setRootElement = element => {
+    this._rootElement = element
+    this.constrainHeight(this._rootElement)
+  }
+
   render() {
     const {focusedItem} = this.state
     const {items, origin, ripple, fullWidth, className} = this.props
@@ -105,6 +158,7 @@ class DefaultMenu extends React.Component {
 
     return (
       <div
+        ref={this.setRootElement}
         className={`
           ${this.props.opened ? styles.opened : styles.closed}
           ${originStyle}

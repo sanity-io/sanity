@@ -10,6 +10,8 @@
   user-select: none;
   text-align: left;
   z-index: var(--zindex-dropdown);
+  overflow: auto;
+  overflow-x: hidden;
 }
 
 .fullWidth {

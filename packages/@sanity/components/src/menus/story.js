@@ -3,52 +3,11 @@ import Menu from 'part:@sanity/components/menus/default'
 //import StateMenu from 'part:@sanity/components/menus/state'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
-import {withKnobs, object, boolean} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, number} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-
-const noIconItems = [
-  {
-    title: 'First item',
-    key: '1'
-  },
-  {
-    title: 'Second item',
-    key: '1'
-  },
-  {
-    title: 'Third item',
-    key: '3'
-  },
-  {
-    title: 'Extra item',
-    key: '4',
-    divider: true
-  }
-]
-
-const itemsWithIcons = [
-  {
-    title: 'First item',
-    icon: SanityIcon,
-    key: '1'
-  },
-  {
-    title: 'Second item',
-    icon: SanityIcon,
-    key: '2'
-  },
-  {
-    title: 'Third item',
-    icon: SanityIcon,
-    key: '3'
-  },
-  {
-    title: 'Extra item',
-    divider: true,
-    key: '4',
-    icon: SanityIcon
-  }
-]
+import {range} from 'lodash'
+import Chance from 'chance'
+const chance = new Chance()
 
 storiesOf('Menus')
 .addDecorator(withKnobs)
@@ -56,7 +15,16 @@ storiesOf('Menus')
   'Default',
   () => {
 
-    const items = boolean('icons', false) ? itemsWithIcons : noIconItems
+    const icon = boolean('icons', false) ? SanityIcon : false
+    const top = number('top', 40)
+    const left = number('left', 40)
+    const items = range(number('#items', 30)).map((item, i) => {
+      return {
+        title: chance.name(),
+        icon: icon,
+        key: i
+      }
+    })
 
     return (
       <Sanity part="part:@sanity/components/menus/default" propTables={[Menu]}>
@@ -66,13 +34,15 @@ storiesOf('Menus')
             position: 'relative'
           }}
         >
-          <Menu
-            onAction={action('onAction')}
-            onClose={action('onClose')}
-            onClickOutside={action('Clicked outside')}
-            items={object('items', items)}
-            opened={boolean('opened', true)}
-          />
+          <div style={{position: 'absolute', top: `${top}px`, left: `${left}px`}}>
+            <Menu
+              onAction={action('onAction')}
+              onClose={action('onClose')}
+              onClickOutside={action('Clicked outside')}
+              items={items}
+              opened={boolean('opened', true)}
+            />
+          </div>
         </div>
       </Sanity>
     )
