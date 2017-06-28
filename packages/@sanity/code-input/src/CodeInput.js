@@ -124,7 +124,7 @@ export default class CodeInput extends PureComponent {
     const target = event.domEvent.target
     if (target.classList.contains('ace_gutter-cell')) {
       const row = event.getDocumentPosition().row
-      this.handleToggleSelectLine(`${row}`)
+      this.handleToggleSelectLine(row + 1) // Ace starts at row 0
     }
   }
 
@@ -143,19 +143,15 @@ export default class CodeInput extends PureComponent {
     ]))
   }
 
-  createMarkers = rows => {
-    return rows.map(row => {
-      return {
-        startRow: Number(row),
-        startCol: 0,
-        endRow: Number(row),
-        endCol: 500,
-        className: styles.highlight,
-        type: 'background',
-        inFront: true
-      }
-    })
-  }
+  createMarkers = rows => rows.map(row => ({
+    startRow: Number(row) - 1,
+    startCol: 0,
+    endRow: Number(row) - 1,
+    endCol: +Infinity,
+    className: styles.highlight,
+    type: 'background',
+    inFront: true
+  }))
 
   renderEditor = () => {
     const {value, type} = this.props
