@@ -54,7 +54,6 @@ export default class CodeInput extends PureComponent {
   }
 
   static defaultProps = {
-    value: '',
     onChange() {}
   }
 
@@ -85,7 +84,7 @@ export default class CodeInput extends PureComponent {
     const highlightedLines = this.props.value.highlightedLines || []
 
     let position = highlightedLines.indexOf(lineNumber)
-    const patches = [setIfMissing({_type: type.name, highlightedLines: []})]
+    const patches = [setIfMissing({_type: type.name}), setIfMissing([], ['highlightedLines'])]
     const addLine = position === -1
 
     if (addLine) {
