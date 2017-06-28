@@ -1,5 +1,5 @@
+import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
@@ -39,7 +39,7 @@ const ACE_SET_OPTIONS = {
 }
 const ACE_EDITOR_PROPS = {$blockScrolling: true}
 
-export default class CodeInput extends React.Component {
+export default class CodeInput extends PureComponent {
 
   static propTypes = {
     type: PropTypes.object,
