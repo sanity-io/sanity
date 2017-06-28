@@ -1,4 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Fjalla+One');
+
 :root {
+  --font-family-sans-serif: 'Fjalla One';
+
   --body-bg: #333;
   --text-color: #eee;
 
