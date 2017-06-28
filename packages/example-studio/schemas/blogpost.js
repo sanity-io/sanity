@@ -64,22 +64,6 @@ export default {
       readOnly: true
     },
     {
-      name: 'imageGallery',
-      title: 'Image Gallery',
-      description: 'An array of images. options: {layout: "grid"}',
-      type: 'array',
-      options: {
-        layout: 'grid'
-      },
-      of: [
-        {
-          name: 'myImage',
-          title: 'My Image',
-          type: 'myImage'
-        }
-      ]
-    },
-    {
       name: 'publishAt',
       title: 'Publish at',
       type: 'date',
