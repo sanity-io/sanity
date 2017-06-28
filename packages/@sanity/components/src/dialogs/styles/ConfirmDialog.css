@@ -1,0 +1,54 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  composes: root from 'part:@sanity/components/dialogs/default-style';
+}
+
+.dialog {
+  composes: dialog from 'part:@sanity/components/dialogs/default-style';
+
+  @media (--screen-medium) {
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    width: auto;
+  }
+}
+
+.success {
+  composes: success from 'part:@sanity/components/dialogs/default-style';
+}
+
+.danger {
+  composes: danger from 'part:@sanity/components/dialogs/default-style';
+}
+
+.info {
+  composes: info from 'part:@sanity/components/dialogs/default-style';
+}
+
+.warning {
+  composes: warning from 'part:@sanity/components/dialogs/default-style';
+}
+
+.closeButton {
+  composes: closeButton from 'part:@sanity/components/dialogs/default-style';
+}
+
+.inner {
+  composes: inner from 'part:@sanity/components/dialogs/default-style';
+  overflow: hidden;
+  height: 100%;
+}
+
+.content {
+  font-size: 1.5rem;
+  padding: var(--medium-padding);
+  clear: both;
+  lost-utility: clearfix;
+}
+
+.footer {
+  padding: var(--medium-padding);
+  text-align: right;
+}

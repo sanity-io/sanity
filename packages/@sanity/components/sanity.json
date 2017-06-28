@@ -255,6 +255,10 @@
       "description": "Default dialog styling"
     },
     {
+      "name": "part:@sanity/components/dialogs/confirm",
+      "description": "Confirm dialog"
+    },
+    {
       "name": "part:@sanity/components/snackbar/default",
       "description": "Shows messages with an action and a timeout."
     },
@@ -498,6 +502,10 @@
     {
       "implements":  "part:@sanity/components/dialogs/default",
       "path": "dialogs/DefaultDialog.js"
+    },
+    {
+      "implements":  "part:@sanity/components/dialogs/confirm",
+      "path": "dialogs/ConfirmDialog.js"
     },
     {
       "implements":  "part:@sanity/components/dialogs/fullscreen",

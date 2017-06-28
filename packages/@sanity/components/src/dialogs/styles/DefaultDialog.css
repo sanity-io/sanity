@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 @keyframes reveal {
   0% {
     opacity: 0;

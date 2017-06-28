@@ -3,6 +3,7 @@ import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
 import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
@@ -119,6 +120,28 @@ storiesOf('Dialogs')
             {text('content', 'This is the content')}
           </FullscreenDialog>
         </div>
+      </Sanity>
+    )
+  }
+)
+
+.add(
+  'Confirm',
+  () => {
+    return (
+      <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
+        <ConfirmDialog
+          color={select('prop:color', [false, 'danger', 'success', 'info', 'warning', false])}
+          confirmColor={select('prop:confirmColor', [false, 'danger', 'success', 'info', 'warning', false])}
+          onConfirm={action('onConfirm')}
+          onCancel={action('onCancel')}
+          confirmButtonText={text('prop:confirmButtonText')}
+          cancelButtonText={text('prop:confirmButtonText')}
+        >
+          {
+            text('prop:children', 'Do you really want to?')
+          }
+        </ConfirmDialog>
       </Sanity>
     )
   }
