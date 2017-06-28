@@ -1,4 +1,5 @@
 import client from 'part:@sanity/base/client'
+import {flatten} from 'lodash'
 
 import {observeForPreview} from 'part:@sanity/base/preview'
 
@@ -14,7 +15,7 @@ function wrapIn(chars = '') {
 
 const wrapInParens = wrapIn('()')
 
-function buildConstraintFromType(type) {
+function buildConstraintFromType(type, terms) {
   const typeConstraint = `_type == '${type.name}'`
 
   const stringFields = type.fields
@@ -24,15 +25,17 @@ function buildConstraintFromType(type) {
     return typeConstraint
   }
 
-  const stringFieldConstraints = stringFields
-    .map(field => `${field.name} match $term`)
+  const stringFieldConstraints = flatten(
+    stringFields.map(field => terms.map(term => `${field.name} match '${term}*'`))
+  )
 
   return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
 }
 
 export function search(textTerm, referenceType) {
 
-  const typeConstraints = referenceType.to.map(buildConstraintFromType)
+  const terms = textTerm.split(/\s+/)
+  const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, terms))
 
   const query = `*[!(_id in path('drafts.**')) && ${typeConstraints.map(wrapInParens).join('||')}]`
 
