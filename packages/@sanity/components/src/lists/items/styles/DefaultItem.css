@@ -42,6 +42,7 @@
 .sortableHelper {
   background-color: inherit;
   color: inherit;
+  z-index: 10;
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
 }
 
