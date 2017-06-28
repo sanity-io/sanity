@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
-import PatchEvent, {set, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
+import PatchEvent, {set, insert, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
 import AceEditor from 'react-ace'
-import {get, has, xor} from 'lodash'
+import {get, has} from 'lodash'
 import fieldsetStyles from './Fieldset.css'
 import styles from './Styles.css'
 
@@ -82,14 +82,42 @@ export default class CodeInput extends PureComponent {
   handleToggleSelectLine = lineNumber => {
     const {type, onChange} = this.props
     const path = ['highlightedLines']
-    const {highlightedLines} = this.props.value
+    const highlightedLines = this.props.value.highlightedLines || []
 
-    const highlightedLinesCleaned = xor(highlightedLines, [lineNumber]).sort(compareNumbers)
+    let position = highlightedLines.indexOf(lineNumber)
+    const patches = [setIfMissing({_type: type.name, highlightedLines: []})]
+    const addLine = position === -1
 
-    onChange(PatchEvent.from([
-      setIfMissing({_type: type.name, highlightedLines: []}),
-      lineNumber ? set(highlightedLinesCleaned, path) : unset(path)
-    ]))
+    if (addLine) {
+      // New element, figure out where to add it so it sorts correctly
+      const sorted = highlightedLines.concat(lineNumber).sort(compareNumbers)
+      position = sorted.indexOf(lineNumber)
+      patches.push(insert(
+        [lineNumber],
+        'before',
+        path.concat(position === sorted.length - 1 ? -1 : position)
+      ))
+    } else if (highlightedLines.length === 1) {
+      // Last element removed, unset whole path
+      patches.push(unset(path))
+
+      // Temporary workaround for bug in react-ace
+      // (https://github.com/securingsincity/react-ace/issues/229)
+      const editor = this.editor
+
+      // Remove all markers from editor
+      ;[true, false].forEach(inFront => {
+        const currentMarkers = editor.getSession().getMarkers(inFront)
+        Object.keys(currentMarkers).forEach(marker => {
+          editor.getSession().removeMarker(currentMarkers[marker].id)
+        })
+      })
+    } else {
+      // Removed, but not the last element, remove single item
+      patches.push(unset(path.concat(position)))
+    }
+
+    onChange(PatchEvent.from(patches))
   }
 
   handleGutterMouseDown = event => {
