@@ -49,10 +49,12 @@ export default class MediaRender extends React.Component {
         <div className={styles.root}>
           <ImageLoader src={this.getAssetUrl(imageUrl)}>
             {({image}) => (
-              <img
-                src={image.src}
-                className={(item.aspect || image.width / image.height || 1) > containerAspect ? styles.landscape : styles.portrait}
-              />
+              image && (
+                <img
+                  src={image.src}
+                  className={(item.aspect || image.width / image.height || 1) > containerAspect ? styles.landscape : styles.portrait}
+                />
+              )
             )}
           </ImageLoader>
         </div>
