@@ -36,7 +36,7 @@ export default async function strengthenReferences(options) {
 function getImportMapQuery(prevMapNumber, concurrency) {
   return trimQuery(`
     *[
-      is "sanity.importmap" &&
+      _type == "sanity.importmap" &&
       importId == $importId &&
       importMapNumber > ${prevMapNumber}
     ] | order(importMapNumber asc) [0...${concurrency}]`
