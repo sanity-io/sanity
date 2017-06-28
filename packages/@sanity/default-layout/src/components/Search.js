@@ -5,10 +5,39 @@ import globalSearchStyles from 'part:@sanity/components/globalsearch/default-sty
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import locationStore from 'part:@sanity/base/location'
 import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import styles from './styles/Search.css'
+
+
+export const DRAFTS_FOLDER = 'drafts'
+const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
+
+function isDraftId(id) {
+  return id.startsWith(DRAFTS_PREFIX)
+}
+
+function getPublishedId(id) {
+  return isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id
+}
+
+function getDraftId(id) {
+  return isDraftId(id) ? id : DRAFTS_PREFIX + id
+}
+
+// Removes published documents that also has a draft
+function removeDupes(documents) {
+  const drafts = documents.map(doc => doc._id).filter(isDraftId)
+
+  return documents
+    .filter(doc => {
+      const draftId = getDraftId(doc._id)
+      const publishedId = getPublishedId(doc._id)
+      const hasDraft = drafts.includes(draftId)
+      const isPublished = doc._id === publishedId
+      return isPublished ? !hasDraft : true
+    })
+}
 
 
 class Search extends React.Component {
@@ -48,15 +77,19 @@ class Search extends React.Component {
           )
         )
 
+    const terms = q.split(/\s+/)
     const uniqueFields = union(searchableFields)
-    const constraints = uniqueFields.map(field => `${field} match $term`)
+    const constraints = flatten(
+      uniqueFields.map(field => terms.map(term => `${field} match '${term}*'`)
+    ))
     const query = `*[${constraints.join(' || ')}][0...10]`
 
     this.setState({
       isSearching: true
     })
 
-    client.fetch(query, {term: `${q}*`})
+    client.fetch(query)
+      .then(removeDupes)
       .then(hits => {
         this.setState({
           isSearching: false,
