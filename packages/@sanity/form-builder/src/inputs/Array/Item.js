@@ -3,10 +3,10 @@ import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import styles from './styles/ItemPreview.css'
 import Preview from '../../Preview'
-import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import {resolveTypeName} from '../../utils/resolveType'
 import InvalidValue from '../InvalidValue'
+import ConfirmButton from './ConfirmButton'
 
 export default class Item extends React.PureComponent {
   static propTypes = {
@@ -17,7 +17,7 @@ export default class Item extends React.PureComponent {
     onChange: PropTypes.func,
     onStartEdit: PropTypes.func,
     layout: PropTypes.oneOf(['media', 'default'])
-  };
+  }
 
   handleRemove = event => {
     event.stopPropagation()
@@ -57,6 +57,7 @@ export default class Item extends React.PureComponent {
   handleClick = () => {
     this.props.onStartEdit(this.props.value)
   }
+
   render() {
     const {value, layout, type} = this.props
 
@@ -67,15 +68,19 @@ export default class Item extends React.PureComponent {
     return (
       <div className={`${styles.root} ${styles[layout]}`}>
         <div className={styles.functions}>
-          {!type.readOnly && <Button
-            kind="simple"
-            className={styles.deleteButton}
-            color="danger"
-            icon={TrashIcon}
-            title="Delete"
-            onClick={this.handleRemove}
-            onMouseDown={this.handleMouseDown}
-          />}
+          {!type.readOnly && (
+            <ConfirmButton
+              kind="simple"
+              className={styles.deleteButton}
+              color="danger"
+              icon={TrashIcon}
+              title="Delete"
+              onClick={this.handleRemove}
+              onMouseDown={this.handleMouseDown}
+            >
+              {doConfirm => doConfirm && 'Confirm delete'}
+            </ConfirmButton>
+          )}
         </div>
         <div className={styles.content} onClick={this.handleClick}>
           <Preview layout={layout} value={value} type={memberType} />
