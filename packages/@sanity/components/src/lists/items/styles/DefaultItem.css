@@ -42,7 +42,7 @@
 .sortableHelper {
   background-color: inherit;
   color: inherit;
-  z-index: 10;
+  z-index: 10; /* TODO Remove this hack that makes dragable defaultItem visible */
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
 }
 
