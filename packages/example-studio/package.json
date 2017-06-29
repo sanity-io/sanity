@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": "true",
-  "version": "0.107.10",
+  "version": "0.107.11",
   "description": "Just a sample Sanity studio project",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@sanity/base": "^0.107.10",
     "@sanity/cli": "^0.107.6",
-    "@sanity/code-input": "^0.107.10",
+    "@sanity/code-input": "^0.107.11",
     "@sanity/components": "^0.107.10",
     "@sanity/core": "^0.107.9",
     "@sanity/date-input": "^0.107.10",
