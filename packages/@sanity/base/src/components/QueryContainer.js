@@ -170,6 +170,6 @@ export default class QueryContainer extends React.Component {
     if (!children || typeof children !== 'function') {
       return <div>Invalid usage of QueryContainer. Expected a function as its only child</div>
     }
-    return children({...rest, ...mapFn(this.state)})
+    return children({...rest, onRetry: this.refresh, ...mapFn(this.state)})
   }
 }
