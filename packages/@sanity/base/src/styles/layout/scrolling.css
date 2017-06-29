@@ -1,13 +1,18 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --defaultScrollBarWidth: var(--small-padding)
+}
+
 .lightScrollbars {
 
   @nest &::-webkit-scrollbar {
     background-color: transparent;
-    width: 3px;
+    width: var(--defaultScrollBarWidth);
+    position: fixed;
 
     @media (--screen-medium) {
-      width: 10px;
+      width: var(--defaultScrollBarWidth);
     }
   }
 
@@ -16,16 +21,16 @@
    }
 
   @nest &::-webkit-scrollbar-thumb:window-inactive {
-	opacity: 0;
+	   opacity: 0;
   }
 
   @nest &:hover {
     @nest &::-webkit-scrollbar {
       display: block;
-      width: 3px;
+      width: var(--defaultScrollBarWidth);
       opacity: 1;
       @media (--screen-medium) {
-        width: 10px;
+        width: var(--defaultScrollBarWidth);
       }
     }
     @nest &::-webkit-scrollbar-thumb {
@@ -62,6 +67,24 @@
   }
 }
 
+.thinLightScrollbars {
+  composes: lightScrollbars;
+  @nest &::-webkit-scrollbar {
+    width: 3px;
+    @media (--screen-medium) {
+      width: 3px;
+    }
+  }
+  @nest &:hover {
+    @nest &::-webkit-scrollbar {
+      width: 3px;
+      @media (--screen-medium) {
+        width: 3px;
+      }
+    }
+  }
+}
+
 .scrollAll {
   overflow: scroll;
 }
@@ -72,19 +95,6 @@
 }
 
 .scrollY {
-  overflow-y: overlay;
+  overflow-y: scroll;
   overflow-x: hidden;
 }
-
-/*
-:horizontal
-:vertical
-:decrement
-:increment
-:start
-:end
-:double-button
-:single-button
-:no-button
-:corner-present
-:window-inactive*/

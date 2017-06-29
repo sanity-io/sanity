@@ -39,6 +39,9 @@ export default {
       name: 'relatedAuthors',
       title: 'Related authors',
       type: 'array',
+      options: {
+        editModal: 'fold'
+      },
       of: [
         {
           type: 'reference',

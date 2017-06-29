@@ -40,10 +40,6 @@
     height: 100vh;
     width: 100vw;
     overflow: scroll;
-
-    @nest &::before {
-      content: "shouldNotReposition";
-    }
   }
 }
 
@@ -56,16 +52,6 @@
   box-sizing: border-box;
   height: 100vh;
   width: 100vw;
-
-  /* @media (--screen-medium) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    background-color: transparent;
-  } */
 }
 
 .autoWidth {
@@ -97,7 +83,7 @@
   position: absolute;
   top: -0.35em;
   left: 2em;
-  z-index: 2;
+  z-index: -1;
 
   @media (--max-screen-medium) {
     display: none;
@@ -184,12 +170,13 @@
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .contentWithScroll {
   composes: content;
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: thinLightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
 }
 
 .head {

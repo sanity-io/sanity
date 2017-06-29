@@ -376,6 +376,9 @@ export default {
       name: 'coauthors',
       title: 'Co authors',
       type: 'array',
+      options: {
+        editModal: 'fold'
+      },
       of: [{
         type: 'reference',
         title: 'Reference to co-author',
@@ -390,9 +393,6 @@ export default {
       title: 'Additional authors',
       description: 'Note: This is an inline array of authors',
       type: 'array',
-      options: {
-        editModal: 'fold'
-      },
       of: [
         {
           title: 'Additional author reference',
