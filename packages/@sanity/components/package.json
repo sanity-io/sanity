@@ -55,15 +55,9 @@
   "devDependencies": {
     "@sanity/base": "^0.107.2",
     "@sanity/check": "^0.107.0",
-<<<<<<< HEAD
     "@sanity/core": "^0.107.9",
-    "eslint": "^3.17.1",
-    "eslint-config-sanity": "^2.1.2",
-=======
-    "@sanity/core": "^0.107.0",
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4",
->>>>>>> [components] Fixing eslint
     "eslint-plugin-react": "^6.10.0",
     "pre-commit": "^1.1.3",
     "react-styleguidist": "^2.3.1",
