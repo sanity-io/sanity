@@ -10,8 +10,8 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import styles from './styles/SchemaPaneResolver.css'
 import Preview from 'part:@sanity/base/preview'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import {DRAFTS_FOLDER, getDraftId, getPublishedId, isDraftId} from './utils/draftUtils'
@@ -182,12 +182,17 @@ export default withRouterHOC(class SchemaPaneResolver extends React.PureComponen
         selectedId={selectedDocumentId}
         listLayout={this.getListLayoutForType(schemaType.name)}
       >
-        {({result, loading, error, type, listLayout}) => {
+        {({result, loading, error, onRetry, type, listLayout}) => {
           if (error) {
             return (
-              <FullscreenDialog kind="danger" title="An error occurred while loading items" isOpen>
-                {error.message}
-              </FullscreenDialog>
+              <Snackbar
+                kind="danger"
+                action={{title: 'Retry'}}
+                onAction={onRetry}
+              >
+                <div>An error occurred while loading items:</div>
+                <div>{error.message}</div>
+              </Snackbar>
             )
           }
 
