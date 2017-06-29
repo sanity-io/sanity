@@ -13,8 +13,5 @@ export default {
     return user && user.id ? user : null
   }),
 
-  logout: () => client.request({
-    uri: '/auth/logout',
-    withCredentials: true
-  })
+  logout: () => client.auth.logout()
 }
