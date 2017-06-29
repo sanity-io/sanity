@@ -85,9 +85,9 @@ export default class CodeInput extends PureComponent {
   }
 
   handleToggleSelectLine = lineNumber => {
-    const {type, onChange} = this.props
+    const {type, onChange, value} = this.props
     const path = ['highlightedLines']
-    const highlightedLines = this.props.value.highlightedLines || []
+    const highlightedLines = (value && value.highlightedLines) || []
 
     let position = highlightedLines.indexOf(lineNumber)
     const patches = [setIfMissing({_type: type.name}), setIfMissing([], ['highlightedLines'])]
@@ -163,13 +163,13 @@ export default class CodeInput extends PureComponent {
     const fixedLanguage = get(type, 'options.language')
     return (
       <AceEditor
-        mode={value.language || fixedLanguage || 'text'}
+        mode={(value && value.language) || fixedLanguage || 'text'}
         theme="tomorrow"
         width="100%"
         onChange={this.handleCodeChange}
         name={`${this._inputId}__aceEditor`}
-        value={value.code || ''}
-        markers={value.highlightedLines ? this.createMarkers(value.highlightedLines) : null}
+        value={(value && value.code) || ''}
+        markers={value && value.highlightedLines ? this.createMarkers(value.highlightedLines) : null}
         onLoad={this.handleEditorLoad}
         tabSize={2}
         setOptions={ACE_SET_OPTIONS}
