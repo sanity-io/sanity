@@ -7,6 +7,7 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {unset, setIfMissing} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
+import fieldStyles from './styles/Field.css'
 
 export default class ObjectInput extends React.PureComponent {
   static displayName = 'Object'
@@ -76,18 +77,21 @@ export default class ObjectInput extends React.PureComponent {
     const columns = fieldset.options && fieldset.options.columns
     const collapsable = fieldset.options && fieldset.options.collapsable
     return (
-      <Fieldset
-        key={fieldset.name}
-        legend={fieldset.title}
-        description={fieldset.description}
-        level={level + 1}
-        columns={columns}
-        collapsable={collapsable}
-      >
-        {fieldset.fields.map((field, fieldIndex) => {
-          return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
-        })}
-      </Fieldset>
+      <div className={fieldStyles.root}>
+        <Fieldset
+          key={fieldset.name}
+          legend={fieldset.title}
+          description={fieldset.description}
+          level={level + 1}
+          columns={columns}
+          collapsable={collapsable}
+        >
+          {fieldset.fields.map((field, fieldIndex) => {
+            return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
+          })}
+        </Fieldset>
+      </div>
+
     )
   }
 
