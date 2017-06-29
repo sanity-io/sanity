@@ -7,7 +7,6 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import fieldsetStyles from './Fieldset.css'
-import styles from './Styles.css'
 
 import 'brace/mode/text'
 import 'brace/mode/javascript'
@@ -18,26 +17,12 @@ import 'brace/mode/css'
 import 'brace/mode/html'
 
 import 'brace/theme/tomorrow'
+import {ACE_EDITOR_PROPS, ACE_SET_OPTIONS, SUPPORTED_LANGUAGES} from './config'
+import createHighlightMarkers from './createHighlightMarkers'
 
 function compareNumbers(numA, numB) {
   return numA - numB
 }
-
-const SUPPORTED_LANGUAGES = [
-  {title: 'JSX', value: 'jsx'},
-  {title: 'JavaScript', value: 'javascript'},
-  {title: 'JSON', value: 'json'},
-  {title: 'Markdown', value: 'markdown'},
-  {title: 'CSS', value: 'css'},
-  {title: 'HTML', value: 'html'},
-  {title: 'text', value: 'text'}
-]
-
-const ACE_SET_OPTIONS = {
-  useSoftTabs: true,
-  navigateWithinSoftTabs: true /* note only supported by ace v1.2.7 or higher */
-}
-const ACE_EDITOR_PROPS = {$blockScrolling: true}
 
 export default class CodeInput extends PureComponent {
 
@@ -148,28 +133,18 @@ export default class CodeInput extends PureComponent {
     ]))
   }
 
-  createMarkers = rows => rows.map(row => ({
-    startRow: Number(row) - 1,
-    startCol: 0,
-    endRow: Number(row) - 1,
-    endCol: +Infinity,
-    className: styles.highlight,
-    type: 'background',
-    inFront: true
-  }))
-
   renderEditor = () => {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
     return (
       <AceEditor
-        mode={(value && value.language) || fixedLanguage || 'text'}
+        mode={value.language || fixedLanguage || 'text'}
         theme="tomorrow"
         width="100%"
         onChange={this.handleCodeChange}
         name={`${this._inputId}__aceEditor`}
         value={(value && value.code) || ''}
-        markers={value && value.highlightedLines ? this.createMarkers(value.highlightedLines) : null}
+        markers={value && value.highlightedLines ? createHighlightMarkers(value.highlightedLines) : null}
         onLoad={this.handleEditorLoad}
         tabSize={2}
         setOptions={ACE_SET_OPTIONS}

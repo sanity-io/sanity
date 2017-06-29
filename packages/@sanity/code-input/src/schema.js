@@ -1,3 +1,5 @@
+import Preview from './Preview'
+
 export default {
   name: 'code',
   type: 'object',
@@ -21,5 +23,8 @@ export default {
         title: 'Highlighted line'
       }]
     }
-  ]
+  ],
+  preview: {
+    component: Preview
+  }
 }
