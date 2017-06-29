@@ -1,11 +1,11 @@
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
+import AceEditor from 'react-ace'
+import {get, has} from 'lodash'
+import PatchEvent, {set, insert, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
-import PatchEvent, {set, insert, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
-import AceEditor from 'react-ace'
-import {get, has} from 'lodash'
 import fieldsetStyles from './Fieldset.css'
 import styles from './Styles.css'
 
@@ -19,8 +19,8 @@ import 'brace/mode/html'
 
 import 'brace/theme/tomorrow'
 
-function compareNumbers(a, b) { // eslint-disable-line id-length
-  return a - b
+function compareNumbers(numA, numB) {
+  return numA - numB
 }
 
 const SUPPORTED_LANGUAGES = [
@@ -42,7 +42,6 @@ const ACE_EDITOR_PROPS = {$blockScrolling: true}
 export default class CodeInput extends PureComponent {
 
   static propTypes = {
-    type: PropTypes.object,
     level: PropTypes.number.isRequired,
     value: PropTypes.shape({
       _type: PropTypes.string,
@@ -50,6 +49,14 @@ export default class CodeInput extends PureComponent {
       language: PropTypes.string,
       highlightedLines: PropTypes.array
     }),
+    type: PropTypes.shape({
+      name: PropTypes.string,
+      title: PropTypes.string,
+      description: PropTypes.string,
+      fields: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired
+      }))
+    }).isRequired,
     onChange: PropTypes.func
   }
 
@@ -64,7 +71,6 @@ export default class CodeInput extends PureComponent {
   componentWillUnmount() {
     this.editor.removeListener('guttermousedown', this.handleGutterMouseDown)
   }
-
 
   handleCodeChange = code => {
     const {type, onChange} = this.props
@@ -169,7 +175,6 @@ export default class CodeInput extends PureComponent {
         setOptions={ACE_SET_OPTIONS}
         editorProps={ACE_EDITOR_PROPS}
       />
-
     )
   }
 
@@ -179,17 +184,19 @@ export default class CodeInput extends PureComponent {
     if (has(type, 'options.language')) {
       return (
         <Fieldset styles={fieldsetStyles} legend={type.title} description={type.description}>
-          {
-            this.renderEditor()
-          }
+          {this.renderEditor()}
         </Fieldset>
       )
     }
 
-    const currentLanguage = (value && value.language) ? SUPPORTED_LANGUAGES.find(item => item.value === value.language) : null
+    const currentLanguage = (value && value.language)
+      ? SUPPORTED_LANGUAGES.find(item => item.value === value.language)
+      : null
 
     const languageField = type.fields.find(field => field.name === 'language')
-    const languages = currentLanguage ? SUPPORTED_LANGUAGES : [{title: 'Select language'}].concat(SUPPORTED_LANGUAGES)
+    const languages = currentLanguage
+      ? SUPPORTED_LANGUAGES
+      : [{title: 'Select language'}].concat(SUPPORTED_LANGUAGES)
 
     return (
       <Fieldset legend={type.title} description={type.description}>
@@ -200,10 +207,9 @@ export default class CodeInput extends PureComponent {
           items={languages}
           level={level + 1}
         />
+
         <FormField label={type.title} level={level + 1}>
-          {
-            this.renderEditor()
-          }
+          {this.renderEditor()}
         </FormField>
       </Fieldset>
     )
