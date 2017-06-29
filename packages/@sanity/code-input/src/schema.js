@@ -25,6 +25,10 @@ export default {
     }
   ],
   preview: {
+    select: {
+      code: 'code',
+      language: 'language'
+    },
     component: Preview
   }
 }

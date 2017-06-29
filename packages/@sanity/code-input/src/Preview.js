@@ -25,6 +25,7 @@ export default class CodePreview extends PureComponent {
 
   static propTypes = {
     type: PropTypes.object,
+    layout: PropTypes.string,
     value: PropTypes.shape({
       _type: PropTypes.string,
       code: PropTypes.string,
@@ -34,6 +35,21 @@ export default class CodePreview extends PureComponent {
   }
 
   render() {
+    const {layout} = this.props
+    return layout === 'block'
+      ? this.renderBlockPreview()
+      : this.renderDefaultPreview()
+  }
+
+  renderDefaultPreview() {
+    const {value} = this.props
+    return (
+      <div className={styles.defaultPreviewContainer}>
+        <div>{(value && value.language) ? getLanguageTitle(value.language) : 'Unknown language'}</div>
+      </div>
+    )
+  }
+  renderBlockPreview() {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
     return (
