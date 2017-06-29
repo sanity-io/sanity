@@ -138,7 +138,7 @@ export default class CodeInput extends PureComponent {
     const fixedLanguage = get(type, 'options.language')
     return (
       <AceEditor
-        mode={value.language || fixedLanguage || 'text'}
+        mode={(value && value.language) || fixedLanguage || 'text'}
         theme="tomorrow"
         width="100%"
         onChange={this.handleCodeChange}
