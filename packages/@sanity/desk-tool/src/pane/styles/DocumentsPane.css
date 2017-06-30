@@ -2,69 +2,15 @@
 
 .root {
   display: block;
-  height: 100%;
-  position: relative;
-  max-width: 100%;
-  width: 100%;
-  padding-top: 2rem;
-
-  @media (--screen-medium) {
-    min-width: 14rem;
-    float: left;
-    width: auto;
-    padding-top: 0;
-    padding-left: var(--medium-padding);
-    max-width: 25em;
-  }
-}
-
-.isActive {
-  composes: root;
-}
-
-.isInactive {
-  composes: root;
-  display: none;
-  @media (--screen-medium) {
-    display: block;
-  }
-}
-
-.list-layout--default {
-  /*display: block;*/
-}
-
-.list-layout--detail {
-  width: 20rem;
-}
-
-.list-layout--card {
-  width: 30rem;
-  max-width: 80vw;
-}
-
-.list-layout--media {
-  width: 30rem;
-  max-width: 80vw;
-}
-
-.listViewContainer {
-  height: calc(100vh - 8rem);
-  clear: both;
-}
-
-.menuButton {
-  font-size: 1rem;
   position: absolute;
   top: 0;
-  right: -0.25rem;
-}
-
-.menu {
-  position: absolute;
-  top: 2em;
-  right: 0.5em;
+  left: 0;
+  height: 100%;
   width: 100%;
+  bottom: 0;
+  right: 0;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .spinner {
@@ -84,37 +30,28 @@
   color: var(--link-color);
 }
 
-.heading {
-  line-height: 3rem;
-  padding-left: var(--small-padding);
-  font-size: 1em;
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-  lost-utility: clearfix;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-
-  @media (--screen-medium) {
-    padding-left: 0;
-  }
+.item {
+  position: relative;
 }
 
-.listContainer {
-  composes: listContainer from './Pane.css';
-  height: 100%;
+.selectedItem {
+  composes: item;
+  background-color: var(--selected-item-color);
+  color: var(--selected-item-color--inverted);
 }
 
 .item {
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
 }
 
-.top {
-  composes: top from './Pane.css';
-  display: flex;
-}
-
-.heading {
-  composes: heading from './Pane.css';
+.itemStatus {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  z-index: 1;
+  @nest .selectedItem & {
+    color: var(--selected-item-color--inverted);
+  }
 }

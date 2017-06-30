@@ -3,9 +3,18 @@
 .item {
   position: relative;
   color: #999;
+  margin: 0;
+  padding: 0;
+}
+
+.selected {
+  composes: item;
+  color: #000;
 }
 
 .link {
+  margin: 0;
+  padding: 0;
   line-height: 2em;
   text-decoration: none;
   color: inherit;

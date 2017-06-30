@@ -3,6 +3,7 @@ import React from 'react'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import styles from './MediaRender.css'
 import ImageLoader from '../../utilities/ImageLoader'
+import ImageAreaIcon from 'part:@sanity/base/image-area-icon'
 
 export default class MediaRender extends React.Component {
   static propTypes = {
@@ -23,7 +24,7 @@ export default class MediaRender extends React.Component {
 
   static defaultProps = {
     size: {width: 100},
-    fallbackText: 'Nothing here…',
+    fallbackText: 'No title…',
     aspect: 1
   }
 
@@ -67,9 +68,14 @@ export default class MediaRender extends React.Component {
 
     return (
       <div className={styles.root}>
-        <div className={styles.noMedia}>
-          <div className={styles.noMediaText}>
-            {fallbackText}
+        <div className={styles.noMediaContainer}>
+          <div className={styles.noMedia}>
+            <div className={styles.noImageIcon}>
+              <ImageAreaIcon />
+            </div>
+            <div className={styles.noMediaText}>
+              {fallbackText}
+            </div>
           </div>
         </div>
       </div>

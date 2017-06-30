@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
-import styles from './styles/EditorPane.css'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
 import FormBuilder, {checkout} from 'part:@sanity/form-builder'
 import {throttle, omit} from 'lodash'
@@ -61,7 +60,7 @@ function isRecoverable(draft, published) {
   return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
 }
 
-export default class EditorPane extends React.PureComponent {
+export default class EditorPane extends React.Component {
   static propTypes = {
     documentId: PropTypes.string.isRequired,
     typeName: PropTypes.string.isRequired
@@ -240,7 +239,7 @@ export default class EditorPane extends React.PureComponent {
 
   renderDeleted() {
     return (
-      <div className={styles.deletedMessage}>
+      <div>
         <h3>This document just got deleted</h3>
         <p>You can undo deleting it until you close this window/tab</p>
         <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
@@ -257,23 +256,21 @@ export default class EditorPane extends React.PureComponent {
     }
 
     return (
-      <div className={styles.root}>
-        <Editor
-          type={schema.get(typeName)}
-          published={published.snapshot}
-          draft={draft.snapshot}
-          isLoading={draft.isLoading || published.isLoading}
-          isSaving={isSaving}
-          isPublishing={isPublishing}
-          isUnpublishing={isUnpublishing}
-          isCreatingDraft={isCreatingDraft}
-          onDelete={this.handleDelete}
-          onDiscardDraft={this.handleDiscardDraft}
-          onPublish={this.handlePublish}
-          onUnpublish={this.handleUnpublish}
-          onChange={this.handleChange}
-        />
-      </div>
+      <Editor
+        type={schema.get(typeName)}
+        published={published.snapshot}
+        draft={draft.snapshot}
+        isLoading={draft.isLoading || published.isLoading}
+        isSaving={isSaving}
+        isPublishing={isPublishing}
+        isUnpublishing={isUnpublishing}
+        isCreatingDraft={isCreatingDraft}
+        onDelete={this.handleDelete}
+        onDiscardDraft={this.handleDiscardDraft}
+        onPublish={this.handlePublish}
+        onUnpublish={this.handleUnpublish}
+        onChange={this.handleChange}
+      />
     )
   }
 }

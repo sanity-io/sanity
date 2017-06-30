@@ -10,7 +10,7 @@ export default class ListView extends React.PureComponent {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,
     getItemKey: PropTypes.func,
-    listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
+    listLayout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
     selectedItem: PropTypes.object
   }
 

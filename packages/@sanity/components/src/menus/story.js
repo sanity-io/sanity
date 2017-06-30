@@ -3,7 +3,7 @@ import Menu from 'part:@sanity/components/menus/default'
 //import StateMenu from 'part:@sanity/components/menus/state'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
-import {withKnobs, boolean, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, object, boolean, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {range} from 'lodash'
 import Chance from 'chance'
@@ -26,21 +26,31 @@ storiesOf('Menus')
       }
     })
 
+    const origins = {
+      'top-left': 'Top Left',
+      'top-right': 'Top Right',
+      'bottom-right': 'Bottom Right',
+      'bottom-left': 'Bottom left',
+    }
+
     return (
       <Sanity part="part:@sanity/components/menus/default" propTables={[Menu]}>
         <div
           style={{
-            width: '300px',
+            width: '70vw',
+            height: '70vh',
+            border: '1px dotted #ccc',
             position: 'relative'
           }}
         >
           <div style={{position: 'absolute', top: `${top}px`, left: `${left}px`}}>
             <Menu
-              onAction={action('onAction')}
-              onClose={action('onClose')}
-              onClickOutside={action('Clicked outside')}
+              onAction={action('prop:onAction')}
+              onClose={action('prop:onClose')}
+              onClickOutside={action('prop:onClickOutside')}
               items={items}
-              opened={boolean('opened', true)}
+              origin={select('prop:origin', origins)}
+              isOpen={boolean('prop: isOpen', true)}
             />
           </div>
         </div>

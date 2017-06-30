@@ -163,6 +163,7 @@
   line-height: var(--switch-label-height);
   margin: 0;
   left: calc(var(--switch-track-length) + 0.5rem);
+  width: calc(100% - var(--switch-track-length) + 0.5rem);
 
   @nest .disabled & {
     color: var(--switch-disabled-thumb-color);

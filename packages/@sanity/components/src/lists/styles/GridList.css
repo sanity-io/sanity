@@ -34,18 +34,22 @@
     padding: 0;
     align-content: flex-start;
     justify-content: flex-start;
-    flex-flow: row wrap;
+    margin-right: calc(var(--small-padding) * -1);
   }
 
   @nest .masonry & {
     display: block;
     columns: 4;
     column-gap: 0;
-    padding: 0.5rem;
+    margin-left: 0.25rem;
+  }
+
+  @nest .masonry.containerQuery__xsmall & {
+    columns: 1;
   }
 
   @nest .masonry.containerQuery__small & {
-    columns: 1;
+    columns: 2;
   }
 
   @nest .masonry.containerQuery__medium & {
@@ -53,6 +57,10 @@
   }
 
   @nest .masonry.containerQuery__large & {
+    columns: 4;
+  }
+
+  @nest .masonry.containerQuery__xlarge & {
     columns: 5;
   }
 }
@@ -75,28 +83,38 @@
   @nest .default & {
     display: block;
     list-style: none;
-    flex-basis: 11em;
+    flex-basis: 5rem;
+    box-sizing: border-box;
     margin-right: var(--small-padding);
     margin-bottom: var(--small-padding);
   }
 
+  @nest .default.containerQuery__xsmall & {
+    flex-basis: calc(100% / 2 - var(--small-padding));
+  }
+
   @nest .default.containerQuery__small & {
-    flex-basis: calc(30% - var(--small-padding));
+    flex-basis: calc(100% / 3 - var(--small-padding));
   }
 
   @nest .default.containerQuery__medium & {
-    flex-basis: calc(20% - var(--small-padding));
+    flex-basis: calc(100% / 5 - var(--small-padding));
   }
 
   @nest .default.containerQuery__large & {
-    flex-basis: calc(5% - var(--small-padding));
+    flex-basis: calc(100% / 8 - var(--small-padding));
+  }
+
+  @nest .default.containerQuery__xlarge & {
+    flex-basis: calc(100% / 10 - var(--small-padding));
   }
 
   @nest .masonry & {
     display: block;
-    padding: 0 0.25rem;
-    padding-bottom: 0.5rem;
     break-inside: avoid;
+    box-shadow: 0 2px 5px color(var(--gray-base) a(50%));
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
   }
 
   @nest .isSortable & {
