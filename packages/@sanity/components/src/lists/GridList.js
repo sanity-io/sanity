@@ -177,24 +177,16 @@ class GridList extends React.Component {
     ])
 
     const query = {
-      [styles.containerQuery__xsmall]: {
-        minWidth: 0,
-        maxWidth: 180
-      },
       [styles.containerQuery__small]: {
-        minWidth: 181,
-        maxWidth: 480
+        minWidth: 0,
+        maxWidth: 220
       },
       [styles.containerQuery__medium]: {
-        minWidth: 480,
-        maxWidth: 768
+        minWidth: 221,
+        maxWidth: 1000,
       },
       [styles.containerQuery__large]: {
-        minWidth: 769,
-        maxWidth: 1200
-      },
-      [styles.containerQuery__xlarge]: {
-        minWidth: 1201
+        minWidth: 1001,
       }
     }
 

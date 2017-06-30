@@ -13,7 +13,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     renderItem: PropTypes.func,
     className: PropTypes.string,
     getItemKey: PropTypes.func,
-    layout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
+    layout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
   }
 
   static defaultProps = {

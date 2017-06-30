@@ -2,7 +2,20 @@
 
 .root {
   display: block;
+  height: 100%;
+  position: relative;
+  max-width: 100%;
+  width: 100%;
+  padding-top: 2rem;
 
+  @media (--screen-medium) {
+    min-width: 14rem;
+    float: left;
+    width: auto;
+    padding-top: 0;
+    padding-left: var(--medium-padding);
+    max-width: 25em;
+  }
 }
 
 .isActive {
@@ -35,6 +48,20 @@
   max-width: 80vw;
 }
 
+.menuButton {
+  font-size: 1rem;
+  position: absolute;
+  top: 0;
+  right: -0.25rem;
+}
+
+.menu {
+  position: absolute;
+  top: 2em;
+  right: 0.5em;
+  width: 100%;
+}
+
 .spinner {
   height: 100vh;
   transform: translateY(-30%);
@@ -46,4 +73,33 @@
   top: 13%;
   left: 0;
   width: 100%;
+}
+
+.emptyCreateNew {
+  color: var(--link-color);
+}
+
+.heading {
+  line-height: 3rem;
+  padding-left: var(--small-padding);
+  font-size: 1em;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  lost-utility: clearfix;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  @media (--screen-medium) {
+    padding-left: 0;
+  }
+}
+
+.top {
+  height: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--component-border-color);
+  margin-bottom: var(--medium-padding);
 }

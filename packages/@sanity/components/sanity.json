@@ -788,38 +788,6 @@
       "path": "utilities/ActivateOnFocus.js"
     },
     {
-      "name": "part:@sanity/components/panes/default",
-      "description": "Default Pane"
-    },
-    {
-      "implements": "part:@sanity/components/panes/default",
-      "path": "panes/DefaultPane.js"
-    },
-    {
-      "name": "part:@sanity/components/panes/controller",
-      "description": "Panes controller"
-    },
-    {
-      "implements": "part:@sanity/components/panes/controller",
-      "path": "panes/Controller.js"
-    },
-    {
-      "name": "part:@sanity/components/panes/split-controller",
-      "description": "Resizeable split controller for panes"
-    },
-    {
-      "implements": "part:@sanity/components/panes/split-controller",
-      "path": "panes/SplitController.js"
-    },
-    {
-      "name": "part:@sanity/components/panes/split-pane-wrapper",
-      "description": "Resizeable split pane wrapper"
-    },
-    {
-      "implements": "part:@sanity/components/panes/split-pane-wrapper",
-      "path": "panes/SplitPaneWrapper.js"
-    },
-    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
@@ -922,10 +890,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "utilities/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "panes/story.js"
     }
 
   ]

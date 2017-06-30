@@ -1,280 +1,123 @@
+import cls from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
+import PaneMenuContainer from './PaneMenuContainer'
 import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import ListView from './ListView'
-import {partition} from 'lodash'
-import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
-import EditIcon from 'part:@sanity/base/edit-icon'
-import QueryContainer from 'part:@sanity/base/query-container'
-import {DRAFTS_FOLDER, getPublishedId, isDraftId, getDraftId} from '../utils/draftUtils'
-import {isPublishedId} from '../../lib/utils/draftUtils'
-import schema from 'part:@sanity/base/schema'
-import Preview from 'part:@sanity/base/preview'
-import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
-import Pane from 'part:@sanity/components/panes/default'
-import DocumentsPaneMenu from './DocumentsPaneMenu'
-import Button from 'part:@sanity/components/buttons/default'
-import PlusIcon from 'part:@sanity/base/plus-icon'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 
-const NOOP = () => {} // eslint-disable-line
+const NOOP = () => {}
 
-function readListLayoutSettings() {
-  return JSON.parse(window.localStorage.getItem('desk-tool.listlayout-settings') || '{}')
-}
-
-function writeListLayoutSettings(settings) {
-  window.localStorage.setItem('desk-tool.listlayout-settings', JSON.stringify(settings))
-}
-
-function getDocumentKey(document) {
-  return getPublishedId(document._id)
-}
-
-function removePublishedWithDrafts(documents) {
-
-  const [draftIds, publishedIds] = partition(documents.map(doc => doc._id), isDraftId)
-
-  return documents
-    .map(doc => {
-      const publishedId = getPublishedId(doc._id)
-      const draftId = getDraftId(doc._id)
-      return ({
-        ...doc,
-        hasPublished: publishedIds.includes(publishedId),
-        hasDraft: draftIds.includes(draftId)
-      })
-    })
-    .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
-}
-
-export default withRouterHOC(class DocumentsPane extends React.PureComponent {
+export default withRouterHOC(class Pane extends React.PureComponent {
   static propTypes = {
-    selectedType: PropTypes.string,
-    selectedDocumentId: PropTypes.string,
-    schemaType: PropTypes.object,
-    isCollapsed: PropTypes.bool,
+    loading: PropTypes.bool,
+    items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+    renderItem: PropTypes.func,
+    getItemKey: PropTypes.func,
+    onSetListLayout: PropTypes.func,
+    onSetSorting: PropTypes.func,
+    listLayout: PropTypes.oneOf(['default', 'media', 'cards', 'media']),
+    type: PropTypes.shape({
+      title: PropTypes.string,
+      name: PropTypes.string
+    }),
     router: PropTypes.shape({
       state: PropTypes.shape({
-        selectType: PropTypes.string,
-        selectedType: PropTypes.string
+        selectType: PropTypes.string
       })
     })
   }
 
   static defaultProps = {
+    listLayout: 'default',
     loading: false,
-    isCollapsed: false,
     published: [],
     drafts: [],
     onSetSorting: NOOP,
     onSetListLayout: NOOP
   }
 
-  state = {
-    listLayoutSettings: readListLayoutSettings(),
-    sorting: '_updatedAt desc',
-    menuIsOpen: false
-  }
-
   static contextTypes = {
     __internalRouter: PropTypes.object
   }
 
-
-  handleSetListLayout = listLayout => {
-    const {selectedType} = this.props.router.state
-    const nextSettings = Object.assign(readListLayoutSettings(), {
-      [selectedType]: listLayout
-    })
-    writeListLayoutSettings(nextSettings)
-    this.setState({listLayoutSettings: nextSettings})
-  }
-
-  getListLayoutForType(typeName) {
-    return this.state.listLayoutSettings[typeName] || 'default'
-  }
-
-  handleSetSort = sorting => {
-    this.setState({
-      sorting: sorting
-    })
-  }
-
-  handleToggleMenu = () => {
-    this.setState({
-      menuIsOpen: !this.state.menuIsOpen
-    })
-  }
-
-  handleCloseMenu = () => {
-    this.setState({
-      menuIsOpen: !this.state.menuIsOpen
-    })
-  }
-
   handleGoToCreateNew = () => {
-    const {selectedType} = this.props
-    const type = schema.get(selectedType)
     const url = this.context.__internalRouter.resolveIntentLink('create', {
-      type: type.name
+      type: this.props.type.name
     })
     this.context.__internalRouter.navigateUrl(url)
   }
 
-  renderDocumentsPaneMenu = () => {
-    return (
-      <DocumentsPaneMenu
-        onSetListLayout={this.handleSetListLayout}
-        onSetSorting={this.handleSetSorting}
-        onGoToCreateNew={this.handleGoToCreateNew}
-        onMenuClose={this.handleCloseMenu}
-        onClickOutside={this.handleCloseDocumentsPaneMenu}
-        isOpen={this.state.menuIsOpen}
-      />
-    )
-  }
-
-
-  renderDocumentPaneItem = (item, index, options = {}) => {
-    const {selectedType, selectedDocumentId} = this.props
-    const listLayout = this.getListLayoutForType(selectedType)
-    const type = schema.get(selectedType)
-    const linkState = {
-      selectedDocumentId: getPublishedId(item._id),
-      selectedType: type.name,
-      action: 'edit'
-    }
-
-    const isSelected = selectedDocumentId && getPublishedId(item._id) === getPublishedId(selectedDocumentId)
-
-    return (
-      <StateLinkListItem
-        state={linkState}
-        highlighted={options.isHighlighted}
-        hasFocus={options.hasFocus}
-      >
-        <div className={isSelected ? styles.selectedItem : styles.item}>
-          <Preview
-            value={item}
-            layout={listLayout}
-            type={type}
-          />
-          <div className={styles.itemStatus}>
-            {
-              !item.hasPublished && (
-                <i title="Not published"><VisibilityOffIcon /></i>
-              )
-            }
-            {
-              item.hasDraft && item.hasPublished && (
-                <i title="Has changes not yet published"><EditIcon /></i>
-              )
-            }
-          </div>
-        </div>
-      </StateLinkListItem>
-    )
-  }
-
-  renderFunctions = isCollapsed => {
-    const {selectedType} = this.props
-    const type = schema.get(selectedType)
-    return (
-      <Button
-        title={`Create new ${type.name}`}
-        icon={PlusIcon}
-        color="primary"
-        kind="simple"
-        onClick={this.handleGoToCreateNew}
-      />
-    )
-  }
-
   render() {
     const {
+      loading,
+      listLayout,
+      items,
+      type,
       router,
-      selectedDocumentId,
-      schemaType,
-      isCollapsed
+      onSetListLayout,
+      onSetSorting,
+      renderItem,
+      getItemKey
     } = this.props
 
+    const {selectedType, action, selectedDocumentId} = router.state
 
-    const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${this.state.sorting}) [0...10000] {_id, _type}`
+    const isActive = selectedType && !action && !selectedDocumentId
+    const paneClasses = cls([
+      isActive ? styles.isActive : styles.isInactive,
+      styles[`list-layout--${listLayout}`]
+    ])
+
+    const hasDocuments = items.length > 0
 
     return (
-      <Pane
-        {...this.props}
-        title={router.state.selectedType}
-        renderMenu={this.renderDocumentsPaneMenu}
-        renderFunctions={this.renderFunctions}
-        defaultWidth={200}
-        isCollapsed={isCollapsed}
-        onMenuToggle={this.handleToggleMenu}
-      >
-        <QueryContainer
-          query={query}
-          params={params}
-          type={schemaType}
-          selectedId={selectedDocumentId}
-          listLayout={this.getListLayoutForType(schemaType.name)}
-        >
-          {({result, loading, error, onRetry, type, listLayout}) => {
-            if (error) {
-              return (
-                <Snackbar
-                  kind="danger"
-                  action={{title: 'Retry'}}
-                  onAction={onRetry}
-                >
-                  <div>An error occurred while loading items:</div>
-                  <div>{error.message}</div>
-                </Snackbar>
-              )
-            }
+      <div className={paneClasses}>
+        <div className={styles.top}>
+          <div className={styles.heading}>
+            {type.title}
+          </div>
+          <PaneMenuContainer
+            onSetListLayout={onSetListLayout}
+            onSetSorting={onSetSorting}
+            onGoToCreateNew={this.handleGoToCreateNew}
+          />
+        </div>
 
-            const items = removePublishedWithDrafts(result ? result.documents : [])
+        {loading && (
+          <div className={styles.spinner}>
+            <Spinner center message="Loading items…" />
+          </div>
+        )
+        }
 
-            return (
-              <div className={styles.root}>
-                {loading && (
-                  <div className={styles.spinner}>
-                    <Spinner center message="Loading items…" />
-                  </div>
-                )
-                }
+        {!loading && !hasDocuments && (
+          <div className={styles.empty}>
+            <h3>Nothing here. Yet…</h3>
+            <IntentLink
+              className={styles.emptyCreateNew}
+              title={`Create new ${type.title}`}
+              intent="create"
+              params={{type: type.name}}
+            >
+              Create new {type.title}
+            </IntentLink>
+          </div>
+        )}
 
-                {!loading && !items && (
-                  <div className={styles.empty}>
-                    <h3>Nothing here. Yet…</h3>
-                    <IntentLink
-                      className={styles.emptyCreateNew}
-                      title={`Create new ${type.title}`}
-                      intent="create"
-                      params={{type: type.name}}
-                    >
-                      Create new {type.title}
-                    </IntentLink>
-                  </div>
-                )}
+        {hasDocuments && (
+          <div className={styles.listViewContainer}>
+            <ListView
+              items={items}
+              getItemKey={getItemKey}
+              renderItem={renderItem}
+              listLayout={listLayout}
+            />
+          </div>
+        )}
 
-                {items && (
-                  <ListView
-                    items={items}
-                    getItemKey={getDocumentKey}
-                    renderItem={this.renderDocumentPaneItem}
-                    listLayout={listLayout}
-                  />
-                )}
-
-              </div>
-            )
-          }}
-        </QueryContainer>
-      </Pane>
+      </div>
     )
   }
 })

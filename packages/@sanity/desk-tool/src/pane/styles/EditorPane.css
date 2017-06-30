@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  /* The container is in SchemaPaneResolver */
+}
+
+.deletedMessage {
+  padding: 1em;
+}
