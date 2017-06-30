@@ -44,8 +44,7 @@ export default class EditItemPopOver extends React.Component {
   static defaultProps = {
     onClose() {}, // eslint-disable-line
     actions: [],
-    isOpen: true,
-    scrollContainerId: 'Sanity_Default_DeskTool_Editor_ScrollContainer'
+    isOpen: true
   };
 
   _rootElement = null
