@@ -22,7 +22,7 @@ function debounceRAF(fn) {
 class DefaultMenu extends React.Component {
   static propTypes = {
     onAction: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool,
+    opened: PropTypes.bool,
     origin: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
     ripple: PropTypes.bool,
     fullWidth: PropTypes.bool,
@@ -42,8 +42,6 @@ class DefaultMenu extends React.Component {
   static defaultProps = {
     menuOpened: false,
     origin: 'top-left',
-    isOpen: false,
-    fullWidth: false,
     icon: false,
     ripple: true,
     onClickOutside() {},
@@ -59,9 +57,7 @@ class DefaultMenu extends React.Component {
   }
 
   handleClickOutside = evt => {
-    if (this.props.isOpen) {
-      this.props.onClickOutside(evt)
-    }
+    this.props.onClickOutside(evt)
   }
 
   componentDidMount() {
@@ -88,25 +84,23 @@ class DefaultMenu extends React.Component {
     const {selectedItem} = this.state
     const currentIndex = items.indexOf(selectedItem) || 0
 
-    const isOpen = this.props.isOpen || this.props.opened // eslint-disable-line
-
-    if (event.key == 'Escape' && isOpen) {
+    if (event.key == 'Escape' && this.props.opened) {
       this.props.onClose()
     }
 
-    if (event.key == 'ArrowDown' && isOpen && currentIndex < items.length - 1) {
+    if (event.key == 'ArrowDown' && this.props.opened && currentIndex < items.length - 1) {
       this.setState({
         focusedItem: this.props.items[currentIndex + 1]
       })
     }
 
-    if (event.key == 'ArrowUp' && isOpen && currentIndex > 0) {
+    if (event.key == 'ArrowUp' && this.props.opened && currentIndex > 0) {
       this.setState({
         focusedItem: this.props.items[currentIndex - 1]
       })
     }
 
-    if (event.key == 'Enter' && isOpen && this.state.selectedItem) {
+    if (event.key == 'Enter' && this.props.opened && this.state.selectedItem) {
       this.props.onAction(this.props.items[currentIndex])
     }
 
@@ -159,16 +153,14 @@ class DefaultMenu extends React.Component {
 
   render() {
     const {focusedItem} = this.state
-    const {items, origin, ripple, fullWidth, className, opened} = this.props
+    const {items, origin, ripple, fullWidth, className} = this.props
     const originStyle = styles[`origin__${origin}`] ? styles[`origin__${origin}`] : ''
-
-    const isOpen = opened || this.props.isOpen
 
     return (
       <div
         ref={this.setRootElement}
         className={`
-          ${isOpen ? styles.isOpen : styles.closed}
+          ${this.props.opened ? styles.opened : styles.closed}
           ${originStyle}
           ${fullWidth && styles.fullWidth ? styles.fullWidth : ''}
           ${className || ''}

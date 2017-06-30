@@ -6,9 +6,8 @@ import IconSortAlphaDesc from 'part:@sanity/base/sort-alpha-desc-icon'
 import IconList from 'part:@sanity/base/bars-icon'
 import IconDetails from 'part:@sanity/base/th-list-icon'
 import IconThumbnails from 'part:@sanity/base/th-large-icon'
-// import IconSettings from 'part:@sanity/base/cog-icon'
+import IconSettings from 'part:@sanity/base/cog-icon'
 import IconNew from 'part:@sanity/base/plus-circle-icon'
-
 const menuItems = [
   {
     title: 'Alphabetical',
@@ -65,39 +64,20 @@ const menuItems = [
   }
 ]
 
-export default class DocumentsPaneMenu extends React.PureComponent {
-
-  static propTypes = {
-    onSetListLayout: PropTypes.func,
-    onSetSorting: PropTypes.func,
-    onGoToCreateNew: PropTypes.func,
-    onMenuClose: PropTypes.func
-  }
-
-  handleMenuAction = item => {
-    if (item.action === 'setListLayout') {
-      this.props.onSetListLayout(item.key)
-    }
-
-    if (item.action === 'setSorting') {
-      this.props.onSetSorting(item.sorting)
-    }
-
-    if (item.action === 'createNew') {
-      this.props.onGoToCreateNew()
-    }
-
-    this.props.onMenuClose()
-  }
-
-  render() {
-    return (
-      <Menu
-        onAction={this.handleMenuAction}
-        items={menuItems}
-        origin="top-right"
-        {...this.props}
-      />
-    )
-  }
+function PaneMenu(props) {
+  return (
+    <Menu
+      onAction={props.onAction}
+      opened={props.opened}
+      items={menuItems}
+      origin="top-right"
+    />
+  )
 }
+
+PaneMenu.propTypes = {
+  opened: PropTypes.bool,
+  onAction: PropTypes.func
+}
+
+export default PaneMenu

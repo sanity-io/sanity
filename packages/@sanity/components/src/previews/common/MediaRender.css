@@ -35,33 +35,20 @@
   transform: translateY(-50%);
 }
 
-.noMediaContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
+.noMedia {
   height: 100%;
   width: 100%;
-  background-color: var(--gray-lighter);
+  background-color: var(--gray-light);
+  position: relative;
 }
 
-.noMedia {
+.noMediaText {
+  display: block;
   position: absolute;
   font-size: var(--font-size-xsmall);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.noImageIcon {
-  font-size: 2rem;
-  opacity: 0.2;
-  text-align: center;
-}
-
-.noMediaText {
-  display: block;
   text-align: center;
   opacity: 0.5;
-  font-size: 0.6rem;
-  line-height: 1em;
 }

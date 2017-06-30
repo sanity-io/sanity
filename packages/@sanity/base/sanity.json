@@ -710,9 +710,6 @@
     {
       "implements": "part:@sanity/base/plugin-icon",
       "path": "components/icons/Plug.js"
-    },{
-      "implements": "part:@sanity/base/image-area-icon",
-      "path": "components/icons/ImageArea.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
