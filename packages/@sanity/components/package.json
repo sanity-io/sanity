@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.107.13",
+  "version": "0.107.14",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "^0.107.13",
+    "@sanity/date-input": "^0.107.14",
     "@sanity/imagetool": "^0.106.21",
     "@sanity/observable": "^0.106.21",
     "attr-accept": "^1.1.0",
@@ -50,12 +50,12 @@
     "react-element-query": "^3.0.2",
     "react-ink": "^6.1.0",
     "react-portal": "^3.0.0",
-    "react-split-pane": "^0.1.63",
     "react-sortable-hoc": "^0.6.3",
+    "react-split-pane": "^0.1.63",
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.107.13",
+    "@sanity/base": "^0.107.14",
     "@sanity/check": "^0.107.0",
     "@sanity/core": "^0.107.9",
     "eslint": "^3.19.0",
