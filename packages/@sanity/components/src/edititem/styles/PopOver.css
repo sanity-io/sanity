@@ -170,7 +170,6 @@
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
-  overflow-y: auto;
 }
 
 .contentWithScroll {
