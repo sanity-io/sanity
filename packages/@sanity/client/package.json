@@ -21,7 +21,7 @@
     "@sanity/observable": "^0.106.21",
     "create-error-class": "^3.0.2",
     "deep-assign": "^2.0.0",
-    "get-it": "^2.0.0",
+    "get-it": "^2.0.1",
     "in-publish": "^2.0.0",
     "object-assign": "^4.1.1"
   },
@@ -36,12 +36,12 @@
     "gzip-size": "^3.0.0",
     "hard-rejection": "^1.0.0",
     "nock": "^9.0.5",
-    "nyc": "^10.1.2",
+    "nyc": "^11.0.3",
     "pretty-bytes": "^4.0.2",
     "rimraf": "^2.6.1",
     "sse-channel": "^2.0.6",
-    "tape": "^4.6.2",
-    "uglify-js": "^3.0.1",
+    "tape": "^4.7.0",
+    "uglify-js": "^3.0.23",
     "uglifyify": "^3.0.4"
   },
   "repository": {
