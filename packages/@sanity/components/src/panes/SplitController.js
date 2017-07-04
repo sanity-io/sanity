@@ -18,25 +18,50 @@ export default class PanesSplitController extends React.Component {
     onSholdExpand() {}
   }
 
+  isResizing = false
+
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
       this.props.onSholdCollapse(pane)
     } else {
       this.props.onSholdExpand(pane)
     }
-  }, 200)
+
+    this.lastPaneSize = size
+  }, 50)
+
+  handleDragStarted = () => {
+    this.isResizing = true
+  }
+
+  handleDragFinished = () => {
+    this.isResizing = false
+  }
 
   renderSplitPane = (pane1, pane2, restMinWidth, restDefaultWidth) => {
     const isCollapsed = pane1.props.isCollapsed
+
+    // Handle size override when collapsing
+    let size = isCollapsed ? COLLAPSED_WIDTH : undefined
+    if (this.isResizing) {
+      size = undefined
+    } else if (isCollapsed) {
+      size = COLLAPSED_WIDTH
+    } else {
+      size = pane1.props.defaultWidth
+    }
+
     return (
       <SplitPane
         minSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.minWidth}
         defaultSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.defaultWidth}
-        size={isCollapsed ? COLLAPSED_WIDTH : undefined}
+        size={size}
         resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
         allowResize
         className={styles.splitPane}
-        onChange={size => this.handleSplitPaneChange(size, pane1)}
+        onDragStarted={this.handleDragStarted}
+        onDragFinished={this.handleDragFinished}
+        onChange={newSize => this.handleSplitPaneChange(newSize, pane1)}
       >
         <div
           className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}
