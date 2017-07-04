@@ -1,4 +1,5 @@
 const assign = require('object-assign')
+const queryString = require('../http/queryString')
 const validators = require('../validators')
 
 function AssetsClient(client) {
@@ -53,6 +54,28 @@ assign(AssetsClient.prototype, {
       method: 'DELETE',
       url: `/assets/${assetEndpoint}/${dataset}/${docId}`
     })
+  },
+
+  getImageUrl(ref, query) {
+    const id = ref._ref || ref
+    if (typeof id !== 'string') {
+      throw new Error(
+        'getImageUrl() needs either an object with a _ref, or a string with an asset document ID'
+      )
+    }
+
+    if (!/^image-[A-Za-z0-9]+-\d+x\d+-[a-z]{1,5}$/.test(id)) {
+      throw new Error(
+        `Unsupported asset ID "${id}". URL generation only works for auto-generated IDs.`
+      )
+    }
+
+    const [, assetId, size, format] = id.split('-')
+
+    validators.hasDataset(this.client.clientConfig)
+    const {projectId, dataset} = this.client.clientConfig
+    const qs = query ? queryString(query) : ''
+    return `https://cdn.sanity.io/images/${projectId}/${dataset}/${assetId}-${size}.${format}${qs}`
   }
 })
 

@@ -1165,6 +1165,45 @@ test('delete assets given whole asset document', t => {
   }, ifError(t))
 })
 
+test('can get an image URL from a reference ID string', t => {
+  const url = getClient().assets.getImageUrl('image-someImageId-200x300-png')
+  t.equal(url, 'https://cdn.sanity.io/images/bf1942/foo/someImageId-200x300.png')
+  t.end()
+})
+
+test('can get an image URL from a reference object', t => {
+  const url = getClient().assets.getImageUrl({_ref: 'image-someImageId-200x300-png'})
+  t.equal(url, 'https://cdn.sanity.io/images/bf1942/foo/someImageId-200x300.png')
+  t.end()
+})
+
+test('can get an image URL with added query string', t => {
+  const url = getClient().assets.getImageUrl('image-someImageId-200x300-png', {
+    w: 320,
+    fit: 'crop',
+    crop: 'bottom,right'
+  })
+
+  const base = 'https://cdn.sanity.io/images/bf1942/foo/someImageId-200x300.png'
+  const qs = 'w=320&fit=crop&crop=bottom%2Cright'
+  t.equal(url, [base, qs].join('?'))
+  t.end()
+})
+
+test('throws if trying to get image URL from object without ref', t => {
+  t.throws(() => {
+    getClient().assets.getImageUrl({id: 'image-someImageId-200x300-png'})
+  }, /object with a _ref/)
+  t.end()
+})
+
+test('throws if trying to get image URL from string in invalid format', t => {
+  t.throws(() => {
+    getClient().assets.getImageUrl('file-someImageId-200x300-png')
+  }, /Unsupported asset ID/)
+  t.end()
+})
+
 /*****************
  * AUTH          *
  *****************/
