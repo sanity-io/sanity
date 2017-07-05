@@ -4,6 +4,7 @@ import styles from 'part:@sanity/components/edititem/fold-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Portal from 'react-portal'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import {delay} from 'lodash'
 
 export default class EditItemFoldOut extends React.Component {
 
@@ -73,6 +74,10 @@ export default class EditItemFoldOut extends React.Component {
         this._scrollContainerElement.onscroll = event => {
           this.moveIntoPosition()
         }
+
+        delay(() => {
+          this.moveIntoPosition()
+        }, 500)
 
         if (__DEV__) { // eslint-disable-line max-depth
           // eslint-disable-next-line no-console
