@@ -38,6 +38,7 @@ class DefaultMenu extends React.Component {
   }
 
   lastWindowHeight = 0
+  scrollOffset = 0
 
   static defaultProps = {
     menuOpened: false,
@@ -67,12 +68,37 @@ class DefaultMenu extends React.Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
     window.addEventListener('resize', this.handleResize, false)
+    this.tryFindScrollContainer()
     this.constrainHeight(this._rootElement)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, false)
     window.removeEventListener('keydown', this.handleKeyDown, false)
+  }
+
+  tryFindScrollContainer() {
+    let scrollContainer = this._rootElement.parentNode
+    while (!this._scrollContainerElement) {
+      if (!scrollContainer.parentNode) {
+        break
+      }
+      if (['overlay', 'auto', 'scroll'].includes(window.getComputedStyle(scrollContainer).overflowY)) {
+        this._scrollContainerElement = scrollContainer
+
+        this._scrollContainerElement.onscroll = event => {
+          this.scrollOffset = this._scrollContainerElement.scrollTop
+          this.handleResize()
+        }
+
+        if (__DEV__) { // eslint-disable-line max-depth
+          // eslint-disable-next-line no-console
+          console.warn('Found a scrollcontainer: ', scrollContainer)
+        }
+        break
+      }
+      scrollContainer = scrollContainer.parentNode
+    }
   }
 
   componentDidUpdate() {
@@ -139,7 +165,7 @@ class DefaultMenu extends React.Component {
       // Change maxheight if window resizes
       if (element.style.maxHeight) {
         const diff = this.lastWindowHeight - window.innerHeight
-        element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff}px`
+        element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff + this.scrollOffset}px`
       }
 
       // Set initial maxHeight
