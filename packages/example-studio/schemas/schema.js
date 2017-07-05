@@ -7,6 +7,7 @@ import author from './author'
 import blogpost from './blogpost'
 import videoEmbed from './videoEmbed'
 import localeString from './localeString'
+import localeSlug from './localeSlug'
 import protein from './protein'
 import proteinTest from './proteinTest'
 import referenceTest from './referenceTest'
@@ -22,6 +23,7 @@ export default createSchema({
     myImage,
     videoEmbed,
     localeString,
+    localeSlug,
     proteinTest,
     protein,
     referenceTest
