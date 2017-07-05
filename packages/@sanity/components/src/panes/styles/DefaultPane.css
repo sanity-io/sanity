@@ -3,18 +3,34 @@
 .root {
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fff;
+
+  @media (--screen-medium) {
+    position: relative;
+    height: 100%;
+    top: initial;
+    left: initial;
+    width: initial;
+    min-height: initial;
+    background-color: initial;
+  }
 }
 
 .isCollapsed {
-  composes: root;
-  margin-right: 0;
-  border-color: #ccc;
-  padding: 0;
-  width: 3rem;
-  height: 100%;
-  flex-direction: row;
+  @media (--screen-medium) {
+    composes: root;
+    margin-right: 0;
+    border-color: #ccc;
+    padding: 0;
+    width: 3rem;
+    height: 100%;
+    flex-direction: row;
+  }
 }
 
 .header {

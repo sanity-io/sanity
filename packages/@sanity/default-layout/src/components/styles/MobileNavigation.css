@@ -6,8 +6,8 @@
   position: fixed;
   z-index: 100;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: var(--small-padding);
+  width: calc(100vw - (var(--small-padding) * 2));
   height: 3rem;
   border-bottom: 1px solid #ccc;
 }
@@ -16,7 +16,6 @@
   position: absolute;
   width: calc(100vw - 2rem);
   top: var(--small-padding);
-  left: var(--small-padding);
   z-index: 100;
 }
 

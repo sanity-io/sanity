@@ -40,8 +40,10 @@
 .toolContainer {
   position: relative;
   max-width: 100%;
+  margin-top: var(--header-height);
 
   @media (--screen-medium) {
+    margin-top: 0;
     float: left;
     width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
     height: calc(100vh - var(--header-height) - var(--medium-padding));

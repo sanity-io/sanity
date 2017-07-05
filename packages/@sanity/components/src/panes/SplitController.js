@@ -102,9 +102,15 @@ export default class PanesSplitController extends React.Component {
       return <div>No panes</div>
     }
 
+    // TODO Fix this
+    // --screen-medium-break: 32em;  ~32 * 16 = 512
+    const isMobile = window && window.innerWidth < 512
+
     return (
       <div className={styles.vertical}>
-        {this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
+        {
+          isMobile ? children : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))
+        }
       </div>
     )
   }
