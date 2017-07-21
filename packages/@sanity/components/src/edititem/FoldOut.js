@@ -19,14 +19,15 @@ export default class EditItemFoldOut extends React.Component {
     onClose() {}, // eslint-disable-line
   }
 
+  state = {
+    rootHeight: null
+  }
+
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown)
-    if (this._rootElement) {
-      this.moveIntoPosition()
-      this.tryFindScrollContainer()
-    }
+    this.addEventListeners()
   }
 
   componentDidUpdate() {
@@ -37,6 +38,52 @@ export default class EditItemFoldOut extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown)
+    this.removeEventListeners()
+  }
+
+  addEventListeners = () => {
+    if (this._rootElement && this._portalModalElement) {
+      this.moveIntoPosition()
+      this.tryFindScrollContainer()
+      // this._rootElement.addEventListener('scroll', this.handleContentScroll)
+      this._elementResizeDetector.listenTo(
+        this._rootElement,
+        this.handleElementResize
+      )
+      this._elementResizeDetector.listenTo(
+        this._portalModalElement,
+        this.resizeRootElement
+      )
+    }
+  }
+
+  removeEventListeners = () => {
+    if (this._rootElement && this._portalModalElement) {
+      // this._rootElement.removeEventListener('scroll', this.handleContentScroll)
+      this._elementResizeDetector.removeListener(
+        this._rootElement,
+        this.handleElementResize
+      )
+      this._elementResizeDetector.removeListener(
+        this._portalModalElement,
+        this.resizeRootElement
+      )
+    }
+  }
+
+  handleContentScroll = () => {
+    this.moveIntoPosition()
+  }
+
+  handleElementResize = () => {
+    this.moveIntoPosition()
+  }
+
+  handleWindowResize = () => {
+    clearTimeout(this._resizeTimeout)
+    this._resizeTimeout = setTimeout(() => {
+      this.moveIntoPosition()
+    }, 40)
   }
 
   handleClose = event => {
@@ -62,7 +109,7 @@ export default class EditItemFoldOut extends React.Component {
     this._portalModalElement = element
   }
 
-  tryFindScrollContainer() {
+  tryFindScrollContainer = () => {
     let scrollContainer = this._rootElement.parentNode
     while (!this._scrollContainerElement) {
       if (!scrollContainer.parentNode) {
@@ -81,14 +128,26 @@ export default class EditItemFoldOut extends React.Component {
 
         if (__DEV__) { // eslint-disable-line max-depth
           // eslint-disable-next-line no-console
-          console.warn('Found a scrollcontainer: ', scrollContainer)
+          console.info('Found a scrollcontainer: ', scrollContainer)
         }
         break
       }
       scrollContainer = scrollContainer.parentNode
     }
-    if (!this._scrollContainerElement) {
-      throw new Error('PopOver needs a scrollcontainer!')
+    if (!this._scrollContainerElement && __DEV__) {
+      // eslint-disable-next-line no-console
+      console.warn('No scrollcontainer ', scrollContainer)
+    }
+  }
+
+  resizeRootElement = () => {
+    const {height} = this._portalModalElement.getBoundingClientRect()
+    const rootHeight = this._rootElement.getBoundingClientRect().height
+
+    if (height !== rootHeight) {
+      this.setState({
+        rootHeight: height
+      })
     }
   }
 
@@ -99,8 +158,6 @@ export default class EditItemFoldOut extends React.Component {
     }
 
     const {top, left, width} = this._rootElement.getBoundingClientRect()
-
-    const {height} = this._portalModalElement.getBoundingClientRect()
 
     // Place the modal initially near the orginating element
     this._portalModalElement.style.top = `${top}px`
@@ -114,8 +171,7 @@ export default class EditItemFoldOut extends React.Component {
 
     this._portalModalElement.style.width = `${width + extraWidth}px`
 
-    this._rootElement.style.height = `${height}px`
-
+    this.resizeRootElement()
   }
 
   renderPortal = () => {
@@ -151,7 +207,12 @@ export default class EditItemFoldOut extends React.Component {
   }
   render() {
     return (
-      <div ref={this.setRootElement} className={styles.root} onClick={this.handleRootClick}>
+      <div
+        ref={this.setRootElement}
+        className={styles.root}
+        onClick={this.handleRootClick}
+        style={{height: this.state.rootHeight ? `${this.state.rootHeight}px` : 'initial'}}
+      >
         { this.renderPortal() }
       </div>
     )

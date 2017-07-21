@@ -7,7 +7,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import Chance from 'chance'
 const chance = new Chance()
-import {withKnobs, boolean} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
 
 const overflowHidden = {
   minHeight: '100vh',
@@ -46,16 +46,18 @@ storiesOf('Edit item')
       maxHeight: '70vh',
       paddingTop: '5rem',
       position: 'relative',
-      overflow: boolean('scroll') ? 'scroll' : 'visible'
+      overflow: boolean('scroll', true) ? 'scroll' : 'visible'
     }
     return (
       <div style={wrapperStyles}>
-        {chance.paragraph()}
+        <p>Over</p>
         <Sanity part="part:@sanity/components/edititem/popover" propTables={[EditItemPopOver]}>
           <EditItemFold title="Edit this item" onClose={action('onClose')}>
-            Put your form here
+            {text('content', 'Put your content here')}
+            <div style={{height: `${number('content padding', 10)}px`}} />
           </EditItemFold>
         </Sanity>
+        <p>Under</p>
         {chance.paragraph()}
         {chance.paragraph()}
         {chance.paragraph()}
