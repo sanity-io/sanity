@@ -22,7 +22,7 @@
   height: 0;
   clear: both;
   position: relative;
-  transition: all 0.2s ease;
+  /*transition: all 0.2s ease;*/
 }
 
 .wrapper {
