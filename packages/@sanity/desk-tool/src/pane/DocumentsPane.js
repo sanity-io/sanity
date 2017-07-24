@@ -131,12 +131,11 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         onSetSorting={this.handleSetSorting}
         onGoToCreateNew={this.handleGoToCreateNew}
         onMenuClose={this.handleCloseMenu}
-        onClickOutside={this.handleCloseDocumentsPaneMenu}
+        onClickOutside={this.handleCloseMenu}
         isOpen={this.state.menuIsOpen}
       />
     )
   }
-
 
   renderDocumentPaneItem = (item, index, options = {}) => {
     const {selectedType, selectedDocumentId} = this.props
