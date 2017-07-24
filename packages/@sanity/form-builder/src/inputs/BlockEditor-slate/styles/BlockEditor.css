@@ -1,7 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --blockEditorFullscreenBackground: var(--component-bg);
+  --blockEditorFullscreenBackground: var(--body-bg);
 }
 
 .root {
