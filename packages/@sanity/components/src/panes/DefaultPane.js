@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
+import Button from 'part:@sanity/components/buttons/default'
 
 export default class Pane extends React.PureComponent {
   static propTypes = {
@@ -80,13 +81,16 @@ export default class Pane extends React.PureComponent {
           </div>
           <div className={styles.menuWrapper}>
             <div className={styles.menuButtonContainer}>
-              <div className={styles.menuButton} onClick={this.handleMenuToggle}>
-                {
-                  renderMenu(isCollapsed) && (
-                    <IconMoreVert />
-                  )
-                }
-              </div>
+              {
+                renderMenu(isCollapsed) && (
+                  <Button
+                    kind="simple"
+                    icon={IconMoreVert}
+                    onClick={this.handleMenuToggle}
+                    className={styles.menuButton}
+                  />
+                )
+              }
             </div>
             <div className={styles.menuContainer}>
               {renderMenu(isCollapsed)}
