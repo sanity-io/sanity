@@ -6,6 +6,7 @@ import Portal from 'react-portal'
 import {uniqueId} from 'lodash'
 
 import FormField from 'part:@sanity/components/formfields/default'
+import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
@@ -55,6 +56,16 @@ export default class BlockEditor extends React.Component {
     this.slatePlugins = initializeSlatePlugins(this)
   }
 
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown)
+    // this._inputContainer.addEventListener('mousewheel', this.handleInputScroll)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown)
+    // this._inputContainer.removeEventListener('mousewheel', this.handleInputScroll)
+  }
+
   handleInsertBlock = item => {
     this.operations.insertBlock(item)
   }
@@ -67,6 +78,15 @@ export default class BlockEditor extends React.Component {
     this.editor.focus()
     this.operations.toggleListItem(listItem, isActive)
   }
+
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.setState({
+        fullscreen: false
+      })
+    }
+  }
+
 
   handleLinkButtonClick = linkNodes => {
     this.editor.focus()
@@ -220,6 +240,31 @@ export default class BlockEditor extends React.Component {
     this.editor.focus()
   }
 
+  handleInputScroll = event => {
+    const el = this._inputContainer
+    const scrollTop = el.scrollTop
+    const scrollHeight = el.scrollHeight
+    const height = el.clientHeight
+
+    if (this.state.fullscreen) {
+      return
+    }
+
+    if (event.nativeEvent.deltaY <= 0) {
+      /* scrolling up */
+      if (scrollTop <= 0) {
+        event.preventDefault()
+      }
+    } else if (scrollTop + height >= scrollHeight) {
+      /* scrolling down */
+      event.preventDefault()
+    }
+  }
+
+  setInputContainerElement = element => {
+    this._inputContainer = element
+  }
+
   renderBlockEditor() {
     const {validation, value, type, level, onChange} = this.props
     const {fullscreen} = this.state
@@ -255,30 +300,33 @@ export default class BlockEditor extends React.Component {
             showLinkButton={showLinkButton}
             marks={this.getActiveMarks()}
           />
-          <div
-            className={styles.inputContainer}
-            id={this._inputId}
-            onClick={this.handleEditorContainerClick}
-          >
-            <div>
-              <Editor
-                ref={this.refEditor}
-                className={styles.input}
-                onChange={onChange}
-                placeholder=""
-                state={value}
-                blockEditor={this}
-                plugins={this.slatePlugins}
-                schema={this.slateSchema}
-              />
-              <div
-                ref={this.refBlockDragMarker}
-                style={{display: 'none'}}
-                className={styles.blockDragMarker}
-              />
+          <ActivateOnFocus isActive={this.state.fullscreen}>
+            <div
+              className={styles.inputContainer}
+              id={this._inputId}
+              onClick={this.handleEditorContainerClick}
+              ref={this.setInputContainerElement}
+              onWheel={this.handleInputScroll}
+            >
+              <div>
+                <Editor
+                  ref={this.refEditor}
+                  className={styles.input}
+                  onChange={onChange}
+                  placeholder=""
+                  state={value}
+                  blockEditor={this}
+                  plugins={this.slatePlugins}
+                  schema={this.slateSchema}
+                />
+                <div
+                  ref={this.refBlockDragMarker}
+                  style={{display: 'none'}}
+                  className={styles.blockDragMarker}
+                />
+              </div>
             </div>
-          </div>
-
+          </ActivateOnFocus>
         </div>
       </FormField>
     )
