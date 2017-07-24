@@ -1,7 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --blockEditorFullscreenBackground: var(--body-bg);
+  --blockEditorFullscreenBackground: var(--gray-lighter);
 }
 
 .root {
@@ -51,7 +51,7 @@
     min-height: calc(100vh - 8rem);
     max-width: 50em;
     margin: 3em auto;
-    box-shadow: 0 0 0.8rem -0.2rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
     height: auto;
     overflow: hidden;
     max-height: none;
@@ -87,7 +87,7 @@
     top: 0;
     left: 0;
     z-index: 5001;
-    background-color: color(var(--blockEditorFullscreenBackground) a(70%));
+    background-color: color(var(--blockEditorFullscreenBackground) a(90%));
     backdrop-filter: blur(3px);
     padding: var(--small-padding);
 

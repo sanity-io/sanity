@@ -7,6 +7,7 @@ class ActivateOnFocus extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string,
+    isActive: PropTypes.bool,
     enableBlur: PropTypes.bool,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
@@ -15,6 +16,7 @@ class ActivateOnFocus extends React.Component {
   static defaultProps = {
     enableBlur: true,
     message: 'Click to activate…',
+    isActive: false,
     onFocus() {},
     onBlur() {},
   }
@@ -63,8 +65,13 @@ class ActivateOnFocus extends React.Component {
   }
 
   render() {
-    const {message, children} = this.props
+    const {message, children, isActive} = this.props
     const {hasFocus} = this.state
+
+    if (isActive) {
+      return children
+    }
+
     return (
       <div
         className={hasFocus ? styles.hasFocus : styles.noFocus}
