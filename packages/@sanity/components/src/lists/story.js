@@ -103,10 +103,10 @@ storiesOf('List')
           <DefaultList
             renderItem={defaultRenderItem}
             items={defaultItems}
-            decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
+            decoration={select('decoration (prop)', [false, 'zebra-stripes', 'divider'], false)}
             selectedItem={boolean('Has selected item', false) ? selectedItem : undefined}
             highlightedItem={boolean('Has selected item', false) ? highlightedItem : undefined}
-            scrollable={boolean('scrollable', false)}
+            scrollable={boolean('scrollable (prop)', false)}
             onSelect={action('onSelect')}
             onSortStart={action('onSortStart')}
             onSortMove={action('onSortMove')}
@@ -128,9 +128,9 @@ storiesOf('List')
         <div style={containerStyle}>
           <SortableComponent
             items={detailedItems}
-            scrollable={boolean('scrollable', false)}
-            decoration={select('decoration', [false, 'zebra-stripes', 'divider'], false)}
-            useDragHandle={boolean('Use Drag Handle', false)}
+            scrollable={boolean('scrollable (prop)', false)}
+            decoration={select('decoration (prop)', [false, 'zebra-stripes', 'divider'], false)}
+            useDragHandle={boolean('useDragHandle (prop)', false)}
             selectedItem={boolean('Has selected item', false) ? selectedItem : undefined}
             highlightedItem={boolean('Has selected item', false) ? highlightedItem : undefined}
             onSelect={action('onSelect')}

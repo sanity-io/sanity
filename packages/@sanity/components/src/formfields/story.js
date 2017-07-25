@@ -15,12 +15,12 @@ storiesOf('Form fields')
     return (
       <Sanity part="part:@sanity/components/formfields/default" propTables={[DefaultFormField]}>
         <DefaultFormField
-          label={text('Label', 'This is the label')}
-          description={text('Description', 'This is the description')}
+          label={text('label (prop)', 'This is the label')}
+          description={text('Description (prop)', 'This is the description')}
           labelHtmlFor={id}
-          level={number('Level', 0)}
-          inline={boolean('Inline', false)}
-          wrapped={boolean('Wrapped', false)}
+          level={number('Level (prop)', 0)}
+          inline={boolean('Inline (prop)', false)}
+          wrapped={boolean('Wrapped (prop)', false)}
         >
           <DefaultTextInput id={id} value="" />
         </DefaultFormField>

@@ -19,7 +19,6 @@ const VALID_TYPES = [
 ]
 
 class DefaultTextInputTest extends React.Component {
-
   constructor(...args) {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
@@ -33,7 +32,6 @@ class DefaultTextInputTest extends React.Component {
     this.setState({
       value: value
     })
-    console.log('value', value) // eslint-disable-line
   }
 
   render() {
@@ -60,13 +58,13 @@ storiesOf('Text inputs')
       return (
         <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
           <DefaultTextInput
-            placeholder={text('placeholder', 'This is the placeholder')}
-            value={text('value', false)}
-            type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
-            error={boolean('error', false)}
-            hasFocus={boolean('hasFocus', false)}
-            showClearButton={boolean('clear button', false)}
-            selected={boolean('selected', false)}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            value={text('value (prop)', false)}
+            type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
+            error={boolean('error (prop)', false)}
+            hasFocus={boolean('hasFocus (prop)', false)}
+            showClearButton={boolean('showClearButton (prop)', false)}
+            selected={boolean('selected (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onKeyPress={action('onKeyPress')}
@@ -83,18 +81,18 @@ storiesOf('Text inputs')
       return (
         <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
           <DefaultTextInput
-            placeholder={text('placeholder', 'This is the placeholder')}
-            value={text('value', false)}
-            type={select('type', ['text', 'number', 'email', 'tel'], 'text')}
-            error={boolean('error', false)}
-            hasFocus={boolean('hasFocus', false)}
-            showClearButton={boolean('clear button', false)}
-            selected={boolean('selected', false)}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            value={text('value (prop)', false)}
+            type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
+            error={boolean('error (prop)', false)}
+            hasFocus={boolean('hasFocus (prop)', false)}
+            showClearButton={boolean('showClearButton (prop)', false)}
+            selected={boolean('selected (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onKeyPress={action('onKeyPress')}
             onBlur={action('onBlur')}
-            styles={object('styles', CustomStyles)}
+            styles={object('styles (prop)', CustomStyles)}
             id="ThisIsAnUniqueId"
           />
         </Sanity>
@@ -107,13 +105,13 @@ storiesOf('Text inputs')
     () => {
       return (
         <DefaultTextInputTest
-          placeholder={text('placeholder', 'This is the placeholder')}
-          value={text('value', '')}
-          type={select('type', VALID_TYPES, 'text')}
-          hasError={boolean('hasError', false)}
-          hasFocus={boolean('hasFocus', false)}
-          isClearable={boolean('isClearable', false)}
-          isSelected={boolean('isSelected', false)}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
+          value={text('value (prop)', '')}
+          type={select('type (prop)', VALID_TYPES, 'text')}
+          hasError={boolean('hasError (prop)', false)}
+          hasFocus={boolean('hasFocus (prop)', false)}
+          isClearable={boolean('isClearable (prop)', false)}
+          isSelected={boolean('isSelected (prop)', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onKeyPress={action('onKeyPress')}

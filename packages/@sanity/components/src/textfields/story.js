@@ -13,15 +13,15 @@ storiesOf('Textfields')
     return (
       <Sanity part="part:@sanity/components/textfields/default" propTables={[DefaultTextField]}>
         <DefaultTextField
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          value={text('value')}
-          error={boolean('error', false)}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
+          value={text('value (prop)')}
+          error={boolean('error (prop)', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onClear={action('onClear')}
-          isClearable={boolean('clear button', false)}
-          hasFocus={boolean('hasFocus', false)}
+          isClearable={boolean('isClearable (prop)', false)}
+          hasFocus={boolean('hasFocus (prop)', false)}
         />
       </Sanity>
     )
@@ -33,12 +33,12 @@ storiesOf('Textfields')
     return (
       <Sanity part="part:@sanity/components/textfields/search" propTables={[SearchTextField]}>
         <SearchTextField
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          value={text('value')}
-          hasFocus={boolean('hasFocus', false)}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
+          value={text('value (prop)')}
+          hasFocus={boolean('hasFocus (prop)', false)}
           onChange={action('onChange')}
-          isClearable={boolean('clear button', false)}
+          isClearable={boolean('isClearable (prop)', false)}
         />
       </Sanity>
     )

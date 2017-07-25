@@ -80,58 +80,25 @@ storiesOf('Image input Fieldset')
 .add(
   'Fieldset',
   () => {
+    const invalidHotspotImage = {imageUrl: 'http://This.is.not.a.valid.url'}
+
     return (
       <Sanity part="part:@sanity/components/imageinput/fieldset" propTables={[ImageInput]}>
         <ImageInput
-          legend={text('Legend', 'This is the legend')}
+          legend={text('Legend (prop)', 'This is the legend')}
           onSelect={action('Select image')}
           onEdit={action('onEdit')}
           onClear={action('onClear')}
           onCancel={action('onCancel')}
-          status={select('Status', ['ready', 'error', 'pending'], 'ready')}
-          percent={number('percent', 50, {range: true, min: 0, max: 100, step: 5})}
-          level={number('Level', 0)}
-          multiple={boolean('Multiple', false)}
-          hotspotImage={object('hotspotImage', {imageUrl: imageUrl})}
-          showContent={boolean('show content', false)}
-          accept={text('accept', 'image/png')}
+          status={select('Status (prop)', ['ready', 'error', 'pending'], 'ready')}
+          percent={number('percent (prop)', 50, {range: true, min: 0, max: 100, step: 5})}
+          level={number('Level (prop)', 0)}
+          multiple={boolean('Multiple (prop)', false)}
+          hotspotImage={boolean('invalid image', false) ? invalidHotspotImage : object('hotspotImage (prop)', {imageUrl: imageUrl})}
+          showContent={boolean('show content (prop)', false)}
+          accept={text('accept (prop)', 'image/png')}
         >
-          {text('Content', 'This is the content')}
-        </ImageInput>
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Invalid url',
-  () => {
-    return (
-      <Sanity part="part:@sanity/components/imageinput/fieldset" propTables={[ImageInput]}>
-        <ImageInput
-          legend="Image input fieldset"
-          onSelect={action('Select image')}
-          status="complete"
-          hotspotImage={{imageUrl: 'http://This.is.not.a.valid.url'}}
-        >
-          <h2>Content goes here</h2>
-        </ImageInput>
-      </Sanity>
-    )
-  }
-)
-.add(
-  'Invalid blob',
-  () => {
-    return (
-      <Sanity part="part:@sanity/components/imageinput/fieldset" propTables={[ImageInput]}>
-        <ImageInput
-          legend="Image input fieldset"
-          onSelect={action('Select image')}
-          status="complete"
-          hotspotImage={{imageUrl: 'blob:http://this.is.no.valid'}}
-        >
-          <h2>Content goes here</h2>
+          {text('children (prop)', 'This is the content')}
         </ImageInput>
       </Sanity>
     )

@@ -48,9 +48,9 @@ storiesOf('File Input')
         >
           <DropZone
             onDrop={action('onDrop')}
-            multiple={boolean('multiple', false)}
-            ghost={boolean('ghost', false)}
-            accept={text('accept', 'image/png')}
+            multiple={boolean('multiple (prop)', false)}
+            ghost={boolean('ghost (prop)', false)}
+            accept={text('accept (prop)', 'image/png')}
           />
         </div>
       </Sanity>

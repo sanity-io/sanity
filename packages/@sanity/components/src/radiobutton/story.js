@@ -13,9 +13,9 @@ storiesOf('Radiobutton')
       <Sanity part="part:@sanity/components/radiobutton/default" propTables={[RadioButton]}>
         <RadioButton
           name="radioButton"
-          label={text('label', 'Label')}
-          item={object('Item', {title: 'test'})}
-          checked={boolean('checked', false)}
+          label={text('label (prop)', 'Label')}
+          item={object('Item (prop)', {title: 'test'})}
+          checked={boolean('checked (prop)', false)}
           onChange={action('onChange')}
         />
       </Sanity>

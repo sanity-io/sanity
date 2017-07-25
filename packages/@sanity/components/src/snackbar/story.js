@@ -31,10 +31,10 @@ storiesOf('Snackbar')
           action={{
             title: text('action title', 'OK, got it')
           }}
-          onAction={action('onAction fired!')}
-          timeout={number('timeout after (sec)', 500)}
+          onAction={action('onAction')}
+          timeout={number('timeout (prop) im ms', 500)}
         >
-          {text('content', 'This is the content')}
+          {text('children (prop)', 'This is the content')}
         </Snackbar>
       </Sanity>
     )

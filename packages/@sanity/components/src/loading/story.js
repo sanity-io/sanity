@@ -18,10 +18,10 @@ storiesOf('Loading')
     return (
       <Sanity part="part:@sanity/components/loading/spinner" propTables={[Spinner]}>
         <Spinner
-          inline={boolean('inline', false)}
-          message={text('Message', 'This is the message')}
-          fullscreen={boolean('fullscreen', false)}
-          center={boolean('center', false)}
+          inline={boolean('inline (prop)', false)}
+          message={text('Message (prop)', 'This is the message')}
+          fullscreen={boolean('fullscreen (prop)', false)}
+          center={boolean('center (prop)', false)}
         />
       </Sanity>
     )

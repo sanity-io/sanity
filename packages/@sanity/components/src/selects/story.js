@@ -177,8 +177,8 @@ storiesOf('Selects')
     return (
       <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
         <DefaultSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
@@ -194,8 +194,8 @@ storiesOf('Selects')
     return (
       <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
         <DefaultSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
@@ -222,8 +222,8 @@ storiesOf('Selects')
     return (
       <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
         <SearchableSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
@@ -232,7 +232,7 @@ storiesOf('Selects')
           valueToString={valueToString}
           renderItem={renderItem}
           items={items}
-          isLoading={boolean('is loading', false)}
+          isLoading={boolean('isLoading (prop)', false)}
         />
       </Sanity>
     )
@@ -260,8 +260,8 @@ storiesOf('Selects')
         const valueToString = item => item.title
         return (
           <SearchableSelect
-            label={text('label', 'This is the label')}
-            placeholder={text('placeholder', 'This is the placeholder')}
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
             onChange={item => this.setState({value: item})}
             onFocus={action('onFocus')}
             onBlur={action('onBlur')}
@@ -294,8 +294,8 @@ storiesOf('Selects')
     return (
       <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
         <SearchableSelect
-          label={text('label', 'This is the label')}
-          placeholder={text('placeholder', 'This is the placeholder')}
+          label={text('label (prop)', 'This is the label')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
@@ -352,9 +352,9 @@ storiesOf('Selects')
       <Sanity part="part:@sanity/components/selects/customField" propTables={[CustomSelectField]}>
         <div style={{padding: '2em', backgroundColor: '#eee'}}>
           <CustomSelectField
-            label={text('label', 'This is the label')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            transparent={boolean('transparent', false)}
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onOpen={action('onOpen')}
@@ -376,9 +376,9 @@ storiesOf('Selects')
       <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
         <div style={{padding: '2em', backgroundColor: '#eee'}}>
           <StyleSelect
-            label={text('label', 'This is the label')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            transparent={boolean('transparent', false)}
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onOpen={action('onOpen')}
@@ -400,9 +400,9 @@ storiesOf('Selects')
       <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
         <div style={{padding: '2em', backgroundColor: '#eee'}}>
           <StyleSelect
-            label={text('label', 'This is the label')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            transparent={boolean('transparent', false)}
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onOpen={action('onOpen')}
@@ -424,9 +424,9 @@ storiesOf('Selects')
       <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
         <div style={{padding: '2em', backgroundColor: '#eee'}}>
           <StyleSelect
-            label={text('label', 'This is the label')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            transparent={boolean('transparent', false)}
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onOpen={action('onOpen')}
@@ -469,8 +469,8 @@ storiesOf('Selects')
           items={radioItems}
           value={value}
           onChange={action('onChange')}
-          legend={text('legend', 'Radio button select')}
-          direction={select('direction', [false, 'vertical', 'vertical'])}
+          legend={text('legend (prop)', 'Radio button select')}
+          direction={select('direction (prop)', [false, 'vertical', 'vertical'])}
         />
       </Sanity>
     )

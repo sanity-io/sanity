@@ -12,8 +12,8 @@ import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const getButtonKinds = () => select('Kind', ['default', 'simple', 'secondary'], 'default')
-const getColorKinds = () => select('Color', [false, 'primary', 'success', 'danger', 'white'], false)
+const getButtonKinds = () => select('kind (prop)', ['default', 'simple', 'secondary'], 'default')
+const getColorKinds = () => select('color (prop)', [false, 'primary', 'success', 'danger', 'white'], false)
 
 storiesOf('Buttons', module)
   .addDecorator(withKnobs)
@@ -29,10 +29,10 @@ storiesOf('Buttons', module)
             inverted={boolean('inverted (prop)', false)}
             type={text('type (prop)', undefined)}
             color={getColorKinds()}
-            loading={boolean('Loading', false)}
-            icon={boolean('icon', false) ? SanityLogoIcon : false}
+            loading={boolean('Loading (prop)', false)}
+            icon={boolean('Show test icon', false) ? SanityLogoIcon : false}
           >
-            {text('Text', 'Touch Me!')}
+            {text('prop: children', 'Touch Me!')}
           </Button>
         </Sanity>
       )
@@ -46,14 +46,14 @@ storiesOf('Buttons', module)
           <AnchorButton
             kind={getButtonKinds()}
             onClick={action('clicked')}
-            disabled={boolean('Disabled', false)}
-            inverted={boolean('Inverted', false)}
+            disabled={boolean('prop: disabled', false)}
+            inverted={boolean('prop: inverted', false)}
             color={getColorKinds()}
-            loading={boolean('Loading', false)}
-            icon={boolean('icon', false) ? SanityLogoIcon : false}
-            href={text('href', 'http://example.org')}
+            loading={boolean('prop: loading', false)}
+            icon={boolean('show test icon', false) ? SanityLogoIcon : false}
+            href={text('prop: href', 'http://example.org')}
           >
-            {text('Text', 'Touch Me!')}
+            {text('prop: children', 'Touch Me!')}
           </AnchorButton>
         </Sanity>
       )
@@ -201,12 +201,12 @@ storiesOf('Buttons', module)
         <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
           <div>
             <DropDownButton
-              items={object('items', items)}
+              items={object('prop: items', items)}
               onAction={action('Clicked item')}
               color={getColorKinds()}
               kind={getButtonKinds()}
             >
-              {text('content', 'This is a dropdown')}
+              {text('prop: children', 'This is a dropdown')}
             </DropDownButton>
             <div>
               This text should be under the menu
@@ -225,7 +225,13 @@ storiesOf('Buttons', module)
             <div className={InInputStyles.wrapper}>
               <DefaultTextInput />
               <div className={InInputStyles.container}>
-                <InInputButton onAction={action('Clicked item')} color={getColorKinds()} kind={getButtonKinds()}>browse</InInputButton>
+                <InInputButton
+                  onAction={action('Clicked item')}
+                  color={getColorKinds()}
+                  kind={getButtonKinds()}
+                >
+                  browse
+                </InInputButton>
               </div>
             </div>
           </DefaultFormField>

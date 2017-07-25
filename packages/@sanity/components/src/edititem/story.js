@@ -27,7 +27,10 @@ storiesOf('Edit item')
         Things is in the background here.
         <Button onClick={action('oh noes! I should not ble clickable!')}>Try click me</Button>
         <Sanity part="part:@sanity/components/edititem/popover" propTables={[EditItemPopOver]}>
-          <EditItemPopOver title="Edit this item" onClose={action('onClose')} scrollContainerId="myScrollContainerId">
+          <EditItemPopOver
+            title={text('title (prop)', 'Edit this item')}
+            onClose={action('onClose')}
+          >
             Put your form here
           </EditItemPopOver>
         </Sanity>
@@ -53,7 +56,7 @@ storiesOf('Edit item')
         <p>Over</p>
         <Sanity part="part:@sanity/components/edititem/popover" propTables={[EditItemPopOver]}>
           <EditItemFold title="Edit this item" onClose={action('onClose')}>
-            {text('content', 'Put your content here')}
+            {text('children (prop)', 'Put your content here')}
             <div style={{height: `${number('content padding', 10)}px`}} />
           </EditItemFold>
         </Sanity>
