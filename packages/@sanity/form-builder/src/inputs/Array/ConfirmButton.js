@@ -5,8 +5,8 @@ import enhanceWithClickOutside from 'react-click-outside'
 
 export default enhanceWithClickOutside(class ConfirmButton extends React.Component {
   static propTypes = {
-    icon: PropTypes.node,
-    confirmIcon: PropTypes.node,
+    icon: PropTypes.func,
+    confirmIcon: PropTypes.func,
     children: PropTypes.func,
     onClick: PropTypes.func
   }
@@ -33,7 +33,6 @@ export default enhanceWithClickOutside(class ConfirmButton extends React.Compone
     return (
       <Button
         {...rest}
-        icon={doConfirm ? confirmIcon : icon}
         onClick={this.handleClick}
       >
         {children(doConfirm)}

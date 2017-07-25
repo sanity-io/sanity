@@ -22,7 +22,10 @@ const VALID_TYPES = [
 
 export default class DefaultTextInput extends React.PureComponent {
   static propTypes = {
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
     type: PropTypes.oneOf(VALID_TYPES),
     onClear: PropTypes.func,
     isClearable: PropTypes.bool,

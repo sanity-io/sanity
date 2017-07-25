@@ -65,6 +65,7 @@ export default class Item extends React.PureComponent {
     if (!memberType) {
       return this.renderInvalid()
     }
+
     return (
       <div className={`${styles.root} ${styles[layout]}`}>
         <div className={styles.functions}>

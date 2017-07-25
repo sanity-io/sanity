@@ -11,7 +11,7 @@ const ARROW_STYLE = {
 const CONTAINER_STYLE = {
   cursor: 'default',
   userSelect: 'none',
-  webkitUserSelect: 'none',
+  WebkitUserSelect: 'none',
   outline: 'none'
 }
 

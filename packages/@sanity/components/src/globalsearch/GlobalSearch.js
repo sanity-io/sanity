@@ -144,12 +144,12 @@ class GlobalSearch extends React.Component {
     const {selectedItem} = this.state
 
     // Concat both list to control index
-    const allItems = topItems.concat(items)
+    const allItems = items.concat(topItems)
 
     // select first
     if (!selectedItem) {
       this.setState({
-        selectedItem: (topItems && topItems[0]) || (items && items[0])
+        selectedItem: (items && items[0]) || (topItems && topItems[0])
       })
     }
 
@@ -211,22 +211,12 @@ class GlobalSearch extends React.Component {
           </div>
         </div>
         {
+          (!items || items.length == 0) && isOpen && <div>No result</div>
+        }
+        {
           ((topItems && topItems.length > 0) || (items && items.length > 0)) && (
             <div className={isOpen ? `${styles.listContainer} ${listContainerClassName || ''}` : styles.listContainerClosed}>
               <ul className={styles.items}>
-                {
-                  topItems && topItems.length > 0 && topItems.map((item, i) => {
-                    return (
-                      <li
-                        key={`topitem${i}`}
-                        onClick={this.handleItemClick.bind(null, item)}
-                        className={selectedItem === item ? styles.selectedTopItem : styles.topItem}
-                      >
-                        {renderItem(item, {isTopItem: true})}
-                      </li>
-                    )
-                  })
-                }
                 {
                   items && items.length > 0 && items.map((item, i) => {
                     return (
@@ -240,6 +230,20 @@ class GlobalSearch extends React.Component {
                     )
                   })
                 }
+                {
+                  topItems && topItems.length > 0 && topItems.map((item, i) => {
+                    return (
+                      <li
+                        key={`topitem${i}`}
+                        onClick={this.handleItemClick.bind(null, item)}
+                        className={selectedItem === item ? styles.selectedTopItem : styles.topItem}
+                      >
+                        {renderItem(item, {isTopItem: true})}
+                      </li>
+                    )
+                  })
+                }
+
               </ul>
             </div>
           )

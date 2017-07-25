@@ -61,7 +61,7 @@ export default class CodePreview extends PureComponent {
             theme="tomorrow"
             width="100%"
             height={null}
-            maxLines="200"
+            maxLines={200}
             readOnly
             wrapEnabled
             showPrintMargin={false}
