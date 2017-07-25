@@ -5,10 +5,9 @@ import globalSearchStyles from 'part:@sanity/components/globalsearch/default-sty
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import {IntentLink} from 'part:@sanity/base/router'
+import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import styles from './styles/Search.css'
-
 
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
@@ -43,12 +42,20 @@ function removeDupes(documents) {
 class Search extends React.Component {
 
   static propTypes = {
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    router: PropTypes.shape({
+      navigate: PropTypes.func
+    }),
   }
 
   static defaultProps = {
     onSelect() {}
   }
+
+  static contextTypes = {
+    __internalRouter: PropTypes.object
+  }
+
 
   constructor(props) {
     super(props)
@@ -80,8 +87,10 @@ class Search extends React.Component {
     const terms = q.split(/\s+/)
     const uniqueFields = union(searchableFields)
     const constraints = flatten(
-      uniqueFields.map(field => terms.map(term => `${field} match '${term}*'`)
+      uniqueFields.map(field => terms.map(term => `${field} match '${term}**'`)
     ))
+
+
     const query = `*[${constraints.join(' || ')}][0...10]`
 
     this.setState({
@@ -113,6 +122,7 @@ class Search extends React.Component {
 
     client.fetch(query, {})
       .then(response => {
+        console.log('topItems', response)
         this.setState({
           topItems: response
         })
@@ -152,6 +162,17 @@ class Search extends React.Component {
     )
   }
 
+  handleChange = item => {
+    const url = this.context.__internalRouter.resolveIntentLink('edit', {
+      type: item._type,
+      id: item._id
+    })
+    this.context.__internalRouter.navigateUrl(url)
+    this.setState({
+      isOpen: false
+    })
+  }
+
   render() {
 
     if (!schema) {
@@ -162,6 +183,7 @@ class Search extends React.Component {
       <div>
         <GlobalSearch
           onSearch={this.handleSearch}
+          onChange={this.handleChange}
           isSearching={this.state.isSearching}
           onBlur={this.handleBlur}
           renderItem={this.renderItem}
@@ -169,7 +191,8 @@ class Search extends React.Component {
           onClose={this.handleClose}
           isOpen={this.state.isOpen}
           label="Search"
-          items={(this.state.items.length > 0 && this.state.items) || this.state.topItems}
+          topItems={this.state.topItems}
+          items={(this.state.items.length > 0 && this.state.items) || undefined}
           placeholder="Search…"
           listContainerClassName={styles.listContainer}
         />
@@ -178,4 +201,4 @@ class Search extends React.Component {
   }
 }
 
-export default Search
+export default withRouterHOC(Search)

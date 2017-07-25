@@ -178,7 +178,7 @@ export default class CodeInput extends PureComponent {
         <DefaultSelect
           label={languageField.type.title}
           onChange={this.handleLanguageChange}
-          value={currentLanguage}
+          value={currentLanguage || undefined}
           items={languages}
           level={level + 1}
         />
