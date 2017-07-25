@@ -87,7 +87,9 @@ export default class EditItemFoldOut extends React.Component {
   }
 
   handleClose = event => {
-    event.stopPropagation()
+    if (event) {
+      event.stopPropagation()
+    }
     this.props.onClose()
   }
 
@@ -125,11 +127,6 @@ export default class EditItemFoldOut extends React.Component {
         delay(() => {
           this.moveIntoPosition()
         }, 500)
-
-        if (__DEV__) { // eslint-disable-line max-depth
-          // eslint-disable-next-line no-console
-          console.info('Found a scrollcontainer: ', scrollContainer)
-        }
         break
       }
       scrollContainer = scrollContainer.parentNode

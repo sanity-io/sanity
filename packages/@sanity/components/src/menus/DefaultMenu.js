@@ -90,11 +90,6 @@ class DefaultMenu extends React.Component {
           this.scrollOffset = this._scrollContainerElement.scrollTop
           this.handleResize()
         }
-
-        if (__DEV__) { // eslint-disable-line max-depth
-          // eslint-disable-next-line no-console
-          console.warn('Found a scrollcontainer: ', scrollContainer)
-        }
         break
       }
       scrollContainer = scrollContainer.parentNode
