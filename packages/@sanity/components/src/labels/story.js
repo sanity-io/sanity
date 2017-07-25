@@ -11,7 +11,12 @@ storiesOf('Labels')
   () => {
     return (
       <Sanity part="part:@sanity/components/labels/default" propTables={[DefaultLabel]}>
-        <DefaultLabel level={number('level', 0)} htmlFor="thisNeedsToBeUnique">{text('content', 'Label')}</DefaultLabel>
+        <DefaultLabel
+          level={number('level (prop)', 0)}
+          htmlFor="thisNeedsToBeUnique"
+        >
+          {text('children  (prop)', 'Label')}
+        </DefaultLabel>
       </Sanity>
     )
   }

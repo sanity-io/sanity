@@ -59,9 +59,9 @@ storiesOf('Tags')
     return (
       <Sanity part="part:@sanity/components/tags/textfield" propTables={[TagsTextField]}>
         <TagsTextField
-          label={text('label', 'Tags')}
-          placeholder={text('placeholder', 'This is the placeholder')}
-          tags={array('tags', tags)}
+          label={text('label (prop)', 'Tags')}
+          placeholder={text('placeholder (prop)', 'This is the placeholder')}
+          tags={array('tags (prop)', tags)}
           onAddTag={action('onAddTag')}
           onRemoveTag={action('onRemoveTag')}
         />
@@ -77,7 +77,7 @@ storiesOf('Tags')
 
     return (
       <Sanity part="part:@sanity/components/tags/textfield" propTables={[TagsTextField]}>
-        <DefaultTextFieldTagsImplementation tags={array('tags', tags)} />
+        <DefaultTextFieldTagsImplementation tags={array('tags (prop)', tags)} />
       </Sanity>
     )
   }

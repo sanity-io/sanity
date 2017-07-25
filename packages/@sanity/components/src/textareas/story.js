@@ -12,15 +12,15 @@ storiesOf('Text areas')
     return (
       <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextArea]}>
         <DefaultTextArea
-          placeholder={text('placehodler', 'This is the placeholder')}
+          placeholder={text('placehodler (prop)', 'This is the placeholder')}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onKeyPress={action('onKeyPress')}
           onBlur={action('onBlur')}
-          rows={number('rows', 2)}
-          value={text('value')}
+          rows={number('rows (prop)', 2)}
+          value={text('value (prop)')}
           id="ThisIsAnUniqueIdForTextArea"
-          hasFocus={boolean('hasFocus', false)}
+          hasFocus={boolean('hasFocus (prop)', false)}
         />
       </Sanity>
     )

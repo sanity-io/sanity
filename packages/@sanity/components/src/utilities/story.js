@@ -16,11 +16,11 @@ storiesOf('Utilities')
           <ActivateOnFocus
             onFocus={action('onFocus')}
             onBlur={action('onBlur')}
-            message={text('Message')}
-            enableBlur={boolean('Enable Blur', false)}
+            message={text('message (prop)')}
+            enableBlur={boolean('enableBlur (prop)', false)}
           >
             <textarea rows="30">
-              This should not scroll
+              This should not be selected on first click
             </textarea>
           </ActivateOnFocus>
         </div>

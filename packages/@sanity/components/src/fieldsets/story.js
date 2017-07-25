@@ -18,24 +18,31 @@ storiesOf('Fieldsets')
     return (
       <Sanity part="part:@sanity/components/fieldsets/default" propTables={[Fieldset]}>
         <Fieldset
-          legend={text('legend', 'This is the legend')}
-          description={text('description', 'This is the description')}
-          level={number('level', 0)}
-          transparent={boolean('transparent', false)}
+          legend={text('legend (prop)', 'This is the legend')}
+          description={text('description (prop)', 'This is the description')}
+          level={number('level (prop)', 0)}
+          transparent={boolean('transparent (prop)', false)}
         >
-          {text('content', 'Put content here')}
+          {text('children (prop)', 'Put content here')}
         </Fieldset>
       </Sanity>
     )
   }
 )
 .add(
-  'Nested',
+  'Nested (demo)',
   () => {
     return (
       <Sanity part="part:@sanity/components/fieldsets/default" propTables={[Fieldset]}>
-        <Fieldset legend="This is the legend" description="Fieldsets supports beeing inside itselfs, and get new styling!" level={0}>
-          <Fieldset legend="This is the legend in a nested fieldset" description={chance.paragraph()} level={1}>
+        <Fieldset
+          legend="This is the legend"
+          description="Fieldsets supports beeing inside itselfs, and get new styling!"
+          level={0}
+        >
+          <Fieldset
+            legend="This is the legend in a nested fieldset"
+            description={chance.paragraph()} level={1}
+          >
             A nested fieldset
           </Fieldset>
         </Fieldset>
@@ -45,7 +52,7 @@ storiesOf('Fieldsets')
 )
 
 .add(
-  'Crazy nested',
+  'Crazy nested (demo)',
   // `
   //   Fieldsets supports beeing inside itselfs, and get new styling!
   // `,
@@ -67,7 +74,7 @@ storiesOf('Fieldsets')
 )
 
 .add(
-  'Collapsable',
+  'Collapsable (demo)',
   () => {
     const level = number('start level', 0)
     const collapsable = boolean('collapsable', true)
@@ -107,7 +114,7 @@ storiesOf('Fieldsets')
 )
 
 .add(
-  'Columns',
+  'Columns (demo)',
   () => {
     const columns = number('columns', 3)
     const level = number('start level', 0)

@@ -109,12 +109,12 @@ storiesOf('Dialogs')
         <div>
           <Button onClick={linkTo('Dialogs', 'Fullscreen (open)')}>Open fullscreen dialog</Button>
           <FullscreenDialog
-            title={text('title', 'This is the title and it is very long. In fact it is so long that it will break and make a magic new line')}
+            title={text('title (prop)', 'This is the title and it is very long. In fact it is so long that it will break and make a magic new line')}
             onClose={action('onClose')}
-            color={select('Color', ['default', 'danger', 'success', 'info', 'warning'])}
-            centered={boolean('Centered', false)}
-            isOpen={boolean('is Open', true)}
-            actions={object('actions', dialogActions)}
+            color={select('Color (prop)', ['default', 'danger', 'success', 'info', 'warning'])}
+            centered={boolean('Centered (prop)', false)}
+            isOpen={boolean('is Open (prop)', true)}
+            actions={object('actions (prop)', dialogActions)}
             onAction={action('onAction')}
           >
             {text('content', 'This is the content')}
@@ -131,15 +131,15 @@ storiesOf('Dialogs')
     return (
       <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
         <ConfirmDialog
-          color={select('prop:color', [false, 'danger', 'success', 'info', 'warning', false])}
-          confirmColor={select('prop:confirmColor', [false, 'danger', 'success', 'info', 'warning', false])}
+          color={select('color (prop)', [false, 'danger', 'success', 'info', 'warning', false])}
+          confirmColor={select('confirmColor (prop)', [false, 'danger', 'success', 'info', 'warning', false])}
           onConfirm={action('onConfirm')}
           onCancel={action('onCancel')}
-          confirmButtonText={text('prop:confirmButtonText')}
-          cancelButtonText={text('prop:confirmButtonText')}
+          confirmButtonText={text('confirmButtonText (prop)')}
+          cancelButtonText={text('confirmButtonText (prop)')}
         >
           {
-            text('prop:children', 'Do you really want to?')
+            text('children (prop)', 'Do you really want to?')
           }
         </ConfirmDialog>
       </Sanity>

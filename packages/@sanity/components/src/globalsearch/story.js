@@ -94,12 +94,12 @@ storiesOf('Global Search')
       <Sanity part="part:@sanity/components/globalsearch/default" propTables={[GlobalSearch]}>
         <div style={elementStyle}>
           <GlobalSearch
-            label={text('label', 'Search')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            isSearching={boolean('Is searching', false)}
-            isOpen={boolean('is open', true)}
-            items={object('items', items)}
-            topItems={object('top tiems', [])}
+            label={text('label (prop)', 'Search')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            isSearching={boolean('Is searching (prop)', false)}
+            isOpen={boolean('isopen (prop)', true)}
+            items={object('items (prop)', items)}
+            topItems={object('top tiems (prop)', [])}
             renderItem={renderItem}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
@@ -120,10 +120,10 @@ storiesOf('Global Search')
       <Sanity part="part:@sanity/components/globalsearch/default" propTables={[GlobalSearch]}>
         <div style={{backgroundColor: '#fff', width: '15em'}}>
           <GlobalSearch
-            label={text('label', 'Search')}
-            placeholder={text('placeholder', 'This is the placeholder')}
-            isSearching={boolean('Is searching', false)}
-            isOpen={boolean('is open', true)}
+            label={text('label (prop)', 'Search')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            isSearching={boolean('isSsearching (prop)', false)}
+            isOpen={boolean('isOpen (prop)', true)}
             items={items}
             onChange={action('onChange')}
             onFocus={action('onFocus')}

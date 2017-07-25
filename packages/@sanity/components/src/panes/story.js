@@ -67,11 +67,11 @@ storiesOf('Panes')
     return (
       <Sanity part="part:@sanity/components/panes/default" propTables={[DefaultPane]}>
         <DefaultPane
-          title={text('title', 'This is the default pane title')}
-          isCollapsed={boolean('Is Collapsed?', false)}
+          title={text('title (prop)', 'This is the default pane title')}
+          isCollapsed={boolean('isCollapsed (prop)', false)}
           onExpand={action('onExpand')}
           onCollapse={action('onCollapse')}
-          minWidth={number('minWidth', 300)}
+          minWidth={number('minWidth (prop)', 300)}
           renderFunctions={renderFunctions}
           renderMenu={renderMenu}
         />
@@ -80,43 +80,43 @@ storiesOf('Panes')
   }
 )
 
-.add(
-  'Controller',
-  () => {
-    const panes = range(number('#Panes', 4)).map((pane, i) => {
-      return {
-        title: `Pane ${i} is the best pane`,
-        layout: i > 3 ? 'default' : 'main'
-      }
-    })
-
-    const selectedPaneIndex = number('Selected pane', 1)
-    const knobsPanes = object('Panes', panes)
-
-    return (
-      <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
-        <PanesController selectedIndex={selectedPaneIndex}>
-          {
-            knobsPanes.map((pane, i) => {
-              return (
-                <DefaultPane
-                  title={pane.title}
-                  key={pane.title}
-                  renderFunctions={renderFunctions}
-                  renderMenu={renderMenu}
-                  onExpand={action('expand')}
-                  onCollapse={action('onCollapse')}
-                  onMenuToggle={action('onMenuToggle')}
-                  minWidth={300}
-                />
-              )
-            })
-          }
-        </PanesController>
-      </Sanity>
-    )
-  }
-)
+// .add(
+//   'Controller',
+//   () => {
+//     const panes = range(number('#Panes', 4)).map((pane, i) => {
+//       return {
+//         title: `Pane ${i} is the best pane`,
+//         layout: i > 3 ? 'default' : 'main'
+//       }
+//     })
+//
+//     const selectedPaneIndex = number('Selected pane', 1)
+//     const knobsPanes = object('Panes', panes)
+//
+//     return (
+//       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
+//         <PanesController selectedIndex={selectedPaneIndex}>
+//           {
+//             knobsPanes.map((pane, i) => {
+//               return (
+//                 <DefaultPane
+//                   title={pane.title}
+//                   key={pane.title}
+//                   renderFunctions={renderFunctions}
+//                   renderMenu={renderMenu}
+//                   onExpand={action('expand')}
+//                   onCollapse={action('onCollapse')}
+//                   onMenuToggle={action('onMenuToggle')}
+//                   minWidth={300}
+//                 />
+//               )
+//             })
+//           }
+//         </PanesController>
+//       </Sanity>
+//     )
+//   }
+// )
 
 
 .add(

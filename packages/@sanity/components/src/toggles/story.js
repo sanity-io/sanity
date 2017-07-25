@@ -16,9 +16,9 @@ storiesOf('Toggles')
     return (
       <Sanity part="part:@sanity/components/toggles/switch" propTables={[Switch]}>
         <Switch
-          checked={boolean('checked', false)}
-          label={text('label', 'This is the label')}
-          disabled={boolean('disabled', false)}
+          checked={boolean('checked (prop)', false)}
+          label={text('label (prop)', 'This is the label')}
+          disabled={boolean('disabled (prop)', false)}
           onChange={action('change')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
@@ -33,9 +33,9 @@ storiesOf('Toggles')
     return (
       <Sanity part="part:@sanity/components/toggles/checkbox" propTables={[Checkbox]}>
         <Checkbox
-          label={text('label', 'This is the label')}
-          checked={boolean('checked', false)}
-          disabled={boolean('disabled', false)}
+          label={text('label (prop)', 'This is the label')}
+          checked={boolean('checked (prop)', false)}
+          disabled={boolean('disabled (prop)', false)}
           onChange={action('onChange')}
           onBlur={action('onBlur')}
           onFocus={action('onFocus')}
@@ -75,11 +75,11 @@ storiesOf('Toggles')
     return (
       <Sanity part="part:@sanity/components/toggles/buttons" propTables={[ToggleButtons]}>
         <ToggleButton
-          selected={boolean('selected', false)}
+          selected={boolean('selected (prop)', false)}
           onClick={action('onClick')}
           icon={icon}
         >
-          {text('content', 'this is the content')}
+          {text('children (prop)', 'this is the content')}
         </ToggleButton>
       </Sanity>
     )

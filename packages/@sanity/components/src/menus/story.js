@@ -33,25 +33,27 @@ storiesOf('Menus')
       'bottom-left': 'Bottom left',
     }
 
+    const scrollStyle = {
+      width: '70vw',
+      height: '70vh',
+      border: '1px dotted #ccc',
+      position: 'relative',
+      overflow: 'scroll'
+    }
+
     return (
       <Sanity part="part:@sanity/components/menus/default" propTables={[Menu]}>
         <div
-          style={{
-            width: '70vw',
-            height: '70vh',
-            border: '1px dotted #ccc',
-            position: 'relative',
-            overflow: 'scroll'
-          }}
+          style={boolean('is inside scroll', false) ? scrollStyle : {}}
         >
           <div style={{position: 'absolute', top: `${top}px`, left: `${left}px`}}>
             <Menu
-              onAction={action('prop:onAction')}
-              onClose={action('prop:onClose')}
+              onAction={action('onAction')}
+              onClose={action('onClose')}
               onClickOutside={action('prop:onClickOutside')}
               items={items}
-              origin={select('prop:origin', origins)}
-              isOpen={boolean('prop: isOpen', true)}
+              origin={select('origin (prop)', origins)}
+              isOpen={boolean('isOpen (prop)', true)}
             />
           </div>
         </div>
