@@ -17,7 +17,9 @@ export default class RadioButton extends React.Component {
   }
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    onFocus() {},
+    onBlur() {}
   }
 
   componentWillMount() {

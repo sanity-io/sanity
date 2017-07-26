@@ -1,22 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/radio-style'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RadioButton from 'part:@sanity/components/radiobutton/default'
 
 export default class RadioSelect extends React.Component {
   static propTypes = {
-    legend: PropTypes.string.isRequired,
     name: PropTypes.string,
     direction: PropTypes.oneOf(['horizontal', 'vertical']),
     onChange: PropTypes.func,
     value: PropTypes.object,
-    error: PropTypes.bool,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    hasFocus: PropTypes.bool,
-    isClearable: PropTypes.bool,
-    level: PropTypes.number,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -25,9 +17,7 @@ export default class RadioSelect extends React.Component {
   }
 
   static defaultProps = {
-    onChange() {},
-    onBlur() {},
-    onFocus() {}
+    onChange() {}
   }
 
   state = {
@@ -51,16 +41,14 @@ export default class RadioSelect extends React.Component {
   }
 
   render() {
-    const {legend, items, value, level, name, direction} = this.props
+    const {items, value, name, direction} = this.props
     const {focusedItem} = this.state
 
     return (
-      <Fieldset
+      <div
         className={`
           ${direction == 'vertical' ? styles.vertical : styles.horizontal}
         `}
-        legend={legend}
-        level={level}
       >
         <div className={styles.radioContainer}>
           {
@@ -83,7 +71,7 @@ export default class RadioSelect extends React.Component {
             })
           }
         </div>
-      </Fieldset>
+      </div>
     )
   }
 }

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
 
@@ -82,15 +83,15 @@ export default class StringSelect extends React.PureComponent {
 
     if (type.options.layout == 'radio') {
       return (
-        <RadioSelect
-          name={type.name}
-          legend={type.title}
-          level={level}
-          items={items}
-          onChange={this.handleChange}
-          value={currentItem || items[0]}
-          direction={type.options.direction || 'vertical'}
-        />
+        <Fieldset legend={type.title} level={level}>
+          <RadioSelect
+            name={type.name}
+            items={items}
+            onChange={this.handleChange}
+            value={currentItem || items[0]}
+            direction={type.options.direction || 'vertical'}
+          />
+        </Fieldset>
       )
     }
 
