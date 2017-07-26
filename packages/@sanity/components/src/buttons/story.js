@@ -25,8 +25,9 @@ storiesOf('Buttons', module)
           <Button
             kind={getButtonKinds()}
             onClick={action('clicked')}
-            disabled={boolean('Disabled', false)}
-            inverted={boolean('Inverted', false)}
+            disabled={boolean('disabled (prop)', false)}
+            inverted={boolean('inverted (prop)', false)}
+            type={text('type (prop)', undefined)}
             color={getColorKinds()}
             loading={boolean('Loading', false)}
             icon={boolean('icon', false) ? SanityLogoIcon : false}
