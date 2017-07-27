@@ -20,7 +20,7 @@ storiesOf('Fieldsets')
         <Fieldset
           legend={text('legend (prop)', 'This is the legend')}
           description={text('description (prop)', 'This is the description')}
-          level={number('level (prop)', 0)}
+          level={number('level (prop)', 1)}
           transparent={boolean('transparent (prop)', false)}
         >
           {text('children (prop)', 'Put content here')}
