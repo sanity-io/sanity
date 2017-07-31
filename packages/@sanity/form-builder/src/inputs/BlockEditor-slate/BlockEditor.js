@@ -241,8 +241,9 @@ export default class BlockEditor extends React.Component {
   }
 
   handleInputScroll = event => {
-    // Prevents the parent container to scroll to top when user tries
-    // to scroll to the top of the block editor.
+    // Prevents the parent container to scroll when user tries
+    // to scroll to the top/bottom of the block editor with momentum scroll or
+    // a speedy mouse wheel
     // This makes the block-editor more usable when scrolling inside it.
     const el = this._inputContainer
     const scrollTop = el.scrollTop
@@ -275,35 +276,35 @@ export default class BlockEditor extends React.Component {
     const hasError = validation && validation.messages && validation.messages.length > 0
     const showLinkButton = this.customSpans.length > 0
     return (
-      <FormField
-        label={type.title}
-        labelHtmlFor={this._inputId}
-        level={level}
-        className={fullscreen ? styles.formFieldFullscreen : styles.formField}
-      >
-        <div
-          className={`
-            ${hasError ? styles.error : styles.root}
-            ${fullscreen ? styles.fullscreen : ''}
-          `}
+      <ActivateOnFocus isActive={this.state.fullscreen}>
+        <FormField
+          label={type.title}
+          labelHtmlFor={this._inputId}
+          level={level}
+          className={fullscreen ? styles.formFieldFullscreen : styles.formField}
         >
-          <Toolbar
-            className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlock}
-            insertBlocks={this.customBlocks}
-            onFullscreenEnable={this.handleToggleFullscreen}
-            fullscreen={this.state.fullscreen}
-            onMarkButtonClick={this.handleOnClickMarkButton}
-            onListButtonClick={this.handleOnClickListFormattingButton}
-            onBlockStyleChange={this.handleBlockStyleChange}
-            listItems={this.getListItems()}
-            blockStyles={this.getBlockStyles()}
-            onLinkButtonClick={this.handleLinkButtonClick}
-            activeLinks={this.getActiveLinks()}
-            showLinkButton={showLinkButton}
-            marks={this.getActiveMarks()}
-          />
-          <ActivateOnFocus isActive={this.state.fullscreen}>
+          <div
+            className={`
+              ${hasError ? styles.error : styles.root}
+              ${fullscreen ? styles.fullscreen : ''}
+            `}
+          >
+            <Toolbar
+              className={styles.toolbar}
+              onInsertBlock={this.handleInsertBlock}
+              insertBlocks={this.customBlocks}
+              onFullscreenEnable={this.handleToggleFullscreen}
+              fullscreen={this.state.fullscreen}
+              onMarkButtonClick={this.handleOnClickMarkButton}
+              onListButtonClick={this.handleOnClickListFormattingButton}
+              onBlockStyleChange={this.handleBlockStyleChange}
+              listItems={this.getListItems()}
+              blockStyles={this.getBlockStyles()}
+              onLinkButtonClick={this.handleLinkButtonClick}
+              activeLinks={this.getActiveLinks()}
+              showLinkButton={showLinkButton}
+              marks={this.getActiveMarks()}
+            />
             <div
               className={styles.inputContainer}
               id={this._inputId}
@@ -329,9 +330,9 @@ export default class BlockEditor extends React.Component {
                 />
               </div>
             </div>
-          </ActivateOnFocus>
-        </div>
-      </FormField>
+          </div>
+        </FormField>
+      </ActivateOnFocus>
     )
   }
 
