@@ -241,6 +241,9 @@ export default class BlockEditor extends React.Component {
   }
 
   handleInputScroll = event => {
+    // Prevents the parent container to scroll to top when user tries
+    // to scroll to the top of the block editor.
+    // This makes the block-editor more usable when scrolling inside it.
     const el = this._inputContainer
     const scrollTop = el.scrollTop
     const scrollHeight = el.scrollHeight

@@ -122,7 +122,6 @@ class Search extends React.Component {
 
     client.fetch(query, {})
       .then(response => {
-        console.log('topItems', response)
         this.setState({
           topItems: response
         })
