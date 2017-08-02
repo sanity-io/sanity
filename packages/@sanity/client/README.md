@@ -15,7 +15,7 @@ The client can be installed from npm:
 npm install --save @sanity/client
 ```
 
-# API
+## API
 
 ```js
 const sanityClient = require('@sanity/client')
@@ -30,7 +30,7 @@ const client = sanityClient({
 
 Initializes a new Sanity Client. Required options are `projectId` and `dataset`.
 
-## Fetch a single document
+### Fetch a single document
 
 ```js
 client.getDocument('bike-123').then(bike => {
@@ -38,7 +38,7 @@ client.getDocument('bike-123').then(bike => {
 })
 ```
 
-## Performing queries
+### Performing queries
 
 ```js
 const query = '*[is "bike" && seats >= $minSeats] {name, seats}'
@@ -56,7 +56,7 @@ client.fetch(query, params).then(bikes => {
 
 Perform a query using the given parameters (if any).
 
-## Listening to queries
+### Listening to queries
 
 ```js
 const query = '*[is "comment" && authorId != $ownerId]'
@@ -78,7 +78,7 @@ By default, the emitted object will also contain a `result` property, which cont
 
 Likewise, you can also have the client return the document *before* the mutation was applied, by setting`includePreviousRevision` to `true` in the options, which will include a `previous` property in each emitted object.
 
-## Creating documents
+### Creating documents
 
 ```js
 const doc = {
@@ -97,7 +97,7 @@ client.create(doc).then(res => {
 Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute. It *may* contain an `_id`. If an ID is not specified, it will automatically be created.
 
 
-## Patch/update a document
+### Patch/update a document
 
 ```js
 client
@@ -119,7 +119,7 @@ client
 Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`. Returns the updated object.
 
 
-## Delete a document
+### Delete a document
 
 ```js
 client.delete('bike-123')
@@ -135,7 +135,7 @@ client.delete('bike-123')
 
 Delete a document. Parameter is a document ID.
 
-## Multiple mutations in a transaction
+### Multiple mutations in a transaction
 
 ```js
 const namePatch = client
@@ -177,7 +177,7 @@ client.transaction()
 A `patch` can be performed inline on a `transaction`.
 
 
-## Clientless patches & transactions
+### Clientless patches & transactions
 
 Transactions and patches can also be built outside the scope of a client:
 
@@ -206,7 +206,7 @@ client.mutate(transaction)
 
 An important note on this approach is that you cannot call `commit()` on transactions or patches instantiated this way, instead you have to pass them to `client.mutate()`
 
-## Get client configuration
+### Get client configuration
 
 ```js
 const config = client.config()
@@ -218,7 +218,7 @@ console.log(config.dataset)
 Get client configuration.
 
 
-## Set client configuration
+### Set client configuration
 
 ```js
 client.config({dataset: 'newDataset'})
