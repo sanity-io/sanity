@@ -14,6 +14,12 @@ import queryDocumentsCommand from './documents/queryDocumentsCommand'
 import installCommand from './install/installCommand'
 import startCommand from './start/startCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
+import hookGroup from './hook/hookGroup'
+import createHookCommand from './hook/createHookCommand'
+import deleteHookCommand from './hook/deleteHookCommand'
+import listHooksCommand from './hook/listHooksCommand'
+import printHookAttemptCommand from './hook/printHookAttemptCommand'
+import listHookLogsCommand from './hook/listHookLogsCommand'
 
 export default [
   buildCommand,
@@ -26,6 +32,12 @@ export default [
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
+  hookGroup,
+  listHooksCommand,
+  createHookCommand,
+  deleteHookCommand,
+  listHookLogsCommand,
+  printHookAttemptCommand,
   documentsGroup,
   getDocumentsCommand,
   queryDocumentsCommand,
