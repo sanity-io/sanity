@@ -1,4 +1,4 @@
-# Sanity client
+# @sanity/client
 
 [![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)
 
