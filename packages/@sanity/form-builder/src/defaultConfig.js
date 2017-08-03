@@ -13,11 +13,12 @@ import {
   UrlInput
 } from './defaultInputComponents'
 
-import ArrayOfStrings from './inputs/Array/ArrayOfStrings'
+import ArrayOfPrimitives from './inputs/ArrayOfPrimitives'
 import SearchableStringSelect from './inputs/SearchableStringSelect'
 import StringSelect from './inputs/StringSelect'
-import ArrayOfStringsSelect from './inputs/Array/ArrayOfStringsSelect'
+import OptionsArray from './inputs/OptionsArray'
 import BlockEditor from './inputs/BlockEditor-slate'
+import TagsArray from './inputs/TagsArray'
 
 const typeNameToInputMap = {
   object: ObjectInput,
@@ -34,20 +35,33 @@ const typeNameToInputMap = {
   slug: Slug
 }
 
+const PRIMITIVES = ['string', 'number', 'boolean']
+
 function is(typeName, type) {
   return type.name === typeName || (type.type && is(typeName, type.type))
 }
 
-function isArrayOfStrings(type) {
-  return is('array', type) && type.of.every(memberType => is('string', memberType))
+function isPrimitive(type) {
+  return PRIMITIVES.some(typeName => is(typeName, type))
+}
+
+function isArrayOfPrimitives(type) {
+  return is('array', type) && type.of.every(isPrimitive)
+}
+
+function isTagsArray(type) {
+  return type.options && type.options.layout === 'tags'
+    && is('array', type)
+    && type.of.length === 1
+    && is('string', type.of[0])
 }
 
 function hasBlockMember(type) {
   return is('array', type) && type.of.find(memberType => is('block', memberType))
 }
 
-function hasListInOptions(type) {
-  return type.options && type.options.list
+function isOptionsArray(type) {
+  return is('array', type) && type.options && type.options.list
 }
 
 function isList(type) {
@@ -61,13 +75,17 @@ function isSearchable(type) {
 export function resolveInputComponent(type) {
 
   // Schema provides predefines list
-  if (hasListInOptions(type) && isArrayOfStrings(type)) {
-    return ArrayOfStringsSelect
+  if (isOptionsArray(type)) {
+    return OptionsArray
+  }
+
+  if (isTagsArray(type)) {
+    return TagsArray
   }
 
   // Special component for array of strings
-  if (isArrayOfStrings(type)) {
-    return ArrayOfStrings
+  if (isArrayOfPrimitives(type)) {
+    return ArrayOfPrimitives
   }
 
   // Special component for array of strings

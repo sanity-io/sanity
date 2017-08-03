@@ -18,7 +18,7 @@ const chance = new Chance()
 import {withKnobs, object, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const items = range(100).map((item, i) => {
+const items = range(20).map((item, i) => {
   return {
     title: chance.name(),
     key: `${i}`

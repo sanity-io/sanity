@@ -73,13 +73,17 @@ const FormBuilder = schema && createFormBuilder({
   }
 })
 
-const EMPTY_VALUE = schema && {_type: schemaType.name, _id: 'example'}
-
 export default class Main extends React.Component {
   state = {
     inspect: false,
-    value: EMPTY_VALUE,
+    value: restore(PERSISTKEY),
     saved: false
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.inspect !== this.state.inspect) {
+      document.body.style.overflow = this.state.inspect === 'fullscreen' ? 'hidden' : ''
+    }
   }
 
   handleChange = event => {
@@ -121,12 +125,6 @@ export default class Main extends React.Component {
       throw new Error(`Invalid command: ${JSON.stringify(command)}`)
     }
     this[methodName](event)
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.inspect !== this.state.inspect) {
-      document.body.style.overflow = this.state.inspect === 'fullscreen' ? 'hidden' : ''
-    }
   }
 
   CommandButton = props => {

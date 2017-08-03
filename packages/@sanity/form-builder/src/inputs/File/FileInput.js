@@ -172,7 +172,7 @@ export default class FileInput extends React.PureComponent {
     }
 
     return (
-      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
+      <FormField label={type.title} labelFor={this._inputId} level={level}>
         <div className={progressClasses}>
           {
             ((progress && uploadingFile) || (status === 'complete')) && (

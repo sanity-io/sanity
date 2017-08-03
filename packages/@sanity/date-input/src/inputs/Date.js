@@ -99,7 +99,7 @@ export default class DateInput extends React.PureComponent {
     }
 
     return (
-      <FormField labelHtmlFor={inputId} label={title} level={level} description={description}>
+      <FormField labelFor={inputId} label={title} level={level} description={description}>
         <div className={styles.root}>
           {options.inputDate && (
             <Kronos

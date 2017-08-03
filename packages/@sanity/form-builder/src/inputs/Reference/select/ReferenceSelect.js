@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import subscriptionManager from '../../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 
@@ -110,13 +111,14 @@ export default class ReferenceSelect extends React.Component {
       : null
 
     return (
-      <Select
-        label={type.title}
-        description={type.description}
-        onChange={this.handleChange}
-        items={[EMPTY, ...items]}
-        value={selected}
-      />
+      <FormField label={type.title} description={type.description}>
+        <Select
+          onChange={this.handleChange}
+          items={[EMPTY, ...items]}
+          value={selected}
+        />
+      </FormField>
+
     )
   }
 }

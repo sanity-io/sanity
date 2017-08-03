@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
+import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../../Preview'
 import subscriptionManager from '../../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
@@ -126,28 +127,29 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   render() {
-    const {type, value, level} = this.props
+    const {type, value, level, ...rest} = this.props
     const {valueAsString, fetching, hits} = this.state
 
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
 
     return (
-      <SearchableSelect
-        label={type.title}
-        level={level}
-        description={type.description}
-        placeholder="Type to search…"
-        onBlur={this.handleBlur}
-        onFocus={this.handleFocus}
-        onSearch={this.handleSearch}
-        onChange={this.handleChange}
-        onClear={this.handleClear}
-        value={valueFromHit}
-        valueAsString={valueAsString}
-        renderItem={this.renderItem}
-        loading={fetching}
-        items={hits}
-      />
+      <FormField label={type.title} level={level}>
+        <SearchableSelect
+          {...rest}
+          description={type.description}
+          placeholder="Type to search…"
+          onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
+          onSearch={this.handleSearch}
+          onChange={this.handleChange}
+          onClear={this.handleClear}
+          value={valueFromHit}
+          valueAsString={valueAsString}
+          renderItem={this.renderItem}
+          loading={fetching}
+          items={hits}
+        />
+      </FormField>
     )
   }
 }

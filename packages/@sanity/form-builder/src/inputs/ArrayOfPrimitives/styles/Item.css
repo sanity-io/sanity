@@ -1,0 +1,68 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.1em;
+  margin: 0.1em;
+
+  &:active {
+    background-color: #f5ff36;
+  }
+
+  &:active:focus-within {
+    background-color: #ffaf5c;
+  }
+
+  &:focus-within {
+    background-color: #9bc3d1;
+  }
+
+  &:hover {
+    background-color: #c1ffdd;
+  }
+
+  &:hover:active {
+    background-color: #dcfff5;
+  }
+
+  &:hover:active:focus-within {
+    background-color: #a1f2ff;
+  }
+
+  &.media {
+    height: 15em;
+    width: 15em;
+  }
+  @nest & input {
+    background-color: transparent;
+    border: none;
+
+    @nest &:focus {
+      background-color: var(--white);
+    }
+  }
+}
+
+.input {
+  flex-grow: 1;
+}
+
+.deleteButton {
+  flex-grow: 0;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  font-size: 0.9em;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.dragHandle {
+  flex-grow: 0;
+}
+
+.addButton {
+  margin-top: var(--medium-padding);
+}

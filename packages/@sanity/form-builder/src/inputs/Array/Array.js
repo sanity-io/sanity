@@ -1,25 +1,16 @@
-import PropTypes from 'prop-types'
-//@flow weak
+// @flow
+import type {ItemValue, Type} from './types'
 import React from 'react'
-import {get} from 'lodash'
-
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
-import EditItemFold from 'part:@sanity/components/edititem/fold'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import DefaultList from 'part:@sanity/components/lists/default'
-import SortableList from 'part:@sanity/components/lists/sortable'
-import GridList from 'part:@sanity/components/lists/grid'
 
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import ItemForm from './ItemForm'
-import Item from './Item'
+import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
+import {movingItem} from './styles/ItemValue.css'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
-import MemberValue from '../../Member'
+import resolveListComponents from './resolveListComponents'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -30,11 +21,17 @@ function hasKeys(object, exclude = []) {
   return false
 }
 
-function isEmpty(value) {
+function isEmpty(value: ?ItemValue) {
   return value === undefined || !hasKeys(value, ['_key', '_type', 'index'])
 }
 
-function createProtoValue(type) {
+type State = {
+  selectType: boolean,
+  editItemKey: ?string,
+  focusItemKey: ?string
+}
+
+function createProtoValue(type): ItemValue {
   if (type.jsonType !== 'object') {
     throw new Error(`Invalid item type: "${type.type}". Default array input can only contain objects (for now)`)
   }
@@ -44,28 +41,18 @@ function createProtoValue(type) {
   }
 }
 
-export default class ArrayInput extends React.Component {
-  static displayName = 'Array';
-
-  static propTypes = {
-    type: FormBuilderPropTypes.type,
-    value: PropTypes.array,
-    level: PropTypes.number,
-    onChange: PropTypes.func
-  }
-
-  static defaultProps = {
-    onChange() {}
-  }
-
-  static contextTypes = {
-    formBuilder: PropTypes.object
+export default class ArrayInput<T: ItemValue> extends React.Component<*, *, State> {
+  props: {
+    type: Type,
+    value: Array<T>,
+    level: number,
+    onChange: (event: PatchEvent) => void
   }
 
   state = {
-    addItemField: null,
+    selectType: false,
     editItemKey: null,
-    lastEditedItem: null
+    focusItemKey: null
   }
 
   handleAddBtnClick = () => {
@@ -85,7 +72,7 @@ export default class ArrayInput extends React.Component {
     })
   }
 
-  insert(itemValue, position, atIndex) {
+  insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
     const {onChange} = this.props
     onChange(PatchEvent.from(
       setIfMissing([]),
@@ -93,36 +80,37 @@ export default class ArrayInput extends React.Component {
     ))
   }
 
-  prepend(value) {
+  prepend(value: ItemValue) {
     this.insert(value, 'before', 0)
   }
 
-  append(value) {
+  append(value: ItemValue) {
     this.insert(value, 'after', -1)
   }
 
-  handleRemoveItem = item => {
+  handleRemoveItem = (item: T) => {
     this.removeItem(item)
   }
 
-  handleClose = () => {
+  handleItemEditStop = (item: T) => {
     const itemValue = this.getEditItem()
-    if (isEmpty(itemValue)) {
-      this.handleRemoveItem(itemValue)
+    if (itemValue && isEmpty(itemValue)) {
+      this.removeItem(itemValue)
     }
-    this.setState({
-      editItemKey: null,
-      lastEditedItem: itemValue
-    })
+    this.setState({editItemKey: null})
   }
 
-  handleDropDownAction = menuItem => {
-    const item = createProtoValue(menuItem.type)
+  handleItemEditStart = (item: T) => {
     this.setState({editItemKey: item._key})
-    this.append(item)
   }
 
-  removeItem(item) {
+  handleDropDownAction = (menuItem: { type: Type }) => {
+    const item = createProtoValue(menuItem.type)
+    this.append(item)
+    this.setState({editItemKey: item._key})
+  }
+
+  removeItem(item: T) {
     const {onChange, value} = this.props
     if (item._key === this.state.editItemKey) {
       this.setState({editItemKey: null})
@@ -140,7 +128,6 @@ export default class ArrayInput extends React.Component {
     const items = type.of.map((memberDef, i) => {
       return {
         title: memberDef.title || memberDef.type.name,
-        index: `action${i}`,
         type: memberDef
       }
     })
@@ -152,11 +139,16 @@ export default class ArrayInput extends React.Component {
     )
   }
 
-  handleItemChange = (event : PatchEvent, item) => {
+  handleItemChange = (event: PatchEvent, item: T) => {
     const {onChange, value} = this.props
 
     const memberType = this.getMemberTypeOfItem(item)
-    if (memberType && memberType.readOnly) {
+    if (!memberType) {
+      // eslint-disable-next-line no-console
+      console.log('Could not find member type of item ', item)
+      return
+    }
+    if (memberType.readOnly) {
       return
     }
 
@@ -168,14 +160,7 @@ export default class ArrayInput extends React.Component {
     )
   }
 
-  handleItemEdit = item => {
-    this.setState({
-      editItem: item,
-      editItemKey: item._key || this.props.value.indexOf(item)
-    })
-  }
-
-  handleMove = event => {
+  handleSort = (event: { newIndex: number, oldIndex: number }) => {
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
     const refItem = value[event.newIndex]
@@ -201,146 +186,58 @@ export default class ArrayInput extends React.Component {
     ))
   }
 
-  handleItemEnter = () => {
-    this.setState({editItemKey: null})
-  }
-
-  renderEditItemForm(item) {
-    // todo: move this over to ./Item.js
-    const {type} = this.props
-    const memberType = this.getMemberTypeOfItem(item)
-
-    // Reset level if a full screen modal
-    const level = (type.options && type.options.editModal == 'fullscreen') ? 1 : this.props.level + 1
-
-    const content = (
-      <MemberValue path={{_key: item._key}}>
-        <ItemForm
-          focus
-          itemKey={item._key || this.props.value.indexOf(item)}
-          type={memberType}
-          level={level}
-          value={item}
-          onChange={this.handleItemChange}
-          onEnter={this.handleItemEnter}
-          onRemove={this.handleRemoveItem}
-        />
-      </MemberValue>
-    )
-
-    if (type.options && type.options.editModal == 'fullscreen') {
-      return (
-        <FullscreenDialog title={memberType.title} onClose={this.handleClose} isOpen>
-          {content}
-        </FullscreenDialog>
-      )
-    }
-
-    if (type.options && type.options.editModal == 'fold') {
-      return (
-        <EditItemFold title={memberType.title} onClose={this.handleClose}>
-          {content}
-        </EditItemFold>
-      )
-    }
-
-    return (
-      <EditItemPopOver title={memberType.title} onClose={this.handleClose}>
-        {content}
-      </EditItemPopOver>
-    )
-  }
-
-  getEditItem() {
+  getEditItem(): ? T {
     const {editItemKey} = this.state
     const {value} = this.props
     return typeof editItemKey === 'number'
-    ? value[editItemKey]
-    : value.find(item => item._key === editItemKey)
+      ? value[editItemKey]
+      : value.find(item => item._key === editItemKey)
   }
 
-  getMemberTypeOfItem(item) {
+  getMemberTypeOfItem(item: T): ? Type {
     const {type} = this.props
     return type.of.find(memberType => memberType.name === item._type)
   }
 
-  renderItem = (item, index) => {
-    const {type} = this.props
-
-    const layout = type.options && type.options.layout == 'grid' ? 'media' : 'default'
-
-    const isRelative = type.options && type.options.editModal == 'fold'
-
-    const isSortable = get(type, 'options.sortable') !== false
-
-    return (
-      <div style={{position: 'relative'}} key={item._key || `item-${index}`}>
-        <Item
-          type={type}
-          value={item}
-          layout={layout}
-          onRemove={this.handleRemoveItem}
-          onChange={this.handleItemChange}
-          onStartEdit={this.handleItemEdit}
-        />
-        <div
-          className={`
-            ${isRelative ? styles.popupAnchorRelative : styles.popupAnchor}
-            ${isSortable ? styles.sortable : styles.nonSortable}
-          `}
-        >
-          {/* todo: move this over to ./Item.js */}
-          {this.getEditItem() === item && this.renderEditItemForm(item)}
-        </div>
-      </div>
-    )
-  }
-
   renderList() {
-    const {value, type} = this.props
-    const sortable = !type.readOnly && get(type, 'options.sortable') !== false
+    const {type, value} = this.props
 
-    if (type.options && type.options.layout === 'grid') {
-      return (
-        <GridList
-          renderItem={this.renderItem}
-          items={value}
-          onSortEnd={this.handleMove}
-          focusedItem={this.state.lastEditedItem}
-          sortable={sortable}
-        />
-      )
-    }
-
-    if (sortable) {
-      return (
-        <SortableList
-          items={value}
-          renderItem={this.renderItem}
-          sortable={sortable}
-          onSortEnd={this.handleMove}
-          useDragHandle
-          decoration="divider"
-          focusedItem={this.state.lastEditedItem}
-        />
-      )
-    }
+    const {List, Item} = resolveListComponents(type)
 
     return (
-      <DefaultList
-        items={value}
-        renderItem={this.renderItem}
-        decoration="divider"
-        focusedItem={this.state.lastEditedItem}
-      />
+      <List
+        movingItemClass={movingItem}
+        onSort={this.handleSort}
+      >
+        {value.map((item, index) => {
+          const {editItemKey} = this.state
+          return (
+            <Item key={item._key} index={index}>
+              <RenderItemValue
+                type={type}
+                value={item}
+                onRemove={this.handleRemoveItem}
+                onChange={this.handleItemChange}
+                onEditStart={this.handleItemEditStart}
+                onEditStop={this.handleItemEditStop}
+                isEditing={editItemKey === item._key}
+              />
+            </Item>
+          )
+        })}
+      </List>
     )
   }
 
   render() {
     const {type, level, value} = this.props
-
     return (
-      <Fieldset legend={type.title} description={type.description} level={level} transparent>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        level={level}
+        tabIndex="0"
+      >
         <div className={styles.root}>
           {
             value && value.length > 0 && (
@@ -351,15 +248,12 @@ export default class ArrayInput extends React.Component {
           }
           {!type.readOnly && (
             <div className={styles.functions}>
-              {
-                this.props.type.of.length === 1
-                && <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+              {this.props.type.of.length === 1 && (
+                <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
                   Add
                 </Button>
-              }
-              {
-                this.props.type.of.length > 1 && this.renderSelectType()
-              }
+              )}
+              {this.props.type.of.length > 1 && this.renderSelectType()}
             </div>
           )}
         </div>

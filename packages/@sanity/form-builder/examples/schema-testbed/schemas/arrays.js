@@ -34,10 +34,48 @@ export default {
           type: 'tags'
         },
         {
-          name: 'relatedCars',
+          name: 'cars',
           type: 'array',
-          title: 'Array of related cars',
-          description: 'This array are defined in the field.',
+          title: 'Cars with defaults',
+          of: [{
+            title: 'Car',
+            type: 'car'
+          }]
+        },
+        {
+          name: 'carsNotSortable',
+          type: 'array',
+          title: 'Cars with default layout, not sortable',
+          options: {
+            sortable: false
+          },
+          of: [{
+            title: 'Car',
+            type: 'car'
+          }]
+        },
+        {
+          name: 'carsInGrid',
+          type: 'array',
+          title: 'Cars in grid',
+          description: 'Cars in grid',
+          options: {
+            layout: 'grid'
+          },
+          of: [{
+            title: 'Related car',
+            type: 'car'
+          }]
+        },
+        {
+          name: 'carsInGridNotSortable',
+          type: 'array',
+          title: 'Cars in grid not sortable',
+          description: 'Cars in grid not sortable',
+          options: {
+            layout: 'grid',
+            sortable: false
+          },
           of: [{
             title: 'Related car',
             type: 'car'

@@ -1,5 +1,5 @@
 // @flow
-import {resolveTypeName} from '../../../utils/resolveType'
+import {resolveTypeName} from '../../../utils/resolveTypeName'
 
 function hasKeys(obj) {
   for (const key in obj) { // eslint-disable-line guard-for-in

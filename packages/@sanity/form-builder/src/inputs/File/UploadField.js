@@ -27,7 +27,7 @@ export default class FileInput extends React.PureComponent {
   render() {
     const {type, level} = this.props
     return (
-      <FormField label={type.title} labelHtmlFor={this._inputId} level={level}>
+      <FormField label={type.title} labelFor={this._inputId} level={level}>
         <File
           id={this._inputId}
           placeholder={type.placeholder}

@@ -1,21 +1,22 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import DefaultTextField from 'part:@sanity/components/textfields/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 
-export default class Url extends React.Component {
+export default class UrlInput extends React.PureComponent {
   static propTypes = {
-    type: FormBuilderPropTypes.type,
+    type: FormBuilderPropTypes.type.isRequired,
+    level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func,
-    hasFocus: PropTypes.bool
+    onChange: PropTypes.func
   };
 
   static defaultProps = {
     value: '',
     onChange() {}
-  };
+  }
 
   handleChange = event => {
     const value = event.target.value || undefined
@@ -23,18 +24,22 @@ export default class Url extends React.Component {
   }
 
   render() {
-    const {value, type, hasFocus} = this.props
+    const {value, type, level, validation, ...rest} = this.props
+
     return (
-      <DefaultTextField
+      <FormField
+        level={level}
         label={type.title}
         description={type.description}
-        type="url"
-        placeholder={type.placeholder}
-        onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        value={value}
-        hasFocus={hasFocus}
-      />
+      >
+        <TextInput
+          {...rest}
+          type="url"
+          value={value}
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+        />
+      </FormField>
     )
   }
 }

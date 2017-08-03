@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
-import warnOnNativeBoolProps from '../utilities/warnOnNativeBoolProps'
 
 const NOOP = () => {}
 
@@ -28,8 +27,9 @@ export default class DefaultTextInput extends React.PureComponent {
     ]),
     type: PropTypes.oneOf(VALID_TYPES),
     onClear: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     isClearable: PropTypes.bool,
-    hasFocus: PropTypes.bool,
     isSelected: PropTypes.bool,
     isDisabled: PropTypes.bool,
     hasError: PropTypes.bool,
@@ -52,40 +52,29 @@ export default class DefaultTextInput extends React.PureComponent {
     hasError: false,
     isClearable: false,
     isDisabled: false,
-    hasFocus: false,
     autoComplete: 'off',
     onClear: NOOP,
+    onFocus: NOOP,
+    onBlur: NOOP,
     styles: {}
   }
 
-  constructor(props) {
-    super()
-    if (__DEV__) {
-      warnOnNativeBoolProps(this, props)
-    }
+  state = {
+    hasFocus: false
   }
 
   componentDidMount() {
-    const {hasFocus, isSelected} = this.props
-    this.setFocused(hasFocus)
+    const {isSelected} = this.props
     this.setSelected(isSelected)
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.isSelected !== this.props.isSelected) {
-      this.setSelected(this.props.isSelected)
-    }
-    if (prevProps.hasFocus !== this.props.hasFocus) {
-      this.setFocused(this.props.hasFocus)
-    }
+    this.setState({hasFocus: this._input === document.activeElement})
   }
 
   select = () => {
     this._input.select()
   }
 
-  focus = () => {
-    this._input.focus()
+  setInputElement = element => {
+    this._input = element
   }
 
   setSelected(isSelected) {
@@ -94,14 +83,14 @@ export default class DefaultTextInput extends React.PureComponent {
     }
   }
 
-  setFocused(hasFocus) {
-    if (hasFocus) {
-      this.focus()
-    }
+  handleFocus = event => {
+    this.props.onFocus(event)
+    this.setState({hasFocus: true})
   }
 
-  setInputElement = element => {
-    this._input = element
+  handleBlur = event => {
+    this.props.onBlur(event)
+    this.setState({hasFocus: false})
   }
 
   render() {
@@ -109,12 +98,13 @@ export default class DefaultTextInput extends React.PureComponent {
       onClear,
       hasError,
       isClearable,
-      hasFocus,
       isDisabled,
       isSelected,
       styles,
       ...rest
     } = this.props
+
+    const {hasFocus} = this.state
 
     return (
       <div
@@ -133,6 +123,8 @@ export default class DefaultTextInput extends React.PureComponent {
             isDisabled && styles.isDisabled,
             hasFocus && styles.hasFocus,
           ])}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
           disabled={isDisabled}
         />
         <div className={styles.focusHelper} />

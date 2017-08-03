@@ -10,22 +10,18 @@ import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
 export default class ObjectInput extends React.PureComponent {
-  static displayName = 'Object'
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
-    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
-    onEnter: PropTypes.func,
     level: PropTypes.number,
     isRoot: PropTypes.bool
   }
 
   static defaultProps = {
     onChange() {},
-    onEnter() {},
     level: 0,
     isRoot: false
   }
@@ -48,12 +44,8 @@ export default class ObjectInput extends React.PureComponent {
     onChange(event)
   }
 
-  handleFieldEnter = (event, field) => {
-    this.props.onEnter(field)
-  }
-
   renderField(field, level, index) {
-    const {value, hasFocus, validation} = this.props
+    const {value, validation, autoFocus} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
     const fieldValue = value && value[field.name]
@@ -61,13 +53,12 @@ export default class ObjectInput extends React.PureComponent {
     return (
       <Field
         key={field.name}
-        hasFocus={hasFocus && index === 0}
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
-        onEnter={this.handleFieldEnter}
         validation={fieldValidation}
         level={level}
+        autoFocus={autoFocus && index === 0}
       />
     )
   }

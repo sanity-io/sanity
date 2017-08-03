@@ -106,7 +106,7 @@ export default class TagsTextField extends React.Component {
         `}
         level={level}
         label={label}
-        labelHtmlFor={this._inputId}
+        labelFor={this._inputId}
         description={description}
       >
         <div className={styles.wrapper}>

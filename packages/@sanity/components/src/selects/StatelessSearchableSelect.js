@@ -3,34 +3,27 @@ import React from 'react'
 import styles from 'part:@sanity/components/selects/searchable-style'
 import {uniqueId} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import DefaultList from 'part:@sanity/components/lists/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import enhanceWithClickOutside from 'react-click-outside'
+import SelectMenu from './SelectMenu'
 
 const noop = () => {}
 
 class StatelessSearchableSelect extends React.PureComponent {
   static propTypes = {
-    label: PropTypes.string.isRequired,
-    description: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.any,
-    hasFocus: PropTypes.bool,
 
     inputValue: PropTypes.string,
     onInputChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
 
     onClear: PropTypes.func,
     renderItem: PropTypes.func,
     placeholder: PropTypes.string,
 
     isLoading: PropTypes.bool,
-    level: PropTypes.number,
 
     isOpen: PropTypes.bool,
     onOpen: PropTypes.func,
@@ -51,7 +44,6 @@ class StatelessSearchableSelect extends React.PureComponent {
     level: 0,
     onInputChange: noop,
     hasError: false,
-    hasFocus: false,
     isLoading: false,
     renderItem: item => item,
     items: []
@@ -61,24 +53,15 @@ class StatelessSearchableSelect extends React.PureComponent {
     this.props.onClose()
   }
 
-  handleInputFocus = event => {
-    this.props.onFocus(event)
-  }
-
-  handleInputBlur = event => {
-    this.props.onBlur(event)
-  }
-
   handleSelect = item => {
     this.props.onChange(item)
   }
 
   handleArrowClick = () => {
-    const {isOpen, onOpen, onClose, onFocus} = this.props
+    const {isOpen, onOpen, onClose} = this.props
     if (isOpen) {
       onClose()
     } else {
-      onFocus()
       onOpen()
     }
   }
@@ -119,49 +102,33 @@ class StatelessSearchableSelect extends React.PureComponent {
     }
   }
 
-  componentWillMount() {
-    this._inputId = uniqueId('SearchableSelect')
-  }
-
   render() {
     const {
-      label,
       onClear,
       placeholder,
       isLoading,
       value,
-      description,
-      level,
       items,
       renderItem,
-      hasFocus,
       isOpen,
       highlightIndex,
       isInputSelected,
-      inputValue
+      inputValue,
+      ...rest
     } = this.props
 
     return (
-      <DefaultFormField
-        className={styles.root}
-        description={description}
-        level={level}
-        labelHtmlFor={this._inputId}
-        label={label}
-      >
+      <div>
         <div className={styles.selectContainer}>
           <DefaultTextInput
+            {...rest}
             className={styles.select}
-            id={this._inputId}
             placeholder={placeholder}
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
-            onFocus={this.handleInputFocus}
-            onBlur={this.handleInputBlur}
             value={inputValue || ''}
             selected={isInputSelected}
-            hasFocus={hasFocus}
           />
           {
             onClear && inputValue && (
@@ -196,8 +163,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             />
           )}
         </div>
-
-      </DefaultFormField>
+      </div>
     )
   }
 }

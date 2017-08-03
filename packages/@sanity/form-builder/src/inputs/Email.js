@@ -1,43 +1,21 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import DefaultTextField from 'part:@sanity/components/textfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 
-export default class Email extends React.PureComponent {
+export default class EmailInput extends React.PureComponent {
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func,
-    hasFocus: PropTypes.bool
-  }
+    onChange: PropTypes.func
+  };
 
   static defaultProps = {
     value: '',
     onChange() {}
-  }
-
-  state = {
-    hasFocus: this.props.hasFocus
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.hasFocus !== this.props.hasFocus) {
-      this.handleFocus()
-    }
-  }
-
-  handleFocus = () => {
-    this.setState({
-      hasFocus: true
-    })
-  }
-
-  handleBlur = () => {
-    this.setState({
-      hasFocus: false
-    })
   }
 
   handleChange = event => {
@@ -46,23 +24,23 @@ export default class Email extends React.PureComponent {
   }
 
   render() {
-    const {type, value, level} = this.props
-    const {hasFocus} = this.state
+    const {value, type, level, validation, ...rest} = this.props
+
     return (
-      <DefaultTextField
+      <FormField
+        level={level}
         label={type.title}
         description={type.description}
-        type="email"
-        level={level}
-        placeholder={type.placeholder}
-        onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        hasFocus={hasFocus}
-        value={value}
-        ref={this.setInputElement}
-      />
+      >
+        <TextInput
+          {...rest}
+          type="email"
+          value={value}
+          readOnly={type.readOnly}
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+        />
+      </FormField>
     )
   }
 }
