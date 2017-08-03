@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.107.22",
+  "version": "0.107.23",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "^0.107.0",
-    "@sanity/form-builder": "^0.107.22",
+    "@sanity/form-builder": "^0.107.23",
     "@sanity/mutator": "^0.106.21",
     "@sanity/uuid": "^0.106.21",
     "classnames": "^2.2.5",
@@ -37,11 +37,11 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.107.18",
+    "@sanity/base": "^0.107.23",
     "@sanity/check": "^0.107.0",
-    "@sanity/client": "^0.107.18",
-    "@sanity/components": "^0.107.22",
-    "@sanity/core": "^0.107.17",
+    "@sanity/client": "^0.107.23",
+    "@sanity/components": "^0.107.23",
+    "@sanity/core": "^0.107.23",
     "babel-plugin-lodash": "^3.2.11",
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4",
