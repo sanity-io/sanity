@@ -5,8 +5,6 @@ import enhanceWithClickOutside from 'react-click-outside'
 
 export default enhanceWithClickOutside(class ConfirmButton extends React.Component {
   static propTypes = {
-    icon: PropTypes.func,
-    confirmIcon: PropTypes.func,
     children: PropTypes.func,
     onClick: PropTypes.func
   }
@@ -28,7 +26,7 @@ export default enhanceWithClickOutside(class ConfirmButton extends React.Compone
   }
 
   render() {
-    const {icon, confirmIcon, children, ...rest} = this.props
+    const {children, ...rest} = this.props
     const {doConfirm} = this.state
     return (
       <Button

@@ -75,7 +75,6 @@ export default class Item extends React.PureComponent {
               className={styles.deleteButton}
               color="danger"
               icon={TrashIcon}
-              confirmIcon={TrashIcon}
               title="Delete"
               onClick={this.handleRemove}
               onMouseDown={this.handleMouseDown}
