@@ -1,7 +1,7 @@
 import {ImageInput} from '../../index'
-import {uploadImage, materializeReference} from './client-adapters/assets'
+import {uploadImageAsset, materializeReference} from './client-adapters/assets'
 
 export default ImageInput.create({
-  upload: uploadImage,
+  upload: uploadImageAsset,
   materializeReference
 })
