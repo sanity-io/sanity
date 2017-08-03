@@ -31,7 +31,7 @@ export default class TagsInput extends React.PureComponent {
   render() {
     const {type, value, level} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description} level={level} transparent>
+      <Fieldset legend={type.title} description={type.description} level={level}>
         <TagInput
           label={type.title}
           level={level}

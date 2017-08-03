@@ -132,6 +132,22 @@ export default {
       options: {
         direction: 'vertical',
         list: [
+          'red',
+          'green',
+          1, // invalid, not defined in list
+          'blue',
+          'black',
+        ]
+      },
+      of: [{type: 'string'}]
+    },
+    {
+      name: 'FavoriteColors',
+      title: 'Select multiple colors',
+      type: 'array',
+      options: {
+        direction: 'vertical',
+        list: [
           {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           1, // invalid, not defined in list
@@ -305,7 +321,8 @@ export default {
       type: 'array',
       of: [
         {
-          title: 'String',
+          title: 'Put a string here',
+          description: 'Must be a nice string',
           type: 'string'
         }
       ]

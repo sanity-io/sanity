@@ -3,6 +3,7 @@
 .root {
   position: relative;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 0.1em;
   margin: 0.1em;
@@ -35,6 +36,7 @@
     height: 15em;
     width: 15em;
   }
+
   @nest & input {
     background-color: transparent;
     border: none;
@@ -47,20 +49,27 @@
 
 .input {
   flex-grow: 1;
+  display: inline-block;
 }
 
 .deleteButton {
   flex-grow: 0;
   z-index: 1;
-  top: 0;
-  right: 0;
   font-size: 0.9em;
-  margin-right: 0;
   box-sizing: border-box;
 }
 
 .dragHandle {
   flex-grow: 0;
+  cursor: ns-resize;
+  opacity: 0.5;
+  font-size: 1em;
+  padding: 0.5em;
+  border: 1px solid transparent;
+  z-index: 1;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .addButton {

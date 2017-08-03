@@ -36,12 +36,12 @@ export default class DefaultFormField extends React.Component {
       >
         <label className={styles.inner}>
           <div className={styles.labelAndDescriptionWrapper}>
-            <DefaultLabel
+            {label && <DefaultLabel
               className={styles.label}
               level={level}
             >
               {label}
-            </DefaultLabel>
+            </DefaultLabel>}
 
             {
               description

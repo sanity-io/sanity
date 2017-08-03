@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {get} from 'lodash'
 import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
-import {createDragHandle, List as SortableList, Item as SortableItem} from 'part:@sanity/components/lists/sortable'
+import {List as SortableList, Item as SortableItem} from 'part:@sanity/components/lists/sortable'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Item from './Item'
@@ -143,7 +143,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
   render() {
     const {type, value, level} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description} level={level} transparent>
+      <Fieldset legend={type.title} description={type.description} level={level}>
         <div className={styles.root}>
           {value && value.length > 0 && (
             <div className={styles.list}>
