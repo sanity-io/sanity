@@ -276,63 +276,61 @@ export default class BlockEditor extends React.Component {
     const hasError = validation && validation.messages && validation.messages.length > 0
     const showLinkButton = this.customSpans.length > 0
     return (
-      <ActivateOnFocus isActive={this.state.fullscreen}>
-        <FormField
-          label={type.title}
-          labelHtmlFor={this._inputId}
-          level={level}
-          className={fullscreen ? styles.formFieldFullscreen : styles.formField}
+      <FormField
+        label={type.title}
+        labelHtmlFor={this._inputId}
+        level={level}
+        className={fullscreen ? styles.formFieldFullscreen : styles.formField}
+      >
+        <div
+          className={`
+            ${hasError ? styles.error : styles.root}
+            ${fullscreen ? styles.fullscreen : ''}
+          `}
         >
+          <Toolbar
+            className={styles.toolbar}
+            onInsertBlock={this.handleInsertBlock}
+            insertBlocks={this.customBlocks}
+            onFullscreenEnable={this.handleToggleFullscreen}
+            fullscreen={this.state.fullscreen}
+            onMarkButtonClick={this.handleOnClickMarkButton}
+            onListButtonClick={this.handleOnClickListFormattingButton}
+            onBlockStyleChange={this.handleBlockStyleChange}
+            listItems={this.getListItems()}
+            blockStyles={this.getBlockStyles()}
+            onLinkButtonClick={this.handleLinkButtonClick}
+            activeLinks={this.getActiveLinks()}
+            showLinkButton={showLinkButton}
+            marks={this.getActiveMarks()}
+          />
           <div
-            className={`
-              ${hasError ? styles.error : styles.root}
-              ${fullscreen ? styles.fullscreen : ''}
-            `}
+            className={styles.inputContainer}
+            id={this._inputId}
+            onClick={this.handleEditorContainerClick}
+            ref={this.setInputContainerElement}
+            onWheel={this.handleInputScroll}
           >
-            <Toolbar
-              className={styles.toolbar}
-              onInsertBlock={this.handleInsertBlock}
-              insertBlocks={this.customBlocks}
-              onFullscreenEnable={this.handleToggleFullscreen}
-              fullscreen={this.state.fullscreen}
-              onMarkButtonClick={this.handleOnClickMarkButton}
-              onListButtonClick={this.handleOnClickListFormattingButton}
-              onBlockStyleChange={this.handleBlockStyleChange}
-              listItems={this.getListItems()}
-              blockStyles={this.getBlockStyles()}
-              onLinkButtonClick={this.handleLinkButtonClick}
-              activeLinks={this.getActiveLinks()}
-              showLinkButton={showLinkButton}
-              marks={this.getActiveMarks()}
-            />
-            <div
-              className={styles.inputContainer}
-              id={this._inputId}
-              onClick={this.handleEditorContainerClick}
-              ref={this.setInputContainerElement}
-              onWheel={this.handleInputScroll}
-            >
-              <div>
-                <Editor
-                  ref={this.refEditor}
-                  className={styles.input}
-                  onChange={onChange}
-                  placeholder=""
-                  state={value}
-                  blockEditor={this}
-                  plugins={this.slatePlugins}
-                  schema={this.slateSchema}
-                />
-                <div
-                  ref={this.refBlockDragMarker}
-                  style={{display: 'none'}}
-                  className={styles.blockDragMarker}
-                />
-              </div>
+            <div>
+              <Editor
+                ref={this.refEditor}
+                className={styles.input}
+                onChange={onChange}
+                placeholder=""
+                state={value}
+                blockEditor={this}
+                plugins={this.slatePlugins}
+                schema={this.slateSchema}
+              />
+              <div
+                ref={this.refBlockDragMarker}
+                style={{display: 'none'}}
+                className={styles.blockDragMarker}
+              />
             </div>
           </div>
-        </FormField>
-      </ActivateOnFocus>
+        </div>
+      </FormField>
     )
   }
 
