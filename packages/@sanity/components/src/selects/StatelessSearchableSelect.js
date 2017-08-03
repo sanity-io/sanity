@@ -80,18 +80,19 @@ class StatelessSearchableSelect extends React.PureComponent {
       onClose()
     }
 
-    if (event.key === 'ArrowUp' && highlightIndex > -1) {
+    const lastIndex = items.length - 1
+    if (event.key === 'ArrowUp') {
       event.preventDefault()
-      onHighlightIndexChange(Math.max(highlightIndex - 1, -1))
+      const nextIndex = highlightIndex - 1
+      onHighlightIndexChange(nextIndex < 0 ? lastIndex : nextIndex)
     }
-    if (event.key === 'ArrowDown' && highlightIndex < items.length - 1) {
+    if (event.key === 'ArrowDown') {
       event.preventDefault()
-
-      if (isOpen) {
-        onHighlightIndexChange(Math.min(highlightIndex + 1, items.length - 1))
-      } else {
+      if (!isOpen) {
         onOpen()
       }
+      const nextIndex = highlightIndex + 1
+      onHighlightIndexChange(nextIndex > lastIndex ? 0 : nextIndex)
     }
   }
 
@@ -153,13 +154,12 @@ class StatelessSearchableSelect extends React.PureComponent {
             items.length === 0 && isLoading && <Spinner message="Loading items…" center />
           }
           {isOpen && items.length > 0 && (
-            <DefaultList
+            <SelectMenu
               items={items}
-              highlightedItem={(items && items[highlightIndex]) || value}
-              selectedItem={value}
-              scrollable
+              value={value}
               onSelect={this.handleSelect}
               renderItem={renderItem}
+              highlightIndex={highlightIndex}
             />
           )}
         </div>

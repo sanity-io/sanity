@@ -2,17 +2,17 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
-import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
+import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
+import {Item} from 'part:@sanity/components/lists/default'
 import ListView from './ListView'
 import {partition} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import QueryContainer from 'part:@sanity/base/query-container'
 import {DRAFTS_FOLDER, getPublishedId, isDraftId, getDraftId} from '../utils/draftUtils'
-import {isPublishedId} from '../../lib/utils/draftUtils'
+import {isPublishedId} from '../utils/draftUtils'
 import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview'
-import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
 import Pane from 'part:@sanity/components/panes/default'
 import DocumentsPaneMenu from './DocumentsPaneMenu'
 import Button from 'part:@sanity/components/buttons/default'
@@ -150,10 +150,10 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     const isSelected = selectedDocumentId && getPublishedId(item._id) === getPublishedId(selectedDocumentId)
 
     return (
-      <StateLinkListItem
+      <StateLink
         state={linkState}
-        highlighted={options.isHighlighted}
-        hasFocus={options.hasFocus}
+        className={styles.link}
+        tabIndex={0}
       >
         <div className={isSelected ? styles.selectedItem : styles.item}>
           <Preview
@@ -174,7 +174,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             }
           </div>
         </div>
-      </StateLinkListItem>
+      </StateLink>
     )
   }
 

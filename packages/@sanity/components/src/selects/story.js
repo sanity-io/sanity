@@ -4,8 +4,6 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
-import CustomSelect from 'part:@sanity/components/selects/custom'
-import CustomSelectField from 'part:@sanity/components/selects/customField'
 import {range} from 'lodash'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import RadioSelect from 'part:@sanity/components/selects/radio'
@@ -174,6 +172,13 @@ storiesOf('Selects')
   .add(
   'Default',
   () => {
+    const options = {
+      range: true,
+      min: 0,
+      max: items.length,
+      step: 1,
+    }
+    const valueIndex = number('Selected item', -1, options)
     return (
       <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
         <DefaultSelect
@@ -182,7 +187,8 @@ storiesOf('Selects')
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
-          items={object('items', items)}
+          items={items}
+          value={items[valueIndex]}
         />
       </Sanity>
     )
@@ -218,7 +224,14 @@ storiesOf('Selects')
         <div>{item.title}</div>
       )
     }
-    const valueToString = item => item.title
+    const hasOnclear = boolean('has onClear')
+    const selected = number('Selected item (value)', -1, {
+      range: true,
+      min: -1,
+      max: items.length,
+      step: 1,
+    })
+    const selectedItem = items[selected]
     return (
       <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
         <SearchableSelect
@@ -228,146 +241,17 @@ storiesOf('Selects')
           onFocus={action('onFocus')}
           onBlur={action('onBlur')}
           onOpen={action('onOpen')}
-          value={items[5]}
-          valueToString={valueToString}
+          value={selectedItem}
+          valueAsString={text('Value as string', selectedItem && selectedItem.title)}
           renderItem={renderItem}
           items={items}
-          isLoading={boolean('isLoading (prop)', false)}
+          isLoading={boolean('is loading', false)}
+          onClear={hasOnclear ? action('onClear') : undefined}
         />
       </Sanity>
     )
   }
 )
-
-.add(
-  'Searchable (selected value, renderItem)',
-  // `
-  //   When provided with items, the component searches inside these when no onInputChange is provided
-  // `,
-  () => {
-    class Example extends React.Component {
-      state = {
-        value: items[4],
-
-      }
-      render() {
-        const renderItem = function (item) {
-          return (
-            <div>{item.title}</div>
-          )
-        }
-
-        const valueToString = item => item.title
-        return (
-          <SearchableSelect
-            label={text('label (prop)', 'This is the label')}
-            placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            onChange={item => this.setState({value: item})}
-            onFocus={action('onFocus')}
-            onBlur={action('onBlur')}
-            onOpen={action('onOpen')}
-            value={this.state.value}
-            items={items}
-            renderItem={renderItem}
-            valueToString={valueToString}
-          />
-        )
-      }
-    }
-    return <Example />
-  }
-)
-
-.add(
-  'Searchable (with onClear)',
-  // `
-  //   When provided with items, the component searches inside these when no onInputChange is provided
-  // `,
-  () => {
-    const renderItem = function (item) {
-      return (
-        <div>{item.title}</div>
-      )
-    }
-    const valueToString = value => value.title
-
-    return (
-      <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
-        <SearchableSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onOpen={action('onOpen')}
-          onClear={action('onClear')}
-          value={items[5]}
-          items={items}
-          renderItem={renderItem}
-          valueToString={valueToString}
-        />
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Custom select',
-  () => {
-
-    const renderItem = function (item) {
-      return (
-        <div>Custom rendering of {item.title}</div>
-      )
-    }
-
-    return (
-      <Sanity part="part:@sanity/components/selects/custom" propTables={[CustomSelect]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
-          <CustomSelect
-            onChange={action('onChange')}
-            onFocus={action('onFocus')}
-            onOpen={action('onOpen')}
-            renderItem={renderItem}
-            value={items[2]}
-            items={items}
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Custom select field',
-  () => {
-
-    const renderItem = function (item) {
-      return (
-        <div>Custom rendering of {item.title}</div>
-      )
-    }
-
-    return (
-      <Sanity part="part:@sanity/components/selects/customField" propTables={[CustomSelectField]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
-          <CustomSelectField
-            label={text('label (prop)', 'This is the label')}
-            placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            transparent={boolean('transparent (prop)', false)}
-            onChange={action('onChange')}
-            onFocus={action('onFocus')}
-            onOpen={action('onOpen')}
-            renderItem={renderItem}
-            value={items[2]}
-            items={items}
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
-
 .add(
   'Style select',
   () => {
