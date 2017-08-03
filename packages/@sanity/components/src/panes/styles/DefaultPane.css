@@ -3,14 +3,17 @@
 .root {
   display: flex;
   flex-direction: column;
+
+  /* On mobile the panes are just stacked on top of each other */
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   background-color: #fff;
 
   @media (--screen-medium) {
+    /* Reset mobile first */
     position: relative;
     height: 100%;
     top: initial;
@@ -167,6 +170,8 @@
   display: block;
   box-sizing: border-box;
   overflow: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 
   @nest .isCollapsed & {
     display: none;

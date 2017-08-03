@@ -3,13 +3,7 @@
 .root {
   composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   display: block;
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: var(--small-padding);
-  width: calc(100vw - (var(--small-padding) * 2));
-  height: 3rem;
-  border-bottom: 1px solid #ccc;
+  padding: var(--small-padding);
 }
 
 .searchContainer {

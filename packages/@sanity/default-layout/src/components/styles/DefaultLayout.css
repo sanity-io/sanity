@@ -27,17 +27,17 @@
 .defaultLayout {
   box-sizing: border-box;
   padding: var(--small-padding);
+  max-width: 100%;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100vh;
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
     padding-top: var(--small-padding);
-    max-width: 100%;
-    width: 100vw;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    height: 100vh;
   }
 }
 
@@ -46,12 +46,12 @@
   position: relative;
   max-width: 100%;
   margin-top: var(--header-height);
+  margin-top: 0;
+  flex-grow: 1;
+  overflow: hidden;
+  box-sizing: border-box;
 
   @media (--screen-medium) {
-    margin-top: 0;
-    flex-grow: 1;
-    overflow: auto;
-    box-sizing: border-box;
     display: flex;
   }
 }
@@ -66,27 +66,20 @@
 }
 
 .mobileNavigation {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
+  border-bottom: 1px solid var(--component-border-color);
   @media (--screen-medium) {
     display: none;
   }
 }
 
 .mainArea {
-  @media (--screen-medium) {
-    flex-grow: 1;
-    display: flex;
-  }
+  flex-grow: 1;
+  display: flex;
+  overflow: hidden;
 }
 
 .secondaryNavigation {
   display: none;
-
 
   @media (--screen-medium) {
     display: block;
