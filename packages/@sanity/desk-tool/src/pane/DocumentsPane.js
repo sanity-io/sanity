@@ -97,7 +97,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     return this.state.listLayoutSettings[typeName] || 'default'
   }
 
-  handleSetSort = sorting => {
+  handleSetSorting = sorting => {
     this.setState({
       sorting: sorting
     })
