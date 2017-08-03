@@ -14,6 +14,7 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import ItemForm from './ItemForm'
 import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
+import UploadPreview from './UploadPreview'
 
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
@@ -146,13 +147,19 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
             onClick={this.handleEditStart}
             onKeyPress={this.handleKeyPress}
           >
-            <Preview
-              layout={previewLayout}
-              value={value}
-              type={this.getMemberType()}
-            />
+            {value._isUploading ? (
+              <UploadPreview
+                value={value}
+                type={this.getMemberType()}
+              />
+            ) : (
+              <Preview
+                layout={previewLayout}
+                value={value}
+                type={this.getMemberType()}
+              />
+            )}
           </div>
-
           <div className={styles.functions}>
             {!type.readOnly && (
               <ConfirmButton
