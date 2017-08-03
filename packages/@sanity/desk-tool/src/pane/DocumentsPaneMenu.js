@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Menu from 'part:@sanity/components/menus/default'
 
-import IconSortAlphaDesc from 'part:@sanity/base/sort-alpha-desc-icon'
 import IconList from 'part:@sanity/base/bars-icon'
 import IconDetails from 'part:@sanity/base/th-list-icon'
 import IconThumbnails from 'part:@sanity/base/th-large-icon'
@@ -10,13 +9,16 @@ import IconThumbnails from 'part:@sanity/base/th-large-icon'
 import IconNew from 'part:@sanity/base/plus-circle-icon'
 
 const menuItems = [
-  {
-    title: 'Alphabetical',
-    icon: IconSortAlphaDesc,
-    action: 'setSorting',
-    key: 'byAlphabetical',
-    sorting: 'name'
-  },
+  // Todo: Disabled for now as we need to rethink how sorting should
+  // work wrt. previews and what is actually displayed on screen
+
+  // {
+  //   title: 'Alphabetical',
+  //   icon: IconSortAlphaDesc,
+  //   action: 'setSorting',
+  //   key: 'byAlphabetical',
+  //   sorting: 'name'
+  // },
   {
     title: 'Last edited',
     icon: undefined,
