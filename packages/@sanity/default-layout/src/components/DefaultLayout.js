@@ -85,22 +85,25 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
           <MobileNavigation tools={tools} />
         </div>
 
-        <div className={styles.secondaryNavigation}>
-          <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
-            <span className={styles.createButtonIcon}><PlusIcon /></span>
-            <span className={styles.createButtonText}>Create</span>
-          </a>
-          <ToolSwitcher
-            tools={this.props.tools}
-            activeToolName={router.state.tool}
-            className={styles.toolSwitcher}
-          />
-        </div>
+        <div className={styles.mainArea}>
 
-        <div className={styles.toolContainer}>
-          <RouteScope scope={router.state.tool}>
-            <RenderTool tool={router.state.tool} />
-          </RouteScope>
+          <div className={styles.secondaryNavigation}>
+            <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
+              <span className={styles.createButtonIcon}><PlusIcon /></span>
+              <span className={styles.createButtonText}>Create</span>
+            </a>
+            <ToolSwitcher
+              tools={this.props.tools}
+              activeToolName={router.state.tool}
+              className={styles.toolSwitcher}
+            />
+          </div>
+
+          <div className={styles.toolContainer}>
+            <RouteScope scope={router.state.tool}>
+              <RenderTool tool={router.state.tool} />
+            </RouteScope>
+          </div>
         </div>
 
         {

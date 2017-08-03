@@ -13,10 +13,6 @@
   height: 100%;
 }
 
-.pane1 {
-  border: 5px solid green;
-}
-
 .paneInSplitted {
   /*position: relative;
   box-sizing: border-box;
@@ -27,7 +23,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0 0.5rem;
 }
 
 .paneInSplittedCollapsed {
@@ -97,4 +92,12 @@
     cursor: default !important;
     border-color: transparent !important;
   }*/
+}
+
+:global(.Pane1) {
+
+}
+
+:global(.Pane2) {
+  margin-left: 10px;
 }

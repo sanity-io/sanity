@@ -34,30 +34,34 @@
     max-width: 100%;
     width: 100vw;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100vh;
   }
 }
 
 .toolContainer {
+  box-sizing: border-box;
   position: relative;
   max-width: 100%;
   margin-top: var(--header-height);
 
   @media (--screen-medium) {
     margin-top: 0;
-    float: left;
-    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
-    height: calc(100vh - var(--header-height) - var(--medium-padding));
+    flex-grow: 1;
     overflow: auto;
     box-sizing: border-box;
+    display: flex;
   }
 }
 
 .desktopNavigation {
   display: none;
-  border-bottom: 1px solid var(--component-border-color);
-  lost-utility: clearfix;
+
   @media (--screen-medium) {
     display: block;
+    border-bottom: 1px solid var(--component-border-color);
   }
 }
 
@@ -73,22 +77,25 @@
   }
 }
 
+.mainArea {
+  @media (--screen-medium) {
+    flex-grow: 1;
+    display: flex;
+  }
+}
+
 .secondaryNavigation {
-  position: relative;
-  width: calc(var(--tool-switcher-width) + var(--medium-padding));
-  margin-right: var(--medium-padding);
-  margin-left: calc(var(--medium-padding) * -1);
-  padding-top: var(--medium-padding);
-  height: 100vh;
-  float: left;
-  font-size: var(--font-size-xsmall);
-  z-index: var(--zindex-navbar);
-  background-color: var(--body-bg);
   display: none;
 
 
   @media (--screen-medium) {
     display: block;
+    position: relative;
+    width: var(--tool-switcher-width);
+    margin-right: var(--medium-padding);
+    padding-top: var(--medium-padding);
+    padding-right: var(--medium-padding);
+    font-size: var(--font-size-xsmall);
   }
 }
 
