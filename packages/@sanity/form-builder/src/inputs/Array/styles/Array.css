@@ -15,6 +15,48 @@
   left: 2em;
 }
 
+.movingItem {
+  opacity: 0.7;
+  background-color: #a1f2ff;
+}
+
+.item {
+  border-bottom: 1px solid var(--list-border-color);
+
+  @nest &:first-child {
+    border-top: 1px solid var(--list-border-color);
+  }
+
+  @nest &:active {
+    background-color: #f5ff36;
+  }
+
+  @nest &:active:focus-within {
+    background-color: #ffaf5c;
+  }
+
+  @nest &:focus-within {
+    background-color: #9bc3d1;
+  }
+
+  @nest &:hover {
+    background-color: #c1ffdd;
+  }
+
+  @nest &:hover:active {
+    background-color: #dcfff5;
+  }
+
+  @nest &:hover:active:focus-within {
+    background-color: #a1f2ff;
+  }
+
+  @nest &.media {
+    height: 15em;
+    width: 15em;
+  }
+}
+
 .popupAnchorRelative {
   margin-left: calc(var(--medium-padding) * -1);
   margin-right: calc(var(--medium-padding) * -1);

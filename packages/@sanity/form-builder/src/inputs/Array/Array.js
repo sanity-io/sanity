@@ -4,10 +4,8 @@ import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-
 import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
-import {movingItem} from './styles/ItemValue.css'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
@@ -206,13 +204,13 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
 
     return (
       <List
-        movingItemClass={movingItem}
+        movingItemClass={styles.movingItem}
         onSort={this.handleSort}
       >
         {value.map((item, index) => {
           const {editItemKey} = this.state
           return (
-            <Item key={item._key} index={index}>
+            <Item key={item._key} index={index} className={styles.item}>
               <RenderItemValue
                 type={type}
                 value={item}

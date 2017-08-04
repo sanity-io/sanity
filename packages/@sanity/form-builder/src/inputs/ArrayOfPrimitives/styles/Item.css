@@ -36,15 +36,6 @@
     height: 15em;
     width: 15em;
   }
-
-  @nest & input {
-    background-color: transparent;
-    border: none;
-
-    @nest &:focus {
-      background-color: var(--white);
-    }
-  }
 }
 
 .input {
