@@ -206,6 +206,7 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
       <List
         movingItemClass={styles.movingItem}
         onSort={this.handleSort}
+        useDragHandle
       >
         {value.map((item, index) => {
           const {editItemKey} = this.state

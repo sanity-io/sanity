@@ -8,8 +8,8 @@ type ValidAxis = "x" | "y" | "xy"
 type ListProps = {
   className: string,
   movingItemClass: string,
-  onSortStart: ({node: string, index: number}) => void,
-  onSortEnd: ({oldIndex: number, newIndex: number}) => void,
+  useDragHandle: boolean,
+  onSort: ({oldIndex: number, newIndex: number}) => void,
   distance: number,
   lockToContainerEdges: boolean,
   transitionDuration: number,
@@ -31,6 +31,7 @@ export function createSortableList(element : Element) {
       onSort,
       movingItemClass,
       distance,
+      useDragHandle,
       lockToContainerEdges,
       axis,
       lockAxis,
@@ -50,6 +51,7 @@ export function createSortableList(element : Element) {
         transitionDuration={transitionDuration}
         axis={axis}
         lockAxis={lockAxis}
+        useDragHandle={useDragHandle}
       />
     )
   }
