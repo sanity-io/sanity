@@ -20,6 +20,7 @@
 
 .preview {
   flex-grow: 1;
+  outline: none;
 }
 
 .dragHandle {
@@ -37,4 +38,5 @@
 
 .functions {
   flex-grow: 0;
+  font-size: 0.9rem;
 }

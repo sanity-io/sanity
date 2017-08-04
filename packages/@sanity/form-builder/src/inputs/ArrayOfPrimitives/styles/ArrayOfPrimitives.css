@@ -4,17 +4,6 @@
   display: block;
 }
 
-.item {
-  @nest & input {
-    background-color: transparent;
-    border: none;
-
-    @nest &:focus {
-      background-color: var(--white);
-    }
-  }
-}
-
 .deleteButton {
   position: absolute;
   z-index: 1;

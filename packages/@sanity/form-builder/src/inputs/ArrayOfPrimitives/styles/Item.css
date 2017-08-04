@@ -8,29 +8,7 @@
   padding: 0.1em;
   margin: 0.1em;
 
-  &:active {
-    background-color: #f5ff36;
-  }
-
-  &:active:focus-within {
-    background-color: #ffaf5c;
-  }
-
-  &:focus-within {
-    background-color: #9bc3d1;
-  }
-
-  &:hover {
-    background-color: #c1ffdd;
-  }
-
-  &:hover:active {
-    background-color: #dcfff5;
-  }
-
-  &:hover:active:focus-within {
-    background-color: #a1f2ff;
-  }
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
 
   &.media {
     height: 15em;
@@ -40,7 +18,6 @@
 
 .input {
   flex-grow: 1;
-  display: inline-block;
 }
 
 .deleteButton {
