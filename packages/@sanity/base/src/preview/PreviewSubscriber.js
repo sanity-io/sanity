@@ -4,37 +4,9 @@ import ReactDOM from 'react-dom'
 import Observable from '@sanity/observable'
 import observeForPreview from './observeForPreview'
 import shallowEquals from 'shallow-equals'
-import resize$ from './streams/resize'
-import scroll$ from './streams/scroll'
-import orientationChange$ from './streams/orientationChange'
+import intersectionObservableFor from './streams/intersectionObservableFor'
 import visibilityChange$ from './streams/visibilityChange'
 
-function isVisible() {
-  return !document.hidden
-}
-
-function getViewport() {
-  return {
-    left: 0,
-    right: window.innerWidth,
-    top: 0,
-    bottom: window.innerHeight
-  }
-}
-
-const MARGIN = 150
-function intersects(rect, viewport) {
-  return (
-    rect.left <= viewport.right + MARGIN
-    && rect.right >= viewport.left - MARGIN
-    && rect.top <= viewport.bottom + MARGIN
-    && rect.bottom >= viewport.top - MARGIN
-  )
-}
-
-function inViewport(element) {
-  return () => intersects(element.getBoundingClientRect(), getViewport())
-}
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
@@ -74,21 +46,16 @@ export default class PreviewSubscriber extends React.PureComponent {
   subscribe(value, type, fields) {
     this.unsubscribe()
 
-    const visibilityOn$ = Observable.of(isVisible())
+    const visibilityOn$ = Observable.of(!document.hidden)
        .merge(visibilityChange$.map(event => !event.target.hidden))
 
-    const checkViewport = inViewport(ReactDOM.findDOMNode(this))
-    const inViewport$ = resize$.merge(scroll$)
-      .merge(orientationChange$)
-      .map(checkViewport)
+    const inViewport$ = intersectionObservableFor(ReactDOM.findDOMNode(this))
+      .map(event => event.isIntersecting)
 
     this.subscription = visibilityOn$
       .distinctUntilChanged()
-      .switchMap(on => {
-        return on ? Observable.of(checkViewport()).merge(inViewport$) : Observable.of(false)
-      })
+      .switchMap(isVisible => (isVisible ? inViewport$ : Observable.of(false)))
       .distinctUntilChanged()
-      // .do(isInViewport => console.log({isInViewport}))
       .switchMap(isInViewport => {
         return isInViewport
           ? observeForPreview(value, type, fields)
