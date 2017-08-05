@@ -15,10 +15,16 @@ const SvgPlaceholder = ({styles}) => {
           <stop offset="0" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
           <stop offset="0.5" style={{stopColor: '#eee'}} />
           <stop offset="1" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
-          <animate attributeName="x1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />
-          <animate attributeName="y1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />
-          <animate attributeName="x2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />
-          <animate attributeName="y2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />
+          {
+          /*
+            Animation disabled due to performance issues. Do not re-enable before verifying that it doesn't cause
+            performance degradations having a *lot* of placeholders on the page /BN
+          */
+          }
+          {/*<animate attributeName="x1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />*/}
+          {/*<animate attributeName="y1" dur="700ms" from="-100" to="100%" repeatCount="indefinite" />*/}
+          {/*<animate attributeName="x2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />*/}
+          {/*<animate attributeName="y2" dur="700ms" from="0%" to="200%" repeatCount="indefinite" />*/}
         </linearGradient>
         <g fill="url(#loader_gradient)" className={styles.placeholderG}>
           <rect className={styles.media} />
