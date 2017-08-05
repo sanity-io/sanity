@@ -245,6 +245,8 @@ export default class BlockEditor extends React.Component {
     // to scroll to the top/bottom of the block editor with momentum scroll or
     // a speedy mouse wheel
     // This makes the block-editor more usable when scrolling inside it.
+
+    /* Disable this when we dont use activateonfocus
     const el = this._inputContainer
     const scrollTop = el.scrollTop
     const scrollHeight = el.scrollHeight
@@ -255,14 +257,15 @@ export default class BlockEditor extends React.Component {
     }
 
     if (event.nativeEvent.deltaY <= 0) {
-      /* scrolling up */
+      // scrolling up
       if (scrollTop <= 0) {
         event.preventDefault()
       }
     } else if (scrollTop + height >= scrollHeight) {
-      /* scrolling down */
+      // scrolling down
       event.preventDefault()
     }
+    */
   }
 
   setInputContainerElement = element => {
