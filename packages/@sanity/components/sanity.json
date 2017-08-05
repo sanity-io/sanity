@@ -287,24 +287,12 @@
       "description": "Sortable list"
     },
     {
-      "name": "part:@sanity/components/lists/default-style",
-      "description": "Styling for edfault list"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/default-style",
-      "description": "Default list item styling"
-    },
-    {
       "name": "part:@sanity/components/lists/grid",
       "description": "Grid list"
     },
     {
       "name": "part:@sanity/components/lists/sortable-grid",
       "description": "Sortable Grid list"
-    },
-    {
-      "name": "part:@sanity/components/lists/grid-style",
-      "description": "Styling for grid list"
     },
     {
       "name": "part:@sanity/components/edititem/popover",
@@ -672,10 +660,6 @@
       "path": "lists/default"
     },
     {
-      "implements": "part:@sanity/components/lists/default-style",
-      "path": "lists/default/styles"
-    },
-    {
       "implements": "part:@sanity/components/lists/sortable",
       "path": "lists/sortable"
     },
@@ -686,10 +670,6 @@
     {
       "implements": "part:@sanity/components/lists/sortable-grid",
       "path": "lists/sortable-grid"
-    },
-    {
-      "implements": "part:@sanity/components/lists/grid-style",
-      "path": "lists/grid/styles"
     },
     {
       "implements": "part:@sanity/components/edititem/popover-style",
