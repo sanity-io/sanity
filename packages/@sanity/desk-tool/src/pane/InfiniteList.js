@@ -51,11 +51,13 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     const {triggerUpdate} = this.state
     return (
       <VirtualList
+        key={layout /* forcefully re-render the whole list when layout changes */}
         className={className || ''}
         height={height}
         itemCount={items.length}
         itemSize={layout === 'default' ? 40 : 80}
         renderItem={this.renderItem}
+        overscanCount={50}
         data-trigger-update-hack={triggerUpdate} /* see componentWillReceiveProps above */
       />
     )
