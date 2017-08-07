@@ -10,7 +10,8 @@ export default async (args, context) => {
   const {output, workDir, yarn, chalk} = context
   const {extOptions, argsWithoutOptions} = args
   const modules = argsWithoutOptions.slice()
-  const {range, tag, exact} = extOptions
+  const {range, tag} = extOptions
+  const saveExact = extOptions['save-exact']
   const targetRange = tag || range || 'latest'
 
   if (range && tag) {
@@ -36,7 +37,7 @@ export default async (args, context) => {
   }
 
   // Replace versions in `package.json`
-  const versionPrefix = exact ? '' : '^'
+  const versionPrefix = saveExact ? '' : '^'
   const oldManifest = await readLocalManifest(workDir)
   const newManifest = needsUpdate.reduce((target, mod) => {
     if (oldManifest.dependencies && oldManifest.dependencies[mod.name]) {
