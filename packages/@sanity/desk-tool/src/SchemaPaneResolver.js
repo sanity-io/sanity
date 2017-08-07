@@ -135,16 +135,15 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
               </SplitPaneWrapper>
             )
           }
-
-          {
-            action && action !== 'edit' && (
-            // this would normally never happen
-            <Snackbar kind="error">
-              Invalid action: {action}
-            </Snackbar>
-            )
-          }
         </SplitController>
+        {
+          action && action !== 'edit' && (
+          // this would normally never happen
+          <Snackbar kind="error">
+            Invalid action: {action}
+          </Snackbar>
+          )
+        }
       </div>
     )
   }
