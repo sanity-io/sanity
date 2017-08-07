@@ -27,68 +27,68 @@
 .defaultLayout {
   box-sizing: border-box;
   padding: var(--small-padding);
+  max-width: 100%;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100vh;
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
     padding-top: var(--small-padding);
-    max-width: 100%;
-    width: 100vw;
-    overflow: hidden;
   }
 }
 
 .toolContainer {
+  box-sizing: border-box;
   position: relative;
   max-width: 100%;
   margin-top: var(--header-height);
+  margin-top: 0;
+  flex-grow: 1;
+  overflow: hidden;
+  box-sizing: border-box;
 
   @media (--screen-medium) {
-    margin-top: 0;
-    float: left;
-    width: calc(100vw - var(--tool-switcher-width) - var(--medium-padding) * 3);
-    height: calc(100vh - var(--header-height) - var(--medium-padding));
-    overflow: auto;
-    box-sizing: border-box;
+    display: flex;
   }
 }
 
 .desktopNavigation {
   display: none;
-  border-bottom: 1px solid var(--component-border-color);
-  lost-utility: clearfix;
+
   @media (--screen-medium) {
     display: block;
+    border-bottom: 1px solid var(--component-border-color);
   }
 }
 
 .mobileNavigation {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
+  border-bottom: 1px solid var(--component-border-color);
   @media (--screen-medium) {
     display: none;
   }
 }
 
-.secondaryNavigation {
-  position: relative;
-  width: calc(var(--tool-switcher-width) + var(--medium-padding));
-  margin-right: var(--medium-padding);
-  margin-left: calc(var(--medium-padding) * -1);
-  padding-top: var(--medium-padding);
-  height: 100vh;
-  float: left;
-  font-size: var(--font-size-xsmall);
-  z-index: var(--zindex-navbar);
-  background-color: var(--body-bg);
-  display: none;
+.mainArea {
+  flex-grow: 1;
+  display: flex;
+  overflow: hidden;
+}
 
+.secondaryNavigation {
+  display: none;
 
   @media (--screen-medium) {
     display: block;
+    position: relative;
+    width: var(--tool-switcher-width);
+    margin-right: var(--medium-padding);
+    padding-top: var(--medium-padding);
+    padding-right: var(--medium-padding);
+    font-size: var(--font-size-xsmall);
   }
 }
 
