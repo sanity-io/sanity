@@ -137,7 +137,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
           }
         </SplitController>
         {
-          action && action !== 'edit' && (
+          selectedType && schemaType && action && action !== 'edit' && (
           // this would normally never happen
           <Snackbar kind="error">
             Invalid action: {action}
