@@ -12,6 +12,7 @@ import EditorWrapper from './pane/EditorWrapper'
 
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -122,44 +123,27 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
               </SplitPaneWrapper>
             )
           }
-          {/* {
-            schemaType && !selectedDocumentId && (
-              <div className={styles.editorCreateNew}>
-                <IntentLink
-                  intent="create"
-                  params={{type: selectedType}}
-                  className={styles.editorCreateNewLink}
-                >
-                  Create new &quot;{schemaType.title}&quot;
-                </IntentLink>
-              </div>
-            )
-          }
 
           {
             selectedType && !schemaType && (
-            <h2 className={styles.emptyText}>
-              Could not find any type
-              named <strong><em>{selectedType}</em></strong> in
-              schema <strong><em>{schema.name}</em></strong>…
-            </h2>
+              <SplitPaneWrapper>
+                <h2 className={styles.emptyText}>
+                  Could not find any type
+                  named <strong><em>{selectedType}</em></strong> in
+                  schema <strong><em>{schema.name}</em></strong>…
+                </h2>
+              </SplitPaneWrapper>
             )
           }
+
           {
             action && action !== 'edit' && (
             // this would normally never happen
-            <h2 className={styles.emptyText}>
+            <Snackbar kind="error">
               Invalid action: {action}
-            </h2>
+            </Snackbar>
             )
           }
-
-          {
-            !selectedType && (
-            <h2 className={styles.emptyText}>Select a type to begin…</h2>
-            )
-          } */}
-
         </SplitController>
       </div>
     )

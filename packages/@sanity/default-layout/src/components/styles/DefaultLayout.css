@@ -115,7 +115,7 @@
   width: 10em;
   bottom: 1rem;
   left: 1rem;
-  z-index: 5000;
+  z-index: var(--zindex-navbar);
   opacity: 0.5;
 
   @nest &:hover {
