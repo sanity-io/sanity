@@ -15,13 +15,11 @@
   white-space: nowrap;
   font-weight: 300;
   float: left;
-  border: 1px solid red;
 }
 
 .projectNameHidden {
   composes: projectName;
   display: none;
-  border: 1px solid green;
 }
 
 .link {
