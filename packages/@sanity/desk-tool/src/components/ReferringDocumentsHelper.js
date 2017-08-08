@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultList from 'part:@sanity/components/lists/default'
-import styles from './styles/ReferringDocumentsHelper.css'
 import renderReferringDocumentItem from './renderReferringDocumentItem'
 
 export default function ReferringDocumentsHelper(props) {
@@ -14,7 +13,7 @@ export default function ReferringDocumentsHelper(props) {
   return (
     <FullscreenDialog isOpen title="Cannot delete document" onClose={props.onCancel}>
       <p>The following documents has references to this document that needs to be removed or replaced before it can be deleted.</p>
-      <h3 className={styles.listHeadline}>{docCount} Referring documents</h3>
+      <h3>{docCount} Referring documents</h3>
       <DefaultList overrideItemRender items={props.documents} renderItem={renderReferringDocumentItem} decoration="divider" />
     </FullscreenDialog>
   )
