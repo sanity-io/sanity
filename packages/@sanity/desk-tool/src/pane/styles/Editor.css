@@ -7,7 +7,7 @@
 .hotkey {
   color: #888;
   font-size: 0.8em;
-  margin-left: 0.6em
+  margin-left: 0.6em;
 }
 
 .top {
@@ -21,6 +21,7 @@
   color: #aaaaaa;
   font-size: 0.7rem;
   display: none;
+
   @media (--screen-medium) {
     display: block;
   }

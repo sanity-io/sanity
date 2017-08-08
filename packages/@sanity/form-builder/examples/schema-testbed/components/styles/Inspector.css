@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .root {
   line-height: 17px;
   font-size: 13px;
@@ -12,6 +10,7 @@
     font-weight: bold;
     color: #0d6d9b;
   }
+
   & .json-markup-bool {
     color: #9d261d;
   }

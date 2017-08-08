@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 @keyframes slideInFromRight {
   from {
     transform: translateX(100%);
@@ -10,7 +8,6 @@
   }
 }
 
-
 @keyframes slideInFromLeft {
   from {
     transform: translateX(-100%);
@@ -20,7 +17,6 @@
     transform: translateX(0);
   }
 }
-
 
 .slide-in-from-right {
   animation-name: slideInFromRight;

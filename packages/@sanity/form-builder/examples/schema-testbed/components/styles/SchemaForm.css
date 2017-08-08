@@ -1,11 +1,5 @@
 @import './shared.css';
 
-@use postcss-cssnext;
-
-.root {
-
-}
-
 .inner {
   margin: 40px 40px 270px;
   padding: 10px;
@@ -15,6 +9,7 @@
 .inspectPaneInner {
   max-height: 250px;
 }
+
 .toolbar {
   background-color: #f0f0f0;
   margin-bottom: 40px;
@@ -30,6 +25,7 @@
   color: #096c85;
   background-color: transparent;
 }
+
 .inspectPaneInnerFullscreen {
   max-height: 100%;
 }
@@ -55,14 +51,17 @@
   position: absolute;
   top: 1vh;
 }
+
 .closeInspectPaneButton {
   right: 5px;
   composes: inspectPaneButton;
 }
+
 .fullscreenInspectPaneButton {
   right: 35px;
   composes: inspectPaneButton;
 }
+
 .dockedInspectPaneButton {
   right: 35px;
   composes: inspectPaneButton;

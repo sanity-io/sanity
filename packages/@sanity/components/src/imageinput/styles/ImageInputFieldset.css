@@ -116,7 +116,7 @@
   display: inline-block;
   margin-top: 3%;
   width: 100%;
-  text-align: center
+  text-align: center;
 }
 
 .imageIsUploaded {
@@ -141,7 +141,6 @@
   cursor: default;
   z-index: 1;
   user-select: none;
-
 }
 
 .imageSelectReplace {

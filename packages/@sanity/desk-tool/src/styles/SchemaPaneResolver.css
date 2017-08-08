@@ -7,15 +7,18 @@
 @keyframes fade-in {
   0% {
     background-color: color(var(--black) a(40%));
-    opacity: 0
+    opacity: 0;
   }
+
   50% {
-    opacity: 1
+    opacity: 1;
   }
+
   75% {
     background-color: color(var(--black) a(40%));
-    opacity: 0.5
+    opacity: 0.5;
   }
+
   100% {
     background-color: color(var(--body-bg) a(50%));
     opacity: 1;
@@ -24,11 +27,11 @@
 
 .link {
   cursor: default;
+
   @nest &:hover {
     background-color: #ccc;
   }
 }
-
 
 .editorCreateNew {
   display: block;

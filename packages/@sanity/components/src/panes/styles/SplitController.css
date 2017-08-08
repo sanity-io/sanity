@@ -61,7 +61,8 @@
 }
 
 .doubleWrapper {
-  /* This may be needed when we use more panes
+  /*
+  This may be needed when we use more panes
 
   @nest & :global(.Pane1) {
     flex: initial !important;
@@ -70,10 +71,9 @@
 
   @nest & :global(.Pane2) {
     display: block;
-  }*/
+  }
+  */
 }
-
-
 
 .paneInSplitted {
   position: absolute;

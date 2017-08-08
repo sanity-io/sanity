@@ -1,5 +1,3 @@
-@use postcss-cssnext;
-
 .list {
   margin: 4rem;
   overflow: hidden;

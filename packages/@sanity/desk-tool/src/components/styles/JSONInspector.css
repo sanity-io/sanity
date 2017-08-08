@@ -34,24 +34,21 @@
 :global .json-inspector .json-inspector__line {
   display: block;
   position: relative;
-
   cursor: default;
 }
 
-:global .json-inspector .json-inspector__line:after {
+:global .json-inspector .json-inspector__line::after {
   content: '';
-
   position: absolute;
   top: 0;
   left: -200px;
   right: -50px;
   bottom: 0;
   z-index: -1;
-
   pointer-events: none;
 }
 
-:global .json-inspector .json-inspector__line:hover:after {
+:global .json-inspector .json-inspector__line:hover::after {
   background: rgba(0, 0, 0, 0.06);
 }
 
@@ -59,13 +56,14 @@
   cursor: pointer;
 }
 
-:global .json-inspector .json-inspector__leaf_composite > .json-inspector__line:before {
+:global .json-inspector .json-inspector__leaf_composite > .json-inspector__line::before {
   content: '▷ ';
   color: #bbb;
   margin-left: -18px;
   font-size: 90%;
 }
-:global .json-inspector .json-inspector__leaf_expanded.json-inspector__leaf_composite > .json-inspector__line:before {
+
+:global .json-inspector .json-inspector__leaf_expanded.json-inspector__leaf_composite > .json-inspector__line::before {
   color: #999;
   content: '▽ ';
   font-size: 90%;
@@ -117,7 +115,6 @@
 :global .json-inspector .json-inspector__show-original {
   display: inline-block;
   padding: 0 6px;
-
   color: #666;
   cursor: pointer;
 }
@@ -126,10 +123,10 @@
   color: #111;
 }
 
-:global .json-inspector .json-inspector__show-original:before {
+:global .json-inspector .json-inspector__show-original::before {
   content: '⥂';
 }
 
-:global .json-inspector .json-inspector__show-original:hover:after {
-  content: ' expand'
+:global .json-inspector .json-inspector__show-original:hover::after {
+  content: ' expand';
 }

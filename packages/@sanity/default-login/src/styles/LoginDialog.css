@@ -13,16 +13,14 @@
 }
 
 .sanityStudioLogo {
-
   width: 8rem;
   margin: 4rem auto;
 
   @media (--screen-medium) {
     margin: 0;
     position: absolute;
-    top: 2rem;
     left: 50%;
-    transform: translatex(-50%);
+    transform: translateX(-50%);
     width: 10em;
     height: 1em;
     top: 10vh;
@@ -32,12 +30,13 @@
 .branding {
   margin: 0 auto;
   margin-bottom: 4rem;
+
   @media (--screen-medium) {
     margin: 0;
     top: 20vh;
     position: absolute;
     left: 50%;
-    transform: translatex(-50%);
+    transform: translateX(-50%);
     text-align: center;
   }
 }
@@ -54,6 +53,7 @@
 
 .brandLogoContainer {
   height: 3em;
+
   @nest & svg {
     height: 4em;
     width: auto;
@@ -81,7 +81,6 @@
   display: inline-block;
   margin: 1em;
   padding: 0;
-
 }
 
 .providerButton {
@@ -100,7 +99,6 @@
   &:active {
     background-color: var(--selected-item-color-hover);
   }
-
 }
 
 .providerName {
@@ -109,12 +107,11 @@
 
 .providerLogo {
   @nest & svg {
-
     height: 4em;
     width: auto;
+
     @media (--screen-medium) {
       height: 7em;
     }
-
   }
 }

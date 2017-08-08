@@ -12,7 +12,7 @@
   border: 1px solid #aaa;
   max-height: 200px;
   overflow-y: scroll;
-  background-color: white
+  background-color: white;
 }
 
 .content {

@@ -22,6 +22,6 @@
   transition: background-color 0.2s linear;
 
   @nest &:hover {
-    background-color: #efefef
+    background-color: #efefef;
   }
 }

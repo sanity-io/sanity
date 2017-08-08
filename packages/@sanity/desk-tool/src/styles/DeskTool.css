@@ -26,7 +26,6 @@
   padding-left: 0.5rem;
 }
 
-
 .nothingSelected {
   composes: center-both from 'part:@sanity/base/theme/layout/positioning-style';
   composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';

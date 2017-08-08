@@ -3,8 +3,6 @@
 .wrapper {
   height: 100%;
   width: 100%;
-
-  
 }
 
 .map {
@@ -19,6 +17,7 @@
   top: 10px;
   width: 220px;
 }
+
 .input {
   composes: textInput from "part:@sanity/base/theme/forms/text-input-style";
 }
