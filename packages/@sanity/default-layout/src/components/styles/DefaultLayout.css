@@ -3,6 +3,7 @@
 
 :global(body) {
   overflow-x: hidden;
+
   @media (--screen-medium) {
     max-height: 100%;
     overflow: hidden;
@@ -17,7 +18,7 @@
   z-index: 1000;
   font-size: 12px;
   line-height: 1.2;
-  padding: 2px 4px
+  padding: 2px 4px;
 }
 
 :root {
@@ -25,7 +26,6 @@
 }
 
 .defaultLayout {
-  box-sizing: border-box;
   padding: var(--small-padding);
   max-width: 100%;
   width: 100vw;
@@ -49,7 +49,6 @@
   margin-top: 0;
   flex-grow: 1;
   overflow: hidden;
-  box-sizing: border-box;
 
   @media (--screen-medium) {
     display: flex;
@@ -67,6 +66,7 @@
 
 .mobileNavigation {
   border-bottom: 1px solid var(--component-border-color);
+
   @media (--screen-medium) {
     display: none;
   }

@@ -2,7 +2,6 @@
 
 .root {
   display: block;
-
 }
 
 .isActive {
@@ -12,13 +11,10 @@
 .isInactive {
   composes: root;
   display: none;
+
   @media (--screen-medium) {
     display: block;
   }
-}
-
-.list-layout--default {
-  /*display: block;*/
 }
 
 .list-layout--detail {

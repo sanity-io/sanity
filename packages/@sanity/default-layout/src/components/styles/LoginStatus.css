@@ -4,7 +4,7 @@
   display: block;
   text-align: center;
 
-  @media(--screen-medium) {
+  @media (--screen-medium) {
     text-align: left;
     line-height: var(--header-height);
   }
@@ -18,7 +18,7 @@
   cursor: pointer;
   margin-top: 4rem;
 
-  @media(--screen-medium) {
+  @media (--screen-medium) {
     float: right;
     display: block;
     height: 1.5rem;
@@ -31,7 +31,7 @@
 .userName {
   display: block;
 
-  @media(--screen-medium) {
+  @media (--screen-medium) {
     display: none;
   }
 }
@@ -45,7 +45,7 @@
 }
 
 .logoutButton {
-  @media(--screen-medium) {
+  @media (--screen-medium) {
     display: inline-block;
   }
 }

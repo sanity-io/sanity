@@ -45,7 +45,8 @@
   font-size: var(--blockquote-font-size);
   font-family: var(--font-family-serif);
   font-style: italic;
-  &:before {
+
+  @nest &:before {
     content: "“";
     font-size: 5em;
     font-family: var(--font-family-serif);

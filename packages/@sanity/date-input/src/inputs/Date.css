@@ -44,6 +44,7 @@
 :global(.react-datepicker__current-month) {
   margin-top: 0;
   color: var(--react-datepicker-header-text-color);
+
   &--hasYearDropdown {
     margin-bottom: 16px;
   }
@@ -106,7 +107,6 @@
 :global(.react-datepicker__month) {
   margin: var(--react-datepicker-datepicker__margin);
   text-align: center;
-
 }
 
 :global(.react-datepicker__day-name) {
@@ -133,7 +133,6 @@
 
 :global(.react-datepicker__day) {
   cursor: pointer;
-
   border-radius: 50%;
 
   &:hover {
@@ -177,7 +176,7 @@
   bottom: 25px;
   border: 1px solid transparent;
   border-radius: var(--react-datepicker-border-radius);
-  font-size: .8em;
+  font-size: 0.8em;
 
   &:hover {
     cursor: pointer;

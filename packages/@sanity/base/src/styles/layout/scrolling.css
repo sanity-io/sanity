@@ -1,11 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --defaultScrollBarWidth: var(--small-padding)
+  --defaultScrollBarWidth: var(--small-padding);
 }
 
 .lightScrollbars {
-
   @nest &::-webkit-scrollbar {
     background-color: transparent;
     width: var(--defaultScrollBarWidth);
@@ -17,11 +16,11 @@
   }
 
   @nest &::-webkit-scrollbar * {
-     background: transparent;
-   }
+    background: transparent;
+  }
 
   @nest &::-webkit-scrollbar-thumb:window-inactive {
-	   opacity: 0;
+    opacity: 0;
   }
 
   @nest &:hover {
@@ -29,55 +28,45 @@
       display: block;
       width: var(--defaultScrollBarWidth);
       opacity: 1;
+
       @media (--screen-medium) {
         width: var(--defaultScrollBarWidth);
       }
     }
+
     @nest &::-webkit-scrollbar-thumb {
       background-color: var(--gray);
     }
+
     @nest &::-webkit-scrollbar-track {
       background-color: var(--gray-lighter);
     }
   }
 
-
-
   @nest &::-webkit-scrollbar-thumb {
     background-color: transparent;
+
     @nest &:hover {
       background-color: var(--black);
     }
-  }
-
-  @nest &::-webkit-scrollbar-track-piece {
-    /*display: none;*/
-  }
-
-  @nest &::-webkit-scrollbar-button {
-    /*display: none;*/
-  }
-
-  @nest &::-webkit-scrollbar-corner {
-    /*display: none;*/
-  }
-
-  @nest &::-webkit-resizer {
-    /*display: none;*/
   }
 }
 
 .thinLightScrollbars {
   composes: lightScrollbars;
+
   @nest &::-webkit-scrollbar {
     width: 3px;
+
     @media (--screen-medium) {
       width: 3px;
     }
   }
+
   @nest &:hover {
     @nest &::-webkit-scrollbar {
       width: 3px;
+
       @media (--screen-medium) {
         width: 3px;
       }

@@ -1,15 +1,11 @@
 :root {
-
   /* Colors */
   --body-bg: #fafafa;
   --body-text: #111;
-
   --component-bg: #fff;
   --component-border-color: #ccc;
   --component-box-shadow: 0 1px 3px color(var(--component-border-color) a(50%));
-
   --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
-
   --header-height: 3rem;
 
   /* Border radius */

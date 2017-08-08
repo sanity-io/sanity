@@ -212,6 +212,7 @@
 
   @nest &.secondary {
     color: var(--state-success-color);
+
     @nest &:not(.disabled) {
       @nest &:hover, &:focus {
         background-color: color(var(--state-success-color) a(10%));

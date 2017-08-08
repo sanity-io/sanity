@@ -1,7 +1,5 @@
 @import "part:@sanity/base/theme/variables-style";
 
-@use postcss-cssnext;
-
 :root {
   --checkbox-label-height: 1rem;
   --checkbox-off-color: var(--brand-primary);
