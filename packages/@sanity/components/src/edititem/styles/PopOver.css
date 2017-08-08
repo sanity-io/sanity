@@ -171,9 +171,6 @@
   max-height: 100%;
   box-sizing: border-box;
 
-  /* Makes it detectable  */
-  overflow: scroll;
-
   @nest &::-webkit-scrollbar {
     display: none;
   }
