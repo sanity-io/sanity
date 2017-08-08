@@ -19,11 +19,63 @@
   height: 100%;
 }
 
-.paneInSplitted {
-  /*position: relative;
-  box-sizing: border-box;
+.splitWrapper {
+  position: relative;
   height: 100%;
-  padding: 0 0.5rem;*/
+}
+
+:global(.Pane1) {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.isCollapsed {
+  @nest & :global(.Pane1) {
+    margin-right: 0;
+    margin-left: 0;
+    border-right: 1px solid #ccc;
+  }
+}
+
+.notCollapsed {
+  @nest & :global(.Pane1) {
+    margin-left: 5px;
+    margin-right: 5px;
+    border-right: none;
+  }
+}
+
+.singleWrapper {
+  /*
+    This is to keep the DOM-tree in the same structure
+    to avoide a re-render of the dom.
+  */
+  @nest & :global(.Pane1) {
+    flex: 1 !important;
+    transition: all 0.3s;
+  }
+
+  @nest & :global(.Pane2) {
+    display: none;
+  }
+}
+
+.doubleWrapper {
+  /* This may be needed when we use more panes
+
+  @nest & :global(.Pane1) {
+    flex: initial !important;
+    transition: all 0.3s;
+  }
+
+  @nest & :global(.Pane2) {
+    display: block;
+  }*/
+}
+
+
+
+.paneInSplitted {
   position: absolute;
   top: 0;
   left: 0;
@@ -86,24 +138,5 @@
 
 .ResizerIsCollapsed {
   composes: Resizer;
-  opacity: 0.1;
-
-  /*@nest .vertical & {
-    border: none !important;
-    width: 1px !important;
-    cursor: default !important;
-  }
-
-  @nest &:hover {
-    cursor: default !important;
-    border-color: transparent !important;
-  }*/
-}
-
-:global(.Pane1) {
-
-}
-
-:global(.Pane2) {
-  margin-left: 10px;
+  opacity: 0;
 }
