@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/SplitController.css'
 import SplitPane from 'react-split-pane'
-import {sumBy, debounce} from 'lodash'
+import {debounce} from 'lodash'
 
 const COLLAPSED_WIDTH = 54
 
@@ -52,45 +52,54 @@ export default class PanesSplitController extends React.Component {
     }
 
     return (
-      <SplitPane
-        minSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.minWidth}
-        defaultSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.defaultWidth}
-        size={size}
-        resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
-        allowResize
-        className={styles.splitPane}
-        onDragStarted={this.handleDragStarted}
-        onDragFinished={this.handleDragFinished}
-        onChange={newSize => this.handleSplitPaneChange(newSize, pane1)}
+      <div
+        className={`
+          ${styles.splitWrapper}
+          ${pane2 ? styles.doubleWrapper : styles.singleWrapper}
+          ${isCollapsed ? styles.isCollapsed : styles.notCollapsed}
+        `}
       >
-        <div
-          className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}
+        <SplitPane
+          minSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.minWidth}
+          defaultSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.defaultWidth}
+          size={size}
+          resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
+          allowResize
+          className={styles.splitPane}
+          onDragStarted={this.handleDragStarted}
+          onDragFinished={this.handleDragFinished}
+          onChange={newSize => this.handleSplitPaneChange(newSize, pane1)}
         >
-          {pane1}
-        </div>
-        <div className={styles.paneInSplitted}>{pane2}</div>
-      </SplitPane>
+          <div
+            className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}
+          >
+            {pane1}
+          </div>
+
+          {/* <div className={styles.paneInSplitted}></div> */}
+          {pane2}
+
+        </SplitPane>
+      </div>
     )
   }
 
   renderRecursivePanes = panes => {
     // only 1 pane left
     if (panes.length === 1) {
-      return panes[0]
+      return this.renderSplitPane(panes[0])
     }
 
     // only 2 panes left
     if (panes.length === 2) {
-      return this.renderSplitPane(panes[0], panes[1])
+      return this.renderSplitPane(panes[0], this.renderSplitPane(panes[1]))
     }
 
     // Recursive
     const remainingPanes = panes.slice(1)
     return this.renderSplitPane(
       panes[0],
-      this.renderRecursivePanes(remainingPanes),
-      sumBy(remainingPanes, 'props.minWidth'),
-      sumBy(remainingPanes, 'props.defaultWidth')
+      this.renderRecursivePanes(remainingPanes)
     )
   }
 
@@ -102,7 +111,7 @@ export default class PanesSplitController extends React.Component {
       return <div>No panes</div>
     }
 
-    // TODO Fix this
+    // TODO We need a way to target mobile devices in JS
     // --screen-medium-break: 32em;  ~32 * 16 = 512
     const isMobile = window && window.innerWidth < 512
 

@@ -44,7 +44,7 @@
   line-height: 3em;
   width: 100%;
   min-height: 3rem;
-  transition: width 1s linear, border 1s linear;
+  transition: width 0.8s linear, border 0.8s linear;
   user-select: none;
 
   @nest .isCollapsed & {
@@ -61,7 +61,7 @@
   justify-content: space-between;
   align-self: flex-start;
   transition: all 0.2s linear;
-  transform-origin: bottom left;
+  transform-origin: 1.2rem 2rem;
   transform: rotate(0);
   box-sizing: border-box;
   height: 3rem;
@@ -70,7 +70,7 @@
   @nest .isCollapsed & {
     min-width: 100vh;
     justify-content: flex-start;
-    transform: rotate(90deg) translateY(3rem);
+    transform: rotate(90deg);
   }
 }
 
@@ -84,15 +84,8 @@
   display: block;
 
   @nest .isCollapsed & {
-    order: -1;
-    align-self: flex-start;
+    display: none;
   }
-}
-
-.menuContainer {
-  position: absolute;
-  top: 3em;
-  right: 0;
 }
 
 .menuButton {
@@ -125,7 +118,7 @@
   align-items: flex-end;
   flex-wrap: nowrap;
   opacity: 1;
-  transition: opacity 1s linear;
+  transition: opacity 0.8s linear;
   z-index: 1;
   flex-direction: row;
   margin-left: 1em;
@@ -133,19 +126,17 @@
 
 .functionsLarge {
   composes: functions;
-  border: 1px solid red;
 }
 
 .functionsSmall {
   composes: functions;
-  border: 1px solid green;
 }
 
 .main {
   flex-grow: 1;
   display: block;
   opacity: 1;
-  transition: width 1s linear;
+  transition: width 0.8s linear;
   position: relative;
 
   @nest .isCollapsed & {
@@ -154,14 +145,6 @@
 }
 
 .content {
-  /*
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-  max-height: calc(100% - 3rem);
-  height: 100%;
-  max-height: 100%;
-  */
-
   position: absolute;
   top: 0.5rem;
   left: 0;
