@@ -6,6 +6,7 @@
   "rules": {
     "shorthand-property-no-redundant-values": null,
     "color-hex-length": null,
+    "declaration-block-no-redundant-longhand-properties": null,
     "selector-pseudo-class-no-unknown": [ true, {
       "ignorePseudoClasses": [
         "export",
