@@ -9,6 +9,8 @@
     "init": "lerna clean --yes && yarn run bootstrap && yarn run build",
     "start": "gulp dev",
     "storybook": "gulp storybook",
+    "stylelint": "stylelint \"**/*.css\"",
+    "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
     "test-all": "lerna run test --stream",
     "updated": "lerna updated",
@@ -49,6 +51,10 @@
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",
+    "stylelint": "^8.0.0",
+    "stylelint-config-css-modules": "^1.1.0",
+    "stylelint-config-lost": "0.0.3",
+    "stylelint-config-standard": "^17.0.0",
     "through2": "^2.0.3",
     "yarn": "^0.27.5"
   }
