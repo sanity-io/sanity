@@ -207,7 +207,6 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     return (
       <Pane
         {...this.props}
-        title={router.state.selectedType}
         renderMenu={this.renderDocumentsPaneMenu}
         renderFunctions={this.renderFunctions}
         defaultWidth={200}
