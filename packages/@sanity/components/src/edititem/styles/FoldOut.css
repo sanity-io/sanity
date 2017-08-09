@@ -22,6 +22,7 @@
   height: 0;
   clear: both;
   position: relative;
+  pointer-events: none;
 }
 
 .wrapper {
@@ -34,6 +35,7 @@
   animation: appear 0.2s linear;
   margin-left: calc(var(--edit-item-fold-padding) * -1);
   margin-right: calc(var(--edit-item-fold-padding) * -1);
+  pointer-events: none;
 
   @nest &::after {
     content: '';
@@ -78,6 +80,7 @@
 }
 
 .close {
+  pointer-events: auto;
   outline: none;
   color: var(--white);
   display: block;
@@ -93,4 +96,8 @@
 
 .content {
   padding: var(--medium-padding);
+
+  @nest & > div {
+    pointer-events: auto;
+  }
 }
