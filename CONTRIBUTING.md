@@ -60,8 +60,8 @@ If the answer to either of those two questions are "yes", then you're probably d
 When filing an issue, make sure to answer these five questions:
 
 - Which versions of Sanity are you using (`sanity versions`)?
-- What operating system and processor architecture are you using?
-- Which versions of node/npm are you running?
+- What operating system are you using?
+- Which versions of Node.js / npm are you running?
 - What did you do?
 - What did you expect to see?
 - What did you see instead?
