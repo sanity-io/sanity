@@ -8,6 +8,8 @@ import IconThumbnails from 'part:@sanity/base/th-large-icon'
 // import IconSettings from 'part:@sanity/base/cog-icon'
 import IconNew from 'part:@sanity/base/plus-circle-icon'
 
+const TEST_CARDS_AND_THUMBNAILS = false
+
 const menuItems = [
   // Todo: Disabled for now as we need to rethink how sorting should
   // work wrt. previews and what is actually displayed on screen
@@ -47,7 +49,7 @@ const menuItems = [
     key: 'detail'
   },
   // Disabled for now as it needs more work (virtual-list support, etc.)
-  __DEV__ && {
+  TEST_CARDS_AND_THUMBNAILS && {
     title: 'Thumbnails (__DEV__ only)',
     icon: IconThumbnails,
     action: 'setListLayout',
@@ -55,7 +57,7 @@ const menuItems = [
 
   },
   // Disabled for now as it needs more work (virtual-list support, etc.)
-  __DEV__ && {
+  TEST_CARDS_AND_THUMBNAILS && {
     title: 'Cards (__DEV__ only)',
     icon: IconThumbnails,
     action: 'setListLayout',
