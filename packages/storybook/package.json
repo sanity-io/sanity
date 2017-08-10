@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.108.0-beta.2",
+  "version": "0.108.0",
   "private": true,
   "description": "",
   "main": "config.js",
@@ -10,15 +10,15 @@
     "start": "sanity start --port=9002"
   },
   "dependencies": {
-    "@sanity/base": "0.108.0-beta.2",
-    "@sanity/components": "0.108.0-beta.2",
-    "@sanity/core": "0.108.0-beta.2",
-    "@sanity/default-layout": "0.108.0-beta.2",
-    "@sanity/default-login": "0.108.0-beta.2",
-    "@sanity/desk-tool": "0.108.0-beta.2",
-    "@sanity/google-maps-input": "0.108.0-beta.2",
-    "@sanity/server": "0.108.0-beta.2",
-    "@sanity/storybook": "0.108.0-beta.2",
+    "@sanity/base": "^0.108.0",
+    "@sanity/components": "^0.108.0",
+    "@sanity/core": "^0.108.0",
+    "@sanity/default-layout": "^0.108.0",
+    "@sanity/default-login": "^0.108.0",
+    "@sanity/desk-tool": "^0.108.0",
+    "@sanity/google-maps-input": "^0.108.0",
+    "@sanity/server": "^0.108.0",
+    "@sanity/storybook": "^0.108.0",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"
