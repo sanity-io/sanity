@@ -1,0 +1,52 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --default-item-selected-color: var(--brand-primary);
+  --default-item-active-color: var(--brand-primary);
+}
+
+.root {
+  max-height: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.scrollContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.item {
+  @nest &:hover {
+    background-color: color(var(--gray-base) a(7%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--gray-base) a(10%));
+    outline: none;
+  }
+
+  @nest &:active {
+    background-color: color(var(--default-item-selected-color) a(100%));
+    color: var(--white);
+  }
+}
+
+.selected {
+  background-color: color(var(--default-item-selected-color) a(80%));
+  color: var(--white);
+}
+
+.highlighted {
+  background-color: color(var(--default-item-selected-color) a(30%));
+
+  @nest &.selected {
+    background-color: color(var(--default-item-selected-color) a(90%));
+  }
+
+}

@@ -9,8 +9,6 @@ export default class SearchableSelect extends React.Component {
     onChange: PropTypes.func,
     onSearch: PropTypes.func,
     onOpen: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
     onClose: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.object,
@@ -18,29 +16,24 @@ export default class SearchableSelect extends React.Component {
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
-    renderItem: PropTypes.func,
-    items: PropTypes.array,
-    hasFocus: PropTypes.bool
+    renderItem: PropTypes.func.isRequired,
+    items: PropTypes.array
   }
 
   static defaultProps = {
     placeholder: 'Type to search…',
     isLoading: false,
     onChange() {},
-    onBlur() {},
-    onFocus() {},
     onSearch() {},
     onOpen() {},
     onClose() {}
   }
-
 
   constructor(props) {
     super()
     const {valueAsString} = props
     this.state = {
       inputValue: valueAsString || '',
-      hasFocus: false,
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
@@ -59,28 +52,10 @@ export default class SearchableSelect extends React.Component {
       })
     }
 
-    if (nextProps.valueAsString != this.props.valueAsString) {
+    if (nextProps.valueAsString !== this.props.valueAsString) {
       this.setState({
         inputValue: nextProps.valueAsString
       })
-    }
-  }
-
-  handleFocus = event => {
-    this.setState({
-      hasFocus: true,
-      isInputSelected: true
-    })
-    this.props.onFocus(event)
-  }
-
-  handleBlur = event => {
-    if (!this.state.isOpen) {
-      this.setState({
-        hasFocus: false
-      })
-      this.close()
-      this.props.onBlur(event)
     }
   }
 
@@ -103,7 +78,6 @@ export default class SearchableSelect extends React.Component {
   close = () => {
     this.setState({
       isOpen: false,
-      hasFocus: false
     })
     this.props.onClose()
   }
@@ -129,11 +103,10 @@ export default class SearchableSelect extends React.Component {
   }
 
   render() {
-    const {hasFocus, isOpen, highlightIndex, isInputSelected, inputValue} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue} = this.state
     return (
       <StatelessSearchableSelect
         {...this.props}
-        hasFocus={hasFocus}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         onHighlightIndexChange={this.handleHighlightIndexChange}

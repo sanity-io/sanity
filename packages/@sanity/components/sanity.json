@@ -287,36 +287,12 @@
       "description": "Sortable list"
     },
     {
-      "name": "part:@sanity/components/lists/default-style",
-      "description": "Styling for edfault list"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/default",
-      "description": "Default list item"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/statelink",
-      "description": "Default statelink list item"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/default-style",
-      "description": "Default list item styling"
-    },
-    {
       "name": "part:@sanity/components/lists/grid",
       "description": "Grid list"
     },
     {
-      "name": "part:@sanity/components/lists/grid-style",
-      "description": "Styling for grid list"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/grid",
-      "description": "Grid item"
-    },
-    {
-      "name": "part:@sanity/components/lists/items/grid-style",
-      "description": "Grid item styling"
+      "name": "part:@sanity/components/lists/sortable-grid",
+      "description": "Sortable Grid list"
     },
     {
       "name": "part:@sanity/components/edititem/popover",
@@ -474,18 +450,6 @@
     {
       "implements": "part:@sanity/components/selects/searchable-style",
       "path": "selects/styles/SearchableSelect.css"
-    },
-    {
-      "implements": "part:@sanity/components/selects/custom",
-      "path": "selects/CustomSelect.js"
-    },
-    {
-      "implements": "part:@sanity/components/selects/customField",
-      "path": "selects/CustomSelectField.js"
-    },
-    {
-      "implements": "part:@sanity/components/selects/custom-style",
-      "path": "selects/styles/CustomSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
@@ -693,43 +657,19 @@
     },
     {
       "implements": "part:@sanity/components/lists/default",
-      "path": "lists/DefaultList.js"
+      "path": "lists/default"
     },
     {
       "implements": "part:@sanity/components/lists/sortable",
-      "path": "lists/SortableList.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/default-style",
-      "path": "lists/styles/DefaultList.css"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/default",
-      "path": "lists/items/DefaultItem.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/statelink",
-      "path": "lists/items/StateLinkItem.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/default-style",
-      "path": "lists/items/styles/DefaultItem.css"
+      "path": "lists/sortable"
     },
     {
       "implements": "part:@sanity/components/lists/grid",
-      "path": "lists/GridList.js"
+      "path": "lists/grid"
     },
     {
-      "implements": "part:@sanity/components/lists/grid-style",
-      "path": "lists/styles/GridList.css"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/grid",
-      "path": "lists/items/GridItem.js"
-    },
-    {
-      "implements": "part:@sanity/components/lists/items/grid-style",
-      "path":    "lists/items/styles/GridItem.css"
+      "implements": "part:@sanity/components/lists/sortable-grid",
+      "path": "lists/sortable-grid"
     },
     {
       "implements": "part:@sanity/components/edititem/popover-style",

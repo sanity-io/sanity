@@ -17,7 +17,7 @@ storiesOf('Form fields')
         <DefaultFormField
           label={text('label (prop)', 'This is the label')}
           description={text('Description (prop)', 'This is the description')}
-          labelHtmlFor={id}
+          labelFor={id}
           level={number('Level (prop)', 0)}
           inline={boolean('Inline (prop)', false)}
           wrapped={boolean('Wrapped (prop)', false)}

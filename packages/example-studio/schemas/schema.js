@@ -11,6 +11,7 @@ import localeSlug from './localeSlug'
 import protein from './protein'
 import proteinTest from './proteinTest'
 import referenceTest from './referenceTest'
+import imagesTest from './imagesTest'
 
 export default createSchema({
   name: 'example-blog',
@@ -21,6 +22,7 @@ export default createSchema({
     blocksTest,
     typeWithBlocks,
     myImage,
+    imagesTest,
     videoEmbed,
     localeString,
     localeSlug,

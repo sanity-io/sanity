@@ -46,15 +46,17 @@ const menuItems = [
     action: 'setListLayout',
     key: 'detail'
   },
-  {
-    title: 'Thumbnails',
+  // Disabled for now as it needs more work (virtual-list support, etc.)
+  __DEV__ && {
+    title: 'Thumbnails (__DEV__ only)',
     icon: IconThumbnails,
     action: 'setListLayout',
     key: 'media'
 
   },
-  {
-    title: 'Cards',
+  // Disabled for now as it needs more work (virtual-list support, etc.)
+  __DEV__ && {
+    title: 'Cards (__DEV__ only)',
     icon: IconThumbnails,
     action: 'setListLayout',
     key: 'card'
@@ -65,7 +67,7 @@ const menuItems = [
     action: 'createNew',
     divider: true
   }
-]
+].filter(Boolean)
 
 export default class DocumentsPaneMenu extends React.PureComponent {
 

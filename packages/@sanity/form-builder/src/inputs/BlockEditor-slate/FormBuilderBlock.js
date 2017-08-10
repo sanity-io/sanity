@@ -10,7 +10,7 @@ import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
-import {resolveTypeName} from '../../utils/resolveType'
+import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
 
 export default class FormBuilderBlock extends React.Component {
@@ -125,7 +125,6 @@ export default class FormBuilderBlock extends React.Component {
 
   // Remove the drop target if we leave the editors nodes
   handleDragLeave = event => {
-    event.stopPropagation()
     this.hideBlockDragMarker()
     if (event.target === this._editorNode) {
       this.resetDropTarget()

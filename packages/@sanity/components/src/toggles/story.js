@@ -39,7 +39,11 @@ storiesOf('Toggles')
           onChange={action('onChange')}
           onBlur={action('onBlur')}
           onFocus={action('onFocus')}
-        />
+        >
+          {
+            text('Children')
+          }
+        </Checkbox>
       </Sanity>
     )
   }

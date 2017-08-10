@@ -78,7 +78,7 @@ class DropDownButton extends React.Component {
         {
           <Menu
             items={items}
-            opened={this.state.menuOpened}
+            isOpen={this.state.menuOpened}
             className={styles.menu}
             onAction={this.handleAction}
             onClickOutside={this.handleClickOutside}

@@ -1,19 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/toggles/checkbox-style'
-import {uniqueId} from 'lodash'
 
 export default class Checkbox extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
-    item: PropTypes.object.isRequired,
+    value: PropTypes.bool,
+    label: PropTypes.string,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
     hasFocus: PropTypes.bool,
-    value: PropTypes.string
+    children: PropTypes.node
   }
 
   static defaultProps = {
@@ -22,34 +21,34 @@ export default class Checkbox extends React.Component {
     onBlur() {}
   }
 
-  componentWillMount() {
-    this._inputId = uniqueId('Checkbox')
+  state = {
+    hasFocus: false
   }
 
-  handleMouseUp = event => {
-    this.handleBlur()
-  }
-
-  handleChange = () => {
-    this.props.onChange(this.props.item)
+  handleMouseUp = () => {
+    this.setState({hasFocus: false})
   }
 
   handleFocus = () => {
-    this.props.onFocus(this.props.item)
+    this.setState({hasFocus: true})
+  }
+
+  handleChange = event => {
+    this.props.onChange(event, this.props.value)
   }
 
   handleBlur = () => {
     window.setTimeout(() => {
-      this.props.onBlur(this.props.item)
+      this.props.onBlur(this.props.value)
     }, 0.001)
   }
 
   render() {
-    const {disabled, checked, onChange, hasFocus, value} = this.props
+    const {disabled, hasFocus, value, checked, label, children} = this.props
 
     return (
       <label
-        htmlFor={this._inputId}
+        title={label}
         className={`
           ${styles.root}
           ${disabled ? styles.isDisabled : styles.isEnabled}
@@ -61,14 +60,15 @@ export default class Checkbox extends React.Component {
         <input
           className={styles.input}
           type="checkbox"
-          value={value}
-          onChange={onChange}
+          value={String(value)}
+          onChange={this.handleChange}
           checked={checked}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          id={this._inputId}
         />
-        <div className={styles.label}>{this.props.label}</div>
+        <div className={styles.label}>
+          {children || label}
+        </div>
 
         <div className={styles.focusHelper} />
         <div className={styles.boxOutline}>

@@ -4,18 +4,17 @@ import styles from 'part:@sanity/components/labels/default-style'
 
 export default class DefaultLabel extends React.PureComponent {
   static propTypes = {
-    htmlFor: PropTypes.string.isRequired,
     className: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     level: PropTypes.number
   }
   render() {
-    const {htmlFor, className, level} = this.props
+    const {className, level} = this.props
     const levelClass = `level_${level}`
     return (
-      <label htmlFor={htmlFor} className={`${styles.root} ${className} ${styles[levelClass]}`}>
+      <div className={`${styles.root} ${className} ${styles[levelClass]}`}>
         {this.props.children}
-      </label>
+      </div>
     )
   }
 }

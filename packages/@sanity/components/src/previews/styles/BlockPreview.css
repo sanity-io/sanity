@@ -8,6 +8,7 @@
   height: 8em;
   position: relative;
   min-height: 1rem;
+  max-width: 100%;
 }
 
 .heading {
@@ -15,18 +16,19 @@
   overflow: hidden;
 }
 
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .title {
-  font-size: var(--font-size-h2);
-  line-height: 1.5em;
+  font-size: var(--font-size-h3);
   color: inherit;
   font-weight: 500;
   text-transform: none;
   margin: 0;
   padding: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: calc(100% - 1em);
 
   @nest .hasSubtitle & {
     top: 0.25em;
@@ -40,11 +42,7 @@
   margin-top: -0.2em;
   font-size: var(--font-size-large);
   font-weight: 300;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1em;
-  width: calc(100% - 1em);
 }
 
 .description {

@@ -3,7 +3,6 @@ import React from 'react'
 import {uniqueId} from 'lodash'
 
 import styles from 'part:@sanity/components/tags/textfield-style'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
 
 export default class TagsTextField extends React.Component {
   static propTypes = {
@@ -93,58 +92,46 @@ export default class TagsTextField extends React.Component {
   }
 
   render() {
-    const {tags, label, description, level} = this.props
-    const {hasFocus} = this.state
+    const {tags} = this.props
     const setInput = component => {
       this._input = component
     }
     return (
-      <DefaultFormField
-        className={`
-          ${styles.root}
-          ${hasFocus ? styles.isFocused : 'noFocus'}
-        `}
-        level={level}
-        label={label}
-        labelHtmlFor={this._inputId}
-        description={description}
-      >
-        <div className={styles.wrapper}>
-          <div className={`${styles.inner}`}>
-            <div className={styles.content} onClick={this.handleSetFocus}>
-              <ul className={styles.tags}>
-                {
-                  tags && tags.map((tag, i) => {
-                    return (
-                      <li key={i} className={styles.tag}>
-                        {tag}
-                        <a
-                          onClick={this.removeTag.bind(this, i)} // eslint-disable-line react/jsx-no-bind
-                          className={styles.clearTag}
-                        >
-                          ×
-                        </a>
-                      </li>
-                    )
-                  })
-                }
-              </ul>
-              <input
-                className={styles.input}
-                onKeyDown={this.handleKeyDown}
-                onKeyPress={this.handleKeyPress}
-                style={{width: `${this.state.length * 0.8}em`}}
-                onBlur={this.handleBlur}
-                onFocus={this.handleFocus}
-                ref={setInput}
-                id={this._inputId}
-                autoComplete="off"
-              />
-            </div>
-            <div className={styles.focusHelper} />
+      <div className={styles.wrapper}>
+        <div className={`${styles.inner}`}>
+          <div className={styles.content} onClick={this.handleSetFocus}>
+            <ul className={styles.tags}>
+              {
+                tags && tags.map((tag, i) => {
+                  return (
+                    <li key={i} className={styles.tag}>
+                      {tag}
+                      <a
+                        onClick={this.removeTag.bind(this, i)} // eslint-disable-line react/jsx-no-bind
+                        className={styles.clearTag}
+                      >
+                        ×
+                      </a>
+                    </li>
+                  )
+                })
+              }
+            </ul>
+            <input
+              className={styles.input}
+              onKeyDown={this.handleKeyDown}
+              onKeyPress={this.handleKeyPress}
+              style={{width: `${this.state.length * 0.8}em`}}
+              onBlur={this.handleBlur}
+              onFocus={this.handleFocus}
+              ref={setInput}
+              id={this._inputId}
+              autoComplete="off"
+            />
           </div>
+          <div className={styles.focusHelper} />
         </div>
-      </DefaultFormField>
+      </div>
     )
   }
 }

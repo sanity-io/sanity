@@ -6,6 +6,7 @@
     "build": "lerna run clean && gulp",
     "clean": "lerna run clean && lerna clean",
     "publish": "yarn run build && lerna publish",
+    "publish-canary": "yarn run build && lerna publish --canary --exact",
     "init": "lerna clean --yes && yarn run bootstrap && yarn run build",
     "start": "gulp dev",
     "storybook": "gulp storybook",

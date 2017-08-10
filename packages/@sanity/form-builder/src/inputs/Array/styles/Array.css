@@ -2,6 +2,13 @@
 
 .root {
   display: block;
+  position: relative;
+}
+
+.list {
+  margin-top: calc(var(--medium-padding) * -1);
+  margin-left: calc(var(--medium-padding) * -1);
+  margin-right: calc(var(--medium-padding) * -1);
 }
 
 .list + .functions {
@@ -12,6 +19,20 @@
   position: absolute;
   top: 75%;
   left: 2em;
+}
+
+.movingItem {
+  composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
+}
+
+.item {
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  border-bottom: 1px solid #ddd;
+
+  @nest &.media {
+    height: 15em;
+    width: 15em;
+  }
 }
 
 .popupAnchorRelative {
