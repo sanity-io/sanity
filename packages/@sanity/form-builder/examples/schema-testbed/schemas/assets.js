@@ -25,7 +25,7 @@ export default {
           type: 'file'
         },
         {
-          name: 'singleImageNoFields',
+          name: 'singleImageNowFields',
           title: 'Single image without fields',
           type: 'image'
         },

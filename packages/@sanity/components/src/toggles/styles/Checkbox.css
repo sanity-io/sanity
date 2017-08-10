@@ -16,7 +16,10 @@
   position: relative;
   z-index: 1;
   vertical-align: middle;
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   box-sizing: border-box;
   width: 100%;
   height: var(--checkbox-label-height);
@@ -120,7 +123,7 @@
 }
 
 .label {
-  position: relative;
+  flex-grow: 1;
   cursor: default;
   font-size: var(--checkbox-label-font-size);
   line-height: var(--checkbox-label-height);

@@ -2,64 +2,29 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
 
+const EMPTY_ITEM = {title: '', value: undefined}
+
 export default class StringSelect extends React.PureComponent {
-  static displayName = 'StringSelect';
 
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    hasFocus: PropTypes.bool,
-    onChange: PropTypes.func,
-    onEnter: PropTypes.func,
-  };
+    onChange: PropTypes.func
+  }
 
   static defaultProps = {
     value: '',
-    onChange() {},
-    onEnter() {},
-    onFocus() {}
+    onChange() {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-    this.setInputElement = this.setInputElement.bind(this)
-    this.state = {
-      hasFocus: this.props.hasFocus
-    }
-  }
-
-  setInputElement(element) {
-    this.inputElement = element
-  }
-
-  handleChange(item) {
+  handleChange = item => {
     const {onChange} = this.props
 
     onChange(PatchEvent.from(set(typeof item === 'string' ? item : item.value)))
-  }
-
-  handleFocus = () => {
-    this.setState({
-      hasFocus: true
-    })
-  }
-
-  handleBlur = () => {
-    this.setState({
-      hasFocus: false
-    })
-  }
-
-  handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      this.props.onEnter()
-    }
   }
 
   render() {
@@ -68,7 +33,7 @@ export default class StringSelect extends React.PureComponent {
     // Support array of string if not objects
     let items = type.options.list
 
-    if (typeof (items[0]) === 'string') {
+    if ((typeof items[0]) === 'string') {
       items = items.map(item => {
         return {
           title: item,
@@ -77,40 +42,27 @@ export default class StringSelect extends React.PureComponent {
       })
     }
 
-    const currentItem = items.find(item => {
-      return item.value == value
-    })
+    const currentItem = items.find(item => item.value === value)
 
-    if (type.options.layout == 'radio') {
-      return (
-        <Fieldset legend={type.title} level={level}>
-          <RadioSelect
-            name={type.name}
-            items={items}
-            onChange={this.handleChange}
-            value={currentItem || items[0]}
-            direction={type.options.direction || 'vertical'}
-          />
-        </Fieldset>
-      )
-    }
-
-    return (
-      <Select
+    const isRadio = type.options && type.options.layout === 'radio'
+    return isRadio
+      ? <RadioSelect
+        name={type.name}
+        legend={type.title}
+        level={level}
+        items={items}
+        onChange={this.handleChange}
+        value={currentItem}
+        direction={type.options.direction || 'vertical'}
+      />
+      : <Select
         label={type.title}
         level={level}
-        type="text"
-        value={currentItem || items[0]}
+        value={currentItem}
         placeholder={type.placeholder}
-        description={type.description}
         onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        items={items}
-        hasFocus={this.state.hasFocus}
-        ref={this.setInputElement}
+        items={[EMPTY_ITEM].concat(items)}
       />
-    )
+
   }
 }

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import FormField from 'part:@sanity/components/formfields/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import Fuse from 'fuse.js'
 
@@ -52,17 +53,17 @@ export default class FuzzySearchableSelect extends React.Component {
     const {searchResult, loading} = this.state
 
     return (
-      <SearchableSelect
-        error={error}
-        label={label}
-        placeholder={placeholder}
-        value={value}
-        onSearch={this.handleSearch}
-        onChange={this.props.onChange}
-        onFocus={this.props.onChange}
-        loading={loading}
-        items={searchResult}
-      />
+      <FormField error={error} label={label}>
+        <SearchableSelect
+          placeholder={placeholder}
+          value={value}
+          onSearch={this.handleSearch}
+          onChange={this.props.onChange}
+          onFocus={this.props.onChange}
+          loading={loading}
+          items={searchResult}
+        />
+      </FormField>
     )
   }
 }

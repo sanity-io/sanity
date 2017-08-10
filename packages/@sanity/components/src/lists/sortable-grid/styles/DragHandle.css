@@ -1,0 +1,19 @@
+.dragHandle {
+  position: absolute;
+  right: 1em;
+  cursor: move;
+  font-size: 1em;
+  height: 1.5em;
+  width: 1.5em;
+  line-height: 100%;
+  display: inline-block;
+  opacity: 0.5;
+  box-sizing: border-box;
+  padding: 0.5em 0.75em;
+  border: 1px solid transparent;
+  z-index: 1;
+
+  &:hover {
+    opacity: 1;
+  }
+}

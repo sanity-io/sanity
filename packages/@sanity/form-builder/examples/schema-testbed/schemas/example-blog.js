@@ -6,13 +6,11 @@ export default {
     {
       name: 'blogpost',
       type: 'object',
-      options: {
-        preview: {
-          fields: ['title', 'image', 'imageUrl'],
-          prepare(document) {
-            return {
-              title: document.title || '',
-            }
+      preview: {
+        select: {title: 'title', image: 'image', imageUrl: 'imageUrl'},
+        prepare(document) {
+          return {
+            title: document.title || '',
           }
         }
       },
@@ -34,6 +32,17 @@ export default {
           name: 'priority',
           title: 'Priority',
           type: 'number'
+        },
+        {
+          name: 'authors',
+          title: 'Authors',
+          type: 'array',
+          of: [
+            {
+              type: 'author'
+            }
+          ],
+          required: true
         },
         {
           name: 'checked',
@@ -67,17 +76,6 @@ export default {
               type: 'string'
             }
           ]
-        },
-        {
-          name: 'authors',
-          title: 'Authors',
-          type: 'array',
-          of: [
-            {
-              type: 'author'
-            }
-          ],
-          required: true
         }
       ]
     },
@@ -124,6 +122,17 @@ export default {
           name: 'deepFieldTest',
           title: 'Deep Field test',
           type: 'deepField'
+        },
+        {
+          name: 'featuredBlogPosts',
+          title: 'Featured blog posts',
+          type: 'array',
+          of: [
+            {
+              type: 'blogpost',
+              title: 'Featured blog post'
+            }
+          ]
         },
         {
           name: 'homestead',

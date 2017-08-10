@@ -82,6 +82,7 @@ export default function createFormBuilder(config = {}) {
           onChange={onChange}
           level={0}
           isRoot
+          autoFocus
         />
       )
     }

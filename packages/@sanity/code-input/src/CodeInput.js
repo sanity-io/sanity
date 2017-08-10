@@ -175,14 +175,13 @@ export default class CodeInput extends PureComponent {
 
     return (
       <Fieldset legend={type.title} description={type.description}>
-        <DefaultSelect
-          label={languageField.type.title}
-          onChange={this.handleLanguageChange}
-          value={currentLanguage || undefined}
-          items={languages}
-          level={level + 1}
-        />
-
+        <FormField level={level + 1} label={languageField.type.title}>
+          <DefaultSelect
+            onChange={this.handleLanguageChange}
+            value={currentLanguage || undefined}
+            items={languages}
+          />
+        </FormField>
         <FormField label={type.title} level={level + 1}>
           {this.renderEditor()}
         </FormField>

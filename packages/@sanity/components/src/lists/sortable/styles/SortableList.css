@@ -1,0 +1,3 @@
+.root {
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
+}

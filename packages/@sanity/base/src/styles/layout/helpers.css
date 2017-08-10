@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .resetList {
   display: block;
   margin: 0;
@@ -19,4 +21,10 @@
   @nest &:hover {
     color: inherit;
   }
+}
+
+.movingItem {
+  background-color: var(--component-bg);
+  opacity: 0.9;
+  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
 }

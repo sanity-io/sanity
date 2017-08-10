@@ -50,7 +50,6 @@ export default class ImageInput extends React.PureComponent {
     }),
     value: PropTypes.object,
     onChange: PropTypes.func,
-    onEnter: PropTypes.func,
     uploadFn: PropTypes.func.isRequired,
     materializeReferenceFn: PropTypes.func.isRequired,
     level: PropTypes.number,
@@ -193,10 +192,6 @@ export default class ImageInput extends React.PureComponent {
       })))
   }
 
-  handleFieldEnter = (event, fieldName) => {
-    this.props.onEnter(fieldName)
-  }
-
   handleEditDialogClose = event => {
     this.setState({isAdvancedEditOpen: false})
   }
@@ -308,7 +303,6 @@ export default class ImageInput extends React.PureComponent {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
-        onEnter={this.handleFieldEnter}
         validation={fieldValidation}
         level={level + 1}
       />
@@ -330,9 +324,7 @@ export default class ImageInput extends React.PureComponent {
       uploadFn,
       materializeReferenceFn,
       onChange,
-      onEnter,
       validation,
-      hasFocus,
     } = this.props
 
     const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {

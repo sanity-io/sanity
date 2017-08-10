@@ -1,18 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
-import DefaultTextField from 'part:@sanity/components/textfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 
-export default class NumberInput extends React.Component {
-  static displayName = 'Number';
-
+export default class NumberInput extends React.PureComponent {
   static propTypes = {
-    type: FormBuilderPropTypes.type,
+    type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.number,
-    onChange: PropTypes.func,
-    hasFocus: PropTypes.bool
+    onChange: PropTypes.func
   };
 
   static defaultProps = {
@@ -25,18 +23,23 @@ export default class NumberInput extends React.Component {
   }
 
   render() {
-    const {value, type, hasFocus, level} = this.props
+    const {value, type, level, validation, ...rest} = this.props
+
     return (
-      <DefaultTextField
+      <FormField
+        level={level}
         label={type.title}
         description={type.description}
-        type="number"
-        level={level}
-        placeholder={type.placeholder || 'Must be a number'}
-        onChange={this.handleChange}
-        value={value}
-        hasFocus={hasFocus}
-      />
+      >
+        <TextInput
+          {...rest}
+          type="number"
+          value={String(value)}
+          readOnly={type.readOnly}
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+        />
+      </FormField>
     )
   }
 }

@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import enhanceWithClickOutside from 'react-click-outside'
 
-export default enhanceWithClickOutside(class ConfirmButton extends React.Component {
+export default class ConfirmButton extends React.Component {
   static propTypes = {
     children: PropTypes.func,
     onClick: PropTypes.func
@@ -13,7 +12,7 @@ export default enhanceWithClickOutside(class ConfirmButton extends React.Compone
     doConfirm: false
   }
 
-  handleClickOutside = event => {
+  handleBlur = event => {
     this.setState({doConfirm: false})
   }
 
@@ -32,9 +31,10 @@ export default enhanceWithClickOutside(class ConfirmButton extends React.Compone
       <Button
         {...rest}
         onClick={this.handleClick}
+        onBlur={this.handleBlur}
       >
         {children(doConfirm)}
       </Button>
     )
   }
-})
+}

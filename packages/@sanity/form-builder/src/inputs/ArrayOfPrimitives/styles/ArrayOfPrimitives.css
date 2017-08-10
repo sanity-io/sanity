@@ -1,0 +1,23 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+}
+
+.deleteButton {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  font-size: 0.9em;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.addButton {
+  margin-top: var(--medium-padding);
+}
+
+.inputLabel {
+  display: none;
+}

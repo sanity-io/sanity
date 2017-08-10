@@ -25,6 +25,7 @@
     "@sanity/observable": "^0.107.27",
     "@sanity/schema": "^0.107.27",
     "cheerio": "^0.22.0",
+    "classnames": "^2.2.5",
     "debug": "^2.6.3",
     "get-random-values": "^1.2.0",
     "get-window": "^1.1.1",

@@ -246,7 +246,9 @@ export default class BlockEditor extends React.Component {
     // a speedy mouse wheel
     // This makes the block-editor more usable when scrolling inside it.
 
-    /* Disable this when we dont use activateonfocus
+    /*
+    Enable this when activeOnFocus is finished
+
     const el = this._inputContainer
     const scrollTop = el.scrollTop
     const scrollHeight = el.scrollHeight

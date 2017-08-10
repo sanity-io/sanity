@@ -101,6 +101,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                 <DocumentsPane
                   isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
                   selectedType={selectedType}
+                  title={dataAspects.getDisplayName(selectedType) || 'Untitled'}
                   selectedDocumentId={selectedDocumentId}
                   schemaType={schemaType}
                   router={router}
