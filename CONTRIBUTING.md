@@ -1,3 +1,6 @@
+
+Want to file an issue? [Jump to _How to file an issue_ ⏬](#how-to-file-an-issue)
+
 # Contributing
 Contributions are always welcome, no matter how large or small.
 
@@ -47,7 +50,7 @@ This is done by running `npm run publish` from the project root, selecting "Prer
 This can be done at any time by anyone and is done by `npm run publish-canary`. This will publish with the commit hash from HEAD, and can be installed with `sanity upgrade --tag=canary --save-exact`
 
 
-# How to report a bug
+# How to file an issue
 
 If you find a security vulnerability, do **NOT** open an issue. Email security@sanity.io instead.
 
@@ -56,7 +59,8 @@ Any security issues should be submitted directly to security@sanity.io. In order
 - Can I disable something for other people?
 If the answer to either of those two questions are "yes", then you're probably dealing with a security issue. Note that even if you answer "no" to both questions, you may still be dealing with a security issue, so if you're unsure, just email us at security@sanity.io.
 
-## Filing an issue
+## How to report a bug
+
 When filing an issue, make sure to answer these five questions:
 
 - Which versions of Sanity are you using (`sanity versions`)?
