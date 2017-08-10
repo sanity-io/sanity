@@ -1,12 +1,13 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import GlobalSearch from 'part:@sanity/components/globalsearch/default'
-import globalSearchStyles from 'part:@sanity/components/globalsearch/default-style'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
+import Multicast from '@sanity/observable/multicast'
 import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
+import SearchIcon from 'part:@sanity/base/search-icon'
+import Spinner from 'part:@sanity/components/loading/spinner'
+
 import styles from './styles/Search.css'
 
 export const DRAFTS_FOLDER = 'drafts'
@@ -38,120 +39,121 @@ function removeDupes(documents) {
     })
 }
 
-
-class Search extends React.Component {
-
-  static propTypes = {
-    onSelect: PropTypes.func,
-    router: PropTypes.shape({
-      navigate: PropTypes.func
-    }),
+function search(query) {
+  if (!client) {
+    console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
+    return
   }
 
-  static defaultProps = {
-    onSelect() {}
+  // Get all fields that we want to search in (text and string)
+  const searchableFields = flatten(
+    schema.getTypeNames()
+      .map(typeName => schema.get(typeName))
+      .filter(type => type.type && type.type.name === 'object')
+      .map(type => type.fields
+        .filter(field => field.type.jsonType === 'string')
+        .map(field => field.name)
+      )
+  )
+
+  const terms = query.split(/\s+/)
+  const uniqueFields = union(searchableFields)
+  const constraints = flatten(uniqueFields.map(field => terms.map(term => `${field} match '${term}**'`)))
+
+  return client.observable.fetch(`*[${constraints.join(' || ')}][0...10]`)
+}
+
+
+export default class Search extends React.Component {
+  input$ = new Multicast()
+  componentWillUnmount$ = new Multicast()
+
+  state = {
+    isOpen: false,
+    hits: [],
+    activeIndex: -1
   }
 
-  static contextTypes = {
-    __internalRouter: PropTypes.object
-  }
-
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      isOpen: false,
-      topItems: [],
-      items: []
-    }
-  }
-
-  handleSearch = q => {
-    if (!client) {
-      console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
-      return
-    }
-
-    // Get all fields that we want to search in (text and string)
-    const searchableFields = flatten(
-      schema.getTypeNames()
-        .map(typeName => schema.get(typeName))
-        .filter(type => type.type && type.type.name === 'object')
-        .map(type => type.fields
-            .filter(field => field.type.jsonType === 'string')
-            .map(field => field.name)
-          )
-        )
-
-    const terms = q.split(/\s+/)
-    const uniqueFields = union(searchableFields)
-    const constraints = flatten(
-      uniqueFields.map(field => terms.map(term => `${field} match '${term}**'`)
-    ))
-
-
-    const query = `*[${constraints.join(' || ')}][0...10]`
-
-    this.setState({
-      isSearching: true
-    })
-
-    client.fetch(query)
-      .then(removeDupes)
-      .then(hits => {
+  componentDidMount() {
+    this.input$.asObservable()
+      .map(event => event.target.value)
+      .debounceTime(100)
+      .do(() => {
+        this.setState({
+          isSearching: true
+        })
+      })
+      .switchMap(search)
+      // we need this filtering because the search may return documents of types not in schema
+      .map(hits => hits.filter(hit => schema.has(hit._type)))
+      .map(removeDupes)
+      .do(hits => {
         this.setState({
           isSearching: false,
-          isOpen: true,
-          // we need this filtering because the search my return documents of types not in schema
-          items: hits.filter(hit => schema.has(hit._type))
+          hits: hits
         })
       })
-
-    this.setState({
-      isOpen: true
-    })
+      .takeUntil(this.componentWillUnmount$.asObservable())
+      .subscribe()
   }
 
-  getTopItems = () => {
-    // We use 3 last edited items until we have logic for most used etc.
-
-    const prefixedTypeNames = schema.getTypeNames().map(str => `"${str}"`)
-
-    const query = `*[_type in [${prefixedTypeNames.join(', ')}]] | order(_updatedAt desc) [0...3]`
-
-    client.fetch(query, {})
-      .then(response => {
-        this.setState({
-          topItems: response
-        })
-      })
+  componentWillUnmount() {
+    this.componentWillUnmount$.next()
+    this.componentWillUnmount$.complete()
   }
 
-  handleFocus = () => {
-    this.getTopItems()
-
-    this.setState({
-      active: true,
-      isOpen: true
-    })
-  }
-  handleClose = () => {
-    this.setState({
-      isOpen: false
-    })
+  handleInputChange = event => {
+    this.input$.next(event)
   }
 
-  handleBlur = () => {
-    this.setState({
-      isOpen: false
-    })
+  handleKeyPress = event => {
+    this.inputElement.focus()
   }
 
-  renderItem = (item, options) => {
+  handleKeyDown = event => {
+    if (event.key === 'Backspace') {
+      this.inputElement.focus()
+    }
+    if (event.key === 'Enter') {
+      this.listContainer.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
+    }
+    const {hits, activeIndex} = this.state
+    const lastIndex = hits.length - 1
+    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+      event.preventDefault()
+      let nextIndex = activeIndex + (event.key === 'ArrowUp' ? - 1 : 1)
+      if (nextIndex < 0) nextIndex = lastIndex
+      if (nextIndex > lastIndex) nextIndex = 0
+      this.setState({activeIndex: nextIndex})
+    }
+  }
+
+  handleBlur = el => {
+    setTimeout(() => this.setState({isOpen: false}), 10)
+  }
+
+  handleFocus = el => {
+    this.setState({isOpen: true})
+  }
+
+  setInput = el => {
+    this.inputElement = el
+  }
+
+  setListContainer = el => {
+    this.listContainer = el
+  }
+
+  renderItem = (item, index) => {
     const type = schema.get(item._type)
+    const {activeIndex} = this.state
     return (
-      <IntentLink intent="edit" params={{id: item._id, type: type.name}} className={globalSearchStyles.link}>
+      <IntentLink
+        intent="edit"
+        params={{id: item._id, type: type.name}}
+        className={activeIndex === index ? styles.activeLink : styles.link}
+        data-hit-index={index}
+      >
         <Preview
           value={item}
           layout="default"
@@ -161,43 +163,49 @@ class Search extends React.Component {
     )
   }
 
-  handleChange = item => {
-    const url = this.context.__internalRouter.resolveIntentLink('edit', {
-      type: item._type,
-      id: item._id
-    })
-    this.context.__internalRouter.navigateUrl(url)
-    this.setState({
-      isOpen: false
-    })
-  }
-
   render() {
-
-    if (!schema) {
-      return <div>No schema</div>
-    }
-
+    const {isSearching, hits, isOpen} = this.state
+    const {placeholder} = this.props
     return (
-      <div>
-        <GlobalSearch
-          onSearch={this.handleSearch}
-          onChange={this.handleChange}
-          isSearching={this.state.isSearching}
-          onBlur={this.handleBlur}
-          renderItem={this.renderItem}
-          onFocus={this.handleFocus}
-          onClose={this.handleClose}
-          isOpen={this.state.isOpen}
-          label="Search"
-          topItems={this.state.topItems}
-          items={(this.state.items.length > 0 && this.state.items) || undefined}
-          placeholder="Search…"
-          listContainerClassName={styles.listContainer}
-        />
+      <div className={styles.root}>
+        <div className={styles.inner}>
+          <label className={styles.label}>
+            <i className={styles.icon} aria-hidden>
+              <SearchIcon />
+            </i>
+          </label>
+          <input
+            className={styles.input}
+            type="search"
+            onInput={this.handleInputChange}
+            onBlur={this.handleBlur}
+            onFocus={this.handleFocus}
+            onKeyDown={this.handleKeyDown}
+            placeholder="Search…"
+            ref={this.setInput}
+
+          />
+          <div className={styles.spinner}>
+            {isSearching && <Spinner />}
+          </div>
+        </div>
+        {isOpen && (
+          <div className={styles.listContainer}>
+            <ul
+              className={styles.hits}
+              onKeyDown={this.handleKeyDown}
+              onKeyPress={this.handleKeyPress}
+              ref={this.setListContainer}
+            >
+              {hits.map((hit, index) => (
+               <li key={hit._id} className={styles.hit}>
+                 {this.renderItem(hit, index)}
+               </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     )
   }
 }
-
-export default withRouterHOC(Search)

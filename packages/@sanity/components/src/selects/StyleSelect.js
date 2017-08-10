@@ -3,14 +3,12 @@ import React from 'react'
 import styles from 'part:@sanity/components/selects/style-style'
 import {uniqueId, includes} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
 import enhanceWithClickOutside from 'react-click-outside'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
 import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
 
 class StyleSelect extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
     description: PropTypes.string,
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
@@ -157,7 +155,7 @@ class StyleSelect extends React.Component {
   }
 
   render() {
-    const {label, error, value, description, items, className, transparent, placeholder} = this.props
+    const {error, value, description, items, className, transparent, placeholder} = this.props
     const {hasFocus, showList} = this.state
 
 
