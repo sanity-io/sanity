@@ -211,6 +211,10 @@
       "description": "Searchable select field styling"
     },
     {
+      "name": "part:@sanity/components/selects/menu",
+      "description": "Select menu"
+    },
+    {
       "name": "part:@sanity/components/selects/custom-style",
       "description": "Custom select field styling"
     },
@@ -450,6 +454,10 @@
     {
       "implements": "part:@sanity/components/selects/searchable-style",
       "path": "selects/styles/SearchableSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/menu",
+      "path": "selects/SelectMenu.js"
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
@@ -704,22 +712,6 @@
       "path": "previews/styles/MediaPreview.css"
     },
     {
-      "name": "part:@sanity/components/globalsearch/default",
-      "description": "Global search component. For use on root site"
-    },
-    {
-      "implements": "part:@sanity/components/globalsearch/default",
-      "path": "globalsearch/GlobalSearch.js"
-    },
-    {
-      "name": "part:@sanity/components/globalsearch/default-style",
-      "description": "Global search component. For use on root site"
-    },
-    {
-      "implements": "part:@sanity/components/globalsearch/default-style",
-      "path": "globalsearch/styles/GlobalSearch.css"
-    },
-    {
       "name": "part:@sanity/components/utilities/activate-on-focus",
       "description": "Prevents scrolling, click and other mouseevents before the area is activated"
     },
@@ -846,10 +838,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "imageinput/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "globalsearch/story.js"
     },
     {
       "implements": "part:@sanity/base/component",

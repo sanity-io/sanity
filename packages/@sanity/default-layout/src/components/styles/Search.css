@@ -1,15 +1,70 @@
 @import "part:@sanity/base/theme/variables-style";
 
+.root {
+  color: inherit;
+  line-height: 1em;
+  height: 1em;
+  position: relative;
+}
+
+.input {
+  border: none;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  background-color: transparent;
+  padding-left: 1.3em;
+  line-height: inherit;
+  font-size: inherit;
+  margin-top: -0.05em;
+
+  @nest &::placeholder {
+    color: inherit;
+    opacity: 0.4;
+  }
+}
+
 .listContainer {
-  margin-top: var(--medium-padding);
-  margin-left: calc(var(--small-padding) * -1);
-  width: 100vw;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  left: 0;
+  height: auto;
 
   @media (--screen-medium) {
-    margin-left: calc(var(--medium-padding) * -1);
-    margin-top: var(--medium-padding);
-    margin-right: calc(var(--medium-padding) * -2);
-    width: 100%;
-    min-width: 100%;
+    backdrop-filter: blur(10px);
+    composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   }
+}
+
+.hits {
+  background-color: color(var(--component-bg) a(90%));
+  color: var(--black);
+  composes: resetList from "part:@sanity/base/theme/layout/helpers";
+}
+
+.hit {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  background-color: transparent;
+  cursor: default;
+}
+
+.link {
+  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  display: block;
+
+  @nest &:hover {
+    background-color: var(--gray-light--transparent);
+  }
+}
+
+.activeLink {
+  composes: link;
+  background-color: var(--selected-item-color-hover);
+}
+
+.label {
+  font-size: inherit;
+  position: absolute;
+  transform: translateY(-14%);
 }
