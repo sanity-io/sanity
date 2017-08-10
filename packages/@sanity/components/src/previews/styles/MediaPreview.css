@@ -39,7 +39,6 @@
 
 .meta {
   composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
-  display: flex;
   position: absolute;
   opacity: 0;
   top: 0;
@@ -53,6 +52,13 @@
   text-align: center;
   z-index: 1;
   transition: opacity 0.3s ease-out;
+
+  /*
+    Disable meta for now
+    display: flex;
+  */
+
+  display: none;
 
   @nest .root:hover & {
     transition-duration: 0.1s;

@@ -27,15 +27,16 @@ export default class BlockStyle extends React.Component {
       return null
     }
     return (
-      <StyleSelect
-        className={styles.root}
-        label="Text"
-        items={this.props.items}
-        value={this.props.value}
-        onChange={this.props.onSelect}
-        renderItem={this.renderItem}
-        transparent
-      />
+      <label className={styles.root}>
+        <span style={{display: 'none'}}>Text</span>
+        <StyleSelect
+          items={this.props.items}
+          value={this.props.value}
+          onChange={this.props.onSelect}
+          renderItem={this.renderItem}
+          transparent
+        />
+      </label>
     )
   }
 }

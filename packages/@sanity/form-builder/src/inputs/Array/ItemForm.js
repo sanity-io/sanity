@@ -1,55 +1,30 @@
-import PropTypes from 'prop-types'
+// @flow
 import React from 'react'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import {FormBuilderInput} from '../../FormBuilderInput'
+import PatchEvent from '../../PatchEvent'
 
-export default class ItemForm extends React.PureComponent {
-  static propTypes = {
-    type: FormBuilderPropTypes.type.isRequired,
-    value: PropTypes.any,
-    level: PropTypes.number,
-    hasFocus: PropTypes.bool,
-    onChange: PropTypes.func,
-    onEnter: PropTypes.func
+export default class ItemForm extends React.Component<*, *, *> {
+  props: {
+    value: Object,
+    type: any,
+    level: number,
+    onChange: (event: PatchEvent, value: Object) => void
   }
 
-  static contextTypes = {
-    formBuilder: PropTypes.object
-  }
-
-  handleChange = event => {
+  handleChange = (event : PatchEvent) => {
     const {value, onChange} = this.props
     onChange(event, value)
   }
 
-  handleEnter = () => {
-    const {value, onEnter} = this.props
-    onEnter(value)
-  }
-
-  resolveInputComponent(type, fieldType) {
-    return this.context.formBuilder.resolveInputComponent(type, fieldType)
-  }
-
   render() {
-    const {value, type, hasFocus, level} = this.props
-
-    const InputComponent = this.context.formBuilder.resolveInputComponent(type)
-    if (!InputComponent) {
-      return (
-        <div>No input component found item of type {JSON.stringify(type.type.name)}
-          <pre>{JSON.stringify(type, null, 2)}</pre>
-        </div>
-      )
-    }
-
+    const {value, type, level} = this.props
     return (
-      <InputComponent
+      <FormBuilderInput
         value={value}
         type={type}
         level={level}
-        hasFocus={hasFocus}
-        onEnter={this.handleEnter}
         onChange={this.handleChange}
+        autoFocus
       />
     )
   }

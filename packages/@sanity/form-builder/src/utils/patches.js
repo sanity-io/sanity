@@ -11,30 +11,31 @@ type Path = Array<PathSegment>
 type HasPath = {
   path: Path
 }
-type SetPatch = HasPath & {
+type HasOrigin = {
+  origin?: 'remote' | 'local'
+}
+type SetPatch = HasPath & HasOrigin & {
   type: 'set',
   value: any
 }
 
-type SetIfMissingPatch = HasPath & {
+type SetIfMissingPatch = HasPath & HasOrigin & {
   type: 'setIfMissing',
   value: any
 }
 
-type UnsetPatch = HasPath & {
+type UnsetPatch = HasPath & HasOrigin & {
   type: 'unset',
 }
 
 type InsertPosition = 'before' | 'after'
-type InsertPatch = HasPath & {
+type InsertPatch = HasPath & HasOrigin & {
   type: 'insert',
   position: InsertPosition,
   items: any[]
 }
 
-export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch & {
-  origin: 'remote' | 'local'
-}
+export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch
 
 export function setIfMissing(value : any, path : Path = []) : SetIfMissingPatch {
   return {

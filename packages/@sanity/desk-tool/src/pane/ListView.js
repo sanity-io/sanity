@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import GridList from 'part:@sanity/components/lists/grid'
+import {List as GridList, Item as GridListItem} from 'part:@sanity/components/lists/grid'
 import InfiniteList from './InfiniteList'
 
 export default class ListView extends React.PureComponent {
@@ -26,17 +26,18 @@ export default class ListView extends React.PureComponent {
     switch (listLayout) {
       case 'card':
       case 'media': {
+        // todo: this part is disabled and deliberately *not* adjusted after lists refactoring
         return (
-          <div>
-            <GridList
-              overrideItemRender
-              items={items}
-              layout={listLayout === 'card' ? 'masonry' : 'default'}
-              getItemKey={getItemKey}
-              renderItem={renderItem}
-              selectedItem={selectedItem}
-            />
-          </div>
+          <GridList>
+            {items.map(item => {
+              // const isSelected = selectedItem === item /* todo: use to decorate with selected class etc. */
+              return (
+                <GridListItem key={getItemKey(item)}>
+                  {renderItem(item)}
+                </GridListItem>
+              )
+            })}
+          </GridList>
         )
       }
       default: {

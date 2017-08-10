@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../FormBuilderPropTypes'
+import FormField from 'part:@sanity/components/formfields/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import {find} from 'lodash'
 import PatchEvent, {set} from '../PatchEvent'
@@ -11,35 +12,20 @@ export default class SearchableStringSelect extends React.Component {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    hasFocus: PropTypes.bool,
     onChange: PropTypes.func,
-    onEnter: PropTypes.func,
   };
 
   static defaultProps = {
     value: '',
-    onChange() {},
-    onEnter() {},
-    onFocus() {}
+    onChange() {}
   };
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleChange(item) {
+  handleChange = item => {
     this.props.onChange(PatchEvent.from(set(item.value)))
   }
 
-  handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      this.props.onEnter()
-    }
-  }
-
   render() {
-    const {value, type, hasFocus, level} = this.props
+    const {value, type, level} = this.props
 
     const items = type.options.list.map(item => {
       return {title: item, value: item}
@@ -50,17 +36,16 @@ export default class SearchableStringSelect extends React.Component {
     })
 
     return (
-      <SearchableSelect
-        label={type.title}
-        level={level}
-        placeholder={type.placeholder}
-        description={type.description}
-        onChange={this.handleChange}
-        onKeyPress={this.handleKeyPress}
-        value={currentItem}
-        items={items}
-        hasFocus={hasFocus}
-      />
+      <FormField label={type.title} level={level} description={type.description}>
+        <SearchableSelect
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+          onKeyPress={this.handleKeyPress}
+          value={currentItem}
+          items={items}
+        />
+      </FormField>
+
     )
   }
 }

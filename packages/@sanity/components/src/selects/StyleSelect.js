@@ -162,7 +162,7 @@ class StyleSelect extends React.Component {
 
 
     return (
-      <DefaultFormField
+      <div
         className={`
           ${styles.root}
           ${hasFocus ? styles.focused : ''}
@@ -170,9 +170,6 @@ class StyleSelect extends React.Component {
           ${transparent ? styles.transparent : ''}
           ${className || ''}
         `}
-        description={description}
-        labelHtmlFor={this._inputId}
-        label={label}
       >
         <div className={styles.inner} onClick={this.handleInnerClick}>
           <div className={styles.selectContainer}>
@@ -214,7 +211,7 @@ class StyleSelect extends React.Component {
             })
           }
         </div>
-      </DefaultFormField>
+      </div>
     )
   }
 }

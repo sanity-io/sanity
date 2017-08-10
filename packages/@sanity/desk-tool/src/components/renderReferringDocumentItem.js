@@ -1,7 +1,7 @@
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview'
-import StateLinkListItem from 'part:@sanity/components/lists/items/statelink'
+import {StateLink} from 'part:@sanity/base/router'
 
 export default function renderReferringDocumentItem(item, index, options) {
   const typeName = item._type
@@ -14,9 +14,9 @@ export default function renderReferringDocumentItem(item, index, options) {
 
   return schemaType
     ? (
-      <StateLinkListItem state={linkState}>
+      <StateLink state={linkState}>
         <Preview value={item} type={schemaType} />
-      </StateLinkListItem>
+      </StateLink>
     )
     : <div>A document of the unknown type <em>{typeName}</em></div>
 }

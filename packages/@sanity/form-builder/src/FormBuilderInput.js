@@ -28,7 +28,7 @@ export class FormBuilderInput extends React.Component {
   }
 
   render() {
-    const {onChange, value, type, level, validation, isRoot} = this.props
+    const {onChange, value, type, level, validation, isRoot, ...rest} = this.props
 
     const InputComponent = this.resolveInputComponent(type)
     if (!InputComponent) {
@@ -36,16 +36,18 @@ export class FormBuilderInput extends React.Component {
     }
 
     const docProps = InputComponent.passDocument ? {document: this.context.formBuilder.getDocument()} : {}
+    const rootProps = isRoot ? {isRoot} : {}
 
     return (
       <InputComponent
+        {...rest}
         value={value}
         type={type}
         onChange={type.readOnly ? NOOP : onChange}
         validation={validation}
-        {...docProps}
         level={level}
-        isRoot={isRoot}
+        {...docProps}
+        {...rootProps}
       />
     )
   }

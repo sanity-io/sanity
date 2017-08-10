@@ -62,13 +62,6 @@ export default {
     //   }
     // },
     {
-      name: 'myImage',
-      title: 'My Image',
-      type: 'myImage',
-      required: true,
-      readOnly: true
-    },
-    {
       name: 'publishAt',
       title: 'Publish at',
       type: 'date',
@@ -139,24 +132,45 @@ export default {
       options: {
         direction: 'vertical',
         list: [
-          {title: 'Red', value: 'red'},
-          {title: 'Green', value: 'green'},
-          {title: 'Blue', value: 'blue'},
-          {title: 'Black', value: 'black'},
+          'red',
+          'green',
+          1, // invalid, not defined in list
+          'blue',
+          'black',
         ]
       },
-      of: [{
-        type: 'string'
-      }]
+      of: [{type: 'string'}]
     },
     {
-      name: 'pngImage',
-      title: 'PNG image',
-      type: 'image',
+      name: 'FavoriteColors',
+      title: 'Select multiple colors',
+      type: 'array',
       options: {
-        hotspot: true,
-        accept: 'image/png'
-      }
+        direction: 'vertical',
+        list: [
+          {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
+          {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
+          1, // invalid, not defined in list
+          {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+        ]
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'color',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'tags',
@@ -170,14 +184,15 @@ export default {
       ]
     },
     {
-      name: 'arrayOfStrings',
-      title: 'Array of strings (sortable)',
+      name: 'arrayOfStringsAndNumbers',
+      title: 'Array of strings and numbers (sortable)',
       type: 'array',
       options: {
         sortable: true
       },
       of: [
-        {type: 'string'}
+        {type: 'string'},
+        {type: 'number'}
       ]
     },
 
@@ -228,37 +243,6 @@ export default {
         {
           title: 'Block',
           type: 'block'
-        }
-      ]
-    },
-    {
-      name: 'imageGallery',
-      title: 'Image gallery',
-      type: 'array',
-      options: {
-        layout: 'grid',
-        sortable: true
-      },
-      of: [
-        {
-          title: 'Image',
-          type: 'image',
-          preview: {
-            select: {
-              imageUrl: 'asset.url',
-              title: 'caption'
-            }
-          },
-          fields: [
-            {
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-              options: {
-                isHighlighted: true
-              }
-            }
-          ]
         }
       ]
     },
@@ -337,7 +321,8 @@ export default {
       type: 'array',
       of: [
         {
-          title: 'String',
+          title: 'Put a string here',
+          description: 'Must be a nice string',
           type: 'string'
         }
       ]
@@ -347,7 +332,7 @@ export default {
       title: 'ReadOnly test',
       description: 'Test readOnly on members of arrays',
       type: 'array',
-      readOnly: true, // toggle comment to test readOnly array values
+      // readOnly: true, // toggle comment to test readOnly array values
       of: [
         {
           title: 'Stuff',
@@ -367,7 +352,16 @@ export default {
             {name: 'something', type: 'string'},
             {name: 'otherThing', type: 'string'}
           ]
-        }
+        },
+        {
+          title: 'Semi editable stuff',
+          type: 'object',
+          name: 'semiEditableStuff',
+          fields: [
+            {name: 'readOnly', type: 'string', readOnly: true},
+            {name: 'canEdit', type: 'string'}
+          ]
+        },
       ]
     },
     {

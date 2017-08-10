@@ -42,7 +42,7 @@ class Fieldset extends React.Component {
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, styles} = this.props
+    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, styles, ...rest} = this.props
     const {isOpen} = this.state
     const levelString = `level${level}`
     const rootClass = `
@@ -53,7 +53,7 @@ class Fieldset extends React.Component {
       ${className || ''}
     `
     return (
-      <fieldset className={rootClass} data-nesting-level={level}>
+      <fieldset {...rest} className={rootClass} data-nesting-level={level}>
         <div className={styles.inner}>
           <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
             {

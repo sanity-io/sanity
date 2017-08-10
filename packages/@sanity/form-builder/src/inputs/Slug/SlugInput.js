@@ -69,7 +69,6 @@ export default class SlugInput extends React.Component {
   static defaultProps = {
     value: {current: undefined, auto: true},
     onChange() {},
-    onEnter() {},
     slugifyFn: defaultSlugify
   };
 

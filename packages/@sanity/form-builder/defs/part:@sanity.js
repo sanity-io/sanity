@@ -23,6 +23,15 @@ declare module 'part:@sanity/components/fieldsets/default' {
 declare module 'part:@sanity/components/edititem/popover' {
   declare export default any;
 }
+
+declare module 'part:@sanity/components/edititem/fold' {
+  declare export default any;
+}
+
+declare module 'part:@sanity/components/lists/sortable' {
+  declare export default any;
+}
+
 declare module 'part:@sanity/components/lists/default' {
   declare export default any;
 }

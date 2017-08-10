@@ -16,7 +16,6 @@ export default class DefaultTextArea extends React.Component {
     placeholder: PropTypes.string,
     isClearable: PropTypes.bool,
     rows: PropTypes.number,
-    id: PropTypes.string.isRequired,
     hasFocus: PropTypes.bool
   }
 
@@ -54,7 +53,6 @@ export default class DefaultTextArea extends React.Component {
             ${isClearable ? styles.hasClearButton : ''}
           `}
           rows={rows}
-          id={id}
           value={value}
           placeholder={placeholder}
           onChange={onChange}

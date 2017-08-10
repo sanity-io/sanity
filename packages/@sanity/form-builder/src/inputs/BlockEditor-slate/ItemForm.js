@@ -7,7 +7,6 @@ export default class ItemForm extends React.PureComponent {
     type: FormBuilderPropTypes.type.isRequired,
     value: PropTypes.any,
     level: PropTypes.number,
-    hasFocus: PropTypes.bool,
     onChange: PropTypes.func
   };
 
@@ -25,7 +24,7 @@ export default class ItemForm extends React.PureComponent {
   }
 
   render() {
-    const {value, type, hasFocus, level} = this.props
+    const {value, type, level} = this.props
 
     const InputComponent = this.context.formBuilder.resolveInputComponent(type)
     if (!InputComponent) {
@@ -41,7 +40,6 @@ export default class ItemForm extends React.PureComponent {
         value={value}
         type={type}
         level={level}
-        hasFocus={hasFocus}
         onChange={this.handleChange}
       />
     )

@@ -8,3 +8,25 @@
     backdrop-filter: blur(10px);
   }
 }
+
+.listItemStates {
+  @nest &:active {
+    background-color: var(--selected-item-color);
+  }
+
+  @nest &:active:focus-within {
+    background-color: var(--selected-item-color);
+  }
+
+  @nest &:focus-within {
+    background-color: var(--selectable-item-color-hover);
+  }
+
+  @nest &:hover {
+    background-color: var(--selectable-item-color-hover);
+  }
+
+  @nest &:hover:active {
+    background-color: var(--selected-item-color-hover);
+  }
+}

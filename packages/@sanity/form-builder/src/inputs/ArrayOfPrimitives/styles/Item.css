@@ -1,0 +1,45 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.1em;
+  margin: 0.1em;
+
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+
+  &.media {
+    height: 15em;
+    width: 15em;
+  }
+}
+
+.input {
+  flex-grow: 1;
+}
+
+.deleteButton {
+  flex-grow: 0;
+  z-index: 1;
+  font-size: 0.9em;
+  box-sizing: border-box;
+}
+
+.dragHandle {
+  flex-grow: 0;
+  cursor: ns-resize;
+  opacity: 0.5;
+  font-size: 1em;
+  padding: 0.5em;
+  border: 1px solid transparent;
+  z-index: 1;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.addButton {
+  margin-top: var(--medium-padding);
+}

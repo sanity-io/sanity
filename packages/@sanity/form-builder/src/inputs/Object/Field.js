@@ -1,14 +1,13 @@
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import PropTypes from 'prop-types'
 import React from 'react'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValue'
 import MemberValue from '../../Member'
 
 import styles from './styles/Field.css'
-import {resolveTypeName} from '../../utils/resolveType'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-
+import {resolveTypeName} from '../../utils/resolveTypeName'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -19,14 +18,11 @@ export default class Field extends React.Component {
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
-    onEnter: PropTypes.func,
-    level: PropTypes.number,
-    hasFocus: PropTypes.bool
+    level: PropTypes.number
   };
 
   static defaultProps = {
     validation: {messages: [], fields: {}},
-    onEnter() {}
   };
 
   handleChange = event => {
@@ -36,13 +32,8 @@ export default class Field extends React.Component {
     }
   }
 
-  handleEnter = event => {
-    const {field, onEnter} = this.props
-    onEnter(event, field)
-  }
-
   render() {
-    const {value, field, level, validation, hasFocus} = this.props
+    const {value, field, level, validation, autoFocus} = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -74,9 +65,8 @@ export default class Field extends React.Component {
             type={field.type}
             validation={validation}
             onChange={this.handleChange}
-            onEnter={this.handleEnter}
             level={level}
-            hasFocus={hasFocus}
+            autoFocus={autoFocus}
           />
         </MemberValue>
       </div>
