@@ -283,7 +283,7 @@ export default class BlockEditor extends React.Component {
     return (
       <FormField
         label={type.title}
-        labelHtmlFor={this._inputId}
+        labelFor={this._inputId}
         level={level}
         className={fullscreen ? styles.formFieldFullscreen : styles.formField}
       >
