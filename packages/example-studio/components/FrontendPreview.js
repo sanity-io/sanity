@@ -7,7 +7,7 @@ export default function FrontendPreview(props) {
   return (
     <div>
       <h2>This is a custom preview of {type.title}</h2>
-      <pre>{JSON.stringify(rest)}</pre>
+      <pre>{JSON.stringify(rest, null, 2)}</pre>
     </div>
   )
 }

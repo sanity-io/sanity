@@ -5,7 +5,6 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import styles from './styles/SchemaPaneResolver.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import Pane from 'part:@sanity/components/panes/default'
 
 import TypePane from './pane/TypePane'
 import DocumentsPane from './pane/DocumentsPane'
@@ -14,7 +13,8 @@ import EditorWrapper from './pane/EditorWrapper'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import FrontendPreview from 'part:@sanity/components/frontend-preview?'
+import FrontendPreview from 'part:@sanity/desk-tool/frontend-preview?'
+import FrontendPreviewPane from './pane/FrontendPreviewPane'
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -36,7 +36,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
 
   state = {
     collapsedPanes: [
-      'FrontendPreviewPane'
+      'frontendPreviewPane'
     ]
   }
 
@@ -146,15 +146,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                 defaultWidth={200}
                 minWidth={100}
                 maxWidth={400}
-                paneId="FrontendPreviewPane"
-                isCollapsed={collapsedPanes.some(pane => pane === 'FrontendPreviewPane')}
+                paneId="frontendPreviewPane"
+                isCollapsed={collapsedPanes.some(pane => pane === 'frontendPreviewPane')}
               >
-                <Pane title="Preview">
-                  <FrontendPreview
-                    documentId={selectedDocumentId}
-                    type={schemaType}
-                  />
-                </Pane>
+                <FrontendPreviewPane documentId={selectedDocumentId} type={schemaType} />
               </SplitPaneWrapper>
             )
           }
