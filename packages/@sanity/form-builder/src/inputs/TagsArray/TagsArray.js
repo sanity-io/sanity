@@ -1,7 +1,7 @@
 // @flow
 import PropTypes from 'prop-types'
 import React from 'react'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
@@ -31,8 +31,12 @@ export default class TagsInput extends React.PureComponent {
   render() {
     const {type, value, level} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
-        <TagInput
+      <FormField
+        level={level}
+        label={type.title}
+        description={type.description}
+      >
+      <TagInput
           label={type.title}
           level={level}
           description={type.description}
@@ -40,7 +44,7 @@ export default class TagsInput extends React.PureComponent {
           onRemoveTag={this.handleRemoveItem}
           onAddTag={this.handleAddItem}
         />
-      </Fieldset>
+      </FormField>
     )
   }
 }
