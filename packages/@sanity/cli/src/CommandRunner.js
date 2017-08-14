@@ -80,12 +80,20 @@ export default class CommandRunner {
       commandRunner: this
     }
 
+    if (command.isGroupRoot) {
+      return context.output.print(generateCommandsDocumentation(
+        this.commandGroups,
+        command.name
+      ))
+    }
+
     if (typeof command.action !== 'function') {
       const cmdName = command.name || commandOrGroup || '<unknown>'
       debug(`Command "${cmdName}" doesnt have a valid "action"-property, showing help`)
+      const groupName = command.group && command.group !== 'default' ? command.group : null
       return context.output.print(generateCommandDocumentation(
         command,
-        command.group && command.group !== 'default' ? command.group : null,
+        groupName,
         subCommandName
       ))
     }
