@@ -11,8 +11,8 @@
 
   "parts": [
     {
-      "name": "part:@sanity/components/production-preview",
-      "description": "A component that can be provided in order to preview documents as they appear in production"
+      "name": "part:@sanity/desk-tool/frontend-preview",
+      "description": "A component that can be provided in order to preview documents as they appear in the front end(s)"
     },
     {
       "implements": "part:@sanity/base/tool",

@@ -14,7 +14,7 @@ import EditorWrapper from './pane/EditorWrapper'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import ProductionPreview from 'part:@sanity/components/production-preview?'
+import FrontendPreview from 'part:@sanity/components/frontend-preview?'
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
@@ -23,8 +23,8 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
 }))
 
 function shouldPreview(type) {
-  return ProductionPreview
-    && (typeof ProductionPreview.shouldPreview !== 'function' || ProductionPreview.shouldPreview(type))
+  return FrontendPreview
+    && (typeof FrontendPreview.shouldPreview !== 'function' || FrontendPreview.shouldPreview(type))
 }
 
 export default withRouterHOC(class SchemaPaneResolver extends React.Component {
@@ -36,7 +36,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
 
   state = {
     collapsedPanes: [
-      'productionPreviewPane'
+      'FrontendPreviewPane'
     ]
   }
 
@@ -146,11 +146,11 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                 defaultWidth={200}
                 minWidth={100}
                 maxWidth={400}
-                paneId="productionPreviewPane"
-                isCollapsed={collapsedPanes.some(pane => pane === 'productionPreviewPane')}
+                paneId="FrontendPreviewPane"
+                isCollapsed={collapsedPanes.some(pane => pane === 'FrontendPreviewPane')}
               >
                 <Pane title="Preview">
-                  <ProductionPreview
+                  <FrontendPreview
                     documentId={selectedDocumentId}
                     type={schemaType}
                   />

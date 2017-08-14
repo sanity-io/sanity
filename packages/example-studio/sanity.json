@@ -32,8 +32,8 @@
       "path": "./parts/inputResolver"
     },
     {
-      "implements": "part:@sanity/components/production-preview",
-      "path": "./components/ProductionPreview"
+      "implements": "part:@sanity/desk-tool/frontend-preview",
+      "path": "./components/FrontendPreview"
     }
   ],
   "env": {
