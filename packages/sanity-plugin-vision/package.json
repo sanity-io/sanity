@@ -1,6 +1,6 @@
 {
-  "name": "@sanity/vision",
-  "version": "0.106.13",
+  "name": "sanity-plugin-vision",
+  "version": "0.108.2",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/InsanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -38,6 +38,9 @@
     "react-textarea-autosize": "^4.0.5"
   },
   "devDependencies": {
+    "@sanity/base": "^0.108.0",
+    "@sanity/default-layout": "^0.108.0",
+    "@sanity/components": "^0.108.2",
     "@sanity/check": "^0.103.6",
     "@sanity/client": "^0.103.6",
     "babel-cli": "^6.23.0",

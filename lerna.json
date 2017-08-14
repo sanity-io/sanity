@@ -4,6 +4,7 @@
   "packages": [
     "packages/@sanity/*",
     "packages/example-studio",
+    "packages/sanity-plugin-vision",
     "packages/storybook"
   ],
   "version": "0.108.8"

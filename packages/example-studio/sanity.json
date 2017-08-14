@@ -16,7 +16,7 @@
     "@sanity/code-input",
     "@sanity/desk-tool",
     "@sanity/storybook",
-    "@sanity/vision"
+    "vision"
   ],
   "parts": [
     {
