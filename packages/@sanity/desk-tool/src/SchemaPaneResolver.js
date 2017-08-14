@@ -5,6 +5,7 @@ import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import styles from './styles/SchemaPaneResolver.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import Pane from 'part:@sanity/components/panes/default'
 
 import TypePane from './pane/TypePane'
 import DocumentsPane from './pane/DocumentsPane'
@@ -13,12 +14,18 @@ import EditorWrapper from './pane/EditorWrapper'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import ProductionPreview from 'part:@sanity/components/production-preview?'
 
 const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   key: typeName,
   name: typeName,
   title: dataAspects.getDisplayName(typeName)
 }))
+
+function shouldPreview(type) {
+  return ProductionPreview
+    && (typeof ProductionPreview.shouldPreview !== 'function' || ProductionPreview.shouldPreview(type))
+}
 
 export default withRouterHOC(class SchemaPaneResolver extends React.Component {
   static propTypes = {
@@ -28,7 +35,9 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
   }
 
   state = {
-    collapsedPanes: []
+    collapsedPanes: [
+      'productionPreviewPane'
+    ]
   }
 
   handleToggleDocumentsPaneMenu = () => {
@@ -96,10 +105,10 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
                 minWidth={100}
                 maxWidth={400}
                 paneId="documentsPane"
-                isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
+                isCollapsed={collapsedPanes.some(pane => pane === 'documentsPane')}
               >
                 <DocumentsPane
-                  isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
+                  isCollapsed={collapsedPanes.some(pane => pane === 'documentsPane')}
                   selectedType={selectedType}
                   title={dataAspects.getDisplayName(selectedType) || 'Untitled'}
                   selectedDocumentId={selectedDocumentId}
@@ -115,12 +124,37 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
 
           {
             schemaType && selectedDocumentId && action === 'edit' && (
-              <SplitPaneWrapper>
+              <SplitPaneWrapper
+                defaultWidth={500}
+                minWidth={200}
+                maxWidth={400}
+                paneId="editorPane"
+                isCollapsed={collapsedPanes.some(pane => pane === 'editorPane')}
+              >
                 <EditorWrapper
                   documentId={selectedDocumentId}
                   typeName={schemaType.name}
                   schemaType={schemaType}
                 />
+              </SplitPaneWrapper>
+            )
+          }
+
+          {
+            schemaType && selectedDocumentId && action === 'edit' && shouldPreview(schemaType) && (
+              <SplitPaneWrapper
+                defaultWidth={200}
+                minWidth={100}
+                maxWidth={400}
+                paneId="productionPreviewPane"
+                isCollapsed={collapsedPanes.some(pane => pane === 'productionPreviewPane')}
+              >
+                <Pane title="Preview">
+                  <ProductionPreview
+                    documentId={selectedDocumentId}
+                    type={schemaType}
+                  />
+                </Pane>
               </SplitPaneWrapper>
             )
           }

@@ -30,6 +30,10 @@
     {
       "implements": "part:@sanity/form-builder/input-resolver",
       "path": "./parts/inputResolver"
+    },
+    {
+      "implements": "part:@sanity/components/production-preview",
+      "path": "./components/ProductionPreview"
     }
   ],
   "env": {
