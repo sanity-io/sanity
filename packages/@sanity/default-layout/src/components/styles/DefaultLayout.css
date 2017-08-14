@@ -49,10 +49,9 @@
   margin-top: 0;
   flex-grow: 1;
   overflow: hidden;
-
-  @media (--screen-medium) {
-    display: flex;
-  }
+  display: block;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .desktopNavigation {

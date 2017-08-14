@@ -2,6 +2,22 @@
 
 .root {
   display: block;
+
+  /*
+    TODO Remove this this when supporting mobile navigation in js
+  */
+  background-color: var(--body-bg);
+
+  @media (--screen-medium) {
+    background-color: transparent;
+  }
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 100;
 }
 
 .hotkey {
