@@ -34,8 +34,7 @@
     "react": "^15.5.4",
     "react-ace": "^4.3.0",
     "react-dom": "^15.5.4",
-    "react-icons": "^2.2.5",
-    "sanity-plugin-vision": "^2.0.2"
+    "react-icons": "^2.2.5"
   },
   "devDependencies": {
     "rimraf": "^2.6.1"

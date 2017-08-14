@@ -1,10 +1,12 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import ReactCodeMirror from 'react-codemirror'
-require('codemirror/mode/javascript/javascript')
-require('codemirror/addon/hint/show-hint')
 import isPlainObject from '../util/isPlainObject'
 import tryParseParams from '../util/tryParseParams'
+
+require('codemirror/mode/javascript/javascript')
+require('codemirror/addon/hint/show-hint')
 
 const ENTER_KEY = 13
 
