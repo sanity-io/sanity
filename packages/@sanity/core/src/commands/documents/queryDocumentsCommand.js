@@ -1,10 +1,20 @@
 const colorizeJson = require('../../util/colorizeJson')
 
+const help = `
+Runs a query against the projects configured dataset. Specify --pretty to get
+colorized JSON output. Example:
+
+  sanity documents query '*[_type == "movie"][0...5]'
+
+Will fetch 5 documents of type "movie"
+`
+
 export default {
   name: 'query',
   group: 'documents',
   signature: '[QUERY]',
   description: 'Query for documents',
+  helpText: help,
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
     const {pretty} = args.extOptions
