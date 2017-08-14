@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 import OffsetKey from 'slate/lib/utils/offset-key'
 import {findDOMNode} from 'slate'
 import ItemForm from './ItemForm'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
@@ -284,7 +284,8 @@ export default class FormBuilderBlock extends React.Component {
     const memberType = this.getMemberTypeOf(value)
 
     return (
-      <EditItemPopOver
+      <FullscreenDialog
+        isOpen
         title={this.props.node.title}
         onClose={this.handleClose}
       >
@@ -295,7 +296,7 @@ export default class FormBuilderBlock extends React.Component {
           value={this.getValue()}
           onChange={this.handleChange}
         />
-      </EditItemPopOver>
+      </FullscreenDialog>
     )
   }
 
