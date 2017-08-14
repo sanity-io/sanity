@@ -45,6 +45,7 @@ export default (args, context) => {
     throw new Error(noSuchCommandText(subCommandName, commandName, commandGroups))
   }
 
+  debug('Subcommand "%s" for group "%s" found, showing help', subCommandName, commandName)
   context.output.print(generateCommandDocumentation(
     subCommand.command,
     commandName,
