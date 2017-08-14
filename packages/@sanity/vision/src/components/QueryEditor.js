@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import ReactCodeMirror from 'react-codemirror'
 import CodeMirror from 'codemirror'
 require('codemirror/mode/javascript/javascript')
@@ -35,7 +36,6 @@ class QueryEditor extends React.PureComponent {
     ]
 
     if (schema) {
-      console.log(schema)
       schema._original.types.forEach(type => {
         suggestions.push({
           text: type.name,
@@ -73,13 +73,10 @@ class QueryEditor extends React.PureComponent {
 }
 
 QueryEditor.propTypes = {
-  // className: PropTypes.string,
   onExecute: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-  // onHeightChange: PropTypes.func,
   value: PropTypes.string,
   schema: PropTypes.object,
-  // style: PropTypes.object // eslint-disable-line react/forbid-prop-types
 }
 
 QueryEditor.defaultProps = {

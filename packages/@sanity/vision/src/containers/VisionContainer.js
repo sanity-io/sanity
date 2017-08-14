@@ -13,7 +13,6 @@ class VisionContainer extends LoadingContainer {
   }
 
   render() {
-    console.log('render visionContainer', this.props.schema)
     if (this.state.error) {
       return (
         <ErrorDialog

@@ -22,7 +22,6 @@ const styles = {
 
 // Used in Sanity project
 function SanityVision() {
-  console.log('we have scema?', schema)
   return (
     <Vision
       styles={styles}
