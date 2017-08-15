@@ -456,6 +456,18 @@
       "path": "selects/styles/SearchableSelect.css"
     },
     {
+      "implements": "part:@sanity/components/selects/custom",
+      "path": "selects/CustomSelect.js"
+    },
+    {
+      "implements": "part:@sanity/components/selects/customField",
+      "path": "selects/CustomSelectField.js"
+    },
+    {
+      "implements": "part:@sanity/components/selects/custom-style",
+      "path": "selects/styles/CustomSelect.css"
+    },
+    {
       "implements": "part:@sanity/components/selects/menu",
       "path": "selects/SelectMenu.js"
     },

@@ -50,3 +50,23 @@
   top: 0.5em;
   right: 0.75em;
 }
+
+.item {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  min-height: 2em;
+  cursor: default;
+
+  &:hover {
+    background-color: var(--selectable-item-color-hover);
+  }
+}
+.activeItem {
+  background-color: var(--gray-light--transparent);
+}
+
+.selectedItem {
+  background-color: var(--selected-item-color);
+}
+
