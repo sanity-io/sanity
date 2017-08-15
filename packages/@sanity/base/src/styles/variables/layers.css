@@ -10,4 +10,5 @@
   --zindex-tooltip: 1100;
   --zindex-modal-background: 2000;
   --zindex-modal: 2010;
+  --zindex-moving-item: 3000;
 }
