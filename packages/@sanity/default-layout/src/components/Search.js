@@ -7,6 +7,18 @@ import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import enhanceClickOutside from 'react-click-outside'
+
+function isParentOf(possibleParent, possibleChild) {
+  let current = possibleChild
+  while (current) {
+    if (current === possibleParent) {
+      return true
+    }
+    current = current.parentNode
+  }
+  return false
+}
 
 import styles from './styles/Search.css'
 
@@ -63,7 +75,7 @@ function search(query) {
 }
 
 
-export default class Search extends React.Component {
+export default enhanceClickOutside(class Search extends React.Component {
   input$ = new Multicast()
   componentWillUnmount$ = new Multicast()
 
@@ -114,7 +126,7 @@ export default class Search extends React.Component {
       this.inputElement.focus()
     }
     if (event.key === 'Enter') {
-      this.listContainer.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
+      this.listElement.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
     }
     const {hits, activeIndex} = this.state
     const lastIndex = hits.length - 1
@@ -127,20 +139,42 @@ export default class Search extends React.Component {
     }
   }
 
-  handleBlur = el => {
-    setTimeout(() => this.setState({isOpen: false}), 10)
+  close() {
+    this.setOpen(false)
+  }
+
+  open() {
+    this.setOpen(true)
+  }
+
+  setOpen(isOpen) {
+    this.setState({isOpen})
+  }
+
+  handleClickOutside = el => {
+    this.close()
   }
 
   handleFocus = el => {
-    this.setState({isOpen: true})
+    this.open()
+  }
+
+  handleBlur = el => {
+    if (!isParentOf(this.rootElement, el.relatedTarget)) {
+      this.close()
+    }
   }
 
   setInput = el => {
     this.inputElement = el
   }
 
-  setListContainer = el => {
-    this.listContainer = el
+  setListElement = el => {
+    this.listElement = el
+  }
+
+  setRootElement = el => {
+    this.rootElement = el
   }
 
   renderItem = (item, index) => {
@@ -165,7 +199,7 @@ export default class Search extends React.Component {
   render() {
     const {isSearching, hits, isOpen} = this.state
     return (
-      <div className={styles.root}>
+      <div className={styles.root} ref={this.setRootElement}>
         <div className={styles.inner}>
           <label className={styles.label}>
             <i className={styles.icon} aria-hidden>
@@ -193,7 +227,7 @@ export default class Search extends React.Component {
               className={styles.hits}
               onKeyDown={this.handleKeyDown}
               onKeyPress={this.handleKeyPress}
-              ref={this.setListContainer}
+              ref={this.setListElement}
             >
               {hits.map((hit, index) => (
                <li key={hit._id} className={styles.hit}>
@@ -206,4 +240,4 @@ export default class Search extends React.Component {
       </div>
     )
   }
-}
+})
