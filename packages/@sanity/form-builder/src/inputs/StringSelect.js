@@ -4,6 +4,7 @@ import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
+import FormField from 'part:@sanity/components/formfields/default'
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
@@ -45,24 +46,32 @@ export default class StringSelect extends React.PureComponent {
     const currentItem = items.find(item => item.value === value)
 
     const isRadio = type.options && type.options.layout === 'radio'
-    return isRadio
-      ? <RadioSelect
-        name={type.name}
-        legend={type.title}
+    return (
+      <FormField
         level={level}
-        items={items}
-        onChange={this.handleChange}
-        value={currentItem}
-        direction={type.options.direction || 'vertical'}
-      />
-      : <Select
         label={type.title}
-        level={level}
-        value={currentItem}
-        placeholder={type.placeholder}
-        onChange={this.handleChange}
-        items={[EMPTY_ITEM].concat(items)}
-      />
-
+        description={type.description}
+      >
+        {isRadio
+          ? <RadioSelect
+            name={type.name}
+            legend={type.title}
+            level={level}
+            items={items}
+            onChange={this.handleChange}
+            value={currentItem}
+            direction={type.options.direction || 'vertical'}
+          />
+          : <Select
+            label={type.title}
+            level={level}
+            value={currentItem}
+            placeholder={type.placeholder}
+            onChange={this.handleChange}
+            items={[EMPTY_ITEM].concat(items)}
+          />
+        }
+      </FormField>
+    )
   }
 }
