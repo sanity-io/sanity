@@ -33,10 +33,37 @@ export default {
     },
     {
       name: 'imageGallery',
-      title: 'Image gallery (sortable, not grid)',
+      title: 'Image gallery (with defaults)',
+      type: 'array',
+      of: [
+        {
+          title: 'Image',
+          type: 'image',
+          preview: {
+            select: {
+              imageUrl: 'asset.url',
+              title: 'caption'
+            }
+          },
+          fields: [
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
+              options: {
+                isHighlighted: true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'imageGalleryNotSortable',
+      title: 'Image gallery (Grid, *not* sortable)',
       type: 'array',
       options: {
-        sortable: true,
+        sortable: false,
         layout: 'grid'
       },
       of: [
