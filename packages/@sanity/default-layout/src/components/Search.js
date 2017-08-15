@@ -3,7 +3,7 @@ import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import Multicast from '@sanity/observable/multicast'
-import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
+import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -41,8 +41,7 @@ function removeDupes(documents) {
 
 function search(query) {
   if (!client) {
-    console.error('Sanity client is missing. (Search is disabled)') // eslint-disable-line
-    return
+    throw new Error('Sanity client is missing')
   }
 
   // Get all fields that we want to search in (text and string)
@@ -165,7 +164,6 @@ export default class Search extends React.Component {
 
   render() {
     const {isSearching, hits, isOpen} = this.state
-    const {placeholder} = this.props
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
