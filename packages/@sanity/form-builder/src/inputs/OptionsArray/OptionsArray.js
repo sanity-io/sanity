@@ -7,7 +7,7 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 import Item from './Item'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {resolveValueWithLegacyOptionsSupport} from './resolveValueWithLegacyOptionsSupport'
+import {resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
 import {isLegacyOptionsItem} from './legacyOptionsSupport'
 
 function isEqual(item, otherItem) {
