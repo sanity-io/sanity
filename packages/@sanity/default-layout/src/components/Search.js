@@ -82,10 +82,17 @@ export default enhanceClickOutside(class Search extends React.Component {
   state = {
     isOpen: false,
     hits: [],
-    activeIndex: -1
+    activeIndex: -1,
+    inputValue: ''
   }
 
   componentDidMount() {
+    this.input$.asObservable()
+      .map(event => event.target.value)
+      .do(inputValue => this.setState({inputValue}))
+      .takeUntil(this.componentWillUnmount$.asObservable())
+      .subscribe()
+
     this.input$.asObservable()
       .map(event => event.target.value)
       .debounceTime(100)
@@ -177,6 +184,22 @@ export default enhanceClickOutside(class Search extends React.Component {
     this.rootElement = el
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.isOpen && this.state.isOpen) {
+      this.inputElement.select()
+    }
+  }
+
+  handleHitMouseDown = ev => {
+    this.setState({
+      activeIndex: Number(ev.currentTarget.getAttribute('data-hit-index'))
+    })
+  }
+
+  handleHitMouseUp = () => {
+    this.inputElement.focus()
+  }
+
   renderItem = (item, index) => {
     const type = schema.get(item._type)
     const {activeIndex} = this.state
@@ -186,6 +209,9 @@ export default enhanceClickOutside(class Search extends React.Component {
         params={{id: item._id, type: type.name}}
         className={activeIndex === index ? styles.activeLink : styles.link}
         data-hit-index={index}
+        onMouseDown={this.handleHitMouseDown}
+        onMouseUp={this.handleHitMouseUp}
+        tabIndex={-1}
       >
         <Preview
           value={item}
@@ -197,7 +223,7 @@ export default enhanceClickOutside(class Search extends React.Component {
   }
 
   render() {
-    const {isSearching, hits, isOpen} = this.state
+    const {isSearching, hits, isOpen, inputValue} = this.state
     return (
       <div className={styles.root} ref={this.setRootElement}>
         <div className={styles.inner}>
@@ -209,6 +235,7 @@ export default enhanceClickOutside(class Search extends React.Component {
           <input
             className={styles.input}
             type="search"
+            value={isOpen ? inputValue : ''}
             onInput={this.handleInputChange}
             onBlur={this.handleBlur}
             onFocus={this.handleFocus}
