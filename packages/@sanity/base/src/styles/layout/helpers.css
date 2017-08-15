@@ -24,7 +24,7 @@
 }
 
 .movingItem {
-  background-color: var(--component-bg);
+  background-color: var(--selected-item-color);
   opacity: 0.9;
   composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
 }

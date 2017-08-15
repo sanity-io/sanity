@@ -23,6 +23,7 @@
 
 .movingItem {
   composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
+  z-index: 100;
 }
 
 .item {

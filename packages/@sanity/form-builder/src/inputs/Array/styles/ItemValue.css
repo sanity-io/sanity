@@ -23,19 +23,6 @@
   outline: none;
 }
 
-.dragHandle {
-  flex-grow: 0;
-  cursor: ns-resize;
-  opacity: 0.5;
-  font-size: 1em;
-  padding: 0.5em;
-  border: 1px solid transparent;
-  z-index: 1;
-  &:hover {
-    opacity: 1;
-  }
-}
-
 .functions {
   flex-grow: 0;
   font-size: 0.9rem;
