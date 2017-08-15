@@ -12,12 +12,16 @@ import protein from './protein'
 import proteinTest from './proteinTest'
 import referenceTest from './referenceTest'
 import imagesTest from './imagesTest'
+import strings from './strings'
+import arrays from './arrays'
 
 export default createSchema({
   name: 'example-blog',
   types: [
     blogpost,
     author,
+    strings,
+    arrays,
     code,
     blocksTest,
     typeWithBlocks,

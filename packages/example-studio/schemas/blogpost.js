@@ -142,37 +142,6 @@ export default {
       of: [{type: 'string'}]
     },
     {
-      name: 'FavoriteColors',
-      title: 'Select multiple colors',
-      type: 'array',
-      options: {
-        direction: 'vertical',
-        list: [
-          {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
-          {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
-          1, // invalid, not defined in list
-          {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
-          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
-        ]
-      },
-      of: [
-        {
-          type: 'object',
-          name: 'color',
-          fields: [
-            {
-              name: 'title',
-              type: 'string',
-            },
-            {
-              name: 'name',
-              type: 'string',
-            }
-          ]
-        }
-      ]
-    },
-    {
       name: 'tags',
       title: 'tags',
       type: 'array',

@@ -7,8 +7,13 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 import Item from './Item'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import {resolveValueWithLegacyOptionsSupport} from './resolveValueWithLegacyOptionsSupport'
+import {isLegacyOptionsItem} from './legacyOptionsSupport'
 
 function isEqual(item, otherItem) {
+  if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
+    return item.value === otherItem.value
+  }
   if (item === otherItem) {
     return true
   }
@@ -61,15 +66,16 @@ export default class OptionsArray extends React.PureComponent {
       .filter(item => (
         isEqual(optionValue, item)
           ? isChecked
-          : inArray(value, item)
+          : inArray(value, resolveValueWithLegacyOptionsSupport(item))
       ))
+      .map(resolveValueWithLegacyOptionsSupport)
 
     this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
   }
 
   getMemberTypeOfItem(option) {
     const {type} = this.props
-    return type.of.find(memberType => memberType.name === resolveTypeName(option))
+    return type.of.find(memberType => memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option)))
   }
 
   render() {
@@ -83,7 +89,7 @@ export default class OptionsArray extends React.PureComponent {
         {options.map(option => {
           const optionType = this.getMemberTypeOfItem(option)
           if (!optionType) {
-            const actualType = resolveTypeName(option)
+            const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
             const validTypes = type.of.map(ofType => ofType.name)
             return (
               <div key={option._key}>
@@ -93,7 +99,7 @@ export default class OptionsArray extends React.PureComponent {
               </div>
             )
           }
-          const checked = inArray(value, option)
+          const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
           return (
             <div
               key={option._key}
