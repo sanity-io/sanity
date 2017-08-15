@@ -7,6 +7,18 @@ import {IntentLink} from 'part:@sanity/base/router'
 import {union, flatten} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import enhanceClickOutside from 'react-click-outside'
+
+function isParentOf(possibleParent, possibleChild) {
+  let current = possibleChild
+  while (current) {
+    if (current === possibleParent) {
+      return true
+    }
+    current = current.parentNode
+  }
+  return false
+}
 
 import styles from './styles/Search.css'
 
@@ -63,17 +75,24 @@ function search(query) {
 }
 
 
-export default class Search extends React.Component {
+export default enhanceClickOutside(class Search extends React.Component {
   input$ = new Multicast()
   componentWillUnmount$ = new Multicast()
 
   state = {
     isOpen: false,
     hits: [],
-    activeIndex: -1
+    activeIndex: -1,
+    inputValue: ''
   }
 
   componentDidMount() {
+    this.input$.asObservable()
+      .map(event => event.target.value)
+      .do(inputValue => this.setState({inputValue}))
+      .takeUntil(this.componentWillUnmount$.asObservable())
+      .subscribe()
+
     this.input$.asObservable()
       .map(event => event.target.value)
       .debounceTime(100)
@@ -114,7 +133,7 @@ export default class Search extends React.Component {
       this.inputElement.focus()
     }
     if (event.key === 'Enter') {
-      this.listContainer.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
+      this.listElement.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
     }
     const {hits, activeIndex} = this.state
     const lastIndex = hits.length - 1
@@ -127,20 +146,58 @@ export default class Search extends React.Component {
     }
   }
 
-  handleBlur = el => {
-    setTimeout(() => this.setState({isOpen: false}), 10)
+  close() {
+    this.setOpen(false)
+  }
+
+  open() {
+    this.setOpen(true)
+  }
+
+  setOpen(isOpen) {
+    this.setState({isOpen})
+  }
+
+  handleClickOutside = el => {
+    this.close()
   }
 
   handleFocus = el => {
-    this.setState({isOpen: true})
+    this.open()
+  }
+
+  handleBlur = el => {
+    if (!isParentOf(this.rootElement, el.relatedTarget)) {
+      this.close()
+    }
   }
 
   setInput = el => {
     this.inputElement = el
   }
 
-  setListContainer = el => {
-    this.listContainer = el
+  setListElement = el => {
+    this.listElement = el
+  }
+
+  setRootElement = el => {
+    this.rootElement = el
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.isOpen && this.state.isOpen) {
+      this.inputElement.select()
+    }
+  }
+
+  handleHitMouseDown = ev => {
+    this.setState({
+      activeIndex: Number(ev.currentTarget.getAttribute('data-hit-index'))
+    })
+  }
+
+  handleHitMouseUp = () => {
+    this.inputElement.focus()
   }
 
   renderItem = (item, index) => {
@@ -152,6 +209,9 @@ export default class Search extends React.Component {
         params={{id: item._id, type: type.name}}
         className={activeIndex === index ? styles.activeLink : styles.link}
         data-hit-index={index}
+        onMouseDown={this.handleHitMouseDown}
+        onMouseUp={this.handleHitMouseUp}
+        tabIndex={-1}
       >
         <Preview
           value={item}
@@ -163,9 +223,9 @@ export default class Search extends React.Component {
   }
 
   render() {
-    const {isSearching, hits, isOpen} = this.state
+    const {isSearching, hits, isOpen, inputValue} = this.state
     return (
-      <div className={styles.root}>
+      <div className={styles.root} ref={this.setRootElement}>
         <div className={styles.inner}>
           <label className={styles.label}>
             <i className={styles.icon} aria-hidden>
@@ -175,6 +235,7 @@ export default class Search extends React.Component {
           <input
             className={styles.input}
             type="search"
+            value={isOpen ? inputValue : ''}
             onInput={this.handleInputChange}
             onBlur={this.handleBlur}
             onFocus={this.handleFocus}
@@ -193,7 +254,7 @@ export default class Search extends React.Component {
               className={styles.hits}
               onKeyDown={this.handleKeyDown}
               onKeyPress={this.handleKeyPress}
-              ref={this.setListContainer}
+              ref={this.setListElement}
             >
               {hits.map((hit, index) => (
                <li key={hit._id} className={styles.hit}>
@@ -206,4 +267,4 @@ export default class Search extends React.Component {
       </div>
     )
   }
-}
+})
