@@ -1,0 +1,128 @@
+/**
+ * react-json-inspector unfortunately doesn't let us specify class names,
+ * so there is no way to use CSS modules without forking the entire project.
+ * as for now, we'll have to make du ewith global selectors, prefixing the
+ * selectors in order to *hopefully* avoid collisions
+ */
+:global .sanity-vision .json-inspector,
+:global .sanity-vision .json-inspector__selection {
+  font: 14px/1.4 Consolas, monospace;
+}
+
+:global .sanity-vision .json-inspector__leaf {
+  padding-left: 10px;
+}
+
+/* Highlight each document when hovering */
+:global .sanity-vision .json-inspector__leaf_root > .json-inspector__leaf:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:global .sanity-vision .json-inspector__leaf_root > .json-inspector__leaf:nth-child(even) {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+/* Add a tiny bit of margin between each document */
+:global .sanity-vision .json-inspector__leaf_root > .json-inspector__leaf {
+  margin-bottom: 1em;
+}
+
+:global .sanity-vision .json-inspector__line {
+  display: block;
+  position: relative;
+
+  cursor: default;
+}
+
+:global .sanity-vision .json-inspector__line:after {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: -200px;
+  right: -50px;
+  bottom: 0;
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+:global .sanity-vision .json-inspector__line:hover:after {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+:global .sanity-vision .json-inspector__leaf_composite > .json-inspector__line {
+  cursor: pointer;
+}
+
+:global .sanity-vision .json-inspector__leaf_composite > .json-inspector__line:before {
+  content: '▶ ';
+  margin-left: -16px;
+}
+
+:global .sanity-vision .json-inspector__leaf_composite .json-inspector__leaf_expanded > .json-inspector__line:before {
+  content: '▼ ';
+}
+
+:global .sanity-vision .json-inspector__radio,
+:global .sanity-vision .json-inspector__flatpath {
+  display: none;
+}
+
+:global .sanity-vision .json-inspector__value {
+  margin-left: 5px;
+}
+
+:global .sanity-vision .json-inspector__search {
+  min-width: 300px;
+  margin: 0 10px 10px 0;
+  padding: 2px;
+}
+
+:global .sanity-vision .json-inspector__key {
+  color: #881391;
+}
+
+:global .sanity-vision .json-inspector__value_helper,
+:global .sanity-vision .json-inspector__value_null,
+:global .sanity-vision .json-inspector__not-found {
+  color: #808080;
+}
+
+:global .sanity-vision .json-inspector__value_string {
+  color: #C41A16;
+}
+
+:global .sanity-vision .json-inspector__value_boolean {
+  color: #75b5aa;
+}
+
+:global .sanity-vision .json-inspector__value_number {
+  color: #1C00CF;
+}
+
+:global .sanity-vision .json-inspector__hl {
+  background: #ff0;
+  box-shadow: 0 -1px 0 2px #ff0;
+  border-radius: 2px;
+}
+
+:global .sanity-vision .json-inspector__show-original {
+  display: inline-block;
+  padding: 0 6px;
+
+  color: #666;
+  cursor: pointer;
+}
+
+:global .sanity-vision .json-inspector__show-original:hover {
+  color: #111;
+}
+
+:global .sanity-vision .json-inspector__show-original:before {
+  content: '⥂';
+}
+
+:global .sanity-vision .json-inspector__show-original:hover:after {
+  content: ' expand'
+}
