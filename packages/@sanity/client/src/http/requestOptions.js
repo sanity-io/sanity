@@ -14,7 +14,7 @@ module.exports = config => {
   return {
     headers: headers,
     timeout: ('timeout' in config) ? config.timeout : 30000,
-    withCredentials: config.withCredentials !== false,
-    json: true
+    json: true,
+    withCredentials: Boolean(config.token || config.withCredentials)
   }
 }
