@@ -1,4 +1,3 @@
 lib
 coverage
-demo/js/*.min.js
 **/node_modules

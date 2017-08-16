@@ -2,21 +2,11 @@
   "name": "sanity-plugin-vision",
   "version": "0.108.2",
   "description": "React-based data management tool for Sanity projects",
-  "main": "lib/InsanityVision.js",
+  "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "npm run build:umd && npm run build:prod && npm run build:demo:prod",
-    "build:demo": "webpack --config webpack.config.demo.js",
-    "build:demo:watch": "npm run build:demo -- --watch",
-    "build:demo:prod": "NODE_ENV=production webpack -p --config webpack.config.demo.js",
-    "build:prod": "NODE_ENV=production webpack -p src/Lowlight.js umd/Lowlight.min.js",
-    "compile": "babel src --copy-files --out-dir lib",
-    "compile:watch": "npm run compile -- --watch",
-    "prepublish": "in-publish && npm run compile && sanity-check || not-in-publish",
-    "postpublish": "rimraf lib",
-    "start": "react-scripts start",
-    "test": "eslint ."
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -26,7 +16,6 @@
   ],
   "dependencies": {
     "classnames": "^2.2.5",
-    "in-publish": "^2.0.0",
     "json-lexer": "^1.1.1",
     "moment": "^2.17.1",
     "query-string": "^4.3.2",
@@ -34,30 +23,23 @@
     "react-icon-base": "^2.0.4",
     "react-json-inspector": "^7.0.0",
     "react-spinner": "^0.2.6",
-    "react-split-pane": "^0.1.63",
-    "react-textarea-autosize": "^4.0.5"
+    "react-split-pane": "^0.1.63"
   },
   "devDependencies": {
     "@sanity/base": "^0.108.0",
     "@sanity/default-layout": "^0.108.0",
     "@sanity/components": "^0.108.2",
-    "@sanity/check": "^0.103.6",
-    "@sanity/client": "^0.103.6",
-    "babel-cli": "^6.23.0",
+    "@sanity/check": "^0.108.0",
+    "@sanity/client": "^0.108.0",
     "babel-eslint": "^7.1.0",
-    "babel-loader": "^6.3.2",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.23.0",
-    "eslint": "^3.16.1",
     "eslint-config-sanity": "^2.0.2",
     "eslint-plugin-react": "^6.10.0",
     "prop-types": "^15.5.8",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-scripts": "^0.9.0",
-    "rimraf": "^2.6.1",
-    "webpack": "^1.13.3"
+    "react-dom": "^15.4.2"
   },
   "repository": {
     "type": "git",

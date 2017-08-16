@@ -7,8 +7,5 @@
   "extends": [
     "sanity",
     "sanity/react"
-  ],
-  "rules": {
-    "react/jsx-closing-bracket-location": 0
-  }
+  ]
 }
