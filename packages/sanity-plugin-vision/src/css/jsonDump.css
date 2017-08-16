@@ -1,0 +1,29 @@
+.punctuator {
+  color: gray;
+}
+
+.number {
+  color: #0086b3;
+}
+
+.string {
+  color: #a54c9f;
+}
+
+.key {
+  color: #183691;
+}
+
+.block {
+  padding: 1rem;
+  margin: 0;
+  @nest &:nth-child(odd) {
+    border-top: 1px solid #eee;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.block:last-child {
+  border-bottom: 0;
+}
