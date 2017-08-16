@@ -10,29 +10,40 @@ const through = require('through2')
 const chalk = require('chalk')
 const childProcess = require('child_process')
 
-const scripts = './packages/@sanity/*/src/**/*.js'
-const assets = './packages/@sanity/*/src/**/*'
+const scripts = ['./packages/@sanity/*/src/**/*.js', './packages/sanity-plugin-*/src/**/*.js']
+const assets = ['./packages/@sanity/*/src/**/*', './packages/sanity-plugin-*/src/**/*']
+const srcOpts = {base: 'packages'}
 
 let srcEx
+let srcRootEx
 let libFragment
 
 if (path.win32 === path) {
   srcEx = /(@sanity\\[^\\]+)\\src\\/
+  srcRootEx = /(sanity-plugin-[^\\]+)\\src\\/
   libFragment = '$1\\lib\\'
 } else {
   srcEx = new RegExp('(@sanity/[^/]+)/src/')
+  srcRootEx = /(sanity-plugin-[^/]+)\/src\//
   libFragment = '$1/lib/'
 }
 
-const mapToDest = orgPath => orgPath.replace(srcEx, libFragment)
-const dest = 'packages/@sanity'
+const mapToDest = orgPath => {
+  const outPath = orgPath
+    .replace(srcEx, libFragment)
+    .replace(srcRootEx, libFragment)
+
+  return outPath
+}
+
+const dest = 'packages'
 
 gulp.task('default', ['build'])
 
 gulp.task('build', () => {
   const assetFilter = filter(['**/*.js'], {restore: true})
 
-  return gulp.src(assets)
+  return gulp.src(assets, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(newer({map: mapToDest}))
     .pipe(assetFilter)
@@ -51,11 +62,11 @@ gulp.task('build', () => {
 })
 
 gulp.task('watch-js', () => {
-  return gulp.src(scripts)
+  return gulp.src(scripts, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(through.obj((file, enc, callback) => {
       file._path = file.path
-      file.path = file.path.replace(srcEx, libFragment)
+      file.path = mapToDest(file.path)
       callback(null, file)
     }))
     .pipe(newer(dest))
@@ -68,12 +79,12 @@ gulp.task('watch-js', () => {
 })
 
 gulp.task('watch-assets', () => {
-  return gulp.src(assets)
+  return gulp.src(assets, srcOpts)
     .pipe(filter(['**/*.*', '!**/*.js']))
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(through.obj((file, enc, callback) => {
       file._path = file.path
-      file.path = file.path.replace(srcEx, libFragment)
+      file.path = mapToDest(file.path)
       callback(null, file)
     }))
     .pipe(newer(dest))
