@@ -5,21 +5,12 @@ import CodeMirror from 'codemirror'
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
 
-const ENTER_KEY = 13
-
 class QueryEditor extends React.PureComponent {
   constructor(props) {
     super(props)
 
     this.handleChange = this.handleChange.bind(this)
-    this.handleKeyUp = this.handleKeyUp.bind(this)
     this.getHint = this.getHint.bind(this)
-  }
-
-  handleKeyUp(evt) {
-    if (evt.ctrlKey && evt.which === ENTER_KEY) {
-      this.props.onExecute()
-    }
   }
 
   getHint(cm, option) {
@@ -60,7 +51,10 @@ class QueryEditor extends React.PureComponent {
       tabSize: 2,
       mode: {name: 'javascript', json: true},
       hintOptions: {hint: this.getHint},
-      extraKeys: {'Ctrl-Space': 'autocomplete'},
+      extraKeys: {
+        'Ctrl-Space': 'autocomplete',
+        'Ctrl-Enter': this.props.onExecute
+      },
     }
     return (
       <ReactCodeMirror
