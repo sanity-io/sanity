@@ -17,22 +17,25 @@ module.exports = function listen(query, params, opts = {}) {
   const options = defaults(opts, defaultOptions)
   const listenOpts = pick(options, possibleOptions)
   const qs = encodeQueryString({query, params, options: listenOpts})
-  const {url, token} = this.clientConfig
-
-  const authHeaders = {}
-  if (token) {
-    authHeaders.Authorization = `Bearer ${token}`
-  }
+  const {url, token, withCredentials} = this.clientConfig
 
   const uri = `${url}${this.getDataUrl('listen', qs)}`
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
 
+  const esOptions = {}
+  if (token || withCredentials) {
+    esOptions.withCredentials = true
+  }
+
+  if (token) {
+    esOptions.headers = {
+      Authorization: `Bearer ${token}`
+    }
+  }
+
   return new Observable(observer => {
-    const es = new EventSource(uri, assign(
-      {withCredentials: true},
-      token ? {headers: authHeaders} : {}
-    ))
+    const es = new EventSource(uri, esOptions)
 
     es.addEventListener('error', onError, false)
     es.addEventListener('channelError', onChannelError, false)
