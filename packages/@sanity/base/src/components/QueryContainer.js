@@ -155,7 +155,7 @@ export default class QueryContainer extends React.Component {
       return true
     }
 
-    return !keysEqual(nextProps, this.props, ['children', 'mapFn', 'query', 'params'])
+    return !keysEqual(nextProps, this.props, ['mapFn', 'query', 'params'])
   }
 
   renderDeprecated() {
