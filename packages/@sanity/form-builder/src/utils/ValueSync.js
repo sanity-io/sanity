@@ -4,7 +4,7 @@ import React from 'react'
 import type {Patch} from '../utils/patches'
 import {debounce} from 'lodash'
 import whyNotEqual from 'is-equal/why'
-import SubscribePatchHOC from './SubscribePatchHOC'
+import withPatchSubscriber from './withPatchSubscriber'
 
 declare var __DEV__: boolean
 
@@ -22,7 +22,7 @@ type Props = {
 }
 
 
-export default SubscribePatchHOC(class SubscribePatch extends React.Component {
+export default withPatchSubscriber(class ValueSync extends React.Component {
   props: Props
 
   static contextTypes = {

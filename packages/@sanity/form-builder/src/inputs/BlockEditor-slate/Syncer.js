@@ -6,7 +6,7 @@ import sanityToSlateRaw from './conversion/sanityToSlateRaw'
 import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import SubscribePatchHOC from '../../utils/SubscribePatchHOC'
+import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/Syncer.css'
 
@@ -21,7 +21,7 @@ function isDocumentEqual(slateState, otherSlateState) {
   return slateState.get('document') === otherSlateState.get('document')
 }
 
-export default SubscribePatchHOC(class Syncer extends React.PureComponent {
+export default withPatchSubscriber(class Syncer extends React.PureComponent {
   static propTypes = {
     value: PropTypes.array,
     type: PropTypes.object.isRequired,

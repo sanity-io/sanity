@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 // @flow
 import React from 'react'
+import PropTypes from 'prop-types'
 import type {Patch} from '../utils/patches'
 import shallowEquals from 'shallow-equals'
 import {get, find} from 'lodash'
@@ -61,9 +61,9 @@ type SubscriberArg = {
 
 type Subscriber = (SubscriberArg) => void
 
-export default function SubscribePatchHOC(ComposedComponent: any) {
+export default function withPatchSubscriber(ComposedComponent: any) {
   return class SubscribePatch extends React.Component {
-    static displayName = `SubscribePatchHOC(${ComposedComponent.displayName || ComposedComponent.name})`
+    static displayName = `withPatches(${ComposedComponent.displayName || ComposedComponent.name})`
 
     static contextTypes = {
       getValuePath: PropTypes.func,
