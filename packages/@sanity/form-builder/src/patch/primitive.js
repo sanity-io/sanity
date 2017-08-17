@@ -31,7 +31,7 @@ export default function apply(value, patch) {
   }
 
   if (patch.path.length > 0) {
-    throw new Error(`Default container cannot apply deep operations. Received patch with type "${patch.type}" and path "${patch.path.join('.')}"`)
+    throw new Error(`Cannot apply deep operations on primitive values. Received patch with type "${patch.type}" and path "${patch.path.join('.')} that targeted the value "${JSON.stringify(value)}"`)
   }
 
   return OPERATIONS[patch.type](value, patch.value)
