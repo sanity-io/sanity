@@ -15,10 +15,7 @@ import ItemForm from './ItemForm'
 import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
 
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
-import DragBarsIcon from 'part:@sanity/base/bars-icon'
-
-const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
+import {DragHandle} from 'part:@sanity/components/lists/sortable'
 
 type Props = {
   type: Type,
