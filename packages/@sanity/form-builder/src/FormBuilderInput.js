@@ -35,7 +35,6 @@ export class FormBuilderInput extends React.Component {
       return <div>No input resolved for type {JSON.stringify(type.name)}</div>
     }
 
-    const docProps = InputComponent.passDocument ? {document: this.context.formBuilder.getDocument()} : {}
     const rootProps = isRoot ? {isRoot} : {}
 
     return (
@@ -46,7 +45,6 @@ export class FormBuilderInput extends React.Component {
         onChange={type.readOnly ? NOOP : onChange}
         validation={validation}
         level={level}
-        {...docProps}
         {...rootProps}
       />
     )

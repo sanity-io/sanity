@@ -48,8 +48,6 @@ const vanillaState = {
 }
 
 export default class SlugInput extends React.Component {
-  static passDocument = true;
-
   static propTypes = {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
