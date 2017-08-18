@@ -11,6 +11,14 @@
   transition: all 0.3s linear;
 }
 
+.wrapper {
+  padding: 1rem;
+  background-color: var(--component-bg);
+  border: 1px solid var(--gray-light);
+  overflow: hidden;
+  max-width: 100%;
+}
+
 .progressBarIdle {
   height: 0;
   transition-delay: 0;

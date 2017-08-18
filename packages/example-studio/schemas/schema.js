@@ -14,6 +14,7 @@ import referenceTest from './referenceTest'
 import imagesTest from './imagesTest'
 import strings from './strings'
 import arrays from './arrays'
+import filesTest from './filesTest'
 
 export default createSchema({
   name: 'example-blog',
@@ -27,6 +28,7 @@ export default createSchema({
     typeWithBlocks,
     myImage,
     imagesTest,
+    filesTest,
     videoEmbed,
     localeString,
     localeSlug,
