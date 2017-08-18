@@ -157,7 +157,7 @@ export default class FileInput extends React.PureComponent {
     this.setState({isAdvancedEditOpen: false})
   }
 
-  handleFieldChange = (event : PatchEvent, field) => {
+  handleFieldChange = (event: PatchEvent, field) => {
     const {onChange, type} = this.props
 
     onChange(event
@@ -186,7 +186,11 @@ export default class FileInput extends React.PureComponent {
   }
 
   renderFields(fields) {
-    return fields.map(field => this.renderField(field))
+    return (
+      <div className={styles.fields}>
+        {fields.map(field => this.renderField(field))}
+      </div>
+    )
   }
 
   renderField(field) {
@@ -239,50 +243,57 @@ export default class FileInput extends React.PureComponent {
 
     return (
       <FormField label={type.title} labelFor={this._inputId} level={level}>
-        <div className={progressClasses}>
-          {
-            ((progress && uploadingFile) || (status === 'complete')) && (
-              <ProgressBar
-                percent={status === 'complete' ? 100 : progress.percent}
-                text={status === 'complete' ? 'Complete' : `Uploading "${uploadingFile.name}"`}
-                showPercent
-                animation
-                completed={status === 'complete'}
-              />
-            )
-          }
-        </div>
-        <FileInputButton
-          onSelect={this.handleSelect}
-        >
-          Select file…
-        </FileInputButton>
-        {materializedFile && (
-          <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
-        )}
-        {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
-        {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-        {
-          value && value.asset && (
-            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
-          )
-        }
-        {fieldGroups.other.length > 0 && (
-          <Button icon={EditIcon} title="Edit file" onClick={this.handleStartAdvancedEdit}>
-            Edit
-          </Button>
-        )}
+        <div className={styles.wrapper}>
+          <div className={progressClasses}>
+            {
+              ((progress && uploadingFile) || (status === 'complete')) && (
+                <ProgressBar
+                  percent={status === 'complete' ? 100 : progress.percent}
+                  text={status === 'complete' ? 'Complete' : `Uploading "${uploadingFile.name}"`}
+                  showPercent
+                  animation
+                  completed={status === 'complete'}
+                />
+              )
+            }
+          </div>
 
-        {uploadingFile && (
-          <Button
-            kind="simple"
-            color="danger"
-            onClick={this.handleCancel}
+          {value && fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
+
+          {materializedFile && (
+            <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
+          )}
+
+          <FileInputButton
+            onSelect={this.handleSelect}
           >
-            Cancel
-          </Button>
-        )
-        }
+            {materializedFile ? 'Replace file…' : 'Select file…'}
+          </FileInputButton>
+
+          {value && fieldGroups.other.length > 0 && (
+            <Button
+              icon={EditIcon}
+              title="Edit details"
+              onClick={this.handleStartAdvancedEdit}
+            >
+              Edit…
+            </Button>
+          )}
+
+          {value && value.asset && (
+            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
+          )}
+          {uploadingFile && (
+            <Button
+              kind="simple"
+              color="danger"
+              onClick={this.handleCancel}
+            >
+              Cancel
+            </Button>
+          )}
+          {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
+        </div>
       </FormField>
     )
   }
