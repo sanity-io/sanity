@@ -15,6 +15,7 @@ const {withLatestFrom} = require('rxjs/operator/withLatestFrom')
 const {merge} = require('rxjs/operator/merge')
 const {share} = require('rxjs/operator/share')
 const {mergeMap} = require('rxjs/operator/mergeMap')
+const {publishReplay} = require('rxjs/operator/publishReplay')
 const {_catch} = require('rxjs/operator/catch')
 const {switchMap} = require('rxjs/operator/switchMap')
 const {_do} = require('rxjs/operator/do')
@@ -55,6 +56,7 @@ Object.assign(SanityObservable.prototype, {
   switchMap: switchMap,
   concatMap: concatMap,
   share,
+  publishReplay,
   debounceTime,
   distinctUntilChanged,
   withLatestFrom,
