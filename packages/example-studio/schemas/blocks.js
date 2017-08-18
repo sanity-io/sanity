@@ -1,4 +1,3 @@
-
 export const blocksTest = {
   name: 'blocksTest',
   title: 'Blocks test',
@@ -15,9 +14,32 @@ export const blocksTest = {
       type: 'array',
       of: [
         {type: 'image', title: 'Image'},
-        {type: 'reference', to: {type: 'author'}, title: 'Reference to author'},
+        {
+          type: 'reference', name: 'authorReference',
+          to: {type: 'author'},
+          title: 'Reference to author'
+        },
+        {
+          type: 'reference',
+          name: 'blogpostReference',
+          to: {type: 'blogpost'},
+          title: 'Reference to blogpost'
+        },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
+        {
+          type: 'object', title: 'Test object', name: 'testObject',
+          fields: [
+            {name: 'field1', type: 'string'}
+          ]
+        },
+        {
+          type: 'object', title: 'Other test object', name: 'otherTestObject',
+          fields: [
+            {name: 'field1', type: 'string'},
+            {name: 'field2', type: 'string'}
+          ]
+        },
         {type: 'block'},
         {type: 'videoEmbed', title: 'Video embed'}
       ]
@@ -43,27 +65,27 @@ export const blocksTest = {
       title: 'Customized with block types',
       type: 'array',
       of: [
-          {type: 'image', title: 'Image'},
-          {type: 'author', title: 'Author'},
+        {type: 'image', title: 'Image'},
+        {type: 'author', title: 'Author'},
         {
           type: 'block',
           styles: [
-              {title: 'Normal', value: 'normal'},
-              {title: 'H1', value: 'h1'},
-              {title: 'H2', value: 'h2'},
-              {title: 'Quote', value: 'blockquote'}
+            {title: 'Normal', value: 'normal'},
+            {title: 'H1', value: 'h1'},
+            {title: 'H2', value: 'h2'},
+            {title: 'Quote', value: 'blockquote'}
           ],
           lists: [
-              {title: 'Bullet', value: 'bullet'},
-              {title: 'Numbered', value: 'number'}
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'}
           ],
           span: {
             marks: [
-                {title: 'Strong', value: 'strong'},
-                {title: 'Emphasis', value: 'em'}
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'}
             ],
             fields: [
-                {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
             ]
           }
         }
@@ -74,33 +96,33 @@ export const blocksTest = {
       title: 'Blocks deep down',
       type: 'object',
       fields: [
-          {name: 'something', title: 'Something', type: 'string'},
+        {name: 'something', title: 'Something', type: 'string'},
         {
           name: 'blocks',
           type: 'array',
           title: 'Blocks',
           of: [
-              {type: 'image', title: 'Image'},
-              {type: 'author', title: 'Author'},
+            {type: 'image', title: 'Image'},
+            {type: 'author', title: 'Author'},
             {
               type: 'block',
               styles: [
-                  {title: 'Normal', value: 'normal'},
-                  {title: 'H1', value: 'h1'},
-                  {title: 'H2', value: 'h2'},
-                  {title: 'Quote', value: 'blockquote'}
+                {title: 'Normal', value: 'normal'},
+                {title: 'H1', value: 'h1'},
+                {title: 'H2', value: 'h2'},
+                {title: 'Quote', value: 'blockquote'}
               ],
               lists: [
-                  {title: 'Bullet', value: 'bullet'},
-                  {title: 'Numbered', value: 'number'}
+                {title: 'Bullet', value: 'bullet'},
+                {title: 'Numbered', value: 'number'}
               ],
               span: {
                 marks: [
-                    {title: 'Strong', value: 'strong'},
-                    {title: 'Emphasis', value: 'em'}
+                  {title: 'Strong', value: 'strong'},
+                  {title: 'Emphasis', value: 'em'}
                 ],
                 fields: [
-                    {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
                 ]
               }
             }
