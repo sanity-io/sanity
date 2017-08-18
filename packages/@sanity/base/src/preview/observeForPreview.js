@@ -6,9 +6,13 @@ import Observable from '@sanity/observable'
 
 const observe = createPreviewObserver(observeWithPaths)
 
+function is(typeName, type) {
+  return type.name === typeName || (type.type && is(typeName, type.type))
+}
+
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
 export default function observeForPreview(value, type, fields) {
-  if (type.name === 'reference') {
+  if (is('reference', type)) {
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
     if (!value._ref) {

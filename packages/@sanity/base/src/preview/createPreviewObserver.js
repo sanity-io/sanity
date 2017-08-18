@@ -9,9 +9,7 @@ function resolveMissingHeads(value, paths) {
 }
 
 function isReference(value) {
-  return value._type === 'reference'
-    // should not happen as all references should have _type === 'reference'
-    || (!('_type' in value) && ('_ref' in value))
+  return '_ref' in value
 }
 
 function isDocument(value) {
