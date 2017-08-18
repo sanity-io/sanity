@@ -1,7 +1,9 @@
 import path from 'path'
 import fsp from 'fs-promise'
+import split from 'split2'
 import prettyMs from 'pretty-ms'
 import streamDataset from '../../actions/dataset/streamDataset'
+import skipSystemDocuments from '../../util/skipSystemDocuments'
 
 export default {
   name: 'export',
@@ -44,6 +46,8 @@ export default {
     const startTime = Date.now()
 
     streamDataset(client, dataset)
+      .pipe(split())
+      .pipe(skipSystemDocuments)
       .pipe(outputPath ? fsp.createWriteStream(outputPath) : process.stdout)
       .on('error', err => output.error(err))
       .on('close', () => {
