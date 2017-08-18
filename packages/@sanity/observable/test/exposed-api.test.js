@@ -50,6 +50,7 @@ function run(t) {
       'switchMap',
       'concatMap',
       'share',
+      'publishReplay',
       'debounceTime',
       'distinctUntilChanged',
       'withLatestFrom',
