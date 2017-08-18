@@ -7,9 +7,13 @@ import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import PropTypes from 'prop-types'
 import React from 'react'
+import {groupBy} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/FileInput.css'
 import subscriptionManager from '../../utils/subscriptionManager'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import Field from '../Object/Field'
+import EditIcon from 'part:@sanity/base/edit-icon'
 
 function getInitialState() {
   return {
@@ -17,7 +21,8 @@ function getInitialState() {
     error: null,
     progress: null,
     uploadingFile: null,
-    materializedFile: null
+    materializedFile: null,
+    isAdvancedEditOpen: false
   }
 }
 
@@ -145,6 +150,23 @@ export default class FileInput extends React.PureComponent {
       uploadingFile: null
     })
   }
+  handleStartAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: true})
+  }
+  handleStopAdvancedEdit = event => {
+    this.setState({isAdvancedEditOpen: false})
+  }
+
+  handleFieldChange = (event : PatchEvent, field) => {
+    const {onChange, type} = this.props
+
+    onChange(event
+      .prefixAll(field.name)
+      .prepend(setIfMissing({
+        _type: type.name,
+        asset: {_type: 'reference'}
+      })))
+  }
 
   handleRemoveButtonClick = event => {
     this.props.onChange(
@@ -152,9 +174,42 @@ export default class FileInput extends React.PureComponent {
     )
   }
 
+  renderAdvancedEdit(fields) {
+    return (
+      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
+        <div>
+          {this.renderFields(fields)}
+        </div>
+        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
+      </Dialog>
+    )
+  }
+
+  renderFields(fields) {
+    return fields.map(field => this.renderField(field))
+  }
+
+  renderField(field) {
+    const {value, validation, level} = this.props
+    const fieldValidation = validation && validation.fields[field.name]
+
+    const fieldValue = value && value[field.name]
+
+    return (
+      <Field
+        key={field.name}
+        field={field}
+        value={fieldValue}
+        onChange={this.handleFieldChange}
+        validation={fieldValidation}
+        level={level + 1}
+      />
+    )
+  }
+
   render() {
     // TODO: Render additional fields
-    const {status, progress, uploadingFile, materializedFile} = this.state
+    const {status, progress, uploadingFile, materializedFile, isAdvancedEditOpen} = this.state
     const {
       type,
       level,
@@ -170,6 +225,17 @@ export default class FileInput extends React.PureComponent {
     } else {
       progressClasses = styles.progressBarIdle
     }
+
+    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
+      if (field.name === 'asset') {
+        return 'asset'
+      }
+      const options = field.type.options || {}
+      if (options.isHighlighted) {
+        return 'highlighted'
+      }
+      return 'other'
+    }))
 
     return (
       <FormField label={type.title} labelFor={this._inputId} level={level}>
@@ -194,11 +260,19 @@ export default class FileInput extends React.PureComponent {
         {materializedFile && (
           <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
         )}
+        {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
+        {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
         {
           value && value.asset && (
             <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )
         }
+        {fieldGroups.other.length > 0 && (
+          <Button icon={EditIcon} title="Edit file" onClick={this.handleStartAdvancedEdit}>
+            Edit
+          </Button>
+        )}
+
         {uploadingFile && (
           <Button
             kind="simple"
