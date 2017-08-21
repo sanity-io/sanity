@@ -30,6 +30,7 @@ export default class RouterProvider extends React.Component {
       resolveIntentLink: this.resolveIntentLink,
       navigateUrl: this.navigateUrl,
       navigate: this.navigateState,
+      navigateIntent: this.navigateIntent,
       getState: this.getState,
       channel: pubsub()
     }
@@ -42,6 +43,10 @@ export default class RouterProvider extends React.Component {
 
   navigateState = (nextState : Object, options : NavigateOptions = {}) : void => {
     this.navigateUrl(this.resolvePathFromState(nextState), options)
+  }
+
+  navigateIntent = (intentName : string, params : Object, options : NavigateOptions = {}) : void => {
+    this.navigateUrl(this.resolveIntentLink(intentName, params), options)
   }
 
   getState = () => this._state
