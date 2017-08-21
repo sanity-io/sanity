@@ -40,7 +40,8 @@ export default function withRouter(ComposedComponent: ReactClass<{}>) : ReactCla
     render() {
       const router = {
         state: this.state.routerState,
-        navigate: this.context.__internalRouter.navigate
+        navigate: this.context.__internalRouter.navigate,
+        navigateIntent: this.context.__internalRouter.navigateIntent
       }
       return <ComposedComponent {...this.props} router={router} />
     }
