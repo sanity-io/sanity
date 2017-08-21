@@ -10,6 +10,7 @@ export default class Product extends React.Component {
   static propTypes = {
     id: PropTypes.string
   }
+
   render() {
     const {id} = this.props
     const nextProductId = Math.random().toString(32).substring(2)
@@ -24,6 +25,15 @@ export default class Product extends React.Component {
         <IntentLink intent="open" params={{type: 'product', id: 'foo'}}>
           Open Foo
         </IntentLink>
+        <p>
+        <WithRouter>
+          {router => (
+            <button onClick={() => router.navigateIntent('open', {type: 'product', id: 'foobar'})}>
+              Click to programmatically navigate to intent <b>open:</b> product foobar
+            </button>
+          )}
+        </WithRouter>
+        </p>
         <WithRouter>{router => <pre>{JSON.stringify(router.state)}</pre>}</WithRouter>
         <p>
           <StateLink toIndex>Up…</StateLink>
