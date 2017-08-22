@@ -21,7 +21,10 @@ export default function withDocument(ComposedComponent: any) {
       const {formBuilder} = context
       this.state = {document: formBuilder.getDocument()}
       this.unsubscribe = formBuilder.onPatch(({snapshot}) => {
-        this.setState({document: snapshot})
+        // we will also receive "delete"-patches, with {snapshot: null}. Don't pass null documents.
+        if (snapshot) {
+          this.setState({document: snapshot})
+        }
       })
     }
     componentWillUnmount() {
