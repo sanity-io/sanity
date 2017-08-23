@@ -74,7 +74,7 @@ class Fieldset extends React.Component {
           }
           <div className={`${styles.content} ${isOpen ? styles.isOpen : ''}`}>
             <div className={styles.fieldWrapper}>
-              {children}
+              {isOpen && children}
             </div>
           </div>
         </div>
