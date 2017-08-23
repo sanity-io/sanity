@@ -4,7 +4,7 @@ import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Field from './Field'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {unset, setIfMissing} from '../../PatchEvent'
+import PatchEvent, {set, unset, setIfMissing} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
@@ -34,12 +34,27 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   handleFieldChange = (fieldEvent: PatchEvent, field) => {
-    const {onChange, type, isRoot} = this.props
+    const {onChange, type, value, isRoot} = this.props
 
     let event = fieldEvent.prefixAll(field.name)
 
     if (!isRoot) {
       event = event.prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
+      if (value) {
+        const valueTypeName = value && value._type
+        const schemaTypeName = type.name
+
+        if (valueTypeName && schemaTypeName === 'object') {
+          // The value has a _type key, but the type name from schema is 'object',
+          // but _type: 'object' is implicit so we should fix it by removing it
+          event = event.prepend(unset(['_type']))
+        } else if (schemaTypeName !== 'object' && valueTypeName !== schemaTypeName) {
+          // There's a mismatch between schema type and the value _type
+          // fix it by setting _type to type name defined in schema
+          event = event.prepend(set(schemaTypeName, ['_type']))
+        }
+
+      }
     }
     onChange(event)
   }
