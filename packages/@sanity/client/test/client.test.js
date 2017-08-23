@@ -1292,6 +1292,21 @@ test('can use alternative http requester', t => {
     })
 })
 
+test('ClientError includes message in stack', t => {
+  const body = {error: {description: 'Invalid query'}}
+  const error = new SanityClient.ClientError({statusCode: 400, headers: {}, body})
+  t.ok(error.stack.includes(body.error.description))
+  t.end()
+})
+
+test('ServerError includes message in stack', t => {
+  const body = {error: 'Gateway Time-Out', message: 'The upstream service did not respond in time'}
+  const error = new SanityClient.ClientError({statusCode: 504, headers: {}, body})
+  t.ok(error.stack.includes(body.error))
+  t.ok(error.stack.includes(body.message))
+  t.end()
+})
+
 test('exposes ClientError', t => {
   t.equal(typeof sanityClient.ClientError, 'function')
   const error = new SanityClient.ClientError({statusCode: 400, headers: {}, body: {}})
