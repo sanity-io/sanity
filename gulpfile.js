@@ -114,6 +114,27 @@ gulp.task('dev', ['watch-js', 'watch-assets'], cb => {
     gulp.start('watch-assets')
   })
 
+  const projectPath = path.join(__dirname, 'packages', 'test-studio')
+  const npmPath = path.join(projectPath, 'node_modules', '.bin')
+  const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
+    cwd: projectPath,
+    env: Object.assign({}, process.env, {
+      PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
+    })
+  })
+
+  proc.stdout.pipe(process.stdout)
+  proc.stderr.pipe(process.stderr)
+})
+gulp.task('example', ['watch-js', 'watch-assets'], cb => {
+  watch(scripts, {debounceDelay: 200}, () => {
+    gulp.start('watch-js')
+  })
+
+  watch(assets, {debounceDelay: 200}, () => {
+    gulp.start('watch-assets')
+  })
+
   const projectPath = path.join(__dirname, 'packages', 'example-studio')
   const npmPath = path.join(projectPath, 'node_modules', '.bin')
   const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {

@@ -5,30 +5,22 @@ export default {
   fields: [
     {
       name: 'title',
+      type: 'string',
       title: 'Title',
-      type: 'string'
+      description: 'This is a basic string field'
     },
     {
       name: 'readonlyField',
-      title: 'A read only string',
       type: 'string',
+      title: 'A read only string',
+      description: 'It may have a value, but it cannot be edited',
       readOnly: true
     },
     {
-      name: 'tags',
-      title: 'tags',
-      type: 'array',
-      options: {
-        layout: 'tags'
-      },
-      of: [
-        {type: 'string'}
-      ]
-    },
-    {
       name: 'select',
-      title: 'Select string',
       type: 'string',
+      title: 'Select string',
+      description: 'Select a single string value from a set of predefined options. It should be possible to unset a selected value.',
       options: {
         list: [
           {
@@ -49,7 +41,7 @@ export default {
     {
       name: 'selectObjectOfString',
       title: 'Select string in object',
-      description: '',
+      description: 'Select a single string value from an array of strings. It should be possible to unset a selected value.',
       type: 'string',
       options: {
         list: ['one', 'two', 'three']
@@ -59,6 +51,7 @@ export default {
       name: 'radioSelect',
       title: 'Select (layout: radio)',
       type: 'string',
+      description: 'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
       options: {
         layout: 'radio',
         list: [

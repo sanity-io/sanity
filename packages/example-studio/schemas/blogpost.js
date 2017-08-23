@@ -1,5 +1,4 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import slugifyWithPrefix from '../src/slugifyWithPrefix'
 
 const pickFirst = (obj, keys) => {
   if (!obj || typeof obj !== 'object') {
@@ -39,28 +38,10 @@ export default {
       type: 'localeString'
     },
     {
-      name: 'readonlyField',
-      title: 'A read only string',
-      type: 'string',
-      readOnly: true
-    },
-    {
-      name: 'lSlug',
+      name: 'localeSlug',
       title: 'Localized slug',
       type: 'localeSlug'
     },
-    // {
-    //   name: 'slug',
-    //   title: 'Slug',
-    //   description: 'The unique identifier for the blogpost in links and urls',
-    //   type: 'slug',
-    //   required: true,
-    //   options: {
-    //     source: document => pickFirst(document.title, LANGUAGE_PRIORITY),
-    //     maxLength: 64,
-    //     slugifyFn: slugifyWithPrefix('my-prefix')
-    //   }
-    // },
     {
       name: 'publishAt',
       title: 'Publish at',
@@ -74,31 +55,6 @@ export default {
         inputUtc: false,
         inputDate: true,
         inputTime: true
-      }
-    },
-    {
-      name: 'file',
-      title: 'Plain file upload',
-      type: 'file'
-    },
-    {
-      name: 'video',
-      title: 'A video embed',
-      type: 'videoEmbed'
-    },
-    {
-      name: 'myCode',
-      title: 'Code editor (default)',
-      description: 'Choose syntax on input.',
-      type: 'code'
-    },
-    {
-      name: 'simpleCode',
-      title: 'Code editor simple (markdown)',
-      description: 'set syntax in schema',
-      type: 'code',
-      options: {
-        language: 'markdown'
       }
     },
     {
@@ -117,29 +73,47 @@ export default {
       ]
     },
     {
-      name: 'rating',
-      title: 'Rating',
-      type: 'number',
-      options: {
-        range: {min: 0, max: 10, step: 0.2}
-      },
+      name: 'lead',
+      title: 'Lead',
+      type: 'text',
       required: true
     },
     {
-      name: 'selectMultipleStrings',
-      title: 'Select multiple strings',
+      name: 'body',
       type: 'array',
-      options: {
-        direction: 'vertical',
-        list: [
-          'red',
-          'green',
-          1, // invalid, not defined in list
-          'blue',
-          'black',
-        ]
-      },
-      of: [{type: 'string'}]
+      title: 'Content',
+      of: [
+        {
+          title: 'Block',
+          type: 'block'
+        },
+        {
+          name: 'video',
+          title: 'A video embed',
+          type: 'videoEmbed'
+        },
+        {
+          type: 'code',
+          title: 'Code example',
+          description: 'Code'
+        },
+        {
+          type: 'protein',
+          title: 'Protein',
+          description: 'Protein'
+        },
+        {
+          title: 'Image',
+          type: 'image',
+          fields: [
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Caption'
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'tags',
@@ -150,187 +124,6 @@ export default {
       },
       of: [
         {type: 'string'}
-      ]
-    },
-    {
-      name: 'arrayOfStringsAndNumbers',
-      title: 'Array of strings and numbers (sortable)',
-      type: 'array',
-      options: {
-        sortable: true
-      },
-      of: [
-        {type: 'string'},
-        {type: 'number'}
-      ]
-    },
-
-    {
-      name: 'arrayOfStringsNonSortable',
-      title: 'Array of strings (not sortable)',
-      type: 'array',
-      options: {
-        sortable: false
-      },
-      of: [
-        {type: 'string'}
-      ]
-    },
-
-    {
-      name: 'priority',
-      title: 'Priority',
-      type: 'number'
-    },
-    {
-      name: 'checked',
-      title: 'Checked',
-      type: 'boolean'
-    },
-    {
-      name: 'someObject',
-      title: 'An object',
-      type: 'object',
-      fields: [
-        {
-          name: 'first',
-          type: 'string',
-          title: 'First field'
-        },
-        {
-          name: 'second',
-          type: 'string',
-          title: 'Second field'
-        }
-      ]
-    },
-    {
-      name: 'body',
-      type: 'array',
-      title: 'Blocks',
-      of: [
-        {
-          title: 'Block',
-          type: 'block'
-        }
-      ]
-    },
-    {
-      name: 'select',
-      title: 'Select string',
-      type: 'string',
-      options: {
-        list: [
-          {
-            title: 'One (1)',
-            value: 'one'
-          },
-          {
-            title: 'Two (2)',
-            value: 'two'
-          },
-          {
-            title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
-    },
-    {
-      name: 'selectObjectOfString',
-      title: 'Select string in object',
-      description: '',
-      type: 'string',
-      options: {
-        list: ['one', 'two', 'three']
-      }
-    },
-    {
-      name: 'radioSelect',
-      title: 'Select (layout: radio)',
-      type: 'string',
-      options: {
-        layout: 'radio',
-        list: [
-          {
-            title: 'One (1)',
-            value: 'one'
-          },
-          {
-            title: 'Two (2)',
-            value: 'two'
-          },
-          {
-            title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
-    },
-    {
-      name: 'lead',
-      title: 'Lead',
-      type: 'text',
-      format: 'html',
-      required: true
-    },
-    {
-      name: 'email',
-      title: 'Email',
-      type: 'email'
-    },
-    {
-      name: 'location',
-      title: 'Location',
-      type: 'geopoint'
-    },
-    {
-      name: 'content',
-      title: 'Content tags',
-      type: 'array',
-      of: [
-        {
-          title: 'Put a string here',
-          description: 'Must be a nice string',
-          type: 'string'
-        }
-      ]
-    },
-    {
-      name: 'arrayOfReadOnly',
-      title: 'ReadOnly test',
-      description: 'Test readOnly on members of arrays',
-      type: 'array',
-      // readOnly: true, // toggle comment to test readOnly array values
-      of: [
-        {
-          title: 'Stuff',
-          type: 'object',
-          name: 'stuff',
-          fields: [
-            {name: 'something', type: 'string'},
-            {name: 'otherThing', type: 'string'}
-          ]
-        },
-        {
-          title: 'Read only stuff',
-          type: 'object',
-          name: 'readOnlyStuff',
-          readOnly: true,
-          fields: [
-            {name: 'something', type: 'string'},
-            {name: 'otherThing', type: 'string'}
-          ]
-        },
-        {
-          title: 'Semi editable stuff',
-          type: 'object',
-          name: 'semiEditableStuff',
-          fields: [
-            {name: 'readOnly', type: 'string', readOnly: true},
-            {name: 'canEdit', type: 'string'}
-          ]
-        },
       ]
     },
     {
@@ -355,51 +148,6 @@ export default {
         }
       }],
       required: true
-    },
-    {
-      name: 'extraAuthors',
-      title: 'Additional authors',
-      description: 'Note: This is an inline array of authors',
-      type: 'array',
-      of: [
-        {
-          title: 'Additional author reference',
-          type: 'author'
-        }
-      ],
-      required: true
-    },
-    {
-      name: 'extraSuperAuthors',
-      title: 'Additional super authors',
-      description: 'Note: This is an inline array of authors',
-      type: 'array',
-      options: {
-        editModal: 'fullscreen'
-      },
-      of: [
-        {
-          title: 'Additional super author reference',
-          type: 'author'
-        }
-      ],
-      required: true
-    },
-    {
-      name: 'superAuthors',
-      title: 'Super authors',
-      type: 'array',
-      options: {
-        editModal: 'fullscreen'
-      },
-      of: [{
-        title: 'Reference to super author',
-        type: 'reference',
-        to: {
-          type: 'author'
-        }
-      }],
-      required: true
-    },
+    }
   ]
 }

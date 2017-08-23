@@ -5,7 +5,7 @@
   },
   "api": {
     "projectId": "q2r21cu7",
-    "dataset": "example"
+    "dataset": "test"
   },
   "plugins": [
     "@sanity/base",
@@ -25,11 +25,7 @@
     },
     {
       "implements": "part:@sanity/base/brand-logo",
-      "path": "components/BrandLogo.js"
-    },
-    {
-      "implements": "part:@sanity/form-builder/input-resolver",
-      "path": "./parts/inputResolver"
+      "path": "src/components/BrandLogo.js"
     }
   ],
   "env": {
