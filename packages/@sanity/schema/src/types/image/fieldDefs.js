@@ -1,7 +1,7 @@
 export const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
-  to: {type: 'imageAsset'}
+  to: [{type: 'imageAsset'}]
 }
 
 export const HOTSPOT_FIELD = {

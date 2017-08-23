@@ -29,11 +29,11 @@ function parsePreview(preview) {
   }
 }
 
-export default function createPreviewGetter(typeDef, parsed) {
+export default function createPreviewGetter(objectTypeDef) {
   return function previewGetter() {
-    warnIfPreviewOnOptions(typeDef)
-    warnIfPreviewHasFields(typeDef)
-    const preview = parsePreview(typeDef.preview || (typeDef.options || {}).preview)
-    return preview || guessPreviewConfig(parsed.fields)
+    warnIfPreviewOnOptions(objectTypeDef)
+    warnIfPreviewHasFields(objectTypeDef)
+    const preview = parsePreview(objectTypeDef.preview || (objectTypeDef.options || {}).preview)
+    return preview || guessPreviewConfig(objectTypeDef)
   }
 }

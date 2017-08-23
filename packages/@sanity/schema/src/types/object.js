@@ -41,7 +41,7 @@ export const ObjectType = {
       return createFieldsets(subTypeDef, parsed.fields)
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
     return subtype(parsed)
 
