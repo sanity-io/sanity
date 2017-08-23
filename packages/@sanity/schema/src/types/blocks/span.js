@@ -44,7 +44,7 @@ export const SpanType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
     return subtype(parsed)
 
