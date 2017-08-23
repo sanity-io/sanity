@@ -3,19 +3,24 @@ import {omitBy, isUndefined} from 'lodash'
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
 
-function isImageField(field) {
-  return field.type.name === 'image'
+function isImageField(fieldDef) {
+  return fieldDef.type === 'image'
 }
 
-function resolveImageAssetPath(fields) {
-  const found = fields.find(field => isImageField(field))
-  return found && `${found.name}.url`
+function isImageAssetField(fieldDef) {
+  return fieldDef.type === 'reference'
+    && fieldDef.to.some(memberTypeDef => memberTypeDef.type === 'imageAsset')
 }
 
-export default function guessPreviewFields(fields) {
+function resolveImageAssetPath(fieldDefs) {
+  const found = fieldDefs.find(field => isImageAssetField(field) || isImageField(field))
+  return found && (isImageField(found) ? `${found.name}.asset.url` : `${found.name}.url`)
+}
 
-  const stringFieldNames = fields
-    .filter(field => field.type.name === 'string')
+export default function guessPreviewFields(objectTypeDef) {
+
+  const stringFieldNames = objectTypeDef.fields
+    .filter(field => field.type === 'string')
     .map(field => field.name)
 
   // Check if we have fields with names that is listed in candidate fields
@@ -32,11 +37,11 @@ export default function guessPreviewFields(fields) {
     descField = stringFieldNames[1]
   }
 
-  const imageAssetPath = resolveImageAssetPath(fields)
+  const imageAssetPath = resolveImageAssetPath(objectTypeDef.fields)
 
   if (!titleField && !imageAssetPath) {
     // last resort, pick all fields and concat them
-    const fieldNames = fields.map(field => field.name)
+    const fieldNames = objectTypeDef.fields.map(field => field.name)
     const fieldMapping = fieldNames.reduce((acc, fieldName) => {
       acc[fieldName] = fieldName
       return acc
