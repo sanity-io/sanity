@@ -18,15 +18,15 @@ test('overrides *must* be arrays', t => {
   t.throws(() => pluginLoader({overrides}), /array/)
 })
 
-test('should be able to override a role with multiple fulfillers', t => {
-  const role = 'part:foo/bar/baz'
+test('should be able to override a part with multiple fulfillers', t => {
+  const part = 'part:foo/bar/baz'
   const func1 = () => '1'
   const func2 = () => '2'
 
-  const overrides = {[role]: [func1, func2]}
+  const overrides = {[part]: [func1, func2]}
   pluginLoader({overrides})
-  t.is(require(role), func1)
-  t.is(require(`all:${role}`), overrides[role])
+  t.is(require(part), func1)
+  t.is(require(`all:${part}`), overrides[part])
 })
 
 test('should pass unmocked requests onto the default resolver', t => {
@@ -43,7 +43,7 @@ test('should be able to resolve an actual filesystem structure', t => {
   t.is(getBar(), 'bar')
 })
 
-test('should be able to require all fulfillers of a role', t => {
+test('should be able to require all fulfillers of a part', t => {
   const start = Date.now()
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
@@ -56,7 +56,7 @@ test('should be able to require all fulfillers of a role', t => {
   })
 })
 
-test('should be able to include the sanity debug role', t => {
+test('should be able to include the sanity debug part', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
   const debug = require('sanity:debug')
   t.is(debug.plugins[0].name, 'date')
@@ -99,7 +99,7 @@ test('should be able to load CSS files through PostCSS', t => {
   t.is(styles.zebra, 'datepicker__zebra___1_qke')
 })
 
-test('should resolve correctly when using optional role requires (?-postfix)', t => {
+test('should resolve correctly when using optional part requires (?-postfix)', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const getBar = require('part:base/bar?')
@@ -107,7 +107,7 @@ test('should resolve correctly when using optional role requires (?-postfix)', t
   t.is(getBar(), 'bar')
 })
 
-test('should resolve correctly when overriding and using optional role requires', t => {
+test('should resolve correctly when overriding and using optional part requires', t => {
   const overrides = {'part:base/bar': ['moo']}
   pluginLoader({basePath: path.join(__dirname, 'fixture'), overrides})
 
@@ -115,7 +115,7 @@ test('should resolve correctly when overriding and using optional role requires'
   t.is(bar, 'moo')
 })
 
-test('should return undefined when using optional role requires on an unfulfilled role', t => {
+test('should return undefined when using optional part requires on an unfulfilled part', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const result = require('part:not/existant?')
@@ -127,4 +127,12 @@ test('should resolve parts that point to a path which is a directory containing 
 
   const result = require('part:base/indexpart')
   t.is(result(), 'index value')
+})
+
+test('should be able to override config parts', t => {
+  const overrides = {'config:sanity': [{api: {projectId: 'heisann'}}]}
+  pluginLoader({overrides})
+
+  const config = require('config:sanity')
+  t.is(config.api.projectId, 'heisann')
 })

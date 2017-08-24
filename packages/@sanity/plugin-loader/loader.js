@@ -74,6 +74,12 @@ function registerLoader(options) {
 
     const configMatch = request.match(configMatcher)
     if (configMatch) {
+      const configOverrides = overrides && overrides[request]
+      if (configOverrides && configOverrides.length > 0) {
+        require.cache[request] = getModule(request, configOverrides[0])
+        return request
+      }
+
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
