@@ -1,0 +1,4 @@
+{
+  "hiddenTypes": ["block", "span", "mark", "link", "address", "code", "myObject"],
+  "listOptions": {}
+}

@@ -1,3 +1,3 @@
-# sanitytest
+# Example Studio
 
-Just a sample Sanity studio project
+A sanity studio with instructional examples and useful patterns

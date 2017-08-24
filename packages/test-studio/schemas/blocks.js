@@ -1,4 +1,4 @@
-export const blocksTest = {
+export default {
   name: 'blocksTest',
   title: 'Blocks test',
   type: 'object',
@@ -41,7 +41,6 @@ export const blocksTest = {
           ]
         },
         {type: 'block'},
-        {type: 'videoEmbed', title: 'Video embed'}
       ]
     },
     {
@@ -130,21 +129,8 @@ export const blocksTest = {
         }
       ]
     },
-  ]
-}
-
-export const typeWithBlocks = {
-  name: 'typeWithBlocks',
-  title: 'Yo Dawg',
-  type: 'object',
-  fields: [
     {
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-    },
-    {
-      name: 'someBlocks',
+      name: 'recursive',
       type: 'object',
       fields: [
         {
@@ -159,8 +145,8 @@ export const typeWithBlocks = {
               span: {}
             },
             {
-              type: 'typeWithBlocks',
-              title: 'Type with blocks!'
+              type: 'blocksTest',
+              title: 'Blocks test!'
             }
           ]
         }
