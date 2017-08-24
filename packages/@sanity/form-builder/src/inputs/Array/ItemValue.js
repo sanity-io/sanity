@@ -16,6 +16,7 @@ import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
 
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
+import {resolveTypeName} from '../../utils/resolveTypeName'
 
 type Props = {
   type: Type,
@@ -58,7 +59,8 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
 
   getMemberType(): ?Type {
     const {value, type} = this.props
-    return type.of.find(memberType => memberType.name === value._type)
+    const itemTypeName = resolveTypeName(value)
+    return type.of.find(memberType => memberType.name === itemTypeName)
   }
 
   renderEditItemForm(item: any): ?React.Element<any> {
