@@ -1,5 +1,3 @@
-import LocaleStringInput from '../components/LocaleStringInput'
-
 import {SUPPORTED_LANGUAGES} from './languages'
 
 export default {
@@ -15,6 +13,5 @@ export default {
       title: lang.title,
       fieldset: lang.default ? null : 'translations'
     }
-  )),
-  inputComponent: LocaleStringInput
+  ))
 }
