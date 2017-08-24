@@ -20,6 +20,7 @@ import deleteHookCommand from './hook/deleteHookCommand'
 import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import listHookLogsCommand from './hook/listHookLogsCommand'
+import execCommand from './exec/execCommand'
 
 export default [
   buildCommand,
@@ -43,5 +44,6 @@ export default [
   queryDocumentsCommand,
   installCommand,
   startCommand,
-  uninstallCommand
+  uninstallCommand,
+  execCommand
 ]
