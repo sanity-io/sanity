@@ -21,9 +21,9 @@ export default {
         },
         {
           type: 'reference',
-          name: 'blogpostReference',
-          to: {type: 'blogpost'},
-          title: 'Reference to blogpost'
+          name: 'bookReference',
+          to: {type: 'book'},
+          title: 'Reference to book'
         },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
