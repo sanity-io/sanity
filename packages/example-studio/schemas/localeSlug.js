@@ -6,7 +6,7 @@ export default {
   fieldsets: [
     {
       name: 'translations',
-      title: 'Translation',
+      title: 'Translations',
       options: { collapsable: true },
     },
   ],
@@ -14,7 +14,7 @@ export default {
     name: lang.id,
     type: 'slug',
     title: lang.title,
-    // fieldset: lang.default ? null : 'translations',
+    fieldset: lang.default ? null : 'translations',
     options: {
       source: document => document.title[lang.id],
       maxLength: 96,

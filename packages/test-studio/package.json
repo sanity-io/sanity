@@ -1,8 +1,8 @@
 {
-  "name": "example-studio",
+  "name": "test-studio",
   "private": true,
   "version": "0.108.12",
-  "description": "A sanity studio with instructional examples and useful patterns",
+  "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {

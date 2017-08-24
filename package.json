@@ -10,6 +10,7 @@
     "init": "lerna clean --yes && yarn run bootstrap && yarn run build",
     "start": "gulp dev",
     "storybook": "gulp storybook",
+    "example": "gulp example",
     "stylelint": "stylelint \"**/*.css\"",
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
