@@ -11,9 +11,9 @@ const ROOT_MARGIN_PX = 150
   Adapted from the polyfill at https://github.com/WICG/IntersectionObserver
 */
 function isIntersectionObserverSupported() {
-  if ('IntersectionObserver' in window &&
-    'IntersectionObserverEntry' in window &&
-    'intersectionRatio' in IntersectionObserverEntry.prototype) {
+  if ('IntersectionObserver' in window
+    && 'IntersectionObserverEntry' in window
+    && 'intersectionRatio' in IntersectionObserverEntry.prototype) {
 
     // Minimal polyfill for Edge 15's lack of `isIntersecting`
     // See: https://github.com/WICG/IntersectionObserver/issues/211
