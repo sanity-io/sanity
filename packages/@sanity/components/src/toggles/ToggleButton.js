@@ -8,17 +8,19 @@ export default class ToggleButton extends React.Component {
     icon: PropTypes.func,
     onClick: PropTypes.func.isRequired,
     selected: PropTypes.bool,
+    disabled: PropTypes.bool,
     children: PropTypes.node,
     className: PropTypes.string,
     title: PropTypes.string
   }
 
   static defaultProps = {
-    className: ''
+    className: '',
+    disabled: false
   }
 
   render() {
-    const {selected, icon, className, title} = this.props
+    const {disabled, selected, icon, className, title} = this.props
     const buttonClasses = `
       ${selected ? styles.selected : styles.unSelected}
       ${className}
@@ -28,6 +30,7 @@ export default class ToggleButton extends React.Component {
         className={buttonClasses}
         icon={icon}
         title={title}
+        disabled={disabled}
         onClick={this.props.onClick}
         kind="simple"
       >

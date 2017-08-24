@@ -80,6 +80,7 @@ storiesOf('Toggles')
       <Sanity part="part:@sanity/components/toggles/buttons" propTables={[ToggleButtons]}>
         <ToggleButton
           selected={boolean('selected (prop)', false)}
+          disabled={boolean('disabled (prop)', false)}
           onClick={action('onClick')}
           icon={icon}
         >
