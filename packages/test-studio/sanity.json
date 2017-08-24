@@ -1,10 +1,10 @@
 {
   "root": true,
   "project": {
-    "name": "SanityTest"
+    "name": "Test"
   },
   "api": {
-    "projectId": "q2r21cu7",
+    "projectId": "ppsg7ml5",
     "dataset": "test"
   },
   "plugins": [
@@ -27,17 +27,5 @@
       "implements": "part:@sanity/base/brand-logo",
       "path": "src/components/BrandLogo.js"
     }
-  ],
-  "env": {
-    "staging": {
-      "api": {
-        "projectId": "exx11uqh"
-      }
-    },
-    "development": {
-      "api": {
-        "projectId": "q2r21cu7"
-      }
-    }
-  }
+  ]
 }
