@@ -14,7 +14,9 @@ export default class Switch extends React.Component {
   }
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    onBlur() {},
+    onFocus() {}
   }
 
   handleMouseUp = event => {
