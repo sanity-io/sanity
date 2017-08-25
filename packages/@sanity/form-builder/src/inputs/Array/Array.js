@@ -9,6 +9,7 @@ import styles from './styles/Array.css'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
+import {resolveTypeName} from '../../utils/resolveTypeName'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -33,7 +34,7 @@ function createProtoValue(type): ItemValue {
   if (type.jsonType !== 'object') {
     throw new Error(`Invalid item type: "${type.type}". Default array input can only contain objects (for now)`)
   }
-  return {
+  return type.name === 'object' ? {_key: randomKey(12)} : {
     _type: type.name,
     _key: randomKey(12)
   }
@@ -194,7 +195,8 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
 
   getMemberTypeOfItem(item: T): ? Type {
     const {type} = this.props
-    return type.of.find(memberType => memberType.name === item._type)
+    const itemTypeName = resolveTypeName(item)
+    return type.of.find(memberType => memberType.name === itemTypeName)
   }
 
   renderList() {
