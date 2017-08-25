@@ -53,11 +53,27 @@ export default {
     },
     {
       name: 'tags',
-      title: 'tags',
+      title: 'Tags',
       description: 'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
       type: 'array',
       options: {layout: 'tags'},
       of: [{type: 'string'}]
+    },
+    {
+      name: 'arrayWithAnonymousObject',
+      title: 'Array with anonymous objects',
+      description: 'This array contains objects of type as defined inline',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          title: 'Something',
+          fields: [
+            {name: 'first', type: 'string', title: 'First string'},
+            {name: 'second', type: 'string', title: 'Second string'}
+          ]
+        }
+      ]
     },
     {
       name: 'arrayOfStringsWithLegacyList',
