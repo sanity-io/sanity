@@ -29,7 +29,6 @@
     "express": "^4.15.2",
     "history": "^4.5.1",
     "mocha": "^3.2.0",
-    "node-sass": "^3.10.0",
     "prop-types": "^15.5.8",
     "quickreload": "^2.1.2",
     "react": "^15.5.4",
