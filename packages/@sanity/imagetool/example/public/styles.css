@@ -1,0 +1,30 @@
+body {
+  font-family: "Helvetica", sans-serif;
+}
+
+label {
+  display: block;
+}
+
+label input[type="range"] {
+  margin-left: 20px;
+  position: absolute;
+  left: 75px;
+}
+
+ul.previews {
+  margin: 0;
+  padding: 0;
+}
+
+ul.previews li {
+  width: 220px;
+  float: left;
+  list-style: none;
+  margin: 5px;
+  padding:0;
+}
+
+ul.previews li pre {
+  font-size: 80%;
+}
