@@ -15,11 +15,17 @@ const normalizer = [
   '}', ''
 ]
 
+// Use JSON.stringify to ensure paths are proper strings
+// (eg, if they contain a `\`, things will blow up without a proper serializer)
+function pathToRequire(path) {
+  return `  require(${JSON.stringify(path)})`
+}
+
 module.exports = function multiImplementationHandler(partName, implementations) {
   return banner
     .concat(normalizer)
     .concat(['\nmodule.exports = ['])
-    .concat(implementations.reverse().map((implementer, i) => `  require('${implementer}')`).join(',\n'))
+    .concat(implementations.reverse().map(pathToRequire).join(',\n'))
     .concat(['].map(normalize)\n'])
     .join('\n')
     .replace(/PART_NAME/g, partName)
