@@ -79,11 +79,11 @@ export default (config = {}) => {
       loaders: [{
         test: /\.jsx?/,
         exclude: modPath => {
-          if (sanityDev && modPath.indexOf('/@sanity/') >= 0) {
+          if (sanityDev && modPath.includes(['', '@sanity', ''].join(path.sep))) {
             return false
           }
 
-          return modPath.indexOf('/node_modules/') >= 0
+          return modPath.includes(['', 'node_modules', ''].join(path.sep))
         },
         loader: require.resolve('babel-loader'),
         query: babelConfig || {
