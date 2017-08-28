@@ -10,9 +10,20 @@ const through = require('through2')
 const chalk = require('chalk')
 const childProcess = require('child_process')
 
+const isWindows = /^win/.test(process.platform)
 const scripts = ['./packages/@sanity/*/src/**/*.js', './packages/sanity-plugin-*/src/**/*.js']
 const assets = ['./packages/@sanity/*/src/**/*', './packages/sanity-plugin-*/src/**/*']
 const srcOpts = {base: 'packages'}
+
+const getProjectEnv = projectPath => {
+  const npmPath = path.join(projectPath, 'node_modules', '.bin')
+  /* eslint-disable no-process-env */
+  const paths = [npmPath].concat(process.env.PATH.split(path.delimiter)).filter(Boolean)
+  return Object.assign({}, process.env, {
+    PATH: paths.join(path.delimiter)
+  })
+  /* eslint-enable no-process-env */
+}
 
 let srcEx
 let srcRootEx
@@ -115,17 +126,16 @@ gulp.task('dev', ['watch-js', 'watch-assets'], cb => {
   })
 
   const projectPath = path.join(__dirname, 'packages', 'test-studio')
-  const npmPath = path.join(projectPath, 'node_modules', '.bin')
   const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
+    shell: isWindows,
     cwd: projectPath,
-    env: Object.assign({}, process.env, {
-      PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
-    })
+    env: getProjectEnv(projectPath)
   })
 
   proc.stdout.pipe(process.stdout)
   proc.stderr.pipe(process.stderr)
 })
+
 gulp.task('example', ['watch-js', 'watch-assets'], cb => {
   watch(scripts, {debounceDelay: 200}, () => {
     gulp.start('watch-js')
@@ -136,12 +146,10 @@ gulp.task('example', ['watch-js', 'watch-assets'], cb => {
   })
 
   const projectPath = path.join(__dirname, 'packages', 'example-studio')
-  const npmPath = path.join(projectPath, 'node_modules', '.bin')
   const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
+    shell: isWindows,
     cwd: projectPath,
-    env: Object.assign({}, process.env, {
-      PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
-    })
+    env: getProjectEnv(projectPath)
   })
 
   proc.stdout.pipe(process.stdout)
@@ -158,12 +166,10 @@ gulp.task('storybook', ['watch-js', 'watch-assets'], () => {
   })
 
   const projectPath = path.join(__dirname, 'packages', 'storybook')
-  const npmPath = path.join(projectPath, 'node_modules', '.bin')
   const proc = childProcess.spawn('npm', ['start'], {
+    shell: isWindows,
     cwd: projectPath,
-    env: Object.assign({}, process.env, {
-      PATH: [npmPath].concat(process.env.PATH.split(path.delimiter)).join(path.delimiter)
-    })
+    env: getProjectEnv(projectPath)
   })
 
   proc.stdout.pipe(process.stdout)
