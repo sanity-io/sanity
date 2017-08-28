@@ -40,6 +40,7 @@ function run(t) {
       '_isScalar', // added by rxjs
       '_subscribe', // added by rxjs
       'map',
+      'concat',
       'filter',
       'reduce',
       'scan',
