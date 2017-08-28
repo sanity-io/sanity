@@ -5,6 +5,7 @@ const {forkJoin} = require('rxjs/observable/forkJoin')
 const {from} = require('rxjs/observable/from')
 const {map} = require('rxjs/operator/map')
 const {filter} = require('rxjs/operator/filter')
+const {concat} = require('rxjs/operator/concat')
 const {reduce} = require('rxjs/operator/reduce')
 const {scan} = require('rxjs/operator/scan')
 const {first} = require('rxjs/operator/first')
@@ -46,6 +47,7 @@ function lift(operator) {
 
 Object.assign(SanityObservable.prototype, {
   map,
+  concat,
   filter,
   reduce,
   scan,
