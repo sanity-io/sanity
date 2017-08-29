@@ -16,15 +16,15 @@ import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import styles from './styles/Editor.css'
 import copyDocument from '../utils/copyDocument'
-import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
-import {debounce, truncate, capitalize, startCase} from 'lodash'
+import {debounce} from 'lodash'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
+import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -98,7 +98,6 @@ const INITIAL_STATE = {
 }
 
 function getToggleKeyState(event) {
-
   if (event.ctrlKey
     && event.code === 'KeyI'
     && event.altKey
@@ -112,6 +111,8 @@ function getToggleKeyState(event) {
     && !event.shiftKey) {
     return 'showConfirmPublish'
   }
+
+  return undefined
 }
 
 export default withRouterHOC(class Editor extends React.PureComponent {
@@ -415,6 +416,10 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               onChange={this.handleChange}
             />
           </form>
+
+          {afterEditorComponents.map((AfterEditorComponent, i) =>
+            <AfterEditorComponent key={i} documentId={published._id} />
+          )}
 
           {inspect && (
             <InspectView
