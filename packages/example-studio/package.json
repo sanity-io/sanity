@@ -35,6 +35,7 @@
     "react-ace": "^4.3.0",
     "react-dom": "^15.5.4",
     "react-icons": "^2.2.5",
+    "sanity-plugin-referring-documents": "0.110.0",
     "sanity-plugin-vision": "0.110.0"
   },
   "devDependencies": {

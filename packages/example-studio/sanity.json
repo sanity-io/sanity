@@ -16,6 +16,7 @@
     "@sanity/code-input",
     "@sanity/desk-tool",
     "@sanity/storybook",
+    "referring-documents",
     "vision"
   ],
   "parts": [
