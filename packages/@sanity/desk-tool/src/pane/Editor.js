@@ -24,6 +24,7 @@ import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
+import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -415,6 +416,10 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               onChange={this.handleChange}
             />
           </form>
+
+          {afterEditorComponents.map((AfterEditorComponent, i) =>
+            <AfterEditorComponent key={i} documentId={published._id} />
+          )}
 
           {inspect && (
             <InspectView
