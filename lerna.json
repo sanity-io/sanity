@@ -3,9 +3,9 @@
   "npmClient": "yarn",
   "packages": [
     "packages/@sanity/*",
+    "packages/sanity-plugin-*",
     "packages/example-studio",
     "packages/test-studio",
-    "packages/sanity-plugin-vision",
     "packages/storybook"
   ],
   "version": "0.110.0"

@@ -1,0 +1,13 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
+  "parts": [
+    {
+      "implements": "part:@sanity/desk-tool/after-editor-component",
+      "path": "ReferringDocumentsList.js"
+    }
+  ]
+}
