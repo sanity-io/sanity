@@ -1,4 +1,14 @@
 
+# v0.110.0
+This release is mainly about fixing Windows support
+
+Author | Message | Commit
+------------ | ------------- | -------------
+rexxars | [imagetool] Remove sass dependency (#142) | 9b0802b  |   | rexxars | [infrastructure] Fix spawning gulptasks on windows (#143) | 0115cfc
+bjoerge | [observable] Add .concat operator | 6e8a0de
+rexxars | [webpack-loader] Fix invalid paths on Windows when using `all:`-parts (… … | 024c75f
+rexxars | [server] Fix invalid paths being ignored for babel loader on windows (#… … | 266637f
+
 # v0.109.0
 
 Author | Message | Commit
