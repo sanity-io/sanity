@@ -2,7 +2,7 @@ import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
+const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'inputComponent']
 
 const OBJECT_CORE = {
   name: 'object',
@@ -96,31 +96,3 @@ function createFieldsets(typeDef, fields) {
     })
     .filter(Boolean)
 }
-
-// const Person = ObjectType.extend({
-//   name: 'person',
-//   title: 'Person',
-//   fields: [
-//     {type: 'string', name: 'lol'}
-//   ]
-// }, v => v)
-//
-// const TypeOfPerson = Person.extend({
-//   name: 'typeofperson',
-//   title: 'Type Of Person'
-// }, v => v)
-//
-// const TypeOfTypeOfPerson = TypeOfPerson.extend({
-//   name: 'typeoftypeofperson',
-//   title: 'Type Of Type Of Person'
-// }, v => v)
-//
-// assert.equal(TypeOfTypeOfPerson.get().type, TypeOfPerson.get())
-// assert.equal(TypeOfTypeOfPerson.get().type, TypeOfPerson.get())
-// assert.equal(TypeOfTypeOfPerson.get().fields, Person.get().fields)
-// assert.throws(
-//   () => TypeOfTypeOfPerson.extend({name: 'lol', fields: []}),
-//   /Cannot override `fields` of subtypes of "object"/
-// )
-// // console.log('TypeOfTypeOfPerson', TypeOfTypeOfPerson.get())
-//
