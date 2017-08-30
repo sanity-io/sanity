@@ -36,6 +36,14 @@ export default {
       ]
     },
     {
+      name: 'awesomeness',
+      title: 'Awesomeness',
+      type: 'number',
+      options: {
+        range: {min: 0, max: 10}
+      }
+    },
+    {
       name: 'relatedAuthors',
       title: 'Related authors',
       type: 'array',
