@@ -20,7 +20,7 @@ export default class CustomMyObjectInput extends React.Component {
   render() {
     const {value, type} = this.props
     return (
-      <div>
+      <div style={{backgroundColor: '#f5ad3d'}}>
         <h3>{type.title}</h3>
         <p>{type.description}</p>
         {type.fields.map(field =>
