@@ -2,7 +2,7 @@ import React from 'react'
 import Undoable from './lib/Undoable'
 
 import Schema from '@sanity/schema'
-import {createFormBuilder} from '../../src'
+import {FormBuilder} from '../../src'
 import applyPatch from '../../src/simplePatch'
 
 const schema = Schema.compile({
@@ -31,8 +31,6 @@ const schema = Schema.compile({
     }
   ]
 })
-
-const FormBuilder = createFormBuilder({schema})
 
 export default class SimpleExample extends React.Component {
   state = {
@@ -83,7 +81,7 @@ export default class SimpleExample extends React.Component {
           <button onClick={this.handleCommand} data-command="undo" disabled={!value.canUndo}>Undo</button>
           <button onClick={this.handleCommand} data-command="redo" disabled={!value.canRedo}>Redo</button>
         </div>
-        <FormBuilder value={value.get()} onChange={this.handleChange} />
+        <FormBuilder schema={schema} value={value.get()} onChange={this.handleChange} />
         <div>
           <label>
             <input type="checkbox" checked={shouldInspect} onChange={this.handleCommand} data-command="inspect" />

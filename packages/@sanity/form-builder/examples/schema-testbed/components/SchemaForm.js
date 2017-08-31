@@ -7,7 +7,7 @@ import {save, restore} from '../lib/persist'
 
 import sourceSchemas from '../schemas'
 import Schema from '@sanity/schema'
-import {createFormBuilder} from '../../../src'
+import {FormBuilder} from '../../../src'
 import {parseParams, preventDefault} from '../lib/utils'
 
 import MyCustomLatLonInput from './custom/MyCustomLatLonInput'
@@ -20,6 +20,7 @@ import resolveReferenceInput from './custom/resolveReferenceInput'
 import {arrayToJSONMatchPath} from '@sanity/mutator'
 import InputWithCustomState from './custom/InputWithCustomState'
 import {set, unset} from '../../../src/utils/patches'
+import {resolvePreviewComponent} from '../../../src/defaultConfig'
 
 const SCHEMA_NAMES = Object.keys(sourceSchemas)
 const params = parseParams(document.location.pathname)
@@ -42,36 +43,34 @@ function logPatch(patch) {
   )
 }
 
-const FormBuilder = schema && createFormBuilder({
-  schema: schema,
-  resolveInputComponent(type) {
-    if (type.component) {
-      return type.component
-    }
-    if (type.name === 'latlon') {
-      return MyCustomLatLonInput
-    }
-    if (type.name === 'reference') {
-      return resolveReferenceInput(type)
-    }
-    if (type.name === 'image') {
-      return MyCustomImageInput
-    }
-    if (type.name === 'customPatchHandlingExampleType') {
-      return InputWithCustomState
-    }
-    if (type.name === 'file') {
-      return MyCustomFileInput
-    }
-    if (type.name === 'slug') {
-      return MyCustomSlugInput
-    }
-    return type.inputComponent || undefined // signal to use default
-  },
-  resolveValidationComponent() {
-    return MyCustomValidationList
+function resolveInputComponent(type) {
+  if (type.component) {
+    return type.component
   }
-})
+  if (type.name === 'latlon') {
+    return MyCustomLatLonInput
+  }
+  if (type.name === 'reference') {
+    return resolveReferenceInput(type)
+  }
+  if (type.name === 'image') {
+    return MyCustomImageInput
+  }
+  if (type.name === 'customPatchHandlingExampleType') {
+    return InputWithCustomState
+  }
+  if (type.name === 'file') {
+    return MyCustomFileInput
+  }
+  if (type.name === 'slug') {
+    return MyCustomSlugInput
+  }
+  return type.inputComponent || undefined // signal to use default
+}
+
+function resolveValidationComponent() {
+  return MyCustomValidationList
+}
 
 export default class Main extends React.Component {
   state = {
@@ -79,6 +78,8 @@ export default class Main extends React.Component {
     value: restore(PERSISTKEY),
     saved: false
   }
+
+  patchChannel = FormBuilder.createPatchChannel()
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.inspect !== this.state.inspect) {
@@ -92,7 +93,7 @@ export default class Main extends React.Component {
 
   receivePatches(patches) {
     const nextValue = patches.reduce((prev, patch) => applyPatch(prev, patch), this.state.value)
-    FormBuilder.receivePatches({patches, snapshot: nextValue})
+    this.patchChannel.receivePatches({patches, snapshot: nextValue})
 
     this.setState({
       value: nextValue,
@@ -105,15 +106,19 @@ export default class Main extends React.Component {
     save(PERSISTKEY, this.state.value)
     this.setState({saved: true})
   }
+
   cmdLog(event) {
     console.log(this.state.value) // eslint-disable-line no-console
   }
+
   cmdClear(event) {
     this.receivePatches([unset()])
   }
+
   cmdRevert(event) {
     this.receivePatches([set(restore(PERSISTKEY))])
   }
+
   cmdInspectLive(event) {
     this.setState({inspect: event.currentTarget.checked ? 'docked' : false})
   }
@@ -163,10 +168,12 @@ export default class Main extends React.Component {
       <div className={styles[inspect === 'docked' ? 'inspectPane' : 'inspectPaneFullScreen']}>
         <button className={styles.closeInspectPaneButton} onClick={() => this.setState({inspect: false})}>x</button>
         {inspect === 'docked' && (
-          <button className={styles.fullscreenInspectPaneButton} onClick={() => this.setState({inspect: 'fullscreen'})}>↑</button>
+          <button className={styles.fullscreenInspectPaneButton} onClick={() => this.setState({inspect: 'fullscreen'})}>
+            ↑</button>
         )}
         {inspect === 'fullscreen' && (
-          <button className={styles.dockedInspectPaneButton} onClick={() => this.setState({inspect: 'docked'})}>↓</button>
+          <button className={styles.dockedInspectPaneButton} onClick={() => this.setState({inspect: 'docked'})}>
+            ↓</button>
         )}
         <div className={styles[inspect === 'docked' ? 'inspectPaneInner' : 'inspectPaneInnerFullScreen']}>
           <Inspector inspect={value} />
@@ -190,6 +197,8 @@ export default class Main extends React.Component {
           <form onSubmit={preventDefault}>
             <FormBuilder
               patchChannel={this.patchChannel}
+              resolveInputComponent={resolveInputComponent}
+              resolvePreviewComponent={resolvePreviewComponent}
               value={value}
               type={schemaType}
               validation={validation}
