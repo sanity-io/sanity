@@ -11,7 +11,7 @@ To the following:
   \`const client = require('part:@sanity/base/client')\`
 `
 
-const apiConfig = {...config.api, withCredentials: true}
+const apiConfig = {...config.api, withCredentials: true, useCdn: false}
 const client = sanityClient(apiConfig)
 
 const configuredClient = configureClient
