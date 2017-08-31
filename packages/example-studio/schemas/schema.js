@@ -7,6 +7,7 @@ import videoEmbed from './videoEmbed'
 import localeString from './localeString'
 import localeSlug from './localeSlug'
 import protein from './protein'
+import customObject from './customObject'
 
 export default createSchema({
   name: 'example-blog',
@@ -14,6 +15,7 @@ export default createSchema({
     blogpost,
     author,
     code,
+    customObject,
     localeString,
     localeSlug,
     videoEmbed,
