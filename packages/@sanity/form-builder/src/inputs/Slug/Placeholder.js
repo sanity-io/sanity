@@ -13,15 +13,17 @@ const CODE_SNIPPET = `
       return Promise.resolve()
     }
   })
-  const FormBuilder = createFormBuilder({
-    schema: mySchema,
-    resolveInputComponent(type) {
-      if (type.name === 'slug') {
-        return MySlugInput
-      }
-  },
   //...
-})
+  function resolveInputComponent(type) {
+    if (type.name === 'slug') {
+      return MySlugInput
+  }
+  <FormBuilder
+    schema={mySchema}
+    resolveInputComponent={resolveInputComponent}
+    //...
+  />
+
 `
 
 export default function Placeholder() {

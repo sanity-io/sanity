@@ -1,6 +1,6 @@
 # The FormBuilder Component
 
-The `FormBuilder` component returned by `createFormBuilder(...)` is responsible for rendering the generated form and takes the following props:
+The `FormBuilder` component is responsible for rendering the generated form and takes the following props:
 
 ## Props
 - **`value`** - required. The current form builder value. It should always be an instance of FormBuilderValue

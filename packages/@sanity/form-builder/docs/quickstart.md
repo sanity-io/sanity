@@ -4,7 +4,8 @@
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {createFormBuilder, Schema} from '@sanity/form-builder'
+import {FormBuilder} from '@sanity/form-builder'
+import Schema from '@sanity/schema'
 
 const schema = Schema.compile({
   name: 'simple',
@@ -33,9 +34,7 @@ const schema = Schema.compile({
   ]
 })
 
-const FormBuilder = createFormBuilder({schema: schema})
-
-let currentValue = FormBuilder.createEmpty('book')
+let currentValue = {_type: 'book'}
 
 function handleChange(event) {
   console.log('Received a patch:', event.patch)
@@ -66,7 +65,7 @@ class MyComponent extends React.Component {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
     this.state = {
-      editorValue: FormBuilder.createEmpty('book')
+      editorValue: {_type: 'book'}
     }
   }
   
