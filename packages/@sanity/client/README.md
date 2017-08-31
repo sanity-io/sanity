@@ -22,7 +22,8 @@ const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
   dataset: 'bikeshop',
-  token: 'sanity-auth-token' // or leave blank to be anonymous user
+  token: 'sanity-auth-token', // or leave blank to be anonymous user
+  useCdn: true // `false` if you want to ensure fresh data
 })
 ```
 
@@ -95,6 +96,45 @@ client.create(doc).then(res => {
 `client.create(doc)`
 
 Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute. It *may* contain an `_id`. If an ID is not specified, it will automatically be created.
+
+
+### Creating/replacing documents
+
+```js
+const doc = {
+  _id: 'my-bike',
+  _type: 'bike',
+  name: 'Bengler Tandem Extraordinaire',
+  seats: 2
+}
+
+client.createOrReplace(doc).then(res => {
+  console.log(`Bike was created, document ID is ${res._id}`)
+})
+```
+
+`client.createOrReplace(doc)`
+
+If you are not sure whether or not a document exists but want to overwrite it if it does, you can use the `createOrReplace()` method. When using this method, the document must contain an `_id` attribute.
+
+### Creating if not already present
+
+```js
+const doc = {
+  _id: 'my-bike',
+  _type: 'bike',
+  name: 'Bengler Tandem Extraordinaire',
+  seats: 2
+}
+
+client.createIfNotExists(doc).then(res => {
+  console.log('Bike was created (or was already present)')
+})
+```
+
+`client.createIfNotExists(doc)`
+
+If you want to create a document if it does not already exist, but fall back without error if it does, you can use the `createIfNotExists()` method. When using this method, the document must contain an `_id` attribute.
 
 
 ### Patch/update a document

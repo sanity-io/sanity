@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "@sanity/eventsource": "^0.108.0",
-    "@sanity/observable": "0.110.0",
+    "@sanity/generate-help-url": "^0.108.0",
+    "@sanity/observable": "^0.110.0",
     "deep-assign": "^2.0.0",
     "get-it": "^2.0.2",
     "in-publish": "^2.0.0",
