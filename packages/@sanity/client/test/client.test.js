@@ -19,7 +19,13 @@ const noop = () => {} // eslint-disable-line no-empty-function
 const apiHost = 'api.sanity.url'
 const defaultProjectId = 'bf1942'
 const projectHost = projectId => `https://${projectId || defaultProjectId}.${apiHost}`
-const clientConfig = {apiHost: `https://${apiHost}`, projectId: 'bf1942', dataset: 'foo'}
+const clientConfig = {
+  apiHost: `https://${apiHost}`,
+  projectId: 'bf1942',
+  dataset: 'foo',
+  useCdn: false
+}
+
 const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
 const fixture = name => path.join(__dirname, 'fixtures', name)
 const ifError = t => err => {
@@ -1253,6 +1259,91 @@ test('can retrieve user by id', t => {
     t.deepEqual(body, response)
     t.end()
   }, ifError(t))
+})
+
+/*****************
+ * CDN API USAGE *
+ *****************/
+test('will use live API by default', t => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'foo'})
+
+  const response = {result: []}
+  nock('https://abc123.api.sanity.io')
+    .get('/v1/data/query/foo?query=*')
+    .reply(200, response)
+
+  client.fetch('*')
+    .then(docs => {
+      t.equal(docs.length, 0)
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('will use CDN API if told to', t => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'foo', useCdn: true})
+
+  const response = {result: []}
+  nock('https://abc123.cdnapi.sanity.io')
+    .get('/v1/data/query/foo?query=*')
+    .reply(200, response)
+
+  client.fetch('*')
+    .then(docs => {
+      t.equal(docs.length, 0)
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('will use live API for mutations', t => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'foo', useCdn: true})
+
+  nock('https://abc123.api.sanity.io')
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync')
+    .reply(200, {})
+
+  client.create({_type: 'foo', title: 'yep'})
+    .then(noop)
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('will use live API if token is specified', t => {
+  const client = sanityClient({
+    projectId: 'abc123',
+    dataset: 'foo',
+    useCdn: true,
+    token: 'foo'
+  })
+
+  const reqheaders = {Authorization: 'Bearer foo'}
+  nock('https://abc123.api.sanity.io', {reqheaders})
+    .get('/v1/data/query/foo?query=*')
+    .reply(200, {result: []})
+
+  client.fetch('*')
+    .then(noop)
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('will use live API if withCredentials is set to true', t => {
+  const client = sanityClient({
+    withCredentials: true,
+    projectId: 'abc123',
+    dataset: 'foo',
+    useCdn: true,
+  })
+
+  nock('https://abc123.api.sanity.io')
+    .get('/v1/data/query/foo?query=*')
+    .reply(200, {result: []})
+
+  client.fetch('*')
+    .then(noop)
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 /*****************
