@@ -67,6 +67,7 @@ export default class EditorPane extends React.Component {
   }
 
   state = INITIAL_STATE
+  patchChannel = FormBuilder.createPatchChannel()
 
   setup(documentId) {
     this.dispose()
@@ -100,7 +101,7 @@ export default class EditorPane extends React.Component {
     }
     // Broadcast incoming patches to input components that applies patches on their own
     // Note: This is *experimental*
-    FormBuilder.receivePatches({
+    this.patchChannel.receivePatches({
       patches: event.patches,
       snapshot: event.document
     })
@@ -257,6 +258,7 @@ export default class EditorPane extends React.Component {
 
     return (
       <Editor
+        patchChannel={this.patchChannel}
         type={schema.get(typeName)}
         published={published.snapshot}
         draft={draft.snapshot}
