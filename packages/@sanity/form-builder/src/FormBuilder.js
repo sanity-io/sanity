@@ -19,11 +19,13 @@ function resolve(type, providedResolve = NOOP, defaultResolve = NOOP) {
   return undefined
 }
 
+function createPatchChannel() {
+  const channel = pubsub()
+  return {onPatch: channel.subscribe, receivePatches: channel.publish}
+}
+
 export default class FormBuilder extends React.Component {
-  static createPatchChannel = () => {
-    const channel = pubsub()
-    return {receivePatches: channel.publish}
-  }
+  static createPatchChannel = createPatchChannel;
   static propTypes = {
     value: PropTypes.any,
     schema: PropTypes.instanceOf(Schema).isRequired,
@@ -68,7 +70,7 @@ export default class FormBuilder extends React.Component {
     return {
       getValuePath: () => ([]),
       formBuilder: {
-        onPatch: patchChannel ? patchChannel.subscribe : () => {
+        onPatch: patchChannel ? patchChannel.onPatch : () => {
           // eslint-disable-next-line no-console
           console.log('No patch channel provided to form-builder. If you need input based patch updates, please provide one')
         },

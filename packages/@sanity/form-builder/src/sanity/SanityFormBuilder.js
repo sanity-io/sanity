@@ -3,7 +3,6 @@ import schema from 'part:@sanity/base/schema'
 
 import inputResolver from './inputResolver/inputResolver'
 import SanityPreview from 'part:@sanity/base/preview'
-import ValidationList from 'part:@sanity/form-builder/validation-list'
 import * as patches from '../utils/patches'
 
 import {FormBuilder, defaultConfig} from '../'
@@ -16,14 +15,17 @@ export {FormBuilderInput} from '../FormBuilderInput'
 
 export {patches}
 
+function previewResolver() {
+  return SanityPreview
+}
+
 export default function SanityFormBuilder(props) {
   return (
     <FormBuilder
       {...props}
       schema={schema}
       resolveInputComponent={inputResolver}
-      resolvePreviewComponent={SanityPreview}
-      resolveValidationComponent={ValidationList}
+      resolvePreviewComponent={previewResolver}
     />)
 }
 
