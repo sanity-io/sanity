@@ -8,15 +8,16 @@ const CODE_SNIPPET = `
       //... code that uploads all files in array
     }
   })
-  const FormBuilder = createFormBuilder({
-    schema: mySchema,
-    resolveInputComponent(type, type) {
-      if (type.type === 'file') {
-        return MyFileInput
-      }
-  },
-  //...
-})
+  function resolveInputComponent(type, type) {
+    if (type.type === 'file') {
+      return MyFileInput
+    }
+  }
+  <FormBuilder
+    schema={mySchema}
+    resolveInputComponent={resolveInputComponent}
+    //...
+  />
 `
 
 export default function Placeholder() {

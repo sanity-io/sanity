@@ -11,14 +11,17 @@ const CODE_SNIPPET = `
       //... code that finds documents matching referenceIds
     }
   })
-  const FormBuilder = createFormBuilder({
-    schema: mySchema,
-    resolveInputComponent(type, type) {
-      if (type.type === 'reference') {
-        return MyReferenceInput
-      }
-  },
+  function resolveInputComponent(type, type) {
+    if (type.type === 'reference') {
+      return MyReferenceInput
+    }
+  }
   //...
+  <FormBuilder
+    schema={mySchema}
+    resolveInputComponent={resolveInputComponent}
+    //...
+  />
 })
 `
 

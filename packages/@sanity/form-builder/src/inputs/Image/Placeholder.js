@@ -8,15 +8,20 @@ const CODE_SNIPPET = `
       //... code that uploads all images in array
     }
   })
-  const FormBuilder = createFormBuilder({
-    schema: mySchema,
-    resolveInputComponent(type, type) {
-      if (type.type === 'image') {
-        return MyImageInput
-      }
-  },
-  //...
-})
+
+
+  function resolveInputComponent(type, type) {
+    if (type.type === 'image') {
+      return MyImageInput
+    }
+  }
+
+  <FormBuilder
+    schema={mySchema}
+    resolveInputComponent={resolveInputComponent}
+    //...
+  />
+
 `
 
 export default function Placeholder() {

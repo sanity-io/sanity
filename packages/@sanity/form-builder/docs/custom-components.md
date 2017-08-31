@@ -69,15 +69,23 @@ export default class MyColorPicker extends React.Component {
 Now that you have this component, you can then create a FormBuilder component providing a `resolveInputComponent` function that returns it for the `favoriteColor` field.
  
 ```js
-import {createFormBuilder} from '@sanity/form-builder'
+import FormBuilder from '@sanity/form-builder'
 import MyColorPicker from './MyColorPicker.js'
 
-const FormBuilder = createFormBuilder({
-  resolveInputComponent(field) {
-    if (field.name === 'favoriteColor') {
-      return MyColorPicker  
-    }
+function resolveInputComponent(field) {
+  if (field.name === 'favoriteColor') {
+    return MyColorPicker
   }
-}) 
+}
+
+function MyComponent() {
+  return (
+    <FormBuilder
+     value={/*...*/}
+     onChange={/*...*/}
+     resolveInputComponent={resolveInputComponent} />
+  )
+}
 ``` 
+
 Now the FormBuilder would render a color picker for the `favoriteColor` field on coworker

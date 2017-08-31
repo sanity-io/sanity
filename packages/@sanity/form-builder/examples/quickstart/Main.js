@@ -1,5 +1,5 @@
 import React from 'react'
-import {createFormBuilder} from '../../src'
+import FormBuilder from '../../src'
 import applyPatch from '../../src/simplePatch'
 import Schema from '@sanity/schema'
 
@@ -30,8 +30,6 @@ const schema = Schema.compile({
   ]
 })
 
-const FormBuilder = createFormBuilder({schema: schema})
-
 export default class QuickstartExample extends React.Component {
 
   state = {
@@ -50,7 +48,7 @@ export default class QuickstartExample extends React.Component {
   render() {
     return (
       <div>
-        <FormBuilder value={this.state.editorValue} onChange={this.handleChange} />
+        <FormBuilder schema={schema} value={this.state.editorValue} onChange={this.handleChange} />
         <button type="button" onClick={this.handleLogClick}>Output current value to console</button>
       </div>
     )
