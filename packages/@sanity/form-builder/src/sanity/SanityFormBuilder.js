@@ -25,7 +25,8 @@ export default function SanityFormBuilder(props) {
       resolvePreviewComponent={SanityPreview}
       resolveValidationComponent={ValidationList}
     />)
-
 }
+
+SanityFormBuilder.createPatchChannel = FormBuilder.createPatchChannel
 
 export {inputResolver, defaultConfig}

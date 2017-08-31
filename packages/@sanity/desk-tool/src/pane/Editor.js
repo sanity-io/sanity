@@ -117,6 +117,7 @@ function getToggleKeyState(event) {
 
 export default withRouterHOC(class Editor extends React.PureComponent {
   static propTypes = {
+    patchChannel: PropTypes.object,
     draft: PropTypes.object,
     published: PropTypes.object,
     type: PropTypes.object.isRequired,
@@ -337,7 +338,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isLoading,
       isPublishing,
       isUnpublishing,
-      isCreatingDraft
+      isCreatingDraft,
+      patchChannel
     } = this.props
 
     const {
@@ -411,6 +413,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           </div>
           <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
             <FormBuilder
+              patchChannel={patchChannel}
               value={draft || published || {_type: type.name}}
               type={type}
               onChange={this.handleChange}
