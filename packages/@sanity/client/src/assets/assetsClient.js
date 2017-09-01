@@ -12,12 +12,24 @@ function toPromise(observable) {
     .toPromise()
 }
 
+function optionsFromFile(opts, file) {
+  if (typeof window === 'undefined' || !(file instanceof window.File)) {
+    return opts
+  }
+
+  return assign({
+    filename: opts.preserveFilename === false ? undefined : file.name,
+    contentType: file.type
+  }, opts)
+}
+
 assign(AssetsClient.prototype, {
-  upload(assetType, body, options = {}) {
+  upload(assetType, body, opts = {}) {
     validators.validateAssetType(assetType)
 
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
+    const options = optionsFromFile(opts, body)
     const {id, label, filename, meta} = options
     const query = {id, label, filename, meta}
 
