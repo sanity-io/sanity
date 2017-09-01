@@ -22,8 +22,9 @@ export default class ReferenceSearchableSelect extends React.Component {
     searchFn: PropTypes.func,
     valueToString: PropTypes.func,
     onChange: PropTypes.func,
-    level: PropTypes.number
-  };
+    level: PropTypes.number,
+    validation: PropTypes.object
+  }
 
   static defaultProps = {
     onChange() {}
@@ -127,16 +128,23 @@ export default class ReferenceSearchableSelect extends React.Component {
   }
 
   render() {
-    const {type, value, level, ...rest} = this.props
+    const {
+      type,
+      value,
+      level,
+      searchFn,
+      valueToString,
+      validation,
+      ...rest
+    } = this.props
     const {valueAsString, fetching, hits} = this.state
 
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
 
     return (
-      <FormField label={type.title} level={level}>
+      <FormField label={type.title} level={level} description={type.description}>
         <SearchableSelect
           {...rest}
-          description={type.description}
           placeholder="Type to search…"
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
@@ -144,9 +152,9 @@ export default class ReferenceSearchableSelect extends React.Component {
           onChange={this.handleChange}
           onClear={this.handleClear}
           value={valueFromHit}
-          valueAsString={valueAsString}
+          inputValue={valueAsString}
           renderItem={this.renderItem}
-          loading={fetching}
+          isLoading={fetching}
           items={hits}
         />
       </FormField>

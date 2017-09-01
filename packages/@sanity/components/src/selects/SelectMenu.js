@@ -27,7 +27,9 @@ export default class SelectMenu extends React.Component {
     }
   }
 
-  setScrollContainer = domNode => this.scrollContainer = domNode
+  setScrollContainer = domNode => {
+    this.scrollContainer = domNode
+  }
 
   render() {
     const {items, renderItem, highlightIndex, value} = this.props
@@ -41,7 +43,7 @@ export default class SelectMenu extends React.Component {
                 [styles.selected]: item === value
               })
               return (
-                <Item data-item-index={index} onClick={this.handleItemClick} className={classes}>
+                <Item key={index} data-item-index={index} onClick={this.handleItemClick} className={classes}>
                   {renderItem(item, index)}
                 </Item>
               )

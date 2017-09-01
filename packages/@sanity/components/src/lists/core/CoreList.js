@@ -3,7 +3,7 @@ import React from 'react'
 import styles from './styles/CoreList.css'
 import cx from 'classnames'
 
-export default class List<T> extends React.Component<*, *, *> {
+export default class List extends React.Component<*> {
   props: {
     className: string
   }

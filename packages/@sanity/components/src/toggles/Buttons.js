@@ -9,7 +9,7 @@ const ITEM_SHAPE = {
 }
 export default class ToggleButtons extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.shape(ITEM_SHAPE),
     items: PropTypes.arrayOf(
@@ -38,7 +38,7 @@ export default class ToggleButtons extends React.Component {
               <Button
                 className={item == value ? styles.selectedButton : styles.button}
                 kind="simple"
-                key={item.key}
+                key={i}
                 icon={item.icon}
                 onClick={this.handleClick}
                 data-index={i}

@@ -201,18 +201,26 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
 
   renderList() {
     const {type, value} = this.props
+    const options = type.options || {}
 
-    const {List, Item} = resolveListComponents(type)
+    const isSortable = options.sortable !== false
+    const isGrid = options.layout === 'grid'
+
+    const {List, Item} = resolveListComponents(isSortable, isGrid)
+
+    const listProps = isSortable
+      ? {movingItemClass: styles.movingItem, onSort: this.handleSort}
+      : {}
 
     return (
       <List
-        movingItemClass={styles.movingItem}
-        onSort={this.handleSort}
+        {...listProps}
       >
         {value.map((item, index) => {
           const {editItemKey} = this.state
+          const itemProps = isSortable ? {index} : {}
           return (
-            <Item key={item._key} index={index} className={styles.item}>
+            <Item key={item._key} className={styles.item} {...itemProps}>
               <RenderItemValue
                 type={type}
                 value={item}

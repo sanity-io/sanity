@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/searchable-style'
-import {uniqueId} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -41,7 +40,6 @@ class StatelessSearchableSelect extends React.PureComponent {
     onChange: noop,
     onOpen: noop,
     onClose: noop,
-    level: 0,
     onInputChange: noop,
     hasError: false,
     isLoading: false,
@@ -115,6 +113,11 @@ class StatelessSearchableSelect extends React.PureComponent {
       highlightIndex,
       isInputSelected,
       inputValue,
+      onChange,
+      onInputChange,
+      onOpen,
+      onClose,
+      onHighlightIndexChange,
       ...rest
     } = this.props
 
