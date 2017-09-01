@@ -8,7 +8,7 @@ const COLLAPSED_WIDTH = 54
 
 export default class PanesSplitController extends React.Component {
   static propTypes = {
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
     onSholdCollapse: PropTypes.func,
     onSholdExpand: PropTypes.func
   }
