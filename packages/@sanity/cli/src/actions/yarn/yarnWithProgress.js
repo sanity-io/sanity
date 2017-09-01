@@ -26,8 +26,16 @@ export default function yarnWithProgress(args, options = {}) {
     env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
   }, options.execOpts || {})
 
-  const proc = execa(yarnPath, args.concat(['--json', '--non-interactive']), execOpts)
-  proc.catch(onNativeError);
+  const nodePath = process.argv[0]
+  const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive'])
+
+  const proc = execa(nodePath, nodeArgs, execOpts)
+  proc.catch(onNativeError)
+
+  // Will throw error async through the promise above
+  if (!proc.stdout) {
+    return
+  }
 
   [proc.stdout, proc.stderr].forEach(stream => {
     stream
@@ -143,7 +151,7 @@ export default function yarnWithProgress(args, options = {}) {
       state.spinner.stop()
     }
 
-    print(`${chalk.green('✔')} Saved lockfile`)
+    print(`\n${chalk.green('✔')} Saved lockfile`)
   }
 
   function onFinished(event) {
