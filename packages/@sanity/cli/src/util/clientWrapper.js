@@ -74,7 +74,8 @@ export default function clientWrapper(manifest, configPath) {
       dataset: apiConfig.dataset || 'dummy',
       token: token,
       useProjectHostname: requireProject,
-      requester: requester
+      requester: requester,
+      useCdn: false
     })
   }
 }
