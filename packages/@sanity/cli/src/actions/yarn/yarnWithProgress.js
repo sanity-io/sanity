@@ -34,7 +34,7 @@ export default function yarnWithProgress(args, options = {}) {
 
   // Will throw error async through the promise above
   if (!proc.stdout) {
-    return
+    return proc
   }
 
   [proc.stdout, proc.stderr].forEach(stream => {
