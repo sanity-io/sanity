@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "0.110.1",
+  "version": "0.111.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
