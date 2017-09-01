@@ -1,15 +1,14 @@
 // @flow
 import React from 'react'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
-import {omit} from 'lodash'
 
-type ValidAxis = "x" | "y" | "xy"
+type ValidAxis = 'x' | 'y' | 'xy'
 
 type ListProps = {
   className: string,
   movingItemClass: string,
   useDragHandle: boolean,
-  onSort: ({oldIndex: number, newIndex: number}) => void,
+  onSort: ({ oldIndex: number, newIndex: number }) => void,
   distance: number,
   lockToContainerEdges: boolean,
   transitionDuration: number,
@@ -17,11 +16,7 @@ type ListProps = {
   lockAxis: ValidAxis
 }
 
-
-// Remove these so they don't accidentally leak
-const reactSortableHOCListProps = `axis,lockAxis,helperClass,transitionDuration,pressDelay,pressThreshold,distance,shouldCancelStart,onSortStart,onSortMove,onSortEnd,useDragHandle,useWindowAsScrollContainer,hideSortableGhost,lockToContainerEdges,lockOffset,getContainer,getHelperDimensions`.split(',')
-
-export function createSortableList(element : Element) {
+export function createSortableList(element: Element) {
 
   // Delegate to SortableContainer from react-sortable-hoc
   const Sortable = SortableContainer(element)
@@ -36,10 +31,24 @@ export function createSortableList(element : Element) {
       axis,
       lockAxis,
       transitionDuration,
+      // Remove react-sortable-hoc props so they don't accidentally leak through usage of {...rest}
+      /* eslint-disable react/prop-types */
+      helperClass,
+      pressDelay,
+      pressThreshold,
+      shouldCancelStart,
+      onSortStart,
+      onSortMove,
+      onSortEnd,
+      useWindowAsScrollContainer,
+      hideSortableGhost,
+      lockOffset,
+      getContainer,
+      getHelperDimensions,
+      /* eslint-enable react/prop-types */
+      // ------------------------------
+      ...rest
     } = props
-
-    // Remove react-sortable-hoc props so they don't accidentally leak through usage of {...rest}
-    const rest = omit(props, reactSortableHOCListProps)
 
     return (
       <Sortable
@@ -61,10 +70,10 @@ type ItemProps = {
   index: number
 }
 
-export function createSortableItem(element : Element) {
+export function createSortableItem(element: Element) {
   const Sortable = SortableElement(element)
   // Delegate to SortableElement from react-sortable-hoc
-  return function SortableItem(props : ItemProps) {
+  return function SortableItem(props: ItemProps) {
     const {
       collection, disabled, // omit to avoid {...rest} leakage
       index,
@@ -74,6 +83,6 @@ export function createSortableItem(element : Element) {
   }
 }
 
-export function createDragHandle(element : Element) {
+export function createDragHandle(element: Element) {
   return SortableHandle(element)
 }

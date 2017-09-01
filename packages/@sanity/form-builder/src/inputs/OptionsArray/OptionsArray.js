@@ -1,14 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import {get, deepEqual} from 'lodash'
+import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import Item from './Item'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
-import {isLegacyOptionsItem} from './legacyOptionsSupport'
+import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
@@ -46,7 +44,15 @@ function inArray(array, candidate) {
 
 export default class OptionsArray extends React.PureComponent {
   static propTypes = {
-    type: FormBuilderPropTypes.type,
+    type: PropTypes.shape({
+      options: PropTypes.shape({
+        list: PropTypes.array,
+        direction: PropTypes.string
+      }),
+      name: PropTypes.string,
+      description: PropTypes.string,
+      of: PropTypes.array
+    }),
     value: PropTypes.array,
     level: PropTypes.number,
     onChange: PropTypes.func
@@ -86,13 +92,13 @@ export default class OptionsArray extends React.PureComponent {
 
     return (
       <Fieldset legend={type.title} description={type.description} level={level}>
-        {options.map(option => {
+        {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
           if (!optionType) {
             const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
             const validTypes = type.of.map(ofType => ofType.name)
             return (
-              <div key={option._key}>
+              <div key={option._key || index}>
                 Invalid option type: Type <code>{actualType}</code> not valid for array
                 of [{validTypes.join(', ')}]. Check
                 the list options of this field
@@ -102,7 +108,7 @@ export default class OptionsArray extends React.PureComponent {
           const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
           return (
             <div
-              key={option._key}
+              key={option._key || index}
               style={{
                 display: direction === 'horizontal' ? 'inline-block' : 'block',
                 marginRight: direction === 'horizontal' ? '1em' : '0',

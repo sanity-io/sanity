@@ -17,7 +17,8 @@ export default class ObjectInput extends React.PureComponent {
     value: PropTypes.object,
     onChange: PropTypes.func,
     level: PropTypes.number,
-    isRoot: PropTypes.bool
+    isRoot: PropTypes.bool,
+    autoFocus: PropTypes.bool
   }
 
   static defaultProps = {
@@ -83,9 +84,8 @@ export default class ObjectInput extends React.PureComponent {
     const columns = fieldset.options && fieldset.options.columns
     const collapsable = fieldset.options && fieldset.options.collapsable
     return (
-      <div className={fieldStyles.root}>
+      <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
-          key={fieldset.name}
           legend={fieldset.title}
           description={fieldset.description}
           level={level + 1}

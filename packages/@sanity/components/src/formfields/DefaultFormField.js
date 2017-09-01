@@ -6,7 +6,7 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 
 export default class DefaultFormField extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     className: PropTypes.string,
     inline: PropTypes.bool,
     description: PropTypes.string,

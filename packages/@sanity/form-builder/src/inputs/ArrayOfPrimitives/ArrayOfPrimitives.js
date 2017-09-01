@@ -86,6 +86,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     if (!itemMemberType) {
       return (
         <InvalidValue
+          key={index}
           actualType={typeName}
           validTypes={type.of.map(memberType => memberType.name)}
           onChange={ev => onChange(ev.prefixAll(index))}
@@ -97,7 +98,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     const sortable = get(type, 'options.sortable') !== false
     const ListItem = sortable ? SortableItem : DefaultItem
     return (
-      <ListItem index={index}>
+      <ListItem key={index} index={index}>
         <Item
           level={level + 1}
           index={index}

@@ -77,7 +77,7 @@ export default class PanesSplitController extends React.Component {
           </div>
 
           {/* <div className={styles.paneInSplitted}></div> */}
-          {pane2}
+          {pane2 || ' '}
 
         </SplitPane>
       </div>

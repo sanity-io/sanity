@@ -13,16 +13,12 @@ export default {
     {
       name: 'arrayOfPredefinedOptions',
       title: 'Array of predefined options',
-      description: (
-        <ul>
-          <li>It should be possible to check/uncheck the different options.</li>
-          <li>There should be a warning about invalid type (number)</li>
-          <li>
-            When inspecting a document with checked values, the array should contain values with
-            <pre>{'{_type: "color", ...}'}</pre>
-          </li>
-        </ul>
-      ),
+      description: [
+        'It should be possible to check/uncheck the different options.',
+        'There should be a warning about invalid type (number)',
+        'When inspecting a document with checked values, the array should contain values with: ',
+        '{_type: "color", ...}'
+      ].join('\n'),
       type: 'array',
       of: [
         {

@@ -4,7 +4,7 @@ import StatelessSearchableSelect from './StatelessSearchableSelect'
 
 export default class SearchableSelect extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     description: PropTypes.string,
     onChange: PropTypes.func,
     onSearch: PropTypes.func,
@@ -12,7 +12,7 @@ export default class SearchableSelect extends React.Component {
     onClose: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.object,
-    valueAsString: PropTypes.string,
+    inputValue: PropTypes.string,
     error: PropTypes.bool,
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
@@ -31,9 +31,9 @@ export default class SearchableSelect extends React.Component {
 
   constructor(props) {
     super()
-    const {valueAsString} = props
+    const {inputValue} = props
     this.state = {
-      inputValue: valueAsString || '',
+      inputValue: inputValue || '',
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
@@ -52,9 +52,9 @@ export default class SearchableSelect extends React.Component {
       })
     }
 
-    if (nextProps.valueAsString !== this.props.valueAsString) {
+    if (nextProps.inputValue !== this.props.inputValue) {
       this.setState({
-        inputValue: nextProps.valueAsString
+        inputValue: nextProps.inputValue
       })
     }
   }
@@ -104,9 +104,10 @@ export default class SearchableSelect extends React.Component {
 
   render() {
     const {isOpen, highlightIndex, isInputSelected, inputValue} = this.state
+    const {onSearch, ...rest} = this.props
     return (
       <StatelessSearchableSelect
-        {...this.props}
+        {...rest}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         onHighlightIndexChange={this.handleHighlightIndexChange}
