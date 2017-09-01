@@ -53,7 +53,7 @@ export const FileType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+    lazyGetter(parsed, 'preview', createPreviewGetter(Object.assign({}, subTypeDef, {fields})))
 
     return subtype(parsed)
 
