@@ -1,6 +1,6 @@
 {
   "name": "@sanity/state-router",
-  "version": "0.109.0",
+  "version": "0.111.2",
   "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
