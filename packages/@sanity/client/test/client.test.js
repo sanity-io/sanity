@@ -1284,7 +1284,7 @@ test('will use CDN API if told to', t => {
   const client = sanityClient({projectId: 'abc123', dataset: 'foo', useCdn: true})
 
   const response = {result: []}
-  nock('https://abc123.cdnapi.sanity.io')
+  nock('https://abc123.apicdn.sanity.io')
     .get('/v1/data/query/foo?query=*')
     .reply(200, response)
 

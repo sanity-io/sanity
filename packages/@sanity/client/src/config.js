@@ -2,7 +2,7 @@ const generateHelpUrl = require('@sanity/generate-help-url')
 const assign = require('object-assign')
 const validate = require('./validators')
 
-const defaultCdnHost = 'cdnapi.sanity.io'
+const defaultCdnHost = 'apicdn.sanity.io'
 const defaultConfig = {
   apiHost: 'https://api.sanity.io',
   useProjectHostname: true,
