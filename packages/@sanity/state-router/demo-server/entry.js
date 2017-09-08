@@ -33,9 +33,15 @@ function handleNavigate(nextUrl, {replace} = {}) {
 
 function render(state, pathname) {
   ReactDOM.render((
-    <RouterProvider router={router} onNavigate={handleNavigate} state={state}>
-      {router.isNotFound(pathname) ? <NotFound pathname={pathname} /> : <Main />}
-    </RouterProvider>
+    <div>
+      <RouterProvider router={router} onNavigate={handleNavigate} state={state}>
+        {router.isNotFound(pathname) ? <NotFound pathname={pathname} /> : <Main />}
+      </RouterProvider>
+      <div>
+        <h2>Components outside provider context</h2>
+        <Main />
+      </div>
+    </div>
   ), document.getElementById('main'))
 }
 
@@ -64,6 +70,7 @@ function checkPath() {
       handleNavigate(router.encode(handler.resolveRedirectState(state.intent, state.params)), {replace: true})
       return
     }
+    // eslint-disable-next-line no-console
     console.log('No intent handler for intent "%s" with params %o', state.intent, state.params)
   }
   render(state || {}, pathname)

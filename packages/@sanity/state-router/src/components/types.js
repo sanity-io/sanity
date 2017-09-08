@@ -14,21 +14,21 @@ export type RouterState = Object
 
 export type InternalRouter = {
   resolvePathFromState: (nextState : RouterState) => string,
-  resolveIntentLink: (intent : string, params? : Object) => string,
+  resolveIntentLink: (intentName : string, params? : Object) => string,
   navigateUrl: (url : string, options? : NavigateOptions) => void,
   navigate: (nextState : RouterState, options? : NavigateOptions) => void,
+  navigateIntent: (intentName : string, params?: Object, options? : NavigateOptions) => void,
   getState: () => RouterState,
   channel: Channel<RouterState>
 }
 
-export type ContextRouter = {
+export type Router = {
   navigate: (nextState : Object, options? : NavigateOptions) => void,
+  navigateIntent: (intentName : string, params? : Object, options? : NavigateOptions) => void,
   state: Object
 }
 
-
 export type RouterProviderContext = {
-  __internalRouter: InternalRouter,
-  router: ContextRouter,
+  __internalRouter: InternalRouter
 }
 

@@ -1,18 +1,18 @@
-import PropTypes from 'prop-types'
 // @flow
 import React from 'react'
-import {omit} from 'lodash'
 import Link from './Link'
 import type {RouterProviderContext} from './types'
+import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 
 const EMPTY_STATE = {}
 
-export default class StateLink extends React.PureComponent {
+export default class StateLink extends React.PureComponent<*, *> {
   props: {
     state?: Object,
     toIndex?: boolean
   }
   context: RouterProviderContext
+  _element: Link
 
   static defaultProps = {
     replace: false,
@@ -20,7 +20,7 @@ export default class StateLink extends React.PureComponent {
   }
 
   static contextTypes = {
-    __internalRouter: PropTypes.object
+    __internalRouter: internalRouterContextTypeCheck
   }
 
   resolveUrl() : string {
@@ -37,7 +37,14 @@ export default class StateLink extends React.PureComponent {
 
     const nextState = toIndex ? EMPTY_STATE : (state || EMPTY_STATE)
 
-    return this.context.__internalRouter.resolvePathFromState(nextState)
+    return this.resolvePathFromState(nextState)
+  }
+
+  resolvePathFromState(state: Object) {
+    if (!this.context.__internalRouter) {
+      return `javascript://state@${JSON.stringify(state)}`
+    }
+    return this.context.__internalRouter.resolvePathFromState(state)
   }
 
 
@@ -47,8 +54,10 @@ export default class StateLink extends React.PureComponent {
     }
   }
 
-  setElement = element => {
-    this._element = element
+  setElement = (element: ?Link) => {
+    if (element) {
+      this._element = element
+    }
   }
 
   render() {
