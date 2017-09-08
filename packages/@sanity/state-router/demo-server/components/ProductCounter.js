@@ -1,10 +1,10 @@
 // @flow
-import type {ContextRouter} from '../../src/components/types'
+import type {Router} from '../../src/components/types'
 import React from 'react'
 import withRouterHOC from '../../src/components/withRouterHOC'
 
 type Props = {
-  router: ContextRouter
+  router: Router
 }
 
 export default withRouterHOC((props: Props) => {
