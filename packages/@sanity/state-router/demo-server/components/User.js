@@ -1,8 +1,9 @@
+// @flow
 import PropTypes from 'prop-types'
 import React from 'react'
 import StateLink from '../../src/components/StateLink'
 
-export default class User extends React.Component {
+export default class User extends React.Component<*> {
   static propTypes = {
     id: PropTypes.string
   }

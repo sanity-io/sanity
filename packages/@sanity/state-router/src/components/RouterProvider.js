@@ -1,18 +1,18 @@
-import PropTypes from 'prop-types'
 // @flow
-import React, { Element } from 'react';
+import * as React from 'react'
+import PropTypes from 'prop-types'
 import type {Router} from '../types'
 import type {RouterProviderContext, NavigateOptions, InternalRouter, RouterState} from './types'
 import pubsub from 'nano-pubsub'
 
 type Props = {
-  onNavigate: (nextPath: string) => void,
+  onNavigate: (nextPath: string, options?: NavigateOptions) => void,
   router: Router,
   state: RouterState,
-  children?: Element<*>
+  children: React.Node
 }
 
-export default class RouterProvider extends React.Component {
+export default class RouterProvider extends React.Component<*, *> {
   props: Props
 
   static childContextTypes = {
@@ -45,7 +45,7 @@ export default class RouterProvider extends React.Component {
     this.navigateUrl(this.resolvePathFromState(nextState), options)
   }
 
-  navigateIntent = (intentName : string, params : Object, options : NavigateOptions = {}) : void => {
+  navigateIntent = (intentName : string, params? : Object, options? : NavigateOptions = {}) : void => {
     this.navigateUrl(this.resolveIntentLink(intentName, params), options)
   }
 
@@ -55,8 +55,8 @@ export default class RouterProvider extends React.Component {
     return this.props.router.encode(state)
   }
 
-  resolveIntentLink = (intent : string, params? : Object) : string => {
-    return this.props.router.encode({intent, params})
+  resolveIntentLink = (intentName : string, params?: Object) : string => {
+    return this.props.router.encode({intent: intentName, params})
   }
 
   getChildContext() : RouterProviderContext {
