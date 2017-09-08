@@ -1364,6 +1364,18 @@ test('includes token if set', t => {
     .then(t.end)
 })
 
+test('includes user agent in node', t => {
+  const pkg = require('../package.json')
+  const reqheaders = {'User-Agent': `${pkg.name} ${pkg.version}`}
+  nock(projectHost(), {reqheaders})
+    .get('/v1/data/doc/foo/bar')
+    .reply(200, {documents: []})
+
+  getClient().getDocument('bar')
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('can use alternative http requester', t => {
   const requester = () => sanityObservable.of({

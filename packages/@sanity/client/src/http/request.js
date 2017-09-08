@@ -28,10 +28,16 @@ const middleware = [
   observable({implementation: SanityObservable})
 ]
 
-// Don't include debug middleware in browsers
+// Node-specifics
 if (process.env.BROWSERIFY_ENV !== 'build') {
+  // Only include debug middleware in browsers
   const debug = require('get-it/lib/middleware/debug')
   middleware.unshift(debug({verbose: true, namespace: 'sanity:client'}))
+
+  // Assign user agent in node
+  const headers = require('get-it/lib/middleware/headers')
+  const pkg = require('../../package.json')
+  middleware.unshift(headers({'User-Agent': `${pkg.name} ${pkg.version}`}))
 }
 
 const request = getIt(middleware)
