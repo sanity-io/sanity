@@ -50,6 +50,10 @@ exports.initConfig = (config, prevConfig) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
+  if (typeof newConfig.useCdn === 'undefined') {
+    printCdnWarning()
+  }
+
   if (projectBased) {
     validate.projectId(newConfig.projectId)
   }
@@ -77,10 +81,6 @@ exports.initConfig = (config, prevConfig) => {
       newConfig.url = `${newConfig.apiHost}/v1`
       newConfig.cdnUrl = newConfig.url
     }
-  }
-
-  if (typeof config.useCdn === 'undefined') {
-    printCdnWarning()
   }
 
   return newConfig

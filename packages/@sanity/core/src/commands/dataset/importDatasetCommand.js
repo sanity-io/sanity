@@ -167,6 +167,7 @@ function getSanityClient(options) {
     apiHost: options.gradient,
     dataset: options.dataset || config.dataset,
     token: options.token || config.token,
+    useCdn: false
   })
 }
 
