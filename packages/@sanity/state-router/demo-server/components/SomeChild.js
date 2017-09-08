@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 export default class SomeChild extends React.Component {

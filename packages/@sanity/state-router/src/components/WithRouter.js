@@ -1,14 +1,13 @@
 // @flow
-import {Element} from 'react'
-import type {ContextRouter} from './types'
+import * as React from 'react'
+import type {Router} from './types'
 import withRouterHOC from './withRouterHOC'
 
 type Props = {
-  router: ContextRouter,
-  children: (ContextRouter) => Element<*>
+  router: Router,
+  children: (Router) => React.Node
 }
 
-const WithRouter = withRouterHOC((props : Props) => props.children(props.router))
-WithRouter.displayName = 'WithRouter'
+const WithRouter = withRouterHOC((props: Props) => props.children(props.router))
 
 export default WithRouter
