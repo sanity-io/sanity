@@ -25,6 +25,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/data-aspects.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }

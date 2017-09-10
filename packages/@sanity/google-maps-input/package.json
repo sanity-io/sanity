@@ -31,6 +31,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/google-maps-input.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }

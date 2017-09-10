@@ -43,6 +43,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/desk-tool.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }

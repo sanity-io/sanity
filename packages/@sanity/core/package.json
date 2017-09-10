@@ -54,6 +54,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/core.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }
