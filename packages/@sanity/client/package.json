@@ -16,6 +16,10 @@
     "prepublish": "in-publish && npm run build || not-in-publish",
     "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
   },
+  "browser": {
+    "./src/http/nodeMiddleware.js": "./src/http/browserMiddleware.js",
+    "./lib/http/nodeMiddleware.js": "./lib/http/browserMiddleware.js"
+  },
   "dependencies": {
     "@sanity/eventsource": "^0.111.5",
     "@sanity/generate-help-url": "^0.111.5",
