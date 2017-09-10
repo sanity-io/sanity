@@ -30,6 +30,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/date-input.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }

@@ -23,6 +23,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/default-login.git"
+    "url": "git@github.com:sanity-io/sanity.git"
   }
 }
