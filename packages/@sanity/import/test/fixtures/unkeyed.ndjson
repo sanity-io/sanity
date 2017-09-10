@@ -1,0 +1,2 @@
+{"_id": "espen", "_type": "employee", "name": "Espen", "favGames": [{"_ref": "bf1942"}]}
+{"_id": "pk", "_type": "employee", "name": "Per-Kristian", "favGames": [{"_ref": "cod2"}, {"_ref": "bf2"}]}
