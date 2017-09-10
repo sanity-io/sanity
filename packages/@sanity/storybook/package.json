@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/sanity-io/sanity#readme",
   "dependencies": {
-    "@kadira/storybook": "^2.35.3",
-    "@kadira/storybook-addon-knobs": "^1.7.1",
-    "@kadira/storybook-addons": "^1.6.1",
+    "@storybook/react": "^3.2.8",
+    "@storybook/addons": "^3.2.6",
+    "@storybook/addon-knobs": "^3.2.8",
     "@sanity/server": "^0.113.7",
     "normalize.css": "^5.0.0",
     "react-addons-create-fragment": "^15.4.2",
