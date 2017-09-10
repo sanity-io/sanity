@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'; // eslint-disable-line no-unused-vars
-import addons from '@kadira/storybook-addons'
+import addons from '@storybook/addons'
 import parts from 'sanity:debug'
 import extractPropTypes from './extractPropTypes'
 

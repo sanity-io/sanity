@@ -80,7 +80,7 @@
     "jsdom": "^9.9.1",
     "json-markup": "^1.1.0",
     "path-to-regexp": "^1.7.0",
-    "postcss-cssnext": "2.10.0",
+    "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
