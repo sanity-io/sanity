@@ -15,7 +15,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "prop-types": "^15.5.10"
   },
   "devDependencies": {
     "@sanity/check": "^0.111.5",
