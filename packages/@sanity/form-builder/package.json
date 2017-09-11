@@ -79,12 +79,17 @@
     "path-to-regexp": "^1.7.0",
     "postcss-cssnext": "2.10.0",
     "prop-types": "^15.5.8",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0-rc.2",
     "react-enroute": "^1.0.0",
     "rimraf": "^2.6.1",
     "tap": "^10.3.0",
     "zen-observable": "^0.4.0"
+  },
+  "peerDependencies": {
+    "prop-types": "15.x || ^16.0.0-rc.2",
+    "react": "15.x || ^16.0.0-rc.2",
+    "react-dom": "15.x || ^16.0.0-rc.2"
   },
   "directories": {
     "example": "example",

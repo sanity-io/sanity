@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types, react/no-multi-comp */
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import tokenize from 'json-lexer'
 
 const punctuator = token => <span className={token.className}>{token.raw}</span>

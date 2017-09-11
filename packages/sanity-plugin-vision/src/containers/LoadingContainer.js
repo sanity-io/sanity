@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import request from '../util/request'
 
 // Yeah, inheritance and all that. Deal with it.

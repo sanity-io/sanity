@@ -20,7 +20,7 @@
     "@sanity/server": "^0.111.5",
     "@sanity/storybook": "^0.111.5",
     "prop-types": "^15.5.8",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0-rc.2"
   }
 }

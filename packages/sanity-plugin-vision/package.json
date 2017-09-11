@@ -19,9 +19,9 @@
     "json-lexer": "^1.1.1",
     "moment": "^2.17.1",
     "query-string": "^4.3.2",
-    "react-codemirror": "^0.3.0",
+    "react-codemirror2": "^1.0.0",
     "react-icon-base": "^2.0.4",
-    "react-json-inspector": "^7.0.0",
+    "react-json-inspector": "rexxars/react-json-inspector#react-15",
     "react-spinner": "^0.2.6",
     "react-split-pane": "^0.1.63"
   },
@@ -38,8 +38,13 @@
     "eslint-config-sanity": "^2.0.2",
     "eslint-plugin-react": "^6.10.0",
     "prop-types": "^15.5.8",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0-rc.2"
+  },
+  "peerDependencies": {
+    "prop-types": "15.x || ^16.0.0-rc.2",
+    "react": "15.x || ^16.0.0-rc.2",
+    "react-dom": "15.x || ^16.0.0-rc.2"
   },
   "repository": {
     "type": "git",

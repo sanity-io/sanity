@@ -32,7 +32,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "react-click-outside": "^2.2.0",
-    "react-json-inspector": "^7.0.0",
+    "react-json-inspector": "rexxars/react-json-inspector#react-15",
     "react-tiny-virtual-list": "^2.0.5",
     "shallow-equals": "^1.0.0"
   },
@@ -50,9 +50,12 @@
     "history": "^4.5.1",
     "postcss-cssnext": "2.10.0",
     "prop-types": "^15.5.8",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "^16.0.0-rc.2",
     "rimraf": "^2.6.1"
+  },
+  "peerDependencies": {
+    "prop-types": "15.x || ^16.0.0-rc.2",
+    "react": "15.x || ^16.0.0-rc.2"
   },
   "repository": {
     "type": "git",

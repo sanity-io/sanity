@@ -29,6 +29,11 @@
     "lodash": "^4.17.4",
     "rimraf": "^2.6.1"
   },
+  "peerDependencies": {
+    "prop-types": "15.x || ^16.0.0-rc.2",
+    "react": "15.x || ^16.0.0-rc.2",
+    "react-dom": "15.x || ^16.0.0-rc.2"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:sanity-io/sanity.git"

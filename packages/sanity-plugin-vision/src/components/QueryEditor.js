@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactCodeMirror from 'react-codemirror'
+import ReactCodeMirror from 'react-codemirror2'
 import CodeMirror from 'codemirror'
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
@@ -41,7 +41,7 @@ class QueryEditor extends React.PureComponent {
     }
   }
 
-  handleChange(value) {
+  handleChange(editor, metadata, value) {
     this.props.onChange({query: value})
   }
 
@@ -61,6 +61,7 @@ class QueryEditor extends React.PureComponent {
         value={this.props.value}
         onChange={this.handleChange}
         options={options}
+        className={this.props.className}
       />
     )
   }
