@@ -1,5 +1,4 @@
 import webpack from 'webpack'
-import {find, get, set} from 'lodash'
 import registerBabel from 'babel-register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
@@ -20,19 +19,6 @@ export default function getDevServer(config = {}) {
   // Use babel-register in order to be able to load things like
   // the document component, which can contain JSX etc
   registerBabel()
-
-  // Inject hot module reloading preset if not present already
-  const babelLoader = find(webpackConfig.module.loaders, {loader: 'babel'})
-  if (babelLoader) {
-    const presets = get(babelLoader, 'query.env.development.presets', [])
-    if (presets.indexOf('react-hmre') === -1) {
-      set(
-        babelLoader,
-        'query.env.development.presets',
-        presets.concat(require.resolve('babel-preset-react-hmre'))
-      )
-    }
-  }
 
   // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
