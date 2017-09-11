@@ -1,5 +1,5 @@
 // @flow
-import * as React from 'react'
+import React from 'react'
 import {omit} from 'lodash'
 import type {RouterProviderContext} from './types'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'

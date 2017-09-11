@@ -1,15 +1,16 @@
 // @flow
-import * as React from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import pubsub from 'nano-pubsub'
+import type {Node} from 'react'
 import type {Router} from '../types'
 import type {RouterProviderContext, NavigateOptions, InternalRouter, RouterState} from './types'
-import pubsub from 'nano-pubsub'
 
 type Props = {
   onNavigate: (nextPath: string, options?: NavigateOptions) => void,
   router: Router,
   state: RouterState,
-  children: React.Node
+  children: Node
 }
 
 export default class RouterProvider extends React.Component<*, *> {

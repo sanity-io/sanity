@@ -1,7 +1,8 @@
 // @flow
-import * as React from 'react'
-import type {Router, InternalRouter} from './types'
+import React from 'react'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
+import type {Router, InternalRouter} from './types'
+import type {ComponentType} from 'react'
 
 type State = {
   routerState: Object
@@ -17,7 +18,7 @@ const NO_CONTEXT_STATE = {
   }
 }
 
-export default function withRouter<Props: {}>(Component: React.ComponentType<{ router: Router } & Props>): React.ComponentType<Props> {
+export default function withRouter<Props: {}>(Component: ComponentType<{ router: Router } & Props>): ComponentType<Props> {
 
   return class extends React.Component<*, *> {
     static displayName = `withRouter(${Component.displayName || Component.name})`
