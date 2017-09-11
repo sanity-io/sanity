@@ -1,8 +1,9 @@
 // @flow
 import PropTypes from 'prop-types'
-import * as React from 'react'
+import React from 'react'
 import isEmpty from '../utils/isEmpty'
 
+import type {Node} from 'react'
 import type {RouterProviderContext, NavigateOptions, InternalRouter} from './types'
 
 function addScope(routerState: Object, scope: string, scopedState: Object) {
@@ -14,7 +15,7 @@ function addScope(routerState: Object, scope: string, scopedState: Object) {
 
 type Props = {
   scope: string,
-  children: React.Node
+  children: Node
 }
 
 export default class RouteScope extends React.Component<*, *> {
