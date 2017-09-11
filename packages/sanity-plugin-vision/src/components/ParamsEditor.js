@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import ReactCodeMirror from 'react-codemirror'
+import ReactCodeMirror from 'react-codemirror2'
 import isPlainObject from '../util/isPlainObject'
 import tryParseParams from '../util/tryParseParams'
 
@@ -25,7 +25,7 @@ class ParamsEditor extends React.PureComponent {
     }
   }
 
-  handleChange(value) {
+  handleChange(editor, metadata, value) {
     const params = tryParseParams(value)
     this.setState({valid: isPlainObject(params)})
     this.props.onChange({parsed: params, raw: value})

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import previewStyles from './AuthorPreview.css'
 

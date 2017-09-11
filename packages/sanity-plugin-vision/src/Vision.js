@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import VisionContainer from './containers/VisionContainer'
 
 // Passes the given Sanity client and components to use down

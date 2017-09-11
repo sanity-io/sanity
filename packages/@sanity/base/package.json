@@ -52,8 +52,13 @@
     "nyc": "^10.1.2",
     "prop-types": "^15.5.8",
     "proxyquire": "^1.7.10",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0-rc.2",
     "rimraf": "^2.6.1"
+  },
+  "peerDependencies": {
+    "prop-types": "15.x || ^16.0.0-rc.2",
+    "react": "15.x || ^16.0.0-rc.2",
+    "react-dom": "15.x || ^16.0.0-rc.2"
   }
 }

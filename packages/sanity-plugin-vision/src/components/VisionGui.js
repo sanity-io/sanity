@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import queryString from 'query-string'
 import {storeState, getState} from '../util/localState'
 import parseApiQueryString from '../util/parseApiQueryString'
