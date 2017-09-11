@@ -1,11 +1,12 @@
 // @flow
-import * as React from 'react'
-import type {Router} from './types'
+import React from 'react'
 import withRouterHOC from './withRouterHOC'
+import type {Router} from './types'
+import type {Node} from 'react'
 
 type Props = {
   router: Router,
-  children: (Router) => React.Node
+  children: (Router) => Node
 }
 
 const WithRouter = withRouterHOC((props: Props) => props.children(props.router))

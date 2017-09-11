@@ -1,5 +1,6 @@
 // @flow
-import * as React from 'react'
+import React from 'react'
+import type {Node} from 'react'
 import Link from './Link'
 import type {RouterProviderContext} from './types'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
@@ -8,7 +9,7 @@ export default class IntentLink extends React.PureComponent<*, *> {
   props: {
     intent: string,
     params?: Object,
-    children: React.Node,
+    children: Node,
     className: string
   };
 
