@@ -29,6 +29,14 @@
   margin-right: 0.5em;
 }
 
+.queryEditor {
+  height: 100%
+}
+
+.paramsEditor {
+  height: 100%
+}
+
 .queryTimingContainer {
   flex-grow: 1;
   text-align: right;
