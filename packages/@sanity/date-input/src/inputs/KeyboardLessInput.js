@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './Date.css'
+import styles from './RichDate.css'
 
 /**
  * The purpose of this custom input is to prevent keyboard shortcuts for

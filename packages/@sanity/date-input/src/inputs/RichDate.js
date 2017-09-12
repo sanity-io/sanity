@@ -1,19 +1,38 @@
 import moment from 'moment-timezone'
 import {uniqueId} from 'lodash'
+import generateHelpUrl from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 import React from 'react'
 import Kronos from 'react-kronos'
 import FormField from 'part:@sanity/components/formfields/default'
-import styles from './Date.css'
+import styles from './RichDate.css'
 import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
 
 const KRONOS_STYLES = {
   input: styles.datepicker,
   kronos: styles.kronos
 }
+const DEPRECATION_WARNING = (
+  <div className={styles.deprecationWarning}>
+    This field has <code>type: {'date'}</code>, which is deprecated and should be changed to
+    {' '}<code>type: {'richDate'}</code>.
+    Please update your schema and migrate your data. {' '}
+    <a
+      href={generateHelpUrl('migrate-to-rich-date')}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      More info
+    </a>
+  </div>
+)
 
 export default class RichDateInput extends React.PureComponent {
 
+  inputId = uniqueId('RichDateInput')
+
+  // If schema options sez input is UTC
+  // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
     const {type} = this.props
 
@@ -70,7 +89,6 @@ export default class RichDateInput extends React.PureComponent {
     const {value, type, level} = this.props
     const {title, description} = type
     const options = this.optionsWithDefaults()
-    const inputId = uniqueId('FormBuilderText')
     const editableMoment = this.editableMoment(value)
     const kronosProps = {
       options: {
@@ -88,27 +106,28 @@ export default class RichDateInput extends React.PureComponent {
     }
 
     return (
-      <FormField labelHtmlFor={inputId} label={title} level={level} description={description}>
+      <FormField labelFor={this.inputId} label={title} level={level} description={description}>
+        {type.name === 'date' && DEPRECATION_WARNING}
         <div className={styles.root}>
           {options.inputDate && (
-          <Kronos
-            classes={KRONOS_STYLES}
-            date={editableMoment}
-            format={options.dateFormat}
-            onChangeDateTime={this.handleChange}
-            placeholder={options.placeholderDate}
-            {...kronosProps}
-          />
+            <Kronos
+              classes={KRONOS_STYLES}
+              date={editableMoment}
+              format={options.dateFormat}
+              onChangeDateTime={this.handleChange}
+              placeholder={options.placeholderDate}
+              {...kronosProps}
+            />
           )}
           {options.inputTime && (
-          <Kronos
-            classes={KRONOS_STYLES}
-            time={editableMoment}
-            format={options.timeFormat}
-            onChangeDateTime={this.handleChange}
-            placeholder={options.placeholderTime}
-            {...kronosProps}
-          />
+            <Kronos
+              classes={KRONOS_STYLES}
+              time={editableMoment}
+              format={options.timeFormat}
+              onChangeDateTime={this.handleChange}
+              placeholder={options.placeholderTime}
+              {...kronosProps}
+            />
           )}
         </div>
       </FormField>

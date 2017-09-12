@@ -6,10 +6,6 @@
 
   "parts": [
     {
-      "implements": "part:@sanity/form-builder/input/date",
-      "path": "inputs/Date"
-    },
-    {
       "implements": "part:@sanity/form-builder/input/rich-date",
       "path": "inputs/RichDate"
     },
