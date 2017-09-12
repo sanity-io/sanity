@@ -5,13 +5,13 @@ export default {
   fields: [
     {
       name: 'utc',
-      type: 'string',
+      type: 'string', // todo: should be changed to 'date' when date strings are supported
       title: 'UTC',
       required: true
     },
     {
       name: 'local',
-      type: 'string',
+      type: 'string', // todo: should be changed to 'date' when date strings are supported
       title: 'Local'
     },
     {
