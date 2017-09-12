@@ -36,7 +36,7 @@ assign(AssetsClient.prototype, {
     const observable = this.client._requestObservable({
       method: 'POST',
       timeout: options.timeout || 0,
-      url: `/assets/${assetEndpoint}/${dataset}`,
+      uri: `/assets/${assetEndpoint}/${dataset}`,
       headers: options.contentType ? {'Content-Type': options.contentType} : {},
       query,
       body
@@ -64,7 +64,7 @@ assign(AssetsClient.prototype, {
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     return this.client.request({
       method: 'DELETE',
-      url: `/assets/${assetEndpoint}/${dataset}/${docId}`
+      uri: `/assets/${assetEndpoint}/${dataset}/${docId}`
     })
   },
 
