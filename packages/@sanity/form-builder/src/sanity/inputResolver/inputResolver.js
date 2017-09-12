@@ -1,8 +1,8 @@
+import React from 'react'
 import customResolver from 'part:@sanity/form-builder/input-resolver?'
 
 import ArrayInput from 'part:@sanity/form-builder/input/array?'
 import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
-import DateInput from 'part:@sanity/form-builder/input/date?'
 import EmailInput from 'part:@sanity/form-builder/input/email?'
 import GeoPointInput from 'part:@sanity/form-builder/input/geopoint?'
 import NumberInput from 'part:@sanity/form-builder/input/number?'
@@ -19,6 +19,8 @@ import ImageInput from '../inputs/Image'
 
 import resolveReference from './resolveReference'
 
+const DeprecatedDateInput = RichDateInput
+
 const typeInputMap = {
   array: ArrayInput,
   object: ObjectInput,
@@ -27,7 +29,7 @@ const typeInputMap = {
   string: StringInput,
   text: TextInput,
   reference: ReferenceInput,
-  date: DateInput,
+  date: DeprecatedDateInput,
   richDate: RichDateInput,
   email: EmailInput,
   file: FileInput,
