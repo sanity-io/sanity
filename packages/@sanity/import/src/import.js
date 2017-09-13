@@ -19,6 +19,7 @@ async function importFromStream(stream, opts) {
 
   // Get raw documents from the stream
   debug('Streaming input source to array of documents')
+  options.onProgress({step: 'Reading/validating data file'})
   const raw = await streamToArray(stream)
 
   // User might not have applied `_key` on array elements which are objects;

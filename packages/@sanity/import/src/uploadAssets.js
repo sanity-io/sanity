@@ -4,6 +4,7 @@ const debug = require('debug')('sanity:import')
 const crypto = require('crypto')
 const pMap = require('p-map')
 const getBufferForUri = require('./util/getBufferForUri')
+const progressStepper = require('./util/progressStepper')
 
 const ASSET_UPLOAD_CONCURRENCY = 3
 const ASSET_PATCH_CONCURRENCY = 3
@@ -15,11 +16,17 @@ async function uploadAssets(assets, options) {
   // `assets` is an array of objects with shape: {documentId, path, url, type}
   const assetMap = getAssetMap(assets)
 
+  // Create a function we can call for every completed upload to report progress
+  const progress = progressStepper(options.onProgress, {
+    step: 'Importing assets (files/images)',
+    total: assetMap.size
+  })
+
   // Loop over all unique URLs and ensure they exist, and if not, upload them
   const mapOptions = {concurrency: ASSET_UPLOAD_CONCURRENCY}
   const assetIds = await pMap(
     assetMap.keys(),
-    ensureAsset.bind(null, options),
+    ensureAsset.bind(null, options, progress),
     mapOptions
   )
 
@@ -43,7 +50,7 @@ function getAssetMap(assets) {
   }, new Map())
 }
 
-async function ensureAsset(options, assetKey, i) {
+async function ensureAsset(options, progress, assetKey, i) {
   const {client} = options
   const [type, url] = assetKey.split('#', 2)
 
@@ -58,6 +65,7 @@ async function ensureAsset(options, assetKey, i) {
   if (assetId) {
     // Same hash means we want to reuse the asset
     debug('[Asset #%d] Found %s for hash %s', i, type, label)
+    progress()
     return assetId
   }
 
@@ -67,6 +75,7 @@ async function ensureAsset(options, assetKey, i) {
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
   const asset = await client.assets.upload(type, buffer, {label, filename})
+  progress()
   return asset.document._id
 }
 
@@ -116,16 +125,27 @@ function setAssetReferences(assetMap, assetIds, options) {
     batches.push(patchTasks.slice(i, i + ASSET_PATCH_BATCH_SIZE))
   }
 
+  // Since separate progress step for batches of reference sets
+  const progress = progressStepper(options.onProgress, {
+    step: 'Setting asset references to documents',
+    total: batches.length
+  })
+
   // Now perform the batch operations in parallel with a given concurrency
   const mapOptions = {concurrency: ASSET_PATCH_CONCURRENCY}
-  return pMap(batches, setAssetReferenceBatch.bind(null, client), mapOptions)
+  return pMap(
+    batches,
+    setAssetReferenceBatch.bind(null, client, progress),
+    mapOptions
+  )
 }
 
-function setAssetReferenceBatch(client, batch) {
+function setAssetReferenceBatch(client, progress, batch) {
   debug('Setting asset references on %d documents', batch.length)
   return batch
     .reduce(reducePatch, client.transaction())
     .commit({visibility: 'async'})
+    .then(progress)
     .then(res => res.results.length)
 }
 
