@@ -17,7 +17,7 @@ function importBatch(options, batch) {
   const {client, operation} = options
   return batch
     .reduce((trx, doc) => trx[operation](doc), client.transaction())
-    .commit()
+    .commit({visibility: 'async'})
     .then(res => res.results.length)
 }
 

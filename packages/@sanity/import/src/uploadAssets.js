@@ -125,7 +125,7 @@ function setAssetReferenceBatch(client, batch) {
   debug('Setting asset references on %d documents', batch.length)
   return batch
     .reduce(reducePatch, client.transaction())
-    .commit()
+    .commit({visibility: 'async'})
     .then(res => res.results.length)
 }
 
