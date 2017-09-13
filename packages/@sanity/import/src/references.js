@@ -66,7 +66,7 @@ function unsetWeakBatch(client, batch) {
   debug('Strengthening batch of %d documents', batch.length)
   return batch
     .reduce(reducePatch, client.transaction())
-    .commit()
+    .commit({visibility: 'async'})
     .then(res => res.results.length)
 }
 
