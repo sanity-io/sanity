@@ -30,7 +30,7 @@ async function importFromStream(stream, opts) {
   const docs = keyed.map(doc => setTypeOnReferences(doc))
 
   // Find references that will need strengthening when import is done
-  const strongRefs = docs.map(getStrongRefs)
+  const strongRefs = docs.map(getStrongRefs).filter(Boolean)
 
   // Extract asset references from the documents
   const assetRefs = flatten(docs.map(getAssetRefs).filter(ref => ref.length))
