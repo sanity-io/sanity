@@ -280,9 +280,11 @@ export default class BlockEditor extends React.Component {
 
     const hasError = validation && validation.messages && validation.messages.length > 0
     const showLinkButton = this.customSpans.length > 0
+
     return (
       <FormField
         label={type.title}
+        description={type.description}
         labelFor={this._inputId}
         level={level}
         className={fullscreen ? styles.formFieldFullscreen : styles.formField}

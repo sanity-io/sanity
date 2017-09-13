@@ -11,6 +11,7 @@ export default {
     {
       name: 'defaults',
       title: 'Content',
+      description: 'Profound description of what belongs here',
       type: 'array',
       of: [
         {type: 'image', title: 'Image'},
