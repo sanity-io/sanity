@@ -3,6 +3,7 @@ const pMap = require('p-map')
 const {get} = require('lodash')
 const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
+const progressStepper = require('./util/progressStepper')
 
 const STRENGTHEN_CONCURRENCY = 3
 const STRENGTHEN_BATCH_SIZE = 30
@@ -58,15 +59,21 @@ function strengthenReferences(strongRefs, options) {
     batches.push(strongRefs.slice(i, i + STRENGTHEN_BATCH_SIZE))
   }
 
+  const progress = progressStepper(options.onProgress, {
+    step: 'Strengthening references',
+    total: batches.length
+  })
+
   const mapOptions = {concurrency: STRENGTHEN_CONCURRENCY}
-  return pMap(batches, unsetWeakBatch.bind(null, client), mapOptions)
+  return pMap(batches, unsetWeakBatch.bind(null, client, progress), mapOptions)
 }
 
-function unsetWeakBatch(client, batch) {
+function unsetWeakBatch(client, progress, batch) {
   debug('Strengthening batch of %d documents', batch.length)
   return batch
     .reduce(reducePatch, client.transaction())
     .commit({visibility: 'async'})
+    .then(progress)
     .then(res => res.results.length)
 }
 

@@ -1,10 +1,14 @@
+const noop = require('lodash/noop')
 const defaults = require('lodash/defaults')
 const clientMethods = ['fetch', 'transaction', 'config']
 const allowedOperations = ['create', 'createIfNotExists', 'createOrReplace']
 const defaultOperation = allowedOperations[0]
 
 function validateOptions(stream, opts) {
-  const options = defaults({}, opts, {operation: defaultOperation})
+  const options = defaults({}, opts, {
+    operation: defaultOperation,
+    onProgress: noop
+  })
 
   if (typeof stream.pipe !== 'function') {
     throw new Error(

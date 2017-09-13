@@ -38,12 +38,12 @@ test('fails if asset download fails', () => {
     url: 'http://127.0.0.1:49999/img.gif'
   })
 
-  const upload = uploadAssets([asset], {client: null})
+  const upload = uploadAssets([asset], {client: null, onProgress: noop})
   return expect(upload).rejects.toMatchSnapshot()
 })
 
 test('fails if asset lookup fails', () => {
-  const options = {client: fetchFailClient}
+  const options = {client: fetchFailClient, onProgress: noop}
   const upload = uploadAssets([fileAsset], options)
   return expect(upload).rejects.toMatchSnapshot()
 })
@@ -70,7 +70,9 @@ test('will reuse an existing asset if it exists', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client})).resolves.toBe(1)
+  return expect(
+    uploadAssets([fileAsset], {client, onProgress: noop})
+  ).resolves.toBe(1)
 })
 
 test('will upload asset that do not already exist', () => {
@@ -98,7 +100,9 @@ test('will upload asset that do not already exist', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client})).resolves.toBe(1)
+  return expect(
+    uploadAssets([fileAsset], {client, onProgress: noop})
+  ).resolves.toBe(1)
 })
 
 test('will upload once but batch patches', () => {
@@ -124,6 +128,9 @@ test('will upload once but batch patches', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  const upload = uploadAssets(mockAssets(imgFileUrl), {client})
+  const upload = uploadAssets(mockAssets(imgFileUrl), {
+    client,
+    onProgress: noop
+  })
   return expect(upload).resolves.toBe(60)
 })
