@@ -8,10 +8,15 @@ const STRENGTHEN_CONCURRENCY = 3
 const STRENGTHEN_BATCH_SIZE = 30
 
 function getStrongRefs(doc) {
-  return {
-    documentId: doc._id,
-    references: findStrongRefs(doc).map(serializePath)
+  const refs = findStrongRefs(doc).map(serializePath)
+  if (refs.length) {
+    return {
+      documentId: doc._id,
+      references: refs
+    }
   }
+
+  return null
 }
 
 // Note: mutates in-place
@@ -66,7 +71,9 @@ function unsetWeakBatch(client, batch) {
 }
 
 function reducePatch(trx, task) {
-  return trx.patch(task.documentId, patch => patch.unset(task.references))
+  return trx.patch(task.documentId, patch =>
+    patch.unset(task.references.map(path => `${path}._weak`))
+  )
 }
 
 exports.getStrongRefs = getStrongRefs
