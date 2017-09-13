@@ -2,8 +2,10 @@
 
 /* eslint-disable id-length, no-console, no-process-env */
 const fs = require('fs')
+const ora = require('ora')
 const get = require('simple-get')
 const meow = require('meow')
+const prettyMs = require('pretty-ms')
 const sanityClient = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 
@@ -79,6 +81,11 @@ if (flags.replace || flags.missing) {
   operation = flags.replace ? 'createOrReplace' : 'createIfNotExists'
 }
 
+let currentStep
+let currentProgress
+let stepStart
+let spinInterval
+
 const client = sanityClient({
   projectId,
   dataset,
@@ -87,8 +94,12 @@ const client = sanityClient({
 })
 
 getStream()
-  .then(stream => sanityImport(stream, {client, operation}))
+  .then(stream => sanityImport(stream, {client, operation, onProgress}))
   .then(imported => {
+    const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
+    currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
+    currentProgress.succeed()
+
     console.log(
       'Done! Imported %d documents to dataset "%s"',
       imported,
@@ -100,28 +111,91 @@ getStream()
   })
 
 function getStream() {
+  if (/^https:\/\//i.test(source)) {
+    return getUriStream(source)
+  }
+
+  return Promise.resolve(
+    source === '-' ? process.stdin : fs.createReadStream(source)
+  )
+}
+
+function getUriStream(uri) {
   return new Promise((resolve, reject) => {
-    if (source === '-') {
-      resolve(process.stdin)
-      return
-    }
+    get(source, (err, res) => {
+      if (err) {
+        reject(new Error(`Error fetching source:\n${err.message}`))
+        return
+      }
 
-    if (/^https:\/\//i.test(source)) {
-      get(source, (err, res) => {
-        if (err) {
-          reject(new Error(`Error fetching source:\n${err.message}`))
-          return
-        }
+      if (res.statusCode !== 200) {
+        reject(new Error(`Error fetching source: HTTP ${res.statusCode}`))
+        return
+      }
 
-        if (res.statusCode !== 200) {
-          reject(new Error(`Error fetching source: HTTP ${res.statusCode}`))
-          return
-        }
-
-        resolve(res)
-      })
-    }
-
-    resolve(fs.createReadStream(source))
+      resolve(res)
+    })
   })
+}
+
+function onProgress(opts) {
+  const lengthComputable = opts.total
+  const sameStep = opts.step == currentStep
+  const percent = getPercentage(opts)
+
+  if (lengthComputable && opts.total === opts.current) {
+    clearInterval(spinInterval)
+    spinInterval = null
+  }
+
+  if (sameStep && !lengthComputable) {
+    return
+  }
+
+  if (sameStep) {
+    const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
+    currentProgress.text = `${percent}${opts.step} (${timeSpent})`
+    currentProgress.render()
+    return
+  }
+
+  // Moved to a new step
+  const prevStep = currentStep
+  const prevStepStart = stepStart
+  stepStart = Date.now()
+  currentStep = opts.step
+
+  if (spinInterval) {
+    clearInterval(spinInterval)
+    spinInterval = null
+  }
+
+  if (currentProgress && currentProgress.succeed) {
+    const timeSpent = prettyMs(Date.now() - prevStepStart, {
+      secDecimalDigits: 2
+    })
+    currentProgress.text = `[100%] ${prevStep} (${timeSpent})`
+    currentProgress.succeed()
+  }
+
+  currentProgress = ora(`[0%] ${opts.step} (0.00s)`).start()
+
+  if (!lengthComputable) {
+    spinInterval = setInterval(() => {
+      const timeSpent = prettyMs(Date.now() - prevStepStart, {
+        secDecimalDigits: 2
+      })
+      currentProgress.text = `${percent}${opts.step} (${timeSpent})`
+      currentProgress.render()
+    }, 60)
+  }
+}
+
+function getPercentage(opts) {
+  if (!opts.total) {
+    return ''
+  }
+
+  const percent = Math.floor(opts.current / opts.total * 100)
+  return `[${percent}%] `
 }
