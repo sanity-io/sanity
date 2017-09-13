@@ -1,3 +1,5 @@
+const basename = require('path').basename
+const parseUrl = require('url').parse
 const debug = require('debug')('sanity:import')
 const crypto = require('crypto')
 const pMap = require('p-map')
@@ -51,7 +53,7 @@ async function ensureAsset(options, assetKey, i) {
   const label = getHash(buffer)
 
   // See if the item exists on the server
-  debug('[Asset #%d]Checking for asset with hash %s', i, label)
+  debug('[Asset #%d] Checking for asset with hash %s', i, label)
   const assetId = await getAssetIdForLabel(client, type, label)
   if (assetId) {
     // Same hash means we want to reuse the asset
@@ -59,9 +61,12 @@ async function ensureAsset(options, assetKey, i) {
     return assetId
   }
 
+  const {pathname} = parseUrl(url)
+  const filename = basename(pathname)
+
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
-  const asset = await client.assets.upload(type, buffer, {label})
+  const asset = await client.assets.upload(type, buffer, {label, filename})
   return asset.document._id
 }
 
