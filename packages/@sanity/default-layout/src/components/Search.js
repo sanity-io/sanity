@@ -67,11 +67,11 @@ function search(query) {
       )
   )
 
-  const terms = query.split(/\s+/)
+  const terms = query.split(/\s+/).filter(Boolean)
   const uniqueFields = union(searchableFields)
-  const constraints = flatten(uniqueFields.map(field => terms.map(term => `${field} match '${term}**'`)))
-
-  return client.observable.fetch(`*[${constraints.join(' || ')}][0...10]`)
+  const constraints = terms.map(term => uniqueFields.map(field => `${field} match '${term}*'`))
+  const constraintString = constraints.map(constraint => `(${constraint.join(' || ')})`).join(' && ')
+  return client.observable.fetch(`*[${constraintString}][0...10]`)
 }
 
 
