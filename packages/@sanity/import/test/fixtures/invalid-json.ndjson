@@ -1,0 +1,3 @@
+{"_id":"foo","_type":"bar","num":0}
+{"_id":"bar","_type":"bar","num":1}
+{_id: "foo"}

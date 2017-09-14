@@ -1,13 +1,11 @@
 import path from 'path'
 import got from 'got'
+import padStart from 'lodash/padStart'
 import fsp from 'fs-promise'
 import prettyMs from 'pretty-ms'
-import progrescii from 'progrescii'
 import linecount from 'linecount/promise'
 import debug from '../../debug'
-import generateGuid from '../../util/generateGuid'
-import strengthenReferences from '../../actions/dataset/import/strengthenReferences'
-import importDocumentsToDataset from '../../actions/dataset/import/importDocumentsToDataset'
+import sanityImport from '@sanity/import'
 
 export default {
   name: 'import',
@@ -17,158 +15,145 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
 
-    const gradientMode = args.extOptions.gradient
     const operation = getMutationOperation(args.extOptions)
 
     const [file, targetDataset] = args.argsWithoutOptions
     if (!file) {
       throw new Error(
-        `Source file name and target dataset must be specified ("sanity dataset import ${chalk.bold('[file]')} [dataset]")`
+        `Source file name and target dataset must be specified ("sanity dataset import ${chalk.bold(
+          '[file]'
+        )} [dataset]")`
       )
     }
 
     if (!targetDataset) {
       // @todo ask which dataset the user wants to use
       throw new Error(
-        `Target dataset must be specified ("sanity dataset import [file] ${chalk.bold('[dataset]')}")`
+        `Target dataset must be specified ("sanity dataset import [file] ${chalk.bold(
+          '[dataset]'
+        )}")`
       )
     }
 
     const isUrl = /^https?:\/\//i.test(file)
     const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
-    const importId = generateGuid()
-    const inputStream = isUrl ? got.stream(sourceFile) : fsp.createReadStream(sourceFile)
-
-    const client = getSanityClient({
-      gradient: gradientMode,
-      token: args.extOptions.token,
-      dataset: targetDataset,
-      apiClient: apiClient
-    })
+    const inputStream = isUrl
+      ? got.stream(sourceFile)
+      : fsp.createReadStream(sourceFile)
+    const client = apiClient()
 
     const documentCount = isUrl ? 0 : await linecount(sourceFile)
-    debug(documentCount ? 'Could not count documents in source' : `Found ${documentCount} lines in source file`)
+    debug(
+      documentCount
+        ? 'Could not count documents in source'
+        : `Found ${documentCount} lines in source file`
+    )
     debug(`Target dataset has been set to "${targetDataset}"`)
 
     let spinner = null
 
     // Verify existence of dataset before trying to import to it
-    if (!gradientMode) {
-      debug('Verifying if dataset already exists')
-      spinner = output.spinner('Checking if destination dataset exists').start()
-      const datasets = await client.datasets.list()
-      if (!datasets.find(set => set.name === targetDataset)) {
-        // @todo ask if user wants to create it
-        spinner.fail()
-        throw new Error([
-          `Dataset with name "${targetDataset}" not found.`,
-          `Create it by running "${chalk.cyan(`sanity dataset create ${targetDataset}`)}" first`
-        ].join('\n'))
-      }
-      spinner.succeed()
-    }
-
-    // Import documents to the target dataset
-    const importStartTime = Date.now()
-    const batchSize = 150
-    const lengthComputable = documentCount > 0
-    const progressTotal = documentCount * 2 // @todo figure out how many reference maps we're gonna need and make a progress thing that makes sense
-    const progress = lengthComputable ? progrescii.create({
-      total: progressTotal,
-      template: `${chalk.yellow('●')} Importing documents :b :p% in :ts`
-    }) : output.spinner('Importing documents (0.00s)').start()
-    const importState = {documentsCompleted: 0}
-
-    // Update progress every 60ms
-    const progressTicker = setInterval(() => {
-      if (lengthComputable) {
-        progress.render()
-      } else {
-        const docProgress = importState.documentsCompleted ? `- ${importState.documentsCompleted} imported` : ''
-        progress.text = `Importing documents ${docProgress} (${prettyMs(Date.now() - importStartTime)})`
-      }
-    }, 60)
-
-    try {
-      await importDocumentsToDataset({
-        inputStream,
-        targetDataset,
-        importId,
-        operation,
-        batchSize,
-        client,
-        progress: numDocs => {
-          importState.documentsCompleted += numDocs
-
-          if (!lengthComputable) {
-            return
-          }
-
-          if (progress.progress + batchSize >= documentCount) {
-            progress.template = `${chalk.green('✔')} Importing documents :b :p% in :ts`
-            clearInterval(progressTicker)
-          }
-
-          progress.step(Math.min(batchSize, documentCount))
-        }
-      }, context)
-
-      clearInterval(progressTicker)
-      if (!lengthComputable) {
-        progress.succeed()
-      }
-    } catch (err) {
-      clearInterval(progressTicker)
-      if (lengthComputable) {
-        output.print('\n')
-      } else {
-        progress.fail()
-      }
-      return output.error(err)
-    }
-
-    // Make previously strong references strong once again
-    let strengthenCount = 0
-    const strengthenStart = Date.now()
-    const baseStrengthenText = 'Strengthening weak references'
-    spinner = output.spinner(baseStrengthenText).start()
-
-    const strengthenProgress = docCount => {
-      strengthenCount += docCount
-      spinner.text = `${baseStrengthenText} (${strengthenCount} documents complete)`
-    }
-
-    try {
-      await strengthenReferences({progress: strengthenProgress, client, importId})
-      const strengthenTime = prettyMs(Date.now() - strengthenStart, {verbose: true})
-      spinner.text = `${spinner.text} (${strengthenTime})`
-      spinner.succeed()
-    } catch (err) {
+    debug('Verifying if dataset already exists')
+    spinner = output.spinner('Checking if destination dataset exists').start()
+    const datasets = await client.datasets.list()
+    if (!datasets.find(set => set.name === targetDataset)) {
+      // @todo ask if user wants to create it
       spinner.fail()
-      return output.error(err)
+      throw new Error(
+        [
+          `Dataset with name "${targetDataset}" not found.`,
+          `Create it by running "${chalk.cyan(
+            `sanity dataset create ${targetDataset}`
+          )}" first`
+        ].join('\n')
+      )
+    }
+    spinner.succeed()
+
+    let currentStep
+    let currentProgress
+    let stepStart
+    let spinInterval
+    let percent
+
+    function onProgress(opts) {
+      const lengthComputable = opts.total
+      const sameStep = opts.step == currentStep
+      percent = getPercentage(opts)
+
+      if (lengthComputable && opts.total === opts.current) {
+        clearInterval(spinInterval)
+        spinInterval = null
+      }
+
+      if (sameStep) {
+        return
+      }
+
+      // Moved to a new step
+      const prevStep = currentStep
+      const prevStepStart = stepStart || Date.now()
+      stepStart = Date.now()
+      currentStep = opts.step
+
+      if (currentProgress && currentProgress.succeed) {
+        const timeSpent = prettyMs(Date.now() - prevStepStart, {
+          secDecimalDigits: 2
+        })
+        currentProgress.text = `[100%] ${prevStep} (${timeSpent})`
+        currentProgress.succeed()
+      }
+
+      currentProgress = output.spinner(`[0%] ${opts.step} (0.00s)`).start()
+
+      if (spinInterval) {
+        clearInterval(spinInterval)
+        spinInterval = null
+      }
+
+      spinInterval = setInterval(() => {
+        const timeSpent = prettyMs(Date.now() - prevStepStart, {
+          secDecimalDigits: 2
+        })
+        currentProgress.text = `${percent}${opts.step} (${timeSpent})`
+      }, 60)
     }
 
-    // That... should be it.
-    const totalTime = prettyMs(Date.now() - importStartTime, {verbose: true})
-    return output.print(`${chalk.green('All done!')} Spent ${totalTime}`)
+    function endTask({success}) {
+      clearInterval(spinInterval)
+      spinInterval = null
+
+      if (success) {
+        const timeSpent = prettyMs(Date.now() - stepStart, {
+          secDecimalDigits: 2
+        })
+        currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
+        currentProgress.succeed()
+      } else {
+        currentProgress.fail()
+      }
+    }
+
+    // Start the import!
+    try {
+      const imported = await sanityImport(inputStream, {
+        client,
+        operation,
+        onProgress
+      })
+
+      endTask({success: true})
+
+      output.print(
+        'Done! Imported %d documents to dataset "%s"',
+        imported,
+        targetDataset
+      )
+    } catch (err) {
+      endTask({success: false})
+      output.error(err)
+    }
   }
-}
-
-function getSanityClient(options) {
-  if (!options.gradient) {
-    return options.apiClient()
-  }
-
-  const existing = options.apiClient({requireUser: false})
-  const config = existing.config()
-
-  return existing.clone().config({
-    gradientMode: true,
-    apiHost: options.gradient,
-    dataset: options.dataset || config.dataset,
-    token: options.token || config.token,
-    useCdn: false
-  })
 }
 
 function getMutationOperation(flags) {
@@ -186,4 +171,13 @@ function getMutationOperation(flags) {
   }
 
   return 'create'
+}
+
+function getPercentage(opts) {
+  if (!opts.total) {
+    return ''
+  }
+
+  const percent = Math.floor(opts.current / opts.total * 100)
+  return `[${padStart(percent, 3, ' ')}%] `
 }
