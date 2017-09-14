@@ -22,8 +22,7 @@ export default {
     {
       name: 'overview',
       title: 'Overview',
-      type: 'text',
-      multiline: true
+      type: 'blockContent'
     },
     {
       name: 'releaseDate',
@@ -77,5 +76,4 @@ export default {
       })
     }
   }
-
 }

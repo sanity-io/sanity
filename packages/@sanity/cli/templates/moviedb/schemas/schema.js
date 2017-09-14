@@ -1,11 +1,12 @@
 import createSchema from 'part:@sanity/base/schema-creator'
-import movie from './movie'
+import blockContent from './blockContent'
 import crewMember from './crewMember'
 import castMember from './castMember'
+import movie from './movie'
 import person from './person'
 import screening from './screening'
 
 export default createSchema({
   name: 'default',
-  types: [movie, castMember, crewMember, person, screening]
+  types: [blockContent, castMember, crewMember, movie, person, screening]
 })
