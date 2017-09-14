@@ -1,6 +1,6 @@
 {
   "name": "@sanity/date-input",
-  "version": "0.111.4",
+  "version": "0.111.5",
   "description": "Date/time input components for Sanity form builder",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -15,7 +15,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.111.4",
+    "@sanity/form-builder": "^0.111.5",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.11",
@@ -24,7 +24,7 @@
     "react-kronos": "^1.5.2"
   },
   "devDependencies": {
-    "@sanity/check": "^0.108.0",
+    "@sanity/check": "^0.111.5",
     "in-publish": "^2.0.0",
     "rimraf": "^2.6.1"
   },

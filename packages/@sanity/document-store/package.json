@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-store",
-  "version": "0.111.2",
+  "version": "0.111.5",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sanity/mutator": "^0.108.0",
-    "@sanity/observable": "^0.111.2",
+    "@sanity/mutator": "^0.111.5",
+    "@sanity/observable": "^0.111.5",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.1"
   },
