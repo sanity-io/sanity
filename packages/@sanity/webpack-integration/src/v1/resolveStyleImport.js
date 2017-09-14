@@ -1,4 +1,4 @@
-const {resolveParts} = require('@sanity/resolver')
+const resolveParts = require('@sanity/resolver').resolveParts
 const resolveNodeModule = require('resolve')
 
 function resolveStyleImport(moduleId, opts) {
