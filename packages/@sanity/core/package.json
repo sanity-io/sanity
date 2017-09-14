@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@sanity/check": "^0.111.5",
-    "@sanity/import": "^0.108.0",
+    "@sanity/import": "^0.111.5",
     "@sanity/mutator": "^0.111.5",
     "@sanity/plugin-loader": "^0.111.5",
     "@sanity/resolver": "^0.111.5",
