@@ -3,7 +3,18 @@ import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessSortConfig from '../sort/guessSortConfig'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'sorting', 'type', 'name', 'title', 'description', 'options', 'inputComponent']
+const OVERRIDABLE_FIELDS = [
+  'jsonType',
+  'sorting',
+  'type',
+  'name',
+  'title',
+  'readOnly',
+  'hidden',
+  'description',
+  'options',
+  'inputComponent'
+]
 
 const OBJECT_CORE = {
   name: 'object',
