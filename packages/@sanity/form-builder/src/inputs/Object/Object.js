@@ -61,6 +61,10 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
+    if (field.type.isHidden) {
+      return null
+    }
+
     const {value, validation, autoFocus} = this.props
     const fieldValidation = validation && validation.fields[field.name]
 
@@ -141,7 +145,6 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   render() {
-
     const {type, level} = this.props
 
     const renderedFields = this.getRenderedFields()
