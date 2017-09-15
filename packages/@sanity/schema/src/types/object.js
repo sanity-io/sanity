@@ -1,8 +1,9 @@
 import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
+import guessSortConfig from '../sort/guessSortConfig'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'inputComponent']
+const OVERRIDABLE_FIELDS = ['jsonType', 'sorting', 'type', 'name', 'title', 'description', 'options', 'inputComponent']
 
 const OBJECT_CORE = {
   name: 'object',
@@ -20,6 +21,7 @@ export const ObjectType = {
       type: OBJECT_CORE,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
+      sorting: subTypeDef.sorting || guessSortConfig(subTypeDef),
       fields: subTypeDef.fields.map(fieldDef => {
         const {name, fieldset, ...rest} = fieldDef
 
