@@ -25,11 +25,11 @@ export default {
       to: {type: 'author', title: 'Author'}
     },
     {
-      name: 'publicationYear',
-      title: 'Publication year',
-      description: 'Year the book was published. Not shown in studio.',
+      name: 'isbn',
+      title: 'ISBN number',
+      description: 'ISBN-number of the book. Not shown in studio.',
       type: 'number',
-      isHidden: true
+      hidden: true
     }
   ]
 }

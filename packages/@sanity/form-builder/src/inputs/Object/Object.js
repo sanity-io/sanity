@@ -61,7 +61,7 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
-    if (field.type.isHidden) {
+    if (field.type.hidden) {
       return null
     }
 
