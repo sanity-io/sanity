@@ -20,7 +20,7 @@ function _stringify(value, options, depth) {
     const capLength = Math.max(value.length - options.maxBreadth)
     const asString = value.slice(0, options.maxBreadth)
       .map((item, index) => _stringify(item, options, depth + 1))
-      .concat(capLength > 0 ? `, …+${capLength}` : [])
+      .concat(capLength > 0 ? `…+${capLength}` : [])
       .join(', ')
 
     return depth === 0 ? asString : `[${asString}]`
