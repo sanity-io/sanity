@@ -23,6 +23,13 @@ export default {
       title: 'Author',
       type: 'reference',
       to: {type: 'author', title: 'Author'}
+    },
+    {
+      name: 'isbn',
+      title: 'ISBN number',
+      description: 'ISBN-number of the book. Not shown in studio.',
+      type: 'number',
+      hidden: true
     }
   ]
 }
