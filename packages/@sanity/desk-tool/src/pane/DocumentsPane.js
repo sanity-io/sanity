@@ -152,7 +152,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
       .map(option => {
         return {
           ...option,
-          icon: SortIcon,
+          icon: option.icon || SortIcon,
           title: <span>Sort by <b>{option.title}</b></span>
         }
       })
