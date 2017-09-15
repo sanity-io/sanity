@@ -1,5 +1,6 @@
 import {omitBy, isUndefined} from 'lodash'
 import arrify from 'arrify'
+import {createFallbackPrepare} from './fallbackPrepare'
 
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
@@ -50,11 +51,7 @@ export default function guessPreviewFields(objectTypeDef) {
 
     return {
       select: fieldMapping,
-      prepare(data) {
-        return {
-          title: fieldNames.map(name => `${name}: ${JSON.stringify(data[name])}`).join(' / ')
-        }
-      }
+      prepare: createFallbackPrepare(fieldNames)
     }
   }
 
