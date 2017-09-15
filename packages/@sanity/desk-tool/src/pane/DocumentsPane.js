@@ -3,7 +3,8 @@ import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
 import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
-import {Item} from 'part:@sanity/components/lists/default'
+import SortIcon from 'part:@sanity/base/sort-icon'
+
 import ListView from './ListView'
 import {partition} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
@@ -21,17 +22,36 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 
 const NOOP = () => {} // eslint-disable-line
 
-function readListLayoutSettings() {
-  return JSON.parse(window.localStorage.getItem('desk-tool.listlayout-settings') || '{}')
+const LOCALSTORAGE_KEY = 'desk-tool.documents-pane-settings'
+
+function readSettings() {
+  return JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY) || '{}')
 }
 
-function writeListLayoutSettings(settings) {
-  window.localStorage.setItem('desk-tool.listlayout-settings', JSON.stringify(settings))
+function writeSettings(settings) {
+  window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(settings))
 }
 
 function getDocumentKey(document) {
   return getPublishedId(document._id)
 }
+
+function toGradientOrderClause(orderBy) {
+  return Object.keys(orderBy).map(fieldName => `${fieldName} ${orderBy[fieldName]}`).join(', ')
+}
+
+const DEFAULT_SORT_OPTIONS = [
+  {
+    title: 'Last edited',
+    name: '__updatedAt',
+    orderBy: {_updatedAt: 'desc'}
+  },
+  {
+    title: 'Created',
+    name: '__createdAt',
+    orderBy: {_createdAt: 'desc'}
+  }
+]
 
 function removePublishedWithDrafts(documents) {
 
@@ -50,18 +70,19 @@ function removePublishedWithDrafts(documents) {
     .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
 }
 
+function writeSettingsForType(type, settings) {
+  writeSettings(Object.assign(readSettings(), {
+    [type]: settings
+  }))
+}
+
 export default withRouterHOC(class DocumentsPane extends React.PureComponent {
   static propTypes = {
     selectedType: PropTypes.string,
     selectedDocumentId: PropTypes.string,
     schemaType: PropTypes.object,
     isCollapsed: PropTypes.bool,
-    router: PropTypes.shape({
-      state: PropTypes.shape({
-        selectType: PropTypes.string,
-        selectedType: PropTypes.string
-      })
-    })
+    router: PropTypes.object
   }
 
   static defaultProps = {
@@ -73,34 +94,41 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     onSetListLayout: NOOP
   }
 
-  state = {
-    listLayoutSettings: readListLayoutSettings(),
-    sorting: '_updatedAt desc',
-    menuIsOpen: false
-  }
-
-  static contextTypes = {
-    __internalRouter: PropTypes.object
-  }
-
-
   handleSetListLayout = listLayout => {
-    const {selectedType} = this.props.router.state
-    const nextSettings = Object.assign(readListLayoutSettings(), {
-      [selectedType]: listLayout
-    })
-    writeListLayoutSettings(nextSettings)
-    this.setState({listLayoutSettings: nextSettings})
+    this.setState(prevState => ({
+      settings: {
+        ...prevState.settings,
+        listLayout: listLayout.key
+      }
+    }), this.writeSettings)
   }
 
-  getListLayoutForType(typeName) {
-    return this.state.listLayoutSettings[typeName] || 'default'
+  constructor(props) {
+    super()
+    const settings = readSettings()
+    this.state = {
+      settings: (settings && settings[props.selectedType]) || {
+        listLayout: 'default',
+        sorting: DEFAULT_SORT_OPTIONS[1].name
+      },
+      menuIsOpen: false
+    }
   }
 
   handleSetSorting = sorting => {
-    this.setState({
-      sorting: sorting
-    })
+    this.setState(prevState => ({
+      settings: {
+        ...prevState.settings,
+        sorting: sorting.name,
+        invertSorting: (prevState.settings.sorting === sorting.name)
+          ? !prevState.settings.invertSorting
+          : false
+      }
+    }), this.writeSettings)
+  }
+
+  writeSettings() {
+    writeSettingsForType(this.props.selectedType, this.state.settings)
   }
 
   handleToggleMenu = () => {
@@ -115,16 +143,27 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     })
   }
 
-  handleGoToCreateNew = () => {
-    const {selectedType} = this.props
+  getSortOptions(selectedType) {
     const type = schema.get(selectedType)
-    const url = this.context.__internalRouter.resolveIntentLink('create', {
-      type: type.name
-    })
-    this.context.__internalRouter.navigateUrl(url)
+    return (type.sorting
+      ? DEFAULT_SORT_OPTIONS.concat(type.sorting)
+      : DEFAULT_SORT_OPTIONS).map(option => {
+        return {
+          ...option,
+          icon: SortIcon,
+          title: <span>Sort by <b>{option.title}</b></span>
+        }
+      })
+  }
+
+  handleGoToCreateNew = () => {
+    const {selectedType, router} = this.props
+    router.navigateIntent('create', {type: selectedType})
   }
 
   renderDocumentsPaneMenu = () => {
+    const {selectedType} = this.props
+    const type = schema.get(selectedType)
     return (
       <DocumentsPaneMenu
         onSetListLayout={this.handleSetListLayout}
@@ -133,13 +172,19 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         onMenuClose={this.handleCloseMenu}
         onClickOutside={this.handleCloseMenu}
         isOpen={this.state.menuIsOpen}
+        sortOptions={this.getSortOptions(selectedType)}
+        type={type}
       />
     )
   }
 
   renderDocumentPaneItem = (item, index, options = {}) => {
     const {selectedType, selectedDocumentId} = this.props
-    const listLayout = this.getListLayoutForType(selectedType)
+    const {settings} = this.state
+
+    const sorting = this.getSortOptions(selectedType)
+      .find(option => option.name === settings.sorting)
+
     const type = schema.get(selectedType)
     const linkState = {
       selectedDocumentId: getPublishedId(item._id),
@@ -158,7 +203,8 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         <div className={isSelected ? styles.selectedItem : styles.item}>
           <Preview
             value={item}
-            layout={listLayout}
+            sorting={sorting}
+            layout={settings.listLayout}
             type={type}
           />
           <div className={styles.itemStatus}>
@@ -194,16 +240,17 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
   render() {
     const {
-      router,
       selectedDocumentId,
       schemaType,
       isCollapsed
     } = this.props
 
+    const {settings} = this.state
+    const sorting = this.getSortOptions(schemaType.name)
+      .find(option => option.name === settings.sorting) || DEFAULT_SORT_OPTIONS[1]
 
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${this.state.sorting}) [0...10000] {_id, _type}`
-
+    const query = `*[_type == $type] | order(${toGradientOrderClause(sorting.orderBy)}) [0...10000] {_id, _type}`
     return (
       <Pane
         {...this.props}
@@ -218,9 +265,9 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
           params={params}
           type={schemaType}
           selectedId={selectedDocumentId}
-          listLayout={this.getListLayoutForType(schemaType.name)}
+          settings={settings}
         >
-          {({result, loading, error, onRetry, type, listLayout}) => {
+          {({result, loading, error, onRetry, type}) => {
             if (error) {
               return (
                 <Snackbar
@@ -264,7 +311,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
                     items={items}
                     getItemKey={getDocumentKey}
                     renderItem={this.renderDocumentPaneItem}
-                    listLayout={listLayout}
+                    listLayout={settings.listLayout}
                   />
                 )}
 

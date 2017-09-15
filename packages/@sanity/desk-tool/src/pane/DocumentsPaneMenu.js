@@ -10,31 +10,7 @@ import IconNew from 'part:@sanity/base/plus-circle-icon'
 
 const TEST_CARDS_AND_THUMBNAILS = false
 
-const menuItems = [
-  // Todo: Disabled for now as we need to rethink how sorting should
-  // work wrt. previews and what is actually displayed on screen
-
-  // {
-  //   title: 'Alphabetical',
-  //   icon: IconSortAlphaDesc,
-  //   action: 'setSorting',
-  //   key: 'byAlphabetical',
-  //   sorting: 'name'
-  // },
-  {
-    title: 'Last edited',
-    icon: undefined,
-    action: 'setSorting',
-    key: 'byLastEdited',
-    sorting: '_updatedAt desc'
-  },
-  {
-    title: 'Created',
-    icon: undefined,
-    action: 'setSorting',
-    key: 'byCreated',
-    sort: '_createdAt desc'
-  },
+const LIST_VIEW_ITEMS = [
   {
     title: 'List',
     icon: IconList,
@@ -71,18 +47,21 @@ const menuItems = [
   }
 ].filter(Boolean)
 
+const NULL_COMPONENT = () => null
+
 export default class DocumentsPaneMenu extends React.PureComponent {
 
   static propTypes = {
     onSetListLayout: PropTypes.func,
     onSetSorting: PropTypes.func,
     onGoToCreateNew: PropTypes.func,
-    onMenuClose: PropTypes.func
+    onMenuClose: PropTypes.func,
+    sortOptions: PropTypes.array
   }
 
   handleMenuAction = item => {
     if (item.action === 'setListLayout') {
-      this.props.onSetListLayout(item.key)
+      this.props.onSetListLayout(item)
     }
 
     if (item.action === 'setSorting') {
@@ -92,15 +71,24 @@ export default class DocumentsPaneMenu extends React.PureComponent {
     if (item.action === 'createNew') {
       this.props.onGoToCreateNew()
     }
-
     this.props.onMenuClose()
   }
 
   render() {
+    const {sortOptions} = this.props
+    const sortItems = sortOptions.map(sortConfig => ({
+      title: sortConfig.title,
+      icon: sortConfig.icon || NULL_COMPONENT,
+      sorting: sortConfig,
+      action: 'setSorting',
+      key: sortConfig.name
+    }))
+      .concat(LIST_VIEW_ITEMS)
+
     return (
       <Menu
         onAction={this.handleMenuAction}
-        items={menuItems}
+        items={sortItems}
         origin="top-right"
         {...this.props}
       />
