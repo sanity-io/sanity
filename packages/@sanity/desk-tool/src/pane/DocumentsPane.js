@@ -6,7 +6,7 @@ import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
 
 import ListView from './ListView'
-import {partition} from 'lodash'
+import {partition, uniqBy} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import QueryContainer from 'part:@sanity/base/query-container'
@@ -42,12 +42,12 @@ function toGradientOrderClause(orderBy) {
 
 const SORT_BY_UPDATED_AT = {
   title: 'Last edited',
-  name: '__updatedAt',
+  name: 'updatedAt',
   orderBy: {_updatedAt: 'desc'}
 }
 const SORT_BY_CREATED_AT = {
   title: 'Created',
-  name: '__createdAt',
+  name: 'createdAt',
   orderBy: {_createdAt: 'desc'}
 }
 
@@ -143,11 +143,12 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
   getSortOptions(selectedType) {
     const type = schema.get(selectedType)
-    return (
-      type.sorting
-        ? DEFAULT_SORT_OPTIONS.concat(type.sorting)
-        : DEFAULT_SORT_OPTIONS
-    )
+
+    const optionsWithDefaults = type.sorting
+      ? type.sorting.concat(DEFAULT_SORT_OPTIONS)
+      : DEFAULT_SORT_OPTIONS
+
+    return uniqBy(optionsWithDefaults, 'name')
       .map(option => {
         return {
           ...option,
