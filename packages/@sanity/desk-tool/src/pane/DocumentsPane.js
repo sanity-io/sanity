@@ -40,18 +40,19 @@ function toGradientOrderClause(orderBy) {
   return Object.keys(orderBy).map(fieldName => `${fieldName} ${orderBy[fieldName]}`).join(', ')
 }
 
-const DEFAULT_SORT_OPTIONS = [
-  {
-    title: 'Last edited',
-    name: '__updatedAt',
-    orderBy: {_updatedAt: 'desc'}
-  },
-  {
-    title: 'Created',
-    name: '__createdAt',
-    orderBy: {_createdAt: 'desc'}
-  }
-]
+const SORT_BY_UPDATED_AT = {
+  title: 'Last edited',
+  name: '__updatedAt',
+  orderBy: {_updatedAt: 'desc'}
+}
+const SORT_BY_CREATED_AT = {
+  title: 'Created',
+  name: '__createdAt',
+  orderBy: {_createdAt: 'desc'}
+}
+
+const DEFAULT_SELECTED_SORT_OPTION = SORT_BY_UPDATED_AT
+const DEFAULT_SORT_OPTIONS = [SORT_BY_UPDATED_AT, SORT_BY_CREATED_AT]
 
 function removePublishedWithDrafts(documents) {
 
@@ -109,7 +110,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     this.state = {
       settings: (settings && settings[props.selectedType]) || {
         listLayout: 'default',
-        sorting: DEFAULT_SORT_OPTIONS[1].name
+        sorting: DEFAULT_SELECTED_SORT_OPTION
       },
       menuIsOpen: false
     }
@@ -142,9 +143,12 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
   getSortOptions(selectedType) {
     const type = schema.get(selectedType)
-    return (type.sorting
-      ? DEFAULT_SORT_OPTIONS.concat(type.sorting)
-      : DEFAULT_SORT_OPTIONS).map(option => {
+    return (
+      type.sorting
+        ? DEFAULT_SORT_OPTIONS.concat(type.sorting)
+        : DEFAULT_SORT_OPTIONS
+    )
+      .map(option => {
         return {
           ...option,
           icon: SortIcon,
@@ -243,11 +247,11 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     } = this.props
 
     const {settings} = this.state
-    const sorting = this.getSortOptions(schemaType.name)
-      .find(option => option.name === settings.sorting) || DEFAULT_SORT_OPTIONS[1]
+    const currentSortOption = this.getSortOptions(schemaType.name)
+      .find(option => option.name === settings.sorting) || DEFAULT_SELECTED_SORT_OPTION
 
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${toGradientOrderClause(sorting.orderBy)}) [0...10000] {_id, _type}`
+    const query = `*[_type == $type] | order(${toGradientOrderClause(currentSortOption.orderBy)}) [0...10000] {_id, _type}`
     return (
       <Pane
         {...this.props}
