@@ -119,10 +119,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     this.setState(prevState => ({
       settings: {
         ...prevState.settings,
-        sorting: sorting.name,
-        invertSorting: (prevState.settings.sorting === sorting.name)
-          ? !prevState.settings.invertSorting
-          : false
+        sorting: sorting.name
       }
     }), this.writeSettings)
   }
