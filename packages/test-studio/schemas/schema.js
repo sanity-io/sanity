@@ -19,6 +19,7 @@ import dates from './dates'
 import slugs from './slugs'
 import geopoint from './geopoint'
 import customInputs from './customInputs'
+import notitle from './notitle'
 
 export default createSchema({
   name: 'test-examples',
@@ -42,6 +43,7 @@ export default createSchema({
     myImage,
     recursive,
     myObject,
-    codeInputType
+    codeInputType,
+    notitle
   ]
 })
