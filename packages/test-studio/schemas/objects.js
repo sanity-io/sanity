@@ -41,7 +41,12 @@ export default {
       description: 'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       fields: [
         {name: 'field1', type: 'string', description: 'This is a string field'},
-        {name: 'field2', type: 'myObject', title: 'A field of myObject', description: 'This is another field of "myObject"'},
+        {
+          name: 'field2',
+          type: 'myObject',
+          title: 'A field of myObject',
+          description: 'This is another field of "myObject"'
+        },
       ]
     },
     {
