@@ -8,14 +8,15 @@ export default class SanityPreview extends React.PureComponent {
   static propTypes = {
     layout: PropTypes.string,
     value: PropTypes.any,
+    sorting: PropTypes.object,
     type: PropTypes.object.isRequired
   }
 
 
   render() {
-    const {type, value, layout} = this.props
+    const {type, value, layout, sorting} = this.props
     return (
-      <PreviewSubscriber type={type} value={value} layout={layout}>
+      <PreviewSubscriber type={type} value={value} layout={layout} sorting={sorting}>
         {RenderPreviewSnapshot}
       </PreviewSubscriber>
     )

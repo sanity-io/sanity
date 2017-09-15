@@ -13,6 +13,7 @@ export default class PreviewSubscriber extends React.PureComponent {
     type: PropTypes.object.isRequired,
     fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
     value: PropTypes.any.isRequired,
+    sorting: PropTypes.object,
     children: PropTypes.func
   }
 
@@ -46,6 +47,10 @@ export default class PreviewSubscriber extends React.PureComponent {
   subscribe(value, type, fields) {
     this.unsubscribe()
 
+    const viewOptions = this.props.sorting
+      ? {sorting: this.props.sorting}
+      : {}
+
     const visibilityOn$ = Observable.of(!document.hidden)
        .merge(visibilityChange$.map(event => !event.target.hidden))
 
@@ -58,7 +63,7 @@ export default class PreviewSubscriber extends React.PureComponent {
       .distinctUntilChanged()
       .switchMap(isInViewport => {
         return isInViewport
-          ? observeForPreview(value, type, fields)
+          ? observeForPreview(value, type, fields, viewOptions)
           : Observable.of(null)
       })
       .subscribe(result => {
