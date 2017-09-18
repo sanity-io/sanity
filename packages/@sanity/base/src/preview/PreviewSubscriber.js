@@ -13,7 +13,7 @@ export default class PreviewSubscriber extends React.PureComponent {
     type: PropTypes.object.isRequired,
     fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
     value: PropTypes.any.isRequired,
-    sorting: PropTypes.object,
+    ordering: PropTypes.object,
     children: PropTypes.func
   }
 
@@ -47,8 +47,8 @@ export default class PreviewSubscriber extends React.PureComponent {
   subscribe(value, type, fields) {
     this.unsubscribe()
 
-    const viewOptions = this.props.sorting
-      ? {sorting: this.props.sorting}
+    const viewOptions = this.props.ordering
+      ? {ordering: this.props.ordering}
       : {}
 
     const visibilityOn$ = Observable.of(!document.hidden)

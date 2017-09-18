@@ -50,19 +50,22 @@ export default {
       hidden: true
     }
   ],
-  sorting: [
+  orderings: [
     {
       title: 'Title',
       name: 'title',
-      orderBy: {title: 'asc', publicationYear: 'asc'}
+      by: [
+        {field: 'title', direction: 'asc'},
+        {field: 'publicationYear', direction: 'asc'}
+      ]
     },
     {
       title: 'Swedish title',
       name: 'swedishTitle',
-      orderBy: {
-        'translations.se': 'asc',
-        title: 'asc'
-      }
+      by: [
+        {field: 'translations.se', direction: 'asc'},
+        {field: 'title', direction: 'asc'}
+      ]
     }
   ],
   preview: {

@@ -6,7 +6,7 @@ const PRIMITIVES = ['string', 'boolean', 'number']
 
 const isPrimitive = field => PRIMITIVES.includes(field.type)
 
-export default function guessSortConfig(objectTypeDef) {
+export default function guessOrderingConfig(objectTypeDef) {
 
   let candidates = CANDIDATES.filter(candidate => objectTypeDef.fields.some(field => field.name === candidate))
 
@@ -19,6 +19,6 @@ export default function guessSortConfig(objectTypeDef) {
     .map(name => ({
       name: name,
       title: capitalize(startCase(name)),
-      orderBy: {[name]: 'asc'}
+      by: [{field: name, direction: 'asc'}]
     }))
 }

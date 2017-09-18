@@ -53,10 +53,10 @@ export default class DocumentsPaneMenu extends React.PureComponent {
 
   static propTypes = {
     onSetListLayout: PropTypes.func,
-    onSetSorting: PropTypes.func,
+    onSetOrdering: PropTypes.func,
     onGoToCreateNew: PropTypes.func,
     onMenuClose: PropTypes.func,
-    sortOptions: PropTypes.array
+    orderingOptions: PropTypes.array
   }
 
   handleMenuAction = item => {
@@ -64,8 +64,8 @@ export default class DocumentsPaneMenu extends React.PureComponent {
       this.props.onSetListLayout(item)
     }
 
-    if (item.action === 'setSorting') {
-      this.props.onSetSorting(item.sorting)
+    if (item.action === 'setOrdering') {
+      this.props.onSetOrdering(item.ordering)
     }
 
     if (item.action === 'createNew') {
@@ -75,20 +75,20 @@ export default class DocumentsPaneMenu extends React.PureComponent {
   }
 
   render() {
-    const {sortOptions} = this.props
-    const sortItems = sortOptions.map(sortConfig => ({
-      title: sortConfig.title,
-      icon: sortConfig.icon || NULL_COMPONENT,
-      sorting: sortConfig,
-      action: 'setSorting',
-      key: sortConfig.name
+    const {orderingOptions} = this.props
+    const orderingItems = orderingOptions.map(orderingOption => ({
+      title: orderingOption.title,
+      icon: orderingOption.icon || NULL_COMPONENT,
+      ordering: orderingOption,
+      action: 'setOrdering',
+      key: orderingOption.name
     }))
       .concat(LIST_VIEW_ITEMS)
 
     return (
       <Menu
         onAction={this.handleMenuAction}
-        items={sortItems}
+        items={orderingItems}
         origin="top-right"
         {...this.props}
       />

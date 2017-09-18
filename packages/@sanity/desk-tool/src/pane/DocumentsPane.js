@@ -37,22 +37,27 @@ function getDocumentKey(document) {
 }
 
 function toGradientOrderClause(orderBy) {
-  return Object.keys(orderBy).map(fieldName => `${fieldName} ${orderBy[fieldName]}`).join(', ')
+  return orderBy.map(
+    ordering => [ordering.field, ordering.direction]
+      .filter(Boolean)
+      .join(' ')
+  ).join(', ')
 }
 
-const SORT_BY_UPDATED_AT = {
+const ORDER_BY_UPDATED_AT = {
   title: 'Last edited',
   name: 'updatedAt',
-  orderBy: {_updatedAt: 'desc'}
-}
-const SORT_BY_CREATED_AT = {
-  title: 'Created',
-  name: 'createdAt',
-  orderBy: {_createdAt: 'desc'}
+  by: [{field: '_updatedAt', direction: 'desc'}]
 }
 
-const DEFAULT_SELECTED_SORT_OPTION = SORT_BY_UPDATED_AT
-const DEFAULT_SORT_OPTIONS = [SORT_BY_UPDATED_AT, SORT_BY_CREATED_AT]
+const ORDER_BY_CREATED_AT = {
+  title: 'Created',
+  name: 'createdAt',
+  by: [{field: '_createdAt', direction: 'desc'}]
+}
+
+const DEFAULT_SELECTED_ORDERING_OPTION = ORDER_BY_UPDATED_AT
+const DEFAULT_ORDERING_OPTIONS = [ORDER_BY_UPDATED_AT, ORDER_BY_CREATED_AT]
 
 function removePublishedWithDrafts(documents) {
 
@@ -91,7 +96,6 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     isCollapsed: false,
     published: [],
     drafts: [],
-    onSetSorting: NOOP,
     onSetListLayout: NOOP
   }
 
@@ -110,17 +114,17 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     this.state = {
       settings: (settings && settings[props.selectedType]) || {
         listLayout: 'default',
-        sorting: DEFAULT_SELECTED_SORT_OPTION
+        ordering: DEFAULT_SELECTED_ORDERING_OPTION
       },
       menuIsOpen: false
     }
   }
 
-  handleSetSorting = sorting => {
+  handleSetOrdering = ordering => {
     this.setState(prevState => ({
       settings: {
         ...prevState.settings,
-        sorting: sorting.name
+        ordering: ordering.name
       }
     }), this.writeSettings)
   }
@@ -141,12 +145,12 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     })
   }
 
-  getSortOptions(selectedType) {
+  getOrderingOptions(selectedType) {
     const type = schema.get(selectedType)
 
-    const optionsWithDefaults = type.sorting
-      ? type.sorting.concat(DEFAULT_SORT_OPTIONS)
-      : DEFAULT_SORT_OPTIONS
+    const optionsWithDefaults = type.orderings
+      ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)
+      : DEFAULT_ORDERING_OPTIONS
 
     return uniqBy(optionsWithDefaults, 'name')
       .map(option => {
@@ -169,12 +173,12 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     return (
       <DocumentsPaneMenu
         onSetListLayout={this.handleSetListLayout}
-        onSetSorting={this.handleSetSorting}
+        onSetOrdering={this.handleSetOrdering}
         onGoToCreateNew={this.handleGoToCreateNew}
         onMenuClose={this.handleCloseMenu}
         onClickOutside={this.handleCloseMenu}
         isOpen={this.state.menuIsOpen}
-        sortOptions={this.getSortOptions(selectedType)}
+        orderingOptions={this.getOrderingOptions(selectedType)}
         type={type}
       />
     )
@@ -184,8 +188,8 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     const {selectedType, selectedDocumentId} = this.props
     const {settings} = this.state
 
-    const sorting = this.getSortOptions(selectedType)
-      .find(option => option.name === settings.sorting)
+    const ordering = this.getOrderingOptions(selectedType)
+      .find(option => option.name === settings.ordering)
 
     const type = schema.get(selectedType)
     const linkState = {
@@ -205,7 +209,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         <div className={isSelected ? styles.selectedItem : styles.item}>
           <Preview
             value={item}
-            sorting={sorting}
+            ordering={ordering}
             layout={settings.listLayout}
             type={type}
           />
@@ -248,11 +252,11 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     } = this.props
 
     const {settings} = this.state
-    const currentSortOption = this.getSortOptions(schemaType.name)
-      .find(option => option.name === settings.sorting) || DEFAULT_SELECTED_SORT_OPTION
+    const currentOrderingOption = this.getOrderingOptions(schemaType.name)
+      .find(option => option.name === settings.ordering) || DEFAULT_SELECTED_ORDERING_OPTION
 
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
-    const query = `*[_type == $type] | order(${toGradientOrderClause(currentSortOption.orderBy)}) [0...10000] {_id, _type}`
+    const query = `*[_type == $type] | order(${toGradientOrderClause(currentOrderingOption.by)}) [0...10000] {_id, _type}`
     return (
       <Pane
         {...this.props}
