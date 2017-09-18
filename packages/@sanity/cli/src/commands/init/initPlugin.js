@@ -1,6 +1,6 @@
 import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
 import getProjectDefaults from '../../util/getProjectDefaults'
-import {bootstrapPlugin} from './bootstrap'
+import bootstrapPlugin from './bootstrapPlugin'
 import gatherInput from './gatherInput'
 
 export default async function initPlugin(args, context, initOpts = {}) {
