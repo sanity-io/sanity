@@ -51,8 +51,8 @@ function invokePrepareChecked(type, value, viewOptions) {
   return value
 }
 
-function invokePrepareUnchecked(type, value) {
-  return (type.preview.prepare || pass)(value)
+function invokePrepareUnchecked(type, value, viewOptions) {
+  return (type.preview.prepare || pass)(value, viewOptions)
 }
 
 export const invokePrepare = __DEV__ ? invokePrepareChecked : invokePrepareUnchecked
