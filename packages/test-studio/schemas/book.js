@@ -79,7 +79,7 @@ export default {
     },
     prepare(book, options = {}) {
       return Object.assign({}, book, {
-        title: ((options.sorting || {}).name === 'swedishTitle' && (book.translations || {}).se) || book.title,
+        title: ((options.ordering || {}).name === 'swedishTitle' && (book.translations || {}).se) || book.title,
         subtitle: formatSubtitle(book)
       })
     }
