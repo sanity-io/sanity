@@ -11,7 +11,7 @@ function is(typeName, type) {
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
-export default function observeForPreview(value, type, fields) {
+export default function observeForPreview(value, type, fields, viewOptions) {
   if (is('reference', type)) {
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
@@ -31,7 +31,13 @@ export default function observeForPreview(value, type, fields) {
     const targetFields = fields ? configFields.filter(fieldName => fields.includes(fieldName)) : configFields
     const paths = targetFields.map(key => selection[key].split('.'))
     return observe(value, paths)
-      .map(snapshot => ({type: type, snapshot: prepareForPreview(snapshot, type)}))
+      .map(snapshot => ({
+        type: type,
+        snapshot: prepareForPreview(snapshot, type, viewOptions)
+      }))
   }
-  return Observable.of({type: type, snapshot: invokePrepare(type, value)})
+  return Observable.of({
+    type: type,
+    snapshot: invokePrepare(type, value, viewOptions)
+  })
 }

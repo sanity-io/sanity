@@ -34,13 +34,13 @@ const reportErrors = debounce(() => {
   /* eslint-enable no-console */
 }, 1000)
 
-function invokePrepareChecked(type, value) {
+function invokePrepareChecked(type, value, viewOptions) {
   const prepare = type.preview.prepare
   if (!prepare) {
     return value
   }
   try {
-    return prepare(value)
+    return prepare(value, viewOptions)
   } catch (error) {
     if (!COLLECTED_ERRORS[type.name]) {
       COLLECTED_ERRORS[type.name] = []
@@ -57,7 +57,7 @@ function invokePrepareUnchecked(type, value) {
 
 export const invokePrepare = __DEV__ ? invokePrepareChecked : invokePrepareUnchecked
 
-export default function prepareForPreview(rawValue, type) {
+export default function prepareForPreview(rawValue, type, viewOptions) {
   const selection = type.preview.select
   const targetKeys = Object.keys(selection)
 
@@ -66,5 +66,5 @@ export default function prepareForPreview(rawValue, type) {
     return acc
   }, pick(rawValue, PRESERVE_KEYS))
 
-  return invokePrepare(type, remapped)
+  return invokePrepare(type, remapped, viewOptions)
 }

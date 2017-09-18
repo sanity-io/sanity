@@ -584,6 +584,10 @@
       "path": "components/icons/SortAlphaDesc.js"
     },
     {
+      "implements": "part:@sanity/base/sort-icon",
+      "path": "components/icons/Sort.js"
+    },
+    {
       "implements": "part:@sanity/base/bars-icon",
       "path": "components/icons/Bars.js"
     },
