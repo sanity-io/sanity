@@ -70,6 +70,8 @@ export default {
     }
     spinner.succeed()
 
+    const importClient = client.clone().config({dataset: targetDataset})
+
     let currentStep
     let currentProgress
     let stepStart
@@ -137,7 +139,7 @@ export default {
     // Start the import!
     try {
       const imported = await sanityImport(inputStream, {
-        client,
+        client: importClient,
         operation,
         onProgress
       })
