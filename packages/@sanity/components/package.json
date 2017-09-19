@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.112.0",
+  "version": "0.112.1",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "^0.112.0",
+    "@sanity/date-input": "^0.112.1",
     "@sanity/imagetool": "^0.112.0",
     "@sanity/observable": "^0.112.0",
     "attr-accept": "^1.1.0",
@@ -58,7 +58,7 @@
   "devDependencies": {
     "@sanity/base": "^0.112.0",
     "@sanity/check": "^0.112.0",
-    "@sanity/core": "^0.112.0",
+    "@sanity/core": "^0.112.1",
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4",
     "eslint-plugin-react": "^6.10.0",
