@@ -7,7 +7,7 @@ import {
   createPluginManifest
 } from './createManifest'
 
-export function bootstrapPlugin(data, opts = {}) {
+export default function bootstrapPlugin(data, opts = {}) {
   const writeIfNotExists = partialRight(writeFileIfNotExists, opts.output)
   const collect = {
     pluginConfig: readTemplate('plugin-config'),
