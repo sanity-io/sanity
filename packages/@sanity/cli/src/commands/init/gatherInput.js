@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import fsp from 'fs-promise'
 import validateNpmPackageName from 'validate-npm-package-name'
@@ -106,8 +107,22 @@ function pathIsEmpty(dir) {
     })
 }
 
+function expandHome(filePath) {
+  if (filePath.charCodeAt(0) === 126 /* ~ */) {
+    if (filePath.charCodeAt(1) === 43 /* + */) {
+      return path.join(process.cwd(), filePath.slice(2))
+    }
+
+    const home = os.homedir()
+    return home ? path.join(home, filePath.slice(1)) : filePath
+  }
+
+  return filePath
+}
+
 function absolutify(dir) {
-  return path.isAbsolute(dir)
-    ? dir
-    : path.resolve(process.cwd(), dir)
+  const pathName = expandHome(dir)
+  return path.isAbsolute(pathName)
+    ? pathName
+    : path.resolve(process.cwd(), pathName)
 }
