@@ -3,12 +3,20 @@ export default {
   group: 'dataset',
   signature: '[datasetName]',
   description: 'Delete a dataset within your project',
-  action: (args, context) => {
-    const {apiClient, output} = context
+  action: async (args, context) => {
+    const {apiClient, prompt, output} = context
     const [dataset] = args.argsWithoutOptions
     if (!dataset) {
       throw new Error('Dataset name must be provided')
     }
+
+    await prompt.single({
+      type: 'input',
+      message: 'Are you ABSOLUTELY sure you want to delete this dataset?\n  Type the name of the dataset to confirm delete:',
+      validate: input => {
+        return input === dataset || 'Incorrect dataset name. Ctrl + C to cancel delete.'
+      }
+    })
 
     return apiClient().datasets.delete(dataset).then(() => {
       output.print('Dataset deleted successfully')
