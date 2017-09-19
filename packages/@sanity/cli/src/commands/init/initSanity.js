@@ -48,9 +48,25 @@ export default async function initSanity(args, context) {
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
+  // Prompt for template to use
+  const templateName = await prompt.single({
+    message: 'Select project template',
+    type: 'list',
+    choices: [
+      {
+        value: 'moviedb',
+        name: 'Movie database (schema + sample data)'
+      },
+      {
+        value: 'clean',
+        name: 'Clean, minimal project'
+      }
+    ]
+  })
+
   // Build a full set of resolved options
   const initOptions = {
-    template: 'moviedb',
+    template: templateName,
     outputDir: outputPath,
     name: sluggedName,
     displayName: displayName,
@@ -81,16 +97,10 @@ export default async function initSanity(args, context) {
 
   // Check if we're currently in the output path, so we can give a better start message
   if (outputPath === process.cwd()) {
-    output.print(
-      `\n${chalk.green('Success!')} You can now run "${chalk.cyan(
-        'sanity start'
-      )}"`
-    )
+    output.print(`\n${chalk.green('Success!')} You can now run "${chalk.cyan('sanity start')}"`)
   } else {
     output.print(
-      `\n${chalk.green(
-        'Success!'
-      )} You can now change to directory "${chalk.cyan(
+      `\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(
         outputPath
       )}" and run "${chalk.cyan('sanity start')}"`
     )
@@ -105,17 +115,13 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateUser() {
-    output.print(
-      "We can't find any auth credentials in your Sanity config - looks like you"
-    )
+    output.print("We can't find any auth credentials in your Sanity config - looks like you")
     output.print("haven't used Sanity on this system before?\n")
 
     // Provide login options (`sanity login`)
     await login(args, context)
 
-    output.print(
-      "Good stuff, you're now authenticated. You'll need a project to keep your"
-    )
+    output.print("Good stuff, you're now authenticated. You'll need a project to keep your")
     output.print('data sets and collaborators safe and snug.')
   }
 
@@ -124,9 +130,7 @@ export default async function initSanity(args, context) {
     try {
       projects = await apiClient({requireProject: false}).projects.list()
     } catch (err) {
-      throw new Error(
-        `Failed to communicate with the Sanity API:\n${err.message}`
-      )
+      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
     }
 
     if (projects.length === 0) {
@@ -135,9 +139,7 @@ export default async function initSanity(args, context) {
       return createProject(apiClient, {displayName: projectName})
     }
 
-    debug(
-      `User has ${projects.length} project(s) already, showing list of choices`
-    )
+    debug(`User has ${projects.length} project(s) already, showing list of choices`)
 
     const projectChoices = projects.map(project => ({
       value: project.id,
@@ -185,9 +187,7 @@ export default async function initSanity(args, context) {
       return {datasetName: name}
     }
 
-    debug(
-      `User has ${datasets.length} dataset(s) already, showing list of choices`
-    )
+    debug(`User has ${datasets.length} dataset(s) already, showing list of choices`)
     const datasetChoices = datasets.map(dataset => ({value: dataset.name}))
 
     const selected = await prompt.single({
