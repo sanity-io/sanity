@@ -45,7 +45,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
     const loginUrl = url.format(providerUrl)
     output.print(`\nOpening browser at ${loginUrl}\n`)
     spin.start()
-    open(loginUrl)
+    open(loginUrl, {wait: false})
   }
 
   function onServerRequest(req, res) {
