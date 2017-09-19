@@ -8,5 +8,5 @@
     "packages/sanity-plugin-vision",
     "packages/storybook"
   ],
-  "version": "0.111.5"
+  "version": "0.111.6-beta.0"
 }

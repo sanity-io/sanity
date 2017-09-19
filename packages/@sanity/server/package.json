@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "0.111.5",
+  "version": "0.111.6-beta.0",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
@@ -27,10 +27,10 @@
   },
   "homepage": "https://github.com/sanity-io/server#readme",
   "dependencies": {
-    "@sanity/extract-text-webpack-plugin": "^0.111.5",
-    "@sanity/resolver": "^0.111.5",
-    "@sanity/webpack-integration": "^0.111.5",
-    "@sanity/webpack-loader": "^0.111.5",
+    "@sanity/extract-text-webpack-plugin": "^0.111.6-beta.0",
+    "@sanity/resolver": "^0.111.6-beta.0",
+    "@sanity/webpack-integration": "^0.111.6-beta.0",
+    "@sanity/webpack-loader": "^0.111.6-beta.0",
     "babel-core": "^6.24.0",
     "babel-loader": "^6.2.10",
     "babel-plugin-lodash": "^3.2.11",
@@ -63,9 +63,9 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "cross-env": "^3.1.4",
+    "prop-types": "^15.5.8",
     "react": "^16.0.0-rc.2",
     "react-dom": "^16.0.0-rc.2",
-    "prop-types": "^15.5.8",
     "rimraf": "^2.6.1"
   },
   "peerDependencies": {
