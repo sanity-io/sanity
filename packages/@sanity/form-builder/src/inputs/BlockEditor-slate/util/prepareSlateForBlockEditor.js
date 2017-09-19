@@ -100,7 +100,7 @@ export default function prepareSlateForBlockEditor(blockEditor) {
   const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
   const spanType = getSpanType(type)
   const customSpanFields = spanType.fields.filter(field => {
-    return !['text', 'marks'].includes(field.name)
+    return !['text', 'marks', '_key'].includes(field.name)
   })
 
   const FormBuilderBlock = createBlockNode(type)

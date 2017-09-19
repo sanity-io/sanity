@@ -113,7 +113,7 @@ export default class FormBuilderSpan extends React.Component {
   renderInput() {
     const value = this.getValue()
     const {type} = this.props
-    const ignoredFields = ['text', 'marks']
+    const ignoredFields = ['text', 'marks', '_key']
     const memberFields = type.fields.filter(field => {
       return !ignoredFields.includes(field.name)
     })
@@ -161,7 +161,7 @@ export default class FormBuilderSpan extends React.Component {
 
   getCustomFields() {
     return this.props.type.fields
-      .filter(field => field.name !== 'text' && field.name !== 'marks')
+      .filter(field => !['text', 'marks', '_key'].includes(field.name))
   }
 
   renderPreview() {
