@@ -50,12 +50,12 @@ export default async function initSanity(args, context) {
 
   // Prompt for template to use
   const templateName = await prompt.single({
-    message: 'Select template to use',
+    message: 'Select project template',
     type: 'list',
     choices: [
       {
         value: 'moviedb',
-        name: 'Movie database (schema + data examples)'
+        name: 'Movie database (schema + sample data)'
       },
       {
         value: 'clean',
