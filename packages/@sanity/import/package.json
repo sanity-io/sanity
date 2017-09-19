@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.111.5",
+  "version": "0.111.6-beta.0",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -31,7 +31,7 @@
     "through2": "^2.0.3"
   },
   "devDependencies": {
-    "@sanity/client": "^0.111.2",
+    "@sanity/client": "^0.111.6-beta.0",
     "babel-preset-env": "^1.6.0",
     "eslint": "^4.6.1",
     "eslint-config-prettier": "^2.4.0",
