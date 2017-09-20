@@ -30,7 +30,7 @@
     "shelljs": "^0.7.6"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.1",
-    "eslint": "^3.19.0"
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.6.1"
   }
 }

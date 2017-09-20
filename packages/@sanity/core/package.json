@@ -29,7 +29,7 @@
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.5.6",
     "fs-promise": "^2.0.0",
-    "get-uri": "^2.0.0",
+    "get-uri": "^2.0.1",
     "got": "^6.7.1",
     "json-lexer": "^1.1.1",
     "linecount": "^1.0.1",
@@ -43,13 +43,13 @@
     "split2": "^2.1.1",
     "tar-fs": "^1.15.2",
     "through2": "^2.0.3",
-    "uglify-js": "^3.0.1"
+    "uglify-js": "^3.0.23"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.6.1",
     "mocha": "^3.2.0"
   },
   "repository": {

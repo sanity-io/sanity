@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/sanity-io/generate-help-url#readme",
   "devDependencies": {
-    "eslint": "^3.19.0",
-    "tape": "^4.6.2"
+    "eslint": "^4.6.1",
+    "tape": "^4.7.0"
   }
 }
