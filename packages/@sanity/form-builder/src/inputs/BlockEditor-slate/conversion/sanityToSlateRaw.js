@@ -15,16 +15,40 @@ function toRawMark(markName) {
   }
 }
 
-function sanitySpanToRawSlateBlockNode(span) {
-  const {text, _key, _type, marks = [], ...rest} = span
+function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
+
+  if (span._type !== 'span') {
+    return {
+      kind: 'inline',
+      isVoid: true,
+      type: span._type,
+      key: span._key,
+      data: {value: span},
+      nodes: []
+    }
+  }
+
+  const {text, marks = []} = span
+  const decorators = marks.filter(mark => {
+    return !sanityBlock.markDefs.map(def => def._key).includes(mark)
+  })
+  const annotationKeys = marks.filter(x => decorators.indexOf(x) == -1)
+  let annotations
+  if (annotationKeys.length) {
+    annotations = {}
+    annotationKeys.forEach(key => {
+      const annotation = sanityBlock.markDefs.find(def => def._key === key)
+      annotations[annotation._type] = annotation
+    })
+  }
 
   const range = {
     kind: 'range',
     text: text,
-    marks: marks.map(toRawMark)
+    marks: decorators.map(toRawMark)
   }
 
-  if (!hasKeys(rest)) {
+  if (!annotations) {
     return {kind: 'text', ranges: [range]}
   }
 
@@ -32,21 +56,15 @@ function sanitySpanToRawSlateBlockNode(span) {
     kind: 'inline',
     isVoid: false,
     type: 'span',
-    data: {value: {_type, ...rest}},
-    nodes: [
-      {kind: 'text', ranges: [range]}
-    ]
+    key: span._key,
+    data: {annotations},
+    nodes: [{kind: 'text', ranges: [range]}]
   }
 }
 
 function sanityBlockToRawNode(sanityBlock, type) {
   // eslint-disable-next-line no-unused-vars
-  const {spans, _type, ...rest} = sanityBlock
-
-  // todo: refactor
-  const spanType = type.fields
-    .find(field => field.name === 'spans').type.of
-    .find(spanMemberType => spanMemberType.name === 'span')
+  const {children, _type, ...rest} = sanityBlock
 
   const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
 
@@ -55,7 +73,7 @@ function sanityBlockToRawNode(sanityBlock, type) {
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: spans.map(span => sanitySpanToRawSlateBlockNode(span, spanType))
+    nodes: children.map(child => sanitySpanToRawSlateBlockNode(child, sanityBlock))
   }
 }
 

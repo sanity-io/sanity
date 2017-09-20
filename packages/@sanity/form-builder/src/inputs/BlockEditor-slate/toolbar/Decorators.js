@@ -9,18 +9,18 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
-import styles from './styles/Marks.css'
+import styles from './styles/Decorators.css'
 
-export const mark = PropTypes.shape({
+export const decorator = PropTypes.shape({
   active: PropTypes.bool,
   type: PropTypes.string
 })
 
-export default class Marks extends React.Component {
+export default class Decorators extends React.Component {
 
   static propTypes = {
     onClick: PropTypes.func,
-    marks: PropTypes.arrayOf(mark)
+    decorators: PropTypes.arrayOf(decorator)
   }
 
   getIcon(type) {
@@ -40,7 +40,7 @@ export default class Marks extends React.Component {
     }
   }
 
-  renderMarkButton = item => {
+  renderDecoratorButton = item => {
     const onClick = event => {
       this.props.onClick(item)
     }
@@ -49,7 +49,7 @@ export default class Marks extends React.Component {
     title = title.charAt(0).toUpperCase() + title.slice(1)
     return (
       <ToggleButton
-        key={`markButton${item.type}`}
+        key={`decoratorButton${item.type}`}
         selected={!!item.active}
         onClick={onClick}
         title={title}
@@ -63,9 +63,9 @@ export default class Marks extends React.Component {
   }
 
   render() {
-    return this.props.marks ? (
+    return this.props.decorators ? (
       <div className={styles.root}>
-        {this.props.marks.map(this.renderMarkButton)}
+        {this.props.decorators.map(this.renderDecoratorButton)}
       </div>
     ) : null
   }

@@ -296,7 +296,7 @@ export class ParagraphAccessor {
   }
 
   setAttribute(key, value) {
-    throw new Error(`setAttribute not supported (yet, do we need it?)`)
+    throw new Error('setAttribute not supported (yet, do we need it?)')
   }
 
   setAttributeAccessor(key, accessor) {

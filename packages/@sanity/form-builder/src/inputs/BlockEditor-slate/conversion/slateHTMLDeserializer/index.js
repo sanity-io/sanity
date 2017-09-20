@@ -1,6 +1,7 @@
 import * as rules from './rules'
 import * as helpers from './helpers'
-import {Html} from 'slate'
+import {SLATE_DEFAULT_BLOCK} from '../../constants'
+import Html from 'slate-html-serializer'
 
 class HtmlDeserializer {
 
@@ -9,10 +10,10 @@ class HtmlDeserializer {
   }
 
   deserialize(html) {
-    const cleanedHtml = helpers.cleanupHtml(html)
+    const cleanedHtml = helpers.cleanHtml(html)
     const deserializer = new Html({
       rules: this.rules,
-      defaultBlockType: this.rules.defaultBlockType
+      defaultBlock: SLATE_DEFAULT_BLOCK
     })
     return deserializer.deserialize(cleanedHtml)
   }

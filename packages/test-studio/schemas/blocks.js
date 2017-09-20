@@ -53,9 +53,9 @@ export default {
           type: 'block',
           styles: [],
           lists: [],
-          span: {
-            marks: [],
-            fields: []
+          marks: {
+            decorators: [],
+            annotations: []
           }
         }
       ]
@@ -79,12 +79,12 @@ export default {
             {title: 'Bullet', value: 'bullet'},
             {title: 'Numbered', value: 'number'}
           ],
-          span: {
-            marks: [
+          marks: {
+            decorators: [
               {title: 'Strong', value: 'strong'},
               {title: 'Emphasis', value: 'em'}
             ],
-            fields: [
+            annotations: [
               {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
             ]
           }
@@ -116,12 +116,12 @@ export default {
                 {title: 'Bullet', value: 'bullet'},
                 {title: 'Numbered', value: 'number'}
               ],
-              span: {
-                marks: [
+              marks: {
+                decorators: [
                   {title: 'Strong', value: 'strong'},
                   {title: 'Emphasis', value: 'em'}
                 ],
-                fields: [
+                annotations: [
                   {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
                 ]
               }
@@ -143,7 +143,10 @@ export default {
               type: 'block',
               styles: [],
               lists: [],
-              span: {}
+              marks: {
+                decorators: [],
+                annotations: []
+              }
             },
             {
               type: 'blocksTest',
