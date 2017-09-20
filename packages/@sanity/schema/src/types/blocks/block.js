@@ -5,12 +5,12 @@ import createPreviewGetter from '../../preview/createPreviewGetter'
 import {
   BLOCK_STYLES,
   DEFAULT_BLOCK_STYLES,
-  DEFAULT_LINK_FIELD,
-  DEFAULT_LIST_TYPES,
+  DEFAULT_LINK_ANNOTATION,
+  DEFAULT_LIST_TYPES, DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD
 } from './defaults'
 
-import {DEFAULT_MARKS} from '../../../lib/types/blocks/defaults'
+import {DEFAULT_DECORATORS} from '../../../lib/types/blocks/defaults'
 
 const INHERITED_FIELDS = [
   'type',
@@ -37,9 +37,9 @@ export const BlockType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const {span, styles, lists, ...rest} = subTypeDef
+    const {marks, styles, lists, ...rest} = subTypeDef
 
-    const spansField = createSpansField(span)
+    const spansField = createSpansField(marks)
     const stylesField = createStylesField(styles)
     const listsField = createListsField(lists)
 
@@ -102,15 +102,15 @@ function createStylesField(styles) {
   }
 }
 
-function createMarksField(marks) {
+function createDecoratorField(decorators) {
   return {
-    name: 'marks',
+    name: 'decorators',
     type: 'array',
-    title: 'Marks',
+    title: 'Decorators',
     of: [{type: 'string'}],
     options: {
       direction: 'vertical',
-      list: marks || DEFAULT_MARKS
+      list: decorators || DEFAULT_DECORATORS
     }
   }
 }
@@ -126,24 +126,11 @@ function createListsField(lists) {
   }
 }
 
-const DEFAULT_FIELDS = [
-  DEFAULT_LINK_FIELD
+const DEFAULT_ANNOTATIONS = [
+  DEFAULT_LINK_ANNOTATION
 ]
 
-function ensureTextField(fields) {
-  return fields.some(style => style.value === 'text')
-    ? fields
-    : [DEFAULT_TEXT_FIELD, ...fields]
-}
-
-function createSpansField(config = {}) {
-  const marksField = createMarksField(config.marks)
-
-  const fields = [
-    marksField,
-    ...(config.fields ? config.fields : DEFAULT_FIELDS)
-  ]
-
+function createSpansField(marks) {
   return {
     name: 'spans',
     title: 'Content',
@@ -151,7 +138,9 @@ function createSpansField(config = {}) {
     of: [
       {
         type: 'span',
-        fields: ensureTextField(fields)
+        fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
+        annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
+        decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS
       }
     ]
   }

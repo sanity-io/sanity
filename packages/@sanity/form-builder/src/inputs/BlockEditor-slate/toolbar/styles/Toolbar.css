@@ -27,7 +27,7 @@
   float: right;
 }
 
-.textFormatContainer {
+.decoratorContainer {
   composes: dividerLeft;
   float: left;
   padding-left: 0.5em;
@@ -52,7 +52,7 @@
   }
 }
 
-.linkContainer {
+.annotationsContainer {
   composes: dividerRight;
   composes: dividerLeft;
   float: left;

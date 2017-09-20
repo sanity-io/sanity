@@ -6,17 +6,17 @@ import OffsetKey from 'slate-react/lib/utils/offset-key'
 import setTransferData from 'slate-react/lib/utils/set-transfer-data'
 import TRANSFER_TYPES from 'slate-react/lib/constants/transfer-types'
 import Base64 from 'slate-base64-serializer'
-import {findDOMNode} from 'slate-react'
+import {Selection} from 'slate'
 import ItemForm from './ItemForm'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Preview from '../../Preview'
-import styles from './styles/FormBuilderBlock.css'
+import styles from './styles/FormBuilderInline.css'
 import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
 
-export default class FormBuilderBlock extends React.Component {
+export default class FormBuilderInline extends React.Component {
   static propTypes = {
     // Note: type refers to the array type, not the value type
     type: PropTypes.object,
@@ -76,7 +76,6 @@ export default class FormBuilderBlock extends React.Component {
         : change.setNodeByKey(node.key, {
           data: {value: nextValue}
         })
-
       editor.onChange(nextChange)
     }, 0)
   }
@@ -116,21 +115,15 @@ export default class FormBuilderBlock extends React.Component {
   handleSelectionChange = event => {
     const selection = document.getSelection()
     const isSelected = selection.containsNode
-        && selection.containsNode(this.formBuilderBlock)
+        && selection.containsNode(this.formBuilderInline)
     this.setState({isSelected})
   }
 
   // Remove the drop target if we leave the editors nodes
   handleDragLeave = event => {
-    this.hideBlockDragMarker()
     if (event.target === this._editorNode) {
-      this.resetDropTarget()
+      this._dropTarget = null
     }
-  }
-
-  resetDropTarget() {
-    this._dropTarget = null
-    this.hideBlockDragMarker()
   }
 
   handleDragOverOtherNode = event => {
@@ -144,6 +137,7 @@ export default class FormBuilderBlock extends React.Component {
     // As the event is registered on the editor parent node
     // ignore the event if it is coming from from the editor node itself
     if (targetDOMNode === this._editorNode) {
+      this._dropTarget = null
       return
     }
 
@@ -153,58 +147,62 @@ export default class FormBuilderBlock extends React.Component {
     }
     const {key} = offsetKey
 
+    // If this is 'our' node, return
+    if (this.props.node.hasDescendant(key)) {
+      return
+    }
+
     const {editor} = this.props
     const state = editor.getState()
     const {document} = state
+
     const range = createRange(event)
 
     if (range === null) {
       return
     }
 
-    const {rangeIsAtStart, rangeOffset} = range
+    const {rangeOffset} = range
 
-    const node = document.getClosestBlock(key)
+    const node = document.getDescendant(key)
 
     if (!node) {
-      this.resetDropTarget()
+      this._dropTarget = null
       return
     }
 
-    const domNode = findDOMNode(node)
-    if (rangeIsAtStart) {
-      this.showBlockDragMarker('before', domNode)
-    } else {
-      this.showBlockDragMarker('after', domNode)
+    // If we are dragging over a custom type block return
+    const block = document.getClosestBlock(node.key)
+    if (block && block.type !== 'contentBlock') {
+      return
     }
-    this._dropTarget = {node: node, isAtStart: rangeIsAtStart, offset: rangeOffset}
+
+    // If we are dragging over another inline return
+    if (document.getClosestInline(node.key)) {
+      return
+    }
+
+    this._dropTarget = {node: node, offset: rangeOffset}
+    this.moveCursor(rangeOffset, node)
   }
 
   handleDragEnd = event => {
+
     this.setState({isDragging: false})
     this.removeDragHandlers()
 
-    const {editor, node} = this.props
-    const state = editor.getState()
-
-    const target = this._dropTarget
-
-    // Return if this is our node
-    if (!target || target.node === node) {
-      this.resetDropTarget()
+    if (!this._dropTarget) {
       return
     }
 
-    let nextChange = state.change().removeNodeByKey(node.key)
-    nextChange = nextChange[target.isAtStart ? 'collapseToStartOf' : 'collapseToEndOf'](target.node)
-      .insertBlock(node)
-      .collapseToEndOf(node)
+    const {editor, node} = this.props
+    const state = editor.getState()
+    const change = state.change()
+      .removeNodeByKey(node.key)
+      .insertInline(node)
       .focus()
-
-    editor.onChange(nextChange)
-
-    this.resetDropTarget()
-
+    this._dropTarget = null
+    editor.onChange(change)
   }
 
   handleCancelEvent = event => {
@@ -244,16 +242,18 @@ export default class FormBuilderBlock extends React.Component {
       )
     }
     return (
-      <Preview
-        type={memberType}
-        value={this.getValue()}
-        layout="block"
-      />
+      <span>
+        <Preview
+          type={memberType}
+          value={this.getValue()}
+          layout="inline"
+        />
+      </span>
     )
   }
 
-  refFormBuilderBlock = formBuilderBlock => {
-    this.formBuilderBlock = formBuilderBlock
+  refFormBuilderInline = formBuilderInline => {
+    this.formBuilderInline = formBuilderInline
   }
 
   refPreview = previewContainer => {
@@ -281,14 +281,35 @@ export default class FormBuilderBlock extends React.Component {
     )
   }
 
-  showBlockDragMarker(pos, node) {
+  moveCursor(offset, node) {
+    if (node.kind !== 'text') {
+      return
+    }
     const {editor} = this.props
-    editor.props.blockEditor.showBlockDragMarker(pos, node)
-  }
+    const state = editor.getState()
+    const {document} = state
+    let theOffset = offset
 
-  hideBlockDragMarker() {
-    const {editor} = this.props
-    editor.props.blockEditor.hideBlockDragMarker()
+    // Check if it is acceptable to move the cursor here
+    const nextChars = document.getCharactersAtRange(
+      Selection.create({
+        anchorKey: node.key,
+        focusKey: node.key,
+        anchorOffset: offset - 1,
+        focusOffset: offset,
+        isFocused: true,
+        isBackward: false
+      })
+    )
+    if (!nextChars.size) {
+      theOffset = 0
+    }
+
+    const change = state.change()
+      .collapseToStartOf(node)
+      .move(theOffset)
+      .focus()
+    editor.onChange(change)
   }
 
   render() {
@@ -305,7 +326,7 @@ export default class FormBuilderBlock extends React.Component {
     }
 
     return (
-      <div
+      <span
         {...attributes}
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
@@ -313,8 +334,8 @@ export default class FormBuilderBlock extends React.Component {
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
         draggable
+        ref={this.refFormBuilderInline}
         onClick={this.handleToggleEdit}
-        ref={this.refFormBuilderBlock}
         className={className}
       >
         <span
@@ -325,11 +346,11 @@ export default class FormBuilderBlock extends React.Component {
         </span>
 
         {isEditing && (
-          <div className={styles.editBlockContainer}>
+          <span className={styles.editInlineContainer}>
             {this.renderInput()}
-          </div>
+          </span>
         )}
-      </div>
+      </span>
     )
   }
 }

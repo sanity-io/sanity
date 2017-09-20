@@ -1,11 +1,4 @@
-// todo:
-const DEFAULT_INDENTATION_FIELD = {  // eslint-disable-line no-console
-  name: 'indentation',
-  title: 'Indentation',
-  type: 'number'
-}
-
-export const DEFAULT_LINK_FIELD = {
+export const DEFAULT_LINK_ANNOTATION = {
   type: 'object',
   name: 'link',
   fields: [
@@ -21,6 +14,13 @@ export const DEFAULT_TEXT_FIELD = {
   type: 'text',
   name: 'text',
   title: 'Text'
+}
+
+export const DEFAULT_MARKS_FIELD = {
+  name: 'marks',
+  type: 'array',
+  of: [{type: 'string'}],
+  title: 'Marks'
 }
 
 export const LIST_TYPES = {
@@ -55,24 +55,24 @@ export const DEFAULT_BLOCK_STYLES = [
   BLOCK_STYLES.blockquote
 ]
 
-export const MARK_STRONG = {title: 'Strong', value: 'strong'}
-export const MARK_EMPHASIS = {title: 'Emphasis', value: 'em'}
-export const MARK_CODE = {title: 'Code', value: 'code'}
-export const MARK_UNDERLINE = {title: 'Underline', value: 'underline'}
-export const MARK_STRIKE = {title: 'Strike', value: 'strike-through'}
+export const DECORATOR_STRONG = {title: 'Strong', value: 'strong'}
+export const DECORATOR_EMPHASIS = {title: 'Emphasis', value: 'em'}
+export const DECORATOR_CODE = {title: 'Code', value: 'code'}
+export const DECORATOR_UNDERLINE = {title: 'Underline', value: 'underline'}
+export const DECORATOR_STRIKE = {title: 'Strike', value: 'strike-through'}
 
-export const MARKS = {
-  strong: MARK_STRONG,
-  em: MARK_EMPHASIS,
-  code: MARK_CODE,
-  underline: MARK_UNDERLINE,
-  strikeThrough: MARK_STRIKE
+export const DECORATORS = {
+  strong: DECORATOR_STRONG,
+  em: DECORATOR_EMPHASIS,
+  code: DECORATOR_CODE,
+  underline: DECORATOR_UNDERLINE,
+  strikeThrough: DECORATOR_STRIKE
 }
 
-export const DEFAULT_MARKS = [
-  MARKS.strong,
-  MARKS.em,
-  MARKS.code,
-  MARKS.underline,
-  MARKS.strikeThrough
+export const DEFAULT_DECORATORS = [
+  DECORATORS.strong,
+  DECORATORS.em,
+  DECORATORS.code,
+  DECORATORS.underline,
+  DECORATORS.strikeThrough
 ]

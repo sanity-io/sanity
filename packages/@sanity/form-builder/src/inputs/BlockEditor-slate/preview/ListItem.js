@@ -10,8 +10,9 @@ function ListItem(props) {
     throw new Error(`Don't know how to handle listItem '${listItem}'. `
       + `Expected one of '${listItems.join("', '")}'`)
   }
+  const className = `${styles[listItem]} ${styles[`level-${props.level}`]}`
   return (
-    <div {...props.attributes} className={styles[listItem]}>
+    <div {...props.attributes} className={className}>
       { props.contentComponent({children: props.children}) }
     </div>
   )
@@ -20,6 +21,7 @@ function ListItem(props) {
 ListItem.propTypes = {
   attributes: PropTypes.object,
   listItem: PropTypes.oneOf(listItems),
+  level: PropTypes.number,
   children: PropTypes.node,
   contentComponent: PropTypes.func
 }

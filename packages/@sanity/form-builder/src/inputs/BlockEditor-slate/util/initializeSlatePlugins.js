@@ -1,45 +1,37 @@
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import softBreak from 'slate-soft-break'
-import formBuilderNodeOnDrop from '../plugins/formBuilderNodeOnDrop'
-import formBuilderNodeOnPaste from '../plugins/formBuilderNodeOnPaste'
+import onDrop from '../plugins/onDrop'
+import onPasteSlateContent from '../plugins/onPasteSlateContent'
 import onModKeySetMarkCombos from '../plugins/onModKeySetMarkCombos'
 import onEnterInListItem from '../plugins/onEnterInListItem'
-import textBlockOnEnterKey from '../plugins/textBlockOnEnterKey'
-import editorOnPasteHtml from '../plugins/editorOnPasteHtml'
+import onEnterInTextBlock from '../plugins/onEnterInTextBlock'
+import onPasteHtml from '../plugins/onPasteHtml'
+import onTabSetIntendation from '../plugins/onTabSetIntendation'
 
-import {SLATE_DEFAULT_STYLE} from '../constants'
-
-const insertBlockOnEnterDef = {
-  type: 'contentBlock',
-  kind: 'block',
-  data: {
-    style: SLATE_DEFAULT_STYLE
-  }
-}
+import {SLATE_DEFAULT_BLOCK} from '../constants'
 
 export default function intializeSlatePlugins(blockEditor) {
   return [
-    insertBlockOnEnter(insertBlockOnEnterDef),
 
-    // Copy paste
-    // TODO: wire up this when spanBlocks are ready
-    editorOnPasteHtml(blockEditor),
-    formBuilderNodeOnPaste(blockEditor.context.formBuilder, blockEditor.props.type.of),
+    insertBlockOnEnter(SLATE_DEFAULT_BLOCK),
+    softBreak({
+      onlyIn: [SLATE_DEFAULT_BLOCK.type],
+      shift: true
+    }),
 
-    // Key handling
-    onEnterInListItem(SLATE_DEFAULT_STYLE, blockEditor.refreshCSS),
-    textBlockOnEnterKey(SLATE_DEFAULT_STYLE),
+    onDrop(),
 
-    // Set mark keyboard shortcuts
+    onEnterInListItem(SLATE_DEFAULT_BLOCK, blockEditor.refreshCSS),
+
+    onEnterInTextBlock(SLATE_DEFAULT_BLOCK),
+
     onModKeySetMarkCombos(blockEditor),
 
-    // Dropping stuff onto formBuilder nodes
-    formBuilderNodeOnDrop(),
+    onPasteHtml(blockEditor),
 
+    onPasteSlateContent(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
-    softBreak({
-      onlyIn: ['contentBlock'],
-      shift: true
-    })
+    onTabSetIntendation()
+
   ]
 }

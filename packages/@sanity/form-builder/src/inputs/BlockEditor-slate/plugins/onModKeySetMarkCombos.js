@@ -1,6 +1,6 @@
 
 function createOnKeyDown(blockEditor) {
-  return function onKeyDown(event, data, state, editor) {
+  return function onKeyDown(event, data, change) {
     if (!data.isMod) {
       return null
     }
@@ -26,13 +26,10 @@ function createOnKeyDown(blockEditor) {
       return null
     }
 
-    const nextState = state
-      .transform()
-      .toggleMark(mark)
-      .apply()
+    change.toggleMark(mark)
 
     event.preventDefault()
-    return nextState
+    return change
   }
 }
 

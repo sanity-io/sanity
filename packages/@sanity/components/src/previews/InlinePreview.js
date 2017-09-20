@@ -32,9 +32,9 @@ export default class InlinePreview extends React.Component {
 
     if (!item) {
       return (
-        <div className={`${styles.empty}`}>
+        <span className={styles.empty}>
           {emptyText}
-        </div>
+        </span>
       )
     }
 

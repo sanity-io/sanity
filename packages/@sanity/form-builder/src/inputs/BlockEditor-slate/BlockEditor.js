@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Editor, State, Data} from 'slate'
+import {State, Data} from 'slate'
+import {Editor} from 'slate-react'
 import Portal from 'react-portal'
 import {uniqueId} from 'lodash'
 
 import FormField from 'part:@sanity/components/formfields/default'
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
 import prepareSlateForBlockEditor from './util/prepareSlateForBlockEditor'
 import initializeSlatePlugins from './util/initializeSlatePlugins'
-import {openSpanDialog} from './util/spanHelpers'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
@@ -47,10 +46,10 @@ export default class BlockEditor extends React.Component {
     super(props, context)
 
     const preparation = prepareSlateForBlockEditor(this)
-    this.slateSchema = preparation.schema
+    this.slateSchema = preparation.slateSchema
     this.textStyles = preparation.textStyles
     this.listItems = preparation.listItems
-    this.customSpans = preparation.customSpans
+    this.annotationTypes = preparation.annotationTypes
     this.customBlocks = preparation.customBlocks
     this.operations = createBlockEditorOperations(this)
     this.slatePlugins = initializeSlatePlugins(this)
@@ -67,6 +66,10 @@ export default class BlockEditor extends React.Component {
   }
 
   handleInsertBlock = item => {
+    if (item.options && item.options.inline) {
+      this.operations.insertInline(item)
+      return
+    }
     this.operations.insertBlock(item)
   }
 
@@ -87,67 +90,46 @@ export default class BlockEditor extends React.Component {
     }
   }
 
-
-  handleLinkButtonClick = linkNodes => {
+  handleAnnotationButtonClick = annotation => {
     this.editor.focus()
-    if (linkNodes.length) {
-      // If selection contains more than one link,
-      // the button will act as a "remove links"-button
-      if (linkNodes.length > 1) {
-        this.operations.removeSpan(linkNodes)
-        return
-      }
-      openSpanDialog(linkNodes[0])
+    if (annotation.active) {
+      const {value} = this.props
+      const spans = value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE)
+      spans.forEach(span => {
+        this.operations.removeAnnotationFromSpan(span, annotation.type)
+      })
       return
     }
-    this.operations.createFormBuilderSpan()
+    this.operations.createFormBuilderSpan(annotation.type)
   }
 
-  handleBlockStyleChange = selectedValue => {
-    this.operations.setBlockStyle(selectedValue.style.value)
-    this.refreshCSS()
-  }
-
-  hasMark(markName) {
+  hasAnnotationType(annotationType) {
     const {value} = this.props
-    return value.marks.some(mark => mark.type == markName)
+    const spans = value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE)
+    return spans.some(span => {
+      const annotations = span.data.get('annotations') || {}
+      return Object.keys(annotations).find(key => annotations[key]._type === annotationType.name)
+    })
+  }
+
+  getActiveAnnotations() {
+    const {value} = this.props
+    const {focusBlock} = value
+    const disabled = value.inlines.some(inline => inline.type !== SLATE_SPAN_TYPE)
+      || (focusBlock ? (focusBlock.isVoid || focusBlock.text === '') : false)
+    return this.annotationTypes.map(annotationType => {
+      const active = this.hasAnnotationType(annotationType)
+      return {
+        active: active,
+        type: annotationType,
+        disabled: disabled
+      }
+    })
   }
 
   hasStyle(styleName) {
     const {value} = this.props
     return value.blocks.some(block => block.data.get('style') === styleName)
-  }
-
-  getActiveLinks() {
-    const {value} = this.props
-    return value.inlines.filter(inline => inline.type == SLATE_SPAN_TYPE).toArray()
-  }
-
-  hasListItem(listItem) {
-    const {value} = this.props
-    return value.blocks.some(block => {
-      return block.data.get('listItem') === listItem
-    })
-  }
-
-  getActiveMarks() {
-    return Object.keys(this.slateSchema.marks).map(mark => {
-      return {
-        type: mark,
-        active: this.hasMark(mark)
-      }
-    })
-  }
-
-  getListItems() {
-    return (this.listItems)
-      .map((item, index) => {
-        return {
-          type: item.value,
-          title: item.title,
-          active: this.hasListItem(item.value)
-        }
-      })
   }
 
   getBlockStyles() {
@@ -175,18 +157,57 @@ export default class BlockEditor extends React.Component {
       })
     let value = items.filter(item => item.active)
     if (value.length === 0) {
-      value = [{
-        key: 'blockFormat-none',
-        preview: null,
-        type: null,
-        title: 'No style',
-        active: true
-      }]
+      value = [
+        {
+          key: 'blockFormat-none',
+          preview: null,
+          type: null,
+          title: 'No style',
+          active: true
+        }
+      ]
     }
     return {
       items: items,
       value: value
     }
+  }
+
+  handleBlockStyleChange = selectedValue => {
+    this.operations.setBlockStyle(selectedValue.style.value)
+    this.refreshCSS()
+  }
+
+  hasDecorator(decoratorName) {
+    const {value} = this.props
+    return value.marks.some(mark => mark.type == decoratorName)
+  }
+
+  getActiveDecorators() {
+    return Object.keys(this.slateSchema.marks).map(decorator => {
+      return {
+        type: decorator,
+        active: this.hasDecorator(decorator)
+      }
+    })
+  }
+
+  hasListItem(listItem) {
+    const {value} = this.props
+    return value.blocks.some(block => {
+      return block.data.get('listItem') === listItem
+    })
+  }
+
+  getListItems() {
+    return this.listItems
+      .map((item, index) => {
+        return {
+          type: item.value,
+          title: item.title,
+          active: this.hasListItem(item.value)
+        }
+      })
   }
 
   handleToggleFullscreen = () => {
@@ -279,8 +300,6 @@ export default class BlockEditor extends React.Component {
     const {fullscreen} = this.state
 
     const hasError = validation && validation.messages && validation.messages.length > 0
-    const showLinkButton = this.customSpans.length > 0
-
     return (
       <FormField
         label={type.title}
@@ -302,14 +321,13 @@ export default class BlockEditor extends React.Component {
             onFullscreenEnable={this.handleToggleFullscreen}
             fullscreen={this.state.fullscreen}
             onMarkButtonClick={this.handleOnClickMarkButton}
+            onAnnotationButtonClick={this.handleAnnotationButtonClick}
             onListButtonClick={this.handleOnClickListFormattingButton}
             onBlockStyleChange={this.handleBlockStyleChange}
             listItems={this.getListItems()}
             blockStyles={this.getBlockStyles()}
-            onLinkButtonClick={this.handleLinkButtonClick}
-            activeLinks={this.getActiveLinks()}
-            showLinkButton={showLinkButton}
-            marks={this.getActiveMarks()}
+            annotations={this.getActiveAnnotations()}
+            decorators={this.getActiveDecorators()}
           />
           <div
             className={styles.inputContainer}

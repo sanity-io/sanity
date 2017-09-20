@@ -20,7 +20,7 @@ export default function createRange(event) {
   const rangeOffset = range.startOffset
   const rangeLength = range.startContainer.wholeText ? range.startContainer.wholeText.length : 0
   const rangeIsAtStart = rangeOffset < rangeLength / 2
-
+  range.detach()
   return {
     rangeOffset: rangeOffset,
     rangeLength: rangeLength,
