@@ -4,11 +4,19 @@
   position: relative;
 }
 
-.isOutOfSyncWarning {
-  position: absolute;
+.warning {
   padding: 2em;
-  top: 2em;
-  bottom: 0;
   background-color: color(var(--state-warning-color) a(90%));
   color: var(--white);
+}
+
+.isOutOfSyncWarning {
+  composes: warning;
+  position: absolute;
+  top: 2em;
+  bottom: 0;
+}
+
+.disabledEditor {
+  composes: warning;
 }

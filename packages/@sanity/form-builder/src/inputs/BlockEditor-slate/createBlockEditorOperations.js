@@ -1,11 +1,11 @@
-import {SLATE_DEFAULT_STYLE, SLATE_SPAN_TYPE} from './constants'
-import {getSpanType} from './util/spanHelpers'
+import {BLOCK_DEFAULT_STYLE, SLATE_DEFAULT_BLOCK, SLATE_SPAN_TYPE} from './constants'
 import {createProtoValue} from './createProtoValue'
+import randomKey from './util/randomKey'
 
 export default function createBlockEditorOperations(blockEditor) {
 
-  function onChange(nextState) {
-    return blockEditor.props.onChange(nextState)
+  function onChange(change) {
+    return blockEditor.props.onChange(change)
   }
 
   function getState() {
@@ -14,146 +14,118 @@ export default function createBlockEditorOperations(blockEditor) {
     return blockEditor.editor.getState()
   }
 
-  const span = {
-    isVoid: false, // todo: make void if schema says so
-    type: SLATE_SPAN_TYPE,
-    kind: 'inline',
-    data: {value: undefined}
-  }
-
-
   return {
 
-    createFormBuilderSpan() {
+    createFormBuilderSpan(annotationType) {
       const state = getState()
-      const {startOffset} = state
-
-      const spanType = getSpanType(blockEditor.props.type)
-
-      let transform
+      let change
 
       if (state.isExpanded) {
-        transform = state.transform()
+        change = state.change()
       } else {
-        transform = this.expandToFocusedWord()
-        if (!transform) {
+        change = this.expandToFocusedWord(state.change())
+        if (!change) {
           // No word to expand to
+          console.warn('No text in vincinity to bind span to')
           return null
         }
       }
-
-      transform = transform
+      const key = randomKey(12)
+      const span = {
+        isVoid: false,
+        type: SLATE_SPAN_TYPE,
+        kind: 'inline',
+        data: undefined,
+        key: key
+      }
+      change
         .unwrapInline(SLATE_SPAN_TYPE)
         .wrapInline(span)
 
-      // There is a bug (in Slate?) where if you
-      // select the first word in a block and try to
-      // make a link of it, at this point, it says
-      // that the range is not in the document
-      // Move the selection back to the initial selection
-      if (startOffset === 0 && state.isExpanded) {
-        transform = transform.select(state.selection)
+      const currentSpan = blockEditor.props.value.inlines
+        .filter(inline => inline.key === key)
+        .first()
+
+      const data = {
+        annotations: currentSpan ? currentSpan.data.get('annotations') || {} : {},
+        focusedAnnotationName: annotationType.name
       }
+      data.annotations[annotationType.name] = createProtoValue(annotationType, key)
 
-      // IDEA: get selected text and set it on the data
-      // could be used to searching etc in the dialogue
-
-      // // Get text of applied new selection
-      // const selecetedText = nextState
-      //   .startText
-      //   .text
-      //   .substring(
-      //     nextState.selection.anchorOffset,
-      //     nextState.selection.focusOffset
-      //   )
-
-      // const spanNode = {data: {value: {text: selectedText}}}
-
-
-      // Update the span with new data
-      const finalState = transform
-        .setInline({data: {value: createProtoValue(spanType.type)}})
-        .apply()
-
-      return onChange(finalState)
+      return onChange(change.setInline({data: data}))
     },
 
-    resetSpan(spanNode) {
+    removeAnnotationFromSpan(spanNode, annotationType) {
       const state = getState()
-      const spanField = getSpanType(blockEditor.props.type)
-      const data = {value: createProtoValue(spanField.type)}
-      let nextState
-      if (Array.isArray(spanNode)) {
-        nextState = state.transform()
-        spanNode.forEach(node => {
-          nextState = nextState
-            .setNodeByKey(spanNode.key, {})
-        })
-        nextState = nextState.focus()
-      } else if (spanNode) {
-        nextState = state.transform()
-          .setNodeByKey(spanNode.key, {data})
-      } else {
-        // Apply on current selection
-        nextState = state.transform()
-          .setInline({data})
+      const annotations = spanNode.data.get('annotations')
+      if (!annotations) {
+        return
       }
+      // Remove the whole span if this annotation is the only one left
+      if (Object.keys(annotations).length === 1 && annotations[annotationType.name]) {
+        this.removeSpan(spanNode)
+        return
+      }
+      // If several annotations, remove only this one and leave the node intact
+      Object.keys(annotations).forEach(name => {
+        if (annotations[name]._type === annotationType.name) {
+          delete annotations[name]
+        }
+      })
+      const data = {
+        ...spanNode.data.toObject(),
+        focusedAnnotationName: undefined,
+        annotations: annotations
+      }
+      const nextChange = state.change()
+        .setNodeByKey(spanNode.key, {data})
 
-      nextState = nextState.focus().apply()
-      onChange(nextState)
+      onChange(nextChange)
     },
 
     removeSpan(spanNode) {
       const state = getState()
-      let nextState
+      let change
       if (Array.isArray(spanNode)) {
-        nextState = state.transform()
+        change = state.change()
         spanNode.forEach(node => {
-          nextState = nextState.unwrapInlineByKey(node.key)
+          change = change.unwrapInlineByKey(node.key)
         })
-        nextState = nextState.focus().apply()
+        change = change.focus()
       } else if (spanNode) {
-        nextState = state.transform()
+        change = state.change()
           .unwrapInlineByKey(spanNode.key)
           .focus()
-          .apply()
       } else {
         // Apply on current selection
-        nextState = state.transform()
+        change = state.change()
           .unwrapInline(SLATE_SPAN_TYPE)
           .focus()
-          .apply()
       }
-      onChange(nextState)
+      onChange(change)
     },
 
     toggleListItem(listItemName, isActive) {
       const state = getState()
-      const normalBlock = {
-        type: 'contentBlock',
-        data: {style: SLATE_DEFAULT_STYLE}
-      }
+      const normalBlock = SLATE_DEFAULT_BLOCK
       const listItemBlock = {
         type: 'contentBlock',
-        data: {listItem: listItemName, style: SLATE_DEFAULT_STYLE}
+        data: {listItem: listItemName, style: BLOCK_DEFAULT_STYLE, level: 1}
       }
-      let transform = state.transform()
+      const change = state.change()
 
       if (isActive) {
-        transform = transform
-          .setBlock(normalBlock)
+        change.setBlock(normalBlock)
       } else {
-        transform = transform
-          .setBlock(listItemBlock)
+        change.setBlock(listItemBlock)
       }
-      const nextState = transform.focus().apply()
-      onChange(nextState)
+      onChange(change.focus())
     },
 
     setBlockStyle(styleName) {
       const state = getState()
       const {selection, startBlock, endBlock} = state
-      let transform = state.transform()
+      let change = state.change()
 
       // If a single block is selected partially, split block conditionally
       // (selection in start, middle or end of text)
@@ -161,16 +133,15 @@ export default function createBlockEditorOperations(blockEditor) {
         && selection.isExpanded
         && !(
           selection.hasStartAtStartOf(startBlock)
-          && selection.hasEndAtEndOf(startBlock
-        )
-      )) {
+          && selection.hasEndAtEndOf(startBlock)
+        )) {
         const hasTextBefore = !selection.hasStartAtStartOf(startBlock)
         const hasTextAfter = !selection.hasEndAtEndOf(startBlock)
         if (hasTextAfter) {
           const extendForward = selection.isForward
             ? (selection.focusOffset - selection.anchorOffset)
             : (selection.anchorOffset - selection.focusOffset)
-          transform = transform
+          change
             .collapseToStart()
             .splitBlock()
             .moveForward()
@@ -178,63 +149,69 @@ export default function createBlockEditorOperations(blockEditor) {
             .collapseToEnd()
             .splitBlock()
             .collapseToStartOfPreviousText()
+        } else if (hasTextBefore) {
+          change
+            .collapseToStart()
+            .splitBlock()
+            .moveForward()
         } else {
-          transform = hasTextBefore ? (
-            transform
-              .collapseToStart()
-              .splitBlock()
-              .moveForward()
-          ) : (
-            transform
-              .collapseToEnd()
-              .splitBlock()
-              .select(selection)
-          )
+          change
+            .collapseToEnd()
+            .splitBlock()
+            .select(selection)
         }
       }
-      transform.focus().apply()
+      change.focus()
 
       // Do the actual style transform, only acting on type contentBlock
-      transform = state.transform()
       state.blocks.forEach(blk => {
         const newData = {...blk.data.toObject(), style: styleName}
         if (blk.type === 'contentBlock') {
-          transform = transform
+          change = change
             .setNodeByKey(blk.key, {data: newData})
         }
       })
-      const nextState = transform.focus().apply()
-      onChange(nextState)
+      onChange(change.focus())
     },
 
     insertBlock(type) {
       const state = getState()
+      const key = randomKey(12)
+      const block = {
+        type: type.name,
+        isVoid: true,
+        key: key,
+        data: {
+          value: createProtoValue(type, key)
+        }
+      }
+      onChange(state.change().insertBlock(block))
+    },
 
+    insertInline(type) {
+      const state = getState()
+      const key = randomKey(12)
       const props = {
         type: type.name,
         isVoid: true,
+        key: key,
         data: {
-          value: createProtoValue(type)
+          value: createProtoValue(type, key)
         }
       }
 
-      const nextState = state.transform().insertBlock(props).apply()
-      onChange(nextState)
+      onChange(state.change().insertInline(props))
     },
 
     toggleMark(mark) {
-      const state = getState()
-      const nextState = state
-        .transform()
+      onChange(getState()
+        .change()
         .toggleMark(mark.type)
-        .focus()
-        .apply()
-      onChange(nextState)
+        .focus())
     },
 
-    expandToFocusedWord() {
-      const state = getState()
-      const {focusText, focusOffset} = state
+    expandToFocusedWord(change) {
+      const {focusText, focusOffset} = change.state
       const charsBefore = focusText.characters.slice(0, focusOffset)
       const charsAfter = focusText.characters.slice(focusOffset, -1)
       const isEmpty = obj => obj.get('text').match(/\s/g)
@@ -252,19 +229,16 @@ export default function createBlockEditorOperations(blockEditor) {
       if (newStartOffset === newEndOffset) {
         return null
       }
-
       // Select and highlight current word
-      // Note: don't call apply and onChange here
-      return state.transform()
+      return change
         .moveOffsetsTo(newStartOffset, newEndOffset)
         .focus()
     },
 
     expandToNode(node) {
-      return getState().transform()
+      return getState().change()
         .moveToRangeOf(node)
         .focus()
-        .apply()
     }
 
   }

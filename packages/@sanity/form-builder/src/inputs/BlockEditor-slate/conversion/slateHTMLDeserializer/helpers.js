@@ -1,81 +1,61 @@
-import cheerio from 'cheerio'
-import cleanUpWordDocument from './cleanUpWordDocument'
-import {HTML_BLOCK_TAGS, HTML_HEADER_TAGS} from './rules'
-
-const wordRegexp = /(class="?Mso|style=(?:"|')[^"]*?\bmso-|w:WordDocument|<o:\w+>|<\/font>)/
-
-function isUnwantedElement(index, node) {
-  return node.type === 'comment' || node.type === 'directive'
+export function isPastedFromWord(html) {
+  return /(class="?Mso|style=(?:"|')[^"]*?\bmso-|w:WordDocument|<o:\w+>|<\/font>)/.test(html)
 }
 
-function unwrapBlockTags(doc) {
-  const blockTags = Object.keys(HTML_BLOCK_TAGS).concat(Object.keys(HTML_HEADER_TAGS))
-  const blockSelect = blockTags.join(', ')
+function cleanUpWordDocument(html) {
 
-  doc.root().contents()
-    .each((index, node) => {
-      const childBlocks = doc(node).find(blockSelect)
-      if (childBlocks.length && blockTags.includes(node.tagName)) {
-        doc(node).attr('data-unwrapped', 'true')
-        childBlocks.insertAfter(node)
-      }
-    })
+  const unwantedWordDocumentPaths = ['/html/text()', '/html/head/text()', '/html/body/text()', '//span[not(text())]', '//p[not(text())]', '//comment()', "//*[name()='o:p']", '//style', '//xml', '//script', '//meta', '//link',]
 
-  // Remove any empty leftover empty block tags if we have unwrapped anything
-  doc.root()
-    .find('*[data-unwrapped=true]')
-    .filter((index, node) => {
-      return doc(node).text().trim() === ''
-    })
-    .remove()
+  const doc = new DOMParser().parseFromString(html, 'text/html')
 
-  return doc
-}
+  // Remove cruft
+  const unwantedNodes = document.evaluate(
+    `${unwantedWordDocumentPaths.join('|')}`,
+    doc,
+    null,
+    XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+    null
+  )
+  for (let i = unwantedNodes.snapshotLength - 1; i >= 0; i--) {
+    const unwanted = unwantedNodes.snapshotItem(i)
+    unwanted.parentNode.removeChild(unwanted)
+  }
 
-function wrapOrphanBrs(doc) {
-  doc.root()
-    .find('br')
-    .each((index, node) => {
-      if (!node.parent) {
-        doc(node).replaceWith('<p></p>')
-      }
-    })
-  return doc
+  // Transform titles into H1s
+  const titleElments = document.evaluate(
+    "//p[@class='MsoTitle']",
+    doc,
+    null,
+    XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+    null
+  )
+  for (let i = titleElments.snapshotLength - 1; i >= 0; i--) {
+    const title = titleElments.snapshotItem(i)
+    const h1 = document.createElement('h1')
+    h1.appendChild(new Text(title.textContent))
+    title.parentNode.replaceChild(h1, title)
+  }
+  return (new XMLSerializer()).serializeToString(doc)
 }
 
 export function isPastedFromGoogleDocs(el) {
-  return el.attribs
-    && el.attribs.id
-    && el.attribs.id.match(/^docs-internal-guid-/)
+  if (el.nodeType !== 1) {
+    return false
+  }
+  const id = el.getAttribute('id')
+  return id && id.match(/^docs-internal-guid-/)
 }
 
-export function cleanupHtml(html) {
-  const isWordDocument = wordRegexp.test(html)
-  let doc = null
-  try {
-    doc = cheerio.load(cheerio.load(html)('body').html())
-  } catch (err) {
-    doc = cheerio.load(html)
+export function cleanHtml(html) {
+  let cleanedHtml = html
+  if (isPastedFromWord(html)) {
+    cleanedHtml = cleanUpWordDocument(html)
   }
-  doc.root()
-    .find('*')
-    .contents()
-    .filter(isUnwantedElement)
-    .remove()
-
-  if (isWordDocument) {
-    doc = cleanUpWordDocument(doc)
-  }
-
-  doc = unwrapBlockTags(doc)
-
-  doc = wrapOrphanBrs(doc)
-
-  const cleanHtml = doc.html()
-    .trim()   // Trim whitespace
+  cleanedHtml = cleanedHtml
+    .trim() // Trim whitespace
     .replace(/[\r\n]+/g, ' ') // Remove newlines / carriage returns
     .replace(/ {2,}/g, ' ') // Remove trailing spaces
-  return cleanHtml
+  return cleanedHtml
 }
 
 export function resolveListItem(listNodeTagName) {
@@ -91,4 +71,11 @@ export function resolveListItem(listNodeTagName) {
       listStyle = 'bullet'
   }
   return listStyle
+}
+
+export function tagName(el) {
+  if (!el || el.nodeType !== 1) {
+    return undefined
+  }
+  return el.tagName.toLowerCase()
 }

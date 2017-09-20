@@ -2,47 +2,49 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/Toolbar.css'
 import InsertBlocks, {insertBlockShape} from './InsertBlocks'
-import Marks, {mark} from './Marks'
+import Decorators, {decorator} from './Decorators'
 import ListItems, {listItem} from './ListItems'
 import BlockStyle, {blockStyleShape} from './BlockStyle'
 import Button from 'part:@sanity/components/buttons/default'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import LinkButton from './LinkButton'
+import AnnotationButton from './AnnotationButton'
 
 export default class Toolbar extends React.Component {
 
   static propTypes = {
-    onInsertBlock: PropTypes.func,
-    onFullscreenEnable: PropTypes.func,
+
     className: PropTypes.string,
+
     fullscreen: PropTypes.bool,
-    onMarkButtonClick: PropTypes.func,
-    onListButtonClick: PropTypes.func,
-    onBlockStyleChange: PropTypes.func,
-    insertBlocks: PropTypes.arrayOf(insertBlockShape),
-    marks: PropTypes.arrayOf(
-      mark
-    ),
-    listItems: PropTypes.arrayOf(
-      listItem
-    ),
+
     blockStyles: PropTypes.shape({
       value: PropTypes.arrayOf(blockStyleShape),
       items: PropTypes.arrayOf(blockStyleShape),
       onSelect: PropTypes.func
     }),
-    onLinkButtonClick: PropTypes.func,
-    activeLinks: PropTypes.arrayOf(PropTypes.object),
-    showLinkButton: PropTypes.bool
+
+    annotations: PropTypes.arrayOf(PropTypes.object),
+    decorators: PropTypes.arrayOf(decorator),
+    insertBlocks: PropTypes.arrayOf(insertBlockShape),
+    listItems: PropTypes.arrayOf(
+      listItem
+    ),
+
+    onInsertBlock: PropTypes.func,
+    onFullscreenEnable: PropTypes.func,
+    onMarkButtonClick: PropTypes.func,
+    onListButtonClick: PropTypes.func,
+    onBlockStyleChange: PropTypes.func,
+    onAnnotationButtonClick: PropTypes.func
   };
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.props.marks !== nextProps.marks
+      this.props.decorators !== nextProps.decorators
       || this.props.blockStyles !== nextProps.blockStyles
       || this.props.fullscreen !== nextProps.fullscreen
-      || this.props.activeLinks !== nextProps.activeLinks
+      || this.props.annotations !== nextProps.annotations
     )
   }
 
@@ -50,17 +52,16 @@ export default class Toolbar extends React.Component {
     const {
       className,
       fullscreen,
-      marks,
+      annotations,
+      decorators,
+      listItems,
+      blockStyles,
+      insertBlocks,
       onInsertBlock,
       onMarkButtonClick,
       onListButtonClick,
       onBlockStyleChange,
-      listItems,
-      blockStyles,
-      insertBlocks,
-      onLinkButtonClick,
-      activeLinks,
-      showLinkButton
+      onAnnotationButtonClick,
     } = this.props
 
     return (
@@ -70,9 +71,9 @@ export default class Toolbar extends React.Component {
         </div>
 
         <div className={styles.formatButtons}>
-          {marks && marks.length > 0 && (
-            <div className={styles.textFormatContainer}>
-              <Marks marks={marks} onClick={onMarkButtonClick} />
+          {decorators && decorators.length > 0 && (
+            <div className={styles.decoratorContainer}>
+              <Decorators decorators={decorators} onClick={onMarkButtonClick} />
             </div>
           )}
 
@@ -83,13 +84,20 @@ export default class Toolbar extends React.Component {
           )}
         </div>
 
-        {
-          showLinkButton && (
-            <div className={styles.linkContainer}>
-              <LinkButton activeLinks={activeLinks} onClick={onLinkButtonClick} />
-            </div>
-          )
-        }
+        {annotations && annotations.length > 0 && (
+          <div className={styles.annotationsContainer}>
+            {
+              annotations.map(annotation => {
+                return (
+                  <AnnotationButton
+                    key={`annotationButton${annotation.type.name}`}
+                    annotation={annotation} onClick={onAnnotationButtonClick}
+                  />
+                )
+              })
+            }
+          </div>
+        )}
 
         <div className={styles.fullscreenButtonContainer}>
           <Button

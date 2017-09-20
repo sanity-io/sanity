@@ -27,7 +27,7 @@ export const SpanType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = subTypeDef.fields || []
+    const {fields = [], annotations = [], marks = []} = subTypeDef
 
     const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
       type: SPAN_CORE,
@@ -43,6 +43,9 @@ export const SpanType = {
         }
       })
     })
+
+    lazyGetter(parsed, 'annotations', () => annotations.map(extendMember))
+    lazyGetter(parsed, 'marks', () => marks.map(extendMember))
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 

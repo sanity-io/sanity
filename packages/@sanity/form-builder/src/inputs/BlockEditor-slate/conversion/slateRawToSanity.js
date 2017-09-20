@@ -1,7 +1,7 @@
 // Converts a persisted array to a slate compatible json document
 import {get, flatten} from 'lodash'
 
-function toSanitySpan(blockNode) {
+function toSanitySpan(blockNode, sanityBlock) {
   if (blockNode.kind === 'text') {
     return blockNode.ranges
       .map(range => {
@@ -18,12 +18,24 @@ function toSanitySpan(blockNode) {
       if (node.kind !== 'text') {
         throw new Error(`Unexpected non-text child node for inline text: ${node.kind}`)
       }
+      if (blockNode.type !== 'span') {
+        return blockNode.data.value
+      }
+      const annotations = data.annotations
+      const annotationKeys = []
+      if (annotations) {
+        Object.keys(annotations).forEach(name => {
+          const annotation = annotations[name]
+          const annotationKey = annotation._key
+          sanityBlock.markDefs.push(annotation)
+          annotationKeys.push(annotationKey)
+        })
+      }
       return node.ranges
         .map(range => ({
           _type: 'span',
           text: range.text,
-          marks: range.marks.map(mark => mark.type),
-          ...data.value
+          marks: range.marks.map(mark => mark.type).concat(annotationKeys),
         }))
     }))
   }
@@ -32,12 +44,17 @@ function toSanitySpan(blockNode) {
 
 function toSanityBlock(block) {
   // debugger
-  if (block.type === 'contentBlock' /*<-- hack should probably be fixed better */ || block.type === 'paragraph' /* -->*/) {
-    return {
+  if (block.type === 'contentBlock') {
+    const sanityBlock = {
       ...block.data,
       _type: 'block',
-      spans: flatten(block.nodes.map(toSanitySpan))
+      _key: block.key,
+      markDefs: []
     }
+    sanityBlock.children = flatten(block.nodes.map(node => {
+      return toSanitySpan(node, sanityBlock)
+    }))
+    return sanityBlock
   }
   return block.data.value
 }
@@ -53,18 +70,18 @@ function isEmpty(blocks) {
   if (firstBlock._type !== 'block') {
     return false
   }
-  const spans = firstBlock.spans
-  if (spans.length === 0) {
+  const children = firstBlock.children
+  if (children.length === 0) {
     return true
   }
-  if (spans.length > 1) {
+  if (children.length > 1) {
     return false
   }
-  const firstSpan = spans[0]
-  if (firstSpan._type !== 'span') {
+  const firstChild = children[0]
+  if (firstChild._type !== 'span') {
     return false
   }
-  return firstSpan.text.length === 0
+  return firstChild.text.length === 0
 }
 
 export default function slateRawToSanity(raw) {
