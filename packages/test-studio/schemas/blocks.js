@@ -65,7 +65,7 @@ export default {
       title: 'Customized with block types',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image'},
+        {type: 'image', title: 'Image', options: {inline: true}},
         {type: 'author', title: 'Author'},
         {
           type: 'block',
