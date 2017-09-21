@@ -146,7 +146,7 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
               <p>
                 You&apos;re using a new version of the Studio with
 
-                {deprecatedSchema && 'a block schema that hasn\'t been updated.'}
+                {deprecatedSchema && ' a block schema that hasn\'t been updated.'}
 
                 {deprecatedSchema && deprecatedBlockValue && ' Also block text needs to be updated.'}
 
