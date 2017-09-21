@@ -17,13 +17,13 @@ export default {
       lists: [
         {title: 'Bullet', value: 'bullet'}
       ],
-      span: {
-        marks: [
+      marks: {
+        decorators: [
           {title: 'Strong', value: 'strong'},
           {title: 'Emphasis', value: 'em'},
           {title: 'Code', value: 'code'}
         ],
-        fields: [
+        annotations: [
           {
             title: 'URL',
             name: 'link',
