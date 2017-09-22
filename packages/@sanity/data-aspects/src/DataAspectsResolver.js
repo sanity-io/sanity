@@ -1,7 +1,6 @@
 import config from 'config:@sanity/data-aspects'
 import {startCase} from 'lodash'
-const bundledTypeNames = ['geopoint', 'richDate', 'imageAsset', 'fileAsset']
-
+const bundledTypeNames = ['geopoint', 'richDate', 'date', 'imageAsset', 'fileAsset']
 
 class DataAspectsResolver {
 
