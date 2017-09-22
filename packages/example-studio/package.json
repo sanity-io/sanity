@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": true,
-  "version": "0.113.0",
+  "version": "0.113.1",
   "description": "A sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -14,17 +14,17 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/base": "^0.113.0",
-    "@sanity/cli": "^0.113.0",
-    "@sanity/code-input": "^0.113.0",
-    "@sanity/components": "^0.113.0",
-    "@sanity/core": "^0.113.0",
-    "@sanity/date-input": "^0.113.0",
-    "@sanity/default-layout": "^0.113.0",
-    "@sanity/default-login": "^0.113.0",
-    "@sanity/desk-tool": "^0.113.0",
-    "@sanity/form-builder": "^0.113.0",
-    "@sanity/storybook": "^0.113.0",
+    "@sanity/base": "^0.113.1",
+    "@sanity/cli": "^0.113.1",
+    "@sanity/code-input": "^0.113.1",
+    "@sanity/components": "^0.113.1",
+    "@sanity/core": "^0.113.1",
+    "@sanity/date-input": "^0.113.1",
+    "@sanity/default-layout": "^0.113.1",
+    "@sanity/default-login": "^0.113.1",
+    "@sanity/desk-tool": "^0.113.1",
+    "@sanity/form-builder": "^0.113.1",
+    "@sanity/storybook": "^0.113.1",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.28.4",
     "fetch": "^1.1.0",
@@ -34,7 +34,7 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-icons": "^2.2.5",
-    "sanity-plugin-vision": "^0.113.0"
+    "sanity-plugin-vision": "^0.113.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.1"

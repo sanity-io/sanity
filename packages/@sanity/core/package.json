@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.113.0",
+  "version": "0.113.1",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -14,13 +14,13 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/check": "^0.113.0",
-    "@sanity/import": "^0.113.0",
-    "@sanity/mutator": "^0.113.0",
-    "@sanity/plugin-loader": "^0.113.0",
-    "@sanity/resolver": "^0.113.0",
-    "@sanity/server": "^0.113.0",
-    "@sanity/util": "^0.113.0",
+    "@sanity/check": "^0.113.1",
+    "@sanity/import": "^0.113.1",
+    "@sanity/mutator": "^0.113.1",
+    "@sanity/plugin-loader": "^0.113.1",
+    "@sanity/resolver": "^0.113.1",
+    "@sanity/server": "^0.113.1",
+    "@sanity/util": "^0.113.1",
     "babel-preset-es2015-node4": "^2.1.1",
     "babel-preset-stage-2": "^6.22.0",
     "babel-register": "^6.26.0",
