@@ -1,7 +1,7 @@
 {
   "name": "test-studio",
   "private": true,
-  "version": "0.113.1",
+  "version": "0.113.2",
   "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "@sanity/date-input": "^0.113.1",
     "@sanity/default-layout": "^0.113.1",
     "@sanity/default-login": "^0.113.1",
-    "@sanity/desk-tool": "^0.113.1",
+    "@sanity/desk-tool": "^0.113.2",
     "@sanity/form-builder": "^0.113.1",
     "@sanity/storybook": "^0.113.1",
     "bio-pv": "^1.8.1",
