@@ -11,6 +11,7 @@ import ResultView from './ResultView'
 import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
 import SplitPane from 'react-split-pane'
+import encodeQueryString from '../util/encodeQueryString'
 
 const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
 
@@ -21,13 +22,21 @@ class VisionGui extends React.PureComponent {
     const lastQuery = getState('lastQuery')
     const lastParams = getState('lastParams')
 
+    const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
+    let dataset = getState('dataset', firstDataset)
+
+    if (!this.props.datasets.includes(dataset)) {
+      dataset = firstDataset
+    }
+
     this.subscribers = {}
     this.state = {
       query: lastQuery,
       params: lastParams && tryParseParams(lastParams),
       rawParams: lastParams,
       queryInProgress: false,
-      editorHeight: 100
+      editorHeight: 100,
+      dataset
     }
 
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
@@ -41,10 +50,7 @@ class VisionGui extends React.PureComponent {
   }
 
   componentDidMount() {
-    const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
-    const dataset = getState('dataset', firstDataset)
-    this.context.client.config({dataset})
-
+    this.context.client.config({dataset: this.state.dataset})
     window.document.addEventListener('paste', this.handlePaste)
   }
 
@@ -128,12 +134,14 @@ class VisionGui extends React.PureComponent {
 
     const client = this.context.client
     const paramsError = params instanceof Error && params
+    const url = client.getDataUrl('listen', encodeQueryString(query, params))
     storeState('lastQuery', query)
     storeState('lastParams', rawParams)
 
     this.cancelQuery()
 
     this.setState({
+      url,
       listenMutations: [],
       queryInProgress: false,
       listenInProgress: !paramsError && Boolean(query),
@@ -180,10 +188,13 @@ class VisionGui extends React.PureComponent {
       return
     }
 
+    const url = client.getDataUrl('query', encodeQueryString(query, params))
     const queryStart = Date.now()
+
     this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
       next: res => this.setState({
         query,
+        url,
         queryTime: res.ms,
         e2eTime: Date.now() - queryStart,
         result: res.result,
