@@ -8,6 +8,7 @@ import progrescii from 'progrescii'
 import {noop, padEnd, throttle} from 'lodash'
 
 // Use require.resolve to ensure it actually exists
+const useProgress = (process.stderr && process.stderr.isTTY) && !process.env.CI
 const binDir = path.join(__dirname, '..', '..', '..', 'vendor')
 const yarnPath = require.resolve(path.join(binDir, 'yarn'))
 
@@ -124,10 +125,14 @@ export default function yarnWithProgress(args, options = {}) {
       state.spinner.stop()
     }
 
-    state.progress = progrescii.create({
-      template: getProgressTemplate(chalk.yellow('●'), state.step.message),
-      total: event.data.total
-    })
+    if (useProgress) {
+      state.progress = progrescii.create({
+        template: getProgressTemplate(chalk.yellow('●'), state.step.message),
+        total: event.data.total
+      })
+    } else {
+      print(`${chalk.yellow('●')} ${state.step.message}`)
+    }
   }
 
   function onProgressTick(event) {
@@ -140,7 +145,7 @@ export default function yarnWithProgress(args, options = {}) {
       return // Will be taken care of by onProgressFinish
     }
 
-    state.progress.set(event.data.current)
+    prog.set(event.data.current)
   }
 
   function onProgressFinish(event) {
