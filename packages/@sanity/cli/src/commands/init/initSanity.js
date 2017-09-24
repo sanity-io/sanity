@@ -56,7 +56,12 @@ export default async function initSanity(args, context) {
 
   // Now let's pick or create a dataset
   debug('Prompting user to select or create a dataset')
-  const {datasetName} = await getOrCreateDataset({projectId, displayName})
+  const {datasetName} = await getOrCreateDataset({
+    projectId,
+    displayName,
+    dataset: flags.dataset
+  })
+
   debug(`Dataset with name ${datasetName} selected`)
 
   // Gather project defaults based on environment
