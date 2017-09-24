@@ -15,6 +15,18 @@ import encodeQueryString from '../util/encodeQueryString'
 
 const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
 
+const handleCopyUrl = () => {
+  const emailLink = document.querySelector('#vision-query-url')
+  emailLink.select()
+
+  try {
+    document.execCommand('copy')
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Unable to copy to clipboard :(')
+  }
+}
+
 class VisionGui extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -134,7 +146,7 @@ class VisionGui extends React.PureComponent {
 
     const client = this.context.client
     const paramsError = params instanceof Error && params
-    const url = client.getDataUrl('listen', encodeQueryString(query, params))
+    const url = client.getUrl(client.getDataUrl('listen', encodeQueryString(query, params)))
     storeState('lastQuery', query)
     storeState('lastParams', rawParams)
 
@@ -188,7 +200,7 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    const url = client.getDataUrl('query', encodeQueryString(query, params))
+    const url = client.getUrl(client.getDataUrl('query', encodeQueryString(query, params)))
     const queryStart = Date.now()
 
     this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
@@ -225,7 +237,7 @@ class VisionGui extends React.PureComponent {
 
   render() {
     const {client, components} = this.context
-    const {error, result, query, queryInProgress, listenInProgress, queryTime, e2eTime, listenMutations} = this.state
+    const {error, result, url, query, queryInProgress, listenInProgress, queryTime, e2eTime, listenMutations} = this.state
     const {Button, Select} = components
     const styles = this.context.styles.visionGui
     const dataset = client.config().dataset
@@ -249,6 +261,15 @@ class VisionGui extends React.PureComponent {
                 onChange={this.handleChangeDataset}
               />
             </label>
+          </div>
+          <div className={styles.queryUrlContainer}>
+            {typeof url === 'string' && (
+              <span>
+                Query URL:
+                <input className={styles.queryUrl} readOnly id="vision-query-url" value={url} />
+                <button onClick={handleCopyUrl}>Copy</button>
+              </span>
+            )}
           </div>
           <div className={styles.queryTimingContainer}>
             {typeof queryTime === 'number' && (
