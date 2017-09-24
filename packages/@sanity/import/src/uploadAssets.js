@@ -133,11 +133,7 @@ function setAssetReferences(assetMap, assetIds, options) {
 
   // Now perform the batch operations in parallel with a given concurrency
   const mapOptions = {concurrency: ASSET_PATCH_CONCURRENCY}
-  return pMap(
-    batches,
-    setAssetReferenceBatch.bind(null, client, progress),
-    mapOptions
-  )
+  return pMap(batches, setAssetReferenceBatch.bind(null, client, progress), mapOptions)
 }
 
 function setAssetReferenceBatch(client, progress, batch) {
@@ -149,9 +145,19 @@ function setAssetReferenceBatch(client, progress, batch) {
     .then(res => res.results.length)
 }
 
+function getAssetType(assetId) {
+  return assetId.slice(0, assetId.indexOf('-'))
+}
+
 function reducePatch(trx, task) {
   return trx.patch(task.documentId, patch =>
-    patch.set({[task.path]: {_type: 'reference', _ref: task.assetId}})
+    patch.set({
+      [`${task.path}._type`]: getAssetType(task.assetId),
+      [`${task.path}.asset`]: {
+        _type: 'reference',
+        _ref: task.assetId
+      }
+    })
   )
 }
 

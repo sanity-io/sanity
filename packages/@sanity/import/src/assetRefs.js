@@ -17,10 +17,14 @@ function unsetAssetRefs(doc) {
 function getAssetRefs(doc) {
   return findAssetRefs(doc).map(path => ({
     documentId: doc._id,
-    path: serializePath({path: path}),
+    path: serializePath({path: path.filter(isNotAssetKey)}),
     url: get(doc, path).replace(assetMatcher, '$2'),
     type: get(doc, path).replace(assetMatcher, '$1')
   }))
+}
+
+function isNotAssetKey(segment) {
+  return segment !== assetKey
 }
 
 function findAssetRefs(doc) {
