@@ -29,6 +29,13 @@ export default function yarnWithProgress(args, options = {}) {
   const nodePath = process.argv[0]
   const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive'])
 
+  const state = {firstStepReceived: false}
+
+  // Yarn takes a while before starting to emit events, we want to show
+  // some sort of indication while it's getting started
+  onStep({data: {message: 'Resolving dependencies'}})
+  onActivityStart({})
+
   const proc = execa(nodePath, nodeArgs, execOpts)
   proc.catch(onNativeError)
 
@@ -44,7 +51,6 @@ export default function yarnWithProgress(args, options = {}) {
       .on('error', onNativeError)
   })
 
-  const state = {}
   const interceptors = options.interceptors || {}
   const throttledOnProgressTick = throttle(onProgressTick, 50)
 
@@ -86,6 +92,11 @@ export default function yarnWithProgress(args, options = {}) {
   function onActivityStart(event) {
     if (!state.step) {
       return
+    }
+
+    if (!state.firstStepReceived && state.spinner) {
+      state.firstStepReceived = true
+      onActivityEnd()
     }
 
     state.spinner = ora(state.step.message).start()

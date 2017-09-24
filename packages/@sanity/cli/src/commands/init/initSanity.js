@@ -1,5 +1,7 @@
+import path from 'path'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
+import noop from 'lodash/noop'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
@@ -10,17 +12,35 @@ import gatherInput from './gatherInput'
 import bootstrapTemplate from './bootstrapTemplate'
 
 export default async function initSanity(args, context) {
+  const flags = args.extOptions
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
-  output.print('This utility walks you through creating a Sanity installation.')
-  output.print('Press ^C at any time to quit.\n')
+  const unattended = flags.y || flags.yes
+  const print = unattended ? noop : output.print
+
+  const requiredForUnattended = ['project', 'dataset', 'output-path']
+  if (unattended) {
+    requiredForUnattended.forEach(flag => {
+      if (!flags[flag]) {
+        throw new Error(`\`--${flag}\` must be specified in unattended mode`)
+      }
+    })
+  }
+
+  print('This utility walks you through creating a Sanity installation.')
+  print('Press ^C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
   const hasToken = userConfig.get('authToken')
+
   debug(hasToken ? 'User already has a token' : 'User has no token')
 
   if (hasToken) {
-    output.print('Looks like you already have a Sanity-account. Sweet!\n')
+    print('Looks like you already have a Sanity-account. Sweet!\n')
+  } else if (unattended) {
+    throw new Error(
+      "Can't use unattended mode without being logged in, please use `sanity login` first!"
+    )
   } else {
     await getOrCreateUser()
   }
@@ -40,16 +60,24 @@ export default async function initSanity(args, context) {
   debug(`Dataset with name ${datasetName} selected`)
 
   // Gather project defaults based on environment
-  const defaults = await getProjectDefaults(workDir, {isPlugin: false})
+  const defaults = await getProjectDefaults(workDir, {isPlugin: false, context})
 
   // Prompt the user for required information
-  const answers = await gatherInput(prompt, defaults, {workDir, sluggedName})
+  let answers
+  if (unattended) {
+    answers = Object.assign({license: 'UNLICENSED'}, defaults, {
+      outputPath: path.resolve(flags['output-path'])
+    })
+  } else {
+    answers = await gatherInput(prompt, defaults, {workDir, sluggedName})
+  }
 
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
   // Prompt for template to use
-  const templateName = await prompt.single({
+  const defaultTemplate = unattended ? flags.template || 'clean' : null
+  const templateName = defaultTemplate || await prompt.single({
     message: 'Select project template',
     type: 'list',
     choices: [
@@ -97,9 +125,9 @@ export default async function initSanity(args, context) {
 
   // Check if we're currently in the output path, so we can give a better start message
   if (outputPath === process.cwd()) {
-    output.print(`\n${chalk.green('Success!')} You can now run "${chalk.cyan('sanity start')}"`)
+    print(`\n${chalk.green('Success!')} You can now run "${chalk.cyan('sanity start')}"`)
   } else {
-    output.print(
+    print(
       `\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(
         outputPath
       )}" and run "${chalk.cyan('sanity start')}"`
@@ -111,18 +139,18 @@ export default async function initSanity(args, context) {
     ? template.getSuccessMessage(initOptions, context)
     : ''
   if (successMessage) {
-    output.print(`\n${successMessage}`)
+    print(`\n${successMessage}`)
   }
 
   async function getOrCreateUser() {
-    output.print("We can't find any auth credentials in your Sanity config - looks like you")
-    output.print("haven't used Sanity on this system before?\n")
+    print("We can't find any auth credentials in your Sanity config - looks like you")
+    print("haven't used Sanity on this system before?\n")
 
     // Provide login options (`sanity login`)
     await login(args, context)
 
-    output.print("Good stuff, you're now authenticated. You'll need a project to keep your")
-    output.print('data sets and collaborators safe and snug.')
+    print("Good stuff, you're now authenticated. You'll need a project to keep your")
+    print('data sets and collaborators safe and snug.')
   }
 
   async function getOrCreateProject() {
@@ -131,6 +159,17 @@ export default async function initSanity(args, context) {
       projects = await apiClient({requireProject: false}).projects.list()
     } catch (err) {
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+    }
+
+    if (projects.length === 0 && unattended) {
+      throw new Error('No projects found for current user')
+    }
+
+    if (unattended) {
+      return {
+        projectId: flags.project,
+        displayName: projects.find(proj => proj.id === flags.project).displayName
+      }
     }
 
     if (projects.length === 0) {
@@ -173,6 +212,10 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
+    if (unattended) {
+      return {datasetName: opts.dataset}
+    }
+
     const client = apiClient({api: {projectId: opts.projectId}})
     const datasets = await client.datasets.list()
 
