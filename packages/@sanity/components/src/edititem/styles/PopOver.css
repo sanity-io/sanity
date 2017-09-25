@@ -1,9 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-/*
-  Never use transform on this component. It destroys the layering combined with overlay
-*/
-
 @keyframes appear {
   0% {
     opacity: 0;
@@ -39,75 +35,48 @@
     right: 0;
     height: 100vh;
     width: 100vw;
-    overflow: scroll;
-  }
-}
-
-.inner {
-  display: block;
-  z-index: var(--zindex-portal);
-  position: fixed;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-  height: 100vh;
-  width: 100vw;
-}
-
-.autoWidth {
-  composes: inner;
-  width: auto;
-}
-
-.fullWidth {
-  composes: inner;
-}
-
-.overlay {
-  background-color: var(--backdrop-background-color);
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  display: block;
-  cursor: default;
-  z-index: 1;
-
-  @media (--max-screen-medium) {
-    display: none;
+    overflow: auto;
   }
 }
 
 .arrow {
   position: absolute;
-  top: -0.35em;
-  left: 2em;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  z-index: 4;
 
   @media (--max-screen-medium) {
     display: none;
   }
 
-  @nest &:before {
+  @nest &::before {
     content: "";
-    z-index: 3;
+    z-index: 5;
     position: absolute;
     height: 1em;
     width: 1em;
     background-color: var(--component-bg);
-    transform: rotate(45deg);
+    transform: translateX(-0.4em) rotate(45deg);
   }
 }
 
-.portalModal {
+.filledArrow {
+  composes: arrow;
+
+  @nest &::before {
+    background-color: var(--brand-primary);
+  }
+}
+
+.popover {
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
-  z-index: calc(var(--zindex-popover) + 3);
+  z-index: 2;
   padding: 0;
   margin-bottom: var(--large-padding);
   box-sizing: border-box;
   position: relative;
+  transform: translateY(0.5rem);
   min-width: 30em;
   max-width: 80vw;
   transition: transform 0.25s cubic-bezier(0.77, 0, 0.175, 1); /* easeInOutQuart */
@@ -132,14 +101,6 @@
     padding-bottom: 3rem;
     overflow: hidden;
   }
-}
-
-.portalModalFullHeight {
-  composes: portalModal;
-  height: 100vh;
-  max-height: 100vh;
-  margin: 0;
-  overflow-y: scroll;
 }
 
 .close {
@@ -170,20 +131,7 @@
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
-
-  @nest &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.contentWithScroll {
-  @nest &::-webkit-scrollbar {
-    display: block;
-  }
-
-  composes: content;
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: thinLightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  overflow: auto;
 }
 
 .head {
@@ -197,7 +145,7 @@
   top: 0;
   width: 100%;
   left: 0;
-  z-index: var(--zindex-portal);
+  z-index: 2;
 
   @media (--screen-medium) {
     display: none;
@@ -207,6 +155,7 @@
 .title {
   margin: 0;
   padding: 0;
+  background-color: var(--array--add-item-color);
 }
 
 .primaryFunctions {

@@ -10,12 +10,22 @@
   composes: root;
   padding: 2px;
   width: 10em;
+
   @nest & .functions {
     position: absolute;
     top: 0.1em;
     right: 0;
     z-index: 1;
   }
+}
+
+.editRoot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  border: 2px solid red;
 }
 
 .preview {
