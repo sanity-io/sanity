@@ -18,7 +18,7 @@ export default async function initPlugin(args, context, initOpts = {}) {
     + 'recommended that the plugin name is prefixed with `sanity-plugin-`'
   )
 
-  const pluginOpts = {isPlugin: true, workDir}
+  const pluginOpts = {isPlugin: true, workDir, context}
   const defaults = await getProjectDefaults(workDir, pluginOpts)
   const answers = await gatherInput(prompt, defaults, pluginOpts)
   const finalAnswers = {outputPath: workDir, ...answers}

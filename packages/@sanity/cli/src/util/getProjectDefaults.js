@@ -5,12 +5,12 @@ import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
 import thenify from 'thenify'
 
-export default (workDir, {isPlugin}) => {
+export default (workDir, {isPlugin, context}) => {
   const cwd = process.cwd()
   const isSanityRoot = workDir === cwd
 
   return promiseProps({
-    author: getUserInfo(),
+    author: getUserInfo(context),
 
     // Don't try to use git remote from main Sanity project for plugins
     gitRemote: isPlugin && isSanityRoot ? '' : resolveGitRemote(cwd),
@@ -31,17 +31,29 @@ function resolveGitRemote(cwd) {
     .catch(() => null)
 }
 
-function getUserInfo() {
+function getUserInfo(context) {
   const user = gitUserInfo()
   if (!user) {
-    return null
+    return getSanityUserInfo(context)
   }
 
   if (user.name && user.email) {
     return `${user.name} <${user.email}>`
   }
 
-  return user.name
+  return undefined
+}
+
+function getSanityUserInfo(context) {
+  const client = context.apiClient({requireUser: false, requireProject: false})
+  const hasToken = Boolean(client.config().token)
+  if (!hasToken) {
+    return null
+  }
+
+  return client.users.getById('me')
+    .then(user => `${user.name} <${user.email}>`)
+    .catch(() => null)
 }
 
 async function getProjectDescription({isSanityRoot, isPlugin, outputDir}) {

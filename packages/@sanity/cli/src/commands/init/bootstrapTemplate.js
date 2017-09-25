@@ -43,6 +43,7 @@ export default async (opts, context) => {
   spinner.succeed()
 
   // Now create a package manifest (`package.json`) with the merged dependencies
+  spinner = output.spinner('Creating default project files').start()
   const packageManifest = await createPackageManifest({...opts, dependencies})
 
   // ...and a `sanity.json` manifest
@@ -70,6 +71,7 @@ export default async (opts, context) => {
   ])
 
   // Finish up by providing init process with template-specific info
+  spinner.succeed()
   return template
 
   async function writeFileIfNotExists(fileName, content) {
