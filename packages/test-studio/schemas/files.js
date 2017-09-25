@@ -15,6 +15,12 @@ export default {
       type: 'file'
     },
     {
+      name: 'arrayOfFiles',
+      title: 'An array of files',
+      type: 'array',
+      of: [{type: 'file'}]
+    },
+    {
       name: 'fileWithFields',
       title: 'File with additional fields',
       type: 'file',
