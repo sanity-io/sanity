@@ -11,11 +11,14 @@
   @media (--screen-medium) {
     background-color: transparent;
   }
+
+  /* This makes the content behave strange. but fixes a safari bug
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
+  */
 }
 
 .hotkey {

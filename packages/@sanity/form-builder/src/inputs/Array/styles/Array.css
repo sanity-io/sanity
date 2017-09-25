@@ -7,9 +7,9 @@
 }
 
 .list {
-  margin-top: calc(var(--medium-padding) * -1);
+  /*margin-top: calc(var(--medium-padding) * -1);
   margin-left: calc(var(--medium-padding) * -1);
-  margin-right: calc(var(--medium-padding) * -1);
+  margin-right: calc(var(--medium-padding) * -1);*/
 }
 
 .list + .functions {

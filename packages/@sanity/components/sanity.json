@@ -731,6 +731,7 @@
       "implements": "part:@sanity/components/utilities/activate-on-focus",
       "path": "utilities/ActivateOnFocus.js"
     },
+
     {
       "name": "part:@sanity/components/panes/default",
       "description": "Default Pane"
@@ -762,6 +763,14 @@
     {
       "implements": "part:@sanity/components/panes/split-pane-wrapper",
       "path": "panes/SplitPaneWrapper.js"
+    },
+    {
+      "name": "part:@sanity/components/portal/sticky",
+      "description": "Portal that sticks to scrollContainer"
+    },
+    {
+      "implements": "part:@sanity/components/portal/sticky",
+      "path": "portal/Sticky.js"
     },
     {
       "implements": "part:@sanity/base/component",
@@ -866,6 +875,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "panes/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "portal/story.js"
     }
 
   ]

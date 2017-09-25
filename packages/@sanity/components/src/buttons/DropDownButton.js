@@ -5,6 +5,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
+import StickyPortal from 'part:@sanity/components/portal/sticky'
 
 class DropDownButton extends React.Component {
   static propTypes = {
@@ -75,16 +76,24 @@ class DropDownButton extends React.Component {
         <span className={styles.arrow}>
           <ArrowIcon color="inherit" />
         </span>
-        {
-          <Menu
-            items={items}
-            isOpen={this.state.menuOpened}
-            className={styles.menu}
-            onAction={this.handleAction}
-            onClickOutside={this.handleClickOutside}
-            onClose={this.handleClose}
-          />
-        }
+        <div className={styles.menuRoot}>
+          {
+            this.state.menuOpened && (
+              <StickyPortal isOpen={this.state.menuOpened} onlyBottomSpace={false}>
+                <div style={{position: 'relative'}}>
+                  <Menu
+                    items={items}
+                    isOpen
+                    className={styles.menu}
+                    onAction={this.handleAction}
+                    onClickOutside={this.handleClickOutside}
+                    onClose={this.handleClose}
+                  />
+                </div>
+              </StickyPortal>
+            )
+          }
+        </div>
       </Button>
     )
   }
