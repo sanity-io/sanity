@@ -21,9 +21,8 @@ function resolveImageAssetPath(typeDef) {
     return imageAssetField.name
   }
   const fieldWithImageAsset = fields.find(fieldDef => (fieldDef.fields || []).some(isImageAssetField))
-  if (fieldWithImageAsset) {
-    return `${fieldWithImageAsset.name}.asset`
-  }
+
+  return fieldWithImageAsset ? `${fieldWithImageAsset.name}.asset` : undefined
 }
 
 function isFileAssetField(fieldDef) {
@@ -37,9 +36,7 @@ function resolveFileAssetPath(typeDef) {
     return assetField.name
   }
   const fieldWithFileAsset = fields.find(fieldDef => (fieldDef.fields || []).some(isFileAssetField))
-  if (fieldWithFileAsset) {
-    return `${fieldWithFileAsset.name}.asset`
-  }
+  return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
 }
 
 export default function guessPreviewFields(objectTypeDef) {
