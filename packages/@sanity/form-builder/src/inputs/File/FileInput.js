@@ -263,7 +263,12 @@ export default class FileInput extends React.PureComponent {
           {value && fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
 
           {materializedFile && (
-            <AnchorButton href={materializedFile.url} download>Download</AnchorButton>
+            <div>{materializedFile.originalFilename}</div>
+          )}
+          {materializedFile && (
+            <AnchorButton href={materializedFile.url} download>
+              Download
+            </AnchorButton>
           )}
 
           <FileInputButton
