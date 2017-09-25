@@ -26,10 +26,11 @@
 
 .listContainer {
   position: absolute;
-  top: 100%;
+  top: 4rem;
   width: 100%;
   left: 0;
   height: auto;
+  padding: 0;
 
   @media (--screen-medium) {
     backdrop-filter: blur(10px);

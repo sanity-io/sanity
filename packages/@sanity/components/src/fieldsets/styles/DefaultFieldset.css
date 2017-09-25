@@ -125,27 +125,27 @@
   cursor: default;
 
   @nest .level1 & {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-base);
     text-transform: none;
   }
 
   @nest .level2 & {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-base);
     text-transform: none;
   }
 
   @nest .level3 & {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-base);
     text-transform: none;
   }
 
   @nest .level4 & {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-base);
     text-transform: none;
   }
 
   @nest .level5 & {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-base);
     text-transform: none;
   }
 }

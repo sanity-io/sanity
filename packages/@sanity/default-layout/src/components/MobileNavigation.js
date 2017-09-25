@@ -42,7 +42,6 @@ export default class MobileNavigation extends React.Component {
     const {tools} = this.props
     return (
       <div className={styles.root}>
-        <Branding />
         <Button
           kind="simple"
           className={styles.hamburgerButton}

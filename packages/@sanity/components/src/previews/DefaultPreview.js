@@ -38,6 +38,10 @@ class DefaultPreview extends React.Component {
     item: {}
   }
 
+  shouldComponentUpdate() {
+    return true
+  }
+
   render() {
     const {item, assetSize, emptyText, children, isPlaceholder, styles} = this.props
 
@@ -49,7 +53,7 @@ class DefaultPreview extends React.Component {
       )
     }
 
-    const hasMedia = item.media || item.sanityImage || item.imageUrl
+    const hasMedia = item.media || item.sanityImage || item.imageUrl || true
 
     return (
       <div
@@ -71,9 +75,11 @@ class DefaultPreview extends React.Component {
             {item.title || emptyText}
           </h2>
           {
-            item.subtitle && <h3 className={styles.subtitle}>
-              {item.subtitle}
-            </h3>
+            item.subtitle && (
+              <h3 className={styles.subtitle}>
+                {item.subtitle}
+              </h3>
+            )
           }
         </div>
         {
