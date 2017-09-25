@@ -7,13 +7,4 @@ import logoutCommand from './logout/logoutCommand'
 import versionsCommand from './versions/versionsCommand'
 import debugCommand from './debug/debugCommand'
 
-export default [
-  initCommand,
-  loginCommand,
-  logoutCommand,
-  installCommand,
-  upgradeCommand,
-  versionsCommand,
-  debugCommand,
-  helpCommand
-]
+export default [initCommand, loginCommand, logoutCommand, installCommand, upgradeCommand, versionsCommand, debugCommand, helpCommand]

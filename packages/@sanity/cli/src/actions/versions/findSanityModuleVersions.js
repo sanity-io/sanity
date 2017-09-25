@@ -59,11 +59,13 @@ function filterSanityModules(manifest) {
 function buildPackageArray(packages, workDir, options = {}) {
   const {includeCli, target} = options
 
-  const initial = includeCli ? [{
-    name: pkg.name,
-    version: pkg.version,
-    latest: tryFindLatestVersion(pkg.name, target)
-  }] : []
+  const initial = includeCli ? [
+    {
+      name: pkg.name,
+      version: pkg.version,
+      latest: tryFindLatestVersion(pkg.name, target)
+    }
+  ] : []
 
   return Object.keys(packages).reduce((result, pkgName) => {
     result.push({

@@ -115,8 +115,7 @@ export default class CommandRunner {
 
       debug(subCommand
         ? `Subcommand resolved to "${subCommand.commandName}"`
-        : `Subcommand with name "${subCommandName}" not found`
-      )
+        : `Subcommand with name "${subCommandName}" not found`)
 
       return subCommand
     }

@@ -193,11 +193,7 @@ export default async function initSanity(args, context) {
     const selected = await prompt.single({
       message: 'Select project to use',
       type: 'list',
-      choices: [
-        {value: 'new', name: 'Create new project'},
-        new prompt.Separator(),
-        ...projectChoices
-      ]
+      choices: [{value: 'new', name: 'Create new project'}, new prompt.Separator(), ...projectChoices]
     })
 
     if (selected === 'new') {
@@ -241,11 +237,7 @@ export default async function initSanity(args, context) {
     const selected = await prompt.single({
       message: 'Select dataset to use',
       type: 'list',
-      choices: [
-        {value: 'new', name: 'Create new dataset'},
-        new prompt.Separator(),
-        ...datasetChoices
-      ]
+      choices: [{value: 'new', name: 'Create new dataset'}, new prompt.Separator(), ...datasetChoices]
     })
 
     if (selected === 'new') {

@@ -51,8 +51,7 @@ export default function bootstrapPlugin(data, opts = {}) {
           writeOps.push(writeIfNotExists(
             path.join(targetPath, `.${file}`),
             templates[file]
-          ))
-        )
+          )))
       }
 
       return Promise.all(writeOps)
@@ -69,8 +68,7 @@ export default function bootstrapPlugin(data, opts = {}) {
           + 'export default function MyComponent() {\n'
           + '  return <div />\n'
           + '}\n'
-        )
-      )
+        ))
     })
 }
 

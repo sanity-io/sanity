@@ -20,8 +20,7 @@ export default async function login(args, context) {
   const provider = await promptProviders(prompt, providers)
 
   return new Promise((resolve, reject) =>
-    loginFlow({provider, ...context}, resolve, reject)
-  )
+    loginFlow({provider, ...context}, resolve, reject))
 }
 
 function loginFlow({output, provider, apiClient}, resolve, reject) {

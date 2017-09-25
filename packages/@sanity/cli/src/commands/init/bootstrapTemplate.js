@@ -54,20 +54,24 @@ export default async (opts, context) => {
 
   // Generate a basic readme
   const readme = [
-    `# ${opts.name}`, '',
-    opts.description, '',
-    '## Running', '',
+    `# ${opts.name}`,
+    '',
+    opts.description,
+    '',
+    '## Running',
+    '',
     '```',
     'npm install',
     'npm start',
-    '```', ''
+    '```',
+    ''
   ].join('\n')
 
   // Write non-template files to disc
   await Promise.all([
     writeFileIfNotExists('README.md', readme),
     writeFileIfNotExists('sanity.json', `${JSON.stringify(sanityManifest, null, 2)}\n`),
-    writeFileIfNotExists('package.json', packageManifest),
+    writeFileIfNotExists('package.json', packageManifest)
   ])
 
   // Finish up by providing init process with template-specific info

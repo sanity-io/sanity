@@ -13,7 +13,7 @@ export const generateSanityManifest = base => ({
 
   plugins: base.plugins.concat([
     '@sanity/date-input',
-    '@sanity/google-maps-input',
+    '@sanity/google-maps-input'
   ])
 })
 

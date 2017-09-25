@@ -228,10 +228,7 @@ export default function yarnWithProgress(args, options = {}) {
 }
 
 
-const ignoredMessages = [
-  'install script for optional dependency',
-  'Command failed: yarn'
-]
+const ignoredMessages = ['install script for optional dependency', 'Command failed: yarn']
 
 function shouldIgnoreError(event) {
   if (!event || !event.data) {

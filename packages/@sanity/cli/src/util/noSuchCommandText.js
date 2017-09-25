@@ -3,15 +3,7 @@ import chalk from 'chalk'
 
 const commonMistakes = {get: 'list'}
 const levenThreshold = 3
-const coreCommands = [
-  'build',
-  'check',
-  'config',
-  'dataset',
-  'start',
-  'install',
-  'uninstall'
-]
+const coreCommands = ['build', 'check', 'config', 'dataset', 'start', 'install', 'uninstall']
 
 const helpText = `
 Run the command again within a Sanity project directory, where "@sanity/core"

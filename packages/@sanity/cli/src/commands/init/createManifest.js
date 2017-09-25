@@ -3,8 +3,17 @@ import sortObject from 'deep-sort-object'
 import versionRanges from '../../versionRanges'
 
 const manifestPropOrder = [
-  'name', 'private', 'version', 'description', 'main', 'author', 'license', 'scripts',
-  'keywords', 'dependencies', 'devDependencies'
+  'name',
+  'private',
+  'version',
+  'description',
+  'main',
+  'author',
+  'license',
+  'scripts',
+  'keywords',
+  'dependencies',
+  'devDependencies'
 ]
 
 function getCommonManifest(data) {
@@ -91,19 +100,23 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
         compiled: './lib'
       },
 
-      parts: [{
-        name: `part:${prefix}/my-component`,
-        path: 'MyComponent.js'
-      }]
+      parts: [
+        {
+          name: `part:${prefix}/my-component`,
+          path: 'MyComponent.js'
+        }
+      ]
     }
   }
 
   return {
-    parts: [{
-      implements: `part:${prefix}/my-component`,
-      description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
-      path: 'lib/MyComponent.js'
-    }]
+    parts: [
+      {
+        implements: `part:${prefix}/my-component`,
+        description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
+        path: 'lib/MyComponent.js'
+      }
+    ]
   }
 }
 

@@ -3,6 +3,7 @@
   "parser": "babel-eslint",
   "extends": "sanity",
   "rules": {
-    "max-depth": [2, 4]
+    "max-depth": [2, 4],
+    "array-element-newline": 0
   }
 }
