@@ -100,10 +100,12 @@ export default class FileInput extends React.PureComponent {
   setRef(id) {
     this.props.onChange(PatchEvent.from(
       setIfMissing({
-        _type: this.props.type.name,
-        asset: {_type: 'reference'}
+        _type: this.props.type.name
       }),
-      set({_ref: id}, ['asset'])
+      set({
+        _ref: id,
+        _type: 'reference'
+      }, ['asset'])
     ))
   }
 
