@@ -12,6 +12,7 @@ import PlusIcon from 'part:@sanity/base/plus-circle-outline-icon'
 import ActionModal from './ActionModal'
 import schema from 'part:@sanity/base/schema'
 import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
+import Branding from './Branding'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -76,27 +77,25 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
 
     return (
       <div className={styles.defaultLayout}>
-
-        <div className={styles.desktopNavigation}>
-          <DesktopNavigation tools={tools} />
+        <div className={styles.secondaryNavigation}>
+          <Branding />
+          <ToolSwitcher
+            tools={this.props.tools}
+            activeToolName={router.state.tool}
+            className={styles.toolSwitcher}
+          />
+          <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
+            <span className={styles.createButtonIcon}><PlusIcon /></span>
+            <span className={styles.createButtonText}>Create</span>
+          </a>
         </div>
-
-        <div className={styles.mobileNavigation}>
-          <MobileNavigation tools={tools} />
-        </div>
-
         <div className={styles.mainArea}>
+          <div className={styles.desktopNavigation}>
+            <DesktopNavigation tools={tools} />
+          </div>
 
-          <div className={styles.secondaryNavigation}>
-            <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
-              <span className={styles.createButtonIcon}><PlusIcon /></span>
-              <span className={styles.createButtonText}>Create</span>
-            </a>
-            <ToolSwitcher
-              tools={this.props.tools}
-              activeToolName={router.state.tool}
-              className={styles.toolSwitcher}
-            />
+          <div className={styles.mobileNavigation}>
+            <MobileNavigation tools={tools} />
           </div>
 
           <div className={styles.toolContainer}>

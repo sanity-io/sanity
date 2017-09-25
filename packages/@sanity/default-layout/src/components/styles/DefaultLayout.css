@@ -22,7 +22,7 @@
 }
 
 :root {
-  --tool-switcher-width: 3rem;
+  --tool-switcher-width: 5rem;
 }
 
 .defaultLayout {
@@ -31,13 +31,12 @@
   width: 100vw;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   box-sizing: border-box;
   height: 100vh;
 
   @media (--screen-medium) {
-    padding: var(--medium-padding);
-    padding-top: var(--small-padding);
+    padding: 0;
   }
 }
 
@@ -75,6 +74,7 @@
   flex-grow: 1;
   display: flex;
   overflow: hidden;
+  flex-direction: column;
 }
 
 .secondaryNavigation {
@@ -84,10 +84,8 @@
     display: block;
     position: relative;
     width: var(--tool-switcher-width);
-    margin-right: var(--medium-padding);
-    padding-top: var(--medium-padding);
-    padding-right: var(--medium-padding);
     font-size: var(--font-size-xsmall);
+    background-color: #333;
   }
 }
 

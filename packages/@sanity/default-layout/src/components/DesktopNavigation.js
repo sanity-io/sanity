@@ -15,7 +15,6 @@ export default class DesktopNavigation extends React.Component {
   render() {
     return (
       <div className={styles.root}>
-        <Branding />
         <LoginStatus className={styles.loginStatus} />
         <div className={styles.searchContainer}>
           <Search />

@@ -3,10 +3,10 @@
 
 .root {
   display: block;
-  float: left;
   text-decoration: none;
   color: var(--text-color);
   font-weight: 300;
+  min-height: 5rem;
 }
 
 .projectName {
@@ -14,7 +14,6 @@
   padding-left: var(--small-padding);
   white-space: nowrap;
   font-weight: 300;
-  float: left;
 }
 
 .projectNameHidden {
@@ -27,14 +26,15 @@
 }
 
 .brandLogoContainer {
-  float: left;
   z-index: 10;
   cursor: pointer;
+  color: #fff;
 
   @nest & svg {
+    fill: #fff;
     height: 1rem;
     padding-top: 1rem;
     padding-left: 0.5rem;
-    width: auto;
+    width: 3rem;
   }
 }

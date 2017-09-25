@@ -77,13 +77,7 @@ const getInspectItem = (draft, published) => ({
   isDisabled: !(draft || published)
 })
 
-const getMenuItems = (draft, published) => ([
-  getDiscardItem,
-  getUnpublishItem,
-  getDuplicateItem,
-  getDeleteItem,
-  getInspectItem
-])
+const getMenuItems = (draft, published) => ([getDiscardItem, getUnpublishItem, getDuplicateItem, getDeleteItem, getInspectItem])
   .map(fn => fn(draft, published))
   .filter(Boolean)
 
@@ -389,16 +383,14 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             <Spinner fullscreen message="Unpublishing…" />
           )}
           <div className={styles.top}>
-            <div className={styles.dates}>
-              <div>
-                {published
-                  ? <span>Published <TimeAgo time={published._updatedAt} /></span>
-                  : 'Not published'
-                }
-              </div>
-              <div>
-                {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
-              </div>
+            <div className={styles.publishedDate}>
+              {published
+                ? <span>Published <TimeAgo time={published._updatedAt} /></span>
+                : 'Not published'
+              }
+            </div>
+            <div className={styles.editedDate}>
+              {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
             </div>
 
             {showSavingStatus && (
@@ -423,8 +415,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           </form>
 
           {afterEditorComponents.map((AfterEditorComponent, i) =>
-            <AfterEditorComponent key={i} documentId={published._id} />
-          )}
+            <AfterEditorComponent key={i} documentId={published._id} />)}
 
           {inspect && (
             <InspectView

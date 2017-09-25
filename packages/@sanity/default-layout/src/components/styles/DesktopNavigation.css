@@ -4,16 +4,11 @@
   width: 100%;
 }
 
-.toolSwitcher {
-  float: left;
-}
-
 .loginStatus {
   float: right;
 }
 
 .searchContainer {
-  float: right;
   padding: 1rem;
   z-index: 100;
   width: 20em;

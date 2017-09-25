@@ -26,9 +26,9 @@
   composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
   background-color: transparent;
 
-  @nest .hasFocus & {
+  /*@nest .hasFocus & {
     background-color: var(--focus-color);
-  }
+  }*/
 }
 
 .clearButton {

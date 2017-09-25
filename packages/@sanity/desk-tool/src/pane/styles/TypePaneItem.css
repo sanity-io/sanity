@@ -2,14 +2,15 @@
 
 .item {
   position: relative;
-  color: #999;
   margin: 0;
   padding: 0;
+  padding-left: var(--medium-padding);
 }
 
 .selected {
   composes: item;
-  color: #000;
+  color: #fff;
+  background-color: var(--selected-item-color);
 }
 
 .link {

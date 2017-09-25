@@ -9,15 +9,15 @@
   --input-bg: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);
-  --input-border-color: var(--component-border-color);
-  --input-border-size: 1px;
+  --input-border-color: color(var(--component-border-color) lightness(-10%));
+  --input-border-size: 2px;
   --input-line-height: 2em;
   --input-padding-vertical: 0.5em;
   --input-padding-horizontal: 0.2em;
   --input-border-radius: var(--border-radius-base);
   --input-border-radius-large: var(--border-radius-large);
   --input-border-radius-small: var(--border-radius-small);
-  --input-border-color-hover: var(--gray-darker);
+  --input-border-color-hover: var(--gray);
   --input-border-color-focus: var(--brand-primary);
   --input-border-color-active: var(--brand-primary);
   --focus-color: color(var(--brand-primary) alpha(40%));

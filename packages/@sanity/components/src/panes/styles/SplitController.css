@@ -26,23 +26,23 @@
 }
 
 :global(.Pane1) {
-  margin-right: 5px;
-  margin-left: 5px;
+  /*margin-right: 5px;
+  margin-left: 5px;*/
+  border-right: 1px solid #ccc;
 }
 
 .isCollapsed {
   @nest & :global(.Pane1) {
     margin-right: 0;
     margin-left: 0;
-    border-right: 1px solid #ccc;
+    border: none;
   }
 }
 
 .notCollapsed {
   @nest & :global(.Pane1) {
-    margin-left: 5px;
-    margin-right: 5px;
-    border-right: none;
+    border: none;
+    /*border-right: 1px solid #ccc;*/
   }
 }
 

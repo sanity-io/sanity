@@ -29,8 +29,8 @@
 
 .top {
   display: flex;
-  align-content: space-between;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  padding: 0 var(--medium-padding);
 }
 
 .dates {
@@ -44,6 +44,14 @@
   }
 }
 
+.publishedDate {
+  composes: dates;
+}
+
+.editedDate {
+  composes: dates;
+}
+
 .editor {
   @media (--screen-medium) {
     padding: 1rem;
@@ -54,6 +62,7 @@
   opacity: 0.5;
   flex-basis: 5em;
   align-self: flex-end;
+  text-align: right;
 }
 
 .overlay {
