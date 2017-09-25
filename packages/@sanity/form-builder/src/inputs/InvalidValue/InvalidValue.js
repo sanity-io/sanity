@@ -76,6 +76,7 @@ export default class InvalidValue extends React.PureComponent {
             ref={setAutoHeight}
             className={styles.currentValueDump}
             onFocus={e => e.target.select()}
+            readOnly
             value={(value && typeof value === 'object') ? JSON.stringify(value, null, 2) : value}
           />
           {converters.map(converter => (
