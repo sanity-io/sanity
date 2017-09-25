@@ -35,6 +35,12 @@ export default {
       description: 'The first field here should be the title'
     },
     {
+      name: 'objectWithoutFields',
+      type: 'object',
+      title: 'Object without fields',
+      description: 'This object has no fields. Should not crash.'
+    },
+    {
       name: 'fieldWithObjectType',
       title: 'Field of object type',
       type: 'object',

@@ -26,7 +26,10 @@ export const ObjectType = {
   get() {
     return OBJECT_CORE
   },
-  extend(subTypeDef, createMemberType) {
+  extend(rawSubTypeDef, createMemberType) {
+
+    const subTypeDef = {fields: [], ...rawSubTypeDef}
+
     const options = {...(subTypeDef.options || {})}
     const parsed = Object.assign(pick(OBJECT_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: OBJECT_CORE,
