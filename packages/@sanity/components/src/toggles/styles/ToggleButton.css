@@ -1,14 +1,11 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .selected {
-  background-color: var(--selected-item-color);
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
+  background-color: color(var(--brand-primary) lightness(-20%));
   color: var(--white);
-
-  &:hover {
-    background-color: var(--selected-item-color-hover);
-  }
 }
 
 .unSelected {
-  background-color: transparent;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
 }

@@ -8,7 +8,6 @@
 
 .selected {
   composes: item;
-  color: #fff;
   background-color: var(--selected-item-color);
 }
 

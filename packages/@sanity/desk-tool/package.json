@@ -32,6 +32,7 @@
     "lodash": "^4.17.4",
     "date-fns": "^1.28.5",
     "react-click-outside": "^2.3.1",
+    "react-ink": "^6.1.0",
     "react-json-inspector": "rexxars/react-json-inspector#react-15",
     "react-tiny-virtual-list": "^2.0.5",
     "shallow-equals": "^1.0.0"

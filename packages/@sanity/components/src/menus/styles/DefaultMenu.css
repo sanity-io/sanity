@@ -22,18 +22,13 @@
 
 .item {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
+}
 
-  @nest &:not(.isDisabled) {
-    @nest & .link {
-      @nest &:hover {
-        background-color: var(--gray-lighter);
-      }
-    }
-
-    @nest &.focusedItem {
-      background-color: var(--gray-lighter);
-    }
+.isDisabled {
+  @nest &:hover {
+    background-color: inherit;
   }
 }
 

@@ -1,5 +1,13 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   display: block;
+}
+
+.pane {
+  background-color: var(--component-bg);
+  box-shadow: 3px 0 4px color(#000 a(10%));
+  border-right: none;
 }
 
 .list {

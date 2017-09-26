@@ -4,6 +4,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
 import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
+import Ink from 'react-ink'
 
 import ListView from './ListView'
 import {partition, uniqBy} from 'lodash'
@@ -206,6 +207,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         className={styles.link}
         tabIndex={0}
       >
+
         <div className={isSelected ? styles.selectedItem : styles.item}>
           <Preview
             value={item}
@@ -226,6 +228,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             }
           </div>
         </div>
+        <Ink duration={200} opacity={0.20} radius={200} />
       </StateLink>
     )
   }
