@@ -45,7 +45,7 @@ export default {
     {
       name: 'publishAt',
       title: 'Publish at',
-      type: 'date',
+      type: 'richDate',
       description: 'Blogpost goes live at this date/time',
       options: {
         dateFormat: 'YYYY-MM-DD',
