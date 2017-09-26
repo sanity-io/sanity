@@ -14,7 +14,7 @@
 
 .header {
   border-bottom: 1px solid #ccc;
-  padding: 1rem 0;
+  padding: 1rem;
   display: flex;
 }
 
@@ -34,11 +34,11 @@
 }
 
 .queryEditor {
-  height: 100%
+  height: 100%;
 }
 
 .paramsEditor {
-  height: 100%
+  height: 100%;
 }
 
 .queryTimingContainer {
@@ -79,6 +79,7 @@
 
 .datasetSelector {
   composes: select from 'part:@sanity/components/selects/default-style';
+  min-width: 10rem;
 }
 
 .datasetSelectorLabel {
