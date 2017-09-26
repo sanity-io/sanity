@@ -32,9 +32,9 @@
 
   @nest & svg {
     fill: #fff;
-    height: 1rem;
-    padding-top: 1rem;
-    padding-left: 0.5rem;
-    width: 3rem;
+    height: auto;
+    width: 4rem;
+    margin-top: 1rem;
+    margin-left: 0.5rem;
   }
 }

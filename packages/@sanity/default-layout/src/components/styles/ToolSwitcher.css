@@ -14,13 +14,13 @@
   display: block;
   position: relative;
   text-align: center;
-  color: var(--selectable-item-color);
+  color: color(var(--white) a(30%));
   margin-bottom: var(--medium-padding);
 }
 
 .activeItem {
   composes: item;
-  color: var(--selected-item-color);
+  color: color(var(--white) a(100%));
 }
 
 .iconContainer {
@@ -39,10 +39,14 @@
   display: block;
 
   @nest &:hover {
+<<<<<<< HEAD
     color: color(var(--selectable-item-color) lightness(- 20%));
+=======
+    color: color(var(--white) a(80%));
+>>>>>>> [design] Adjusting layout
   }
 
   @nest &:active {
-    color: var(--black);
+    color: color(var(--white) a(100%));
   }
 }

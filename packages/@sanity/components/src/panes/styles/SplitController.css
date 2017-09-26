@@ -8,6 +8,10 @@
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
+
+  @nest & :global(.Pane1) {
+    border-right: 1px solid #ccc;
+  }
 }
 
 .vertical {
@@ -23,12 +27,6 @@
   position: absolute;
   height: 100%;
   width: 100%;
-}
-
-:global(.Pane1) {
-  /*margin-right: 5px;
-  margin-left: 5px;*/
-  border-right: 1px solid #ccc;
 }
 
 .isCollapsed {
