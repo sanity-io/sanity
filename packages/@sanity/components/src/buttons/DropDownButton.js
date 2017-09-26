@@ -121,6 +121,7 @@ class DropDownButton extends React.Component {
                   isOpen={menuOpened}
                   scrollContainer={scrollContainer}
                   onlyBottomSpace={false}
+                  useOverlay={false}
                   onResize={this.handleResize}
                 >
                   <div ref={this.setMenuElement}>
