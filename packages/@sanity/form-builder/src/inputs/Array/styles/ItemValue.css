@@ -20,12 +20,14 @@
 }
 
 .editRoot {
+  /*
+    This is where the popover sticks to
+  */
   position: absolute;
   top: 50%;
   left: 50%;
   width: 1px;
   height: 1px;
-  border: 2px solid red;
 }
 
 .preview {

@@ -43,7 +43,8 @@ export default class EditItemPopOver extends React.Component {
     isFocused: true,
     arrowLeft: 0,
     popoverLeft: 0,
-    scrollContainer: undefined
+    scrollContainer: undefined,
+    isResizing: false
   }
 
   componentWillMount() {
@@ -131,7 +132,8 @@ export default class EditItemPopOver extends React.Component {
     const {
       rootLeft,
       availableHeight,
-      availableWidth
+      availableWidth,
+      isScrolling
     } = dimensions
 
     const width = this._popOverInnerElement.offsetWidth
@@ -146,6 +148,7 @@ export default class EditItemPopOver extends React.Component {
       popoverLeft: popoverLeft,
       availableHeight: availableHeight,
       arrowLeft: rootLeft,
+      isResizing: isScrolling
     })
   }
 
@@ -162,7 +165,8 @@ export default class EditItemPopOver extends React.Component {
       popoverLeft,
       arrowLeft,
       availableHeight,
-      scrollContainer
+      scrollContainer,
+      isResizing
     } = this.state
 
     return (
@@ -204,7 +208,7 @@ export default class EditItemPopOver extends React.Component {
 
               <div
                 ref={this.setContentElement}
-                className={styles.content}
+                className={isResizing ? styles.contentIsResizing : styles.content}
                 style={{
                   maxHeight: `${availableHeight - 16}px`
                 }}

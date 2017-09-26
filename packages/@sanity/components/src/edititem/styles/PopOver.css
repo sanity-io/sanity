@@ -134,6 +134,11 @@
   overflow: auto;
 }
 
+.contentIsResizing {
+  composes: content;
+  overflow: hidden;
+}
+
 .head {
   /* Mobile header */
   font-size: 1em;

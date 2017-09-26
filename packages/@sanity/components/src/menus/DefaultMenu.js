@@ -69,7 +69,7 @@ class DefaultMenu extends React.Component {
     window.addEventListener('keydown', this.handleKeyDown, false)
     window.addEventListener('resize', this.handleResize, false)
     this.tryFindScrollContainer()
-    this.constrainHeight(this._rootElement)
+    //this.constrainHeight(this._rootElement)
   }
 
   componentWillUnmount() {
@@ -97,11 +97,11 @@ class DefaultMenu extends React.Component {
   }
 
   componentDidUpdate() {
-    this.constrainHeight(this._rootElement)
+    //this.constrainHeight(this._rootElement)
   }
 
   handleResize = debounceRAF(() => {
-    this.constrainHeight(this._rootElement)
+    //this.constrainHeight(this._rootElement)
   })
 
   handleKeyDown = event => {
@@ -152,30 +152,30 @@ class DefaultMenu extends React.Component {
     }
   }
 
-  constrainHeight = element => {
-    const margin = 10
-    if (element) {
-      const clientRects = element.getBoundingClientRect()
-
-      // Change maxheight if window resizes
-      if (element.style.maxHeight) {
-        const diff = this.lastWindowHeight - window.innerHeight
-        element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff + this.scrollOffset}px`
-      }
-
-      // Set initial maxHeight
-      if ((clientRects.top + clientRects.height) > (window.innerHeight - margin)) {
-        const newMaxHeight = window.innerHeight - clientRects.top - margin
-        element.style.maxHeight = `${newMaxHeight}px`
-      }
-
-      this.lastWindowHeight = window.innerHeight
-    }
-  }
+  // constrainHeight = element => {
+  //   const margin = 10
+  //   if (element) {
+  //     const clientRects = element.getBoundingClientRect()
+  //
+  //     // Change maxheight if window resizes
+  //     if (element.style.maxHeight) {
+  //       const diff = this.lastWindowHeight - window.innerHeight
+  //       element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff + this.scrollOffset}px`
+  //     }
+  //
+  //     // Set initial maxHeight
+  //     if ((clientRects.top + clientRects.height) > (window.innerHeight - margin)) {
+  //       const newMaxHeight = window.innerHeight - clientRects.top - margin
+  //       element.style.maxHeight = `${newMaxHeight}px`
+  //     }
+  //
+  //     this.lastWindowHeight = window.innerHeight
+  //   }
+  // }
 
   setRootElement = element => {
     this._rootElement = element
-    this.constrainHeight(this._rootElement)
+    // this.constrainHeight(this._rootElement)
   }
 
   render() {
@@ -190,7 +190,6 @@ class DefaultMenu extends React.Component {
         ref={this.setRootElement}
         className={`
           ${isOpen ? styles.isOpen : styles.closed}
-          ${originStyle}
           ${fullWidth && styles.fullWidth ? styles.fullWidth : ''}
           ${className || ''}
         `}
@@ -202,11 +201,7 @@ class DefaultMenu extends React.Component {
               return (
                 <li
                   key={i}
-                  className={classNames([
-                    item === focusedItem ? styles.focusedItem : styles.item,
-                    item.isDisabled && styles.isDisabled,
-                    item.divider && styles.divider
-                  ])}
+                  className={classNames([item === focusedItem ? styles.focusedItem : styles.item, item.isDisabled && styles.isDisabled, item.divider && styles.divider])}
                 >
                   <a
                     onClick={item.isDisabled ? null : this.handleItemClick}
@@ -221,7 +216,7 @@ class DefaultMenu extends React.Component {
                     }
                     {item.title}
                     {
-                      ripple && !item.isDisabled && <Ink />
+                      ripple && !item.isDisabled && <Ink duration={200} opacity={0.10} radius={200} />
                     }
                   </a>
                 </li>

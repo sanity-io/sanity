@@ -1,5 +1,19 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  --animation-timing: 0.2s;
+}
+
 .root {
   border-radius: 50%;
   width: 1em;
@@ -10,10 +24,9 @@
 }
 
 .overlay {
+  opacity: 1;
   background-color: var(--backdrop-background-color);
-  /*
-  backdrop-filter: blur(2px) grayscale(100%);
-  */
+  /*backdrop-filter: blur(2px) grayscale(100%);*/
   position: fixed;
   height: 100%;
   width: 100%;
@@ -23,11 +36,11 @@
   cursor: default;
   z-index: 2;
   pointer-events: none;
+  animation: fade var(--animation-timing) linear;
 }
 
 .portalInner {
   position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
   right: 0;
@@ -58,6 +71,8 @@
 .content {
   position: absolute;
   pointer-events: auto;
+  opacity: 1;
+  animation: fade var(--animation-timing) linear;
 }
 
 .portal {

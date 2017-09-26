@@ -1,8 +1,6 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .root {
-  position: absolute;
-  width: auto;
   background-color: var(--component-bg);
   color: var(--text-color);
   composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
