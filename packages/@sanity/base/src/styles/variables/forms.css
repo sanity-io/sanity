@@ -9,8 +9,8 @@
   --input-bg: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);
-  --input-border-color: color(var(--component-border-color) lightness(-10%));
-  --input-border-size: 2px;
+  --input-border-color: color(var(--component-border-color) lightness(+5%));
+  --input-border-size: 1px;
   --input-line-height: 2em;
   --input-padding-vertical: 0.5em;
   --input-padding-horizontal: 0.2em;

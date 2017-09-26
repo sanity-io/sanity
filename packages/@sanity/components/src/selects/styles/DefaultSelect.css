@@ -11,6 +11,7 @@
 
 .select {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  padding-right: 2rem;
   appearance: none;
   position: relative;
   overflow: hidden;
