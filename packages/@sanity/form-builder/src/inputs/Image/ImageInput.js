@@ -216,7 +216,7 @@ export default class ImageInput extends React.PureComponent<*> {
       return uploadingImage.previewUrl
     }
     if (materializedImage && materializedImage.url) {
-      return `${materializedImage.url}?w=500`
+      return `${materializedImage.url}`
     }
     return null
   }
@@ -236,7 +236,11 @@ export default class ImageInput extends React.PureComponent<*> {
     return (
       <div style={{display: 'flex', flexDirection: 'row', width: 800}}>
         <div style={{width: '40%'}}>
-          <ImageTool value={{hotspot, crop}} src={imageUrl} onChange={this.handleImageToolChange} />
+          <ImageTool
+            value={{hotspot, crop}}
+            src={`${imageUrl}?w=500&fit=max`}
+            onChange={this.handleImageToolChange}
+          />
         </div>
         <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
           {ASPECT_RATIOS.map(([title, ratio]) => {
