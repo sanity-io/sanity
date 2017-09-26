@@ -27,7 +27,7 @@ export default {
     {
       name: 'releaseDate',
       title: 'Release date',
-      type: 'date',
+      type: 'richDate',
       options: {
         inputUtc: true,
         inputTime: false

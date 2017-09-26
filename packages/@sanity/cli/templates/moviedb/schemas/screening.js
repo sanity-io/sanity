@@ -32,13 +32,13 @@ export default {
     {
       name: 'beginAt',
       title: 'Starts at',
-      type: 'date',
+      type: 'richDate',
       description: 'When does the screening start?'
     },
     {
       name: 'endAt',
       title: 'Ends at',
-      type: 'date',
+      type: 'richDate',
       description: 'When does the screening end?'
     },
     {
