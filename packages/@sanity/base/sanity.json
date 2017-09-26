@@ -184,6 +184,10 @@
       "description": "Provides backgrounds"
     },
     {
+      "name": "part:@sanity/base/theme/layout/selectable-style",
+      "description": "Provides pseudo styles for selectable items"
+    },
+    {
       "name": "part:@sanity/base/theme/forms/text-input-style",
       "description": "Styling for <input>"
     },
@@ -364,8 +368,8 @@
       "path": "styles/layout/box.css"
     },
     {
-      "implements": "part:@sanity/base/theme/layout/backgrounds-style",
-      "path": "styles/layout/backgrounds.css"
+      "implements": "part:@sanity/base/theme/layout/selectable-style",
+      "path": "styles/layout/selectable.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",

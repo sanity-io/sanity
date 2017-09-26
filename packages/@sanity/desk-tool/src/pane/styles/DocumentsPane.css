@@ -39,34 +39,17 @@
   color: inherit;
   text-decoration: inherit;
   outline: none;
-
-  @nest &:hover {
-    background-color: color(var(--gray-base) a(7%));
-  }
-
-  @nest &:focus {
-    background-color: color(var(--gray-base) a(10%));
-    outline: none;
-  }
-
-  @nest &:active {
-    background-color: color(var(--default-item-selected-color) a(100%));
-    color: var(--white);
-  }
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .item {
+  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
   padding: var(--small-padding) var(--medium-padding);
 }
 
 .selectedItem {
   composes: item;
-  background-color: var(--selected-item-color);
-  color: var(--selected-item-color--inverted);
-}
-
-.item {
-  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .itemStatus {
