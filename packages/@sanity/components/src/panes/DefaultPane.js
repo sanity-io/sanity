@@ -17,17 +17,17 @@ export default class Pane extends React.PureComponent {
     children: PropTypes.node,
     isSelected: PropTypes.bool,
     isScrollable: PropTypes.bool,
-    onMenuToggle: PropTypes.func
+    onMenuToggle: PropTypes.func,
+    className: PropTypes.string
   }
 
   static defaultProps = {
     title: 'Untitled',
     isCollapsed: false,
+    className: '',
     isScrollable: true,
     minWidth: 0,
     width: 0,
-    Functions: <div />,
-    menu: <div />,
     children: <div />,
     onCollapse() {},
     onExpand() {},
@@ -59,7 +59,7 @@ export default class Pane extends React.PureComponent {
   }
 
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, className} = this.props
 
     return (
       <div
@@ -67,6 +67,7 @@ export default class Pane extends React.PureComponent {
           ${isCollapsed ? styles.isCollapsed : styles.root}
           ${isScrollable ? styles.isScrollable : ''}
           ${isSelected ? styles.isActive : ''}
+          ${className}
         `}
         ref={this.setRootElement}
       >

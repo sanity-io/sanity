@@ -33,7 +33,7 @@ export default withRouterHOC(class TypePane extends React.PureComponent {
     // const isActive = !selectedType && !action && !selectedDocumentId
 
     return (
-      <Pane {...this.props}>
+      <Pane {...this.props} className={styles.pane}>
         <ul className={styles.list}>
           {
             items.map((item, i) => {

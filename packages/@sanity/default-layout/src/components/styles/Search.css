@@ -16,7 +16,6 @@
   padding-left: 1.3em;
   line-height: inherit;
   font-size: inherit;
-  margin-top: -0.05em;
 
   @nest &::placeholder {
     color: inherit;
@@ -26,14 +25,14 @@
 
 .listContainer {
   position: absolute;
-  top: 4rem;
+  top: 2rem;
   width: 100%;
   left: 0;
   height: auto;
   padding: 0;
+  overflow: hidden;
 
   @media (--screen-medium) {
-    backdrop-filter: blur(10px);
     composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   }
 }
@@ -67,5 +66,5 @@
 .label {
   font-size: inherit;
   position: absolute;
-  transform: translateY(-14%);
+  /*transform: translateY(-14%);*/
 }
