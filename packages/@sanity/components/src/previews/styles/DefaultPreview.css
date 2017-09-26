@@ -1,30 +1,31 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --media-width: 2em;
+  --height: 2.5em;
+  --media-width: var(--height);
   --padding: var(--medium-padding);
 }
 
 .root {
   display: block;
-  padding: 0.5em var(--medium-padding);
+  padding: 0;
   user-select: none;
-  overflow: hidden;
-  height: 2em;
+  height: 2.5em;
   position: relative;
   clear: both;
 }
 
 .heading {
   position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  height: 2em;
+  top: 0;
+  right: var(--small-padding);
+  height: var(--height);
   box-sizing: border-box;
-  left: 0.5em;
+  left: var(--small-padding);
 
   @nest .hasMedia & {
-    left: 2.5em;
+    left: var(--media-width);
+    padding-left: var(--small-padding);
   }
 }
 
@@ -37,17 +38,15 @@
 .title {
   composes: ellipsis;
   font-size: 1em;
-  line-height: 2em;
+  line-height: var(--height);
   color: inherit;
   font-weight: 500;
   text-transform: none;
   padding: 0;
   margin: 0;
-  padding-left: calc(var(--padding));
 
   @nest .hasSubtitle & {
     line-height: 1.3em;
-    top: 0.25em;
   }
 }
 
@@ -60,15 +59,14 @@
   height: 1em;
   font-size: 0.7em;
   font-weight: 300;
-  line-height: 1em;
+  line-height: 1.5em;
   width: calc(100% - 1em);
-  padding-left: calc(var(--padding));
 }
 
 .media {
   position: absolute;
-  top: 0.5em;
-  left: var(--medium-padding);
+  top: 0;
+  left: 0;
   height: var(--media-width);
   width: var(--media-width);
   overflow: hidden;

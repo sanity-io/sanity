@@ -56,7 +56,7 @@
 }
 
 .item {
-
+  padding: var(--small-padding) var(--medium-padding);
 }
 
 .selectedItem {
