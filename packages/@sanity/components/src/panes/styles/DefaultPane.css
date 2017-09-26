@@ -111,6 +111,16 @@
   text-overflow: ellipsis;
 }
 
+.menuContainer {
+  position: absolute;
+  right: 0;
+
+  @nest & > div {
+    position: absolute;
+    right: 0;
+  }
+}
+
 .functions {
   display: flex;
   align-items: flex-end;
@@ -143,6 +153,7 @@
 }
 
 .content {
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
   top: 0.5rem;
   left: 0;
@@ -150,7 +161,7 @@
   bottom: 0;
   display: block;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: overlay;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 
