@@ -33,7 +33,8 @@ export default class BlockEditor extends React.Component {
   }
 
   state = {
-    fullscreen: false
+    fullscreen: false,
+    toolbarStyle: {}
   }
 
   _inputId = uniqueId('SlateBlockEditor')
@@ -293,72 +294,95 @@ export default class BlockEditor extends React.Component {
   }
 
   renderBlockEditor() {
-    const {value, type, level, onChange} = this.props
-    const {fullscreen} = this.state
+    const {value, onChange} = this.props
+    const {fullscreen, toolbarStyle} = this.state
 
+    console.log('renderBlockEditor', toolbarStyle)
+
+    return (
+      <div
+        className={fullscreen ? styles.fullscreen : ''}
+      >
+        <Toolbar
+          className={styles.toolbar}
+          onInsertBlock={this.handleInsertBlock}
+          insertBlocks={this.customBlocks}
+          onFullscreenEnable={this.handleToggleFullscreen}
+          fullscreen={this.state.fullscreen}
+          onMarkButtonClick={this.handleOnClickMarkButton}
+          onAnnotationButtonClick={this.handleAnnotationButtonClick}
+          onListButtonClick={this.handleOnClickListFormattingButton}
+          onBlockStyleChange={this.handleBlockStyleChange}
+          listItems={this.getListItems()}
+          blockStyles={this.getBlockStyles()}
+          annotations={this.getActiveAnnotations()}
+          decorators={this.getActiveDecorators()}
+          style={toolbarStyle}
+        />
+        <div
+          className={styles.inputContainer}
+          id={this._inputId}
+          onClick={this.handleEditorContainerClick}
+          ref={this.setInputContainerElement}
+          onWheel={this.handleInputScroll}
+        >
+          <div>
+            <Editor
+              ref={this.refEditor}
+              className={styles.input}
+              onChange={onChange}
+              placeholder=""
+              state={value}
+              blockEditor={this}
+              plugins={this.slatePlugins}
+              schema={this.slateSchema}
+            />
+            <div
+              ref={this.refBlockDragMarker}
+              style={{display: 'none'}}
+              className={styles.blockDragMarker}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  handleFullScreenScroll = event => {
+    const threshold = 100
+    const scrollTop = event.target.scrollTop
+    if (scrollTop < threshold) {
+      const ratio = scrollTop / threshold
+      this.setState({
+        toolbarStyle: {
+          backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
+          boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+        }
+      })
+    }
+  }
+
+  render() {
+    const {type, level} = this.props
+    const {fullscreen} = this.state
+    const blockEditor = this.renderBlockEditor()
     return (
       <FormField
         label={type.title}
         description={type.description}
         labelFor={this._inputId}
         level={level}
-        className={fullscreen ? styles.formFieldFullscreen : styles.formField}
       >
-        <div
-          className={fullscreen && styles.fullscreen}
-        >
-          <Toolbar
-            className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlock}
-            insertBlocks={this.customBlocks}
-            onFullscreenEnable={this.handleToggleFullscreen}
-            fullscreen={this.state.fullscreen}
-            onMarkButtonClick={this.handleOnClickMarkButton}
-            onAnnotationButtonClick={this.handleAnnotationButtonClick}
-            onListButtonClick={this.handleOnClickListFormattingButton}
-            onBlockStyleChange={this.handleBlockStyleChange}
-            listItems={this.getListItems()}
-            blockStyles={this.getBlockStyles()}
-            annotations={this.getActiveAnnotations()}
-            decorators={this.getActiveDecorators()}
-          />
-          <div
-            className={styles.inputContainer}
-            id={this._inputId}
-            onClick={this.handleEditorContainerClick}
-            ref={this.setInputContainerElement}
-            onWheel={this.handleInputScroll}
-          >
-            <div>
-              <Editor
-                ref={this.refEditor}
-                className={styles.input}
-                onChange={onChange}
-                placeholder=""
-                state={value}
-                blockEditor={this}
-                plugins={this.slatePlugins}
-                schema={this.slateSchema}
-              />
-              <div
-                ref={this.refBlockDragMarker}
-                style={{display: 'none'}}
-                className={styles.blockDragMarker}
-              />
-            </div>
-          </div>
-        </div>
+        {
+          fullscreen ? (
+            <Portal isOpened>
+              <div className={styles.portal} onScroll={this.handleFullScreenScroll}>
+                {blockEditor}
+              </div>
+            </Portal>
+          ) : blockEditor
+        }
       </FormField>
-    )
-  }
-
-  render() {
-    const {fullscreen} = this.state
-    const blockEditor = this.renderBlockEditor()
-    return (
-      <div>
-        {fullscreen ? (<Portal isOpened>{blockEditor}</Portal>) : blockEditor}
-      </div>
     )
   }
 }
