@@ -15,7 +15,7 @@ const getSanityVersions = basePath => {
   const dependencies = Object.keys(Object.assign({}, pkg.dependencies, pkg.devDependencies))
   const sanityDeps = dependencies.filter(depName => depName.indexOf('@sanity/') === 0)
   const versions = uniq(sanityDeps).reduce((target, moduleId) => {
-    const modulePath = resolveFrom(basePath, path.join(moduleId, 'package.json'))
+    const modulePath = resolveFrom.silent(basePath, path.join(moduleId, 'package.json'))
     target[moduleId] = modulePath && require(modulePath).version
     return target
   }, {})

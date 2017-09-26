@@ -24,7 +24,7 @@
   "dependencies": {
     "fs-promise": "^2.0.0",
     "lodash": "^4.17.4",
-    "resolve-from": "^3.0.0"
+    "resolve-from": "^4.0.0"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",

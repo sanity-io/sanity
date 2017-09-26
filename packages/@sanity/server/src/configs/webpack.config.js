@@ -16,8 +16,8 @@ export default (config = {}) => {
   const basePath = config.basePath || process.cwd()
   const skipMinify = config.skipMinify || false
 
-  const reactPath = resolveFrom(basePath, 'react')
-  const reactDomPath = resolveFrom(basePath, 'react-dom')
+  const reactPath = resolveFrom.silent(basePath, 'react')
+  const reactDomPath = resolveFrom.silent(basePath, 'react-dom')
   const missing = [!reactPath && '`react`', !reactDomPath && '`react-dom`'].filter(Boolean)
   if (!reactPath || !reactDomPath) {
     const missingErr = [

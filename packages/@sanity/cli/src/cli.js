@@ -113,7 +113,7 @@ function resolveRootDir(cwd) {
 }
 
 function getCoreModulePath(workDir) {
-  const pkgPath = resolveFrom(workDir, '@sanity/core')
+  const pkgPath = resolveFrom.silent(workDir, '@sanity/core')
   if (pkgPath) {
     return pkgPath
   }

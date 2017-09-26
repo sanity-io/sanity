@@ -119,7 +119,7 @@ export default async function initSanity(args, context) {
   }
 
   // Make sure we have the required configs
-  const coreCommands = require(resolveFrom(outputPath, '@sanity/core')).commands
+  const coreCommands = require(resolveFrom.silent(outputPath, '@sanity/core')).commands
   const configCheckCmd = coreCommands.find(cmd => cmd.name === 'configcheck')
   await configCheckCmd.action(
     {extOptions: {quiet: true}},
