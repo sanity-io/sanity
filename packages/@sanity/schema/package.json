@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "0.113.5",
+  "version": "0.113.7",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "rimraf": "^2.6.1"
   },
   "dependencies": {
-    "@sanity/generate-help-url": "^0.113.3",
+    "@sanity/generate-help-url": "^0.113.7",
     "arrify": "^1.0.1",
     "lodash": "^4.17.4"
   }
