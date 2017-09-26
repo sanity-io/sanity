@@ -108,18 +108,18 @@
 
 .sanityStudioLogoContainer {
   position: fixed;
-  height: 1rem;
-  width: 10em;
-  bottom: 1rem;
-  left: 1rem;
+  width: 5em;
+  bottom: 0.5rem;
+  left: 0.5rem;
   z-index: var(--zindex-navbar);
   opacity: 0.5;
+  color: #fff;
 
   @nest &:hover {
     opacity: 1;
   }
 
   @nest & svg {
-    height: 0.75rem;
+    height: 0.5rem;
   }
 }
