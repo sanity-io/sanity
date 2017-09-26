@@ -14,19 +14,7 @@
 }
 
 .fullscreen {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: var(--zindex-fullscreen-edit);
-  background-color: var(--blockEditorFullscreenBackground);
-  padding-top: 2rem;
-  padding-bottom: 5rem;
-  overflow: scroll;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 .blockDragMarker {
@@ -83,13 +71,15 @@
   @nest .fullscreen & {
     position: fixed;
     box-sizing: border-box;
-    width: 100%;
+    width: 100vw;
     top: 0;
     left: 0;
-    z-index: 5001;
+    right: 0;
+    z-index: 1;
     background-color: color(var(--blockEditorFullscreenBackground) a(90%));
     backdrop-filter: blur(3px);
     padding: var(--small-padding);
+    height: 4rem;
 
     @media (--screen-medium) {
       padding: var(--medium-padding);
@@ -111,7 +101,17 @@
 
 .portal {
   position: fixed;
-  z-index: var(--zindex-fullscreen-edit);
+  z-index: var(--zindex-portal);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: var(--blockEditorFullscreenBackground);
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  box-sizing: border-box;
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
 }
 
 .textFormattingToolbar {

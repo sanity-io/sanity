@@ -15,6 +15,7 @@ export default class Toolbar extends React.Component {
   static propTypes = {
 
     className: PropTypes.string,
+    style: PropTypes.object,
 
     fullscreen: PropTypes.bool,
 
@@ -62,40 +63,50 @@ export default class Toolbar extends React.Component {
       onListButtonClick,
       onBlockStyleChange,
       onAnnotationButtonClick,
+      style
     } = this.props
 
     return (
-      <div className={`${styles.root} ${className}`}>
+      <div className={`${styles.root} ${className}`} style={style}>
         <div className={styles.blockFormatContainer}>
           <BlockStyle value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
         </div>
 
-        <div className={styles.formatButtons}>
-          {decorators && decorators.length > 0 && (
-            <div className={styles.decoratorContainer}>
-              <Decorators decorators={decorators} onClick={onMarkButtonClick} />
-            </div>
-          )}
+        <div className={styles.canBeMinimized}>
 
-          {listItems && listItems.length > 0 && (
-            <div className={styles.listFormatContainer}>
-              <ListItems listItems={listItems} onClick={onListButtonClick} />
+          <div className={styles.formatButtons}>
+            {decorators && decorators.length > 0 && (
+              <div className={styles.decoratorContainer}>
+                <Decorators decorators={decorators} onClick={onMarkButtonClick} />
+              </div>
+            )}
+
+            {listItems && listItems.length > 0 && (
+              <div className={styles.listFormatContainer}>
+                <ListItems listItems={listItems} onClick={onListButtonClick} />
+              </div>
+            )}
+          </div>
+
+          {annotations && annotations.length > 0 && (
+            <div className={styles.annotationsContainer}>
+              {
+                annotations.map(annotation => {
+                  return (
+                    <AnnotationButton
+                      key={`annotationButton${annotation.type.name}`}
+                      annotation={annotation} onClick={onAnnotationButtonClick}
+                    />
+                  )
+                })
+              }
             </div>
           )}
         </div>
 
-        {annotations && annotations.length > 0 && (
-          <div className={styles.annotationsContainer}>
-            {
-              annotations.map(annotation => {
-                return (
-                  <AnnotationButton
-                    key={`annotationButton${annotation.type.name}`}
-                    annotation={annotation} onClick={onAnnotationButtonClick}
-                  />
-                )
-              })
-            }
+        {insertBlocks.length > 0 && (
+          <div className={styles.insertContainer}>
+            <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
           </div>
         )}
 
@@ -106,12 +117,6 @@ export default class Toolbar extends React.Component {
             icon={fullscreen ? CloseIcon : FullscreenIcon}
           />
         </div>
-
-        {insertBlocks.length > 0 && (
-          <div className={styles.insertContainer}>
-            <InsertBlocks blocks={insertBlocks} onInsertBlock={onInsertBlock} />
-          </div>
-        )}
       </div>
     )
   }
