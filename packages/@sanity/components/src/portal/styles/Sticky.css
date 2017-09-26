@@ -11,7 +11,7 @@
 }
 
 :root {
-  --animation-timing: 0.2s;
+  --animation-timing: 0.1s;
 }
 
 .root {
@@ -47,7 +47,7 @@
   bottom: 0;
   height: 100%;
   width: 100%;
-  z-index: 3;
+  z-index: var(--zindex-portal);
   pointer-events: none;
 }
 
