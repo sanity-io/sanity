@@ -153,20 +153,19 @@ export default function prepareSlateForBlockEditor(blockEditor) {
       // Rule to ensure that every non-void block has a style
       {
         match: node => {
-          // contentBlock with no style
-          if (node.kind === 'block' && !node.isVoid && node.text && node.data.get('style') === undefined
+          if (node.kind === 'block' && !node.isVoid
           ) {
             return node
           }
           return undefined
         },
-        validate: contentBlock => {
-          return contentBlock
+        validate: block => {
+          return block.data.get('style') === undefined ? block : null
         },
-        normalize: (change, contentBlock) => {
-          const data = {...contentBlock.data.toObject(), style: BLOCK_DEFAULT_STYLE}
+        normalize: (change, block) => {
+          const data = {...block.data.toObject(), style: BLOCK_DEFAULT_STYLE}
           return change
-            .setNodeByKey(contentBlock.key, {type: 'contentBlock', ...data})
+            .setNodeByKey(block.key, {data})
         }
       },
       // Rule to ensure that annotation _key's within a block is unique
