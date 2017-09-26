@@ -43,7 +43,7 @@ assign(AssetsClient.prototype, {
     })
 
     return this.client.isPromiseAPI()
-      ? toPromise(observable)
+      ? toPromise(observable).then(response => response.document)
       : observable
   },
 
