@@ -1,4 +1,4 @@
-
+// @flow
 export type Type = {
   type: any,
   name: string,
@@ -7,12 +7,18 @@ export type Type = {
   readOnly: ?boolean,
   options: {
     editModal: 'fold' | 'modal',
-    sortable: boolean
+    sortable: boolean,
+    layout?: 'grid'
   },
   of: Array<Type>
 }
 
+export type TransferStatus = {
+  progress: number
+}
+
 export type ItemValue = {
-  _type: string,
-  _key: string
+  _type?: string,
+  _key: string,
+  _transferStatus?: TransferStatus
 }

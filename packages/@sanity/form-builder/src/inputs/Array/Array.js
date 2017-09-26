@@ -1,5 +1,5 @@
 // @flow
-import type {ItemValue, Type} from './types'
+import type {ItemValue, TransferStatus, Type} from './types'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
@@ -12,10 +12,7 @@ import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 
 import Observable from '@sanity/observable'
-import importFile from './importFile'
-import {getAcceptedMember} from './utils'
-import {uploadImage} from '../../sanity/inputs/client-adapters/assets'
-
+import {findMatchingImporter} from './utils'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -30,53 +27,32 @@ function isEmpty(value: ?ItemValue) {
   return value === undefined || !hasKeys(value, ['_key', '_type', 'index'])
 }
 
-type State = {
-  selectType: boolean,
-  editItemKey: ?string,
-  focusItemKey: ?string,
-  uploadItems: { [string]: Object }
-}
-
-function createProtoValue(type): ItemValue {
+function createProtoValue(type: Type): ItemValue {
   if (type.jsonType !== 'object') {
     throw new Error(`Invalid item type: "${type.type}". Default array input can only contain objects (for now)`)
   }
-  return type.name === 'object' ? {_key: randomKey(12)} : {
+  const key = randomKey(12)
+  return type.name === 'object' ? {_key: key} : {
     _type: type.name,
-    _key: randomKey(12)
+    _key: key
   }
 }
+type Props<T> = {
+  type: Type,
+  value: Array<T>,
+  level: number,
+  onChange: (event: PatchEvent) => void
+}
 
-export default class ArrayInput<T: ItemValue> extends React.Component<*, *, State> {
-  props: {
-    type: Type,
-    value: Array<T>,
-    level: number,
-    onChange: (event: PatchEvent) => void
-  }
+type State = {
+  editItemKey: ?string,
+  transferItems: {[string]: TransferStatus}
+}
 
+export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, State> {
   state = {
-    selectType: false,
     editItemKey: null,
-    focusItemKey: null,
-    uploadItems: {}
-  }
-
-  handleAddBtnClick = () => {
-    const {type} = this.props
-    if (type.of.length > 1) {
-      this.setState({selectType: true})
-      return
-    }
-
-    const item = createProtoValue(type.of[0])
-
-    this.append(item)
-
-    this.setState({
-      selectType: false,
-      editItemKey: item._key
-    })
+    transferItems: {}
   }
 
   insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
@@ -111,8 +87,19 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
     this.setState({editItemKey: item._key})
   }
 
-  handleDropDownAction = (menuItem: { type: Type }) => {
+  handleDropDownAction = (menuItem: {type: Type}) => {
     const item = createProtoValue(menuItem.type)
+    this.append(item)
+    this.setState({editItemKey: item._key})
+  }
+
+  handleAddBtnClick = () => {
+    const {type} = this.props
+    const memberType = type.of[0]
+    if (!memberType) {
+      throw new Error('Nothing to add')
+    }
+    const item = createProtoValue(memberType)
     this.append(item)
     this.setState({editItemKey: item._key})
   }
@@ -146,84 +133,53 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
     )
   }
 
-  handlePaste = (ev: SyntheticClipboardEvent) => {
+  handlePaste = (ev: SyntheticClipboardEvent<*>) => {
     if (ev.clipboardData.files) {
-      importFile(ev.clipboardData.files)
-        .subscribe(result => {
-          console.log('UPLOAD THIS', result)
-        })
+      ev.preventDefault()
+      ev.stopPropagation()
+      this.importFiles(Array.from(ev.clipboardData.files))
     }
   }
 
-  setUploadItem(key: string, value: ItemValue) {
+  setTransferStatus(key: string, status: ?TransferStatus) {
     this.setState(prevState => ({
-      uploadItems: {
-        ...prevState.uploadItems,
-        [key]: value
+      transferItems: {
+        ...prevState.transferItems,
+        [key]: status
       }
     }))
   }
 
-  handleDragOver = (ev: SyntheticDragEvent) => {
+  handleDragOver = (ev: SyntheticDragEvent<*>) => {
     ev.preventDefault()
     ev.stopPropagation()
   }
 
-  handleDrop = (ev: SyntheticDragEvent) => {
+  importFiles(files: Array<File>) {
+    const import$ = Observable.from(files)
+      .mergeMap(file => {
+        const {importer, memberType} = findMatchingImporter(this.props.type, file)
+        if (!memberType || !importer) {
+          return Observable.of(null)
+        }
+        const proto = createProtoValue(memberType)
+        return importer(file)
+          .reduce((prev, curr) => curr)
+          .map(result => ({...result, ...proto}))
+      })
+      .filter(Boolean)
+
+    import$.subscribe(item => {
+      this.append(item)
+    })
+  }
+
+  handleDrop = (ev: SyntheticDragEvent<*>) => {
     const {onChange} = this.props
     if (ev.dataTransfer.files) {
       ev.preventDefault()
       ev.stopPropagation()
-      const toUpload = Observable.from(Array.from(ev.dataTransfer.files))
-        .map(file => {
-          const memberType = getAcceptedMember(this.props.type, file)
-          // start by inserting placeholder values
-          const item = {
-            ...createProtoValue(memberType),
-            _isUploading: true,
-            _percent: 0
-          }
-          this.insert(item, 'after', -1)
-          return {
-            ...item,
-            file: file
-          }
-        })
-        .mergeMap(item =>
-          importFile(item.file)
-            .do(prepared => {
-              this.setUploadItem(item._key, {
-                _previewImageUrl: prepared._imageUrl
-              })
-            })
-            .map(() => item))
-        .mergeMap(item => {
-          return Observable.from(uploadImage(item.file))
-            .do(event => {
-              onChange(PatchEvent.from(set(event.percent, ['_percent'])).prefixAll({_key: item._key}))
-            })
-            .do(event => {
-              if (event.type === 'complete') {
-                onChange(PatchEvent.from(
-                  setIfMissing({
-                    ...item,
-                    asset: {_type: 'reference'}
-                  }),
-                  set({_type: 'reference', _ref: event.id}, ['asset']),
-                  unset(['_isUploading']),
-                  unset(['_percent'])
-                ).prefixAll({_key: item._key}))
-              }
-            })
-            .do(ev => {
-              setTimeout(() => {
-                this.setUploadItem(item._key, null)
-              }, 2000)
-            })
-        })
-        .subscribe(event => {
-          console.log(event)
-        })
+      this.importFiles(Array.from(ev.dataTransfer.files))
     }
   }
 
@@ -327,16 +283,16 @@ export default class ArrayInput<T: ItemValue> extends React.Component<*, *, Stat
     )
   }
 
-  getValueWithUploadItemsMerged() {
+  getValueWithUploadItemsMerged() : Array<T> {
     const {value} = this.props
-    const {uploadItems} = this.state
-    const keys = Object.keys(uploadItems)
+    const {transferItems} = this.state
+    const keys = Object.keys(transferItems)
     if (keys.length === 0) {
       return value
     }
     return value.map(item => {
-      return (uploadItems[item._key])
-        ? {...item, ...(uploadItems[item._key])}
+      return (transferItems[item._key])
+        ? {...item, ...(transferItems[item._key])}
         : item
     })
   }

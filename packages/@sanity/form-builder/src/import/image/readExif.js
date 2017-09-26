@@ -5,13 +5,12 @@ function readFileAsArrayBuffer(file, length) {
   return new Observable(observer => {
     /* global window */
     const reader = new window.FileReader()
-    reader.onerror = err => {
-      observer.error(error)
-    }
+    reader.onerror = err => observer.error(err)
     reader.onload = () => {
       observer.next(reader.result)
+      observer.complete()
     }
-    reader.readAsArrayBuffer(length !== undefined ? file.slice(0, length) : file)
+    reader.readAsArrayBuffer(length === undefined ? file : file.slice(0, length))
     return () => reader.abort()
   })
 }

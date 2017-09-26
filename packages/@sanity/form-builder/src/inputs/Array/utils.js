@@ -1,7 +1,7 @@
 // @flow
-
+import handlers from '../../import/handlers'
 import accept from 'attr-accept'
-import {Type} from './types'
+import type {Type} from './types'
 
 // todo: extract and reuse
 function is(typeName, type) {
@@ -11,9 +11,24 @@ function is(typeName, type) {
   return type.name === typeName || is(typeName, type.type)
 }
 
-export function getAcceptedMember(type : Type, file : File) {
-  return type.of.find(memberType => {
-    return (is('file', memberType) || is('image', memberType))
-      && accept(file, (memberType.options || {}).accept)
-  })
+export function findMatchingImporter(type: Type, file: File) {
+  debugger
+  // find the first member that has a matching handler
+  for (let i = 0; i < type.of.length; i++) {
+    const memberType = type.of[i]
+    const keys = Object.keys(handlers)
+    for (let j = 0; j < keys.length; j++) {
+      const typeName = keys[j]
+      if (is(typeName, memberType)) {
+        const mimeTypes = Object.keys(handlers[typeName])
+        for (let x = 0; x < mimeTypes.length; x++) {
+          const mimeType = mimeTypes[x]
+          if (accept(file, mimeType)) {
+            return {importer: handlers[typeName][mimeType], memberType}
+          }
+        }
+      }
+    }
+  }
+  return {importer: null, memberType: null}
 }

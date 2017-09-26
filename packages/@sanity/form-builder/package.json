@@ -82,6 +82,7 @@
     "in-publish": "^2.0.0",
     "jsdom": "^9.9.1",
     "json-markup": "^1.1.0",
+    "component-normalized-upload": "^0.0.6",
     "path-to-regexp": "^1.7.0",
     "postcss-cssnext": "2.10.0",
     "prop-types": "^15.5.10",

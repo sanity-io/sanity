@@ -147,7 +147,7 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
             onClick={this.handleEditStart}
             onKeyPress={this.handleKeyPress}
           >
-            {value._isUploading ? (
+            {value._transfer ? (
               <UploadPreview
                 value={value}
                 type={this.getMemberType()}
