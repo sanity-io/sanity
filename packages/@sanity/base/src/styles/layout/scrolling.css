@@ -9,6 +9,7 @@
     background-color: transparent;
     width: var(--defaultScrollBarWidth);
     position: fixed;
+    display: none;
 
     @media (--screen-medium) {
       width: var(--defaultScrollBarWidth);
@@ -25,9 +26,8 @@
 
   @nest &:hover {
     @nest &::-webkit-scrollbar {
-      display: block;
       width: var(--defaultScrollBarWidth);
-      opacity: 1;
+      display: initial;
 
       @media (--screen-medium) {
         width: var(--defaultScrollBarWidth);

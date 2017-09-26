@@ -59,9 +59,10 @@ class DefaultMenu extends React.Component {
     }
   }
 
-  handleClickOutside = evt => {
+  handleClickOutside = event => {
     if (this.props.isOpen) {
-      this.props.onClickOutside(evt)
+      event.stopPropagation()
+      this.props.onClickOutside(event)
     }
   }
 
