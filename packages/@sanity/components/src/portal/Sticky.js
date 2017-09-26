@@ -148,7 +148,8 @@ export default class StickyPortal extends React.Component {
     }
 
     const neededHeight = this._contentElement.offsetHeight
-    const extraHeight = -window.innerHeight + neededHeight + this._rootTop
+    //const extraHeight = -window.innerHeight + neededHeight + this._rootTop
+    const extraHeight = this._contentElement.offsetHeight
 
     this._paddingDummy.style.height = `${extraHeight}px`
 
@@ -164,6 +165,9 @@ export default class StickyPortal extends React.Component {
       this._isScrolling = true
       scroll.top(this._scrollContainerElement, scrollTop + this._extraScrollTop, scrollOptions, () => {
         this._isScrolling = false
+        this.props.onResize({
+          isScrolling: this._isScrolling
+        })
       })
     }
   }
