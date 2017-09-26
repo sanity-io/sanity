@@ -11,9 +11,11 @@ import scroll from 'scroll'
 //import {getComputedTranslateY} from './utils'
 
 const scrollOptions = {
-  duration: 150,
+  duration: 200,
   ease: ease.easeInOutQuart
 }
+
+const PADDING_DUMMY_TRANSITION = 'height 0.2s linear'
 
 export default class StickyPortal extends React.Component {
 
@@ -51,6 +53,7 @@ export default class StickyPortal extends React.Component {
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
   _containerScrollTop = 0
   _initialScrollTop = 0
+  _isScrolling = false
 
   // Root positions
   _rootTop = 0
@@ -78,7 +81,7 @@ export default class StickyPortal extends React.Component {
     this.scrollBack()
 
     if (this._paddingDummy) {
-      this._paddingDummy.remove()
+      this._paddingDummy.style.height = '0'
     }
     if (window) {
       window.removeEventListener('resize', this.handleWindowResize)
@@ -91,6 +94,9 @@ export default class StickyPortal extends React.Component {
     if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
       this._elementResizeDetector.uninstall(this._contentElement.firstChild)
     }
+    this._paddingDummy.addEventListener('transitionend', () => {
+      this._paddingDummy.remove()
+    }, false)
   }
 
   componentDidUpdate(prevProps) {
@@ -123,7 +129,10 @@ export default class StickyPortal extends React.Component {
 
   scrollBack = () => {
     if (this._scrollContainerElement && this._initialScrollTop) {
-      scroll.top(this._scrollContainerElement, this._initialScrollTop, scrollOptions)
+      this._isScrolling = true
+      scroll.top(this._scrollContainerElement, this._initialScrollTop, scrollOptions, () => {
+        this._isScrolling = false
+      })
     }
   }
 
@@ -139,22 +148,28 @@ export default class StickyPortal extends React.Component {
     }
 
     const neededHeight = this._contentElement.offsetHeight
-    this._paddingDummy.style.height = `${this._contentElement.offsetHeight}px`
+    const extraHeight = -window.innerHeight + neededHeight + this._rootTop
+
+    this._paddingDummy.style.height = `${extraHeight}px`
 
     const scrollTop = this._scrollContainerElement.scrollTop
     this._extraScrollTop = -window.innerHeight + neededHeight + this._rootTop
 
-    if (this._initialScrollTop != 0) {
-      this._initialScrollTop = scrollTop
-    }
+    // if (this._initialScrollTop != 0) {
+    //
+    // }
 
     if (this._extraScrollTop > 0) {
-      scroll.top(this._scrollContainerElement, scrollTop + this._extraScrollTop, scrollOptions)
+      this._initialScrollTop = scrollTop
+      this._isScrolling = true
+      scroll.top(this._scrollContainerElement, scrollTop + this._extraScrollTop, scrollOptions, () => {
+        this._isScrolling = false
+      })
     }
   }
 
   setContentScrollTop = event => {
-    this._contentElement.scrollTop = this._contentScrollTop
+    //this._contentElement.scrollTop = this._contentScrollTop
   }
 
   addMovingListeners = () => {
@@ -182,7 +197,7 @@ export default class StickyPortal extends React.Component {
   }
 
   handleContentScroll = event => {
-    this._contentScrollTop = event.target.scrollTop
+    //this._contentScrollTop = event.target.scrollTop
   }
 
   handleClose() {
@@ -210,6 +225,8 @@ export default class StickyPortal extends React.Component {
     if (!this._paddingDummy && this._contentElement) {
       this._paddingDummy = document.createElement('div')
       this._paddingDummy.style.clear = 'both'
+      this._paddingDummy.style.height = 0
+      this._paddingDummy.style.transition = PADDING_DUMMY_TRANSITION
       if (this._scrollContainerElement) {
         //console.info('appendPadding: added padding element', this._paddingDummy)
         this._scrollContainerElement.appendChild(this._paddingDummy)
@@ -321,7 +338,8 @@ export default class StickyPortal extends React.Component {
       containerWidth: this._scrollContainerWidth,
       containerLeft: this._scrollContainerLeft,
       availableWidth: this.state.availableWidth || window.innerWidth,
-      availableHeight: this.state.availableHeight || 0
+      availableHeight: this.state.availableHeight || window.innerHeight,
+      isScrolling: this._isScrolling
     })
   }
 
