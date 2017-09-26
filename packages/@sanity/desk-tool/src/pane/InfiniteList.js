@@ -55,7 +55,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
         className={className || ''}
         height={height}
         itemCount={items.length}
-        itemSize={layout === 'default' ? 49 : 80}
+        itemSize={layout === 'default' ? 56 : 80}
         renderItem={this.renderItem}
         overscanCount={50}
         data-trigger-update-hack={triggerUpdate} /* see componentWillReceiveProps above */
