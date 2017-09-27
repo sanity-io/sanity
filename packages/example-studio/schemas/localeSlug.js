@@ -16,7 +16,7 @@ export default {
     title: lang.title,
     fieldset: lang.default ? null : 'translations',
     options: {
-      source: document => document.title[lang.id],
+      source: document => ((document && document.title) ? document.title[lang.id] : ''),
       maxLength: 96,
       auto: true,
     },
