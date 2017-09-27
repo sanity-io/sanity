@@ -305,7 +305,7 @@ ctx.fillText('Sanity', 8, 30)
 canvas.toBlob(uploadImageBlob, 'image/png')
 
 function uploadImageBlob(blob) {
-  client.assets.upload('image', blob, "image/png")
+  client.assets.upload('image', blob)
     .then(document => {
       console.log('The image was uploaded!', document)
     })
