@@ -35,14 +35,17 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
   line-height: 3rem;
   width: 100%;
-  min-height: 3rem;
+  height: 3rem;
   transition: width 0.8s linear, border 0.8s linear;
   user-select: none;
+  background-color: inherit;
+  z-index: 2;
 
   @nest .isCollapsed & {
     flex-direction: row;
@@ -51,7 +54,18 @@
   }
 }
 
+.headerBackground {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: var(--body-bg);
+  z-index: 0;
+}
+
 .headerContent {
+  z-index: 1;
   display: flex;
   flex-wrap: nowrap;
   flex-grow: 1;
@@ -77,6 +91,8 @@
 }
 
 .menuWrapper {
+  position: relative;
+  z-index: 2;
   align-self: flex-end;
   flex: 0 1 3rem;
   display: block;
@@ -155,7 +171,8 @@
 .content {
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
-  top: 0;
+  top: -3rem;
+  padding-top: 3rem;
   left: 0;
   right: 0;
   bottom: 0;

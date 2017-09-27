@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/DefaultPane.css'
+import defaultStyles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import Styleable from '../utilities/Styleable'
 
-export default class Pane extends React.PureComponent {
+class Pane extends React.PureComponent {
   static propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isCollapsed: PropTypes.bool,
@@ -18,7 +19,8 @@ export default class Pane extends React.PureComponent {
     isSelected: PropTypes.bool,
     isScrollable: PropTypes.bool,
     onMenuToggle: PropTypes.func,
-    className: PropTypes.string
+    className: PropTypes.string,
+    styles: PropTypes.object
   }
 
   static defaultProps = {
@@ -28,6 +30,7 @@ export default class Pane extends React.PureComponent {
     isScrollable: true,
     minWidth: 0,
     width: 0,
+    styles: {},
     children: <div />,
     onCollapse() {},
     onExpand() {},
@@ -39,6 +42,21 @@ export default class Pane extends React.PureComponent {
     updateId: 0,
     onMenuToggle() {
       return true
+    }
+  }
+
+  componentDidMount() {
+    this._contentElement.addEventListener('scroll', this.handleContentScroll, {passive: true})
+  }
+
+  componentWillUnmount() {
+    this._contentElement.removeEventListener('scroll', this.handleContentScroll, {passive: true})
+  }
+
+  state = {
+    headerStyle: {
+      opacity: 0,
+      boxShadow: 'none'
     }
   }
 
@@ -58,8 +76,42 @@ export default class Pane extends React.PureComponent {
     }
   }
 
+  handleContentScroll = event => {
+    const threshold = 100
+    const scrollTop = event.target.scrollTop
+    console.log(scrollTop, this.props.title)
+    if (scrollTop < threshold) {
+      const ratio = scrollTop / threshold
+      this.setState({
+        headerStyle: {
+          opacity: ratio,
+          boxShadow: `0 2px ${3 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+        }
+      })
+    } else {
+      this.setState({
+        headerStyle: {
+          opacity: 1,
+          boxShadow: '0 2px 3px rgba(0, 0, 0, 0.3)'
+        }
+      })
+    }
+
+    if (scrollTop < 0) {
+      this.setState({
+        headerStyle: {
+          boxShadow: 'none'
+        }
+      })
+    }
+  }
+
+  setContentElement = element => {
+    this._contentElement = element
+  }
+
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, className} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, styles} = this.props
 
     return (
       <div
@@ -67,11 +119,15 @@ export default class Pane extends React.PureComponent {
           ${isCollapsed ? styles.isCollapsed : styles.root}
           ${isScrollable ? styles.isScrollable : ''}
           ${isSelected ? styles.isActive : ''}
-          ${className}
         `}
         ref={this.setRootElement}
       >
-        <div className={styles.header}>
+        <div
+          className={styles.header}
+          style={{
+            boxShadow: isCollapsed ? {} : this.state.headerStyle.boxShadow
+          }}
+        >
           <div className={styles.headerContent}>
             <h2 className={styles.title} onClick={this.handleToggle}>
               {title}
@@ -97,9 +153,15 @@ export default class Pane extends React.PureComponent {
               {renderMenu(isCollapsed)}
             </div>
           </div>
+          <div
+            className={styles.headerBackground}
+            style={{
+              opacity: isCollapsed ? {} : this.state.headerStyle.opacity
+            }}
+          />
         </div>
         <div className={styles.main}>
-          <div className={styles.content}>
+          <div className={styles.content} ref={this.setContentElement}>
             {children}
           </div>
         </div>
@@ -107,3 +169,5 @@ export default class Pane extends React.PureComponent {
     )
   }
 }
+
+export default Styleable(Pane, defaultStyles)
