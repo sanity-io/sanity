@@ -76,7 +76,7 @@ async function ensureAsset(options, progress, assetKey, i) {
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
   const asset = await client.assets.upload(type, buffer, {label, filename})
   progress()
-  return asset.document._id
+  return asset._id
 }
 
 async function getAssetIdForLabel(client, type, label, attemptNum = 0) {

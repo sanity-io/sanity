@@ -1065,11 +1065,11 @@ test('uploads images', t => {
 
   nock(projectHost())
     .post('/v1/assets/images/foo', isImage)
-    .reply(201, {url: 'https://some.asset.url'})
+    .reply(201, {document: {url: 'https://some.asset.url'}})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath))
-    .then(body => {
-      t.equal(body.url, 'https://some.asset.url')
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
 })
@@ -1080,11 +1080,11 @@ test('uploads images with given content type', t => {
 
   nock(projectHost(), {reqheaders: {'Content-Type': 'image/jpeg'}})
     .post('/v1/assets/images/foo', isImage)
-    .reply(201, {url: 'https://some.asset.url'})
+    .reply(201, {document: {url: 'https://some.asset.url'}})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath), {contentType: 'image/jpeg'})
-    .then(body => {
-      t.equal(body.url, 'https://some.asset.url')
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
 })
@@ -1113,7 +1113,7 @@ test('uploads images with custom label', t => {
   const label = 'xy zzy'
   nock(projectHost())
     .post(`/v1/assets/images/foo?label=${encodeURIComponent(label)}`, isImage)
-    .reply(201, {label: label})
+    .reply(201, {document: {label: label}})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath), {label: label})
     .then(body => {
@@ -1128,11 +1128,11 @@ test('uploads files', t => {
 
   nock(projectHost())
     .post('/v1/assets/files/foo', isFile)
-    .reply(201, {url: 'https://some.asset.url'})
+    .reply(201, {document: {url: 'https://some.asset.url'}})
 
   getClient().assets.upload('file', fs.createReadStream(fixturePath))
-    .then(body => {
-      t.equal(body.url, 'https://some.asset.url')
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
 })
@@ -1143,11 +1143,11 @@ test('uploads images and can cast to promise', t => {
 
   nock(projectHost())
     .post('/v1/assets/images/foo', isImage)
-    .reply(201, {url: 'https://some.asset.url'})
+    .reply(201, {document: {url: 'https://some.asset.url'}})
 
   getClient().assets.upload('image', fs.createReadStream(fixturePath))
-    .then(body => {
-      t.equal(body.url, 'https://some.asset.url')
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
       t.end()
     }, ifError(t))
 })
