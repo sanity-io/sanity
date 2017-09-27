@@ -12,6 +12,21 @@ function toPromise(observable) {
     .toPromise()
 }
 
+
+function resolveWithDocument(body) {
+  // todo: rewrite to just return body.document in a while
+  const document = body.document
+  Object.defineProperty(document, 'document', {
+    enumerable: false,
+    get: () => {
+      // eslint-disable-next-line no-console
+      console.warn('The promise returned from client.asset.upload(...) now resolves with the asset document')
+      return document
+    }
+  })
+  return document
+}
+
 function optionsFromFile(opts, file) {
   if (typeof window === 'undefined' || !(file instanceof window.File)) {
     return opts
@@ -43,7 +58,7 @@ assign(AssetsClient.prototype, {
     })
 
     return this.client.isPromiseAPI()
-      ? toPromise(observable).then(response => response.document)
+      ? toPromise(observable).then(resolveWithDocument)
       : observable
   },
 
