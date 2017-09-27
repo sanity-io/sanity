@@ -2,9 +2,13 @@
 
 .root {
   color: inherit;
-  line-height: 1em;
-  height: 1em;
+  line-height: 3em;
+  height: 3em;
   position: relative;
+}
+
+.inner {
+  display: block;
 }
 
 .input {
@@ -12,25 +16,33 @@
   outline: none;
   color: inherit;
   width: 100%;
+  height: 3em;
+  line-height: 2rem;
+  padding: 0.5rem;
+  padding-left: 2.5rem;
   background-color: transparent;
-  padding-left: 1.3em;
-  line-height: inherit;
   font-size: inherit;
+  display: block;
 
   @nest &::placeholder {
     color: inherit;
     opacity: 0.4;
   }
+
+  @nest &:hover::placeholder {
+    opacity: 1;
+  }
 }
 
 .listContainer {
   position: absolute;
-  top: 2rem;
-  width: 100%;
+  z-index: var(--zindex-dropdown);
+  top: 3rem;
+  max-width: 100%;
+  width: 40rem;
   left: 0;
   height: auto;
   padding: 0;
-  overflow: hidden;
 
   @media (--screen-medium) {
     composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
@@ -41,6 +53,7 @@
   background-color: color(var(--component-bg) a(90%));
   color: var(--black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
+  width: 100%;
 }
 
 .hit {
@@ -66,5 +79,7 @@
 .label {
   font-size: inherit;
   position: absolute;
-  /*transform: translateY(-14%);*/
+  left: 1rem;
+  top: -0.1rem;
+  font-size: 0.9rem;
 }

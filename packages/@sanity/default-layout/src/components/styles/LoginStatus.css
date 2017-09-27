@@ -19,12 +19,10 @@
   margin-top: 4rem;
 
   @media (--screen-medium) {
-    float: right;
     display: block;
-    height: 1.5rem;
-    width: 1.5rem;
-    margin-top: 0.75rem;
-    margin-right: 0.75rem;
+    height: 2rem;
+    width: 2rem;
+    margin: 0.5rem;
   }
 }
 
@@ -38,10 +36,9 @@
 
 .userMenu {
   position: absolute;
-  top: 2em;
+  top: 3em;
   right: 0;
   z-index: 10;
-  width: 100%;
 }
 
 .logoutButton {
