@@ -1,5 +1,3 @@
-import SlateInput from '../../../src/inputs/BlockEditor-slate'
-
 export default {
   types: [
     {
@@ -16,7 +14,6 @@ export default {
           name: 'content',
           title: 'Content',
           type: 'array',
-          inputComponent: SlateInput,
           of: [
             {
               type: 'block',
