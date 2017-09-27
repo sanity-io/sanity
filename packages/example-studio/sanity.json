@@ -26,6 +26,10 @@
     {
       "implements": "part:@sanity/base/brand-logo",
       "path": "components/BrandLogo.js"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input-resolver",
+      "path": "./parts/inputResolver.js"
     }
   ],
   "env": {
