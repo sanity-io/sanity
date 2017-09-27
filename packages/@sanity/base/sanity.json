@@ -420,6 +420,10 @@
       "path": "styles/body.css"
     },
     {
+      "implements": "part:@sanity/base/theme/layout/backgrounds-style",
+      "path": "styles/layout/backgrounds.css"
+    },
+    {
       "name": "part:@sanity/base/close-icon",
       "description": "Used in dialogs and popups"
     },
