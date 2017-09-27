@@ -1,0 +1,13 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: root from '../../../../components/src/panes/styles/DefaultPane.css';
+  background-color: var(--component-bg);
+  box-shadow: 3px 0 4px color(#000 a(10%));
+  border-right: none;
+}
+
+.headerBackground {
+  composes: headerBackground from '../../../../components/src/panes/styles/DefaultPane.css';
+  background-color: var(--component-bg);
+}
