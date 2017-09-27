@@ -1,5 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .root {
   display: block;
 
@@ -29,13 +39,12 @@
 
 .top {
   display: flex;
-  justify-content: space-between;
-  padding: 0 var(--medium-padding);
+  /*justify-content: space-between;*/
+  margin: 0 var(--medium-padding);
+  color: #aaaaaa;
 }
 
 .dates {
-  flex-basis: 14em;
-  color: #aaaaaa;
   font-size: 0.7rem;
   display: none;
 
@@ -46,10 +55,13 @@
 
 .publishedDate {
   composes: dates;
+  align-self: flex-end;
+  margin-left: auto;
 }
 
 .editedDate {
   composes: dates;
+  margin-right: 1rem;
 }
 
 .editor {
@@ -58,11 +70,19 @@
   }
 }
 
-.savingStatus {
-  opacity: 0.5;
-  flex-basis: 5em;
-  align-self: flex-end;
-  text-align: right;
+.syncStatus {
+  display: block;
+  opacity: 1;
+  font-size: 0.7em;
+}
+
+.syncStatusSynced {
+  composes: syncStatus;
+}
+
+.syncStatusSyncing {
+  composes: syncStatus;
+  color: var(--state-success-color);
 }
 
 .overlay {
@@ -77,6 +97,11 @@
   padding: 10em 3em;
 }
 
+.paneFunctions {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
 .publishButton {
   padding: 0 1rem;
   padding-right: 0;
@@ -84,8 +109,27 @@
   line-height: calc(2.75em / 0.8);
 }
 
+.spinnerContainer {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  margin-right: 1em;
+}
+
 .spinner {
+  display: block;
   position: absolute;
-  left: -1.5em;
-  font-size: 0.9em;
+  top: 0;
+  left: 0;
+  width: 1em;
+  height: 1em;
+  transform-origin: center center;
+  animation-name: spin;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+
+  @nest & > svg {
+    display: block;
+  }
 }
