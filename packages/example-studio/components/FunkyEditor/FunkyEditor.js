@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import SlateEditor from '@sanity/form-builder/lib/inputs/BlockEditor-slate'
+import {BlockEditor} from 'part:@sanity/form-builder'
 export default class FunkyEditor extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
@@ -15,15 +15,19 @@ export default class FunkyEditor extends React.Component {
     this.props.onChange(event)
   }
 
+  componentDidUpdate() {
+    console.log('did update')
+  }
+
   render() {
     const {type, value, level} = this.props
     return (
       <div>
         <h3>Take me to Funky Town</h3>
-        <SlateEditor
+        <BlockEditor
           type={type}
           level={level}
-          value={value === undefined ? '' : value}
+          value={value === undefined ? [] : value}
           onChange={this.handleChange}
         />
       </div>
