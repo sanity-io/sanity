@@ -5,7 +5,7 @@ import inputResolver from './inputResolver/inputResolver'
 import SanityPreview from 'part:@sanity/base/preview'
 import * as patches from '../utils/patches'
 
-import {FormBuilder, defaultConfig} from '../'
+import {FormBuilder, defaultConfig} from '..'
 
 export {default as WithFormBuilderValue} from './WithFormBuilderValue'
 export {default as withDocument} from '../utils/withDocument'
@@ -14,6 +14,7 @@ export {default as PatchEvent} from '../PatchEvent'
 export {FormBuilderInput} from '../FormBuilderInput'
 
 export {patches}
+export {BlockEditor} from '..'
 
 function previewResolver() {
   return SanityPreview
