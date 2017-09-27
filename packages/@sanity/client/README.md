@@ -251,10 +251,10 @@ An important note on this approach is that you cannot call `commit()` on transac
 Assets can be uploaded using the `client.assets.upload(...)` method.
 
 ```
-client.asset.upload(type: 'file' | image', body: File | Blob | NodeStream): Promise<AssetDocument>
+client.asset.upload(type: 'file' | image', body: File | Blob | Buffer | NodeStream): Promise<AssetDocument>
 ```
 
-Read more about [assets in Sanity](https://sanity.io/docs/http-api/assets)
+👉 Read more about [assets in Sanity](https://sanity.io/docs/http-api/assets)
 
 #### Examples: Uploading assets from Node.js
 ```js
