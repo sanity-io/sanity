@@ -688,6 +688,10 @@
       "path": "components/icons/CircleCheck.js"
     },
     {
+      "implements": "part:@sanity/base/check-icon",
+      "path": "components/icons/Check.js"
+    },
+    {
       "implements": "part:@sanity/base/circle-thin-icon",
       "path": "components/icons/CircleThin.js"
     },
@@ -722,9 +726,14 @@
     {
       "implements": "part:@sanity/base/plugin-icon",
       "path": "components/icons/Plug.js"
-    },{
+    },
+    {
       "implements": "part:@sanity/base/image-area-icon",
       "path": "components/icons/ImageArea.js"
+    },
+    {
+      "implements": "part:@sanity/base/sync-icon",
+      "path": "components/icons/Sync.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
