@@ -9,7 +9,7 @@ export {defaultInputs}
 export {defaultConfig}
 
 export {default as FormBuilder} from './FormBuilder'
-export {default as SlateInput} from './inputs/BlockEditor-slate'
+export {default as BlockEditor} from './inputs/BlockEditor-slate'
 
 // Input component factories
 export {ReferenceInput}
