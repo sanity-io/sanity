@@ -37,7 +37,7 @@
     "eslint-config-prettier": "^2.4.0",
     "eslint-config-sanity": "^3.0.1",
     "file-url": "^2.0.2",
-    "get-it": "^3.0.0",
+    "get-it": "^4.0.0",
     "jest": "^21.0.1",
     "prettier": "^1.6.1",
     "rimraf": "^2.6.1"
