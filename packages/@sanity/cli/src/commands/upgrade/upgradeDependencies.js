@@ -1,5 +1,5 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import semver from 'semver'
 import {padStart} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
@@ -57,14 +57,14 @@ export default async (args, context) => {
 
   // Write new `package.json`
   const manifestPath = path.join(context.workDir, 'package.json')
-  await fsp.writeJson(manifestPath, newManifest, {spaces: 2})
+  await fse.writeJson(manifestPath, newManifest, {spaces: 2})
 
   // Delete `yarn.lock` to ensure we're getting new modules
   // (workaround, shouldnt be needed in the future)
   const yarnLockPath = path.join(context.workDir, 'yarn.lock')
-  const hasLockFile = fsp.existsSync(yarnLockPath) // eslint-disable-line no-sync
+  const hasLockFile = fse.existsSync(yarnLockPath) // eslint-disable-line no-sync
   if (hasLockFile) {
-    await fsp.unlink(yarnLockPath)
+    await fse.unlink(yarnLockPath)
   }
 
   // Run `yarn install`
