@@ -1,9 +1,9 @@
 import crypto from 'crypto'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import deepSortObject from 'deep-sort-object'
 
 function generateConfigChecksum(configPath) {
-  return fsp.readJson(configPath)
+  return fse.readJson(configPath)
     .then(deepSortObject)
     .then(generateChecksum)
 }

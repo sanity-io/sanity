@@ -1,4 +1,4 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import {spawn} from 'child_process'
 import concat from 'simple-concat'
 
@@ -7,10 +7,10 @@ export default inputFile => {
   const sourceFile = `${inputFile}.source`
 
   return new Promise(async (resolve, reject) => {
-    await fsp.rename(inputFile, sourceFile)
+    await fse.rename(inputFile, sourceFile)
 
     const uglify = spawn(uglifyPath, ['-c', '-m', '--', sourceFile])
-    uglify.stdout.pipe(fsp.createWriteStream(inputFile))
+    uglify.stdout.pipe(fse.createWriteStream(inputFile))
 
     let error = ''
     concat(uglify.stderr, (err, buf) => {
@@ -26,7 +26,7 @@ export default inputFile => {
         return reject(new Error(error))
       }
 
-      await fsp.unlink(sourceFile)
+      await fse.unlink(sourceFile)
       return resolve()
     })
   })

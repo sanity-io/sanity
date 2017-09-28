@@ -1,5 +1,5 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import readLocalManifest from './readLocalManifest'
 
 const addPluginToManifest = (sanityDir, pluginName) =>
@@ -9,12 +9,10 @@ const addPluginToManifest = (sanityDir, pluginName) =>
       manifest.plugins.push(pluginName)
     }
     return manifest
-  }).then(manifest =>
-    fsp.writeJson(
-      path.join(sanityDir, 'sanity.json'),
-      manifest,
-      {spaces: 2}
-    )
-  )
+  }).then(manifest => fse.writeJson(
+    path.join(sanityDir, 'sanity.json'),
+    manifest,
+    {spaces: 2}
+  ))
 
 export default addPluginToManifest

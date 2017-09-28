@@ -1,5 +1,5 @@
 const path = require('path')
-const fsp = require('fs-promise')
+const fse = require('fs-extra')
 const promiseProps = require('promise-props-recursive')
 const generateHelpUrl = require('@sanity/generate-help-url')
 const resolveParts = require('@sanity/resolver').resolveParts
@@ -56,7 +56,7 @@ function throwOnErrors(results, options) {
 function getFolderContents(dirs) {
   return promiseProps(dirs.reduce((folders, dir) => {
     if (!folders[dir]) {
-      folders[dir] = fsp.readdir(dir).catch(() => [])
+      folders[dir] = fse.readdir(dir).catch(() => [])
     }
     return folders
   }, {}))
@@ -106,7 +106,7 @@ function checkImplementationMsg(impl) {
 }
 
 function isFileOrDirectoryWithIndex(impl) {
-  return fsp.stat(impl.path).then(stats => {
+  return fse.stat(impl.path).then(stats => {
     return stats.isDirectory()
       ? directoryHasIndex(impl)
       : true
@@ -117,7 +117,7 @@ function isFileOrDirectoryWithIndex(impl) {
 }
 
 function directoryHasIndex(impl) {
-  return fsp.readdir(impl.path).then(dirContent => {
+  return fse.readdir(impl.path).then(dirContent => {
     return includes(dirContent, 'index.js')
       ? true
       : new Error(
