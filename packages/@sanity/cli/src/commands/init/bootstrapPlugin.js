@@ -1,5 +1,5 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import {partialRight} from 'lodash'
 import promiseProps from 'promise-props-recursive'
 import {
@@ -29,7 +29,7 @@ export default function bootstrapPlugin(data, opts = {}) {
     })
   }
 
-  return fsp.ensureDir(targetPath).then(() => promiseProps(collect))
+  return fse.ensureDir(targetPath).then(() => promiseProps(collect))
     .then(templates => {
       if (!data.createConfig) {
         return templates
@@ -61,7 +61,7 @@ export default function bootstrapPlugin(data, opts = {}) {
         return
       }
 
-      fsp.ensureDir(path.join(targetPath, 'src')).then(() =>
+      fse.ensureDir(path.join(targetPath, 'src')).then(() =>
         writeIfNotExists(
           path.join(targetPath, 'src', 'MyComponent.js'),
           "import React from 'react'\n\n"
@@ -73,11 +73,11 @@ export default function bootstrapPlugin(data, opts = {}) {
 }
 
 function readTemplate(file) {
-  return fsp.readFile(path.join(__dirname, 'templates', file))
+  return fse.readFile(path.join(__dirname, 'templates', file))
 }
 
 function writeFileIfNotExists(filePath, content, output) {
-  return fsp.writeFile(filePath, content, {flag: 'wx'})
+  return fse.writeFile(filePath, content, {flag: 'wx'})
     .catch(err => {
       if (err.code === 'EEXIST') {
         output.print(`[WARN] File "${filePath}" already exists, skipping`)

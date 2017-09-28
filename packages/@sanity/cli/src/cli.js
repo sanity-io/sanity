@@ -2,7 +2,7 @@
 import 'babel-polyfill'
 import path from 'path'
 import chalk from 'chalk'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import updateNotifier from 'update-notifier'
 import {resolveProjectRoot} from '@sanity/resolver'
@@ -94,7 +94,7 @@ function checkCwdPresence() {
 }
 
 function hasDevMode() {
-  return fsp.existsSync(path.join(__dirname, '..', 'src'))
+  return fse.existsSync(path.join(__dirname, '..', 'src'))
 }
 
 function resolveRootDir(cwd) {
@@ -118,7 +118,7 @@ function getCoreModulePath(workDir) {
     return pkgPath
   }
 
-  const hasManifest = fsp.existsSync(path.join(workDir, 'sanity.json'))
+  const hasManifest = fse.existsSync(path.join(workDir, 'sanity.json'))
   if (hasManifest && process.argv.indexOf('install') === -1) {
     console.warn(chalk.yellow([
       '@sanity/core not installed in current project',
