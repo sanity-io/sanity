@@ -11,8 +11,21 @@ import ResultView from './ResultView'
 import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
 import SplitPane from 'react-split-pane'
+import encodeQueryString from '../util/encodeQueryString'
 
 const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
+
+const handleCopyUrl = () => {
+  const emailLink = document.querySelector('#vision-query-url')
+  emailLink.select()
+
+  try {
+    document.execCommand('copy')
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Unable to copy to clipboard :(')
+  }
+}
 
 class VisionGui extends React.PureComponent {
   constructor(props) {
@@ -21,13 +34,21 @@ class VisionGui extends React.PureComponent {
     const lastQuery = getState('lastQuery')
     const lastParams = getState('lastParams')
 
+    const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
+    let dataset = getState('dataset', firstDataset)
+
+    if (!this.props.datasets.includes(dataset)) {
+      dataset = firstDataset
+    }
+
     this.subscribers = {}
     this.state = {
       query: lastQuery,
       params: lastParams && tryParseParams(lastParams),
       rawParams: lastParams,
       queryInProgress: false,
-      editorHeight: 100
+      editorHeight: 100,
+      dataset
     }
 
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
@@ -41,10 +62,7 @@ class VisionGui extends React.PureComponent {
   }
 
   componentDidMount() {
-    const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
-    const dataset = getState('dataset', firstDataset)
-    this.context.client.config({dataset})
-
+    this.context.client.config({dataset: this.state.dataset})
     window.document.addEventListener('paste', this.handlePaste)
   }
 
@@ -128,12 +146,14 @@ class VisionGui extends React.PureComponent {
 
     const client = this.context.client
     const paramsError = params instanceof Error && params
+    const url = client.getUrl(client.getDataUrl('listen', encodeQueryString(query, params)))
     storeState('lastQuery', query)
     storeState('lastParams', rawParams)
 
     this.cancelQuery()
 
     this.setState({
+      url,
       listenMutations: [],
       queryInProgress: false,
       listenInProgress: !paramsError && Boolean(query),
@@ -180,10 +200,13 @@ class VisionGui extends React.PureComponent {
       return
     }
 
+    const url = client.getUrl(client.getDataUrl('query', encodeQueryString(query, params)))
     const queryStart = Date.now()
+
     this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
       next: res => this.setState({
         query,
+        url,
         queryTime: res.ms,
         e2eTime: Date.now() - queryStart,
         result: res.result,
@@ -214,7 +237,7 @@ class VisionGui extends React.PureComponent {
 
   render() {
     const {client, components} = this.context
-    const {error, result, query, queryInProgress, listenInProgress, queryTime, e2eTime, listenMutations} = this.state
+    const {error, result, url, query, queryInProgress, listenInProgress, queryTime, e2eTime, listenMutations} = this.state
     const {Button, Select} = components
     const styles = this.context.styles.visionGui
     const dataset = client.config().dataset
@@ -238,6 +261,15 @@ class VisionGui extends React.PureComponent {
                 onChange={this.handleChangeDataset}
               />
             </label>
+          </div>
+          <div className={styles.queryUrlContainer}>
+            {typeof url === 'string' && (
+              <span>
+                Query URL:
+                <input className={styles.queryUrl} readOnly id="vision-query-url" value={url} />
+                <button onClick={handleCopyUrl}>Copy</button>
+              </span>
+            )}
           </div>
           <div className={styles.queryTimingContainer}>
             {typeof queryTime === 'number' && (
