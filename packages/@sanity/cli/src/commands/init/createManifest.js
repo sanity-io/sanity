@@ -1,4 +1,3 @@
-import ghUrl from 'github-url-to-object'
 import sortObject from 'deep-sort-object'
 import versionRanges from '../../versionRanges'
 
@@ -35,14 +34,6 @@ function getCommonManifest(data) {
       type: 'git',
       url: data.gitRemote
     }
-  }
-
-  const gh = (data.gitRemote || '').includes('github.com/') && ghUrl(data.gitRemote)
-  if (gh) {
-    Object.assign(pkg, {
-      homepage: `${gh.https_url}#readme`,
-      bugs: {url: `${gh.https_url}/issues`}
-    })
   }
 
   return pkg

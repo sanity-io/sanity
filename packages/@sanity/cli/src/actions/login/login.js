@@ -4,7 +4,7 @@ import path from 'path'
 import http from 'http'
 import open from 'opn'
 import chalk from 'chalk'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import {parseJson} from '@sanity/util/lib/safeJson'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
@@ -107,7 +107,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
     res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
-    const successPage = await fsp.readFile(path.join(__dirname, 'loginResponse.html'), 'utf8')
+    const successPage = await fse.readFile(path.join(__dirname, 'loginResponse.html'), 'utf8')
     res.end(successPage, () => {
       req.connection.unref()
 
@@ -130,7 +130,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
 
   async function onTokenExchangeError(err, req, res) {
     res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
-    const errorPage = await fsp.readFile(path.join(__dirname, 'loginError.html'), 'utf8')
+    const errorPage = await fse.readFile(path.join(__dirname, 'loginError.html'), 'utf8')
 
     res.end(errorPage.replace(/%error%/g, err.message), 'utf8', () => {
       debug('Error page served')

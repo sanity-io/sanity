@@ -2,7 +2,7 @@ import os from 'os'
 import util from 'util'
 import path from 'path'
 import osenv from 'osenv'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import xdgBasedir from 'xdg-basedir'
 import promiseProps from 'promise-props-recursive'
 import {pick, omit} from 'lodash'
@@ -111,7 +111,7 @@ async function gatherProjectConfigInfo(context) {
   const configLocation = path.join(workDir, 'sanity.json')
 
   try {
-    const config = await fsp.readJson(configLocation)
+    const config = await fse.readJson(configLocation)
     if (!config.api || !config.api.projectId) {
       throw new Error(`Project config (${configLocation}) does not contain required "api.projectId" key`)
     }
