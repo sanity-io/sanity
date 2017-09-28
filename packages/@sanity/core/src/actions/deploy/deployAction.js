@@ -1,6 +1,6 @@
 import path from 'path'
 import zlib from 'zlib'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import tar from 'tar-fs'
 import lazyRequire from '@sanity/util/lib/lazyRequire'
 
@@ -80,7 +80,7 @@ export default async (args, context) => {
 
 async function checkDir(sourceDir) {
   try {
-    const stats = await fsp.stat(sourceDir)
+    const stats = await fse.stat(sourceDir)
     if (!stats.isDirectory()) {
       throw new Error(`Directory ${sourceDir} is not a directory`)
     }
@@ -93,7 +93,7 @@ async function checkDir(sourceDir) {
   }
 
   try {
-    await fsp.stat(path.join(sourceDir, 'index.html'))
+    await fse.stat(path.join(sourceDir, 'index.html'))
   } catch (err) {
     const error = err.code === 'ENOENT' ? new Error([
       `"${sourceDir}/index.html" does not exist -`,

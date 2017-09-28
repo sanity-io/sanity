@@ -1,7 +1,7 @@
 import path from 'path'
 import got from 'got'
 import padStart from 'lodash/padStart'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import prettyMs from 'pretty-ms'
 import linecount from 'linecount/promise'
 import debug from '../../debug'
@@ -39,7 +39,7 @@ export default {
     const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
     const inputStream = isUrl
       ? got.stream(sourceFile)
-      : fsp.createReadStream(sourceFile)
+      : fse.createReadStream(sourceFile)
     const client = apiClient()
 
     const documentCount = isUrl ? 0 : await linecount(sourceFile)

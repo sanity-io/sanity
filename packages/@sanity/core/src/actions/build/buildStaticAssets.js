@@ -1,4 +1,4 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import path from 'path'
 import rimTheRaf from 'rimraf'
 import thenify from 'thenify'
@@ -81,7 +81,7 @@ export default async (args, context) => {
     bundle.stats = stats
 
     if (flags.profile) {
-      await fsp.writeFile(
+      await fse.writeFile(
         path.join(workDir, 'build-stats.json'),
         JSON.stringify(statistics.toJson('verbose'))
       )
@@ -101,7 +101,7 @@ export default async (args, context) => {
     })
 
     // Write index file to output destination
-    await fsp.writeFile(
+    await fse.writeFile(
       path.join(outputDir, 'index.html'),
       `<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`
     )
@@ -133,7 +133,7 @@ export default async (args, context) => {
     }
 
     // Copy static assets (from /static folder) to output dir
-    await fsp.copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
+    await fse.copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
   } catch (err) {
     spin.fail()
     throw err

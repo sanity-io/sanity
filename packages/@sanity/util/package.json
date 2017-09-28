@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/sanity-io/util#readme",
   "dependencies": {
-    "fs-promise": "^2.0.0",
+    "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "resolve-from": "^4.0.0"
   },

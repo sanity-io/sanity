@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console, no-process-env, no-process-exit */
 const path = require('path')
-const fsp = require('fs-promise')
+const fse = require('fs-extra')
 const chalk = require('chalk')
 const publish = require('in-publish')
 const sanityCheck = require('./sanityCheck')
@@ -39,7 +39,7 @@ if (showVersion) {
   process.exit()
 }
 
-fsp.readJson(manifestDir)
+fse.readJson(manifestDir)
   .catch(err => {
     console.error(chalk.red(
       `${tag} Failed to read "${manifestDir}":\n${err.message}`

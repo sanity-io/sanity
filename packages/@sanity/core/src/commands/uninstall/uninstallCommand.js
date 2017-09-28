@@ -1,4 +1,4 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import path from 'path'
 import {without} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
@@ -54,7 +54,7 @@ async function removeConfiguration(workDir, fullName, shortName, prompt) {
 async function removeFromSanityManifest(workDir, pluginName) {
   const manifest = await readLocalManifest(workDir, 'sanity.json')
   manifest.plugins = without(manifest.plugins || [], pluginName)
-  return fsp.writeJson(path.join(workDir, 'sanity.json'), manifest, {spaces: 2})
+  return fse.writeJson(path.join(workDir, 'sanity.json'), manifest, {spaces: 2})
 }
 
 function deleteConfiguration(configPath, userConfirmed) {
@@ -62,7 +62,7 @@ function deleteConfiguration(configPath, userConfirmed) {
     return Promise.resolve() // Leave the configuration in place
   }
 
-  return fsp.unlink(configPath)
+  return fse.unlink(configPath)
 }
 
 function promptOnAlteredConfiguration(plugin, sameChecksum, prompt) {

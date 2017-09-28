@@ -1,5 +1,5 @@
 const spawn = require('child_process').spawn
-const fsp = require('fs-promise')
+const fse = require('fs-extra')
 const path = require('path')
 
 module.exports = async args => {
@@ -10,7 +10,7 @@ module.exports = async args => {
     throw new Error('SCRIPT must be provided. `sanity exec <script>`')
   }
 
-  if (!await fsp.exists(scriptPath)) {
+  if (!await fse.exists(scriptPath)) {
     throw new Error(`${scriptPath} does not exist`)
   }
 
