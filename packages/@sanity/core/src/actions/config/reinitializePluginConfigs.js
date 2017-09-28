@@ -1,6 +1,6 @@
 import path from 'path'
 import pathExists from 'path-exists'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import resolveTree from '@sanity/resolver'
 import normalizePluginName from '../../util/normalizePluginName'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
@@ -39,7 +39,7 @@ export default async function reinitializePluginConfigs(options, flags = {}) {
       output.print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
     }
 
-    return fsp.copy(srcPath, dstPath).then(() => plugin)
+    return fse.copy(srcPath, dstPath).then(() => plugin)
   }
 
   function warnOnDifferingChecksum(plugin) {

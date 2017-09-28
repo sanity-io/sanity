@@ -1,5 +1,5 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import split from 'split2'
 import prettyMs from 'pretty-ms'
 import streamDataset from '../../actions/dataset/streamDataset'
@@ -48,7 +48,7 @@ export default {
     streamDataset(client, dataset)
       .pipe(split())
       .pipe(skipSystemDocuments)
-      .pipe(outputPath ? fsp.createWriteStream(outputPath) : process.stdout)
+      .pipe(outputPath ? fse.createWriteStream(outputPath) : process.stdout)
       .on('error', err => output.error(err))
       .on('close', () => {
         if (outputPath) {
@@ -70,7 +70,7 @@ async function getOutputPath(destination, dataset) {
 
   let dstStats = null
   try {
-    dstStats = await fsp.stat(dstPath)
+    dstStats = await fse.stat(dstPath)
   } catch (err) {
     // Do nothing
   }
@@ -84,7 +84,7 @@ async function getOutputPath(destination, dataset) {
       ? path.dirname(dstPath)
       : dstPath
 
-    await fsp.mkdirs(createPath)
+    await fse.mkdirs(createPath)
   }
 
   return looksLikeFile

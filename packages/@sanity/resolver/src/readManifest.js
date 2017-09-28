@@ -1,5 +1,5 @@
 /* eslint-disable no-sync, no-process-env */
-import fsp from 'mz/fs'
+import fse from 'fs-extra'
 import path from 'path'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {reduceConfig} from '@sanity/util'
@@ -7,7 +7,7 @@ import validateManifest from './validateManifest'
 
 function readManifestSync(manifestPath, options) {
   try {
-    return parseManifest(fsp.readFileSync(manifestPath), options)
+    return parseManifest(fse.readFileSync(manifestPath), options)
   } catch (err) {
     return handleManifestReadError(err, options)
   }
@@ -44,7 +44,7 @@ function readManifest(opts = {}) {
     return readManifestSync(manifestPath, options)
   }
 
-  return fsp.readFile(manifestPath, {encoding: 'utf8'})
+  return fse.readFile(manifestPath, {encoding: 'utf8'})
     .then(raw => parseManifest(raw, options))
     .catch(err => handleManifestReadError(err, options))
 }

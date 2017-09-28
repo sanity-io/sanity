@@ -1,4 +1,4 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import path from 'path'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
@@ -45,18 +45,18 @@ async function copyConfiguration(rootDir, fullName, shortName, output) {
   const configPath = path.join(rootDir, 'node_modules', fullName, 'config.dist.json')
   const dstPath = path.join(rootDir, 'config', `${shortName}.json`)
 
-  if (!fsp.existsSync(configPath)) {
+  if (!fse.existsSync(configPath)) {
     return
   }
 
   // Configuration exists, check if user has local configuration already
-  if (fsp.existsSync(dstPath)) {
+  if (fse.existsSync(dstPath)) {
     const distChecksum = await generateConfigChecksum(configPath)
     const sameChecksum = await hasSameChecksum(rootDir, fullName, distChecksum)
     warnOnDifferentChecksum(shortName, sameChecksum, output.print)
   } else {
     // Destination file does not exist, copy
-    await fsp.copy(configPath, dstPath)
+    await fse.copy(configPath, dstPath)
     const checksum = await generateConfigChecksum(configPath)
     await setChecksum(rootDir, fullName, checksum)
   }

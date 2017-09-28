@@ -37,8 +37,8 @@
   "dependencies": {
     "@sanity/generate-help-url": "^0.113.7",
     "@sanity/util": "^0.113.7",
+    "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
-    "mz": "^2.4.0",
     "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"
   }
