@@ -1,5 +1,5 @@
-import fsp from 'fs-promise'
 import path from 'path'
+import fse from 'fs-extra'
 import gitConfigLocal from 'gitconfiglocal'
 import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
@@ -25,7 +25,7 @@ export default (workDir, {isPlugin, context}) => {
 
 const getGitConfig = thenify(gitConfigLocal)
 function resolveGitRemote(cwd) {
-  return fsp.stat(path.join(cwd, '.git'))
+  return fse.stat(path.join(cwd, '.git'))
     .then(() => getGitConfig(cwd))
     .then(cfg => cfg.remote && cfg.remote.origin && cfg.remote.origin.url)
     .catch(() => null)
@@ -65,7 +65,7 @@ async function getProjectDescription({isSanityRoot, isPlugin, outputDir}) {
   // Try to grab a project description from a standard Github-generated readme
   try {
     const readmePath = path.join(outputDir, 'README.md')
-    const readme = await fsp.readFile(readmePath, {encoding: 'utf8'})
+    const readme = await fse.readFile(readmePath, {encoding: 'utf8'})
     const match = readme.match(/^# .*?\n+(\w.*?)(?:$|\n)/)
     return ((match && match[1]) || '').replace(/\.$/, '') || ''
   } catch (err) {

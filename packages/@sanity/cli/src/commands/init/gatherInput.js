@@ -1,8 +1,7 @@
 import os from 'os'
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import validateNpmPackageName from 'validate-npm-package-name'
-import isGitUrl from 'is-git-url'
 
 export default async function gatherInput(prompt, defaults, options = {}) {
   const {isPlugin, workDir, sluggedName} = options
@@ -20,36 +19,20 @@ export default async function gatherInput(prompt, defaults, options = {}) {
         return validForNewPackages ? true : errors[0]
       }
     })
+
+    answers.description = await prompt.single({
+      type: 'input',
+      message: `${thing} description:`,
+      default: defaults.description
+    })
   }
 
-  answers.description = await prompt.single({
-    type: 'input',
-    message: `${thing} description:`,
-    default: defaults.description
-  })
+  answers.description = answers.description || defaults.description
+  answers.gitRemote = defaults.gitRemote
+  answers.author = defaults.author
+  answers.license = 'UNLICENSED'
 
-  answers.gitRemote = await prompt.single({
-    type: 'input',
-    message: 'Git repository URL:',
-    default: defaults.gitRemote,
-    validate: url => {
-      return (url ? isGitUrl(url) : true) || 'Invalid git url'
-    }
-  })
-
-  answers.author = await prompt.single({
-    type: 'input',
-    message: 'Author:',
-    default: defaults.author
-  })
-
-  answers.license = await prompt.single({
-    type: 'input',
-    message: 'License:',
-    default: 'UNLICENSED'
-  })
-
-  const workDirIsEmpty = (await fsp.readdir(workDir)).length === 0
+  const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
 
   if (!isPlugin) {
     answers.outputPath = await prompt.single({
@@ -96,7 +79,7 @@ async function validateEmptyPath(dir) {
 }
 
 function pathIsEmpty(dir) {
-  return fsp.readdir(dir)
+  return fse.readdir(dir)
     .then(content => content.length === 0)
     .catch(err => {
       if (err.code === 'ENOENT') {

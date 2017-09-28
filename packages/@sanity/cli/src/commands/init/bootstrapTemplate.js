@@ -1,5 +1,5 @@
 import path from 'path'
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import {union} from 'lodash'
 import debug from '../../debug'
 import versionRanges from '../../versionRanges'
@@ -25,7 +25,7 @@ export default async (opts, context) => {
   // Copy template files
   debug('Copying files from template "%s" to "%s"', opts.template, outputDir)
   let spinner = output.spinner('Bootstrapping files from template').start()
-  await fsp.copy(sourceDir, outputDir, {
+  await fse.copy(sourceDir, outputDir, {
     overwrite: false,
     errorOnExist: true
   })
@@ -81,7 +81,7 @@ export default async (opts, context) => {
   async function writeFileIfNotExists(fileName, content) {
     const filePath = path.join(outputDir, fileName)
     try {
-      await fsp.writeFile(filePath, content, {flag: 'wx'})
+      await fse.writeFile(filePath, content, {flag: 'wx'})
     } catch (err) {
       if (err.code === 'EEXIST') {
         output.print(`[WARN] File "${filePath}" already exists, skipping`)
