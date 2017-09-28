@@ -1,11 +1,12 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 
 export function loadJsonSync(file, defaultVal) {
-  return fsp.readJsonSync(file, {throws: false}) || defaultVal
+  // eslint-disable-next-line no-sync
+  return fse.readJsonSync(file, {throws: false}) || defaultVal
 }
 
-export async function loadJson(file, defaultVal) {
-  return fsp.readJson(file).catch(() => defaultVal)
+export function loadJson(file, defaultVal) {
+  return fse.readJson(file).catch(() => defaultVal)
 }
 
 export function parseJson(json, defaultVal) {

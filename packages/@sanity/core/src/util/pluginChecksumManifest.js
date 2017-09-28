@@ -1,4 +1,4 @@
-import fsp from 'fs-promise'
+import fse from 'fs-extra'
 import pathExists from 'path-exists'
 import path from 'path'
 import normalizePluginName from './normalizePluginName'
@@ -10,13 +10,13 @@ const baseChecksums = {
 export function setChecksum(sanityPath, pluginName, checksum) {
   return getChecksums(sanityPath).then(checksums => {
     checksums[pluginName] = checksum
-    return fsp.writeJson(getChecksumsPath(sanityPath), checksums, {spaces: 2})
+    return fse.writeJson(getChecksumsPath(sanityPath), checksums, {spaces: 2})
   })
 }
 
 export function setChecksums(sanityPath, checksums) {
   const sums = Object.assign({}, baseChecksums, checksums)
-  return fsp.writeJson(getChecksumsPath(sanityPath), sums, {spaces: 2})
+  return fse.writeJson(getChecksumsPath(sanityPath), sums, {spaces: 2})
 }
 
 export function getChecksum(sanityPath, pluginName) {
@@ -24,7 +24,7 @@ export function getChecksum(sanityPath, pluginName) {
 }
 
 export function getChecksums(sanityPath) {
-  return fsp.readJson(getChecksumsPath(sanityPath))
+  return fse.readJson(getChecksumsPath(sanityPath))
     .catch(() => baseChecksums)
 }
 
