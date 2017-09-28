@@ -9,6 +9,7 @@ export {defaultInputs}
 export {defaultConfig}
 
 export {default as FormBuilder} from './FormBuilder'
+export {default as FormBuilderContext} from './FormBuilderContext'
 export {default as BlockEditor} from './inputs/BlockEditor-slate'
 
 // Input component factories
