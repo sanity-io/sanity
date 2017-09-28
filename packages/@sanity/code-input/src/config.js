@@ -1,14 +1,23 @@
-// Todo: should be made configurable from outside
-
 export const SUPPORTED_LANGUAGES = [
-  {title: 'JSX', value: 'jsx'},
-  {title: 'JavaScript', value: 'javascript'},
-  {title: 'JSON', value: 'json'},
-  {title: 'Markdown', value: 'markdown'},
+  {title: 'Batch file', value: 'batchfile'},
   {title: 'CSS', value: 'css'},
   {title: 'HTML', value: 'html'},
-  {title: 'text', value: 'text'}
+  {title: 'JavaScript', value: 'javascript'},
+  {title: 'JSON', value: 'json'},
+  {title: 'JSX', value: 'jsx'},
+  {title: 'LaTeX', value: 'latex'},
+  {title: 'Markdown', value: 'markdown'},
+  {title: 'Matlab', value: 'matlab'},
+  {title: 'PHP', value: 'php'},
+  {title: 'sh', value: 'sh'},
+  {title: 'Plain text', value: 'text'}
 ]
+
+export const SUPPORTED_THEMES = [
+  'github', 'monokai', 'terminal', 'tomorrow'
+]
+
+export const DEFAULT_THEME = 'tomorrow'
 
 export const ACE_SET_OPTIONS = {
   useSoftTabs: true,
