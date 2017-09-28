@@ -39,7 +39,8 @@ function resolveFileAssetPath(typeDef) {
   return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
 }
 
-export default function guessPreviewFields(objectTypeDef) {
+export default function guessPreviewFields(rawObjectTypeDef) {
+  const objectTypeDef = {fields: [], ...rawObjectTypeDef}
 
   const stringFieldNames = objectTypeDef.fields
     .filter(field => field.type === 'string')
