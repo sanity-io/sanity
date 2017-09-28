@@ -8,6 +8,7 @@ import * as patches from '../utils/patches'
 import {FormBuilder, defaultConfig} from '..'
 
 export {default as WithFormBuilderValue} from './WithFormBuilderValue'
+export {default as FormBuilderContext} from '../FormBuilderContext'
 export {default as withDocument} from '../utils/withDocument'
 export {checkout} from './formBuilderValueStore'
 export {default as PatchEvent} from '../PatchEvent'
