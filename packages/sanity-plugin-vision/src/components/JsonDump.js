@@ -46,9 +46,9 @@ export default function JsonDump(props) {
 
   return (
     <code>
-      {props.data.map(row =>
-        <JsonBlock key={row._rev || row.eventId} data={row} />
-      )}
+      {props.data.map((row, i) => (
+        <JsonBlock key={row._id || row.eventId || i} data={row} />
+      ))}
     </code>
   )
 }
