@@ -151,6 +151,28 @@
   font-weight: bold;
 }
 
+.queryUrlContainer {
+  flex-grow: 1;
+  text-align: right;
+}
+
+.queryUrlContainer > span {
+  font-size: 0.8em;
+}
+
+.queryUrl {
+  composes: queryTiming;
+  margin-left: 5px;
+  font-size: 1em;
+  max-width: 50%;
+  max-height: 48px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 0;
+  background-color: transparent;
+}
+
 /* BASICS */
 
 :global(.CodeMirror) {
