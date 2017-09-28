@@ -7,18 +7,32 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import fieldsetStyles from './Fieldset.css'
+import createHighlightMarkers from './createHighlightMarkers'
+import {
+  ACE_EDITOR_PROPS,
+  ACE_SET_OPTIONS,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_THEMES,
+  DEFAULT_THEME
+} from './config'
 
-import 'brace/mode/text'
+import 'brace/mode/batchfile'
+import 'brace/mode/css'
+import 'brace/mode/html'
 import 'brace/mode/javascript'
 import 'brace/mode/json'
 import 'brace/mode/jsx'
+import 'brace/mode/latex'
 import 'brace/mode/markdown'
-import 'brace/mode/css'
-import 'brace/mode/html'
+import 'brace/mode/matlab'
+import 'brace/mode/php'
+import 'brace/mode/sh'
+import 'brace/mode/text'
 
+import 'brace/theme/github'
+import 'brace/theme/monokai'
+import 'brace/theme/terminal'
 import 'brace/theme/tomorrow'
-import {ACE_EDITOR_PROPS, ACE_SET_OPTIONS, SUPPORTED_LANGUAGES} from './config'
-import createHighlightMarkers from './createHighlightMarkers'
 
 function compareNumbers(numA, numB) {
   return numA - numB
@@ -60,7 +74,6 @@ export default class CodeInput extends PureComponent {
   handleCodeChange = code => {
     const {type, onChange} = this.props
     const path = ['code']
-
     const fixedLanguage = get(type, 'options.language')
 
     onChange(PatchEvent.from([
@@ -133,13 +146,24 @@ export default class CodeInput extends PureComponent {
     ]))
   }
 
+  getLanguageAlternatives() {
+    return get(this.props.type, 'options.languageAlternatives') || SUPPORTED_LANGUAGES
+  }
+
+  getTheme() {
+    const preferredTheme = get(this.props.type, 'options.theme')
+    return (preferredTheme && SUPPORTED_THEMES.find(theme => theme === preferredTheme))
+      ? preferredTheme
+      : DEFAULT_THEME
+  }
+
   renderEditor = () => {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
     return (
       <AceEditor
         mode={(value && value.language) || fixedLanguage || 'text'}
-        theme="tomorrow"
+        theme={this.getTheme()}
         width="100%"
         onChange={this.handleCodeChange}
         name={`${this._inputId}__aceEditor`}
@@ -155,6 +179,7 @@ export default class CodeInput extends PureComponent {
 
   render() {
     const {value, type, level} = this.props
+    const languages = this.getLanguageAlternatives()
 
     if (has(type, 'options.language')) {
       return (
@@ -164,21 +189,21 @@ export default class CodeInput extends PureComponent {
       )
     }
 
-    const currentLanguage = (value && value.language)
-      ? SUPPORTED_LANGUAGES.find(item => item.value === value.language)
-      : null
+    const selectedLanguage = (value && value.language)
+      ? this.getLanguageAlternatives().find(item => item.value === value.language)
+      : undefined
 
+    if (!selectedLanguage) {
+      languages.unshift({title: 'Select language'})
+    }
     const languageField = type.fields.find(field => field.name === 'language')
-    const languages = currentLanguage
-      ? SUPPORTED_LANGUAGES
-      : [{title: 'Select language'}].concat(SUPPORTED_LANGUAGES)
 
     return (
       <Fieldset legend={type.title} description={type.description}>
         <FormField level={level + 1} label={languageField.type.title}>
           <DefaultSelect
             onChange={this.handleLanguageChange}
-            value={currentLanguage || undefined}
+            value={selectedLanguage}
             items={languages}
           />
         </FormField>
