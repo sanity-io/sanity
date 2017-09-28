@@ -152,10 +152,19 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
 
   render() {
     const {typeName, documentId, schema, children: Component} = this.props
+    const {isLoading, isSaving, value, deletedSnapshot} = this.state
+
     return (
-      <FormBuilderContext schema={schema} patchChannel={this.patchChannel}>
+      <FormBuilderContext
+        value={value}
+        schema={schema}
+        patchChannel={this.patchChannel}
+      >
         <Component
-          {...this.state}
+          value={value}
+          isLoading={isLoading}
+          isSaving={isSaving}
+          deletedSnapshot={deletedSnapshot}
           documentId={documentId}
           type={schema.get(typeName)}
           onChange={this.handleChange}
