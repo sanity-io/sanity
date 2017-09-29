@@ -2,7 +2,7 @@ function formatSubtitle(book) {
   if (book.authorName && book.publicationYear) {
     return `By ${book.authorName} (${book.publicationYear})`
   }
-  return book.authorName ? `By ${book.authorName}` : book.publicationYear
+  return book.authorName ? `By ${book.authorName}` : String(book.publicationYear || '')
 }
 
 export default {
