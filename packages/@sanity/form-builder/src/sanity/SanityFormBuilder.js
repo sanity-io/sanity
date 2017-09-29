@@ -1,36 +1,36 @@
+// @flow
 import React from 'react'
-import schema from 'part:@sanity/base/schema'
+import SanityFormBuilderContext from './SanityFormBuilderContext'
+import {FormBuilderInput} from '../FormBuilderInput'
 
-import inputResolver from './inputResolver/inputResolver'
-import SanityPreview from 'part:@sanity/base/preview'
-import * as patches from '../utils/patches'
-
-import {FormBuilder, defaultConfig} from '..'
-
-export {default as WithFormBuilderValue} from './WithFormBuilderValue'
-export {default as FormBuilderContext} from '../FormBuilderContext'
-export {default as withDocument} from '../utils/withDocument'
-export {checkout} from './formBuilderValueStore'
-export {default as PatchEvent} from '../PatchEvent'
-export {FormBuilderInput} from '../FormBuilderInput'
-
-export {patches}
-export {BlockEditor} from '..'
-
-function previewResolver() {
-  return SanityPreview
+type PatchChannel = {
+  subscribe: () => () => {},
+  receivePatches: (patches: Array<*>) => void
 }
 
-export default function SanityFormBuilder(props) {
+type Props = {
+  value: ?any,
+  schema: any,
+  type: Object,
+  patchChannel: PatchChannel,
+  onChange: () => {}
+}
+
+export default function SanityFormBuilder(props: Props) {
   return (
-    <FormBuilder
-      {...props}
-      schema={schema}
-      resolveInputComponent={inputResolver}
-      resolvePreviewComponent={previewResolver}
-    />)
+    <SanityFormBuilderContext
+      value={props.value}
+      schema={props.schema}
+      patchChannel={props.patchChannel}
+    >
+      <FormBuilderInput
+        type={props.type}
+        onChange={props.onChange}
+        level={0}
+        value={props.value}
+      />
+    </SanityFormBuilderContext>
+  )
 }
 
-SanityFormBuilder.createPatchChannel = FormBuilder.createPatchChannel
-
-export {inputResolver, defaultConfig}
+SanityFormBuilder.createPatchChannel = SanityFormBuilderContext.createPatchChannel

@@ -2,26 +2,25 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {FormBuilderInput} from './FormBuilderInput'
 import Schema from '@sanity/schema'
-import pubsub from 'nano-pubsub'
 import FormBuilderContext from './FormBuilderContext'
 
-function createPatchChannel() {
-  const channel = pubsub()
-  return {onPatch: channel.subscribe, receivePatches: channel.publish}
-}
-
+// Todo: consider deprecating this in favor of <FormBuilderContext ...><FormBuilderInput .../></FormBuilderContext>
 export default class FormBuilder extends React.Component {
-  static createPatchChannel = createPatchChannel;
+  static createPatchChannel = FormBuilderContext.createPatchChannel;
   static propTypes = {
     value: PropTypes.any,
     schema: PropTypes.instanceOf(Schema).isRequired,
-    type: PropTypes.object,
-    onChange: PropTypes.func,
+    type: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
     patchChannel: PropTypes.shape({
       onPatch: PropTypes.func
-    }),
-    resolveInputComponent: PropTypes.func,
-    resolvePreviewComponent: PropTypes.func
+    }).isRequired,
+    resolveInputComponent: PropTypes.func.isRequired,
+    resolvePreviewComponent: PropTypes.func.isRequired
+  }
+
+  static defaultProps = {
+    value: undefined,
   }
 
   render() {
