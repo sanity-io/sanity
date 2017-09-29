@@ -4,13 +4,42 @@ export function isPastedFromWord(html) {
 
 function cleanUpWordDocument(html) {
 
-  const unwantedWordDocumentPaths = ['/html/text()', '/html/head/text()', '/html/body/text()', '//span[not(text())]', '//p[not(text())]', '//comment()', "//*[name()='o:p']", '//style', '//xml', '//script', '//meta', '//link',]
+  const unwantedWordDocumentPaths = [
+    '/html/text()',
+    '/html/head/text()',
+    '/html/body/text()',
+    '//p[not(.//text())]',
+    '//span[not(.//text())]',
+    '//comment()',
+    "//*[name()='o:p']",
+    '//style',
+    '//xml',
+    '//script',
+    '//meta',
+    '//link'
+  ]
+
+  const mappedPaths = [
+    "//p[@class='MsoTitle']",
+    "//p[@class='MsoToaHeading']",
+    "//p[@class='MsoSubtitle']",
+    "//span[@class='MsoSubtleEmphasis']",
+    "//span[@class='MsoIntenseEmphasis']",
+  ]
+
+  const elementMap = {
+    MsoTitle: 'h1',
+    MsoToaHeading: 'h2',
+    MsoSubtitle: 'h5',
+    MsoSubtleEmphasis: 'span:em',
+    MsoIntenseEmphasis: 'span:em:strong'
+  }
 
   const doc = new DOMParser().parseFromString(html, 'text/html')
 
   // Remove cruft
   const unwantedNodes = document.evaluate(
-    `${unwantedWordDocumentPaths.join('|')}`,
+    unwantedWordDocumentPaths.join('|'),
     doc,
     null,
     XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
@@ -21,20 +50,38 @@ function cleanUpWordDocument(html) {
     unwanted.parentNode.removeChild(unwanted)
   }
 
-  // Transform titles into H1s
-  const titleElments = document.evaluate(
-    "//p[@class='MsoTitle']",
+  // Transform mapped elements into what they should be mapped to
+  const mappedElements = document.evaluate(
+    mappedPaths.join('|'),
     doc,
     null,
     XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
     null
   )
-  for (let i = titleElments.snapshotLength - 1; i >= 0; i--) {
-    const title = titleElments.snapshotItem(i)
-    const h1 = document.createElement('h1')
-    h1.appendChild(new Text(title.textContent))
-    title.parentNode.replaceChild(h1, title)
+  for (let i = mappedElements.snapshotLength - 1; i >= 0; i--) {
+    const mappedElm = mappedElements.snapshotItem(i)
+    const mapToTag = elementMap[mappedElm.className]
+    const text = new Text(mappedElm.textContent)
+    let newElm
+    if (mapToTag.includes(':')) {
+      const tags = mapToTag.split(':')
+      const parentElement = document.createElement(tags[0])
+      let parent = parentElement
+      let child
+      tags.slice(1).forEach(tag => {
+        child = document.createElement(tag)
+        parent.appendChild(child)
+        parent = child
+      })
+      child.appendChild(text)
+      newElm = parentElement
+    } else {
+      newElm = document.createElement(mapToTag)
+      newElm.appendChild(text)
+    }
+    mappedElm.parentNode.replaceChild(newElm, mappedElm)
   }
+
   return (new XMLSerializer()).serializeToString(doc)
 }
 
