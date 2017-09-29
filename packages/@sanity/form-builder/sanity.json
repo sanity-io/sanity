@@ -83,7 +83,7 @@
     },
     {
       "implements": "part:@sanity/form-builder",
-      "path": "sanity/SanityFormBuilder.js"
+      "path": "sanity/index.js"
     }
   ]
 }

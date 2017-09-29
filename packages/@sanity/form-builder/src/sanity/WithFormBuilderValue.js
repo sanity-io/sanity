@@ -1,12 +1,16 @@
 // @flow
-// Connects the FormBuilder with various sanity roles
+
+// Provides a utility component for easy editing a value of a schema type with the form builder
+// Manages server sync, mutations, etc. and passes a value + onChange to a child component
+// Note: Experimental, and likely to change in the future
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import {throttle} from 'lodash'
 import subscriptionManager from '../utils/subscriptionManager'
 import PatchEvent from '../PatchEvent'
 import {checkout} from './formBuilderValueStore'
-import FormBuilderContext from '../FormBuilderContext'
+import SanityFormBuilderContext from './SanityFormBuilderContext'
 
 type State = {
   isLoading: boolean,
@@ -21,6 +25,7 @@ type Props = {
   schema: Object,
   children: Function
 }
+
 function getInitialState() : State {
   return {
     isLoading: true,
@@ -41,7 +46,7 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
   subscriptions = subscriptionManager('documentEvents', 'commit')
 
   state = getInitialState();
-  patchChannel = FormBuilderContext.createPatchChannel()
+  patchChannel = SanityFormBuilderContext.createPatchChannel()
 
   checkoutDocument(documentId : string) {
     this.document = checkout(documentId)
@@ -153,9 +158,8 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
   render() {
     const {typeName, documentId, schema, children: Component} = this.props
     const {isLoading, isSaving, value, deletedSnapshot} = this.state
-
     return (
-      <FormBuilderContext
+      <SanityFormBuilderContext
         value={value}
         schema={schema}
         patchChannel={this.patchChannel}
@@ -171,7 +175,7 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
           onDelete={this.handleDelete}
           onCreate={this.handleCreate}
         />
-      </FormBuilderContext>
+      </SanityFormBuilderContext>
     )
   }
 }
