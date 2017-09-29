@@ -19,6 +19,7 @@ import copyDocument from '../utils/copyDocument'
 import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
+import schema from 'part:@sanity/base/schema'
 import {debounce} from 'lodash'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
@@ -413,6 +414,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           </div>
           <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
             <FormBuilder
+              schema={schema}
               patchChannel={patchChannel}
               value={draft || published || {_type: type.name}}
               type={type}
