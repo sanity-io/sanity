@@ -4,7 +4,20 @@ export function isPastedFromWord(html) {
 
 function cleanUpWordDocument(html) {
 
-  const unwantedWordDocumentPaths = ['/html/text()', '/html/head/text()', '/html/body/text()', '//span[not(text())]', '//p[not(text())]', '//comment()', "//*[name()='o:p']", '//style', '//xml', '//script', '//meta', '//link',]
+  const unwantedWordDocumentPaths = [
+    '/html/text()',
+    '/html/head/text()',
+    '/html/body/text()',
+    '//p[not(.//text())]',
+    '//span[not(.//text())]',
+    '//comment()',
+    "//*[name()='o:p']",
+    '//style',
+    '//xml',
+    '//script',
+    '//meta',
+    '//link'
+  ]
 
   const doc = new DOMParser().parseFromString(html, 'text/html')
 
@@ -20,7 +33,6 @@ function cleanUpWordDocument(html) {
     const unwanted = unwantedNodes.snapshotItem(i)
     unwanted.parentNode.removeChild(unwanted)
   }
-
   // Transform titles into H1s
   const titleElments = document.evaluate(
     "//p[@class='MsoTitle']",
