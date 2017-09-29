@@ -1,6 +1,3 @@
-import React from 'react'
-import customResolver from 'part:@sanity/form-builder/input-resolver?'
-
 import ArrayInput from 'part:@sanity/form-builder/input/array?'
 import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
 import EmailInput from 'part:@sanity/form-builder/input/email?'
@@ -40,7 +37,21 @@ const typeInputMap = {
   url: UrlInput
 }
 
+function getExport(obj) {
+  return obj && obj.__esModule ? obj.default : obj
+}
+
+// this is needed to avoid errors due to circular imports
+// this can happen if a custom input component imports and tries
+// to access something from the form-builder immediately (top-level)
+let getCustomResolver = () => {
+  const resolver = getExport(require('part:@sanity/form-builder/input-resolver?'))
+  getCustomResolver = () => resolver
+  return resolver
+}
 export default function inputResolver(type) {
+  const customResolver = getCustomResolver()
+
   const custom = customResolver && customResolver(type)
   if (custom) {
     return custom

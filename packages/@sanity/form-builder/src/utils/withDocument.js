@@ -31,7 +31,7 @@ export default function withDocument(ComposedComponent: any) {
       this.unsubscribe()
     }
     render() {
-      return <ComposedComponent document={this.state.document} {...this.props}/>
+      return <ComposedComponent document={this.state.document} {...this.props} />
     }
   }
 }
