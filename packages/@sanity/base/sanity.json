@@ -740,6 +740,10 @@
       "path": "components/icons/Sync.js"
     },
     {
+      "implements": "part:@sanity/base/time-icon",
+      "path": "components/icons/Time.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },

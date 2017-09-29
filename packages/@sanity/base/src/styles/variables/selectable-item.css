@@ -20,6 +20,7 @@
     Selected Item
   */
   --selected-item-color: color(var(--brand-primary) lightness(- 20%) a(10%));
+  --selected-item-color--hard: color(var(--brand-primary) lightness(- 20%) a(90%));
   --selected-item-color--inverted: var(--selectable-item-text-color);
   --selected-item-color-hover: color(var(--brand-primary) lightness(- 20%) a(10%));
   --selected-item-color-hover--inverted: var(--selectable-item-text-color);

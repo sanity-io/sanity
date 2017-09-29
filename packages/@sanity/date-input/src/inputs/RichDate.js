@@ -1,17 +1,15 @@
 import moment from 'moment-timezone'
-import {uniqueId} from 'lodash'
+import {get} from 'lodash'
 import generateHelpUrl from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 import React from 'react'
-import Kronos from 'react-kronos'
 import FormField from 'part:@sanity/components/formfields/default'
 import styles from './RichDate.css'
 import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker-cssmodules.css'
+import DefaultSelect from 'part:@sanity/components/selects/default'
 
-const KRONOS_STYLES = {
-  input: styles.datepicker,
-  kronos: styles.kronos
-}
 const DEPRECATION_WARNING = (
   <div className={styles.deprecationWarning}>
     This field has <code>type: {'date'}</code>, which is deprecated and should be changed to
@@ -29,17 +27,28 @@ const DEPRECATION_WARNING = (
 
 export default class RichDateInput extends React.PureComponent {
 
-  inputId = uniqueId('RichDateInput')
+  getOptions(props) {
+    const options = props.type.options
+    options.dateFormat = options.dateFormat || 'YYYY-MM-DD'
+    options.timeFormat = options.timeFormat || 'HH:mm'
+    options.inputUtc = options.inputUtc === true
+    options.timeStep = options.timeStep || 15
+    options.calendarTodayLabel = options.calendarTodayLabel || 'Today'
+    options.inputDate = options.hasOwnProperty('inputDate') ? options.inputDate : true
+    options.inputTime = options.hasOwnProperty('inputTime') ? options.inputTime : true
+    options.placeholderDate = options.placeholderDate || moment().format(options.dateFormat)
+    options.placeholderTime = options.placeholderTime || moment().format(options.timeFormat)
+    return options
+  }
 
   // If schema options sez input is UTC
   // we're not storing anything else in order to avoid confusion
   assembleOutgoingValue(newMoment) {
     const {type} = this.props
-
     if (!newMoment || !newMoment.isValid()) {
       return undefined
     }
-    if (this.optionsWithDefaults().inputUtc) {
+    if (get(type, 'options.inputUtc') === true) {
       // Only store non-localized data
       return {
         _type: type.name,
@@ -61,74 +70,100 @@ export default class RichDateInput extends React.PureComponent {
     onChange(PatchEvent.from(assembledValue ? set(assembledValue) : unset()))
   }
 
-  editableMoment(currentValue) {
-    if (!currentValue) {
-      return null
-    }
-    if (this.optionsWithDefaults().inputUtc) {
-      return currentValue.utc ? moment.utc(currentValue.utc) : moment.utc()
-    }
-    return currentValue.local ? moment(currentValue.local) : moment()
+  handleTimeChange = nextValue => {
+    const {onChange} = this.props
+    const assembledValue = this.assembleOutgoingValue(nextValue.value)
+    onChange(PatchEvent.from(assembledValue ? set(assembledValue) : unset()))
   }
 
-  optionsWithDefaults() { // eslint-disable-line complexity
-    const options = this.props.type.options || {}
-    options.dateFormat = options.dateFormat || 'YYYY-MM-DD'
-    options.timeFormat = options.timeFormat || 'HH:mm'
-    options.inputUtc = options.inputUtc === true
-    options.timeStep = options.timeStep || 15
-    options.calendarTodayLabel = options.calendarTodayLabel || 'Today'
-    options.inputDate = options.hasOwnProperty('inputDate') ? options.inputDate : true
-    options.inputTime = options.hasOwnProperty('inputTime') ? options.inputTime : true
-    options.placeholderDate = options.placeholderDate || moment().format(options.dateFormat)
-    options.placeholderTime = options.placeholderTime || moment().format(options.timeFormat)
-    return options
+  getTimeIntervals(options, value) {
+    //const value = this.props
+    const times = []
+    const format = options.timeFormat
+    const intervals = options.timeStep
+    const activeTime = (value && moment(value.utc))
+    const base = moment().startOf('day')
+    const multiplier = 1440 / intervals
+    for (let i = 0; i < multiplier; i++) {
+      times.push(base.clone().add(i * intervals, 'minutes'))
+    }
+    return times.map(time => {
+      const isActive = activeTime && (time.format('HH:mm') === activeTime.format('HH:mm'))
+      return {
+        title: time.format(format),
+        value: time,
+        isActive: isActive
+      }
+    })
+  }
+
+  getCurrentValue = () => {
+    const {value} = this.props
+    if (!value) {
+      return null
+    }
+    if (get(this.props, 'type.options.inputUtc') === true) {
+      return value.utc
+    }
+
+    return value.local
+  }
+
+  getPlaceholderText(options) {
+    return `${options.inputDate ? options.placeholderDate : ''} ${options.inputTime ? options.placeholderTime : ''}`
   }
 
   render() {
     const {value, type, level} = this.props
-    const {title, description} = type
-    const options = this.optionsWithDefaults()
-    const editableMoment = this.editableMoment(value)
-    const kronosProps = {
-      options: {
-        color: '#67c446',
-        format: {
-          today: options.calendarTodayLabel,
-          year: 'YYYY',
-          month: 'MMM',
-          day: 'D',
-          hour: 'H:mm',
-        }
-      },
-      hideOutsideDateTimes: true,
-      timeStep: options.timeStep,
+
+    if (!type) {
+      return <div>Date picker: Missing type</div>
     }
+
+    const {title, description} = type
+
+    const options = this.getOptions(this.props)
+    const timeIntervals = this.getTimeIntervals(options, value)
+
+    const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
 
     return (
       <FormField labelFor={this.inputId} label={title} level={level} description={description}>
         {type.name === 'date' && DEPRECATION_WARNING}
-        <div className={styles.root}>
+        <div className={options.inputTime ? styles.rootWithTime : styles.root}>
           {options.inputDate && (
-            <Kronos
-              classes={KRONOS_STYLES}
-              date={editableMoment}
-              format={options.dateFormat}
-              onChangeDateTime={this.handleChange}
-              placeholder={options.placeholderDate}
-              {...kronosProps}
+            <DatePicker
+              {...options}
+              showMonthDropdown
+              showYearDropdown
+              todayButton={options.calendarTodayLabel}
+              selected={value && moment(
+                get(this.props, 'type.options.inputUtc') ? value.utc : value.local
+              )}
+              placeholderText={this.getPlaceholderText(options)}
+              calendarClassName={styles.datepicker}
+              className={styles.input}
+              onChange={this.handleChange}
+              value={value && moment(
+                  get(this.props, 'type.options.inputUtc') ? value.utc : value.local
+                ).format(`${options.inputDate ? options.dateFormat : ''} ${options.inputTime ? options.timeFormat : ''}`)
+              }
+              showTimeSelect={options.inputTime}
+              dateFormat={`${options.inputDate ? options.dateFormat : ''} ${options.inputTime ? options.timeFormat : ''}`}
+              timeFormat={options.timeFormat}
+              timeIntervals={options.timeStep}
             />
           )}
-          {options.inputTime && (
-            <Kronos
-              classes={KRONOS_STYLES}
-              time={editableMoment}
-              format={options.timeFormat}
-              onChangeDateTime={this.handleChange}
-              placeholder={options.placeholderTime}
-              {...kronosProps}
-            />
-          )}
+
+          {
+            !options.inputDate && options.inputTime && (
+              <DefaultSelect
+                items={timeIntervals}
+                value={activeTimeInterval}
+                onChange={this.handleTimeChange}
+              />
+            )
+          }
         </div>
       </FormField>
     )
