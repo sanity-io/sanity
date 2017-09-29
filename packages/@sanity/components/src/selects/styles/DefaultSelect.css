@@ -16,7 +16,6 @@
   appearance: none;
   position: relative;
   overflow: hidden;
-  z-index: 1;
 }
 
 .selectContainer {

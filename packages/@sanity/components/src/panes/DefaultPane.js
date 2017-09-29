@@ -79,7 +79,6 @@ class Pane extends React.PureComponent {
   handleContentScroll = event => {
     const threshold = 100
     const scrollTop = event.target.scrollTop
-    console.log(scrollTop, this.props.title)
     if (scrollTop < threshold) {
       const ratio = scrollTop / threshold
       this.setState({
