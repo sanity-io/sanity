@@ -1,4 +1,5 @@
 // @flow
+import {SLATE_DEFAULT_BLOCK} from '../constants'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 
 function hasKeys(obj) {
@@ -103,14 +104,12 @@ function sanityBlocksArrayToRawNodes(blockArray, type) {
     .map(item => sanityBlockItemToRawNode(item, type))
 }
 
-const EMPTY_NODE = {kind: 'block', type: 'contentBlock', data: {style: 'normal'}, nodes: []}
-
 export default function sanityToSlateRaw(array, type) {
   return {
     kind: 'state',
     document: {
       kind: 'document',
-      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : [EMPTY_NODE]
+      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : [SLATE_DEFAULT_BLOCK]
     }
   }
 }
