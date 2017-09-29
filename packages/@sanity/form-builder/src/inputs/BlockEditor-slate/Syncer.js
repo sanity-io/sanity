@@ -59,7 +59,7 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
       isOutOfSync: false,
       deprecatedSchema,
       deprecatedBlockValue,
-      value: (deprecatedBlockValue || deprecatedBlockValue)
+      value: (deprecatedSchema || deprecatedBlockValue)
         ? undefined : deserialize(props.value, props.type)
     }
     this.unsubscribe = props.subscribe(this.receivePatches)
