@@ -105,11 +105,12 @@ function sanityBlocksArrayToRawNodes(blockArray, type) {
 }
 
 export default function sanityToSlateRaw(array, type) {
+  const defaultNodes = [{...SLATE_DEFAULT_BLOCK, nodes: [{kind: 'text', text: ''}]}]
   return {
     kind: 'state',
     document: {
       kind: 'document',
-      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : [SLATE_DEFAULT_BLOCK]
+      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : defaultNodes
     }
   }
 }

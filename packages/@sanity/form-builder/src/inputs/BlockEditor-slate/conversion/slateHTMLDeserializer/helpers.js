@@ -39,7 +39,7 @@ function cleanUpWordDocument(html) {
 
   // Remove cruft
   const unwantedNodes = document.evaluate(
-    `${unwantedWordDocumentPaths.join('|')}`,
+    unwantedWordDocumentPaths.join('|'),
     doc,
     null,
     XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
@@ -52,7 +52,7 @@ function cleanUpWordDocument(html) {
 
   // Transform mapped elements into what they should be mapped to
   const mappedElements = document.evaluate(
-    `${mappedPaths.join('|')}`,
+    mappedPaths.join('|'),
     doc,
     null,
     XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
@@ -63,7 +63,7 @@ function cleanUpWordDocument(html) {
     const mapToTag = elementMap[mappedElm.className]
     const text = new Text(mappedElm.textContent)
     let newElm
-    if (mapToTag.indexOf(':') > -1) {
+    if (mapToTag.includes(':')) {
       const tags = mapToTag.split(':')
       const parentElement = document.createElement(tags[0])
       let parent = parentElement
