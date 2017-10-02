@@ -1,0 +1,26 @@
+[
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Header"
+      }
+    ],
+    "markDefs": [],
+    "style": "h5"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Paragraph"
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  }
+]

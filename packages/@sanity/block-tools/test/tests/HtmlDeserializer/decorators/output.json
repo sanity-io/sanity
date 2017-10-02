@@ -1,0 +1,29 @@
+[
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Strong text but "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em"],
+        "text": "this is also emphasized and "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "strike-through"],
+        "text": "striked"
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "Just emphasized"
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  }
+]
