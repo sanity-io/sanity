@@ -5,9 +5,7 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'JavaScript', value: 'javascript'},
   {title: 'JSON', value: 'json'},
   {title: 'JSX', value: 'jsx'},
-  {title: 'LaTeX', value: 'latex'},
   {title: 'Markdown', value: 'markdown'},
-  {title: 'Matlab', value: 'matlab'},
   {title: 'PHP', value: 'php'},
   {title: 'sh', value: 'sh'},
   {title: 'Plain text', value: 'text'}
