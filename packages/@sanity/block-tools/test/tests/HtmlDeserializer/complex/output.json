@@ -1,0 +1,204 @@
+[
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "h1",
+    "children": [{ "_type": "span", "marks": [], "text": "Jeg er overskrift" }]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Hei jeg er en paragraph." },
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "Jeg har " },
+      { "_type": "span", "marks": ["strong"], "text": "strong" },
+      { "_type": "span", "marks": [], "text": " og " },
+      { "_type": "span", "marks": ["strong"], "text": "bold" },
+      { "_type": "span", "marks": [], "text": " og " },
+      { "_type": "span", "marks": ["em"], "text": "italic" },
+      { "_type": "span", "marks": [], "text": " og " },
+      { "_type": "span", "marks": ["em"], "text": "emphasis" },
+      { "_type": "span", "marks": [], "text": " og greier og greier." },
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "Ja, og så" },
+      { "_type": "span", "marks": ["strike-through"], "text": " < del>" },
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "Ja, og så" },
+      { "_type": "span", "marks": ["strike-through"], "text": " < strike>" },
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "Ja, og så" },
+      { "_type": "span", "marks": ["strike-through"], "text": " < s>" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "\n" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "level": 1,
+    "listItem": "bullet",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Og jeg er et bullet-liste-element"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "level": 1,
+    "listItem": "bullet",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Det er " },
+      { "_type": "span", "marks": ["em"], "text": "faktisk" },
+      { "_type": "span", "marks": [], "text": " jeg " },
+      { "_type": "span", "marks": ["strong"], "text": "også" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "\n" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "level": 1,
+    "listItem": "number",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Og jeg er et nummer-liste-element"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "level": 1,
+    "listItem": "number",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Det er " },
+      { "_type": "span", "marks": ["em"], "text": "faktisk" },
+      { "_type": "span", "marks": [], "text": " jeg " },
+      { "_type": "span", "marks": ["strong"], "text": "også" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey0",
+        "_type": "link",
+        "href": "http://www.google.com?q=link"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Hvis du ser her, så " },
+      {
+        "_type": "span",
+        "marks": ["randomKey0"],
+        "text": "ser du at jeg er en lenke"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "\n" },
+      { "_type": "span", "marks": [], "text": "\n" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "blockquote",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Jeg er en blockquote" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "blockquote",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Og jeg er en blockquote i en blockquote."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "blockquote",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Og jeg er en blockquote i en blockquote i en blockquote."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [{ "_type": "span", "marks": [], "text": "Test test" }]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [{ "_type": "span", "marks": [], "text": "Lala" }]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Test test " },
+      { "_type": "span", "marks": [], "text": "Div i div" }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [{ "_type": "span", "marks": [], "text": "Lala" }]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "Span på root" },
+      { "_type": "span", "marks": [], "text": "Span på root 2 " },
+      { "_type": "span", "marks": [], "text": "Span i span" }
+    ]
+  }
+]

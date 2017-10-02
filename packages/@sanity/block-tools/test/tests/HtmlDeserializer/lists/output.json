@@ -1,0 +1,50 @@
+[
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "1 a" }],
+    "level": 1,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "2 a" }],
+    "level": 2,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "3 a" }],
+    "level": 3,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "3 b" }],
+    "level": 3,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "2 b" }],
+    "level": 2,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": [], "text": "1 b" }],
+    "level": 1,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
+  }
+]

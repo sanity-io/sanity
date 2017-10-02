@@ -1,0 +1,39 @@
+[
+  {
+    "_type": "block",
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": ["randomKey0"], "text": "I am a " },
+      {
+        "_type": "span",
+        "marks": ["randomKey0", "strong"],
+        "text": "strong"
+      },
+      { "_type": "span", "marks": ["randomKey0"], "text": " link" },
+      { "_type": "span", "marks": ["em"], "text": "and " },
+      {
+        "_type": "span",
+        "marks": ["em", "randomKey1"],
+        "text": "I am a emphasized link"
+      }
+    ],
+    "markDefs": [
+      { "_key": "randomKey0", "_type": "link", "href": "http://test.com" },
+      { "_key": "randomKey1", "_type": "link", "href": "http://foo.bar" }
+    ]
+  },
+  {
+    "_type": "block",
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": ["randomKey2"],
+        "text": "I am a totally different link"
+      }
+    ],
+    "markDefs": [
+      { "_key": "randomKey2", "_type": "link", "href": "http://another.com" }
+    ]
+  }
+]

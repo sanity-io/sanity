@@ -1,0 +1,98 @@
+[
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Paragraph"
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H1"
+      }
+    ],
+    "markDefs": [],
+    "style": "h1"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H2"
+      }
+    ],
+    "markDefs": [],
+    "style": "h2"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H3"
+      }
+    ],
+    "markDefs": [],
+    "style": "h3"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H4"
+      }
+    ],
+    "markDefs": [],
+    "style": "h4"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H5"
+      }
+    ],
+    "markDefs": [],
+    "style": "h5"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "H6"
+      }
+    ],
+    "markDefs": [],
+    "style": "h6"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Blockquote"
+      }
+    ],
+    "markDefs": [],
+    "style": "blockquote"
+  }
+]
