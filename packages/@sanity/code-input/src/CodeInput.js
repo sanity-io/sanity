@@ -22,9 +22,7 @@ import 'brace/mode/html'
 import 'brace/mode/javascript'
 import 'brace/mode/json'
 import 'brace/mode/jsx'
-import 'brace/mode/latex'
 import 'brace/mode/markdown'
-import 'brace/mode/matlab'
 import 'brace/mode/php'
 import 'brace/mode/sh'
 import 'brace/mode/text'
@@ -179,7 +177,7 @@ export default class CodeInput extends PureComponent {
 
   render() {
     const {value, type, level} = this.props
-    const languages = this.getLanguageAlternatives()
+    const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
       return (
