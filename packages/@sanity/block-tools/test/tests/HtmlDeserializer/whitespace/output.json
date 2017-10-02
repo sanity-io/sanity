@@ -1,0 +1,80 @@
+[
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "I should not have any whitepace in the start, and none in the end"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "I should not have any whitepace in the start, and none in the end"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "I should not have any whitepace in the start, and none in the end"
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": " I have one in the beginning but none in the end"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [{ "_key": "randomKey0", "_type": "link", "href": "#foo" }],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "I should not have any whitepace in the start, and one in the end "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey0"],
+        "text": "I have none in the beginning and none in the end"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " But I have one in the beginning"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [{ "_key": "randomKey1", "_type": "link", "href": "#lala" }],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "I should have a space here: " },
+      { "_type": "span", "marks": ["randomKey1"], "text": "But none here" },
+      { "_type": "span", "marks": [], "text": "." },
+      { "_type": "span", "marks": [], "text": "\n" }
+    ]
+  }
+]
