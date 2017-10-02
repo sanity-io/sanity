@@ -177,7 +177,7 @@ export default class CodeInput extends PureComponent {
 
   render() {
     const {value, type, level} = this.props
-    const languages = this.getLanguageAlternatives()
+    const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
       return (
