@@ -14,7 +14,7 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import ItemForm from './ItemForm'
 import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
-import ImportPreview from './ImportPreview'
+import Preview from '../../Preview'
 
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
@@ -147,7 +147,7 @@ export default class Item extends React.Component<Props> {
             onClick={this.handleEditStart}
             onKeyPress={this.handleKeyPress}
           >
-            <ImportPreview
+            <Preview
               layout={previewLayout}
               value={value}
               type={this.getMemberType()}

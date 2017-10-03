@@ -2,6 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
+function extractUploadState(value) {
+  if (!value || typeof value !== 'object') {
+    return value
+  }
+  const {_upload, ...rest} = value
+  return {_upload, value: rest}
+}
+
 export default class Preview extends React.Component {
 
   static propTypes = {
@@ -14,13 +22,23 @@ export default class Preview extends React.Component {
     formBuilder: PropTypes.object
   }
 
-  render() {
-    const {type, value, layout} = this.props
 
+  render() {
+    const {type, layout} = this.props
+    const {_upload, value} = extractUploadState(this.props.value)
     const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type)
 
     if (PreviewComponent) {
-      return <PreviewComponent type={type} value={value} layout={layout} />
+      const renderedPreview = (<PreviewComponent type={type} value={value} layout={layout} />)
+
+      return _upload
+        ? (
+          <div style={{position: 'relative'}}>
+            <ProgressBar showPercent percent={_upload.percent || 0} completed={_upload.percent === 100} />
+            {renderedPreview}
+          </div>
+        )
+        : renderedPreview
     }
     return (
       <div title="Unable to resolve preview component. Using fallback.">
