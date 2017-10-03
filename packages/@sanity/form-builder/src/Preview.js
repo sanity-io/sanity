@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import ProgressBar from 'part:@sanity/components/progress/bar'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
 function extractUploadState(value) {

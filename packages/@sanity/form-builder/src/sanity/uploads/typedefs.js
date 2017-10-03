@@ -3,11 +3,8 @@ import type {Patch} from '../../utils/patches'
 import type {Type} from '../../typedefs'
 import type {ObservableI} from '../../typedefs/observable'
 
-type EventType = 'process' | 'complete'
-
 export type UploadEvent = {
-  type: EventType,
-  percent: number,
+  type: 'uploadEvent',
   patches: ?Array<Patch>
 }
 

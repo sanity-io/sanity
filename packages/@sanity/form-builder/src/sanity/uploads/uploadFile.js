@@ -1,31 +1,28 @@
 // @flow
 import Observable from '@sanity/observable'
-import {uploadFile} from '../inputs/client-adapters/assets'
-import {set, unset} from '../../utils/patches'
-import type {ObservableI} from './typedefs/observable'
+import {uploadFile as uploadFileAsset} from '../inputs/client-adapters/assets'
+import {set} from '../../utils/patches'
+import type {ObservableI} from '../../typedefs/observable'
 import type {UploadEvent} from './typedefs'
+import {UPLOAD_STATUS_KEY} from './constants'
+import {CLEANUP_EVENT, createUploadEvent, INIT_EVENT} from './utils'
 
-const SET_UPLOAD_PATCH = set({
-  percent: 0,
-}, ['_import'])
+const setInitialUploadState$ = Observable.of(INIT_EVENT)
+const unsetUploadState$ = Observable.of(CLEANUP_EVENT)
 
-export default function importFile(file: File) : ObservableI<UploadEvent> {
-  return Observable.of({patches: SET_UPLOAD_PATCH})
-    .merge(
-      uploadFile(file)
-        .map(event => {
-          if (event.type === 'complete') {
-            return {
-              patches: [
-                unset(['_import']),
-                set({_type: 'reference', _ref: event.asset._id}, ['asset'])
-              ]
-            }
-          }
-          return {
-            patches: [set(event.percent, ['_import', 'percent'])]
-          }
-        })
-    )
+export default function uploadFile(file: File): ObservableI<UploadEvent> {
+  const upload$ = uploadFileAsset(file)
+    .map(event => {
+      if (event.type === 'complete') {
+        return createUploadEvent([
+          set({_type: 'reference', _ref: event.asset._id}, ['asset']),
+          set(100, [UPLOAD_STATUS_KEY, 'percent'])
+        ])
+      }
+      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'percent'])])
+    })
 
+  return setInitialUploadState$
+    .concat(upload$)
+    .concat(unsetUploadState$)
 }

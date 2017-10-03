@@ -2,7 +2,8 @@
 import accept from 'attr-accept'
 import importers from './uploaders'
 import {get} from 'lodash'
-import type {Type, Uploader} from './typedefs'
+import type {Uploader} from './typedefs'
+import type {Type} from '../../typedefs'
 
 // todo: extract and reuse
 function is(typeName: string, type: Type): boolean {

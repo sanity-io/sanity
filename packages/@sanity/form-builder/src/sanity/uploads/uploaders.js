@@ -1,21 +1,8 @@
 // @flow
 import uploadImage from './uploadImage'
 import uploadFile from './uploadFile'
-import Observable from '@sanity/observable'
 import type {Uploader} from './typedefs'
 import {set} from '../../utils/patches'
-
-function readAsText(file: File) {
-  return new Observable(observer => {
-    const reader = new FileReader()
-    reader.onerror = error => observer.error(error)
-    reader.onload = () => {
-      observer.next(reader.result)
-      observer.complete()
-    }
-    reader.readAsText(file)
-  })
-}
 
 const IMPORT_IMAGE: Uploader = {
   type: 'image',
@@ -32,7 +19,7 @@ const IMPORT_FILE: Uploader = {
 const IMPORT_TEXT: Uploader = {
   type: 'string',
   accepts: 'text/*',
-  upload: (file: File, type: any) => readAsText(file)
+  upload: (file: File, type: any) => uploadFile(file)
     .map(content => ({
       patches: [set(content)]
     }))
