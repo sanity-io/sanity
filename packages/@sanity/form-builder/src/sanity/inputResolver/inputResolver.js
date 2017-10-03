@@ -13,6 +13,7 @@ import codeInput from 'part:@sanity/form-builder/input/code?'
 import SlugInput from '../inputs/Slug'
 import FileInput from '../inputs/File'
 import ImageInput from '../inputs/Image'
+import SanityArray from '../inputs/Array'
 
 import resolveReference from './resolveReference'
 
@@ -63,6 +64,10 @@ export default function inputResolver(type) {
 
   if (type.name === 'reference') {
     return resolveReference(type)
+  }
+
+  if (type.name === 'array') {
+    return ArrayInput || SanityArray
   }
 
   return typeInputMap[type.name]

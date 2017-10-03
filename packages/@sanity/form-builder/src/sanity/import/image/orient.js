@@ -1,3 +1,6 @@
+// @flow
+import Observable from '@sanity/observable/minimal'
+
 /* eslint-disable */
 // Polyfills HTMLCanvasElement.toBlob
 require('canvas-to-blob').init()
@@ -10,22 +13,27 @@ function rotated(n) {
   return [5, 6, 7, 8].indexOf(n) > -1
 }
 
-// Based on github.com/component/rotate
-function rotate(ctx, options) {
-  const x = options.x || 0
-  const y = options.y || 0
+type RotateOpts = {
+  degrees?: number,
+  degrees: number,
+  x: number,
+  y: number
+}
 
-  if (options.degrees) {
-    options.radians = options.degrees * (Math.PI / 180)
-  }
+// Based on github.com/component/rotate
+function rotate(ctx, options: RotateOpts) {
+  const x = options.x
+  const y = options.y
+
+  const radians = options.degrees * (Math.PI / 180)
 
   ctx.translate(x, y)
-  ctx.rotate(options.radians)
+  ctx.rotate(radians)
   ctx.translate(-x, -y)
 }
 
 // Based on github.com/component/flip
-function flip(canvas, x, y) {
+function flip(canvas: HTMLCanvasElement, x: boolean, y: boolean) {
   const ctx = canvas.getContext('2d')
   ctx.translate(
     x ? canvas.width : 0,
@@ -35,7 +43,7 @@ function flip(canvas, x, y) {
     y ? -1 : 1)
 }
 
-const orientations = [
+const ORIENTATION_OPS = [
   {op: 'none', degrees: 0},
   {op: 'flip-x', degrees: 0},
   {op: 'none', degrees: 180},
@@ -46,9 +54,32 @@ const orientations = [
   {op: 'none', degrees: -90}
 ]
 
+export opaque type OrientationId =
+  'top-left' |
+  'top-right' |
+  'bottom-right' |
+  'bottom-left' |
+  'left-top' |
+  'right-top' |
+  'right-bottom' |
+  'left-bottom'
+
+const ORIENTATIONS: Array<OrientationId> = [
+  'top-left',
+  'top-right',
+  'bottom-right',
+  'bottom-left',
+  'left-top',
+  'right-top',
+  'right-bottom',
+  'left-bottom'
+]
+
+export const DEFAULT_ORIENTATION: OrientationId = 'top-left'
+
 // Based on github.com/component/exif-rotate
-function orient(img, orientationNumber, callback) {
-  const orientation = orientations[orientationNumber - 1]
+function _orient(img: Image, orientationNumber: number, callback: Blob => void) {
+  const orientation = ORIENTATION_OPS[orientationNumber - 1]
 
   // canvas
   const canvas = document.createElement('canvas')
@@ -64,10 +95,10 @@ function orient(img, orientationNumber, callback) {
   }
 
   // flip
-  if (orientation.op == 'flip-x') {
+  if (orientation.op === 'flip-x') {
     flip(canvas, true, false)
   }
-  if (orientation.op == 'flip-y') {
+  if (orientation.op === 'flip-y') {
     flip(canvas, false, true)
   }
 
@@ -89,14 +120,16 @@ function orient(img, orientationNumber, callback) {
   canvas.toBlob(callback)
 }
 
+
 /* eslint-enable */
-export default function () {
+export default function orient(image: Image, orientationId: OrientationId) {
   return new Observable(observer => {
-    console.time('canvas to blob')
-    orient(blob => {
-      console.timeEnd('canvas to blob')
+    // console.time('canvas to blob')
+    const orientation = ORIENTATIONS.indexOf(orientationId) + 1
+    _orient(image, orientation, (blob: Blob) => {
+      // console.timeEnd('canvas to blob')
       observer.next(blob)
+      observer.complete()
     })
   })
-    .map(blob => window.URL.createObjectURL(blob))
 }

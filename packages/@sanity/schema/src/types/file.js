@@ -25,7 +25,7 @@ const FILE_CORE = {
 }
 
 const DEFAULT_OPTIONS = {
-  accept: '*/*',
+  accept: '',
 }
 
 export const FileType = {

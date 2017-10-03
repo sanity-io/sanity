@@ -1,18 +1,21 @@
 // @flow
-import type {ItemValue, TransferStatus, Type} from './types'
+import type {ItemValue, Type} from './types'
+import type {Patch} from '../../utils/patches'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import Snackbar from 'part:@sanity/components/snackbar/default'
+import Dialog from 'part:@sanity/components/dialogs/default'
+import {sortBy, reverse} from 'lodash'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
+import humanize from 'humanize-list'
 import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-
 import Observable from '@sanity/observable'
-import {findMatchingImporter} from './utils'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -37,23 +40,48 @@ function createProtoValue(type: Type): ItemValue {
     _key: key
   }
 }
-type Props<T> = {
+
+type ImportEvent = {
+  patches: Array<Patch>
+}
+
+type Importer = {
+  import: (value: File, type: Type) => Observable<ImportEvent>
+}
+
+type ImportOption = {
   type: Type,
-  value: Array<T>,
+  importer: Importer
+}
+
+type Task = {
+  file: File,
+  importOptions: Array<ImportOption>
+}
+
+type Props = {
+  type: Type,
+  value: Array<ItemValue>,
   level: number,
-  onChange: (event: PatchEvent) => void
+  onChange: (event: PatchEvent) => void,
+  resolveImporter: (type: Type, file: File) => Importer
 }
 
 type State = {
   editItemKey: ?string,
-  transferItems: {[string]: TransferStatus}
+  unimportable: Array<Task>,
+  needsSelect: Array<Task>,
 }
 
-export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, State> {
+export default class ArrayInput extends React.Component<Props, State> {
   state = {
     editItemKey: null,
-    transferItems: {}
+    unimportable: [],
+    needsSelect: []
   }
+
+  importSubscriptions: {}
+  importSubscriptions = {}
 
   insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
     const {onChange} = this.props
@@ -71,11 +99,11 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     this.insert(value, 'after', -1)
   }
 
-  handleRemoveItem = (item: T) => {
+  handleRemoveItem = (item: ItemValue) => {
     this.removeItem(item)
   }
 
-  handleItemEditStop = (item: T) => {
+  handleItemEditStop = (item: ItemValue) => {
     const itemValue = this.getEditItem()
     if (itemValue && isEmpty(itemValue)) {
       this.removeItem(itemValue)
@@ -83,11 +111,11 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     this.setState({editItemKey: null})
   }
 
-  handleItemEditStart = (item: T) => {
+  handleItemEditStart = (item: ItemValue) => {
     this.setState({editItemKey: item._key})
   }
 
-  handleDropDownAction = (menuItem: {type: Type}) => {
+  handleDropDownAction = (menuItem: { type: Type }) => {
     const item = createProtoValue(menuItem.type)
     this.append(item)
     this.setState({editItemKey: item._key})
@@ -104,7 +132,7 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     this.setState({editItemKey: item._key})
   }
 
-  removeItem(item: T) {
+  removeItem(item: ItemValue) {
     const {onChange, value} = this.props
     if (item._key === this.state.editItemKey) {
       this.setState({editItemKey: null})
@@ -114,6 +142,9 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
         unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
       )
     )
+    if (item._key in this.importSubscriptions) {
+      this.importSubscriptions[item._key].unsubscribe()
+    }
   }
 
   renderSelectType() {
@@ -141,41 +172,71 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     }
   }
 
-  setTransferStatus(key: string, status: ?TransferStatus) {
-    this.setState(prevState => ({
-      transferItems: {
-        ...prevState.transferItems,
-        [key]: status
-      }
-    }))
-  }
-
   handleDragOver = (ev: SyntheticDragEvent<*>) => {
     ev.preventDefault()
     ev.stopPropagation()
   }
 
-  importFiles(files: Array<File>) {
-    const import$ = Observable.from(files)
-      .mergeMap(file => {
-        const {importer, memberType} = findMatchingImporter(this.props.type, file)
-        if (!memberType || !importer) {
-          return Observable.of(null)
+  getImportOptions = (file: File): Array<ImportOption> => {
+    const {type, resolveImporter} = this.props
+    return type.of
+      .map(memberType => {
+        const importer = resolveImporter(memberType, file)
+        return importer && {
+          type: memberType,
+          importer
         }
-        const proto = createProtoValue(memberType)
-        return importer(file)
-          .reduce((prev, curr) => curr)
-          .map(result => ({...result, ...proto}))
       })
       .filter(Boolean)
+  }
 
-    import$.subscribe(item => {
-      this.append(item)
-    })
+  importFiles(files: Array<File>) {
+    const tasks = files.map(file => ({
+      file,
+      importOptions: this.getImportOptions(file)
+    }))
+
+    const ready = tasks
+      .filter(task => task.importOptions.length > 0)
+
+    const unimportable = tasks
+      .filter(task => task.importOptions.length === 0)
+    this.setState({unimportable})
+
+    // todo: consider if we need to ask the user
+    // const needsSelect = tasks
+    //   .filter(task => task.importOptions.length > 1)
+
+    ready
+      .forEach(task => {
+        this.importFile(task.file, reverse(sortBy(task.importOptions, 'priority'))[0])
+      })
+  }
+
+  importFile(file: File, importOption: ImportOption) {
+    const {onChange} = this.props
+
+    const {type, importer} = importOption
+    const item = {
+      ...createProtoValue(type),
+      _import: {
+        initiatedAt: new Date().toISOString()
+      }
+    }
+
+    const key = item._key
+    this.append(item)
+
+    const events$ = importer.import(file, type)
+      .map(importEvent => PatchEvent.from(importEvent.patches).prefixAll({_key: key}))
+
+    this.importSubscriptions = {
+      ...this.importSubscriptions,
+      [key]: events$.subscribe(onChange)
+    }
   }
 
   handleDrop = (ev: SyntheticDragEvent<*>) => {
-    const {onChange} = this.props
     if (ev.dataTransfer.files) {
       ev.preventDefault()
       ev.stopPropagation()
@@ -183,7 +244,7 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     }
   }
 
-  handleItemChange = (event: PatchEvent, item: T) => {
+  handleItemChange = (event: PatchEvent, item: ItemValue) => {
     const {onChange, value} = this.props
 
     const memberType = this.getMemberTypeOfItem(item)
@@ -230,7 +291,7 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     ))
   }
 
-  getEditItem(): ? T {
+  getEditItem(): ? ItemValue {
     const {editItemKey} = this.state
     const {value} = this.props
     return typeof editItemKey === 'number'
@@ -238,15 +299,14 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
       : value.find(item => item._key === editItemKey)
   }
 
-  getMemberTypeOfItem(item: T): ? Type {
+  getMemberTypeOfItem(item: ItemValue): ? Type {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
     return type.of.find(memberType => memberType.name === itemTypeName)
   }
 
   renderList() {
-    const {type} = this.props
-    const value = this.getValueWithUploadItemsMerged()
+    const {type, value} = this.props
     const options = type.options || {}
 
     const isSortable = options.sortable !== false
@@ -283,22 +343,9 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
     )
   }
 
-  getValueWithUploadItemsMerged() : Array<T> {
-    const {value} = this.props
-    const {transferItems} = this.state
-    const keys = Object.keys(transferItems)
-    if (keys.length === 0) {
-      return value
-    }
-    return value.map(item => {
-      return (transferItems[item._key])
-        ? {...item, ...(transferItems[item._key])}
-        : item
-    })
-  }
-
   render() {
     const {type, level, value} = this.props
+    const {unimportable, needsSelect} = this.state
 
     return (
       <Fieldset
@@ -329,6 +376,45 @@ export default class ArrayInput<T: ItemValue> extends React.Component<Props<T>, 
             </div>
           )}
         </div>
+        {needsSelect.length > 0 && (
+          <Dialog
+            isOpen
+            title="Select how to represent"
+            actions={[{title: 'Cancel'}]}
+            onAction={() => this.setState({needsSelect: []})}
+          >
+            {needsSelect.map(task => (
+              <div key={task.file.name}>
+                The file {task.file.name} can be converted to several types of content.
+                Please select how you want to represent it:
+                <ul>
+                  {task.importOptions.map(importOption => (
+                    <li key={importOption.type.name}>
+                      <Button
+                        onClick={() => {
+                          this.importFile(task.file, importOption)
+                          this.setState({needsSelect: needsSelect.filter(t => t !== task)})
+                        }}
+                      >
+                        Represent as {importOption.type.name}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </Dialog>
+        )}
+        {unimportable.length > 0 && (
+          <Snackbar
+            kind="warning"
+            action={{title: 'OK'}}
+            onAction={() => this.setState({unimportable: []})}
+          >
+            File(s) not accepted:
+            {humanize(unimportable.map(task => task.file.name))}
+          </Snackbar>
+        )}
       </Fieldset>
     )
   }

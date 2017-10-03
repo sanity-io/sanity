@@ -2,8 +2,8 @@
 import type {ItemValue, Type} from './types'
 
 import React from 'react'
+import type {Node} from 'react'
 import styles from './styles/ItemValue.css'
-import Preview from '../../Preview'
 import ConfirmButton from './ConfirmButton'
 
 import TrashIcon from 'part:@sanity/base/trash-icon'
@@ -14,7 +14,7 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import ItemForm from './ItemForm'
 import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
-import UploadPreview from './UploadPreview'
+import ImportPreview from './ImportPreview'
 
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
@@ -30,10 +30,10 @@ type Props = {
   onEditStop: (ItemValue) => void,
   isEditing: boolean
 }
-export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
-  props: Props
 
-  domElement: HTMLElement
+export default class Item extends React.Component<Props> {
+
+  domElement: ?HTMLElement
 
   handleRemove = () => {
     const {onRemove, value} = this.props
@@ -50,7 +50,7 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
     onEditStop(value)
   }
 
-  handleKeyPress = event => {
+  handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
     const {value, onEditStart} = this.props
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -64,7 +64,7 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
     return type.of.find(memberType => memberType.name === itemTypeName)
   }
 
-  renderEditItemForm(item: any): ?React.Element<any> {
+  renderEditItemForm(item: ItemValue): Node {
     const {type, onChange, onRemove} = this.props
     const options = type.options || {}
 
@@ -115,12 +115,12 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.isEditing && !this.props.isEditing) {
+    if (this.domElement && prevProps.isEditing && !this.props.isEditing) {
       this.domElement.focus()
     }
   }
 
-  setElement = (el: HTMLElement) => {
+  setElement = (el: ?HTMLElement) => {
     this.domElement = el
   }
 
@@ -147,18 +147,11 @@ export default class Item<T: ItemValue> extends React.Component<*, Props, *> {
             onClick={this.handleEditStart}
             onKeyPress={this.handleKeyPress}
           >
-            {value._transfer ? (
-              <UploadPreview
-                value={value}
-                type={this.getMemberType()}
-              />
-            ) : (
-              <Preview
-                layout={previewLayout}
-                value={value}
-                type={this.getMemberType()}
-              />
-            )}
+            <ImportPreview
+              layout={previewLayout}
+              value={value}
+              type={this.getMemberType()}
+            />
           </div>
           <div className={styles.functions}>
             {!type.readOnly && (

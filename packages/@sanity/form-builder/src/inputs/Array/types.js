@@ -13,12 +13,14 @@ export type Type = {
   of: Array<Type>
 }
 
-export type TransferStatus = {
-  progress: number
+export type ImportStatus = {
+  initiatedAt: string,
+  progress: number,
+  previewImageUrl?: string
 }
 
 export type ItemValue = {
   _type?: string,
   _key: string,
-  _transferStatus?: TransferStatus
+  _importStatus?: ImportStatus
 }
