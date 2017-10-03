@@ -5,6 +5,7 @@ const streamToArray = require('./streamToArray')
 const {getAssetRefs, unsetAssetRefs} = require('./assetRefs')
 const assignArrayKeys = require('./assignArrayKeys')
 const uploadAssets = require('./uploadAssets')
+const documentHasErrors = require('./documentHasErrors')
 const batchDocuments = require('./batchDocuments')
 const importBatches = require('./importBatches')
 const {
@@ -14,17 +15,22 @@ const {
   strengthenReferences
 } = require('./references')
 
-async function importFromStream(stream, opts) {
-  const options = validateOptions(stream, opts)
+async function importFromStream(input, opts) {
+  const options = validateOptions(input, opts)
 
-  // Get raw documents from the stream
-  debug('Streaming input source to array of documents')
   options.onProgress({step: 'Reading/validating data file'})
-  const raw = await streamToArray(stream)
+  const isStream = typeof input.pipe === 'function'
+  let documents = input
+  if (isStream) {
+    debug('Streaming input source to array of documents')
+    documents = await streamToArray(input)
+  } else {
+    documents.some(documentHasErrors.validate)
+  }
 
   // User might not have applied `_key` on array elements which are objects;
   // if this is the case, generate random keys to help realtime engine
-  const keyed = raw.map(doc => assignArrayKeys(doc))
+  const keyed = documents.map(doc => assignArrayKeys(doc))
 
   // Sanity prefers to have a `_type` on every object. Make sure references
   // has `_type` set to `reference`.

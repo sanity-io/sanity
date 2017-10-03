@@ -1,24 +1,9 @@
 const path = require('path')
 const fileUrl = require('file-url')
 const noop = require('lodash/noop')
-const sanityClient = require('@sanity/client')
-const {injectResponse} = require('get-it/middleware')
 const uploadAssets = require('../src/uploadAssets')
 const mockAssets = require('./fixtures/mock-assets')
-
-const defaultClientOptions = {
-  projectId: 'foo',
-  dataset: 'bar',
-  useCdn: false
-}
-
-const getSanityClient = (inject = noop, opts = {}) => {
-  const requester = sanityClient.requester.clone()
-  requester.use(injectResponse({inject}))
-  const req = {requester: requester}
-  const client = sanityClient(Object.assign(defaultClientOptions, req, opts))
-  return client
-}
+const {getSanityClient} = require('./helpers')
 
 const fixturesDir = path.join(__dirname, 'fixtures')
 const imgFileUrl = fileUrl(path.join(fixturesDir, 'img.gif'))
@@ -70,9 +55,7 @@ test('will reuse an existing asset if it exists', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(
-    uploadAssets([fileAsset], {client, onProgress: noop})
-  ).resolves.toBe(1)
+  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toBe(1)
 })
 
 test('will upload asset that do not already exist', () => {
@@ -100,9 +83,7 @@ test('will upload asset that do not already exist', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(
-    uploadAssets([fileAsset], {client, onProgress: noop})
-  ).resolves.toBe(1)
+  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toBe(1)
 })
 
 test('will upload once but batch patches', () => {
