@@ -1,6 +1,6 @@
 import path from 'path'
 import fse from 'fs-extra'
-import {union} from 'lodash'
+import {union, difference} from 'lodash'
 import debug from '../../debug'
 import versionRanges from '../../versionRanges'
 import resolveLatestVersions from '../../util/resolveLatestVersions'
@@ -32,14 +32,22 @@ export default async (opts, context) => {
   spinner.succeed()
 
   // Merge global and template-specific plugins and dependencies
+  const allModules = Object.assign({}, versionRanges.core, template.dependencies || {})
   const modules = union(
     Object.keys(versionRanges.core),
     Object.keys(template.dependencies || {})
   )
 
-  // Resolve latest versions of dependencies
+  // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
-  const dependencies = await resolveLatestVersions(modules, {asRange: true})
+  const firstParty = modules.filter(isFirstParty)
+  const thirdParty = difference(modules, firstParty)
+  const firstPartyVersions = await resolveLatestVersions(firstParty, {asRange: true})
+  const thirdPartyVersions = thirdParty.reduce((acc, dep) => {
+    acc[dep] = allModules[dep]
+    return acc
+  }, {})
+  const dependencies = Object.assign({}, firstPartyVersions, thirdPartyVersions)
   spinner.succeed()
 
   // Now create a package manifest (`package.json`) with the merged dependencies
@@ -90,4 +98,9 @@ export default async (opts, context) => {
       }
     }
   }
+}
+
+
+function isFirstParty(pkg) {
+  return pkg.indexOf('@sanity/') === 0
 }
