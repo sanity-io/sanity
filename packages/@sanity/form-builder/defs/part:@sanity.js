@@ -32,6 +32,7 @@ declare module 'part:@sanity/components/edititem/fold' {
 }
 
 declare module 'part:@sanity/components/lists/sortable' {
+  declare export type DragHandle = any;
   declare export default any;
 }
 
