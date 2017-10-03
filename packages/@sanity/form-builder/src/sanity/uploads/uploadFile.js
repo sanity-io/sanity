@@ -1,11 +1,11 @@
 // @flow
 import Observable from '@sanity/observable'
-import {uploadFile as uploadFileAsset} from '../inputs/client-adapters/assets'
+import {uploadFileAsset} from '../inputs/client-adapters/assets'
 import {set} from '../../utils/patches'
 import type {ObservableI} from '../../typedefs/observable'
 import type {UploadEvent} from './typedefs'
 import {UPLOAD_STATUS_KEY} from './constants'
-import {CLEANUP_EVENT, createUploadEvent, INIT_EVENT} from './utils'
+import {createUploadEvent, CLEANUP_EVENT, INIT_EVENT} from './utils'
 
 const setInitialUploadState$ = Observable.of(INIT_EVENT)
 const unsetUploadState$ = Observable.of(CLEANUP_EVENT)

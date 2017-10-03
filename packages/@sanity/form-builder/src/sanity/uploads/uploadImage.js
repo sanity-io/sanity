@@ -1,6 +1,6 @@
 // @flow
 import Observable from '@sanity/observable'
-import {uploadImage as uploadImageAsset} from '../inputs/client-adapters/assets'
+import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION} from './image/orient'
@@ -26,9 +26,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
   const upload$ = uploadImageAsset(file)
     .map(event => {
       if (event.type === 'complete') {
-        return createUploadEvent([
-          set({_type: 'reference', _ref: event.asset._id}, ['asset'])
-        ])
+        return createUploadEvent([set({_type: 'reference', _ref: event.asset._id}, ['asset'])])
       }
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'percent'])])
     })
