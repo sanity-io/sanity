@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
-import addons from '@kadira/storybook-addons'
+import addons from '@storybook/addons'
 import PropTable from './PropTable'
 import styles from './styles/SanityPanel.css'
 

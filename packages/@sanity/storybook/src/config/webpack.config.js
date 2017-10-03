@@ -1,5 +1,8 @@
 const sanityServer = require('@sanity/server')
 
+// todo: do something with this, according to https://storybook.js.org/configurations/custom-webpack-config/
+const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/webpack.config.js')
+
 // This is very hacky, but I couldn't figure out a way to pass config from
 // the parent task onto this configuration, which we need to infer the base
 // path of the Sanity project in question, along with listener options et all.
