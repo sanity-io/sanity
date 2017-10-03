@@ -2,6 +2,9 @@
 declare module 'part:@sanity' {
   declare export default any;
 }
+declare module 'part:@sanity/base/preview' {
+  declare export default any;
+}
 declare module 'part:@sanity/components/buttons/default' {
   declare export default any;
 }

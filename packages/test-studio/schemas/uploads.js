@@ -1,8 +1,8 @@
 
 export default {
-  name: 'importsTest',
+  name: 'uploadsTest',
   type: 'object',
-  title: 'Imports test',
+  title: 'Uploads test',
   fields: [
     {
       name: 'title',

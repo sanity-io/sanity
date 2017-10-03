@@ -1,11 +1,9 @@
 // @flow
-import importImage from './importImage'
-import {set} from '../../utils/patches'
-import type {ObservableI} from './types/observable'
+import uploadImage from './uploadImage'
+import uploadFile from './uploadFile'
 import Observable from '@sanity/observable'
-import type {ImportEvent} from './types/import'
-import type {Type} from '../../inputs/Array/types'
-import importFile from './importFile'
+import type {Uploader} from './typedefs'
+import {set} from '../../utils/patches'
 
 function readAsText(file: File) {
   return new Observable(observer => {
@@ -19,35 +17,29 @@ function readAsText(file: File) {
   })
 }
 
-type Importer = {
-  type: string,
-  accepts: string,
-  import: (file: File, type: Type) => ObservableI<ImportEvent>
-}
-
-const IMPORT_IMAGE: Importer = {
+const IMPORT_IMAGE: Uploader = {
   type: 'image',
   accepts: 'image/*',
-  import: (file: File, type: any) => importImage(file)
+  upload: (file: File, type: any) => uploadImage(file)
 }
 
-const IMPORT_FILE: Importer = {
+const IMPORT_FILE: Uploader = {
   type: 'file',
   accepts: '',
-  import: (file: File, type: any) => importFile(file)
+  upload: (file: File, type: any) => uploadFile(file)
 }
 
-const IMPORT_TEXT: Importer = {
+const IMPORT_TEXT: Uploader = {
   type: 'string',
   accepts: 'text/*',
-  import: (file: File, type: any) => readAsText(file)
+  upload: (file: File, type: any) => readAsText(file)
     .map(content => ({
       patches: [set(content)]
     }))
 }
 
 // Todo: make it possible to register custom importers
-const importers: Array<Importer> = [
+const importers: Array<Uploader> = [
   IMPORT_IMAGE,
   IMPORT_TEXT,
   IMPORT_FILE

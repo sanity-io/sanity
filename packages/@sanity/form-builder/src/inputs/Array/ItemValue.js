@@ -1,5 +1,5 @@
 // @flow
-import type {ItemValue, Type} from './types'
+import type {ItemValue, ArrayType} from './typedefs'
 
 import React from 'react'
 import type {Node} from 'react'
@@ -20,7 +20,7 @@ import {DragHandle} from 'part:@sanity/components/lists/sortable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 
 type Props = {
-  type: Type,
+  type: ArrayType,
   value: ItemValue,
   level: number,
   layout: 'media' | 'default',

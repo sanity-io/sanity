@@ -1,6 +1,5 @@
 // @flow
-import type {ItemValue, Type} from './types'
-import type {Patch} from '../../utils/patches'
+import type {ArrayType, ItemValue} from './typedefs'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -15,7 +14,7 @@ import randomKey from './randomKey'
 import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import Observable from '@sanity/observable'
+import type {Uploader} from '../../sanity/uploads/typedefs'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -41,30 +40,22 @@ function createProtoValue(type: Type): ItemValue {
   }
 }
 
-type ImportEvent = {
-  patches: Array<Patch>
-}
-
-type Importer = {
-  import: (value: File, type: Type) => Observable<ImportEvent>
-}
-
-type ImportOption = {
+type UploadOption = {
   type: Type,
-  importer: Importer
+  uploader: Uploader
 }
 
 type Task = {
   file: File,
-  importOptions: Array<ImportOption>
+  importOptions: Array<UploadOption>
 }
 
 type Props = {
-  type: Type,
+  type: ArrayType,
   value: Array<ItemValue>,
   level: number,
   onChange: (event: PatchEvent) => void,
-  resolveImporter: (type: Type, file: File) => Importer
+  resolveUploader: (type: Type, file: File) => Uploader
 }
 
 type State = {
@@ -177,14 +168,14 @@ export default class ArrayInput extends React.Component<Props, State> {
     ev.stopPropagation()
   }
 
-  getImportOptions = (file: File): Array<ImportOption> => {
-    const {type, resolveImporter} = this.props
+  getUploadOptions = (file: File): Array<UploadOption> => {
+    const {type, resolveUploader} = this.props
     return type.of
       .map(memberType => {
-        const importer = resolveImporter(memberType, file)
-        return importer && {
+        const uploader = resolveUploader(memberType, file)
+        return uploader && {
           type: memberType,
-          importer
+          uploader
         }
       })
       .filter(Boolean)
@@ -193,7 +184,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   importFiles(files: Array<File>) {
     const tasks = files.map(file => ({
       file,
-      importOptions: this.getImportOptions(file)
+      importOptions: this.getUploadOptions(file)
     }))
 
     const ready = tasks
@@ -213,10 +204,10 @@ export default class ArrayInput extends React.Component<Props, State> {
       })
   }
 
-  importFile(file: File, importOption: ImportOption) {
+  importFile(file: File, importOption: UploadOption) {
     const {onChange} = this.props
 
-    const {type, importer} = importOption
+    const {type, uploader} = importOption
     const item = {
       ...createProtoValue(type),
       _import: {
@@ -227,7 +218,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const key = item._key
     this.append(item)
 
-    const events$ = importer.import(file, type)
+    const events$ = uploader.upload(file, type)
       .map(importEvent => PatchEvent.from(importEvent.patches).prefixAll({_key: key}))
 
     this.importSubscriptions = {

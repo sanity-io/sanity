@@ -13,7 +13,7 @@ import codeInput from 'part:@sanity/form-builder/input/code?'
 import SlugInput from '../inputs/Slug'
 import FileInput from '../inputs/File'
 import ImageInput from '../inputs/Image'
-import SanityArray from '../inputs/Array'
+import SanityArray from '../inputs/SanityArray'
 
 import resolveReference from './resolveReference'
 

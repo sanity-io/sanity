@@ -20,5 +20,6 @@ type Subscriber<T> = FunctionSubscriber<T> | ObjectSubscriber<T>
 
 export interface ObservableI<T> {
   constructor: (observer: ObserverI<T>) => void,
-  subscribe: (subscriber: Subscriber<T>) => Subscription<T>
+  subscribe: (subscriber: Subscriber<T>) => Subscription<T>,
+  map<T, A>((T) => A): ObservableI<A>
 }

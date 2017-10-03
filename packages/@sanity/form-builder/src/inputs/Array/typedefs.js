@@ -1,6 +1,7 @@
 // @flow
-export type Type = {
-  type: any,
+import type {Type} from '../../typedefs'
+
+export type ArrayType = Type & {
   name: string,
   title: string,
   description: string,
