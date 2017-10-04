@@ -28,6 +28,8 @@ export default class StickyPortal extends React.Component {
     onClose: PropTypes.func,
     onResize: PropTypes.func,
     useOverlay: PropTypes.bool,
+    scrollIntoView: PropTypes.bool,
+    addPadding: PropTypes.bool,
     scrollContainer: PropTypes.object // DOM element
   }
 
@@ -38,6 +40,8 @@ export default class StickyPortal extends React.Component {
     isOpen: true,
     ignoreScroll: false,
     useOverlay: true,
+    scrollIntoView: true,
+    addPadding: true,
     onClose: () => {},
     onResize: () => {}
   }
@@ -114,7 +118,6 @@ export default class StickyPortal extends React.Component {
   handlePortalOpened = () => {
     if (this._scrollContainerElement) {
       this._initialScrollTop = this._scrollContainerElement.scrollTop
-      // this.initScrollContainer(this._scrollContainerElement)
     }
     this.moveIntoPosition()
     this.addMovingListeners()
@@ -137,6 +140,9 @@ export default class StickyPortal extends React.Component {
   }
 
   scrollIntoView = () => {
+    if (!this.props.scrollIntoView) {
+      return
+    }
     if (!this._scrollContainerElement) {
       //console.error('scrollIntoView: Missing scrollContainer element')
       return
@@ -148,17 +154,14 @@ export default class StickyPortal extends React.Component {
     }
 
     const neededHeight = this._contentElement.offsetHeight
-    //const extraHeight = -window.innerHeight + neededHeight + this._rootTop
-    const extraHeight = this._contentElement.offsetHeight
 
-    this._paddingDummy.style.height = `${extraHeight}px`
+    if (this.props.addPadding) {
+      const extraHeight = this._contentElement.offsetHeight
+      this._paddingDummy.style.height = `${extraHeight}px`
+    }
 
     const scrollTop = this._scrollContainerElement.scrollTop
     this._extraScrollTop = -window.innerHeight + neededHeight + this._rootTop
-
-    // if (this._initialScrollTop != 0) {
-    //
-    // }
 
     if (this._extraScrollTop > 0) {
       this._initialScrollTop = scrollTop

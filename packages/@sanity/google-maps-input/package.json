@@ -27,10 +27,10 @@
     "@sanity/form-builder": "^0.115.2",
     "babel-plugin-lodash": "^3.2.11",
     "lodash": "^4.17.4",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "prop-types": "15.x || ^16.0.0-rc.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
     "react": "15.x || ^16.0.0-rc.2",
     "react-dom": "15.x || ^16.0.0-rc.2"
   },

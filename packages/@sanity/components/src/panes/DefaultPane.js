@@ -83,7 +83,7 @@ class Pane extends React.PureComponent {
       const ratio = scrollTop / threshold
       this.setState({
         headerStyle: {
-          opacity: ratio,
+          opacity: ratio + 0.5,
           boxShadow: `0 2px ${3 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
         }
       })

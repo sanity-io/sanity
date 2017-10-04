@@ -3,17 +3,12 @@
 .root {
   background-color: var(--component-bg);
   color: var(--text-color);
-  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-8dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-small);
   user-select: none;
   text-align: left;
-  z-index: var(--zindex-dropdown);
   overflow: auto;
   overflow-x: hidden;
-}
-
-.fullWidth {
-  width: 100%;
 }
 
 .list {
@@ -72,24 +67,4 @@
 .closed {
   composes: root;
   display: none;
-}
-
-.origin__top-left {
-  top: 0;
-  left: 0;
-}
-
-.origin__top-right {
-  top: 0;
-  right: 0;
-}
-
-.origin__bottom-right {
-  bottom: 0;
-  right: 0;
-}
-
-.origin__bottom-left {
-  bottom: 0;
-  left: 0;
 }
