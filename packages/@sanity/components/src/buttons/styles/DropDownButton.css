@@ -13,13 +13,32 @@
   font-size: 1.5em;
 }
 
-.menu {
-  width: auto;
+.sticky {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  top: 0;
+  left: 0;
 }
 
-.menuRoot {
-  position: absolute;
-  z-index: 1;
-  top: 100%;
-  left: 0;
+.stickyTop {
+  composes: sticky;
+}
+
+.stickyBottom {
+  composes: sticky;
+}
+
+.menu {
+  width: 100%;
+}
+
+.menuStickToBottom {
+  composes: menu;
+  transform: translateY(3em);
+}
+
+.menuStickToTop {
+  composes: menu;
+  transform: translateY(-100%);
 }

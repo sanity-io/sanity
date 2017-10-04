@@ -23,9 +23,7 @@ class DefaultMenu extends React.Component {
   static propTypes = {
     onAction: PropTypes.func.isRequired,
     isOpen: PropTypes.bool,
-    origin: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
     ripple: PropTypes.bool,
-    fullWidth: PropTypes.bool,
     className: PropTypes.string,
     onClickOutside: PropTypes.func,
     onClose: PropTypes.func,
@@ -42,7 +40,6 @@ class DefaultMenu extends React.Component {
 
   static defaultProps = {
     menuOpened: false,
-    origin: 'top-left',
     isOpen: false,
     fullWidth: false,
     icon: false,
@@ -69,41 +66,12 @@ class DefaultMenu extends React.Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
     window.addEventListener('resize', this.handleResize, false)
-    this.tryFindScrollContainer()
-    //this.constrainHeight(this._rootElement)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, false)
     window.removeEventListener('keydown', this.handleKeyDown, false)
   }
-
-  tryFindScrollContainer() {
-    let scrollContainer = this._rootElement.parentNode
-    while (!this._scrollContainerElement) {
-      if (!scrollContainer.parentNode) {
-        break
-      }
-      if (['overlay', 'auto', 'scroll'].includes(window.getComputedStyle(scrollContainer).overflowY)) {
-        this._scrollContainerElement = scrollContainer
-
-        this._scrollContainerElement.onscroll = event => {
-          this.scrollOffset = this._scrollContainerElement.scrollTop
-          this.handleResize()
-        }
-        break
-      }
-      scrollContainer = scrollContainer.parentNode
-    }
-  }
-
-  componentDidUpdate() {
-    //this.constrainHeight(this._rootElement)
-  }
-
-  handleResize = debounceRAF(() => {
-    //this.constrainHeight(this._rootElement)
-  })
 
   handleKeyDown = event => {
     const {items} = this.props
@@ -131,7 +99,6 @@ class DefaultMenu extends React.Component {
     if (event.key == 'Enter' && isOpen && this.state.selectedItem) {
       this.props.onAction(this.props.items[currentIndex])
     }
-
   }
 
   handleItemClick = event => {
@@ -153,47 +120,20 @@ class DefaultMenu extends React.Component {
     }
   }
 
-  // constrainHeight = element => {
-  //   const margin = 10
-  //   if (element) {
-  //     const clientRects = element.getBoundingClientRect()
-  //
-  //     // Change maxheight if window resizes
-  //     if (element.style.maxHeight) {
-  //       const diff = this.lastWindowHeight - window.innerHeight
-  //       element.style.maxHeight = `${element.style.maxHeight.split('px')[0] - diff + this.scrollOffset}px`
-  //     }
-  //
-  //     // Set initial maxHeight
-  //     if ((clientRects.top + clientRects.height) > (window.innerHeight - margin)) {
-  //       const newMaxHeight = window.innerHeight - clientRects.top - margin
-  //       element.style.maxHeight = `${newMaxHeight}px`
-  //     }
-  //
-  //     this.lastWindowHeight = window.innerHeight
-  //   }
-  // }
-
   setRootElement = element => {
     this._rootElement = element
-    // this.constrainHeight(this._rootElement)
   }
 
   render() {
     const {focusedItem} = this.state
-    const {items, origin, ripple, fullWidth, className, opened} = this.props
-    const originStyle = styles[`origin__${origin}`] ? styles[`origin__${origin}`] : ''
+    const {items, ripple, className, opened} = this.props
 
     const isOpen = opened || this.props.isOpen
 
     return (
       <div
         ref={this.setRootElement}
-        className={`
-          ${isOpen ? styles.isOpen : styles.closed}
-          ${fullWidth && styles.fullWidth ? styles.fullWidth : ''}
-          ${className || ''}
-        `}
+        className={`${isOpen ? styles.isOpen : styles.closed} ${className || ''}`}
       >
         <ul className={styles.list}>
           {
@@ -202,7 +142,13 @@ class DefaultMenu extends React.Component {
               return (
                 <li
                   key={i}
-                  className={classNames([item === focusedItem ? styles.focusedItem : styles.item, item.isDisabled && styles.isDisabled, item.divider && styles.divider])}
+                  className={
+                    classNames([
+                      item === focusedItem ? styles.focusedItem : styles.item,
+                      item.isDisabled && styles.isDisabled,
+                      item.divider && styles.divider
+                    ])
+                  }
                 >
                   <a
                     onClick={item.isDisabled ? null : this.handleItemClick}

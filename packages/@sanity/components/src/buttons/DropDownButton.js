@@ -8,7 +8,7 @@ import {omit} from 'lodash'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 
-class DropDownButton extends React.Component {
+class DropDownButton extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['secondary', 'add', 'delete', 'warning', 'success', 'danger', 'simple']),
     items: PropTypes.arrayOf(
@@ -29,14 +29,12 @@ class DropDownButton extends React.Component {
     className: PropTypes.string
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.state = {
-      menuOpened: false
-    }
-    this.handleOnClick = this.handleOnClick.bind(this)
-    this.handleAction = this.handleAction.bind(this)
+  state = {
+    menuOpened: false,
+    stickToBottom: true
   }
+
+  width = 100
 
   componentDidMount() {
     const {
@@ -52,10 +50,6 @@ class DropDownButton extends React.Component {
     } else {
       tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
     }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return true
   }
 
   setScrollContainerElement = element => {
@@ -75,6 +69,9 @@ class DropDownButton extends React.Component {
 
   setRootElement = element => {
     this._rootElement = element
+    if (element) {
+      this.width = element.offsetWidth
+    }
   }
 
   setMenuElement = element => {
@@ -83,22 +80,30 @@ class DropDownButton extends React.Component {
 
   handleOnClick = event => {
     this.setState({
-      menuOpened: !this.state.menuOpened
+      menuOpened: !this.state.menuOpened,
+      width: event.target.offsetWidth
     })
-
   }
-  handleAction(item) {
+
+  handleAction = item => {
     this.props.onAction(item)
   }
 
   handleResize = dimensions => {
-    // console.log('handleResize: dimensions', dimensions)
-    // console.log('menuHeight', this._menuElement.offsetHeight)
+    if (this._menuElement.offsetHeight < (window.innerHeight - dimensions.rootTop)) {
+      this.setState({
+        stickToBottom: true
+      })
+      return
+    }
+    this.setState({
+      stickToBottom: false
+    })
   }
 
   render() {
     const {items, children, kind, className, ...rest} = omit(this.props, 'onAction')
-    const {menuOpened, scrollContainer} = this.state
+    const {menuOpened, scrollContainer, width, stickToBottom} = this.state
     return (
       <div ref={this.setRootElement} className={className}>
         <Button
@@ -114,21 +119,26 @@ class DropDownButton extends React.Component {
           <span className={styles.arrow}>
             <ArrowIcon color="inherit" />
           </span>
-          <div className={styles.menuRoot}>
+          <div className={stickToBottom ? styles.stickyBottom : styles.stickyTop}>
             {
               menuOpened && (
                 <StickyPortal
-                  isOpen={menuOpened}
+                  isOpen
                   scrollContainer={scrollContainer}
+                  onResize={this.handleResize}
                   onlyBottomSpace={false}
                   useOverlay={false}
-                  onResize={this.handleResize}
+                  addPadding={false}
+                  scrollIntoView={false}
                 >
-                  <div ref={this.setMenuElement}>
+                  <div
+                    ref={this.setMenuElement}
+                    style={{width: `${width}px`}}
+                  >
                     <Menu
                       items={items}
                       isOpen
-                      className={styles.menu}
+                      className={stickToBottom ? styles.menuStickToBottom : styles.menuStickToTop}
                       onAction={this.handleAction}
                       onClickOutside={this.handleClickOutside}
                       onClose={this.handleClose}
