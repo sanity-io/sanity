@@ -1,6 +1,7 @@
 import client from 'part:@sanity/base/client'
 
 function uploadAsset(assetType, file) {
+  console.log('Uploading…', file.name)
   return client.observable.assets.upload(assetType, file)
     .map(event => {
       if (event.type === 'response') {

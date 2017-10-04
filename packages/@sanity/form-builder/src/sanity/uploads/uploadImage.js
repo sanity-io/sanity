@@ -1,6 +1,5 @@
 // @flow
 import Observable from '@sanity/observable'
-import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION} from './image/orient'
@@ -14,6 +13,7 @@ import type {OrientationId} from './image/orient'
 import type {ObservableI} from '../../typedefs/observable'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {CLEANUP_EVENT, INIT_EVENT, createUploadEvent} from './utils'
+import {createUploadId, getUploadEvents, scheduleUpload} from './uploadQueue'
 
 type Exif = {
   orientation: OrientationId
@@ -23,7 +23,9 @@ const setInitialUploadState$ = Observable.of(INIT_EVENT)
 const unsetUploadState$ = Observable.of(CLEANUP_EVENT)
 
 export default function uploadImage(file: File): ObservableI<UploadEvent> {
-  const upload$ = uploadImageAsset(file)
+  const uploadId = createUploadId(file)
+
+  const upload$ = getUploadEvents(uploadId)
     .map(event => {
       if (event.type === 'complete') {
         return createUploadEvent([set({_type: 'reference', _ref: event.asset._id}, ['asset'])])
@@ -34,12 +36,15 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
   const setPreviewUrl$ = readExif(file)
     .mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION))
     .catch(error => {
+      // eslint-disable-next-line no-console
       console.warn('Image preprocessing failed: ', error)
       // something went wrong, but continue still
       return Observable.of(null)
     })
     .filter(Boolean)
     .map(imageUrl => createUploadEvent([set({previewImage: imageUrl}, [UPLOAD_STATUS_KEY])]))
+
+  scheduleUpload(uploadId, file)
 
   return setInitialUploadState$
     .concat(Observable.from(upload$).merge(setPreviewUrl$))
