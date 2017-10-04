@@ -1,12 +1,13 @@
+// @flow
 import PropTypes from 'prop-types'
-// @flow weak
 import React from 'react'
 import {omit, groupBy, get} from 'lodash'
 
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import ImageInputFieldset from 'part:@sanity/components/imageinput/fieldset'
+import DefaultImageInput from 'part:@sanity/components/imageinput/default'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 
 import Field from '../Object/Field'
 import ImageTool from '@sanity/imagetool'
@@ -14,6 +15,7 @@ import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import SelectAsset from './SelectAsset'
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -36,11 +38,12 @@ function getInitialState() {
     progress: null,
     uploadingImage: null,
     materializedImage: null,
-    isAdvancedEditOpen: false
+    isAdvancedEditOpen: false,
+    isSelectAssetOpen: false
   }
 }
 
-export default class ImageInput extends React.PureComponent {
+export default class ImageInput extends React.PureComponent<*> {
   _unmounted: boolean
 
   static propTypes = {
@@ -71,7 +74,7 @@ export default class ImageInput extends React.PureComponent {
     const currentRef = get(this.props, 'value.asset')
     const nextRef = get(nextProps, 'value.asset')
 
-    const shouldUpdate = currentRef !== nextRef && get(currentRef, '_ref') !== get(nextRef, '_ref')
+    const shouldUpdate = currentRef !== nextRef || get(currentRef, '_ref') !== get(nextRef, '_ref')
 
     if (shouldUpdate) {
       this.setState(omit(getInitialState(), 'materializedImage', 'uploadingImage'))
@@ -93,9 +96,6 @@ export default class ImageInput extends React.PureComponent {
   syncImageRef(reference) {
     if (!reference) {
       this.setState({materializedImage: null})
-      return
-    }
-    if (this.state.materializedImage && this.state.materializedImage._id === reference._id) {
       return
     }
     const {materializeReferenceFn} = this.props
@@ -181,7 +181,7 @@ export default class ImageInput extends React.PureComponent {
     })
   }
 
-  handleFieldChange = (event : PatchEvent, field) => {
+  handleFieldChange = (event: PatchEvent, field) => {
     const {onChange, type} = this.props
 
     onChange(event
@@ -315,8 +315,37 @@ export default class ImageInput extends React.PureComponent {
     })
   }
 
+  handleOpenSelectAsset = () => {
+    this.setState({
+      isSelectAssetOpen: true
+    })
+  }
+
+  handleCloseSelectAsset = () => {
+    this.setState({
+      isSelectAssetOpen: false
+    })
+  }
+
+  handleSelectAsset = asset => {
+    const {onChange, type} = this.props
+    onChange(PatchEvent.from([
+      setIfMissing({
+        _type: type.name
+      }),
+      set({
+        _type: 'reference',
+        _ref: asset._id
+      }, ['asset'])
+    ]))
+
+    this.setState({
+      isSelectAssetOpen: false
+    })
+  }
+
   render() {
-    const {status, progress, isAdvancedEditOpen} = this.state
+    const {status, progress, isAdvancedEditOpen, isSelectAssetOpen} = this.state
     const {
       type,
       level,
@@ -347,27 +376,35 @@ export default class ImageInput extends React.PureComponent {
     const hasAdvancedFields = fieldGroups.other.length > 0
     const onEdit = hasAdvancedFields ? this.handleOpenAdvancedEdit : null
     return (
-      <ImageInputFieldset
-        status={status}
-        legend={type.title}
-        level={level}
-        percent={progress && progress.percent}
-        onSelect={this.handleSelect}
-        onCancel={this.handleCancel}
-        onClear={this.handleClearValue}
-        onEdit={onEdit}
-        showContent={fieldGroups.highlighted.length > 0}
-        multiple={false}
-        accept={accept || 'image/*'}
-        hotspotImage={{
-          hotspot: isImageToolEnabled ? (value && value.hotspot) : DEFAULT_HOTSPOT,
-          crop: isImageToolEnabled ? (value && value.crop) : DEFAULT_CROP,
-          imageUrl: imageUrl
-        }}
-      >
-        {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
-        {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-      </ImageInputFieldset>
+      <Fieldset legend={type.title} description={type.description} level={level}>
+        <DefaultImageInput
+          status={status}
+          legend={type.title}
+          level={level}
+          percent={progress && progress.percent}
+          onSelect={this.handleSelect}
+          onCancel={this.handleCancel}
+          onClear={this.handleClearValue}
+          onEdit={onEdit}
+          showContent={fieldGroups.highlighted.length > 0}
+          multiple={false}
+          accept={accept || 'image/*'}
+          hotspotImage={{
+            hotspot: isImageToolEnabled ? (value && value.hotspot) : DEFAULT_HOTSPOT,
+            crop: isImageToolEnabled ? (value && value.crop) : DEFAULT_CROP,
+            imageUrl: imageUrl
+          }}
+        >
+          {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
+          {isSelectAssetOpen && (
+            <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
+              <SelectAsset onSelect={this.handleSelectAsset} />
+            </Dialog>
+          )}
+          {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
+        </DefaultImageInput>
+        <Button onClick={this.handleOpenSelectAsset}>Select from library…</Button>
+      </Fieldset>
     )
   }
 }
