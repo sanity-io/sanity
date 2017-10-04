@@ -4,27 +4,21 @@ const clientMethods = ['fetch', 'transaction', 'config']
 const allowedOperations = ['create', 'createIfNotExists', 'createOrReplace']
 const defaultOperation = allowedOperations[0]
 
-function validateOptions(stream, opts) {
+function validateOptions(input, opts) {
   const options = defaults({}, opts, {
     operation: defaultOperation,
     onProgress: noop
   })
 
-  if (typeof stream.pipe !== 'function') {
-    throw new Error(
-      'Stream does not seem to be a readable stream - no "pipe" method found'
-    )
+  if (!input || (typeof input.pipe !== 'function' && !Array.isArray(input))) {
+    throw new Error('Stream does not seem to be a readable stream or an array')
   }
 
   if (!options.client) {
-    throw new Error(
-      '`options.client` must be set to an instance of @sanity/client'
-    )
+    throw new Error('`options.client` must be set to an instance of @sanity/client')
   }
 
-  const missing = clientMethods.find(
-    key => typeof options.client[key] !== 'function'
-  )
+  const missing = clientMethods.find(key => typeof options.client[key] !== 'function')
 
   if (missing) {
     throw new Error(

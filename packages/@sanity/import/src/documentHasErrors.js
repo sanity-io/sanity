@@ -1,4 +1,4 @@
-module.exports = function documentHasErrors(doc) {
+function documentHasErrors(doc) {
   if (typeof doc._id !== 'undefined' && typeof doc._id !== 'string') {
     return `Document contained an invalid "_id" property - must be a string`
   }
@@ -9,3 +9,12 @@ module.exports = function documentHasErrors(doc) {
 
   return null
 }
+
+documentHasErrors.validate = (doc, index) => {
+  const err = documentHasErrors(doc)
+  if (err) {
+    throw new Error(`Failed to parse document at index #${index}: ${err}`)
+  }
+}
+
+module.exports = documentHasErrors

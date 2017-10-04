@@ -22,6 +22,7 @@ const client = sanityClient({
   useCdn: false
 })
 
+// Input can either be a stream or an array of documents
 const input = fs.createReadStream('my-documents.ndjson')
 sanityImport(input, {
   client: client,
