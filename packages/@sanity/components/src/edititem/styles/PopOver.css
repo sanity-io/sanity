@@ -113,7 +113,7 @@
   cursor: pointer;
   color: #fff;
   outline: none;
-  z-index: calc(var(--zindex-popover) + 1);
+  /*z-index: calc(var(--zindex-popover) + 1);*/
   padding-right: 0.25em;
 
   @media (--screen-medium) {
@@ -131,7 +131,7 @@
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: overlay;
 }
 
 .contentIsResizing {

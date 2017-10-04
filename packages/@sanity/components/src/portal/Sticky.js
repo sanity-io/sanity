@@ -98,9 +98,12 @@ export default class StickyPortal extends React.Component {
     if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
       this._elementResizeDetector.uninstall(this._contentElement.firstChild)
     }
-    this._paddingDummy.addEventListener('transitionend', () => {
-      this._paddingDummy.remove()
-    }, false)
+
+    if (this._paddingDummy) {
+      this._paddingDummy.removeEventListener('transitionend', () => {
+        this._paddingDummy.remove()
+      }, false)
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -351,18 +354,7 @@ export default class StickyPortal extends React.Component {
   }
 
   handleElementResize = el => {
-    if (!this.isResizing) {
-      return
-    }
-    this.appendPadding()
-    const scrollHeight = el.scrollHeight
-    if (scrollHeight !== this._contentElementScrollHeight) {
-      this._contentElementScrollHeight = scrollHeight
-      if (this.state.isFocused) {
-        this.moveIntoPosition()
-      }
-    }
-    this.setRootRects()
+    this.moveIntoPosition()
   }
 
   // Set elements

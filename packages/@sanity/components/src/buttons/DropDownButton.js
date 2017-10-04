@@ -133,7 +133,7 @@ class DropDownButton extends React.PureComponent {
                 >
                   <div
                     ref={this.setMenuElement}
-                    style={{width: `${width}px`}}
+                    style={{minWidth: `${width}px`}}
                   >
                     <Menu
                       items={items}

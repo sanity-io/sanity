@@ -2,11 +2,18 @@
 
 .root {
   position: relative;
+}
+
+.inner {
   display: flex;
   justify-content: space-between;
 }
 
-.grid {
+.listItem {
+  composes: root;
+}
+
+.gridItem {
   composes: root;
   padding: 2px;
   width: 10em;
@@ -30,9 +37,16 @@
   height: 1px;
 }
 
+.editRootFold {
+  position: relative;
+  width: calc(100% + var(--medium-padding) * 2);
+  margin-left: calc(var(--medium-padding) * -1);
+}
+
 .preview {
   flex-grow: 1;
   outline: none;
+  user-select: none;
 }
 
 .functions {
