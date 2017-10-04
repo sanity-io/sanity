@@ -15,7 +15,7 @@ const {
   strengthenReferences
 } = require('./references')
 
-async function importFromStream(input, opts) {
+async function importDocuments(input, opts) {
   const options = validateOptions(input, opts)
 
   options.onProgress({step: 'Reading/validating data file'})
@@ -68,4 +68,4 @@ async function importFromStream(input, opts) {
   return docsImported
 }
 
-module.exports = importFromStream
+module.exports = importDocuments

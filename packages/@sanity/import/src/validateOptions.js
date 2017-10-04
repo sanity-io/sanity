@@ -10,7 +10,7 @@ function validateOptions(input, opts) {
     onProgress: noop
   })
 
-  if (typeof input.pipe !== 'function' && !Array.isArray(input)) {
+  if (!input || (typeof input.pipe !== 'function' && !Array.isArray(input))) {
     throw new Error('Stream does not seem to be a readable stream or an array')
   }
 

@@ -23,6 +23,20 @@ const getFixtureArray = fix =>
     .split('\n')
     .map(JSON.parse)
 
+test('rejects on invalid input type (null/undefined)', async () => {
+  await expect(importer(null, importOptions)).rejects.toHaveProperty(
+    'message',
+    'Stream does not seem to be a readable stream or an array'
+  )
+})
+
+test('rejects on invalid input type (non-array)', async () => {
+  await expect(importer({}, importOptions)).rejects.toHaveProperty(
+    'message',
+    'Stream does not seem to be a readable stream or an array'
+  )
+})
+
 test('rejects on invalid JSON', async () => {
   await expect(importer(getFixtureStream('invalid-json'), importOptions)).rejects.toHaveProperty(
     'message',
