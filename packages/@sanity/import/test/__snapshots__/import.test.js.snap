@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`employee creation 1`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "create": Object {
+        "_id": "espen",
+        "_type": "employee",
+        "name": "Espen",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "pk",
+        "_type": "employee",
+        "name": "Per-Kristian",
+      },
+    },
+  ],
+}
+`;
+
+exports[`employee creation 2`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "create": Object {
+        "_id": "espen",
+        "_type": "employee",
+        "name": "Espen",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "pk",
+        "_type": "employee",
+        "name": "Per-Kristian",
+      },
+    },
+  ],
+}
+`;
