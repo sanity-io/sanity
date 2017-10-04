@@ -5,7 +5,7 @@ import {set, unset} from '../../utils/patches'
 import Observable from '@sanity/observable'
 
 const SET_UPLOAD_PATCH = set({
-  percent: 0,
+  percent: 2,
   initiated: new Date().toISOString()
 }, [UPLOAD_STATUS_KEY])
 

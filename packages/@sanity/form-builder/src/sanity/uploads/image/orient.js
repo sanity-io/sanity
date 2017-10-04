@@ -77,9 +77,15 @@ const ORIENTATIONS: Array<OrientationId> = [
 
 export const DEFAULT_ORIENTATION: OrientationId = 'top-left'
 
+const THUMB_SIZE = 120
+
 // Based on github.com/component/exif-rotate
-function _orient(img: Image, orientationNumber: number, callback: Blob => void) {
+function _orient(img: Image, orientationNumber: number): HTMLCanvasElement {
   const orientation = ORIENTATION_OPS[orientationNumber - 1]
+
+  const ratio = img.height / img.width
+  img.width = THUMB_SIZE / ratio
+  img.height = img.width * ratio
 
   // canvas
   const canvas = document.createElement('canvas')
@@ -116,8 +122,8 @@ function _orient(img: Image, orientationNumber: number, callback: Blob => void) 
     }
   }
 
-  ctx.drawImage(img, 0, 0)
-  canvas.toBlob(callback)
+  ctx.drawImage(img, 0, 0, img.width, img.height)
+  return canvas
 }
 
 
@@ -126,10 +132,8 @@ export default function orient(image: Image, orientationId: OrientationId) {
   return new Observable(observer => {
     // console.time('canvas to blob')
     const orientation = ORIENTATIONS.indexOf(orientationId) + 1
-    _orient(image, orientation, (blob: Blob) => {
-      // console.timeEnd('canvas to blob')
-      observer.next(blob)
-      observer.complete()
-    })
+    const canvas = _orient(image, orientation)
+    observer.next(canvas.toDataURL('image/jpeg', 0.1))
+    observer.complete()
   })
 }

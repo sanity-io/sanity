@@ -208,12 +208,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const {onChange} = this.props
 
     const {type, uploader} = importOption
-    const item = {
-      ...createProtoValue(type),
-      _import: {
-        initiatedAt: new Date().toISOString()
-      }
-    }
+    const item = createProtoValue(type)
 
     const key = item._key
     this.append(item)

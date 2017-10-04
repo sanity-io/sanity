@@ -25,12 +25,6 @@ function loadImage(url: string) {
 
 export default function rotateImage(file: File, orientation: OrientationId) {
   /* global window */
-  const objectUrl = window.URL.createObjectURL(file)
-  if (orientation && orientation !== DEFAULT_ORIENTATION) {
-    return Observable.of(objectUrl)
-  }
-
-  return loadImage(objectUrl)
+  return loadImage(window.URL.createObjectURL(file))
     .mergeMap(image => orient(image, orientation))
-    .map(blob => window.URL.createObjectURL(blob))
 }

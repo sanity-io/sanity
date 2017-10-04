@@ -22,13 +22,42 @@ type Exif = {
 const setInitialUploadState$ = Observable.of(INIT_EVENT)
 const unsetUploadState$ = Observable.of(CLEANUP_EVENT)
 
+// function mockUpload() {
+//   return new Observable(observer => {
+//     let progress = 0
+//     observer.next({percent: 0})
+//     const interval = setInterval(next, 20)
+//
+//     function next() {
+//       progress = Math.min(100, progress + (50 + (Math.random() * 10)))
+//       observer.next({type: 'progress', percent: progress})
+//       if (progress === 100) {
+//         clearInterval(interval)
+//         observer.next({type: 'complete', percent: progress, asset: {_id: 'image-LNxatfW7KD61pdBPKcgxC7qa-1419x1001-tiff'}})
+//         setTimeout(() => {
+//           observer.complete()
+//         }, 100)
+//       }
+//       return () => clearInterval(interval)
+//     }
+//   })
+// }
+
 export default function uploadImage(file: File): ObservableI<UploadEvent> {
   const uploadId = createUploadId(file)
 
   const upload$ = getUploadEvents(uploadId)
+    .filter(event => event.stage !== 'download')
+    .map(event => ({
+      ...event,
+      percent: 2 + ((event.percent / 100) * 98)
+    }))
     .map(event => {
       if (event.type === 'complete') {
-        return createUploadEvent([set({_type: 'reference', _ref: event.asset._id}, ['asset'])])
+        return createUploadEvent([
+          set({_type: 'reference', _ref: event.asset._id}, ['asset']),
+          set(100, [UPLOAD_STATUS_KEY, 'percent'])
+        ])
       }
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'percent'])])
     })
@@ -42,7 +71,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
       return Observable.of(null)
     })
     .filter(Boolean)
-    .map(imageUrl => createUploadEvent([set({previewImage: imageUrl}, [UPLOAD_STATUS_KEY])]))
+    .map(imageUrl => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
 
   scheduleUpload(uploadId, file)
 
