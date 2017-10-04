@@ -132,13 +132,12 @@ export default class Item extends React.Component<Props> {
     const isSortable = options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
 
-    const className = isGrid ? styles.grid : styles.root
     return (
-      <div>
-        <div
-          className={className}
-          ref={this.setElement}
-        >
+      <div
+        className={isGrid ? styles.gridItem : styles.listItem}
+        ref={this.setElement}
+      >
+        <div className={styles.inner}>
           {!isGrid && isSortable && <DragHandle />}
 
           <div
@@ -168,9 +167,11 @@ export default class Item extends React.Component<Props> {
               </ConfirmButton>
             )}
           </div>
-          <div className={styles.editRoot}>
-            {isEditing && this.renderEditItemForm(value)}
-          </div>
+        </div>
+        <div
+          className={options.editModal === 'fold' ? styles.editRootFold : styles.editRoot}
+        >
+          {isEditing && this.renderEditItemForm(value)}
         </div>
       </div>
     )
