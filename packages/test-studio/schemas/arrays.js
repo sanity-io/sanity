@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default {
   name: 'arraysTest',
   type: 'object',
@@ -9,6 +7,33 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string'
+    },
+    {
+      name: 'arrayOfMultipleTypes',
+      title: 'Array of multiple types',
+      type: 'array',
+      of: [
+        {
+          type: 'image'
+        },
+        {
+          type: 'book'
+        },
+        {
+          type: 'object',
+          name: 'color',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'arrayOfPredefinedOptions',
