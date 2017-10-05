@@ -37,11 +37,7 @@ export default async function initSanity(args, context) {
 
   if (hasToken) {
     print('Looks like you already have a Sanity-account. Sweet!\n')
-  } else if (unattended) {
-    throw new Error(
-      "Can't use unattended mode without being logged in, please use `sanity login` first!"
-    )
-  } else {
+  } else if (!unattended) {
     await getOrCreateUser()
   }
 
@@ -163,6 +159,10 @@ export default async function initSanity(args, context) {
     try {
       projects = await apiClient({requireProject: false}).projects.list()
     } catch (err) {
+      if (unattended) {
+        return {projectId: flags.project, displayName: 'Unknown project'}
+      }
+
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
     }
 
@@ -171,9 +171,10 @@ export default async function initSanity(args, context) {
     }
 
     if (unattended) {
+      const project = projects.find(proj => proj.id === flags.project)
       return {
         projectId: flags.project,
-        displayName: projects.find(proj => proj.id === flags.project).displayName
+        displayName: project ? project.displayName : 'Unknown project'
       }
     }
 
