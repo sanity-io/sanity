@@ -1,3 +1,7 @@
+// Note: Node 4 compat, please!
+// eslint-disable-next-line strict
+'use strict'
+
 const path = require('path')
 const gulp = require('gulp')
 const newer = require('gulp-newer')
