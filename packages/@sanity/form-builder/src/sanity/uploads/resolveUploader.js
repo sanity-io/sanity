@@ -1,6 +1,6 @@
 // @flow
 import accept from 'attr-accept'
-import importers from './uploaders'
+import uploaders from './uploaders'
 import {get} from 'lodash'
 import type {Uploader} from './typedefs'
 import type {Type} from '../../typedefs'
@@ -14,9 +14,9 @@ function is(typeName: string, type: Type): boolean {
 }
 
 export default function resolveUploader(type: Type, file: File) : ?Uploader {
-  return importers.find(handler => {
-    return is(handler.type, type)
-      && accept(file, handler.accepts)
+  return uploaders.find(uploader => {
+    return is(uploader.type, type)
+      && accept(file, uploader.accepts)
       && accept(file, get(type.options, 'accept') || '')
   })
 }

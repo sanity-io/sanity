@@ -4,12 +4,15 @@ import type {Type} from '../../typedefs'
 import type {ObservableI} from '../../typedefs/observable'
 
 export type UploadEvent = {
-  type: 'uploadEvent',
   patches: ?Array<Patch>
 }
 
-export type Uploader = {
+export type UploaderDef = {
   type: string,
   accepts: string,
   upload: (file: File, type: Type) => ObservableI<UploadEvent>
+}
+
+export type Uploader = UploaderDef & {
+  priority: number,
 }

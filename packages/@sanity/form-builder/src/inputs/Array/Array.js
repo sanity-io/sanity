@@ -4,7 +4,7 @@ import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import {sortBy, reverse} from 'lodash'
+import {sortBy} from 'lodash'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RenderItemValue from './ItemValue'
@@ -45,9 +45,9 @@ type UploadOption = {
   uploader: Uploader
 }
 
-type Task = {
+type UploadTask = {
   file: File,
-  importOptions: Array<UploadOption>
+  uploaderCandidates: Array<UploadOption>
 }
 
 type Props = {
@@ -60,19 +60,19 @@ type Props = {
 
 type State = {
   editItemKey: ?string,
-  unimportable: Array<Task>,
-  needsSelect: Array<Task>,
+  rejected: Array<UploadTask>,
+  ambiguous: Array<UploadTask>,
 }
 
 export default class ArrayInput extends React.Component<Props, State> {
   state = {
     editItemKey: null,
-    unimportable: [],
-    needsSelect: []
+    rejected: [],
+    ambiguous: []
   }
 
-  importSubscriptions: {}
-  importSubscriptions = {}
+  uploadSubscriptions: {}
+  uploadSubscriptions = {}
 
   insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
     const {onChange} = this.props
@@ -133,8 +133,8 @@ export default class ArrayInput extends React.Component<Props, State> {
         unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
       )
     )
-    if (item._key in this.importSubscriptions) {
-      this.importSubscriptions[item._key].unsubscribe()
+    if (item._key in this.uploadSubscriptions) {
+      this.uploadSubscriptions[item._key].unsubscribe()
     }
   }
 
@@ -159,7 +159,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     if (ev.clipboardData.files) {
       ev.preventDefault()
       ev.stopPropagation()
-      this.importFiles(Array.from(ev.clipboardData.files))
+      this.uploadFiles(Array.from(ev.clipboardData.files))
     }
   }
 
@@ -181,43 +181,44 @@ export default class ArrayInput extends React.Component<Props, State> {
       .filter(Boolean)
   }
 
-  importFiles(files: Array<File>) {
+  uploadFiles(files: Array<File>) {
     const tasks = files.map(file => ({
       file,
-      importOptions: this.getUploadOptions(file)
+      uploaderCandidates: this.getUploadOptions(file)
     }))
 
     const ready = tasks
-      .filter(task => task.importOptions.length > 0)
+      .filter(task => task.uploaderCandidates.length > 0)
 
-    const unimportable = tasks
-      .filter(task => task.importOptions.length === 0)
-    this.setState({unimportable})
+    const rejected = tasks
+      .filter(task => task.uploaderCandidates.length === 0)
+    this.setState({rejected})
 
     // todo: consider if we need to ask the user
-    // const needsSelect = tasks
-    //   .filter(task => task.importOptions.length > 1)
+    // the list of candidates is sorted by their priority and the first one is selected
+    // const ambiguous = tasks
+    //   .filter(task => task.uploaderCandidates.length > 1)
 
     ready
       .forEach(task => {
-        this.importFile(task.file, reverse(sortBy(task.importOptions, 'priority'))[0])
+        this.uploadFile(task.file, sortBy(task.uploaderCandidates, cand => cand.uploader.priority)[0])
       })
   }
 
-  importFile(file: File, importOption: UploadOption) {
+  uploadFile(file: File, uploadOption: UploadOption) {
     const {onChange} = this.props
 
-    const {type, uploader} = importOption
+    const {type, uploader} = uploadOption
     const item = createProtoValue(type)
 
     const key = item._key
     this.append(item)
 
     const events$ = uploader.upload(file, type)
-      .map(importEvent => PatchEvent.from(importEvent.patches).prefixAll({_key: key}))
+      .map(uploadEvent => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key}))
 
-    this.importSubscriptions = {
-      ...this.importSubscriptions,
+    this.uploadSubscriptions = {
+      ...this.uploadSubscriptions,
       [key]: events$.subscribe(onChange)
     }
   }
@@ -227,7 +228,7 @@ export default class ArrayInput extends React.Component<Props, State> {
       // todo: support folders with webkitGetAsEntry
       ev.preventDefault()
       ev.stopPropagation()
-      this.importFiles(Array.from(ev.dataTransfer.files))
+      this.uploadFiles(Array.from(ev.dataTransfer.files))
     }
   }
 
@@ -332,7 +333,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
   render() {
     const {type, level, value} = this.props
-    const {unimportable, needsSelect} = this.state
+    const {rejected, ambiguous} = this.state
 
     return (
       <Fieldset
@@ -363,27 +364,27 @@ export default class ArrayInput extends React.Component<Props, State> {
             </div>
           )}
         </div>
-        {needsSelect.length > 0 && (
+        {ambiguous.length > 0 && ( // not in use right now as we just pick the first uploader
           <Dialog
             isOpen
             title="Select how to represent"
             actions={[{title: 'Cancel'}]}
-            onAction={() => this.setState({needsSelect: []})}
+            onAction={() => this.setState({ambiguous: []})}
           >
-            {needsSelect.map(task => (
+            {ambiguous.map(task => (
               <div key={task.file.name}>
-                The file {task.file.name} can be converted to several types of content.
-                Please select how you want to represent it:
+                  The file {task.file.name} can be converted to several types of content.
+                  Please select how you want to represent it:
                 <ul>
-                  {task.importOptions.map(importOption => (
-                    <li key={importOption.type.name}>
+                  {task.uploaderCandidates.map(uploaderCandidate => (
+                    <li key={uploaderCandidate.type.name}>
                       <Button
                         onClick={() => {
-                          this.importFile(task.file, importOption)
-                          this.setState({needsSelect: needsSelect.filter(t => t !== task)})
+                          this.uploadFile(task.file, uploaderCandidate)
+                          this.setState({ambiguous: ambiguous.filter(t => t !== task)})
                         }}
                       >
-                        Represent as {importOption.type.name}
+                          Represent as {uploaderCandidate.type.name}
                       </Button>
                     </li>
                   ))}
@@ -392,14 +393,14 @@ export default class ArrayInput extends React.Component<Props, State> {
             ))}
           </Dialog>
         )}
-        {unimportable.length > 0 && (
+        {rejected.length > 0 && (
           <Snackbar
             kind="warning"
             action={{title: 'OK'}}
-            onAction={() => this.setState({unimportable: []})}
+            onAction={() => this.setState({rejected: []})}
           >
             File(s) not accepted:
-            {humanize(unimportable.map(task => task.file.name))}
+            {humanize(rejected.map(task => task.file.name))}
           </Snackbar>
         )}
       </Fieldset>

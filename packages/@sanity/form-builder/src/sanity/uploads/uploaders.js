@@ -1,22 +1,22 @@
 // @flow
 import uploadImage from './uploadImage'
 import uploadFile from './uploadFile'
-import type {Uploader} from './typedefs'
+import type {Uploader, UploaderDef} from './typedefs'
 import {set} from '../../utils/patches'
 
-const IMPORT_IMAGE: Uploader = {
+const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
   accepts: 'image/*',
   upload: (file: File, type: any) => uploadImage(file)
 }
 
-const IMPORT_FILE: Uploader = {
+const UPLOAD_FILE: UploaderDef = {
   type: 'file',
   accepts: '',
   upload: (file: File, type: any) => uploadFile(file)
 }
 
-const IMPORT_TEXT: Uploader = {
+const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
   accepts: 'text/*',
   upload: (file: File, type: any) => uploadFile(file)
@@ -25,14 +25,14 @@ const IMPORT_TEXT: Uploader = {
     }))
 }
 
-// Todo: make it possible to register custom importers
-const importers: Array<Uploader> = [
-  IMPORT_IMAGE,
-  IMPORT_TEXT,
-  IMPORT_FILE
-].map((importer, i) => ({
-  ...importer,
+// Todo: make it possible to register custom uploaders
+const uploaders: Array<Uploader> = [
+  UPLOAD_IMAGE,
+  UPLOAD_TEXT,
+  UPLOAD_FILE
+].map((uploader, i) => ({
+  ...uploader,
   priority: i
 }))
 
-export default importers
+export default uploaders
