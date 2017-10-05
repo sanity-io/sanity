@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
+import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 
 export default class SearchableSelect extends React.Component {
   static propTypes = {
@@ -17,12 +18,14 @@ export default class SearchableSelect extends React.Component {
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func.isRequired,
-    items: PropTypes.array
+    items: PropTypes.array,
+    scrollContainer: PropTypes.object
   }
 
   static defaultProps = {
     placeholder: 'Type to search…',
     isLoading: false,
+    scrollContainer: undefined,
     onChange() {},
     onSearch() {},
     onOpen() {},
@@ -37,8 +40,26 @@ export default class SearchableSelect extends React.Component {
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
-      arrowNavigationPosition: 0
+      arrowNavigationPosition: 0,
+      width: 448
     }
+  }
+
+  componentDidMount() {
+    const {
+      scrollContainer
+    } = this.props
+    if (scrollContainer) {
+      this.setScrollContainerElement(scrollContainer)
+    } else {
+      tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
+    }
+  }
+
+  setScrollContainerElement = element => {
+    this.setState({
+      scrollContainer: element
+    })
   }
 
   handleClickOutside = () => {
@@ -102,24 +123,37 @@ export default class SearchableSelect extends React.Component {
     this.setState({highlightIndex: nextIndex})
   }
 
+  setRootElement = element => {
+    this._rootElement = element
+    if (this._rootElement) {
+      this.setState({
+        width: this._rootElement.offsetWidth
+      })
+    }
+  }
+
   render() {
-    const {isOpen, highlightIndex, isInputSelected, inputValue} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width} = this.state
     const {onSearch, ...rest} = this.props
     return (
-      <StatelessSearchableSelect
-        {...rest}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        onHighlightIndexChange={this.handleHighlightIndexChange}
-        onOpen={this.handleOpen}
-        onClose={this.handleClose}
-        onChange={this.handleChange}
-        isOpen={isOpen}
-        highlightIndex={highlightIndex}
-        isInputSelected={isInputSelected}
-        inputValue={inputValue}
-        onInputChange={this.handleInputChange}
-      />
+      <div ref={this.setRootElement}>
+        <StatelessSearchableSelect
+          {...rest}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          onHighlightIndexChange={this.handleHighlightIndexChange}
+          onOpen={this.handleOpen}
+          onClose={this.handleClose}
+          onChange={this.handleChange}
+          isOpen={isOpen}
+          highlightIndex={highlightIndex}
+          isInputSelected={isInputSelected}
+          inputValue={inputValue}
+          onInputChange={this.handleInputChange}
+          scrollContainer={scrollContainer}
+          width={width}
+        />
+      </div>
     )
   }
 }

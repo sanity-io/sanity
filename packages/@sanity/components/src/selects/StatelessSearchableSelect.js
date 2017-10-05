@@ -7,6 +7,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import enhanceWithClickOutside from 'react-click-outside'
 import SelectMenu from './SelectMenu'
+import StickyPortal from 'part:@sanity/components/portal/sticky'
 
 const noop = () => {}
 
@@ -33,7 +34,9 @@ class StatelessSearchableSelect extends React.PureComponent {
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
 
-    isInputSelected: PropTypes.bool
+    isInputSelected: PropTypes.bool,
+
+    scrollContainer: PropTypes.node
   }
 
   static defaultProps = {
@@ -44,7 +47,8 @@ class StatelessSearchableSelect extends React.PureComponent {
     hasError: false,
     isLoading: false,
     renderItem: item => item,
-    items: []
+    items: [],
+    scrollContainer: undefined
   }
 
   handleClickOutside = () => {
@@ -117,6 +121,7 @@ class StatelessSearchableSelect extends React.PureComponent {
       onInputChange,
       onOpen,
       onClose,
+      scrollContainer,
       onHighlightIndexChange,
       ...rest
     } = this.props
@@ -148,24 +153,36 @@ class StatelessSearchableSelect extends React.PureComponent {
             </div>
           )}
         </div>
-
-        <div className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}>
-          {
-            items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
-          }
-          {
-            items.length === 0 && isLoading && <Spinner message="Loading items…" center />
-          }
-          {isOpen && items.length > 0 && (
-            <SelectMenu
-              items={items}
-              value={value}
-              onSelect={this.handleSelect}
-              renderItem={renderItem}
-              highlightIndex={highlightIndex}
-            />
-          )}
-        </div>
+        <StickyPortal
+          isOpen={isOpen}
+          scrollContainer={scrollContainer}
+          onResize={this.handleResize}
+          onlyBottomSpace={false}
+          useOverlay={false}
+          addPadding={false}
+          scrollIntoView={false}
+        >
+          <div
+            className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}
+            style={{width: `${this.props.width}px`}}
+          >
+            {
+              items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+            }
+            {
+              items.length === 0 && isLoading && <Spinner message="Loading items…" center />
+            }
+            {isOpen && items.length > 0 && (
+              <SelectMenu
+                items={items}
+                value={value}
+                onSelect={this.handleSelect}
+                renderItem={renderItem}
+                highlightIndex={highlightIndex}
+              />
+            )}
+          </div>
+        </StickyPortal>
       </div>
     )
   }
