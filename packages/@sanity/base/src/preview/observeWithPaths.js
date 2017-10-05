@@ -17,9 +17,10 @@ function listen(id) {
     observer.next({type: 'welcome', documentId: id})
     return getGlobalListener()
       .filter(event => event.documentId === id)
-      .debounceTime(2000)
+      .debounceTime(1000)
       .subscribe(observer)
   })
+    .debounceTime(1000)
 }
 
 function fetchAllDocumentSnapshots(selections) {
