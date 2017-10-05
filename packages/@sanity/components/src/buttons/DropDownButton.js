@@ -26,7 +26,12 @@ class DropDownButton extends React.PureComponent {
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
     color: PropTypes.string,
-    className: PropTypes.string
+    className: PropTypes.string,
+    origin: PropTypes.oneOf(['left', 'right'])
+  }
+
+  static defaultProps = {
+    origin: 'left'
   }
 
   state = {
@@ -102,8 +107,28 @@ class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, children, kind, className, ...rest} = omit(this.props, 'onAction')
+    const {items, children, kind, className, origin, ...rest} = omit(this.props, 'onAction')
     const {menuOpened, scrollContainer, width, stickToBottom} = this.state
+
+
+    let menuClassName = styles.menu
+
+    if (stickToBottom && origin === 'right') {
+      menuClassName = styles.menuBottomRight
+    }
+
+    if (!stickToBottom && origin === 'right') {
+      menuClassName = styles.menuTopRight
+    }
+
+    if (stickToBottom && origin === 'left') {
+      menuClassName = styles.menuBottomLeft
+    }
+
+    if (!stickToBottom && origin === 'left') {
+      menuClassName = styles.menuTopLeft
+    }
+
     return (
       <div ref={this.setRootElement} className={className}>
         <Button
@@ -119,7 +144,12 @@ class DropDownButton extends React.PureComponent {
           <span className={styles.arrow}>
             <ArrowIcon color="inherit" />
           </span>
-          <span className={stickToBottom ? styles.stickyBottom : styles.stickyTop}>
+          <span
+            className={`
+              ${stickToBottom ? styles.stickyBottom : styles.stickyTop}
+              ${origin === 'left' ? styles.stickyLeft : styles.stickyRight}
+            `}
+          >
             {
               menuOpened && (
                 <StickyPortal
@@ -138,7 +168,7 @@ class DropDownButton extends React.PureComponent {
                     <Menu
                       items={items}
                       isOpen
-                      className={stickToBottom ? styles.menuStickToBottom : styles.menuStickToTop}
+                      className={menuClassName}
                       onAction={this.handleAction}
                       onClickOutside={this.handleClickOutside}
                       onClose={this.handleClose}

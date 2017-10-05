@@ -20,7 +20,12 @@ export default class InsertBlocks extends React.Component {
 
   render() {
     return (
-      <DropDownButton items={this.props.blocks} onAction={this.props.onInsertBlock} kind="simple">
+      <DropDownButton
+        items={this.props.blocks}
+        onAction={this.props.onInsertBlock}
+        kind="simple"
+        origin="right"
+      >
         Insert
       </DropDownButton>
     )
