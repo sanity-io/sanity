@@ -4,7 +4,6 @@ node_js:
   - '6'
   - '8'
 before_script:
-  - npm install -g yarn@latest
   - travis_wait yarn run bootstrap
   - yarn run build
 script:
@@ -15,4 +14,4 @@ script:
   # Test initializing a project in unattended mode and building it
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
   - cd /tmp/test-project
-  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build
+  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build --skip-minify
