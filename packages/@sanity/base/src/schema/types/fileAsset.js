@@ -1,17 +1,29 @@
 export default {
-  name: 'fileAsset',
-  title: 'File asset',
+  name: 'sanity.fileAsset',
+  title: 'File',
   type: 'object',
+  fieldsets: [
+    {
+      name: 'system',
+      title: 'System fields',
+      description: 'These are read only'
+    }
+  ],
   fields: [
     {
-      name: 'assetId',
+      name: 'originalFilename',
       type: 'string',
-      title: 'Asset ID'
+      title: 'Original file name'
     },
     {
-      name: 'project',
+      name: 'extension',
       type: 'string',
-      title: 'Project'
+      title: 'File extension'
+    },
+    {
+      name: 'mimeType',
+      type: 'string',
+      title: 'Mime type'
     },
     {
       name: 'label',
@@ -19,14 +31,30 @@ export default {
       title: 'Label'
     },
     {
+      name: 'assetId',
+      type: 'string',
+      title: 'Asset ID',
+      readOnly: true,
+      fieldset: 'system'
+    },
+    {
       name: 'path',
       type: 'string',
-      title: 'Path'
+      title: 'Path',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'url',
       type: 'string',
-      title: 'Url'
+      title: 'Url',
+      readOnly: true,
+      fieldset: 'system'
     }
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'originalFilename'
+    }
+  }
 }
