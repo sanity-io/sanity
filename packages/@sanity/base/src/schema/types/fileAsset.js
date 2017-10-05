@@ -1,6 +1,6 @@
 export default {
   name: 'sanity.fileAsset',
-  title: 'File asset',
+  title: 'File',
   type: 'object',
   fieldsets: [
     {
