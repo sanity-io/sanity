@@ -4,7 +4,8 @@ node_js:
   - '6'
   - '8'
 before_script:
-  - yarn run init
+  - travis_wait yarn run bootstrap
+  - yarn run build
   - export PATH=$PATH:$PWD/packages/@sanity/cli/bin
 script:
   # Test building the test studio with all customizations
