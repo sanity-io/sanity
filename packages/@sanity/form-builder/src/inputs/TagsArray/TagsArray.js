@@ -5,7 +5,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
-export default class TagsInput extends React.PureComponent {
+export default class TagsArrayInput extends React.PureComponent {
   static propTypes = {
     type: PropTypes.object,
     value: PropTypes.arrayOf(PropTypes.string),
