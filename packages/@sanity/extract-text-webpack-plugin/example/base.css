@@ -1,6 +1,0 @@
-@import url(http://this.should.be/in/c);
-@import url("http://this.should.also.be/in/c");
-body {
-	border: 1px solid black;
-	correct: c;
-}
