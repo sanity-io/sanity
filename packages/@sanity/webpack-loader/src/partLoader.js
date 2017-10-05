@@ -29,7 +29,7 @@ function sanityPartLoader(input) {
 
   const basePath = this._compiler.sanity.basePath
 
-  if (request === 'config:sanity') {
+  if (request.indexOf('config:') === 0) {
     const config = JSON.parse(input)
     const indent = env === 'production' ? 0 : 2
     const reduced = reduceConfig(config, env)

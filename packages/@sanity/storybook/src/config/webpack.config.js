@@ -1,4 +1,9 @@
 const sanityServer = require('@sanity/server')
+const wpIntegration = require('@sanity/webpack-integration/v3')
+const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/webpack.config.js')
+
+const skipCssLoader = rule => rule.test && !rule.test.toString().includes('.css')
+const isCssLoader = rule => rule.test && rule.test.toString().includes('.css')
 
 // This is very hacky, but I couldn't figure out a way to pass config from
 // the parent task onto this configuration, which we need to infer the base
@@ -9,7 +14,7 @@ const sanityServer = require('@sanity/server')
 
 let sanityContext = null
 
-function getWebpackConfig(storyWpConfig, configType) {
+function getWebpackConfig(baseConfig, env) {
   /* eslint-disable strict */
 
   'use strict'
@@ -18,24 +23,22 @@ function getWebpackConfig(storyWpConfig, configType) {
     throw new Error('Sanity context has not been set for Storybook!')
   }
 
-  const config = Object.assign({}, sanityContext, {commonChunkPlugin: false})
-  const sanityWpConfig = sanityServer.getWebpackDevConfig(config)
+  const wpConfig = Object.assign({}, sanityContext, {commonChunkPlugin: false})
+  const sanityWpConfig = sanityServer.getWebpackDevConfig(wpConfig)
+  const config = Object.assign({}, genDefaultConfig(baseConfig, env))
+  config.plugins = config.plugins.concat(wpIntegration.getPlugins(sanityContext))
+  config.module.rules = (config.module.rules || []).concat(wpIntegration.getLoaders(sanityContext))
+  config.module.rules = config.module.rules.filter(skipCssLoader)
+  config.module.rules.unshift(sanityWpConfig.module.rules.find(isCssLoader))
 
-  sanityWpConfig.module = sanityWpConfig.module || {loaders: []}
-
-  if (configType.toLowerCase() === 'development') {
-    sanityWpConfig.module.loaders = sanityServer.applyStaticLoaderFix(sanityWpConfig, config)
-  }
-
-  return Object.assign({}, sanityWpConfig, storyWpConfig, {
-    plugins: [].concat(storyWpConfig.plugins, sanityWpConfig.plugins || []),
-    resolve: Object.assign({}, storyWpConfig.resolve, sanityWpConfig.resolve, {
-      alias: Object.assign({}, storyWpConfig.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
-    }),
-    module: Object.assign({}, storyWpConfig.module, sanityWpConfig.module, {
-      loaders: [].concat(storyWpConfig.module.loaders, sanityWpConfig.module.loaders)
-    })
+  config.resolve = Object.assign({}, config.resolve, sanityWpConfig.resolve, {
+    alias: Object.assign(
+      {},
+      config.resolve.alias || {},
+      sanityWpConfig.resolve.alias || {}
+    )
   })
+  return config
 }
 
 getWebpackConfig.setSanityContext = context => {

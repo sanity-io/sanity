@@ -28,6 +28,11 @@ module.exports = config => {
   })
 
   proc.stderr.on('data', data => {
+    // Skip progress events from storybook
+    if (/ \d+% /.test(data)) {
+      return
+    }
+
     output.print(chalk.red(`Storybook: ${data}`))
   })
 

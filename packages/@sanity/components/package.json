@@ -41,7 +41,7 @@
     "lodash": "^4.17.4",
     "lost": "^8.0.0",
     "moment": "^2.18.1",
-    "postcss-cssnext": "2.10.0",
+    "postcss-cssnext": "^3.0.2",
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
     "react-click-outside": "^2.3.1",
