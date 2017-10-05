@@ -1,7 +1,5 @@
-import webpackIntegration from '@sanity/webpack-integration'
+import webpackIntegration from '@sanity/webpack-integration/v3'
 
 export default options => {
-  return wp => {
-    return webpackIntegration.getPostcssPlugins(options)
-  }
+  return webpackIntegration.getPostcssPlugins(options)
 }

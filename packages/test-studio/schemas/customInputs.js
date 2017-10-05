@@ -1,5 +1,6 @@
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
+import CustomFontStringInput from '../src/components/CustomFontStringInput'
 
 export default {
   name: 'customInputsTest',
@@ -20,6 +21,13 @@ export default {
       description: 'A custom input for a custom object type',
       type: 'myObject',
       inputComponent: CustomMyObjectInput
+    },
+    {
+      name: 'customFont',
+      title: 'Input with custom font',
+      description: 'Custom input that has a bundled, custom font',
+      type: 'string',
+      inputComponent: CustomFontStringInput
     }
   ]
 }

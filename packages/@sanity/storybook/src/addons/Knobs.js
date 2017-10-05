@@ -1,1 +1,1 @@
-module.exports = require('@kadira/storybook-addon-knobs')
+module.exports = require('@storybook/addon-knobs')

@@ -1,5 +1,0 @@
-@import url(http://this.should.be/in/a);
-.xyz {
-	color: url(image.png);
-	correct: a;
-}
