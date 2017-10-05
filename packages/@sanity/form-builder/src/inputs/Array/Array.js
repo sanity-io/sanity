@@ -15,6 +15,7 @@ import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
+import type {Type} from '../../typedefs'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -55,7 +56,7 @@ type Props = {
   value: Array<ItemValue>,
   level: number,
   onChange: (event: PatchEvent) => void,
-  resolveUploader: (type: Type, file: File) => Uploader
+  resolveUploader?: (type: Type, file: File) => Uploader
 }
 
 type State = {
@@ -159,17 +160,33 @@ export default class ArrayInput extends React.Component<Props, State> {
     if (ev.clipboardData.files) {
       ev.preventDefault()
       ev.stopPropagation()
-      this.uploadFiles(Array.from(ev.clipboardData.files))
+      if (this.props.resolveUploader) {
+        this.uploadFiles(Array.from(ev.clipboardData.files))
+      }
     }
   }
 
   handleDragOver = (ev: SyntheticDragEvent<*>) => {
-    ev.preventDefault()
-    ev.stopPropagation()
+    if (this.props.resolveUploader) {
+      ev.preventDefault()
+      ev.stopPropagation()
+    }
+  }
+
+  handleDrop = (ev: SyntheticDragEvent<*>) => {
+    if (this.props.resolveUploader && ev.dataTransfer.files) {
+      // todo: support folders with webkitGetAsEntry
+      ev.preventDefault()
+      ev.stopPropagation()
+      this.uploadFiles(Array.from(ev.dataTransfer.files))
+    }
   }
 
   getUploadOptions = (file: File): Array<UploadOption> => {
     const {type, resolveUploader} = this.props
+    if (!resolveUploader) {
+      return []
+    }
     return type.of
       .map(memberType => {
         const uploader = resolveUploader(memberType, file)
@@ -220,15 +237,6 @@ export default class ArrayInput extends React.Component<Props, State> {
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,
       [key]: events$.subscribe(onChange)
-    }
-  }
-
-  handleDrop = (ev: SyntheticDragEvent<*>) => {
-    if (ev.dataTransfer.files) {
-      // todo: support folders with webkitGetAsEntry
-      ev.preventDefault()
-      ev.stopPropagation()
-      this.uploadFiles(Array.from(ev.dataTransfer.files))
     }
   }
 
