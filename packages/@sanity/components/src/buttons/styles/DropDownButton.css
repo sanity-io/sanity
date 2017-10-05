@@ -18,7 +18,6 @@
   width: 1px;
   height: 1px;
   top: 0;
-  left: 0;
 }
 
 .stickyTop {
@@ -29,16 +28,34 @@
   composes: sticky;
 }
 
+.stickyLeft {
+  left: 0;
+}
+
+.stickyRight {
+  right: 0;
+}
+
 .menu {
   width: 100%;
 }
 
-.menuStickToBottom {
+.menuBottomRight {
+  composes: menu;
+  transform: translateY(3em) translateX(-100%);
+}
+
+.menuTopRight {
+  composes: menu;
+  transform: translateY(-100%) translateX(-100%);
+}
+
+.menuBottomLeft {
   composes: menu;
   transform: translateY(3em);
 }
 
-.menuStickToTop {
+.menuTopLeft {
   composes: menu;
   transform: translateY(-100%);
 }
