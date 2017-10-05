@@ -247,6 +247,10 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     )
   }
 
+  handleScroll = scrollTop => {
+    this.setState({scrollTop})
+  }
+
   render() {
     const {
       selectedDocumentId,
@@ -268,6 +272,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         defaultWidth={200}
         isCollapsed={isCollapsed}
         onMenuToggle={this.handleToggleMenu}
+        scrollTop={this.state.scrollTop}
       >
         <QueryContainer
           query={query}
@@ -317,6 +322,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
                 {items && (
                   <ListView
+                    onScroll={this.handleScroll}
                     items={items}
                     getItemKey={getDocumentKey}
                     renderItem={this.renderDocumentPaneItem}
