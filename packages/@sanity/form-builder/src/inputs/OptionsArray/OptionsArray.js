@@ -42,7 +42,7 @@ function inArray(array, candidate) {
   return array ? array.some(item => isEqual(item, candidate)) : false
 }
 
-export default class OptionsArray extends React.PureComponent {
+export default class OptionsArrayInput extends React.PureComponent {
   static propTypes = {
     type: PropTypes.shape({
       options: PropTypes.shape({
