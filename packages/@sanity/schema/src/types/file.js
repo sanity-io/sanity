@@ -24,7 +24,9 @@ const FILE_CORE = {
   jsonType: 'object'
 }
 
-const DEFAULT_OPTIONS = {}
+const DEFAULT_OPTIONS = {
+  accept: '',
+}
 
 export const FileType = {
   get() {
