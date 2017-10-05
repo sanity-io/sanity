@@ -5,18 +5,20 @@ import styles from './styles/ImageSelect.css'
 import DropZone from 'part:@sanity/components/fileinput/dropzone'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 
-// todo: investigate if we can use web workers to do the heavy work on the images here
-
 export default class ImageInput extends React.PureComponent {
   static propTypes = {
     onSelect: PropTypes.func.isRequired,
-    processFiles: PropTypes.func,
     className: PropTypes.string,
     dropzone: PropTypes.bool
   }
 
   handleSelect = files => {
-
+    const {onSelect} = this.props
+    // Todo: fix this so it just emits the raw files.
+    onSelect(Array.from(files).map(file => ({
+      previewUrl: window.URL.createObjectURL(file),
+      file
+    })))
   }
 
   render() {
