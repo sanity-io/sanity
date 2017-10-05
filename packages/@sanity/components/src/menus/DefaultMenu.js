@@ -5,20 +5,6 @@ import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
 
-// Debounce function on requestAnimationFrame
-function debounceRAF(fn) {
-  let scheduled
-  return function debounced(...args) {
-    if (!scheduled) {
-      requestAnimationFrame(() => {
-        fn.call(this, ...scheduled)
-        scheduled = null
-      })
-    }
-    scheduled = args
-  }
-}
-
 class DefaultMenu extends React.Component {
   static propTypes = {
     onAction: PropTypes.func.isRequired,

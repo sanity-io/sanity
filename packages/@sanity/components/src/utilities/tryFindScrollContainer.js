@@ -5,7 +5,7 @@ export default function tryFindScrollContainer(element, callback) {
   }
 
   if (!element) {
-    console.error('tryFindScrollContainer: No element', element)
+    console.error('tryFindScrollContainer: No element', element) //eslint-disable-line
   }
 
   let scrollContainer = element

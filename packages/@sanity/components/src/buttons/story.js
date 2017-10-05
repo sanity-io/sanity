@@ -187,7 +187,8 @@ storiesOf('Buttons', module)
   .add(
     'DropDownButton',
     () => {
-      const items = [{index: '1', title: 'Test'}, {index: '2', title: 'Test 2'}, {index: '3', title: 'Test 3'}, {index: '4', title: 'Test 4'}, {index: '5', title: 'Test 5'}, {index: '6', title: 'Test 6'}, {index: '7', title: 'Test 7'},]
+      // eslint-disable-next-line max-len
+      const items = [{index: '1', title: 'Test'}, {index: '2', title: 'Test 2'}, {index: '3', title: 'Test 3'}, {index: '4', title: 'Test 4'}, {index: '5', title: 'Test 5'}, {index: '6', title: 'Test 6'}, {index: '7', title: 'Test 7'}]
       return (
         <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
           <div>
