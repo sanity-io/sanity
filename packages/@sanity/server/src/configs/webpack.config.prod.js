@@ -8,9 +8,7 @@ export default config => {
     devtool: config.sourceMaps ? 'source-map' : undefined,
     plugins: (baseConfig.plugins || []).concat([
       new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify('production')
-        }
+        'process.env.NODE_ENV': JSON.stringify('production')
       })
     ].filter(Boolean))
   })

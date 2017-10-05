@@ -24,7 +24,7 @@
   "dependencies": {
     "@sanity/resolver": "^0.115.2",
     "@sanity/util": "^0.115.2",
-    "loader-utils": "^0.2.16"
+    "loader-utils": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "^4.6.1",
