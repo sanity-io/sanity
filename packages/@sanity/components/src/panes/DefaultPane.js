@@ -20,7 +20,8 @@ class Pane extends React.PureComponent {
     isScrollable: PropTypes.bool,
     onMenuToggle: PropTypes.func,
     className: PropTypes.string,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    scrollTop: PropTypes.number
   }
 
   static defaultProps = {
@@ -40,6 +41,7 @@ class Pane extends React.PureComponent {
     renderFunctions() {},
     isActive: false,
     updateId: 0,
+    scrollTop: undefined,
     onMenuToggle() {
       return true
     }
@@ -47,6 +49,12 @@ class Pane extends React.PureComponent {
 
   componentDidMount() {
     this._contentElement.addEventListener('scroll', this.handleContentScroll, {passive: true})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.scrollTop !== this.props.scrollTop) {
+      this.setScrollShadow(nextProps.scrollTop)
+    }
   }
 
   componentWillUnmount() {
@@ -76,9 +84,8 @@ class Pane extends React.PureComponent {
     }
   }
 
-  handleContentScroll = event => {
+  setScrollShadow = scrollTop => {
     const threshold = 100
-    const scrollTop = event.target.scrollTop
     if (scrollTop < threshold) {
       const ratio = scrollTop / threshold
       this.setState({
@@ -103,6 +110,10 @@ class Pane extends React.PureComponent {
         }
       })
     }
+  }
+
+  handleContentScroll = event => {
+    this.setScrollShadow(event.target.scrollTop)
   }
 
   setContentElement = element => {
