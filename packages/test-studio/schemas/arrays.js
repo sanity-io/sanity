@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default {
   name: 'arraysTest',
   type: 'object',
@@ -40,7 +38,12 @@ export default {
     {
       name: 'arrayOfPredefinedOptions',
       title: 'Array of predefined options',
-      description: ['It should be possible to check/uncheck the different options.', 'There should be a warning about invalid type (number)', 'When inspecting a document with checked values, the array should contain values with: ', '{_type: "color", ...}'].join('\n'),
+      description: [
+        'It should be possible to check/uncheck the different options.',
+        'There should be a warning about invalid type (number)',
+        'When inspecting a document with checked values, the array should contain values with: ',
+        '{_type: "color", ...}'
+      ].join('\n'),
       type: 'array',
       of: [
         {
@@ -61,8 +64,11 @@ export default {
       options: {
         direction: 'vertical',
         list: [
-          {_type: 'color', title: 'Red', name: 'red', _key: 'red'}, {_type: 'color', title: 'Green', name: 'green', _key: 'green'}, 1, // invalid, not defined in list
-          {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'}, {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+          {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
+          {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
+          1, // invalid, not defined in list
+          {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
         ]
       },
     },
@@ -83,7 +89,10 @@ export default {
         {
           type: 'object',
           title: 'Something',
-          fields: [{name: 'first', type: 'string', title: 'First string'}, {name: 'second', type: 'string', title: 'Second string'}]
+          fields: [
+            {name: 'first', type: 'string', title: 'First string'},
+            {name: 'second', type: 'string', title: 'Second string'}
+          ]
         }
       ]
     },
@@ -94,7 +103,18 @@ export default {
       type: 'array',
       of: [{type: 'string'}],
       options: {
-        list: [{value: 'residential', title: 'Residential'}, {value: 'education', title: 'Education'}, {value: 'commercial', title: 'Commercial'}, {value: 'cultural', title: 'Cultural'}, {value: 'display', title: 'Display'}, {value: 'installation', title: 'Installation'}, {value: 'objects', title: 'Objects'}, {value: 'performance', title: 'Performance'}, {value: 'public space', title: 'Public Space'}, {value: 'publications', title: 'Publications'}]
+        list: [
+          {value: 'residential', title: 'Residential'},
+          {value: 'education', title: 'Education'},
+          {value: 'commercial', title: 'Commercial'},
+          {value: 'cultural', title: 'Cultural'},
+          {value: 'display', title: 'Display'},
+          {value: 'installation', title: 'Installation'},
+          {value: 'objects', title: 'Objects'},
+          {value: 'performance', title: 'Performance'},
+          {value: 'public space', title: 'Public Space'},
+          {value: 'publications', title: 'Publications'}
+        ]
       }
     },
     {

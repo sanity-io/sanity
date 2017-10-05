@@ -2,7 +2,6 @@
 import {UploadEvent} from './typedefs'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {set, unset} from '../../utils/patches'
-import Observable from '@sanity/observable'
 
 const SET_UPLOAD_PATCH = set({
   percent: 2,

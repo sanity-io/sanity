@@ -14,9 +14,9 @@ export default class Preview extends React.Component {
     formBuilder: PropTypes.object
   }
 
-
   render() {
     const {type, value, layout} = this.props
+
     const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type)
 
     if (PreviewComponent) {

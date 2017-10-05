@@ -153,6 +153,7 @@ export default class Item extends React.Component<Props> {
               type={this.getMemberType()}
             />
           </div>
+
           <div className={styles.functions}>
             {!type.readOnly && (
               <ConfirmButton
