@@ -13,14 +13,9 @@ const getGlobalListener = () => {
 }
 
 function listen(id) {
-  return new Observable(observer => {
-    observer.next({type: 'welcome', documentId: id})
-    return getGlobalListener()
-      .filter(event => event.documentId === id)
-      .debounceTime(1000)
-      .subscribe(observer)
-  })
-    .debounceTime(1000)
+  return Observable.of({type: 'welcome', documentId: id})
+    .concat(getGlobalListener())
+    .filter(event => event.documentId === id)
 }
 
 function fetchAllDocumentSnapshots(selections) {
@@ -45,6 +40,8 @@ const debouncedFetchDocumentSnapshot = debounceCollect(fetchAllDocumentSnapshots
 // }
 
 export default function observePaths(id, paths) {
-  return listen(id)
-    .switchMap(event => debouncedFetchDocumentSnapshot(id, paths))
+  return debouncedFetchDocumentSnapshot(id, paths)
+    .concat(listen(id)
+      .debounceTime(1000)
+      .switchMap(event => debouncedFetchDocumentSnapshot(id, paths)))
 }
