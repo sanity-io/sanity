@@ -1,17 +1,42 @@
+const PALETTE_FIELDS = [
+  {name: 'background', type: 'string', title: 'Background'},
+  {name: 'foreground', type: 'string', title: 'Foreground'},
+  {name: 'population', type: 'number', title: 'Population'},
+  {name: 'title', type: 'string', title: 'String'},
+]
 export default {
   name: 'sanity.imageAsset',
   title: 'Image asset',
   type: 'object',
-  fields: [
+  fieldsets: [
     {
-      name: 'assetId',
-      type: 'string',
-      title: 'Asset ID'
+      name: 'system',
+      title: 'System fields',
+      description: 'These are read only'
     },
     {
-      name: 'project',
+      name: 'metadata',
+      title: 'Extra metadata…',
+      options: {
+        collapsable: true
+      }
+    }
+  ],
+  fields: [
+    {
+      name: 'originalFilename',
       type: 'string',
-      title: 'Project'
+      title: 'Original file name'
+    },
+    {
+      name: 'extension',
+      type: 'string',
+      title: 'File extension'
+    },
+    {
+      name: 'mimeType',
+      type: 'string',
+      title: 'Mime type'
     },
     {
       name: 'label',
@@ -19,25 +44,37 @@ export default {
       title: 'Label'
     },
     {
-      name: 'originalFilename',
+      name: 'assetId',
       type: 'string',
-      title: 'Original file name'
+      title: 'Asset ID',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'path',
       type: 'string',
-      title: 'Path'
+      title: 'Path',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'url',
       type: 'string',
-      title: 'Url'
+      title: 'Url',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'metadata',
       type: 'object',
       title: 'Metadata',
+      readOnly: true,
+      fieldset: 'metadata',
       fields: [
+        {
+          name: 'location',
+          type: 'geopoint'
+        },
         {
           name: 'dimensions',
           type: 'object',
@@ -49,8 +86,18 @@ export default {
           ]
         },
         {
-          name: 'location',
-          type: 'geopoint'
+          name: 'palette',
+          type: 'object',
+          title: 'Palette',
+          fields: [
+            {name: 'darkMuted', type: 'object', title: 'Dark Muted', fields: PALETTE_FIELDS},
+            {name: 'lightVibrant', type: 'object', title: 'Light Vibrant', fields: PALETTE_FIELDS},
+            {name: 'darkVibrant', type: 'object', title: 'Dark Vibrant', fields: PALETTE_FIELDS},
+            {name: 'vibrant', type: 'object', title: 'Vibrant', fields: PALETTE_FIELDS},
+            {name: 'dominant', type: 'object', title: 'Dominant', fields: PALETTE_FIELDS},
+            {name: 'lightMuted', type: 'object', title: 'Light Muted', fields: PALETTE_FIELDS},
+            {name: 'muted', type: 'object', title: 'Muted', fields: PALETTE_FIELDS}
+          ]
         }
       ]
     }
