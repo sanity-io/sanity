@@ -1,15 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import * as defaultConfig from './defaultConfig'
+import {fallbackInputs} from './fallbackInputs'
+
 import Schema from '@sanity/schema'
 import pubsub from 'nano-pubsub'
 
 const NOOP = () => {}
 
-function resolve(type, providedResolve = NOOP, defaultResolve = NOOP) {
+function resolve(type, providedResolve = NOOP) {
   let itType = type
   while (itType) {
-    const resolved = providedResolve(itType) || defaultResolve(itType)
+    const resolved = providedResolve(itType)
     if (resolved) {
       return resolved
     }
@@ -50,14 +51,13 @@ export default class FormBuilderContext extends React.Component {
 
   resolveInputComponent = type => {
     const {resolveInputComponent} = this.props
-    return resolve(type, resolveInputComponent, defaultConfig.resolveInputComponent)
-      || defaultConfig.jsonTypeFallbacks[type.jsonType]
+    return resolve(type, resolveInputComponent) || fallbackInputs[type.jsonType]
   }
 
   resolvePreviewComponent = type => {
     const {resolvePreviewComponent} = this.props
 
-    return resolve(type, resolvePreviewComponent, defaultConfig.resolvePreviewComponent)
+    return resolve(type, resolvePreviewComponent)
   }
 
   _getMemoizedChildContext() {
