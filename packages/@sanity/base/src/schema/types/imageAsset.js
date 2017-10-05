@@ -1,5 +1,5 @@
 export default {
-  name: 'imageAsset',
+  name: 'sanity.imageAsset',
   title: 'Image asset',
   type: 'object',
   fields: [
@@ -17,6 +17,11 @@ export default {
       name: 'label',
       type: 'string',
       title: 'Label'
+    },
+    {
+      name: 'originalFilename',
+      type: 'string',
+      title: 'Original file name'
     },
     {
       name: 'path',
@@ -49,5 +54,11 @@ export default {
         }
       ]
     }
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'originalFilename',
+      imageUrl: 'url'
+    }
+  }
 }

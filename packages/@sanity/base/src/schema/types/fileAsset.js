@@ -1,5 +1,5 @@
 export default {
-  name: 'fileAsset',
+  name: 'sanity.fileAsset',
   title: 'File asset',
   type: 'object',
   fields: [
@@ -12,6 +12,11 @@ export default {
       name: 'project',
       type: 'string',
       title: 'Project'
+    },
+    {
+      name: 'originalFilename',
+      type: 'string',
+      title: 'Original file name'
     },
     {
       name: 'label',
