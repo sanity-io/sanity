@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'Rye';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url("./fonts/Rye-Regular.woff2") format("woff2"),
+    url("./fonts/Rye-Regular.woff") format("woff"),
+    url("./fonts/Rye-Regular.ttf") format("truetype"),
+    url("./fonts/Rye-Regular.otf") format("opentype");
+}
+
+.input {
+  font-size: 3em;
+  font-family: 'Rye', monospace;
+}

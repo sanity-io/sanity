@@ -21,10 +21,10 @@ export default config => {
     },
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoErrorsPlugin()
+      new webpack.NoEmitOnErrorsPlugin()
     ]),
     module: Object.assign({}, baseConfig.module, {
-      loaders: applyStaticLoaderFix(baseConfig, config)
+      rules: applyStaticLoaderFix(baseConfig, config)
     })
   })
 }

@@ -1,14 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
-import parents from 'parents'
 import resolveFrom from 'resolve-from'
-import webpackIntegration from '@sanity/webpack-integration'
-import ExtractTextPlugin from '@sanity/extract-text-webpack-plugin'
-import postcssPlugins from './postcssPlugins'
+import webpackIntegration from '@sanity/webpack-integration/v3'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
 
-// Webpack 2 vs 1
-const OccurrenceOrderPlugin = webpack.optimize.OccurrenceOrderPlugin || webpack.optimize.OccurenceOrderPlugin
+const resolve = mod => require.resolve(mod)
 
 export default (config = {}) => {
   const env = config.env || 'development'
@@ -30,14 +27,24 @@ export default (config = {}) => {
 
   const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const isProd = env === 'production'
-  const sanityDev = typeof process.env.SANITY_DEV !== 'undefined' // eslint-disable-line no-process-env
 
-  const resolvePaths = parents(basePath).map(dir => path.join(dir, 'node_modules'))
+  const cssExtractor = new ExtractTextPlugin({
+    filename: 'css/main.css',
+    allChunks: true,
+    ignoreOrder: true,
+    disable: !isProd
+  })
 
-  const cssExtractor = isProd
-    && new ExtractTextPlugin('css/main.css', {allChunks: true, ignoreOrder: true})
+  const postcssLoader = {
+    loader: resolve('postcss-loader'),
+    options: {
+      config: {
+        path: path.join(__dirname, 'postcss.config.js')
+      }
+    }
+  }
 
-  const cssLoaderLocation = require.resolve('css-loader')
+  const cssLoaderLocation = resolve('css-loader')
   const baseCssLoader = `${cssLoaderLocation}?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1`
   const cssLoader = isProd && !skipMinify
     ? `${baseCssLoader}&minimize`
@@ -46,16 +53,13 @@ export default (config = {}) => {
   const commonChunkPlugin = (
     typeof config.commonChunkPlugin === 'undefined'
     || config.commonChunkPlugin
-  ) && new webpack.optimize.CommonsChunkPlugin('vendor', 'js/vendor.bundle.js')
-
-  // const cssConfigPath = path.join(__dirname, 'postcss.config.js')
-  // const cssConfig = JSON.stringify({config: {path: cssConfigPath}})
+  ) && new webpack.optimize.CommonsChunkPlugin({name: 'vendor', filename: 'js/vendor.bundle.js'})
 
   return {
     entry: {
       app: [
-        !isProd && require.resolve('react-hot-loader/patch'),
-        require.resolve('normalize.css'),
+        !isProd && resolve('react-hot-loader/patch'),
+        resolve('normalize.css'),
         path.join(__dirname, '..', 'browser', isProd ? 'entry.js' : 'entry-dev.js')
       ].filter(Boolean),
       vendor: ['react', 'react-dom']
@@ -66,68 +70,57 @@ export default (config = {}) => {
       publicPath: '/static/'
     },
     resolve: {
-      fallback: resolvePaths,
       alias: {
         react: path.dirname(reactPath),
         'react-dom': path.dirname(reactDomPath)
       }
     },
-    resolveLoader: {
-      root: resolvePaths
-    },
     module: {
-      loaders: [{
+      rules: [{
         test: /\.jsx?/,
-        exclude: modPath => {
-          if (sanityDev && modPath.includes(['', '@sanity', ''].join(path.sep))) {
-            return false
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: resolve('babel-loader'),
+          options: babelConfig || {
+            presets: [
+              resolve('babel-preset-react'),
+              resolve('babel-preset-es2015')
+            ],
+            plugins: [
+              resolve('babel-plugin-syntax-class-properties'),
+              resolve('babel-plugin-transform-class-properties'),
+              !isProd && resolve('react-hot-loader/patch')
+            ].filter(Boolean),
+            cacheDirectory: true
           }
-
-          return modPath.includes(['', 'node_modules', ''].join(path.sep))
-        },
-        loader: require.resolve('babel-loader'),
-        query: babelConfig || {
-          presets: [
-            require.resolve('babel-preset-react'),
-            require.resolve('babel-preset-es2015')
-          ],
-          plugins: [
-            require.resolve('babel-plugin-syntax-class-properties'),
-            require.resolve('babel-plugin-transform-class-properties'),
-            !isProd && require.resolve('react-hot-loader/patch')
-          ].filter(Boolean),
-          cacheDirectory: true
         }
-      }, {
-        test: /\.json$/,
-        loader: require.resolve('json-loader')
       }, {
         test: /\.css(\?|$)/,
-        loader: isProd && cssExtractor.extract([cssLoader, 'postcss-loader']),
-        loaders: !isProd && [require.resolve('style-loader'), cssLoader, require.resolve('postcss-loader')]
+        use: isProd
+          ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
+          : [resolve('style-loader'), cssLoader, postcssLoader]
       }, {
-        test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot)$/,
-        loader: require.resolve('file-loader'),
-        query: {
-          name: 'assets/[name]-[hash].[ext]'
-        }
+        test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,
+        use: {
+          loader: resolve('file-loader'),
+          options: {name: 'assets/[name]-[hash].[ext]'}
+        },
       }, webpackIntegration.getPartLoader(wpIntegrationOptions)]
     },
     profile: config.profile || false,
     plugins: [
       webpackIntegration.getEnvPlugin(wpIntegrationOptions),
       new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|nb/),
-      cssExtractor,
-      new OccurrenceOrderPlugin(),
       webpackIntegration.getPartResolverPlugin(wpIntegrationOptions),
+      cssExtractor,
       commonChunkPlugin
-    ].filter(Boolean),
-    postcss: postcssPlugins({basePath})
+    ].filter(Boolean)
   }
 }
 
 function tryRead(filePath) {
   try {
+    // eslint-disable-next-line no-sync
     const content = fs.readFileSync(filePath)
     return JSON.parse(content)
   } catch (err) {
