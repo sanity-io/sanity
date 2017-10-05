@@ -224,6 +224,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
   handleDrop = (ev: SyntheticDragEvent<*>) => {
     if (ev.dataTransfer.files) {
+      // todo: support folders with webkitGetAsEntry
       ev.preventDefault()
       ev.stopPropagation()
       this.importFiles(Array.from(ev.dataTransfer.files))
