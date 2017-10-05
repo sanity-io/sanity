@@ -6,8 +6,7 @@ import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import PatchEvent, {set} from '../PatchEvent'
 
 // Todo: support indeterminate state, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
-export default class Bool extends React.Component {
-  static displayName = 'Boolean'
+export default class BooleanInput extends React.Component {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,

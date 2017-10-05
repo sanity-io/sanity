@@ -4,18 +4,11 @@ import uploaders from './uploaders'
 import {get} from 'lodash'
 import type {Uploader} from './typedefs'
 import type {Type} from '../../typedefs'
-
-// todo: extract and reuse
-function is(typeName: string, type: Type): boolean {
-  if (!type) {
-    return false
-  }
-  return type.name === typeName || is(typeName, type.type)
-}
+import * as is from '../../utils/is'
 
 export default function resolveUploader(type: Type, file: File) : ?Uploader {
   return uploaders.find(uploader => {
-    return is(uploader.type, type)
+    return is.type(uploader.type, type)
       && accept(file, uploader.accepts)
       && accept(file, get(type.options, 'accept') || '')
   })

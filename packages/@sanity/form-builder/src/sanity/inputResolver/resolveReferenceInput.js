@@ -6,7 +6,7 @@ import ReferenceBrowser from '../inputs/ReferenceBrowser'
 // eslint-disable-next-line no-console
 const warnNoSearchYet = once(() => console.warn('Reference browser does not yet support search'))
 
-export default function resolveReference(type) {
+export default function resolveReferenceInput(type) {
   const options = type.options || {}
   if (options.inputType === 'select') {
     return options.searchable
