@@ -11,6 +11,7 @@ import strings from './strings'
 import objects, {myObject} from './objects'
 import arrays from './arrays'
 import files from './files'
+import uploads from './uploads'
 import code from './code'
 import recursive from './recursive'
 import numbers from './numbers'
@@ -32,6 +33,7 @@ export default createSchema({
     objects,
     dates,
     arrays,
+    uploads,
     code,
     images,
     files,

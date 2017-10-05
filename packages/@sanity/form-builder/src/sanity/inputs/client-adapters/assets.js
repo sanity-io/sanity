@@ -15,8 +15,8 @@ function uploadAsset(assetType, file) {
     })
 }
 
-export const uploadImage = file => uploadAsset('image', file)
-export const uploadFile = file => uploadAsset('file', file)
+export const uploadImageAsset = file => uploadAsset('image', file)
+export const uploadFileAsset = file => uploadAsset('file', file)
 
 export function materializeReference(id) {
   return client.observable
