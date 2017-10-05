@@ -4,15 +4,15 @@ node_js:
   - '6'
   - '8'
 before_script:
+  - npm install -g yarn@latest
   - travis_wait yarn run bootstrap
   - yarn run build
-  - export PATH=$PATH:$PWD/packages/@sanity/cli/bin
 script:
   # Test building the test studio with all customizations
   - cd packages/test-studio
-  - sanity build
+  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build
 
   # Test initializing a project in unattended mode and building it
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
   - cd /tmp/test-project
-  - sanity build
+  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build
