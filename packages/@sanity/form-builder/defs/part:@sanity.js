@@ -2,6 +2,9 @@
 declare module 'part:@sanity' {
   declare export default any;
 }
+declare module 'part:@sanity/base/preview' {
+  declare export default any;
+}
 declare module 'part:@sanity/components/buttons/default' {
   declare export default any;
 }
@@ -29,6 +32,7 @@ declare module 'part:@sanity/components/edititem/fold' {
 }
 
 declare module 'part:@sanity/components/lists/sortable' {
+  declare export type DragHandle = any;
   declare export default any;
 }
 
