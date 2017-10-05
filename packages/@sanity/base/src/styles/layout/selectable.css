@@ -3,6 +3,7 @@
 .item {
   background-color: var(--selectable-item-color);
   color: var(--selectable-item-text-color);
+  cursor: default;
 
   @nest &:hover {
     background-color: var(--selectable-item-color-hover);

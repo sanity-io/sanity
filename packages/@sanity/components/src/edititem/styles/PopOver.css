@@ -113,13 +113,12 @@
   cursor: pointer;
   color: #fff;
   outline: none;
-  /*z-index: calc(var(--zindex-popover) + 1);*/
   padding-right: 0.25em;
 
   @media (--screen-medium) {
     color: var(--text-color);
-    top: 0;
-    right: 0;
+    top: var(--small-padding);
+    right: var(--small-padding);
 
     @nest &:hover {
       color: var(--black);

@@ -119,7 +119,7 @@ class DropDownButton extends React.PureComponent {
           <span className={styles.arrow}>
             <ArrowIcon color="inherit" />
           </span>
-          <div className={stickToBottom ? styles.stickyBottom : styles.stickyTop}>
+          <span className={stickToBottom ? styles.stickyBottom : styles.stickyTop}>
             {
               menuOpened && (
                 <StickyPortal
@@ -147,7 +147,7 @@ class DropDownButton extends React.PureComponent {
                 </StickyPortal>
               )
             }
-          </div>
+          </span>
         </Button>
       </div>
     )
