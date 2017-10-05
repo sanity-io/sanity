@@ -28,7 +28,7 @@
     "eslint-config-sanity": "^3.1.0",
     "eslint-plugin-flowtype-errors": "^3.0.3",
     "eslint-plugin-import": "^2.7.0",
-    "flow-bin": "^0.42.0",
+    "flow-bin": "^0.56.0",
     "rimraf": "^2.6.1",
     "tap": "^10.3.0"
   },
