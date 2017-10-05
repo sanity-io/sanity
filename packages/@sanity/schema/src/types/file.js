@@ -5,7 +5,7 @@ import createPreviewGetter from '../preview/createPreviewGetter'
 export const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
-  to: {type: 'fileAsset'}
+  to: {type: 'sanity.fileAsset'}
 }
 
 const OVERRIDABLE_FIELDS = [
