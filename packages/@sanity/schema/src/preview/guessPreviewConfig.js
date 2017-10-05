@@ -11,7 +11,7 @@ function fieldHasReferenceTo(fieldDef, refType) {
 }
 
 function isImageAssetField(fieldDef) {
-  return fieldHasReferenceTo(fieldDef, 'imageAsset')
+  return fieldHasReferenceTo(fieldDef, 'sanity.imageAsset')
 }
 
 function resolveImageAssetPath(typeDef) {
@@ -26,7 +26,7 @@ function resolveImageAssetPath(typeDef) {
 }
 
 function isFileAssetField(fieldDef) {
-  return fieldHasReferenceTo(fieldDef, 'fileAsset')
+  return fieldHasReferenceTo(fieldDef, 'sanity.fileAsset')
 }
 
 function resolveFileAssetPath(typeDef) {
@@ -66,6 +66,9 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     const fileAssetPath = resolveFileAssetPath(objectTypeDef)
     if (fileAssetPath) {
       titleField = `${fileAssetPath}.originalFilename`
+    }
+    if (imageAssetPath) {
+      titleField = `${imageAssetPath}.originalFilename`
     }
   }
 

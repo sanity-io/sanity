@@ -1,7 +1,7 @@
 export const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
-  to: [{type: 'imageAsset'}]
+  to: [{type: 'sanity.imageAsset'}]
 }
 
 export const HOTSPOT_FIELD = {
