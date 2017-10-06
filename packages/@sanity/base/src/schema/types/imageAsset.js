@@ -44,6 +44,13 @@ export default {
       title: 'Label'
     },
     {
+      name: 'size',
+      type: 'number',
+      title: 'File size in bytes',
+      readOnly: true,
+      fieldset: 'system',
+    },
+    {
       name: 'assetId',
       type: 'string',
       title: 'Asset ID',
