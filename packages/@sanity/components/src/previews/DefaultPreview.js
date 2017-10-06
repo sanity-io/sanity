@@ -11,7 +11,7 @@ const PLACEHOLDER = (
   </div>
 )
 
-class DefaultPreview extends React.Component {
+class DefaultPreview extends React.PureComponent {
   static propTypes = {
     item: PropTypes.shape({
       title: PropTypes.string,
@@ -36,10 +36,6 @@ class DefaultPreview extends React.Component {
     emptyText: 'Untitled',
     assetSize: {width: 40, height: 40},
     item: {}
-  }
-
-  shouldComponentUpdate() {
-    return true
   }
 
   render() {
