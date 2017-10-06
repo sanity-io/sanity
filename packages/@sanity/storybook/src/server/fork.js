@@ -28,12 +28,19 @@ module.exports = config => {
   })
 
   proc.stderr.on('data', data => {
-    // Skip progress events from storybook
-    if (/ \d+% /.test(data)) {
+    const msg = data.toString().replace(/\x08/g, '').trim()
+
+    // Skip empty messages
+    if (!msg) {
       return
     }
 
-    output.print(chalk.red(`Storybook: ${data}`))
+    // Skip progress events from storybook
+    if (/\d+% /.test(msg)) {
+      return
+    }
+
+    output.print(chalk.red(`Storybook: ${msg}`))
   })
 
   proc.stdout.on('data', data => {
