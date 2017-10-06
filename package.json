@@ -2,11 +2,12 @@
   "name": "sanity",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap && yarn run install-husky",
+    "bootstrap": "lerna bootstrap && yarn run package-yarn && yarn run install-husky",
     "build": "lerna run clean && gulp",
     "clean": "lerna run clean && lerna clean",
     "publish": "yarn run build && lerna publish",
     "publish-canary": "yarn run build && lerna publish --canary --exact",
+    "package-yarn": "cd packages/@sanity/cli && yarn run package-yarn",
     "init": "lerna clean --yes && yarn run bootstrap && yarn run build",
     "start": "gulp dev",
     "storybook": "gulp storybook",
