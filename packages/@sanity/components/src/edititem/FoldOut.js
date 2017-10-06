@@ -30,7 +30,7 @@ export default class EditItemFoldOut extends React.PureComponent {
     if (scrollContainer) {
       this.setScrollContainerElement(scrollContainer)
     } else {
-      tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
+      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
     }
     window.addEventListener('keydown', this.handleKeyDown)
   }

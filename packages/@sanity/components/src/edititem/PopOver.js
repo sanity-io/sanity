@@ -68,7 +68,7 @@ export default class EditItemPopOver extends React.Component {
     if (scrollContainer) {
       this.setScrollContainerElement(scrollContainer)
     } else {
-      tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
+      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
     }
     window.addEventListener('keydown', this.handleKeyDown)
   }
@@ -84,7 +84,6 @@ export default class EditItemPopOver extends React.Component {
     const prevPopOver = popOverStack.slice(-1)[0]
     if (prevPopOver) {
       setFocus(prevPopOver)
-      // prevPopOver.moveIntoPosition()
     }
     window.removeEventListener('keydown', this.handleKeyDown)
   }

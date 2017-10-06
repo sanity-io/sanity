@@ -1,9 +1,5 @@
 /* global window, document */
-export default function tryFindScrollContainer(element, callback) {
-  if (!window || !document) {
-    return false
-  }
-
+export default function tryFindScrollContainer(element) {
   if (!element) {
     console.error('tryFindScrollContainer: No element', element) //eslint-disable-line
   }
@@ -27,5 +23,5 @@ export default function tryFindScrollContainer(element, callback) {
     scrollContainer = document.body
   }
 
-  return callback(scrollContainer)
+  return scrollContainer
 }
