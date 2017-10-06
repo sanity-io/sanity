@@ -3,7 +3,7 @@ import ImageInput from './ImageInput'
 import {omit} from 'lodash'
 
 export default function createImageInput({upload, materializeReference}) {
-  return class CustomImageInput extends React.PureComponent {
+  return class CustomImageInput extends React.Component {
     static propTypes = omit(ImageInput.propTypes, 'uploadFn', 'materializeReferenceFn');
     static valueContainer = ImageInput.valueContainer;
 
