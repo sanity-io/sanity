@@ -52,7 +52,7 @@ export default class SearchableSelect extends React.Component {
     if (scrollContainer) {
       this.setScrollContainerElement(scrollContainer)
     } else {
-      tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
+      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
     }
   }
 

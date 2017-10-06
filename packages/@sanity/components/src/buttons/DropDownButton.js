@@ -53,7 +53,7 @@ class DropDownButton extends React.PureComponent {
     if (scrollContainer) {
       this.setScrollContainerElement(scrollContainer)
     } else {
-      tryFindScrollContainer(this._rootElement, this.setScrollContainerElement)
+      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
     }
   }
 
