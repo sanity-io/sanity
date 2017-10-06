@@ -5,10 +5,7 @@ import {set} from '../../utils/patches'
 import type {ObservableI} from '../../typedefs/observable'
 import type {UploadEvent} from './typedefs'
 import {UPLOAD_STATUS_KEY} from './constants'
-import {createUploadEvent, CLEANUP_EVENT, INIT_EVENT} from './utils'
-
-const setInitialUploadState$ = Observable.of(INIT_EVENT)
-const unsetUploadState$ = Observable.of(CLEANUP_EVENT)
+import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
 export default function uploadFile(file: File): ObservableI<UploadEvent> {
   const upload$ = uploadFileAsset(file)
@@ -22,7 +19,7 @@ export default function uploadFile(file: File): ObservableI<UploadEvent> {
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'percent'])])
     })
 
-  return setInitialUploadState$
+  return Observable.of(createInitialUploadEvent(file))
     .concat(upload$)
-    .concat(unsetUploadState$)
+    .concat(Observable.of(CLEANUP_EVENT))
 }

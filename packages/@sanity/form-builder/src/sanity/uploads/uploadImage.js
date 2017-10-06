@@ -12,15 +12,12 @@ import type {UploadEvent} from './typedefs'
 import type {OrientationId} from './image/orient'
 import type {ObservableI} from '../../typedefs/observable'
 import {UPLOAD_STATUS_KEY} from './constants'
-import {CLEANUP_EVENT, INIT_EVENT, createUploadEvent} from './utils'
+import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 import {createUploadId, getUploadEvents, scheduleUpload} from './uploadQueue'
 
 type Exif = {
   orientation: OrientationId
 }
-
-const setInitialUploadState$ = Observable.of(INIT_EVENT)
-const unsetUploadState$ = Observable.of(CLEANUP_EVENT)
 
 export default function uploadImage(file: File): ObservableI<UploadEvent> {
   const uploadId = createUploadId(file)
@@ -29,16 +26,16 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     .filter(event => event.stage !== 'download')
     .map(event => ({
       ...event,
-      percent: 2 + ((event.percent / 100) * 98)
+      progress: 2 + ((event.percent / 100) * 98)
     }))
     .map(event => {
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
-          set(100, [UPLOAD_STATUS_KEY, 'percent'])
+          set(100, [UPLOAD_STATUS_KEY, 'progress'])
         ])
       }
-      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'percent'])])
+      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
     })
 
   const setPreviewUrl$ = readExif(file)
@@ -54,7 +51,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
 
   scheduleUpload(uploadId, file)
 
-  return setInitialUploadState$
+  return Observable.of(createInitialUploadEvent(file))
     .concat(Observable.from(upload$).merge(setPreviewUrl$))
-    .concat(unsetUploadState$)
+    .concat(Observable.of(CLEANUP_EVENT))
 }
