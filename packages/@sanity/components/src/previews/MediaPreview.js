@@ -26,7 +26,7 @@ export default class MediaPreview extends React.Component {
   }
 
   static defaultProps = {
-    assetSize: {width: 120, height: 120},
+    assetSize: {width: 160, height: 160},
     aspect: 1,
     emptyText: 'Untitled…'
   }
