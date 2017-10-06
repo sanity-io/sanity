@@ -5,21 +5,21 @@ interface ObserverI<T> {
   error: (error: Error) => void
 }
 
-interface Subscription {
+export interface Subscription {
   unsubscribe: () => void
 }
 
 type FunctionSubscriber<T> = T => void
 type ObjectSubscriber<T> = {
-  next: T => void,
-  error: (error: Error) => void,
-  complete: () => void
+  next?: T => void,
+  error?: (error: Error) => void,
+  complete?: () => void
 }
 
 type Subscriber<T> = FunctionSubscriber<T> | ObjectSubscriber<T>
 
 export interface ObservableI<T> {
   constructor: (observer: ObserverI<T>) => void,
-  subscribe: (subscriber: Subscriber<T>) => Subscription<T>,
+  subscribe: (subscriber: Subscriber<T>) => Subscription,
   map<T, A>((T) => A): ObservableI<A>
 }

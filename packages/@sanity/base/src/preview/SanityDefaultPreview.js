@@ -44,13 +44,13 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
     const item = _upload ? {
       ...value,
-      // todo: remove this from here and handle invalid preview urls (e.g. blob urls from another computer)
-      imageUrl: _upload.previewImage
+      imageUrl: _upload.previewImage,
+      title: value.title || (_upload.file && _upload.file.name) || 'Uploading…'
     } : value
 
     return (
       <div>
-        {_upload && <UploadProgressBar percent={_upload.percent} />}
+        {_upload && <UploadProgressBar progress={_upload.progress} />}
         <PreviewComponent item={item} {...rest} />
       </div>
     )

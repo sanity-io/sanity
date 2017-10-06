@@ -2,24 +2,25 @@
 import uploadImage from './uploadImage'
 import uploadFile from './uploadFile'
 import type {Uploader, UploaderDef} from './typedefs'
+import type {Type} from '../../typedefs'
 import {set} from '../../utils/patches'
 
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
   accepts: 'image/*',
-  upload: (file: File, type: any) => uploadImage(file)
+  upload: (file: File, type?: Type) => uploadImage(file)
 }
 
 const UPLOAD_FILE: UploaderDef = {
   type: 'file',
   accepts: '',
-  upload: (file: File, type: any) => uploadFile(file)
+  upload: (file: File, type: Type) => uploadFile(file)
 }
 
 const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
   accepts: 'text/*',
-  upload: (file: File, type: any) => uploadFile(file)
+  upload: (file: File, type: Type) => uploadFile(file)
     .map(content => ({
       patches: [set(content)]
     }))
