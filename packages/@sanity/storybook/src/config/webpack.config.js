@@ -2,7 +2,7 @@ const sanityServer = require('@sanity/server')
 const wpIntegration = require('@sanity/webpack-integration/v3')
 const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/webpack.config.js')
 
-const skipCssLoader = rule => rule.test && !rule.test.toString().includes('.css')
+const skipCssLoader = rule => !rule.test || (rule.test && !rule.test.toString().includes('.css'))
 const isCssLoader = rule => rule.test && rule.test.toString().includes('.css')
 
 // This is very hacky, but I couldn't figure out a way to pass config from
