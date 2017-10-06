@@ -78,8 +78,8 @@ assign(SanityClient.prototype, {
 
   request(options) {
     const observable = this._requestObservable(options)
-        .filter(event => event.type === 'response')
-        .map(event => event.body)
+      .filter(event => event.type === 'response')
+      .map(event => event.body)
 
     return this.isPromiseAPI()
       ? toPromise(observable)
