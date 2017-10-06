@@ -39,14 +39,34 @@ function optionsFromFile(opts, file) {
 }
 
 assign(AssetsClient.prototype, {
+  /**
+   * Upload an asset
+   *
+   * @param  {String} assetType `image` or `file`
+   * @param  {File|Blob|Buffer|ReadableStream} body File to upload
+   * @param  {Object}  opts Options for the upload
+   * @param  {Boolean} opts.preserveFilename Whether or not to preserve the original filename (default: true)
+   * @param  {String}  opts.filename Filename for this file (optional)
+   * @param  {Number}  opts.timeout  Milliseconds to wait before timing the request out (default: 0)
+   * @param  {String}  opts.contentType Mime type of the file
+   * @param  {Array}   opts.extract Array of metadata parts to extract from image.
+   *                                 Possible values: `location`, `exif`, `image`, `palette`
+   * @return {Promise} Resolves with the created asset document
+   */
   upload(assetType, body, opts = {}) {
     validators.validateAssetType(assetType)
+
+    // If an empty array is given, explicitly set `none` to override API defaults
+    let meta = opts.extract || undefined
+    if (meta && !meta.length) {
+      meta = ['none']
+    }
 
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     const options = optionsFromFile(opts, body)
-    const {id, label, filename, meta} = options
-    const query = {id, label, filename, meta}
+    const {label, filename} = options
+    const query = {label, filename, meta}
 
     const observable = this.client._requestObservable({
       method: 'POST',
