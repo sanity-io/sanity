@@ -13,6 +13,11 @@ export type UploaderDef = {
   upload: (file: File, type: Type) => ObservableI<UploadEvent>
 }
 
-export type Uploader = UploaderDef & {
-  priority: number,
+export type Uploader = {
+  type: string,
+  accepts: string,
+  upload: (file: File, type: Type) => ObservableI<UploadEvent>,
+  priority: number
 }
+
+export type UploaderResolver = (type: Type, file: File) => ?Uploader

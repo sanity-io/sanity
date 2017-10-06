@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import styles from './UploadProgressBar.css'
 
 export default function UploadProgressBar(props) {
-  const {percent} = props
+  const {progress} = props
   const classes = [
     styles.root,
-    percent === 100 && styles.completed
+    progress === 100 && styles.completed
   ]
     .filter(Boolean)
     .join(' ')
@@ -15,7 +15,7 @@ export default function UploadProgressBar(props) {
     <div className={classes}>
       <div className={styles.inner}>
         <div className={styles.barContainer}>
-          <div className={styles.bar} style={{width: `${percent}%`}} />
+          <div className={styles.bar} style={{width: `${progress}%`}} />
         </div>
       </div>
     </div>
@@ -23,9 +23,9 @@ export default function UploadProgressBar(props) {
 }
 
 UploadProgressBar.propTypes = {
-  percent: PropTypes.number
+  progress: PropTypes.number
 }
 
 UploadProgressBar.defaultProps = {
-  percent: 0
+  progress: 0
 }
