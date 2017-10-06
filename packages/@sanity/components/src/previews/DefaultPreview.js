@@ -29,17 +29,19 @@ class DefaultPreview extends React.PureComponent {
     emptyText: PropTypes.string,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    progress: PropTypes.number
   }
 
   static defaultProps = {
     emptyText: 'Untitled',
     assetSize: {width: 40, height: 40},
+    progress: undefined,
     item: {}
   }
 
   render() {
-    const {item, assetSize, emptyText, children, isPlaceholder, styles} = this.props
+    const {item, assetSize, emptyText, children, isPlaceholder, progress, styles} = this.props
 
     if (!item || isPlaceholder) {
       return (
@@ -80,6 +82,13 @@ class DefaultPreview extends React.PureComponent {
         </div>
         {
           children && <div className={styles.children}>{children}</div>
+        }
+        {
+          progress && (
+            <div className={styles.progress}>
+              <div className={styles.progressBar} style={{width: `${progress}%`}} />
+            </div>
+          )
         }
       </div>
     )
