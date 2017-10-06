@@ -39,8 +39,12 @@ uploadRequests$.asObservable()
   .mergeMap(
     ({uploadId, file}) => new Observable(observer => {
       const upload = Observable.from(uploadImageAsset(file)).share()
-      upload.subscribe(registry[uploadId]._multicast)
-      return upload.subscribe(observer)
+      const registrySubscription = upload.subscribe(registry[uploadId]._multicast)
+      const uploadSubscription = upload.subscribe(observer)
+      return () => {
+        registrySubscription.unsubscribe()
+        uploadSubscription.unsubscribe()
+      }
     }),
     CONCURRENCY
   )
