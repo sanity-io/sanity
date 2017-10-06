@@ -18,6 +18,10 @@
   margin-top: var(--medium-padding);
 }
 
+.movingItem {
+  composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
+}
+
 .inputLabel {
   display: none;
 }
