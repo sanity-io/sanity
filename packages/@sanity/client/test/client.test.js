@@ -13,8 +13,13 @@ const fs = require('fs')
 const validators = require('../src/validators')
 const sanityObservable = require('@sanity/observable')
 const sanityClient = require('../src/sanityClient')
+
 const SanityClient = sanityClient
 const noop = () => {} // eslint-disable-line no-empty-function
+const bufferFrom = (content, enc) => (Buffer.from
+  ? Buffer.from(content, enc)
+  : new Buffer(content, enc) // eslint-disable-line no-buffer-constructor
+)
 
 const apiHost = 'api.sanity.url'
 const defaultProjectId = 'bf1942'
@@ -149,10 +154,12 @@ test('can request project by id', t => {
     projectId: 'n1f7y',
     displayName: 'Movies Unlimited',
     studioHost: 'movies',
-    members: [{
-      id: 'someuserid',
-      role: 'administrator'
-    }]
+    members: [
+      {
+        id: 'someuserid',
+        role: 'administrator'
+      }
+    ]
   }
 
   nock(`https://${apiHost}`).get('/v1/projects/n1f7y').reply(200, doc)
@@ -335,13 +342,15 @@ test('can create documents', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
 
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', {mutations: [{create: doc}]})
-  .reply(200, {
-    transactionId: 'abc123',
-    results: [{
-      document: {_id: 'abc123', _createdAt: '2016-10-24T08:09:32.997Z', name: 'Raptor'},
-      operation: 'create'
-    }]
-  })
+    .reply(200, {
+      transactionId: 'abc123',
+      results: [
+        {
+          document: {_id: 'abc123', _createdAt: '2016-10-24T08:09:32.997Z', name: 'Raptor'},
+          operation: 'create'
+        }
+      ]
+    })
 
   getClient().create(doc)
     .then(res => {
@@ -358,10 +367,12 @@ test('can create documents without specifying ID', t => {
   nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {
       transactionId: '123abc',
-      results: [{
-        id: 'abc456',
-        document: {_id: 'abc456', name: 'Raptor'}
-      }]
+      results: [
+        {
+          id: 'abc456',
+          document: {_id: 'abc456', name: 'Raptor'}
+        }
+      ]
     })
 
   getClient().create(doc)
@@ -475,15 +486,17 @@ test('delete() can be told not to return documents', t => {
 })
 
 test('mutate() accepts multiple mutations', t => {
-  const docs = [{
-    _id: 'movies.raiders-of-the-lost-ark',
-    title: 'Raiders of the Lost Ark',
-    year: 1981
-  }, {
-    _id: 'movies.the-phantom-menace',
-    title: 'Star Wars: Episode I - The Phantom Menace',
-    year: 1999
-  }]
+  const docs = [
+    {
+      _id: 'movies.raiders-of-the-lost-ark',
+      title: 'Raiders of the Lost Ark',
+      year: 1981
+    }, {
+      _id: 'movies.the-phantom-menace',
+      title: 'Star Wars: Episode I - The Phantom Menace',
+      year: 1999
+    }
+  ]
 
   const mutations = [
     {create: docs[0]},
@@ -605,8 +618,7 @@ test('can apply unset()', t => {
 test('throws if non-array is passed to unset()', t => {
   t.throws(() =>
     getClient().patch('abc123').unset('bitter').serialize(),
-    /non-array given/
-  )
+  /non-array given/)
   t.end()
 })
 
@@ -627,18 +639,15 @@ test('can apply insert()', t => {
 test('throws on invalid insert()', t => {
   t.throws(() =>
     getClient().patch('abc123').insert('bitter', 'sel', ['raf']),
-    /one of: "before", "after", "replace"/
-  )
+  /one of: "before", "after", "replace"/)
 
   t.throws(() =>
     getClient().patch('abc123').insert('before', 123, ['raf']),
-    /must be a string/
-  )
+  /must be a string/)
 
   t.throws(() =>
     getClient().patch('abc123').insert('before', 'prop', 'blah'),
-    /must be an array/
-  )
+  /must be an array/)
   t.end()
 })
 
@@ -741,16 +750,18 @@ test('returns patched document by default', t => {
   const expectedBody = {mutations: [expectedPatch]}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
-    .reply(200, {transactionId: 'blatti', results: [{
-      id: 'abc123',
-      operation: 'update',
-      document: {
-        _id: 'abc123',
-        _createdAt: '2016-10-24T08:09:32.997Z',
-        count: 2,
-        visited: true
+    .reply(200, {transactionId: 'blatti', results: [
+      {
+        id: 'abc123',
+        operation: 'update',
+        document: {
+          _id: 'abc123',
+          _createdAt: '2016-10-24T08:09:32.997Z',
+          count: 2,
+          visited: true
+        }
       }
-    }]})
+    ]})
 
   getClient().patch('abc123')
     .inc({count: 1})
@@ -884,30 +895,32 @@ test('transaction methods are chainable', t => {
     .delete('prototype')
     .patch('foobar', {inc: {sales: 1}})
 
-  t.deepEqual(trans.serialize(), [{
-    create: {
-      moo: 'tools'
+  t.deepEqual(trans.serialize(), [
+    {
+      create: {
+        moo: 'tools'
+      }
+    }, {
+      createIfNotExists: {
+        _id: 'someId',
+        j: 'query'
+      }
+    }, {
+      createOrReplace: {
+        _id: 'someOtherId',
+        do: 'jo'
+      }
+    }, {
+      delete: {
+        id: 'prototype'
+      }
+    }, {
+      patch: {
+        id: 'foobar',
+        inc: {sales: 1}
+      }
     }
-  }, {
-    createIfNotExists: {
-      _id: 'someId',
-      j: 'query'
-    }
-  }, {
-    createOrReplace: {
-      _id: 'someOtherId',
-      do: 'jo'
-    }
-  }, {
-    delete: {
-      id: 'prototype'
-    }
-  }, {
-    patch: {
-      id: 'foobar',
-      inc: {sales: 1}
-    }
-  }])
+  ])
 
   t.equal(trans.reset().serialize().length, 0, 'resets to 0 operations')
   t.end()
@@ -918,13 +931,15 @@ test('patches can be built with callback', t => {
     .patch('moofoo', p => p.inc({sales: 1}).dec({stock: 1}))
     .serialize()
 
-  t.deepEqual(trans, [{
-    patch: {
-      id: 'moofoo',
-      inc: {sales: 1},
-      dec: {stock: 1}
+  t.deepEqual(trans, [
+    {
+      patch: {
+        id: 'moofoo',
+        inc: {sales: 1},
+        dec: {stock: 1}
+      }
     }
-  }])
+  ])
   t.end()
 })
 
@@ -941,12 +956,14 @@ test('patch can take an existing patch', t => {
   const incPatch = client.patch('bar').inc({sales: 1})
   const trans = getClient().transaction().patch(incPatch).serialize()
 
-  t.deepEqual(trans, [{
-    patch: {
-      id: 'bar',
-      inc: {sales: 1}
+  t.deepEqual(trans, [
+    {
+      patch: {
+        id: 'bar',
+        inc: {sales: 1}
+      }
     }
-  }])
+  ])
   t.end()
 })
 
@@ -1061,7 +1078,7 @@ test('listeners connect to listen endpoint, emits events', t => {
  *****************/
 test('uploads images', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
-  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
 
   nock(projectHost())
     .post('/v1/assets/images/foo', isImage)
@@ -1076,7 +1093,7 @@ test('uploads images', t => {
 
 test('uploads images with given content type', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
-  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
 
   nock(projectHost(), {reqheaders: {'Content-Type': 'image/jpeg'}})
     .post('/v1/assets/images/foo', isImage)
@@ -1091,7 +1108,7 @@ test('uploads images with given content type', t => {
 
 test('uploads images with progress events', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
-  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
 
   nock(projectHost())
     .post('/v1/assets/images/foo', isImage)
@@ -1109,7 +1126,7 @@ test('uploads images with progress events', t => {
 
 test('uploads images with custom label', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
-  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
   const label = 'xy zzy'
   nock(projectHost())
     .post(`/v1/assets/images/foo?label=${encodeURIComponent(label)}`, isImage)
@@ -1124,7 +1141,7 @@ test('uploads images with custom label', t => {
 
 test('uploads files', t => {
   const fixturePath = fixture('pdf-sample.pdf')
-  const isFile = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isFile = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
 
   nock(projectHost())
     .post('/v1/assets/files/foo', isFile)
@@ -1139,7 +1156,7 @@ test('uploads files', t => {
 
 test('uploads images and can cast to promise', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
-  const isImage = body => new Buffer(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
 
   nock(projectHost())
     .post('/v1/assets/images/foo', isImage)
@@ -1215,11 +1232,13 @@ test('throws if trying to get image URL from string in invalid format', t => {
  *****************/
 test('can retrieve auth providers', t => {
   const response = {
-    providers: [{
-      name: 'providerid',
-      title: 'providertitle',
-      url: 'https://some/login/url'
-    }]
+    providers: [
+      {
+        name: 'providerid',
+        title: 'providertitle',
+        url: 'https://some/login/url'
+      }
+    ]
   }
 
   nock(projectHost())
