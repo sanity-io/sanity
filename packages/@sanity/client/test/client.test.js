@@ -1106,6 +1106,38 @@ test('uploads images with given content type', t => {
     }, ifError(t))
 })
 
+test('uploads images with specified metadata to be extracted', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo?meta=palette&meta=location', isImage)
+    .reply(201, {document: {url: 'https://some.asset.url'}})
+
+  const options = {extract: ['palette', 'location']}
+  getClient().assets.upload('image', fs.createReadStream(fixturePath), options)
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
+      t.end()
+    }, ifError(t))
+})
+
+test('empty extract array sends `none` as metadata', t => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo?meta=none', isImage)
+    .reply(201, {document: {url: 'https://some.asset.url'}})
+
+  const options = {extract: []}
+  getClient().assets.upload('image', fs.createReadStream(fixturePath), options)
+    .then(document => {
+      t.equal(document.url, 'https://some.asset.url')
+      t.end()
+    }, ifError(t))
+})
+
 test('uploads images with progress events', t => {
   const fixturePath = fixture('horsehead-nebula.jpg')
   const isImage = body => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
