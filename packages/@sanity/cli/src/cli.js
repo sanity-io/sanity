@@ -72,7 +72,7 @@ module.exports = function runCli() {
       const error = (debug && err.details) || err
       const errMessage = debug ? (error.stack || error) : (error.message || error)
       console.error(chalk.red(errMessage)) // eslint-disable-line no-console
-      process.exit(error.code || 1) // eslint-disable-line no-process-exit
+      process.exit(1) // eslint-disable-line no-process-exit
     })
 }
 
