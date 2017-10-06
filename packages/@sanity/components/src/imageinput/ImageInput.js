@@ -4,7 +4,6 @@ import React from 'react'
 import styles from 'part:@sanity/components/imageinput/fieldset-style'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import UploadIcon from 'part:@sanity/base/upload-icon'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageSelect from 'part:@sanity/components/imageinput/image-select'
@@ -20,7 +19,7 @@ const DEFAULT_HOTSPOT = {
   y: 0.5
 }
 
-export default class ImageInputFieldset extends React.PureComponent {
+export default class ImageInput extends React.PureComponent {
   static propTypes = {
     status: PropTypes.oneOf(['ready', 'complete', 'pending', 'error']),
     legend: PropTypes.string,
@@ -44,7 +43,6 @@ export default class ImageInputFieldset extends React.PureComponent {
   }
 
   static defaultProps = {
-    level: 1,
     status: 'ready',
     showContent: true
   }
@@ -60,7 +58,6 @@ export default class ImageInputFieldset extends React.PureComponent {
     const {
       legend,
       description,
-      level,
       hotspotImage,
       fieldName,
       percent,
@@ -76,7 +73,7 @@ export default class ImageInputFieldset extends React.PureComponent {
     }
 
     return (
-      <Fieldset legend={legend} description={description} level={level} className={`${styles[`level${level}`] || ''}`}>
+      <div>
         <div className={`${styles.grid} ${showContent ? styles.hasContent : styles.noContent}`}>
           <div
             className={`
@@ -212,7 +209,7 @@ export default class ImageInputFieldset extends React.PureComponent {
             )
           }
         </div>
-      </Fieldset>
+      </div>
     )
   }
 }

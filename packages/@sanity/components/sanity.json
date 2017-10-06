@@ -54,6 +54,10 @@
       "description": "Image input fieldset"
     },
     {
+      "name": "part:@sanity/components/imageinput/default",
+      "description": "Default image input"
+    },
+    {
       "name": "part:@sanity/components/imageinput/image-select",
       "description": "Abstract Image selector. Replaces <Input type=file />"
     },
@@ -552,8 +556,8 @@
       "path": "buttons/styles/InInput.css"
     },
     {
-      "implements": "part:@sanity/components/imageinput/fieldset",
-      "path": "imageinput/ImageInputFieldset.js"
+      "implements": "part:@sanity/components/imageinput/default",
+      "path": "imageinput/ImageInput.js"
     },
     {
       "implements": "part:@sanity/components/fileinput/default",
