@@ -16,7 +16,7 @@ export const CLEANUP_EVENT = createUploadEvent([UNSET_UPLOAD_PATCH])
 export function createInitialUploadEvent(file: File) {
   return createUploadEvent([
     set({
-      percent: 2,
+      progress: 2,
       initiated: new Date().toISOString(),
       file: {name: file.name, type: file.type}
     }, [UPLOAD_STATUS_KEY])
