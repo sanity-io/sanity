@@ -3,6 +3,7 @@ node_js:
   - '4'
   - '6'
   - '8'
+cache: yarn
 before_script:
   - travis_wait yarn run bootstrap
   - yarn run build
