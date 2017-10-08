@@ -5,6 +5,7 @@ import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION} from './image/orient'
 import {set} from '../../utils/patches'
 import type {UploadEvent} from './typedefs'
+
 // The eslint import plugin doesn't work well with opaque types
 // https://github.com/benmosher/eslint-plugin-import/issues/921
 // https://github.com/gajus/eslint-plugin-flowtype/issues/260
@@ -13,16 +14,14 @@ import type {OrientationId} from './image/orient'
 import type {ObservableI} from '../../typedefs/observable'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
-import {createUploadId, getUploadEvents, scheduleUpload} from './uploadQueue'
+import {uploadImageAsset} from '../inputs/client-adapters/assets'
 
 type Exif = {
   orientation: OrientationId
 }
 
 export default function uploadImage(file: File): ObservableI<UploadEvent> {
-  const uploadId = createUploadId(file)
-
-  const upload$ = getUploadEvents(uploadId)
+  const upload$ = uploadImageAsset(file)
     .filter(event => event.stage !== 'download')
     .map(event => ({
       ...event,
@@ -48,8 +47,6 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     })
     .filter(Boolean)
     .map(imageUrl => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
-
-  scheduleUpload(uploadId, file)
 
   return Observable.of(createInitialUploadEvent(file))
     .concat(Observable.from(upload$).merge(setPreviewUrl$))
