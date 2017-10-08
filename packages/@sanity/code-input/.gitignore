@@ -13,3 +13,7 @@ node_modules
 
 # UMD bundle
 umd
+
+# Lockfiles
+yarn.lock
+package-lock.json
