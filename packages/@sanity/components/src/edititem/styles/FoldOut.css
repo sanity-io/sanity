@@ -2,7 +2,7 @@
 
 :root {
   --edit-item-fold-border-color: var(--brand-primary);
-  --edit-item-fold-dark-color: color(var(--edit-item-fold-border-color) lightness(-20%));
+  --edit-item-fold-dark-color: color(var(--edit-item-fold-border-color) lightness(- 20%));
   --edit-item-fold-padding: var(--small-padding);
 }
 
