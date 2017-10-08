@@ -10,6 +10,6 @@
   --selectable-item-color-active--inverted: var(--white);
   --selected-item-color: var(--brand-primary);
   --selected-item-color--inverted: var(--white);
-  --selected-item-color-hover: color(var(--brand-primary) lightness(+10%));
+  --selected-item-color-hover: color(var(--brand-primary) lightness(+ 10%));
   --selected-item-color-hover--inverted: var(--white);
 }
