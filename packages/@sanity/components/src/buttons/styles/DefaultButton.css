@@ -52,15 +52,15 @@
 
   @nest &:not(.disabled) {
     @nest &:hover {
-      background-color: color(var(--default-button-color) lightness(-5%));
+      background-color: color(var(--default-button-color) lightness(- 5%));
     }
 
     @nest &:focus {
-      background-color: color(var(--default-button-color) lightness(-20%));
+      background-color: color(var(--default-button-color) lightness(- 20%));
     }
 
     @nest &:active {
-      background-color: color(var(--default-button-color) lightness(+10%));
+      background-color: color(var(--default-button-color) lightness(+ 10%));
       outline: 0;
     }
   }
@@ -96,7 +96,7 @@
 
   @nest &:not(.disabled) {
     @nest &:hover, &:focus {
-      background-color: color(var(--brand-primary) lightness(-5%));
+      background-color: color(var(--brand-primary) lightness(- 5%));
     }
   }
 
@@ -148,7 +148,7 @@
 
   @nest &:not(.disabled) {
     @nest &:hover, &:focus {
-      background-color: color(var(--state-danger-color) lightness(-10%));
+      background-color: color(var(--state-danger-color) lightness(- 10%));
     }
   }
 
@@ -206,7 +206,7 @@
 
   @nest &:not(.disabled) {
     @nest &:hover, &:focus {
-      background-color: color(var(--state-success-color) lightness(-5%));
+      background-color: color(var(--state-success-color) lightness(- 5%));
     }
   }
 
@@ -256,7 +256,7 @@
 
   @nest &:not(.disabled) {
     @nest &:hover, &:focus {
-      background-color: color(var(--white) lightness(-5%));
+      background-color: color(var(--white) lightness(- 5%));
     }
   }
 
@@ -268,7 +268,7 @@
 
     @nest &:not(.disabled) {
       @nest &:hover. &:focus {
-        background-color: color(var(--white) lightness(-5%));
+        background-color: color(var(--white) lightness(- 5%));
       }
     }
   }
