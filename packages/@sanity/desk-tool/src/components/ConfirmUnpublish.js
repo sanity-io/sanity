@@ -3,9 +3,9 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
-import DefaultList from 'part:@sanity/components/lists/default'
+import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
-import renderReferringDocumentItem from './renderReferringDocumentItem'
+import ReferringDocumentLink from './ReferringDocumentLink'
 import DocTitle from './DocTitle'
 
 export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
@@ -32,41 +32,46 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
     const {isCheckingReferringDocuments, referringDocuments, draft, published, onCancel} = this.props
 
     const hasReferringDocuments = referringDocuments.length > 0
+    const canContinue = !isCheckingReferringDocuments && !hasReferringDocuments
     const actions = [
-      !isCheckingReferringDocuments && {
-        name: 'confirm',
-        color: 'danger',
-        title: 'Unpublish now',
-        disabled: hasReferringDocuments
-      },
-      {name: 'cancel', title: hasReferringDocuments ? 'Close' : 'Cancel', kind: 'secondary'}
-    ]
-      .filter(Boolean)
+      canContinue && {name: 'confirm', title: 'Unpublish now'},
+      {name: 'cancel', title: hasReferringDocuments ? 'Ok, got it' : 'Cancel', kind: 'secondary'}
+    ].filter(Boolean)
+
+    const title = (isCheckingReferringDocuments && 'Checking…')
+      || (hasReferringDocuments ? 'Cannot unpublish' : 'Confirm unpublish')
 
     return (
       <Dialog
         isOpen
         showHeader
         centered
-        title={hasReferringDocuments ? 'Cannot unpublish document' : 'Confirm unpublish document'}
+        title={title}
         onClose={onCancel}
         onAction={this.handleAction}
         actions={actions}
       >
-        {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" /> }
+        {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" />}
         {hasReferringDocuments && (
           <div>
+            <h3>
+              Found {referringDocuments.length === 1 ? 'a document' : `${referringDocuments.length} documents`} that
+              refers to <DocTitle document={(draft || published)} />
+            </h3>
             <p>
-              The following documents has references to this document that needs to be removed or replaced before it
-              can be unpublished.
+              You cannot unpublish a document that other documents are referring to.
+              In order to continue, every reference
+              to <strong><DocTitle document={(draft || published)} /></strong> needs
+              to be removed from
+              the following document{referringDocuments.length > 1 && 's'}:
             </p>
-            <h3>{referringDocuments.length} Referring documents</h3>
-            <DefaultList
-              overrideItemRender
-              items={referringDocuments}
-              renderItem={renderReferringDocumentItem}
-              decoration="divider"
-            />
+            <DefaultList>
+              {referringDocuments.map(document => (
+                <DefaultItem key={document._id}>
+                  <ReferringDocumentLink document={document} />
+                </DefaultItem>
+              ))}
+            </DefaultList>
           </div>
         )}
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
@@ -77,9 +82,10 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
                 <DocTitle document={(draft || published)} />
               </strong>?
             </p>
+            <h2>Careful!</h2>
             <p>
-              It will no longer be available for the public, but it will not be deleted and can be published again later
-              if you change your mind.
+              If you unpublish, this document will no longer be available for the public, but it will not be
+              deleted and can be published again later if you change your mind.
             </p>
           </div>
         )}
