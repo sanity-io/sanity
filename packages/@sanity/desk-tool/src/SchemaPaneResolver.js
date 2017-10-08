@@ -117,6 +117,7 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
             schemaType && selectedDocumentId && action === 'edit' && (
               <SplitPaneWrapper>
                 <EditorWrapper
+                  key={selectedDocumentId}
                   documentId={selectedDocumentId}
                   typeName={schemaType.name}
                   schemaType={schemaType}
