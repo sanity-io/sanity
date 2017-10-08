@@ -9,7 +9,8 @@ export interface Subscription {
   unsubscribe: () => void
 }
 
-type FunctionSubscriber<T> = T => void
+type FunctionSubscriber<T> = T => any
+
 type ObjectSubscriber<T> = {
   next?: T => void,
   error?: (error: Error) => void,
