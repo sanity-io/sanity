@@ -6,14 +6,6 @@
   z-index: 1;
 }
 
-.list {
-  /*
-  margin-top: calc(var(--medium-padding) * -1);
-  margin-left: calc(var(--medium-padding) * -1);
-  margin-right: calc(var(--medium-padding) * -1);
-  */
-}
-
 .list + .functions {
   padding-top: var(--medium-padding);
 }
@@ -30,18 +22,6 @@
 
 .item {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
-  border-bottom: 1px solid #ddd;
-  user-select: none;
-  cursor: default;
-
-  @nest &:first-child {
-    border-top: 1px solid #ddd;
-  }
-
-  @nest &.media {
-    height: 15em;
-    width: 15em;
-  }
 }
 
 .popupAnchorRelative {

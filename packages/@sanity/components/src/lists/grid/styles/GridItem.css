@@ -6,7 +6,4 @@
   user-select: none;
   cursor: default;
   list-style: none;
-  flex-basis: 5em;
-  margin-right: var(--small-padding);
-  margin-bottom: var(--small-padding);
 }

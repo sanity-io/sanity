@@ -15,8 +15,6 @@
 
 .gridItem {
   composes: root;
-  padding: 2px;
-  width: 10em;
 
   @nest & .functions {
     position: absolute;
