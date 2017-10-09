@@ -126,6 +126,16 @@
   }
 }
 
+.closeInverted {
+  composes: close;
+
+  @media (--screen-medium) {
+    color: #fff;
+    top: calc(var(--small-padding) / 2);
+    right: 0;
+  }
+}
+
 .content {
   padding: 1em;
   max-height: 100%;
@@ -143,8 +153,6 @@
   font-size: 1em;
   padding: 0.5em;
   overflow: hidden;
-  background-color: var(--array--add-item-color);
-  color: var(--component-bg);
   position: fixed;
   top: 0;
   width: 100%;
@@ -158,8 +166,11 @@
 
 .title {
   margin: 0;
-  padding: 0;
   background-color: var(--array--add-item-color);
+  color: var(--component-bg);
+  padding: var(--small-padding);
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 .primaryFunctions {
