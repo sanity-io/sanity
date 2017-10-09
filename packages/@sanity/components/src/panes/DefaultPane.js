@@ -166,7 +166,7 @@ class Pane extends React.PureComponent {
           <div
             className={styles.headerBackground}
             style={{
-              opacity: isCollapsed ? {} : this.state.headerStyle.opacity
+              opacity: isCollapsed ? '' : this.state.headerStyle.opacity
             }}
           />
         </div>
