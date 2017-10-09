@@ -39,11 +39,7 @@
   display: block;
 
   @nest &:hover {
-<<<<<<< HEAD
-    color: color(var(--selectable-item-color) lightness(- 20%));
-=======
     color: color(var(--white) a(80%));
->>>>>>> [design] Adjusting layout
   }
 
   @nest &:active {
