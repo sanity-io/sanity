@@ -8,7 +8,7 @@ module.exports = function parseArguments(argv = process.argv) {
     d, debug,
     v, version,
     '--': extraArguments,
-    ...extOptions,
+    ...extOptions
   } = minimist(argv.slice(2), {
     '--': true,
     boolean: ['h', 'help', 'd', 'debug', 'v', 'version']

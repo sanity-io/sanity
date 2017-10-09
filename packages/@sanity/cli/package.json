@@ -72,6 +72,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "eslint": "^4.6.1",
+    "eslint-config-sanity": "^3.1.0",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
     "source-map-support": "^0.4.11"
