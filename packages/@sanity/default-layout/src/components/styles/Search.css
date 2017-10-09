@@ -45,12 +45,12 @@
   padding: 0;
 
   @media (--screen-medium) {
-    composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+    composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   }
 }
 
 .hits {
-  background-color: color(var(--component-bg) a(90%));
+  background-color: var(--component-bg);
   color: var(--black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
   width: 100%;
@@ -60,20 +60,30 @@
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: default;
+  border-bottom: 1px solid #ddd;
+  position: relative;
 }
 
 .link {
   composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   display: block;
-
-  @nest &:hover {
-    background-color: var(--gray-light--transparent);
-  }
+  padding: var(--small-padding);
 }
 
 .activeLink {
   composes: link;
   background-color: var(--selected-item-color-hover);
+}
+
+.itemType {
+  position: absolute;
+  top: 50%;
+  color: var(--gray);
+  right: var(--small-padding);
+  text-transform: uppercase;
+  font-size: var(--font-size-tiny);
+  transform: translateY(-50%);
 }
 
 .label {
