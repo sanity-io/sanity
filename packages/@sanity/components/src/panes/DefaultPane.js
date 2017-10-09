@@ -135,7 +135,7 @@ class Pane extends React.PureComponent {
         <div
           className={styles.header}
           style={{
-            boxShadow: isCollapsed ? {} : this.state.headerStyle.boxShadow
+            boxShadow: isCollapsed ? '' : this.state.headerStyle.boxShadow
           }}
         >
           <div className={styles.headerContent}>
