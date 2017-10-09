@@ -297,11 +297,9 @@ export default class BlockEditor extends React.Component {
     const {value, onChange} = this.props
     const {fullscreen, toolbarStyle} = this.state
 
-    console.log('renderBlockEditor', toolbarStyle)
-
     return (
       <div
-        className={fullscreen ? styles.fullscreen : ''}
+        className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`}
       >
         <Toolbar
           className={styles.toolbar}
