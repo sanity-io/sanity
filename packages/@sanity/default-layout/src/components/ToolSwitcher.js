@@ -3,6 +3,7 @@ import React from 'react'
 import {StateLink} from 'part:@sanity/base/router'
 import styles from './styles/ToolSwitcher.css'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
+import Ink from 'react-ink'
 
 function ToolSwitcher(props) {
   const {tools, activeToolName} = props
@@ -25,6 +26,7 @@ function ToolSwitcher(props) {
                 <div className={styles.toolName}>
                   {tool.title || tool.name}
                 </div>
+                <Ink duration={200} opacity={0.10} radius={200} />
               </StateLink>
             </li>
           )

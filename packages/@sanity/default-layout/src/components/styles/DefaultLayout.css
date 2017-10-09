@@ -91,14 +91,26 @@
 
 .createButton {
   display: block;
-  color: var(--state-danger-color);
   text-align: center;
-  margin-bottom: var(--medium-padding);
+  padding-bottom: var(--medium-padding);
+  color: var(--white);
+  user-select: none;
+  cursor: default;
+  position: relative;
+
+  @nest &:hover {
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--brand-primary) a(20%));
+  }
 }
 
 .createButtonIcon {
   display: block;
-  font-size: 1.5em;
+  font-size: 3em;
+  color: var(--brand-primary);
 }
 
 .createButtonText {

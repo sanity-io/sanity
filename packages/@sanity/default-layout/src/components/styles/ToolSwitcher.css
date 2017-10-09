@@ -15,7 +15,6 @@
   position: relative;
   text-align: center;
   color: color(var(--white) a(30%));
-  margin-bottom: var(--medium-padding);
 }
 
 .activeItem {
@@ -26,6 +25,7 @@
 .iconContainer {
   display: block;
   font-size: 2em;
+  line-height: 1em;
   margin: 0 auto;
 }
 
@@ -37,9 +37,11 @@
   color: inherit;
   text-decoration: none;
   display: block;
+  padding: var(--medium-padding) 0;
 
   @nest &:hover {
     color: color(var(--white) a(80%));
+    background-color: color(var(--white) a(10%));
   }
 
   @nest &:active {

@@ -6,7 +6,7 @@
   text-decoration: none;
   color: var(--text-color);
   font-weight: 300;
-  min-height: 5rem;
+  min-height: 3rem;
 }
 
 .projectName {
