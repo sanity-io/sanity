@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import Observable from '@sanity/observable'
 import observeForPreview from './observeForPreview'
 import shallowEquals from 'shallow-equals'
 import intersectionObservableFor from './streams/intersectionObservableFor'
 import visibilityChange$ from './streams/visibilityChange'
-
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
@@ -52,9 +50,9 @@ export default class PreviewSubscriber extends React.PureComponent {
       : {}
 
     const visibilityOn$ = Observable.of(!document.hidden)
-       .merge(visibilityChange$.map(event => !event.target.hidden))
+      .merge(visibilityChange$.map(event => !event.target.hidden))
 
-    const inViewport$ = intersectionObservableFor(ReactDOM.findDOMNode(this))
+    const inViewport$ = intersectionObservableFor(this._element)
       .map(event => event.isIntersecting)
 
     this.subscription = visibilityOn$
@@ -75,9 +73,17 @@ export default class PreviewSubscriber extends React.PureComponent {
       })
   }
 
+  setElement = element => {
+    this._element = element
+  }
+
   render() {
     const {result, isLive, error} = this.state
     const {children: Child, ...props} = this.props
-    return <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} {...props} />
+    return (
+      <div ref={this.setElement}>
+        <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} {...props} />
+      </div>
+    )
   }
 }
