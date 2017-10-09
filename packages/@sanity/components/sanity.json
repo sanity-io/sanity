@@ -724,6 +724,14 @@
       "path": "previews/styles/MediaPreview.css"
     },
     {
+      "name": "part:@sanity/components/panes/default-pane-style",
+      "description": "Styling for panes"
+    },
+    {
+      "implements": "part:@sanity/components/panes/default-pane-style",
+      "path": "panes/styles/DefaultPane.css"
+    },
+    {
       "name": "part:@sanity/components/utilities/activate-on-focus",
       "description": "Prevents scrolling, click and other mouseevents before the area is activated"
     },
