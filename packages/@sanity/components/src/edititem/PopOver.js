@@ -193,7 +193,7 @@ export default class EditItemPopOver extends React.Component {
                 left: `${popoverLeft}px`
               }}
             >
-              <button className={styles.close} type="button" onClick={this.handleClose}>
+              <button className={title ? styles.closeInverted : styles.close} type="button" onClick={this.handleClose}>
                 <CloseIcon />
               </button>
 
