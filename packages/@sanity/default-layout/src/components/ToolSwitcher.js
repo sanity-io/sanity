@@ -6,7 +6,7 @@ import PluginIcon from 'part:@sanity/base/plugin-icon'
 import Ink from 'react-ink'
 
 function ToolSwitcher(props) {
-  const {tools, activeToolName} = props
+  const {tools, activeToolName, onSwitchTool} = props
   return (
     <div className={`${styles.toolSwitcher} ${props.className}`}>
       <ul className={styles.toolList}>
@@ -19,7 +19,7 @@ function ToolSwitcher(props) {
 
           return (
             <li key={tool.name} className={itemClass}>
-              <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={props.onClick}>
+              <StateLink className={styles.toolLink} state={{tool: tool.name}} onClick={onSwitchTool}>
                 <div className={styles.iconContainer}>
                   <ToolIcon />
                 </div>
@@ -42,7 +42,7 @@ ToolSwitcher.defaultProps = {
 
 ToolSwitcher.propTypes = {
   activeToolName: PropTypes.string,
-  onClick: PropTypes.func,
+  onSwitchTool: PropTypes.func,
   className: PropTypes.string,
   tools: PropTypes.arrayOf(
     PropTypes.shape({

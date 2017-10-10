@@ -65,9 +65,7 @@
 }
 
 .editor {
-  @media (--screen-medium) {
-    padding: 1rem;
-  }
+  padding: var(--medium-padding);
 }
 
 .syncStatus {
