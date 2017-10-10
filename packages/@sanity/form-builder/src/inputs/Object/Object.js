@@ -45,7 +45,7 @@ export default class ObjectInput extends React.PureComponent {
         const valueTypeName = value && value._type
         const schemaTypeName = type.name
 
-        if (valueTypeName && schemaTypeName === 'object') {
+        if (valueTypeName && schemaTypeName === 'object') { // eslint-disable-line max-depth
           // The value has a _type key, but the type name from schema is 'object',
           // but _type: 'object' is implicit so we should fix it by removing it
           event = event.prepend(unset(['_type']))

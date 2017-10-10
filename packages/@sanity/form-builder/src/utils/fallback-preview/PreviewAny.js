@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+// @flow
 import React from 'react'
 import {PreviewPrimitive} from './PreviewPrimitive'
 import {PreviewObject} from './PreviewObject'
@@ -6,13 +6,17 @@ import {PreviewArray} from './PreviewArray'
 
 const NO_VALUE = <PreviewPrimitive value="<no value>" />
 
-export function PreviewAny(props) {
+type Props = {
+  value: Array<*> | Object | number | boolean | string
+}
+
+export function PreviewAny(props: Props) {
   const {value, ...rest} = props
   switch (typeof value) {
     case 'number':
     case 'boolean':
     case 'string': {
-      return <PreviewPrimitive {...rest} value={value} />
+      return <PreviewPrimitive {...rest} value={value} />
     }
     case 'undefined': {
       return NO_VALUE
@@ -32,8 +36,4 @@ export function PreviewAny(props) {
       return <span>{'<unknown>'}</span>
     }
   }
-}
-
-PreviewAny.defaultProps = {
-  _depth: 1
 }

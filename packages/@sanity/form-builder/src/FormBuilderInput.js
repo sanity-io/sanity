@@ -18,7 +18,6 @@ export class FormBuilderInput extends React.Component {
   };
 
   static defaultProps = {
-    onChange() {},
     validation: {messages: [], fields: {}},
     isRoot: false
   }

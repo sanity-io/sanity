@@ -1,24 +1,24 @@
 // @flow
-import PropTypes from 'prop-types'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import type {Type} from '../../typedefs'
 
-export default class TagsArrayInput extends React.PureComponent {
-  static propTypes = {
-    type: PropTypes.object,
-    value: PropTypes.arrayOf(PropTypes.string),
-    level: PropTypes.number,
-    onChange: PropTypes.func
-  }
+type Props = {
+  type: Type,
+  value: Array<string>,
+  level: number,
+  onChange: (PatchEvent) => void
+}
 
+export default class TagsArrayInput extends React.PureComponent<Props> {
   set(nextValue: string[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
   }
 
-  handleAddItem = itemValue => {
+  handleAddItem = (itemValue: string) => {
     this.set((this.props.value || []).concat(itemValue))
   }
 
@@ -36,7 +36,7 @@ export default class TagsArrayInput extends React.PureComponent {
         label={type.title}
         description={type.description}
       >
-      <TagInput
+        <TagInput
           label={type.title}
           level={level}
           description={type.description}
