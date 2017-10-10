@@ -18,7 +18,8 @@ export default class Field extends React.Component {
     validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
-    level: PropTypes.number
+    level: PropTypes.number,
+    autoFocus: PropTypes.bool
   };
 
   static defaultProps = {

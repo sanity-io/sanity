@@ -1,10 +1,9 @@
-// @flow
 import React from 'react'
 import PropTypes from 'prop-types'
 
 export default function withDocument(ComposedComponent: any) {
 
-  return class withDocument extends React.PureComponent {
+  return class WithDocument extends React.PureComponent {
     static displayName = `withDocument(${ComposedComponent.displayName || ComposedComponent.name})`
 
     static contextTypes = {

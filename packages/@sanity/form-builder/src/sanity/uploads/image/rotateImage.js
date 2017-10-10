@@ -1,6 +1,11 @@
 // @flow
 import Observable from '@sanity/observable'
-import orient, {DEFAULT_ORIENTATION} from './orient'
+import orient from './orient'
+
+// The eslint import plugin doesn't work well with opaque types
+// https://github.com/benmosher/eslint-plugin-import/issues/921
+// https://github.com/gajus/eslint-plugin-flowtype/issues/260
+// eslint-disable-next-line import/named
 import type {OrientationId} from './orient'
 
 function loadImage(url: string) {

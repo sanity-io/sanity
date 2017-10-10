@@ -23,7 +23,7 @@ export default class NumberInput extends React.PureComponent {
   }
 
   render() {
-    const {value, type, level, validation, ...rest} = this.props
+    const {value, type, level, ...rest} = this.props
 
     return (
       <FormField

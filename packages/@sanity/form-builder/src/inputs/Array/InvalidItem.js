@@ -9,7 +9,7 @@ type Type = {
   of: Array<Type>
 }
 
-export default class Item extends React.PureComponent {
+export default class Item extends React.PureComponent<*> {
   props: {
     // note: type here is the *array* type
     type: Type,

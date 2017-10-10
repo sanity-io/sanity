@@ -1,13 +1,11 @@
-// @flow
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import {get, uniqueId, omit} from 'lodash'
+import {get, uniqueId, omit, groupBy} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {groupBy} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/FileInput.css'
 import subscriptionManager from '../../utils/subscriptionManager'
@@ -128,8 +126,7 @@ export default class FileInput extends React.PureComponent {
 
   handleUploadError = error => {
     this.setState({
-      status: 'error',
-      error: error
+      status: 'error'
     })
   }
 
@@ -147,7 +144,6 @@ export default class FileInput extends React.PureComponent {
     this.cancelCurrent()
     this.setState({
       status: 'cancelled',
-      error: null,
       progress: {},
       uploadingFile: null
     })
@@ -196,9 +192,7 @@ export default class FileInput extends React.PureComponent {
   }
 
   renderField(field) {
-    const {value, validation, level} = this.props
-    const fieldValidation = validation && validation.fields[field.name]
-
+    const {value, level} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -207,7 +201,6 @@ export default class FileInput extends React.PureComponent {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
-        validation={fieldValidation}
         level={level + 1}
       />
     )
