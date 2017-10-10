@@ -32,23 +32,6 @@
   }
 }
 
-.focusHelper {
-  display: none;
-  display: block;
-  width: calc(100% + (var(--extra-small-padding) * 2));
-  height: calc(100% + (var(--extra-small-padding) * 2));
-  position: absolute;
-  top: calc(var(--extra-small-padding) * -1);
-  left: calc(var(--extra-small-padding) * -1);
-  z-index: -1;
-  background-color: transparent;
-}
-
-.focusHelperActive {
-  background-color: var(--focus-color);
-  background-color: transparent;
-}
-
 .disabled {
   composes: textInput;
   background-color: var(--input-bg-disabled);

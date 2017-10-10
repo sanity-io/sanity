@@ -1,10 +1,10 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --checkbox-label-height: 1rem;
+  --checkbox-label-height: 1em;
   --checkbox-off-color: var(--brand-primary);
   --checkbox-color: var(--brand-primary);
-  --checkbox-button-size: 1rem;
+  --checkbox-button-size: 1em;
   --checkbox-top-offset: 0;
   --checkbox-focus-color: color(var(--black) a(10%));
   --checkbox-label-font-size: 1em;
@@ -69,8 +69,8 @@
   margin: 0;
   cursor: default;
   overflow: hidden;
-  border: 2px solid var(--checkbox-off-color);
-  border-radius: 2px;
+  border: calc(var(--checkbox-button-size) * 0.1) solid var(--checkbox-off-color);
+  border-radius: 10%;
   z-index: 2;
   background-color: var(--white);
 
@@ -105,8 +105,8 @@
 
 .tickOutline {
   position: absolute;
-  top: calc(var(--checkbox-button-size) * 0.1);
-  left: calc(var(--checkbox-button-size) * 0.1);
+  top: calc(var(--checkbox-button-size) * 0.12);
+  left: calc(var(--checkbox-button-size) * 0.12);
   height: calc(var(--checkbox-button-size) * 0.5);
   width: calc(var(--checkbox-button-size) * 0.5);
 
