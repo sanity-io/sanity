@@ -58,6 +58,10 @@ class GeopointSelect extends React.Component {
       'place_changed',
       this.handlePlaceChanged.bind(this)
     )
+
+    event.addListener(this.mapInstance, 'click', clickEvent => {
+      this.setValue(clickEvent.latLng)
+    })
   }
 
   getValueLatLng() {
