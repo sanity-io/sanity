@@ -105,7 +105,7 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <Fieldset legend={type.title} descriptions={type.description} className={styles.root}>
+      <Fieldset legend={type.title} description={type.description} className={styles.root}>
         {value && <div>
           <img className={styles.previewImage} src={this.getStaticImageUrl(value)} />
         </div>}
