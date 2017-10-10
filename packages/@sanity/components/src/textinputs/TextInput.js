@@ -32,6 +32,7 @@ export default class DefaultTextInput extends React.PureComponent {
     isClearable: PropTypes.bool,
     isSelected: PropTypes.bool,
     isDisabled: PropTypes.bool,
+    autoComplete: PropTypes.string,
     hasError: PropTypes.bool,
     styles: PropTypes.shape({
       container: PropTypes.string,
@@ -101,6 +102,7 @@ export default class DefaultTextInput extends React.PureComponent {
       isDisabled,
       isSelected,
       styles,
+      validation,
       ...rest
     } = this.props
 

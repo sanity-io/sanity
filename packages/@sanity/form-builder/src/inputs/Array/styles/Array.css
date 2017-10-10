@@ -28,6 +28,10 @@
   composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
 }
 
+.listItemMute {
+  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+}
+
 .gridItem {
   display: block;
 }
