@@ -8,6 +8,11 @@ export function valueToString(value, referenceType) {
     .map(result => result.snapshot.title)
 }
 
+export function observeReferenceForPreview(value, referenceType) {
+  return observeForPreview(value, referenceType)
+    .map(result => result.snapshot)
+}
+
 function wrapIn(chars = '') {
   const [start = '', end = start] = chars
   return value => start + value + end

@@ -199,18 +199,18 @@ export class SpansAccessor {
     // Now groups contain only consecutive spans with identical marks, we may replace them with merged
     // versions of the same content. As each of these mutations change the length of the array, we must do them in
     // reverse order from back to front so that our indicies stay valid as we mutate
-    groups.reverse().forEach(group => {
+    groups.reverse().forEach(grp => {
       const value = {
         _type: 'textspan',
-        content: group.spans.map(span => span.content).join('')
+        content: grp.spans.map(span => span.content).join('')
       }
-      if (group.marks.length > 0) {
-        value.marks = group.marks
+      if (grp.marks.length > 0) {
+        value.marks = grp.marks
       }
       patches.push({
         type: 'insert',
         position: 'replace',
-        path: [`[${group.firstIndex}:${group.lastIndex}]`],
+        path: [`[${grp.firstIndex}:${grp.lastIndex}]`],
         value: [value]
       })
     })

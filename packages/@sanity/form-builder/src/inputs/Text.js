@@ -26,7 +26,7 @@ export default class TextInput extends React.PureComponent {
   }
 
   render() {
-    const {value, type, level, validation, ...rest} = this.props
+    const {value, type, level, ...rest} = this.props
     return (
       <FormField label={type.title} level={level} description={type.description}>
         <TextArea

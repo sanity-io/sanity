@@ -1,8 +1,6 @@
 import customInputs from './customInputs'
 import defaultInputs from './defaultInputs'
 import * as is from '../../utils/is'
-import SearchableStringSelect from '../../inputs/SearchableStringSelect'
-import StringSelect from '../../inputs/StringSelect'
 import resolveReferenceInput from './resolveReferenceInput'
 import resolveArrayInput from './resolveArrayInput'
 import resolveStringInput from './resolveStringInput'

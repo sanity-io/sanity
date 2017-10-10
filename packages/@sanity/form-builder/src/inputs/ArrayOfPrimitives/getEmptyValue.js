@@ -10,6 +10,7 @@ export default function getEmptyValue(type) {
     case 'boolean': {
       return false
     }
+    default:
+      return undefined
   }
-  return undefined
 }

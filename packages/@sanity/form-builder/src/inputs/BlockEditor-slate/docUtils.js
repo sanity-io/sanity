@@ -66,7 +66,7 @@ export function spanAccessorsToSlateNodes(spans) {
       const firstIndex = i
       // consume until we get something else
       let next = i
-      while (next < spans.length && (spans[next] instanceof TextSpanAccessor)) {
+      while (next < spans.length && (spans[next] instanceof TextSpanAccessor)) { // eslint-disable-line max-depth
         next++
       }
       joined = joined.push(consecutiveSanitySpansToSlateText(span.key, spans.slice(i, next), firstIndex))

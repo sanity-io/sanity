@@ -55,8 +55,7 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
       .subscribe({
         next: this.handleDocumentEvent,
         // error: this.handleDocumentError
-      })
-    )
+      }))
   }
 
   handleDocumentEvent = (event: {type: string, document: any}) => {

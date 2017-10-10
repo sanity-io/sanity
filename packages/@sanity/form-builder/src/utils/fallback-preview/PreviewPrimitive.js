@@ -1,4 +1,9 @@
+// @flow
 import React from 'react'
-export function PreviewPrimitive(props) {
+
+type Props = {
+  value: string | boolean | number
+}
+export function PreviewPrimitive(props: Props) {
   return <span>{props.value}</span>
 }

@@ -35,7 +35,7 @@ export default {
   boolean: {
     string: {
       test: TRUE,
-      convert: value => value ? 'Yes' : 'No'
+      convert: value => (value ? 'Yes' : 'No')
     },
     number: {
       test: TRUE,

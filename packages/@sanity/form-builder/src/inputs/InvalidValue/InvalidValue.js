@@ -8,8 +8,8 @@ import CONVERTERS from './converters'
 
 const setAutoHeight = el => {
   if (el) {
-    el.style.height = Math.min(300, el.scrollHeight) + 'px'
-    el.style.padding = 4 + 'px'
+    el.style.height = `${Math.min(300, el.scrollHeight)}px`
+    el.style.padding = `${4}px`
     el.style.overflow = 'auto'
   }
 }
@@ -56,8 +56,8 @@ export default class InvalidValue extends React.PureComponent {
     return (
       <div>
         Only the following types are valid here according to schema: {
-        validTypes.map(validType => (<li key={validType}><code>{validType}</code></li>))
-      }
+          validTypes.map(validType => (<li key={validType}><code>{validType}</code></li>))
+        }
       </div>
     )
   }
@@ -80,7 +80,11 @@ export default class InvalidValue extends React.PureComponent {
             value={(value && typeof value === 'object') ? JSON.stringify(value, null, 2) : value}
           />
           {converters.map(converter => (
-            <DefaultButton onClick={() => this.handleConvertTo(converter.convert(value))} color="primary">
+            <DefaultButton
+              key={`${converter.from}-${converter.to}`}
+              onClick={() => this.handleConvertTo(converter.convert(value))}
+              color="primary"
+            >
               Convert value to {converter.to}
             </DefaultButton>
           ))}

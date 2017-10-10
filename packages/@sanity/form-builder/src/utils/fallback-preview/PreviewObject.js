@@ -1,9 +1,16 @@
+// @flow
 import React from 'react'
 import {capitalize} from 'lodash'
 import {PreviewAny} from './PreviewAny'
 
-export function PreviewObject(props) {
-  const {value, maxDepth, _depth, ...rest} = props
+type Props = {
+  value: Object,
+  maxDepth?: number,
+  _depth?: number
+}
+
+export function PreviewObject(props: Props) {
+  const {value, maxDepth = 4, _depth = 0, ...rest} = props
   const {_type, _key, ...restValue} = value
   const keys = Object.keys(restValue)
   if (_depth >= maxDepth) {
@@ -15,7 +22,7 @@ export function PreviewObject(props) {
       <ul>
         {keys
           .map(key => (
-            <li>
+            <li key={key}>
               <b>{key}</b>: <PreviewAny {...rest} value={restValue[key]} _depth={_depth + 1} maxDepth={maxDepth} />
             </li>
           ))}

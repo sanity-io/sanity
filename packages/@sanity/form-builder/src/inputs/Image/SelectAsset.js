@@ -51,7 +51,7 @@ export default class SelectAsset extends React.Component<Props, State> {
       this.props.onSelect(selected)
     }
   }
-  fetchNextPage = () => {
+  handleFetchNextPage = () => {
     this.fetchPage(++this.pageNo)
   }
 
@@ -72,7 +72,7 @@ export default class SelectAsset extends React.Component<Props, State> {
         </GridList>
         {isLastPage
           ? <span>Nothing more to load…</span>
-          : <Button onClick={this.fetchNextPage}>Load more…</Button>}
+          : <Button onClick={this.handleFetchNextPage}>Load more…</Button>}
       </div>
     )
   }

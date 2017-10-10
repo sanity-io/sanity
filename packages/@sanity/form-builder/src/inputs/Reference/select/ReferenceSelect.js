@@ -1,28 +1,33 @@
+// @flow
 import PropTypes from 'prop-types'
-// @flow weak
 import React from 'react'
-import FormBuilderPropTypes from '../../../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import subscriptionManager from '../../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import type {Reference, Type} from '../../../typedefs'
 
 const EMPTY = {}
 
-export default class ReferenceSelect extends React.Component {
+type Props = {
+  type: Type,
+  value?: Reference,
+  fetchAllFn: Function,
+  fetchValueFn: Function,
+  onChange: PatchEvent => void
+}
+type Item = typeof EMPTY | Reference
 
-  static propTypes = {
-    type: FormBuilderPropTypes.type,
-    value: PropTypes.object,
-    fetchAllFn: PropTypes.func,
-    fetchValueFn: PropTypes.func,
-    onChange: PropTypes.func
-  }
+type State = {
+  items: Array<Item>,
+  refCache: Object,
+  materializedValue: ?Object
+}
 
+export default class ReferenceSelect extends React.Component<Props, State> {
   static defaultProps = {
     onChange() {}
   }
-
   static contextTypes = {
     formBuilder: PropTypes.object
   }
@@ -30,10 +35,7 @@ export default class ReferenceSelect extends React.Component {
   state = {
     items: [],
     refCache: {},
-    showDialog: false,
-    materializedValue: null,
-    fetching: false,
-    dialogSelectedItem: null
+    materializedValue: null
   }
 
   subscriptions = subscriptionManager('search', 'fetchValue')
@@ -47,13 +49,13 @@ export default class ReferenceSelect extends React.Component {
     this.subscriptions.unsubscribeAll()
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (this.props.value !== nextProps.value) {
       this.syncValue(nextProps.value)
     }
   }
 
-  syncValue(value) {
+  syncValue(value: Reference) {
     const {fetchValueFn, type} = this.props
 
     if (!value || !value._ref) {
@@ -69,9 +71,6 @@ export default class ReferenceSelect extends React.Component {
 
   fetchAll() {
     const {fetchAllFn, type} = this.props
-
-    this.setState({isSearching: true})
-
     this.subscriptions.replace('search', fetchAllFn(type)
       .subscribe(items => {
         const updatedCache = items.reduce((cache, item) => {
@@ -81,14 +80,12 @@ export default class ReferenceSelect extends React.Component {
 
         this.setState({
           items: items,
-          isSearching: false,
           refCache: updatedCache
         })
-      })
-    )
+      }))
   }
 
-  handleChange = item => {
+  handleChange = (item: Item) => {
     const {onChange} = this.props
 
     onChange(PatchEvent.from(item === EMPTY
