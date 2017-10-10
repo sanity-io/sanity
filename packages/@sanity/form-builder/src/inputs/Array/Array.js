@@ -317,6 +317,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     return (
       <List
         className={isGrid ? undefined : styles.list}
+        useDragHandle={!isGrid}
         {...listProps}
       >
         {value.map((item, index) => {
