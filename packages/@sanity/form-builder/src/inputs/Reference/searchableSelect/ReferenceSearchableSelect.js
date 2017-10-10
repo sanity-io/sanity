@@ -104,7 +104,6 @@ export default class ReferenceSearchableSelect extends React.Component {
         }, Object.assign({}, this.state.refCache))
 
         this.setState({
-          items: items,
           hits: items,
           fetching: false,
           refCache: updatedCache

@@ -27,7 +27,7 @@ export default class FormBuilderSpan extends React.Component {
     node: PropTypes.object
   }
 
-  state = {isFocused: false, isEditing: false, focusedAnnotationName: undefined}
+  state = {isEditing: false, focusedAnnotationName: undefined}
 
   _clickCounter = 0
   _isMarkingText = false
@@ -56,16 +56,6 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    const {node} = this.props
-    const {state} = nextProps
-    const selection = state.selection
-    const isFocused = selection.hasFocusIn(node)
-
-    if (selection !== this.props.state.selection) {
-      if (!isFocused) {
-        this.setState({isEditing: false, ...{isFocused}})
-      }
-    }
     // If annotations where emptied, just destroy this span (unwrap it to text actually)
     if (!nextProps.node.data.get('annotations')) {
       this.destroy()

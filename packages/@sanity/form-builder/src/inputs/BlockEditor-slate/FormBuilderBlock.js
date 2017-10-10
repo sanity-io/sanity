@@ -28,22 +28,12 @@ export default class FormBuilderBlock extends React.Component {
 
   state = {
     isSelected: false,
-    isFocused: false,
     isEditing: false,
     isDragging: false
   }
 
   _dropTarget = null
   _editorNode = null
-
-  componentWillUpdate(nextProps) {
-    const {node} = this.props
-    const selection = nextProps.state.selection
-    if (selection !== this.props.state.selection) {
-      const isFocused = selection.hasFocusIn(node)
-      this.setState({isFocused})
-    }
-  }
 
   componentDidMount() {
     this.addSelectionHandler()
@@ -60,7 +50,6 @@ export default class FormBuilderBlock extends React.Component {
       .setNodeByKey(node.key, {
         data: {value: applyAll(node.data.get('value'), event.patches)}
       })
-
     editor.onChange(change)
   }
 
@@ -293,10 +282,11 @@ export default class FormBuilderBlock extends React.Component {
 
   render() {
     const {isEditing} = this.state
-    const {attributes} = this.props
+    const {attributes, node, editor} = this.props
+    const isFocused = editor.props.blockEditor.props.value.selection.hasFocusIn(node)
 
     let className
-    if (this.state.isFocused && !this.state.isSelected) {
+    if (isFocused && !this.state.isSelected) {
       className = styles.focused
     } else if (this.state.isSelected) {
       className = styles.selected

@@ -25,8 +25,6 @@ export default function createBlockEditorOperations(blockEditor) {
       } else {
         change = this.expandToFocusedWord(state.change())
         if (!change) {
-          // No word to expand to
-          console.warn('No text in vincinity to bind span to')
           return null
         }
       }

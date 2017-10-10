@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 // @flow
-/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react'
 import {get} from 'lodash'
 import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
@@ -37,7 +36,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     onChange: PropTypes.func
   }
 
-  set (nextValue: any[]) {
+  set(nextValue: any[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
   }
@@ -117,12 +116,16 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     const sortable = get(type, 'options.sortable') !== false
 
     return sortable
-      ? <SortableList onSort={this.handleSort} useDragHandle>
-        {value.map(this.renderItem)}
-      </SortableList>
-      : <DefaultList decoration="divider">
-        {value.map(this.renderItem)}
-      </DefaultList>
+      ? (
+        <SortableList onSort={this.handleSort} useDragHandle>
+          {value.map(this.renderItem)}
+        </SortableList>
+      )
+      : (
+        <DefaultList decoration="divider">
+          {value.map(this.renderItem)}
+        </DefaultList>
+      )
 
   }
 

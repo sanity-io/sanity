@@ -1,4 +1,3 @@
-// @flow
 import PropTypes from 'prop-types'
 import React from 'react'
 import {omit, groupBy, get} from 'lodash'
@@ -155,8 +154,7 @@ export default class ImageInput extends React.PureComponent<*> {
 
   handleUploadError = error => {
     this.setState({
-      status: 'error',
-      error: error
+      status: 'error'
     })
   }
 
@@ -175,7 +173,6 @@ export default class ImageInput extends React.PureComponent<*> {
     this.cancelUpload()
     this.setState({
       status: 'ready',
-      error: null,
       progress: null,
       uploadingImage: null
     })
@@ -349,11 +346,7 @@ export default class ImageInput extends React.PureComponent<*> {
     const {
       type,
       level,
-      value,
-      uploadFn,
-      materializeReferenceFn,
-      onChange,
-      validation,
+      value
     } = this.props
 
     const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
