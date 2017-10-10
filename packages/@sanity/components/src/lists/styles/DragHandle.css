@@ -1,5 +1,5 @@
 .default {
-  cursor: row-resize;
+  cursor: ns-resize;
   font-size: 1em;
   height: 2.5em;
   display: inline-block;

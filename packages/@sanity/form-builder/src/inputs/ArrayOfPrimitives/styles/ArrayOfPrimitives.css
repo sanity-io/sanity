@@ -4,6 +4,10 @@
   display: block;
 }
 
+.list {
+  composes: root from 'part:@sanity/components/lists/default-style';
+}
+
 .deleteButton {
   position: absolute;
   z-index: 1;
@@ -12,6 +16,10 @@
   font-size: 0.9em;
   margin-right: 0;
   box-sizing: border-box;
+}
+
+.item {
+  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
 }
 
 .addButton {
