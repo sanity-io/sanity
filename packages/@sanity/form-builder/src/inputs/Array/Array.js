@@ -316,14 +316,18 @@ export default class ArrayInput extends React.Component<Props, State> {
 
     return (
       <List
-        className={styles.list}
+        className={isGrid ? undefined : styles.list}
         {...listProps}
       >
         {value.map((item, index) => {
           const {editItemKey} = this.state
           const itemProps = isSortable ? {index} : {}
           return (
-            <Item key={item._key} className={styles.item} {...itemProps}>
+            <Item
+              key={item._key}
+              className={isGrid ? styles.gridItem : styles.listItem}
+              {...itemProps}
+            >
               <RenderItemValue
                 type={type}
                 value={item}
