@@ -169,24 +169,25 @@
   backdrop-filter: blur(20px);
   background-color: color(var(--secondary-menu-background-color) a(90%));
   transition: height 0.1s linear;
+  width: 100vw;
 }
 
 .toolSwitcher {
   height: 1px;
+  width: 1px;
   overflow: hidden;
   position: absolute;
   transition: height 0.1s linear;
   top: var(--header-height);
   left: 0;
-  width: 100vw;
 
   @media (--screen-medium) {
-    top: initial;
-    height: initial;
-    left: initial;
     position: relative;
     display: block;
     width: auto;
     overflow: hidden;
+    top: initial;
+    height: initial;
+    left: initial;
   }
 }
