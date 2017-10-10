@@ -105,34 +105,30 @@
 
 .close {
   position: absolute;
-  top: 0.15em;
-  right: 0;
   border: 0;
   background: transparent;
   font-size: 1.5em;
   cursor: pointer;
-  color: #fff;
   outline: none;
   padding-right: 0.25em;
+  color: var(--text-color);
+  top: var(--small-padding);
+  right: var(--small-padding);
 
-  @media (--screen-medium) {
-    color: var(--text-color);
-    top: var(--small-padding);
-    right: var(--small-padding);
-
-    @nest &:hover {
-      color: var(--black);
-    }
+  @nest &:hover {
+    color: var(--black);
   }
 }
 
 .closeInverted {
   composes: close;
+  color: #fff;
+  top: calc(var(--small-padding) / 2);
+  right: 0;
 
-  @media (--screen-medium) {
-    color: #fff;
-    top: calc(var(--small-padding) / 2);
-    right: 0;
+  @media (--max-screen-medium) {
+    top: var(--small-padding);
+    right: var(--small-padding);
   }
 }
 
@@ -141,6 +137,10 @@
   max-height: 100%;
   box-sizing: border-box;
   overflow: overlay;
+
+  @media (--max-screen-medium) {
+    max-height: calc(100vh - var(--header-height)) !important;
+  }
 }
 
 .contentIsResizing {
@@ -171,6 +171,12 @@
   padding: var(--small-padding);
   font-size: 1rem;
   font-weight: 400;
+
+  @media (--max-screen-medium) {
+    height: var(--header-height);
+    line-height: var(--header-height);
+    padding: 0 var(--small-padding);
+  }
 }
 
 .primaryFunctions {
