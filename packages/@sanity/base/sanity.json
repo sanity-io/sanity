@@ -11,8 +11,7 @@
     },
     {
       "name": "part:@sanity/base/sanity-root",
-      "description": "The very root of any Sanity application. Used to load layout-agnostic behaviour",
-      "path": "components/SanityRoot.js"
+      "description": "The very root of any Sanity application. Used to load layout-agnostic behaviour"
     },
     {
       "name": "part:@sanity/base/root",
@@ -216,6 +215,11 @@
     {
       "name": "part:@sanity/base/app-loading-screen",
       "description": "Loading screen when sanity is initializing. Only static html and css. No javascript."
+    },
+    
+    {
+      "implements": "part:@sanity/base/sanity-root",
+      "path": "components/SanityRoot.js"
     },
     {
       "implements": "part:@sanity/base/app-loading-screen",
