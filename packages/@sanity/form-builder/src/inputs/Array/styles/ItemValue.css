@@ -41,6 +41,10 @@
   margin-left: calc(var(--medium-padding) * -1);
 }
 
+.dragHandle {
+  composes: default from 'part:@sanity/components/drag-handle-style';
+}
+
 .preview {
   flex-grow: 1;
   outline: none;

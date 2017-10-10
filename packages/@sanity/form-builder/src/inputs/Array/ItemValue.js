@@ -138,7 +138,7 @@ export default class Item extends React.Component<Props> {
         ref={this.setElement}
       >
         <div className={styles.inner}>
-          {!isGrid && isSortable && <DragHandle />}
+          {!isGrid && isSortable && <DragHandle className={styles.dragHandle} />}
 
           <div
             className={styles.preview}

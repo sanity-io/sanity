@@ -316,6 +316,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
     return (
       <List
+        className={styles.list}
         {...listProps}
       >
         {value.map((item, index) => {

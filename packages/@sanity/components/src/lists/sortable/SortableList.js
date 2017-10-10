@@ -1,9 +1,9 @@
 // @flow
 import React from 'react'
-import CoreList from '../core/CoreList'
+import List from '../default/List'
 import {createSortableList} from '../sortable-factories'
 
-const Sortable = createSortableList(CoreList)
+const Sortable = createSortableList(List)
 
 export default function SortableList(props) {
   return (

@@ -303,6 +303,30 @@
       "description": "Sortable Grid list"
     },
     {
+      "name": "part:@sanity/components/lists/default-style",
+      "description": "Default list style"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-style",
+      "path": "lists/styles/DefaultList.css"
+    },
+    {
+      "name": "part:@sanity/components/lists/default-item-style",
+      "description": "Default list item style"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-item-style",
+      "path": "lists/styles/DefaultListItem.css"
+    },
+    {
+      "name": "part:@sanity/components/drag-handle-style",
+      "description": "Drag handle style for use with default list"
+    },
+    {
+      "implements": "part:@sanity/components/drag-handle-style",
+      "path": "lists/styles/DragHandle.css"
+    },
+    {
       "name": "part:@sanity/components/edititem/popover",
       "description": "Edit item. Popover that points to the element"
     },
