@@ -19,7 +19,9 @@
 }
 
 .item {
-  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 
 .addButton {

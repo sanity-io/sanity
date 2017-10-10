@@ -36,7 +36,7 @@ class StatelessSearchableSelect extends React.PureComponent {
 
     isInputSelected: PropTypes.bool,
 
-    scrollContainer: PropTypes.node
+    scrollContainer: PropTypes.func
   }
 
   static defaultProps = {
