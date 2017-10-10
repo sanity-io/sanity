@@ -23,9 +23,13 @@
   composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
 }
 
-.item {
+.listItem {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+}
+
+.gridItem {
+  display: block;
 }
 
 .popupAnchorRelative {
