@@ -1,13 +1,20 @@
+// @flow
 import React from 'react'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import Preview from '../../Preview'
-import {resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
-import {isLegacyOptionsItem} from './legacyOptionsSupport'
+import {isLegacyOptionsItem, resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
+import type {Type} from '../../typedefs'
 
-export default class Item extends React.PureComponent {
-  handleChange = event => {
+type Props = {
+  type: Type,
+  value: any,
+  checked: boolean,
+  onChange: (boolean, any) => void
+}
+export default class Item extends React.PureComponent<Props> {
+  handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
     const {onChange, value} = this.props
-    onChange(event.target.checked, value)
+    onChange(event.currentTarget.checked, value)
   }
 
   render() {

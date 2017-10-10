@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+// @flow
 import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/Item.css'
@@ -10,17 +10,21 @@ import getEmptyValue from './getEmptyValue'
 
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
+import type {Type} from '../../typedefs'
 
 const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
 
-export default class Item extends React.PureComponent {
-  static propTypes = {
-    type: PropTypes.object.isRequired,
-    onChange: PropTypes.func,
-    index: PropTypes.number
-  }
+type Props = {
+  type: Type,
+  onChange: PatchEvent => void,
+  index: number,
+  value: string | number | boolean,
+  sortable: boolean,
+  level: number
+}
+export default class Item extends React.PureComponent<Props> {
 
-  handleRemove = event => {
+  handleRemove = () => {
     const {index, onChange} = this.props
     onChange(PatchEvent.from(unset([index])))
   }
@@ -35,32 +39,16 @@ export default class Item extends React.PureComponent {
     ))).prefixAll(index))
   }
 
-  handleClick = () => {
-    this.setState({edit: true})
-  }
-
-  handleBlur = () => {
-    this.setState({edit: false})
-  }
-
-  handleKeyPress = event => {
-    if (event.key === 'Enter' || event.keyCode === 27) {
-      this.setState({edit: false})
-    }
-  }
-
   render() {
     const {value, level, type, sortable} = this.props
     return (
       <div className={styles.root}>
-        {sortable && <DragHandle className={styles.dragHandle}/>}
-        <div onClick={this.handleClick} className={styles.input}>
+        {sortable && <DragHandle className={styles.dragHandle} />}
+        <div className={styles.input}>
           <FormBuilderInput
             value={value}
             type={type}
             onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-            onBlur={this.handleBlur}
             level={level}
           />
         </div>

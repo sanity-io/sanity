@@ -1,5 +1,4 @@
 import client from 'part:@sanity/base/client'
-import {observeWithPaths} from 'part:@sanity/base/preview'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4

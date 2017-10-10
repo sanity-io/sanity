@@ -143,8 +143,7 @@ export default class ReferenceBrowser extends React.Component {
           isSearching: false,
           refCache: updatedCache
         })
-      })
-    )
+      }))
   }
 
   renderItem = item => {

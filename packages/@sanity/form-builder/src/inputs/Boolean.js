@@ -23,24 +23,28 @@ export default class BooleanInput extends React.Component {
   }
 
   render() {
-    const {value, type, validation, ...rest} = this.props
+    const {value, type, ...rest} = this.props
 
     const isCheckbox = type.options && type.options.layout === 'checkbox'
     return isCheckbox
-      ? <Checkbox
-        {...rest}
-        onChange={this.handleChange}
-        checked={!!value}
-        description={type.description}
-      >
-        {type.title}
-      </Checkbox>
-      : <Switch
-        {...rest}
-        onChange={this.handleChange}
-        checked={!!value}
-        label={type.title}
-        description={type.description}
-      />
+      ? (
+        <Checkbox
+          {...rest}
+          onChange={this.handleChange}
+          checked={!!value}
+          description={type.description}
+        >
+          {type.title}
+        </Checkbox>
+      )
+      : (
+        <Switch
+          {...rest}
+          onChange={this.handleChange}
+          checked={!!value}
+          label={type.title}
+          description={type.description}
+        />
+      )
   }
 }
