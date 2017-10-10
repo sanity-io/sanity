@@ -3,7 +3,10 @@
 .root {
   display: block;
   position: relative;
-  z-index: 1;
+}
+
+.list {
+  composes: root from 'part:@sanity/components/lists/default-style';
 }
 
 .list + .functions {
@@ -22,6 +25,7 @@
 
 .item {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
 }
 
 .popupAnchorRelative {
