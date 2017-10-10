@@ -63,13 +63,15 @@ type State = {
   editItemKey: ?string,
   rejected: Array<UploadTask>,
   ambiguous: Array<UploadTask>,
+  isMoving: ?boolean
 }
 
 export default class ArrayInput extends React.Component<Props, State> {
   state = {
     editItemKey: null,
     rejected: [],
-    ambiguous: []
+    ambiguous: [],
+    isMoving: false
   }
 
   uploadSubscriptions: {}
@@ -261,7 +263,12 @@ export default class ArrayInput extends React.Component<Props, State> {
     )
   }
 
-  handleSort = (event: { newIndex: number, oldIndex: number }) => {
+  handleSortStart = () => {
+    this.setState({isMoving: true})
+  }
+
+  handleSortEnd = (event: { newIndex: number, oldIndex: number }) => {
+    this.setState({isMoving: false})
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
     const refItem = value[event.newIndex]
@@ -301,8 +308,9 @@ export default class ArrayInput extends React.Component<Props, State> {
     return type.of.find(memberType => memberType.name === itemTypeName)
   }
 
-  renderList() {
+  renderList = () => {
     const {type, value} = this.props
+    const {isMoving} = this.state
     const options = type.options || {}
 
     const isSortable = options.sortable !== false
@@ -311,11 +319,16 @@ export default class ArrayInput extends React.Component<Props, State> {
     const {List, Item} = resolveListComponents(isSortable, isGrid)
 
     const listProps = isSortable
-      ? {movingItemClass: styles.movingItem, onSort: this.handleSort}
+      ? {
+        movingItemClass: styles.movingItem,
+        onSortEnd: this.handleSortEnd,
+        onSortStart: this.handleSortStart
+      }
       : {}
-
+    const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
     return (
       <List
+        lockToContainerEdges
         className={isGrid ? undefined : styles.list}
         useDragHandle={!isGrid}
         {...listProps}
@@ -326,7 +339,11 @@ export default class ArrayInput extends React.Component<Props, State> {
           return (
             <Item
               key={item._key}
-              className={isGrid ? styles.gridItem : styles.listItem}
+              className={
+                isGrid
+                  ? styles.gridItem
+                  : listItemClassName
+              }
               {...itemProps}
             >
               <RenderItemValue

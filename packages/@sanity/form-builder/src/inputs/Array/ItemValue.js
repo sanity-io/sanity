@@ -107,7 +107,7 @@ export default class Item extends React.Component<Props> {
 
     return (
       <div className={styles.popupAnchor}>
-        <EditItemPopOver onClose={this.handleEditStop} key={`popOver${item._key}`}>
+        <EditItemPopOver onClose={this.handleEditStop} key={item._key}>
           {content}
         </EditItemPopOver>
       </div>
