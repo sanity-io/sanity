@@ -10,10 +10,12 @@
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: var(--body-bg);
 
   @media (--screen-medium) {
     /* Reset mobile first */
     position: relative;
+    background-color: initial;
     height: 100%;
     top: initial;
     left: initial;

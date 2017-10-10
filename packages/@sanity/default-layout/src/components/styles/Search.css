@@ -38,19 +38,22 @@
   position: absolute;
   z-index: var(--zindex-dropdown);
   top: 3rem;
-  max-width: 100%;
-  width: 40rem;
+  width: 100vw;
+  min-height: calc(100vh - var(--header-height));
+  background-color: var(--component-bg);
+  box-sizing: border-box;
   left: 0;
-  height: auto;
   padding: 0;
 
   @media (--screen-medium) {
     composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+    width: 40rem;
+    max-width: 100%;
+    min-height: initial;
   }
 }
 
 .hits {
-  background-color: var(--component-bg);
   color: var(--black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
   width: 100%;
