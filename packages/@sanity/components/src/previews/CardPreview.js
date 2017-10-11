@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Moment from 'moment'
+import formatDate from 'date-fns/format'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
@@ -123,13 +123,13 @@ export default class CardPreview extends React.Component {
                 item.date
                 && <p className={styles.date}>
                   {
-                    emWidth <= 20 && Moment(item.date).format('L')
+                    emWidth <= 20 && formatDate(item.date, 'DD.MM.YY')
                   }
                   {
-                    emWidth <= 30 && emWidth > 20 && Moment(item.date).format('LLL')
+                    emWidth <= 30 && emWidth > 20 && formatDate(item.date, 'DD.MM.YY hh:mm A')
                   }
                   {
-                    emWidth > 30 && Moment(item.date).format('LLLL')
+                    emWidth > 30 && formatDate(item.date, 'ddd, MMM Do, YYYY hh:mm A')
                   }
                 </p>
               }
