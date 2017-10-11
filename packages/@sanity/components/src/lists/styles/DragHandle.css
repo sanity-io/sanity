@@ -1,8 +1,7 @@
-.dragHandle {
-  cursor: row-resize;
+.default {
+  cursor: ns-resize;
   font-size: 1em;
   height: 2.5em;
-  line-height: 100%;
   display: inline-block;
   opacity: 0.5;
   width: 2.5em;

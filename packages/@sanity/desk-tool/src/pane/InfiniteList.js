@@ -14,6 +14,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     className: PropTypes.string,
     getItemKey: PropTypes.func,
     layout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
+    onScroll: PropTypes.func
   }
 
   static defaultProps = {
@@ -51,11 +52,12 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
     const {triggerUpdate} = this.state
     return (
       <VirtualList
+        onScroll={this.props.onScroll}
         key={layout /* forcefully re-render the whole list when layout changes */}
         className={className || ''}
         height={height}
         itemCount={items.length}
-        itemSize={layout === 'default' ? 40 : 80}
+        itemSize={layout === 'default' ? 56 : 80}
         renderItem={this.renderItem}
         overscanCount={50}
         data-trigger-update-hack={triggerUpdate} /* see componentWillReceiveProps above */

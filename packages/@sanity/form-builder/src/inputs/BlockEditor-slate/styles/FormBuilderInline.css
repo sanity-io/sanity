@@ -5,7 +5,7 @@
 }
 
 .previewContainer {
-  display: inline;
+  display: inline-block;
   cursor: move;
   border: 1px solid var(--form-builder-block-border-color);
   padding: 0 0.2em;

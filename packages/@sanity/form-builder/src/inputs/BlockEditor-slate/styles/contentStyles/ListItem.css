@@ -6,7 +6,6 @@
      because of the &:before content-rules
   */
   padding: 0 0 0 1.1em;
-
 }
 
 .level-2 {
@@ -68,26 +67,31 @@
       content: '\25E6 '; /* WHITE CIRCLE */
     }
   }
+
   @nest &.level-3 > * {
     @nest &:before {
       content: '\25AA '; /* SMALL BLACK SQUARE */
     }
   }
+
   @nest &.level-5 > * {
     @nest &:before {
       content: '\25E6 '; /* WHITE CIRCLE */
     }
   }
+
   @nest &.level-6 > * {
     @nest &:before {
       content: '\25AA '; /* SMALL BLACK SQUARE */
     }
   }
+
   @nest &.level-8 > * {
     @nest &:before {
       content: '\25E6 '; /* WHITE CIRCLE */
     }
   }
+
   @nest &.level-9 > * {
     @nest &:before {
       content: '\25AA '; /* SMALL BLACK SQUARE */
@@ -162,79 +166,59 @@
     counter-reset: listItemNumber;
   }
 
-
   @nest &.level-2 > * {
-
     @nest &:before {
       content: counter(listItemAlpha, lower-alpha) ". ";
     }
-
   }
 
   @nest &.level-3 > * {
-
     @nest &:before {
       content: counter(listItemRoman, lower-roman) ". ";
     }
-
   }
 
   @nest &.level-4 > * {
-
     @nest &:before {
       content: counter(listItemNumberNext) ". ";
     }
-
   }
 
   @nest &.level-5 > * {
-
     @nest &:before {
       content: counter(listItemLetterNext, lower-alpha) ". ";
     }
-
   }
 
   @nest &.level-6 > * {
-
     @nest &:before {
       content: counter(listItemRomanNext, lower-roman) ". ";
     }
-
   }
 
   @nest &.level-7 > * {
-
     @nest &:before {
       content: counter(listItemNumberNextNext) ". ";
     }
-
   }
 
   @nest &.level-8 > * {
-
     @nest &:before {
       content: counter(listItemAlphaNextNext, lower-alpha) ". ";
     }
-
   }
 
   @nest &.level-9 > * {
-
     @nest &:before {
       content: counter(listItemRomanNextNext, lower-roman) ". ";
     }
-
   }
 
   @nest &.level-10 > * {
-
     @nest &:before {
       content: counter(listItemNumberNextNextNext) ". ";
     }
-
   }
-
 }
 
 .number > * {

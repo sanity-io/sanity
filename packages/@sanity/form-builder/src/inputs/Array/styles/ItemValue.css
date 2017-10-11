@@ -2,14 +2,20 @@
 
 .root {
   position: relative;
+}
+
+.inner {
   display: flex;
   justify-content: space-between;
 }
 
-.grid {
+.listItem {
   composes: root;
-  padding: 2px;
-  width: 10em;
+}
+
+.gridItem {
+  composes: root;
+
   @nest & .functions {
     position: absolute;
     top: 0.1em;
@@ -18,9 +24,31 @@
   }
 }
 
+.editRoot {
+  /*
+    This is where the popover sticks to
+  */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+}
+
+.editRootFold {
+  position: relative;
+  width: calc(100% + var(--medium-padding) * 2);
+  margin-left: calc(var(--medium-padding) * -1);
+}
+
+.dragHandle {
+  composes: default from 'part:@sanity/components/drag-handle-style';
+}
+
 .preview {
   flex-grow: 1;
   outline: none;
+  user-select: none;
 }
 
 .functions {

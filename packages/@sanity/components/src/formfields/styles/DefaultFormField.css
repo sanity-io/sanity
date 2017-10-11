@@ -18,6 +18,7 @@
 
 .label {
   display: block;
+  font-size: 1rem;
   margin-bottom: var(--small-padding);
 }
 

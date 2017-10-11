@@ -1,0 +1,81 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  --animation-timing: 0.1s;
+}
+
+.root {
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.overlay {
+  opacity: 1;
+  background-color: var(--backdrop-background-color);
+  /*backdrop-filter: blur(2px) grayscale(100%);*/
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: block;
+  cursor: default;
+  z-index: 2;
+  pointer-events: none;
+  animation: fade var(--animation-timing) linear;
+}
+
+.portalInner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  z-index: var(--zindex-portal);
+  pointer-events: none;
+}
+
+.portalInnerInvisible {
+  composes: portalInner;
+}
+
+.availableSpace {
+  z-index: 4;
+  display: block;
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  width: 100vw;
+
+  /*
+  background-color: color(green a(50%));
+  */
+}
+
+.content {
+  position: absolute;
+  pointer-events: auto;
+  opacity: 1;
+  animation: fade var(--animation-timing) linear;
+}
+
+.portal {
+  z-index: 1;
+  position: relative;
+}

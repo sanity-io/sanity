@@ -11,7 +11,7 @@ const PLACEHOLDER = (
   </div>
 )
 
-class DefaultPreview extends React.Component {
+class DefaultPreview extends React.PureComponent {
   static propTypes = {
     item: PropTypes.shape({
       title: PropTypes.string,
@@ -29,17 +29,19 @@ class DefaultPreview extends React.Component {
     emptyText: PropTypes.string,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    progress: PropTypes.number
   }
 
   static defaultProps = {
     emptyText: 'Untitled',
     assetSize: {width: 40, height: 40},
+    progress: undefined,
     item: {}
   }
 
   render() {
-    const {item, assetSize, emptyText, children, isPlaceholder, styles} = this.props
+    const {item, assetSize, emptyText, children, isPlaceholder, progress, styles} = this.props
 
     if (!item || isPlaceholder) {
       return (
@@ -49,7 +51,7 @@ class DefaultPreview extends React.Component {
       )
     }
 
-    const hasMedia = item.media || item.sanityImage || item.imageUrl
+    const hasMedia = item.media || item.sanityImage || item.imageUrl || true
 
     return (
       <div
@@ -71,13 +73,22 @@ class DefaultPreview extends React.Component {
             {item.title || emptyText}
           </h2>
           {
-            item.subtitle && <h3 className={styles.subtitle}>
-              {item.subtitle}
-            </h3>
+            item.subtitle && (
+              <h3 className={styles.subtitle}>
+                {item.subtitle}
+              </h3>
+            )
           }
         </div>
         {
           children && <div className={styles.children}>{children}</div>
+        }
+        {
+          progress && (
+            <div className={styles.progress}>
+              <div className={styles.progressBar} style={{width: `${progress}%`}} />
+            </div>
+          )
         }
       </div>
     )
