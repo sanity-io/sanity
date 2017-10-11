@@ -72,7 +72,8 @@ export default (config = {}) => {
     resolve: {
       alias: {
         react: path.dirname(reactPath),
-        'react-dom': path.dirname(reactDomPath)
+        'react-dom': path.dirname(reactDomPath),
+        moment$: 'moment/moment.js',
       }
     },
     module: {
