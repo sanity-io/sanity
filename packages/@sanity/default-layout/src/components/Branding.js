@@ -16,9 +16,13 @@ function Branding() {
             </div>
           )
         }
-        <h1 className={styles.projectName}>
-          {projectName}
-        </h1>
+        {
+          !BrandLogo && (
+            <h1 className={styles.projectName}>
+              {projectName}
+            </h1>
+          )
+        }
       </StateLink>
     </div>
   )
