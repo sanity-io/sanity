@@ -27,6 +27,8 @@
 }
 
 .highlighted {
+  background-color: var(--selectable-item-color-highlighted);
+
   @nest &.selected {
     background-color: var(--selectable-item-color-highlighted);
   }

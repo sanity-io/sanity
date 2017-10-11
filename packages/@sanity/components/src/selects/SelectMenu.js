@@ -36,7 +36,7 @@ export default class SelectMenu extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.scrollContainer} ref={this.setScrollContainer}>
-          <List>
+          <List className={styles.list}>
             {items.map((item, index) => {
               const classes = cx(styles.item, {
                 [styles.highlighted]: index === highlightIndex,
