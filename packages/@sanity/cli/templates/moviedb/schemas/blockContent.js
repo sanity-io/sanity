@@ -16,11 +16,7 @@ export default {
       ],
       lists: [{title: 'Bullet', value: 'bullet'}],
       marks: {
-        decorators: [
-          {title: 'Strong', value: 'strong'},
-          {title: 'Emphasis', value: 'em'},
-          {title: 'Code', value: 'code'}
-        ],
+        decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
         annotations: [
           {
             title: 'URL',
