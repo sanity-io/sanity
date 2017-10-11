@@ -15,28 +15,21 @@ class StatelessSearchableSelect extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.any,
-
     inputValue: PropTypes.string,
     onInputChange: PropTypes.func,
-
     onClear: PropTypes.func,
     renderItem: PropTypes.func,
     placeholder: PropTypes.string,
-
     isLoading: PropTypes.bool,
-
     isOpen: PropTypes.bool,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
-
     items: PropTypes.array,
-
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
-
     isInputSelected: PropTypes.bool,
-
-    scrollContainer: PropTypes.func
+    scrollContainer: PropTypes.object,
+    width: PropTypes.number
   }
 
   static defaultProps = {
@@ -44,15 +37,17 @@ class StatelessSearchableSelect extends React.PureComponent {
     onOpen: noop,
     onClose: noop,
     onInputChange: noop,
-    hasError: false,
     isLoading: false,
     renderItem: item => item,
     items: [],
+    width: 100,
     scrollContainer: undefined
   }
 
-  handleClickOutside = () => {
-    this.props.onClose()
+  handleClickOutside = event => {
+    if (this.props.isOpen && !this._listElement.contains(event.target)) {
+      this.props.onClose()
+    }
   }
 
   handleSelect = item => {
@@ -103,6 +98,10 @@ class StatelessSearchableSelect extends React.PureComponent {
     if (event.key === 'Enter' && highlightIndex > -1) {
       onChange(items[highlightIndex])
     }
+  }
+
+  setListElement = element => {
+    this._listElement = element
   }
 
   render() {
@@ -165,6 +164,7 @@ class StatelessSearchableSelect extends React.PureComponent {
           <div
             className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}
             style={{width: `${this.props.width}px`}}
+            ref={this.setListElement}
           >
             {
               items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>

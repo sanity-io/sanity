@@ -16,8 +16,18 @@
   overflow-y: auto;
 }
 
+.list {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
 .item {
+  display: block;
+  margin: 0;
+  padding: 0;
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
 }
 
 .selected {

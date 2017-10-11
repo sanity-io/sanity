@@ -170,193 +170,193 @@ class SearchableTest extends React.Component {
 storiesOf('Selects')
   .addDecorator(withKnobs)
   .add(
-  'Default',
-  () => {
-    const options = {
-      range: true,
-      min: 0,
-      max: items.length,
-      step: 1,
-    }
-    const valueIndex = number('Selected item', -1, options)
-    return (
-      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
-        <DefaultSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          items={items}
-          value={items[valueIndex]}
-        />
-      </Sanity>
-    )
-  }
-)
-.add(
-  'Default with value',
-  () => {
-    return (
-      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
-        <DefaultSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          value={items[10]}
-          items={items}
-        />
-      </Sanity>
-    )
-  }
-)
-
-.add(
-  'Searchable',
-  // `
-  //   When provided with items, the component searches inside these when no onInputChange is provided
-  // `,
-  () => {
-    const renderItem = function (item) {
+    'Default',
+    () => {
+      const options = {
+        range: true,
+        min: 0,
+        max: items.length,
+        step: 1,
+      }
+      const valueIndex = number('Selected item', -1, options)
       return (
-        <div>{item.title}</div>
+        <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+          <DefaultSelect
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            items={items}
+            value={items[valueIndex]}
+          />
+        </Sanity>
       )
     }
-    const hasOnclear = boolean('has onClear')
-    const selected = number('Selected item (value)', -1, {
-      range: true,
-      min: -1,
-      max: items.length,
-      step: 1,
-    })
-    const selectedItem = items[selected]
-    return (
-      <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
-        <SearchableSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          onOpen={action('onOpen')}
-          value={selectedItem}
-          valueAsString={text('Value as string', selectedItem && selectedItem.title)}
-          renderItem={renderItem}
-          items={items}
-          isLoading={boolean('is loading', false)}
-          onClear={hasOnclear ? action('onClear') : undefined}
-        />
-      </Sanity>
-    )
-  }
-)
-.add(
-  'Style select',
-  () => {
-
-    return (
-      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
-          <StyleSelect
+  )
+  .add(
+    'Default with value',
+    () => {
+      return (
+        <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+          <DefaultSelect
             label={text('label (prop)', 'This is the label')}
             placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
-            onOpen={action('onOpen')}
-            renderItem={renderStyleItem}
-            items={styleItems}
+            onBlur={action('onBlur')}
+            value={items[10]}
+            items={items}
           />
-        </div>
-      </Sanity>
-    )
-  }
-)
+        </Sanity>
+      )
+    }
+  )
 
-
-.add(
-  'Style select (one style)',
-  () => {
-
-    return (
-      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
-          <StyleSelect
+  .add(
+    'Searchable',
+    // `
+    //   When provided with items, the component searches inside these when no onInputChange is provided
+    // `,
+    () => {
+      const renderItem = function (item) {
+        return (
+          <div>{item.title}</div>
+        )
+      }
+      const hasOnclear = boolean('has onClear')
+      const selected = number('Selected item (value)', -1, {
+        range: true,
+        min: -1,
+        max: items.length,
+        step: 1,
+      })
+      const selectedItem = items[selected]
+      return (
+        <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
+          <SearchableSelect
             label={text('label (prop)', 'This is the label')}
             placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            transparent={boolean('transparent (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
             onOpen={action('onOpen')}
-            renderItem={renderStyleItem}
-            value={[styleItems[0]]}
-            items={styleItems}
+            value={selectedItem}
+            valueAsString={text('Value as string', selectedItem && selectedItem.title)}
+            renderItem={renderItem}
+            items={items}
+            isLoading={boolean('is loading', false)}
+            onClear={hasOnclear ? action('onClear') : undefined}
           />
-        </div>
-      </Sanity>
-    )
-  }
-)
+        </Sanity>
+      )
+    }
+  )
+  .add(
+    'Style select',
+    () => {
 
-.add(
-  'Style select (multiple)',
-  () => {
-
-    return (
-      <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
-          <StyleSelect
-            label={text('label (prop)', 'This is the label')}
-            placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            transparent={boolean('transparent (prop)', false)}
-            onChange={action('onChange')}
-            onFocus={action('onFocus')}
-            onOpen={action('onOpen')}
-            renderItem={renderStyleItem}
-            value={[styleItems[0], styleItems[2]]}
-            items={styleItems}
-          />
-        </div>
-      </Sanity>
-    )
-  }
-)
+      return (
+        <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+          <div style={{padding: '2em', backgroundColor: '#eee'}}>
+            <StyleSelect
+              label={text('label (prop)', 'This is the label')}
+              placeholder={text('placeholder (prop)', 'This is the placeholder')}
+              transparent={boolean('transparent (prop)', false)}
+              onChange={action('onChange')}
+              onFocus={action('onFocus')}
+              onOpen={action('onOpen')}
+              renderItem={renderStyleItem}
+              items={styleItems}
+            />
+          </div>
+        </Sanity>
+      )
+    }
+  )
 
 
-.add(
-  'Searchable example',
-  () => {
+  .add(
+    'Style select (one style)',
+    () => {
 
-    return (
-      <div>
-        <SearchableTest />
+      return (
+        <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+          <div style={{padding: '2em', backgroundColor: '#eee'}}>
+            <StyleSelect
+              label={text('label (prop)', 'This is the label')}
+              placeholder={text('placeholder (prop)', 'This is the placeholder')}
+              transparent={boolean('transparent (prop)', false)}
+              onChange={action('onChange')}
+              onFocus={action('onFocus')}
+              onOpen={action('onOpen')}
+              renderItem={renderStyleItem}
+              value={[styleItems[0]]}
+              items={styleItems}
+            />
+          </div>
+        </Sanity>
+      )
+    }
+  )
+
+  .add(
+    'Style select (multiple)',
+    () => {
+
+      return (
+        <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
+          <div style={{padding: '2em', backgroundColor: '#eee'}}>
+            <StyleSelect
+              label={text('label (prop)', 'This is the label')}
+              placeholder={text('placeholder (prop)', 'This is the placeholder')}
+              transparent={boolean('transparent (prop)', false)}
+              onChange={action('onChange')}
+              onFocus={action('onFocus')}
+              onOpen={action('onOpen')}
+              renderItem={renderStyleItem}
+              value={[styleItems[0], styleItems[2]]}
+              items={styleItems}
+            />
+          </div>
+        </Sanity>
+      )
+    }
+  )
+
+
+  .add(
+    'Searchable example',
+    () => {
+
+      return (
+        <div>
+          <SearchableTest />
         This text should be behind the dropdown
-      </div>
-    )
-  }
-)
+        </div>
+      )
+    }
+  )
 
-.add(
-  'Radiobuttons',
-  // `
-  //   When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
-  // `,
-  () => {
+  .add(
+    'Radiobuttons',
+    // `
+    //   When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when waiting for server.
+    // `,
+    () => {
 
-    const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
+      const value = radioItems[number('value', 0, {range: true, min: 0, max: radioItems.length - 1})]
 
-    return (
-      <Sanity part="part:@sanity/components/selects/radio" propTables={[RadioSelect]}>
-        <RadioSelect
-          items={radioItems}
-          value={value}
-          onChange={action('onChange')}
-          legend={text('legend (prop)', 'Radio button select')}
-          direction={select('direction (prop)', [false, 'vertical', 'vertical'])}
-        />
-      </Sanity>
-    )
-  }
-)
+      return (
+        <Sanity part="part:@sanity/components/selects/radio" propTables={[RadioSelect]}>
+          <RadioSelect
+            items={radioItems}
+            value={value}
+            onChange={action('onChange')}
+            legend={text('legend (prop)', 'Radio button select')}
+            direction={select('direction (prop)', [false, 'vertical', 'vertical'])}
+          />
+        </Sanity>
+      )
+    }
+  )
