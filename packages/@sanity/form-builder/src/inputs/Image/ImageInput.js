@@ -54,8 +54,7 @@ export default class ImageInput extends React.PureComponent<*> {
     onChange: PropTypes.func,
     uploadFn: PropTypes.func.isRequired,
     materializeReferenceFn: PropTypes.func.isRequired,
-    level: PropTypes.number,
-    validation: PropTypes.object
+    level: PropTypes.number
   }
 
   state = getInitialState()
@@ -289,9 +288,7 @@ export default class ImageInput extends React.PureComponent<*> {
   }
 
   renderField(field) {
-    const {value, validation, level} = this.props
-    const fieldValidation = validation && validation.fields[field.name]
-
+    const {value, level} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -300,7 +297,6 @@ export default class ImageInput extends React.PureComponent<*> {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
-        validation={fieldValidation}
         level={level + 1}
       />
     )

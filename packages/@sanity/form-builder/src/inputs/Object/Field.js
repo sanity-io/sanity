@@ -15,15 +15,10 @@ export default class Field extends React.Component {
 
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
-    validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.any,
     onChange: PropTypes.func,
     level: PropTypes.number,
     autoFocus: PropTypes.bool
-  };
-
-  static defaultProps = {
-    validation: {messages: [], fields: {}},
   };
 
   handleChange = event => {
@@ -34,7 +29,7 @@ export default class Field extends React.Component {
   }
 
   render() {
-    const {value, field, level, validation, autoFocus} = this.props
+    const {value, field, level, autoFocus} = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -64,7 +59,6 @@ export default class Field extends React.Component {
           <FormBuilderInput
             value={value}
             type={field.type}
-            validation={validation}
             onChange={this.handleChange}
             level={level}
             autoFocus={autoFocus}
