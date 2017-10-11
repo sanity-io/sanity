@@ -133,6 +133,9 @@ export default enhanceClickOutside(class Search extends React.Component {
     if (event.key === 'Backspace') {
       this.inputElement.focus()
     }
+    if (event.key === 'Escape') {
+      this.close()
+    }
     if (event.key === 'Enter') {
       this.listElement.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
     }
@@ -164,6 +167,10 @@ export default enhanceClickOutside(class Search extends React.Component {
   }
 
   handleClickOutside = el => {
+    this.close()
+  }
+
+  handleClick = el => {
     this.close()
   }
 
@@ -216,6 +223,7 @@ export default enhanceClickOutside(class Search extends React.Component {
         data-hit-index={index}
         onMouseDown={this.handleHitMouseDown}
         onMouseUp={this.handleHitMouseUp}
+        onClick={this.handleClick}
         tabIndex={-1}
       >
         <div className={styles.itemType}>{type.title}</div>
