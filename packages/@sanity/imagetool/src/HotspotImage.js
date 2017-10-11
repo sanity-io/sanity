@@ -142,7 +142,7 @@ export default class HotspotImage extends React.PureComponent {
           <div style={targetStyles.crop}>
             <img
               ref={this.setImageElement}
-              src={`${src}?w=500&fit=max`}
+              src={src}
               alt={alt}
               srcSet={srcSet}
               onLoad={onLoad}

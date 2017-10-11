@@ -238,7 +238,7 @@ export default class ImageInput extends React.PureComponent<*> {
         <div style={{width: '40%'}}>
           <ImageTool
             value={{hotspot, crop}}
-            src={`${imageUrl}?w=500&fit=max`}
+            src={imageUrl}
             onChange={this.handleImageToolChange}
           />
         </div>
