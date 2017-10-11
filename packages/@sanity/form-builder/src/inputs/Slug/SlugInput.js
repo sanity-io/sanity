@@ -42,7 +42,6 @@ const makeCancelable = promise => {
 }
 
 const vanillaState = {
-  validationError: null,
   inputText: undefined,
   loading: false
 }
@@ -54,9 +53,6 @@ export default class SlugInput extends React.Component {
     value: PropTypes.shape({
       current: PropTypes.string,
       auto: PropTypes.bool
-    }),
-    validation: PropTypes.shape({
-      messages: PropTypes.array
     }),
     checkValidityFn: PropTypes.func,
     slugifyFn: PropTypes.func,
@@ -201,13 +197,12 @@ export default class SlugInput extends React.Component {
   }
 
   render() {
-    const {value, type, validation, level} = this.props
+    const {value, type, level} = this.props
     const hasSourceField = type.options && type.options.source
     const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
       description: type.description,
-      validation: validation,
       level: level
     }
 
