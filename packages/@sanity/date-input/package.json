@@ -22,7 +22,7 @@
     "moment-timezone": "^0.5.11",
     "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.5.10",
-    "react-kronos": "^1.5.2"
+    "react-datepicker": "^0.55.0"
   },
   "devDependencies": {
     "@sanity/check": "^0.115.2",

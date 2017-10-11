@@ -22,11 +22,12 @@
 }
 
 :root {
-  --tool-switcher-width: 3rem;
+  --tool-switcher-width: 5rem;
+  --secondary-menu-background-color: #333;
 }
 
 .defaultLayout {
-  padding: var(--small-padding);
+  padding: 0;
   max-width: 100%;
   width: 100vw;
   overflow: hidden;
@@ -36,8 +37,21 @@
   height: 100vh;
 
   @media (--screen-medium) {
-    padding: var(--medium-padding);
-    padding-top: var(--small-padding);
+    flex-direction: row;
+  }
+}
+
+.navigation {
+  border-bottom: 1px solid var(--component-border-color);
+}
+
+.branding {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  @media (--screen-medium) {
+    position: relative;
   }
 }
 
@@ -45,83 +59,135 @@
   box-sizing: border-box;
   position: relative;
   max-width: 100%;
-  margin-top: var(--header-height);
-  margin-top: 0;
   flex-grow: 1;
   overflow: hidden;
   display: block;
   max-height: 100%;
   overflow-y: auto;
-}
-
-.desktopNavigation {
-  display: none;
-
-  @media (--screen-medium) {
-    display: block;
-    border-bottom: 1px solid var(--component-border-color);
-  }
-}
-
-.mobileNavigation {
-  border-bottom: 1px solid var(--component-border-color);
-
-  @media (--screen-medium) {
-    display: none;
-  }
+  margin-top: 0;
 }
 
 .mainArea {
   flex-grow: 1;
   display: flex;
   overflow: hidden;
+  flex-direction: column;
 }
 
 .secondaryNavigation {
-  display: none;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  position: relative;
+  width: 100vw;
+  font-size: var(--font-size-xsmall);
+  background-color: var(--secondary-menu-background-color);
+  height: var(--header-height);
 
   @media (--screen-medium) {
     display: block;
-    position: relative;
     width: var(--tool-switcher-width);
-    margin-right: var(--medium-padding);
-    padding-top: var(--medium-padding);
-    padding-right: var(--medium-padding);
-    font-size: var(--font-size-xsmall);
+    height: 100vh;
   }
 }
 
 .createButton {
   display: block;
-  color: var(--state-danger-color);
   text-align: center;
-  margin-bottom: var(--medium-padding);
+  color: var(--brand-primary);
+  user-select: none;
+  cursor: default;
+  position: relative;
+  line-height: 2.5rem;
+  padding: 0 1rem;
+
+  @nest &:hover {
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
+  @media (--screen-medium) {
+    line-height: initial;
+    padding-bottom: var(--medium-padding);
+  }
 }
 
 .createButtonIcon {
-  display: block;
-  font-size: 1.5em;
+  display: inline-block;
+  font-size: 2em;
+
+  @media (--screen-medium) {
+    font-size: 3em;
+    display: block;
+  }
 }
 
 .createButtonText {
-  display: block;
+  display: inline-block;
   font-size: 1em;
+
+  @media (--screen-medium) {
+    display: block;
+  }
 }
 
 .sanityStudioLogoContainer {
   position: fixed;
-  height: 1rem;
-  width: 10em;
-  bottom: 1rem;
-  left: 1rem;
+  width: 5em;
+  bottom: 0.5rem;
+  left: 0.5rem;
   z-index: var(--zindex-navbar);
   opacity: 0.5;
+  color: #fff;
 
   @nest &:hover {
     opacity: 1;
   }
 
   @nest & svg {
-    height: 0.75rem;
+    height: 0.5rem;
+  }
+}
+
+.mobileMenuButton {
+  color: var(--white);
+  font-size: 1rem;
+
+  @media (--screen-medium) {
+    display: none !important;
+  }
+}
+
+.mobileMenuIsOpen .toolSwitcher {
+  position: absolute;
+  height: calc(100vh - var(--header-height));
+  display: block;
+  z-index: 5000;
+  backdrop-filter: blur(20px);
+  background-color: color(var(--secondary-menu-background-color) a(90%));
+  transition: height 0.1s linear;
+  width: 100vw;
+}
+
+.toolSwitcher {
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  position: absolute;
+  transition: height 0.1s linear;
+  top: var(--header-height);
+  left: 0;
+
+  @media (--screen-medium) {
+    position: relative;
+    display: block;
+    width: auto;
+    overflow: hidden;
+    top: initial;
+    height: initial;
+    left: initial;
   }
 }

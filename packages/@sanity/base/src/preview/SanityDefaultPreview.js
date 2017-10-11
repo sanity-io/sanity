@@ -50,8 +50,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
     return (
       <div>
-        {_upload && <UploadProgressBar progress={_upload.progress} />}
-        <PreviewComponent item={item} {...rest} />
+        <PreviewComponent item={item} {...rest} progress={_upload && _upload.progress} />
       </div>
     )
   }

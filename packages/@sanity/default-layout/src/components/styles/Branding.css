@@ -3,23 +3,24 @@
 
 .root {
   display: block;
-  float: left;
   text-decoration: none;
   color: var(--text-color);
   font-weight: 300;
+  min-height: 3rem;
 }
 
 .projectName {
-  font-size: 1em;
-  padding-left: var(--small-padding);
-  white-space: nowrap;
+  font-size: var(--font-size-tiny);
   font-weight: 300;
-  float: left;
-}
+  color: var(--white);
+  padding: 0;
+  margin: 0;
+  padding-left: var(--small-padding);
+  margin-top: -0.25rem;
 
-.projectNameHidden {
-  composes: projectName;
-  display: none;
+  @media (--screen-medium) {
+    padding: 0 var(--small-padding);
+  }
 }
 
 .link {
@@ -27,14 +28,22 @@
 }
 
 .brandLogoContainer {
-  float: left;
   z-index: 10;
   cursor: pointer;
+  color: #fff;
 
   @nest & svg {
+    fill: #fff;
     height: 1rem;
-    padding-top: 1rem;
-    padding-left: 0.5rem;
+    margin-top: var(--medium-padding);
+    margin-left: var(--small-padding);
     width: auto;
+
+    @media (--screen-medium) {
+      width: 4rem;
+      height: auto;
+      margin-top: 1rem;
+      margin-left: 0.5rem;
+    }
   }
 }

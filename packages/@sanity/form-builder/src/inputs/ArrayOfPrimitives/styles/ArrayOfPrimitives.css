@@ -4,6 +4,10 @@
   display: block;
 }
 
+.list {
+  composes: root from 'part:@sanity/components/lists/default-style';
+}
+
 .deleteButton {
   position: absolute;
   z-index: 1;
@@ -14,8 +18,18 @@
   box-sizing: border-box;
 }
 
+.item {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
 .addButton {
   margin-top: var(--medium-padding);
+}
+
+.movingItem {
+  composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
 }
 
 .inputLabel {

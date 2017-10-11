@@ -1,25 +1,18 @@
 import {once} from 'lodash'
-import ReferenceSearchableSelect from '../inputs/ReferenceSearchableSelect'
-import ReferenceSelect from '../inputs/ReferenceSelect'
-import ReferenceBrowser from '../inputs/ReferenceBrowser'
+import ReferenceInput from '../inputs/SanityReference'
 
-// eslint-disable-next-line no-console
-const warnNoSearchYet = once(() => console.warn('Reference browser does not yet support search'))
+/* eslint-disable no-console */
+const warnInputTypeNotSupported = once(() => console.warn('The option "inputType" on references is removed.'))
+const warnSearchableOptionNotSupported = once(() => console.warn('The option "searchable" on references has been removed.'))
+/* eslint-enable no-console */
 
 export default function resolveReferenceInput(type) {
   const options = type.options || {}
-  if (options.inputType === 'select') {
-    return options.searchable
-      ? ReferenceSearchableSelect
-      : ReferenceSelect
+  if (options.inputType) {
+    warnInputTypeNotSupported()
   }
-
-  if (options.inputType === 'browser') {
-    if (options.searchable) {
-      warnNoSearchYet()
-    }
-    return ReferenceBrowser
+  if ('searchable' in options) {
+    warnSearchableOptionNotSupported()
   }
-
-  return ReferenceSearchableSelect
+  return ReferenceInput
 }

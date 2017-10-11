@@ -97,7 +97,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     const sortable = get(type, 'options.sortable') !== false
     const ListItem = sortable ? SortableItem : DefaultItem
     return (
-      <ListItem key={index} index={index}>
+      <ListItem key={index} index={index} className={styles.item}>
         <Item
           level={level + 1}
           index={index}
@@ -113,11 +113,10 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
 
   renderList(value) {
     const {type} = this.props
-    const sortable = get(type, 'options.sortable') !== false
-
-    return sortable
+    const isSortable = get(type, 'options.sortable') !== false
+    return isSortable
       ? (
-        <SortableList onSort={this.handleSort} useDragHandle>
+        <SortableList className={styles.list} onSort={this.handleSort} movingItemClass={styles.movingItem} useDragHandle>
           {value.map(this.renderItem)}
         </SortableList>
       )

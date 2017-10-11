@@ -7,7 +7,6 @@
   left: 0;
   right: 0;
   z-index: var(--zindex-portal);
-  backdrop-filter: blur(3px);
   overflow: auto;
 }
 

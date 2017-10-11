@@ -17,7 +17,6 @@
 .root {
   position: relative;
   display: inline-block;
-  margin-right: var(--extra-small-padding);
   outline: none;
   border: none;
   color: inherit;
@@ -38,6 +37,10 @@
       animation-duration: 0.2s;
     }
   }
+}
+
+.root + .root {
+  margin-left: var(--extra-small-padding);
 }
 
 .shadow {

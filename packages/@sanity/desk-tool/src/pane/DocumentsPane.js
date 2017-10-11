@@ -4,6 +4,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import styles from './styles/DocumentsPane.css'
 import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
+import Ink from 'react-ink'
 
 import ListView from './ListView'
 import {partition, uniqBy} from 'lodash'
@@ -206,6 +207,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         className={styles.link}
         tabIndex={0}
       >
+
         <div className={isSelected ? styles.selectedItem : styles.item}>
           <Preview
             value={item}
@@ -226,6 +228,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             }
           </div>
         </div>
+        <Ink duration={200} opacity={0.20} radius={200} />
       </StateLink>
     )
   }
@@ -242,6 +245,10 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         onClick={this.handleGoToCreateNew}
       />
     )
+  }
+
+  handleScroll = scrollTop => {
+    this.setState({scrollTop})
   }
 
   render() {
@@ -265,6 +272,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         defaultWidth={200}
         isCollapsed={isCollapsed}
         onMenuToggle={this.handleToggleMenu}
+        scrollTop={this.state.scrollTop}
       >
         <QueryContainer
           query={query}
@@ -314,6 +322,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
                 {items && (
                   <ListView
+                    onScroll={this.handleScroll}
                     items={items}
                     getItemKey={getDocumentKey}
                     renderItem={this.renderDocumentPaneItem}

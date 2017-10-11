@@ -15,12 +15,12 @@
   @media (--screen-medium) {
     /* Reset mobile first */
     position: relative;
+    background-color: initial;
     height: 100%;
     top: initial;
     left: initial;
     width: initial;
     min-height: initial;
-    background-color: initial;
   }
 }
 
@@ -37,15 +37,17 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
-  border-bottom: 1px solid #ccc;
-  line-height: 3em;
+  line-height: 3rem;
   width: 100%;
-  min-height: 3rem;
+  height: 3rem;
   transition: width 0.8s linear, border 0.8s linear;
   user-select: none;
+  background-color: inherit;
+  z-index: 2;
 
   @nest .isCollapsed & {
     flex-direction: row;
@@ -54,7 +56,18 @@
   }
 }
 
+.headerBackground {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: var(--body-bg);
+  z-index: 0;
+}
+
 .headerContent {
+  z-index: 1;
   display: flex;
   flex-wrap: nowrap;
   flex-grow: 1;
@@ -66,6 +79,7 @@
   box-sizing: border-box;
   height: 3rem;
   overflow: hidden;
+  padding-left: var(--medium-padding);
 
   @nest .isCollapsed & {
     min-width: 100vh;
@@ -79,6 +93,8 @@
 }
 
 .menuWrapper {
+  position: relative;
+  z-index: 2;
   align-self: flex-end;
   flex: 0 1 3rem;
   display: block;
@@ -113,6 +129,16 @@
   text-overflow: ellipsis;
 }
 
+.menuContainer {
+  position: absolute;
+  right: 0;
+
+  @nest & > div {
+    position: absolute;
+    right: 0;
+  }
+}
+
 .functions {
   display: flex;
   align-items: flex-end;
@@ -145,14 +171,16 @@
 }
 
 .content {
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
-  top: 0.5rem;
+  top: -3rem;
+  padding-top: 3rem;
   left: 0;
   right: 0;
   bottom: 0;
   display: block;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: overlay;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/TypePaneItem.css'
 import {StateLink} from 'part:@sanity/base/router'
+import Ink from 'react-ink'
 
 export default class TypePaneItem extends React.Component {
   static propTypes = {
@@ -26,6 +27,7 @@ export default class TypePaneItem extends React.Component {
           className={styles.link}
         >
           {type.title}
+          <Ink duration={200} opacity={0.20} radius={200} />
         </StateLink>
       </div>
     )
