@@ -95,7 +95,7 @@ class StatelessSearchableSelect extends React.PureComponent {
 
   handleKeyUp = event => {
     const {items, onChange, highlightIndex} = this.props
-    if (event.key === 'Enter' && highlightIndex > -1) {
+    if (event.key === 'Enter' && highlightIndex > -1 && items[highlightIndex]) {
       onChange(items[highlightIndex])
     }
   }
