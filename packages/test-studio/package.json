@@ -24,6 +24,7 @@
     "@sanity/default-login": "^0.115.2",
     "@sanity/desk-tool": "^0.115.3",
     "@sanity/form-builder": "^0.115.3",
+    "@sanity/google-maps-input": "^0.115.3",
     "@sanity/storybook": "^0.115.2",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.28.4",
