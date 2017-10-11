@@ -47,7 +47,6 @@
 
 .center {
   background-color: color(var(--body-bg) a(10%));
-  backdrop-filter: blur(10px);
   position: absolute;
   height: 100%;
   width: 100%;

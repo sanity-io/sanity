@@ -77,7 +77,6 @@
     right: 0;
     z-index: 1;
     background-color: color(var(--blockEditorFullscreenBackground) a(90%));
-    backdrop-filter: blur(3px);
     padding: var(--small-padding);
     height: 4rem;
 
