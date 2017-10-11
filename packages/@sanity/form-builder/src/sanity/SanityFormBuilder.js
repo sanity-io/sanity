@@ -28,6 +28,8 @@ export default function SanityFormBuilder(props: Props) {
         onChange={props.onChange}
         level={0}
         value={props.value}
+        isRoot
+        autoFocus
       />
     </SanityFormBuilderContext>
   )
