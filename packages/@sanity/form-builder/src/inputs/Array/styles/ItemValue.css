@@ -8,8 +8,7 @@
 
 .grid {
   composes: root;
-  padding: 2px;
-  width: 10em;
+
   @nest & .functions {
     position: absolute;
     top: 0.1em;
