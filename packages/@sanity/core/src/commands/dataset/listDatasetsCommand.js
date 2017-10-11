@@ -2,7 +2,7 @@ export default {
   name: 'list',
   group: 'dataset',
   signature: '',
-  description: 'Create a new dataset within your project',
+  description: 'List datasets of your project',
   action: async (args, context) => {
     const {apiClient, output} = context
     const client = apiClient()
