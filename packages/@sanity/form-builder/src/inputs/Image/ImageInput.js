@@ -279,10 +279,14 @@ export default class ImageInput extends React.PureComponent<*> {
     })
     return (
       <Dialog title="Edit details" onClose={this.handleEditDialogClose} isOpen>
-        <h2>Hotspot/crop</h2>
-        <div>
-          {grouped.imagetool && this.renderImageTool()}
-        </div>
+        {grouped.imagetool && (
+          <div>
+            <h2>Hotspot/crop</h2>
+            <div>
+              {grouped.imagetool && this.renderImageTool()}
+            </div>
+          </div>
+        )}
         <div>
           {grouped.other && this.renderFields(grouped.other)}
         </div>
