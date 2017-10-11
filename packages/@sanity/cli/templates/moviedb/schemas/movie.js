@@ -29,8 +29,8 @@ export default {
       title: 'Release date',
       type: 'richDate',
       options: {
-        inputUtc: true,
-        inputTime: false
+        inputTime: false,
+        inputUtc: true
       }
     },
     {
@@ -46,7 +46,10 @@ export default {
     {
       name: 'poster',
       title: 'Poster Image',
-      type: 'image'
+      type: 'image',
+      options: {
+        hotspot: true
+      }
     },
     {
       name: 'castMembers',
@@ -65,13 +68,13 @@ export default {
   preview: {
     select: {
       title: 'title',
-      date: 'releaseDate',
+      date: 'releaseDate.utc',
       imageUrl: 'poster.asset.url'
     },
     prepare(selection) {
       const {date, imageUrl} = selection
       return Object.assign({}, selection, {
-        subtitle: date ? date.utc.split('-')[0] : '',
+        subtitle: date && date.utc ? date.utc.split('-')[0] : '',
         imageUrl: imageUrl ? `${imageUrl}?w=100` : imageUrl
       })
     }

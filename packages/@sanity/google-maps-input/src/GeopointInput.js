@@ -72,8 +72,8 @@ class GeopointInput extends React.Component {
       center: loc,
       markers: loc,
       zoom: 13,
-      scale: window.devicePixelRatio,
-      size: '1000x350'
+      scale: 2,
+      size: '640x300'
     }
 
     const qs = Object.keys(params).reduce((res, param) => {
