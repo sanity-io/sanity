@@ -2,9 +2,13 @@
 
 .root {
   color: inherit;
-  line-height: 1em;
-  height: 1em;
+  line-height: 3em;
+  height: 3em;
   position: relative;
+}
+
+.inner {
+  display: block;
 }
 
 .input {
@@ -12,50 +16,62 @@
   outline: none;
   color: inherit;
   width: 100%;
+  height: 3em;
+  line-height: 2rem;
+  padding: 0.5rem;
+  padding-left: 2.5rem;
   background-color: transparent;
-  padding-left: 1.3em;
-  line-height: inherit;
   font-size: inherit;
-  margin-top: -0.05em;
+  display: block;
 
   @nest &::placeholder {
     color: inherit;
     opacity: 0.4;
   }
+
+  @nest &:hover::placeholder {
+    opacity: 1;
+  }
 }
 
 .listContainer {
   position: absolute;
-  top: 100%;
-  width: 100%;
+  z-index: var(--zindex-dropdown);
+  top: 3rem;
+  width: 100vw;
+  min-height: calc(100vh - var(--header-height));
+  background-color: var(--component-bg);
+  box-sizing: border-box;
   left: 0;
-  height: auto;
+  padding: 0;
 
   @media (--screen-medium) {
-    backdrop-filter: blur(10px);
-    composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+    composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+    width: 40rem;
+    max-width: 100%;
+    min-height: initial;
   }
 }
 
 .hits {
-  background-color: color(var(--component-bg) a(90%));
   color: var(--black);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
+  width: 100%;
 }
 
 .hit {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: default;
+  border-bottom: 1px solid #ddd;
+  position: relative;
 }
 
 .link {
   composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   display: block;
-
-  @nest &:hover {
-    background-color: var(--gray-light--transparent);
-  }
+  padding: var(--small-padding);
 }
 
 .activeLink {
@@ -63,8 +79,19 @@
   background-color: var(--selected-item-color-hover);
 }
 
-.label {
-  font-size: inherit;
+.itemType {
   position: absolute;
-  transform: translateY(-14%);
+  top: 50%;
+  color: var(--gray);
+  right: var(--small-padding);
+  text-transform: uppercase;
+  font-size: var(--font-size-tiny);
+  transform: translateY(-50%);
+}
+
+.label {
+  position: absolute;
+  left: 1rem;
+  top: -0.1rem;
+  font-size: 0.9rem;
 }

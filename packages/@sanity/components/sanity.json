@@ -303,6 +303,30 @@
       "description": "Sortable Grid list"
     },
     {
+      "name": "part:@sanity/components/lists/default-style",
+      "description": "Default list style"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-style",
+      "path": "lists/styles/DefaultList.css"
+    },
+    {
+      "name": "part:@sanity/components/lists/default-item-style",
+      "description": "Default list item style"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-item-style",
+      "path": "lists/styles/DefaultListItem.css"
+    },
+    {
+      "name": "part:@sanity/components/drag-handle-style",
+      "description": "Drag handle style for use with default list"
+    },
+    {
+      "implements": "part:@sanity/components/drag-handle-style",
+      "path": "lists/styles/DragHandle.css"
+    },
+    {
       "name": "part:@sanity/components/edititem/popover",
       "description": "Edit item. Popover that points to the element"
     },
@@ -724,6 +748,14 @@
       "path": "previews/styles/MediaPreview.css"
     },
     {
+      "name": "part:@sanity/components/panes/default-pane-style",
+      "description": "Styling for panes"
+    },
+    {
+      "implements": "part:@sanity/components/panes/default-pane-style",
+      "path": "panes/styles/DefaultPane.css"
+    },
+    {
       "name": "part:@sanity/components/utilities/activate-on-focus",
       "description": "Prevents scrolling, click and other mouseevents before the area is activated"
     },
@@ -731,6 +763,7 @@
       "implements": "part:@sanity/components/utilities/activate-on-focus",
       "path": "utilities/ActivateOnFocus.js"
     },
+
     {
       "name": "part:@sanity/components/panes/default",
       "description": "Default Pane"
@@ -762,6 +795,14 @@
     {
       "implements": "part:@sanity/components/panes/split-pane-wrapper",
       "path": "panes/SplitPaneWrapper.js"
+    },
+    {
+      "name": "part:@sanity/components/portal/sticky",
+      "description": "Portal that sticks to scrollContainer"
+    },
+    {
+      "implements": "part:@sanity/components/portal/sticky",
+      "path": "portal/Sticky.js"
     },
     {
       "implements": "part:@sanity/base/component",
@@ -866,6 +907,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "panes/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "portal/story.js"
     }
 
   ]

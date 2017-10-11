@@ -107,7 +107,7 @@ export default class Item extends React.Component<Props> {
 
     return (
       <div className={styles.popupAnchor}>
-        <EditItemPopOver title={memberType.title} onClose={this.handleEditStop}>
+        <EditItemPopOver onClose={this.handleEditStop} key={item._key}>
           {content}
         </EditItemPopOver>
       </div>
@@ -132,14 +132,13 @@ export default class Item extends React.Component<Props> {
     const isSortable = options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
 
-    const className = isGrid ? styles.grid : styles.root
     return (
-      <div>
-        <div
-          className={className}
-          ref={this.setElement}
-        >
-          {!isGrid && isSortable && <DragHandle />}
+      <div
+        className={isGrid ? styles.gridItem : styles.listItem}
+        ref={this.setElement}
+      >
+        <div className={styles.inner}>
+          {!isGrid && isSortable && <DragHandle className={styles.dragHandle} />}
 
           <div
             className={styles.preview}
@@ -169,7 +168,11 @@ export default class Item extends React.Component<Props> {
             )}
           </div>
         </div>
-        {isEditing && this.renderEditItemForm(value)}
+        <div
+          className={options.editModal === 'fold' ? styles.editRootFold : styles.editRoot}
+        >
+          {isEditing && this.renderEditItemForm(value)}
+        </div>
       </div>
     )
   }

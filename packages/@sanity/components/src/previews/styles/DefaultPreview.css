@@ -1,24 +1,41 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+@keyframes progressGlow {
+  0% {
+    box-shadow: 0 0 3px var(--progress-bar-bg);
+  }
+
+  100% {
+    box-shadow: 0 0 15px var(--progress-bar-bg);
+  }
+}
+
+:root {
+  --height: 2.5em;
+  --media-width: var(--height);
+  --padding: var(--medium-padding);
+}
+
 .root {
   display: block;
   padding: 0;
   user-select: none;
-  overflow: hidden;
   height: 2.5em;
   position: relative;
+  clear: both;
 }
 
 .heading {
   position: absolute;
-  top: 0.25em;
-  right: 0.25em;
-  height: 2em;
+  top: 0;
+  right: var(--small-padding);
+  height: var(--height);
   box-sizing: border-box;
-  left: 0.25em;
+  left: var(--small-padding);
 
   @nest .hasMedia & {
-    left: 2.5em;
+    left: var(--media-width);
+    padding-left: var(--small-padding);
   }
 }
 
@@ -31,20 +48,15 @@
 .title {
   composes: ellipsis;
   font-size: 1em;
-  line-height: 2em;
+  line-height: var(--height);
   color: inherit;
   font-weight: 500;
   text-transform: none;
-  margin: 0;
   padding: 0;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
-  margin-top: -0.25em;
-  width: calc(100% - 1em);
+  margin: 0;
 
   @nest .hasSubtitle & {
-    line-height: 1em;
-    top: 0.25em;
+    line-height: 1.3em;
   }
 }
 
@@ -57,23 +69,23 @@
   height: 1em;
   font-size: 0.7em;
   font-weight: 300;
-  line-height: 1em;
+  line-height: 1.5em;
   width: calc(100% - 1em);
 }
 
 .media {
   position: absolute;
-  top: 0.25em;
-  left: 0.25em;
-  height: 2em;
-  width: 2em;
+  top: 0;
+  left: 0;
+  height: var(--media-width);
+  width: var(--media-width);
   overflow: hidden;
   background-color: var(--gray-lighter);
 
   @nest & div {
     position: relative;
-    height: 2em;
-    width: 2em;
+    height: var(--media-width);
+    width: var(--media-width);
     overflow: hidden;
   }
 
@@ -129,4 +141,35 @@
   height: 100%;
   width: 100%;
   z-index: -1;
+}
+
+.progress {
+  position: absolute;
+  background-color: color(var(--progress-bar-bg) a(5%));
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+.progressBar {
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: color(var(--progress-bar-bg) a(20%));
+  z-index: 1;
+}
+
+.progressBar::after {
+  position: absolute;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  content: '';
+  background-color: var(--progress-bar-bg);
+  box-shadow: 0 0 3px var(--progress-bar-bg);
+  z-index: 2;
+  /*animation: progressGlow 0.5s linear infinite alternate;*/
 }

@@ -5,44 +5,85 @@
 }
 
 .toolList {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
   padding: 0;
+  width: 100%;
+  align-content: flex-start;
+
+  @media (--screen-medium) {
+    flex-direction: column;
+  }
 }
 
 .item {
   display: block;
   position: relative;
   text-align: center;
-  color: var(--selectable-item-color);
-  margin-bottom: var(--medium-padding);
+  box-sizing: border-box;
+  color: color(var(--white) a(30%));
+  width: 50vw;
+  height: 50vw;
+  overflow: hidden;
+
+  @media (--screen-medium) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 }
 
 .activeItem {
   composes: item;
-  color: var(--selected-item-color);
+  color: color(var(--white) a(100%));
 }
 
 .iconContainer {
   display: block;
-  font-size: 2em;
-  margin: 0 auto;
+  font-size: 2.5em;
+  line-height: 1em;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  @media (--screen-medium) {
+    position: static;
+    transform: none;
+  }
 }
 
 .toolName {
   display: block;
+  margin-top: 60%;
+
+  @media (--screen-medium) {
+    margin-top: 0;
+  }
 }
 
 .toolLink {
   color: inherit;
   text-decoration: none;
   display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-size: 1.3rem;
 
   @nest &:hover {
-    color: color(var(--selectable-item-color) lightness(- 20%));
+    color: color(var(--white) a(80%));
+    background-color: color(var(--white) a(10%));
   }
 
   @nest &:active {
-    color: var(--black);
+    color: color(var(--white) a(100%));
+  }
+
+  @media (--screen-medium) {
+    position: static;
+    padding: var(--medium-padding) 0;
+    font-size: 1em;
   }
 }

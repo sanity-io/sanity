@@ -10,7 +10,8 @@ export default class ListView extends React.PureComponent {
     renderItem: PropTypes.func,
     getItemKey: PropTypes.func,
     listLayout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
-    selectedItem: PropTypes.object
+    selectedItem: PropTypes.object,
+    onScroll: PropTypes.func
   }
 
   static defaultProps = {
@@ -43,6 +44,7 @@ export default class ListView extends React.PureComponent {
       default: {
         return (
           <InfiniteList
+            onScroll={this.props.onScroll}
             items={items}
             getItemKey={getItemKey}
             renderItem={renderItem}

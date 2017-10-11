@@ -1,13 +1,45 @@
 import React from 'react'
-import {storiesOf} from 'part:@sanity/storybook'
+import {storiesOf, action} from 'part:@sanity/storybook'
 import RichDateInput from 'part:@sanity/form-builder/input/rich-date'
+import {withKnobs, object, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
 
-storiesOf('Icons').add(
-  'Date picker',
+storiesOf('Date Picker')
+  .addDecorator(withKnobs)
+  .add(
+  'Default',
   () => {
 
+    const dateFormat = text('dateFormat', 'YYYY-MM-DD')
+    const timeFormat = text('timeFormat', 'HH:mm')
+    const inputUtc = boolean('inputUtc', false)
+    const timeStep = number('timeStep', 15)
+    const calendarTodayLabel = text('calendarTodayLabel', 'Today')
+    const placeholderDate = text('placeholderDate')
+    const placeholderTime = text('placeholderTime')
+    const inputDate = boolean('inputDate', true)
+    const inputTime = boolean('inputTime', true)
+
+    const options = {
+      dateFormat,
+      timeFormat,
+      inputUtc,
+      timeStep,
+      calendarTodayLabel,
+      placeholderDate,
+      placeholderTime,
+      inputDate,
+      inputTime
+    }
+
     return (
-      <RichDateInput />
+      <RichDateInput
+        onChange={action('onChange')}
+        type={{
+          title: text('title'),
+          description: text('description'),
+          options: options
+        }}
+      />
     )
   }
 )

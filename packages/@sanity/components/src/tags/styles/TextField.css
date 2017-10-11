@@ -84,10 +84,6 @@
 .focusHelper {
   composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
   background-color: transparent;
-
-  @nest .hasFocus & {
-    background-color: var(--focus-color);
-  }
 }
 
 .label {

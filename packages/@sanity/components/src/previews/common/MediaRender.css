@@ -53,9 +53,17 @@
 }
 
 .noImageIcon {
-  font-size: 2rem;
-  opacity: 0.2;
   text-align: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  color: var(--gray-light);
+  opacity: 0.5;
+
+  @nest & > svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .noMediaText {

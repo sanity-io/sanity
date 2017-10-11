@@ -4,24 +4,28 @@ import BrandLogo from 'part:@sanity/base/brand-logo?'
 import {StateLink} from 'part:@sanity/base/router'
 import config from 'config:sanity'
 
-class Branding extends React.PureComponent {
-  render() {
-    const projectName = (config.project && config.project.name) || ''
-    return (
-      <div className={styles.root}>
-        <StateLink toIndex className={styles.link} title={projectName}>
-          <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
-          {
-            BrandLogo && (
-              <div className={styles.brandLogoContainer}>
-                <BrandLogo projectName={projectName} />
-              </div>
-            )
-          }
-        </StateLink>
-      </div>
-    )
-  }
+function Branding() {
+  const projectName = (config.project && config.project.name) || ''
+  return (
+    <div className={styles.root}>
+      <StateLink toIndex className={styles.link} title={projectName}>
+        {
+          BrandLogo && (
+            <div className={styles.brandLogoContainer}>
+              <BrandLogo projectName={projectName} />
+            </div>
+          )
+        }
+        {
+          !BrandLogo && (
+            <h1 className={styles.projectName}>
+              {projectName}
+            </h1>
+          )
+        }
+      </StateLink>
+    </div>
+  )
 }
 
 export default Branding

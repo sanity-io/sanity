@@ -41,11 +41,6 @@
   width: auto;
   overflow-y: auto;
   z-index: var(--zindex-dropdown);
-
-  @supports (backdrop-filter: blur(5px)) {
-    backdrop-filter: blur(5px);
-    background-color: color(var(--component-bg) a(70%));
-  }
 }
 
 .text {

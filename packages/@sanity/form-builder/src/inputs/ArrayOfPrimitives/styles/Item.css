@@ -8,8 +8,6 @@
   padding: 0.1em;
   margin: 0.1em;
 
-  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
-
   &.media {
     height: 15em;
     width: 15em;

@@ -37,9 +37,9 @@ export function createSortableList(element: Element) {
       pressDelay,
       pressThreshold,
       shouldCancelStart,
-      onSortStart,
+      // onSortStart,
       onSortMove,
-      onSortEnd,
+      //onSortEnd,
       useWindowAsScrollContainer,
       hideSortableGhost,
       lockOffset,
@@ -53,7 +53,7 @@ export function createSortableList(element: Element) {
     return (
       <Sortable
         {...rest}
-        onSortEnd={onSort}
+        // onSortEnd={onSort}
         distance={distance}
         helperClass={movingItemClass}
         lockToContainerEdges={lockToContainerEdges}

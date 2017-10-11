@@ -34,7 +34,7 @@ export default class NumberInput extends React.PureComponent {
         <TextInput
           {...rest}
           type="number"
-          value={String(value)}
+          value={value}
           readOnly={type.readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}

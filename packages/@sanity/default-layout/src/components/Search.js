@@ -8,6 +8,7 @@ import {union, flatten} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceClickOutside from 'react-click-outside'
+import Ink from 'react-ink'
 
 function isParentOf(possibleParent, possibleChild) {
   let current = possibleChild
@@ -59,12 +60,12 @@ function search(query) {
   // Get all fields that we want to search in (text and string)
   const searchableFields = flatten(
     schema.getTypeNames()
+      .filter(typeName => !typeName.startsWith('sanity.'))
       .map(typeName => schema.get(typeName))
       .filter(type => type.type && type.type.name === 'object')
       .map(type => type.fields
         .filter(field => field.type.jsonType === 'string')
-        .map(field => field.name)
-      )
+        .map(field => field.name))
   )
 
   const terms = query.split(/\s+/).filter(Boolean)
@@ -139,9 +140,13 @@ export default enhanceClickOutside(class Search extends React.Component {
     const lastIndex = hits.length - 1
     if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
       event.preventDefault()
-      let nextIndex = activeIndex + (event.key === 'ArrowUp' ? - 1 : 1)
-      if (nextIndex < 0) nextIndex = lastIndex
-      if (nextIndex > lastIndex) nextIndex = 0
+      let nextIndex = activeIndex + (event.key === 'ArrowUp' ? -1 : 1)
+      if (nextIndex < 0) {
+        nextIndex = lastIndex
+      }
+      if (nextIndex > lastIndex) {
+        nextIndex = 0
+      }
       this.setState({activeIndex: nextIndex})
     }
   }
@@ -213,11 +218,13 @@ export default enhanceClickOutside(class Search extends React.Component {
         onMouseUp={this.handleHitMouseUp}
         tabIndex={-1}
       >
+        <div className={styles.itemType}>{type.title}</div>
         <Preview
           value={item}
           layout="default"
           type={type}
         />
+        <Ink duration={200} opacity={0.10} radius={200} />
       </IntentLink>
     )
   }
@@ -248,7 +255,7 @@ export default enhanceClickOutside(class Search extends React.Component {
             {isSearching && <Spinner />}
           </div>
         </div>
-        {isOpen && (
+        {isOpen && hits && hits.length > 0 && (
           <div className={styles.listContainer}>
             <ul
               className={styles.hits}
@@ -257,9 +264,9 @@ export default enhanceClickOutside(class Search extends React.Component {
               ref={this.setListElement}
             >
               {hits.map((hit, index) => (
-               <li key={hit._id} className={styles.hit}>
-                 {this.renderItem(hit, index)}
-               </li>
+                <li key={hit._id} className={styles.hit}>
+                  {this.renderItem(hit, index)}
+                </li>
               ))}
             </ul>
           </div>

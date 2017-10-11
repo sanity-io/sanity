@@ -5,13 +5,16 @@ import absolutes from 'all:part:@sanity/base/absolutes'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
-import DesktopNavigation from './DesktopNavigation'
-import MobileNavigation from './MobileNavigation'
+import Navigation from './Navigation'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import PlusIcon from 'part:@sanity/base/plus-circle-outline-icon'
+import PlusIcon from 'part:@sanity/base/plus-icon'
 import ActionModal from './ActionModal'
 import schema from 'part:@sanity/base/schema'
 import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
+import Branding from './Branding'
+import Ink from 'react-ink'
+import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
+import Button from 'part:@sanity/components/buttons/default'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -27,7 +30,8 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
   }
 
   state = {
-    createMenuOpen: false
+    createMenuIsOpen: false,
+    mobileMenuIsOpen: false
   }
 
   maybeRedirectToFirstTool() {
@@ -47,19 +51,32 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
 
   handleCreateButtonClick = () => {
     this.setState({
-      createMenuOpen: !this.state.createMenuOpen
+      createMenuIsOpen: !this.state.createMenuIsOpen
     })
   }
 
   handleActionModalClose = () => {
     this.setState({
-      createMenuOpen: false
+      createMenuIsOpen: false
+    })
+  }
+
+  handleMobileMenuToggle = () => {
+    this.setState({
+      mobileMenuIsOpen: !this.state.mobileMenuIsOpen
+    })
+  }
+
+  handleSwitchTool = () => {
+    console.log('handleSwitchTool')
+    this.setState({
+      mobileMenuIsOpen: false
     })
   }
 
   render() {
     const {tools, router} = this.props
-    const {createMenuOpen} = this.state
+    const {createMenuIsOpen, mobileMenuIsOpen} = this.state
 
     const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
       key: typeName,
@@ -75,30 +92,35 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     })
 
     return (
-      <div className={styles.defaultLayout}>
-
-        <div className={styles.desktopNavigation}>
-          <DesktopNavigation tools={tools} />
-        </div>
-
-        <div className={styles.mobileNavigation}>
-          <MobileNavigation tools={tools} />
-        </div>
-
-        <div className={styles.mainArea}>
-
-          <div className={styles.secondaryNavigation}>
-            <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
-              <span className={styles.createButtonIcon}><PlusIcon /></span>
-              <span className={styles.createButtonText}>Create</span>
-            </a>
-            <ToolSwitcher
-              tools={this.props.tools}
-              activeToolName={router.state.tool}
-              className={styles.toolSwitcher}
+      <div className={`${styles.defaultLayout} ${mobileMenuIsOpen ? styles.mobileMenuIsOpen : ''}`}>
+        <div className={styles.secondaryNavigation}>
+          <div className={styles.branding}>
+            <Branding />
+          </div>
+          <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
+            <span className={styles.createButtonIcon}><PlusIcon /></span>
+            <span className={styles.createButtonText}>New</span>
+            <Ink duration={200} opacity={0.10} radius={200} />
+          </a>
+          <div className={styles.mobileMenuButton}>
+            <Button
+              kind="simple"
+              onClick={this.handleMobileMenuToggle}
+              title="Menu"
+              icon={HamburgerIcon}
             />
           </div>
-
+          <ToolSwitcher
+            tools={this.props.tools}
+            activeToolName={router.state.tool}
+            onSwitchTool={this.handleSwitchTool}
+            className={styles.toolSwitcher}
+          />
+        </div>
+        <div className={styles.mainArea}>
+          <div className={styles.navigation}>
+            <Navigation tools={tools} />
+          </div>
           <div className={styles.toolContainer}>
             <RouteScope scope={router.state.tool}>
               <RenderTool tool={router.state.tool} />
@@ -107,7 +129,7 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
         </div>
 
         {
-          createMenuOpen && <ActionModal onClose={this.handleActionModalClose} actions={modalActions} />
+          createMenuIsOpen && <ActionModal onClose={this.handleActionModalClose} actions={modalActions} />
         }
 
         <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
