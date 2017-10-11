@@ -63,6 +63,18 @@ export default {
       type: 'file',
       description: 'PDF for printing a physical ticket'
     }
-
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      imageUrl: 'movie.poster.asset.url'
+    },
+    prepare(selection) {
+      const {title, imageUrl} = selection
+      return {
+        title: title,
+        imageUrl: imageUrl
+      }
+    }
+  }
 }

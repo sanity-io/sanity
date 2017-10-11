@@ -28,13 +28,15 @@ export default {
   preview: {
     select: {
       characterName: 'characterName',
-      name: 'person.name'
+      name: 'person.name',
+      imageUrl: 'person.image.asset.url'
     },
     prepare(selection) {
-      const {characterName, name} = selection
+      const {characterName, name, imageUrl} = selection
       return {
         title: name,
-        subtitle: characterName
+        subtitle: characterName,
+        imageUrl: imageUrl
       }
     }
   }
