@@ -11,11 +11,6 @@
     },
 
     {
-      "name": "part:@sanity/form-builder/validation-list",
-      "description": "Component that renders a list of validation feedback items"
-    },
-
-    {
       "name": "part:@sanity/form-builder",
       "description": "Sanity form builder module"
     },
@@ -72,11 +67,6 @@
       "name": "part:@sanity/form-builder/input/slug",
       "description": "Input component for the slug type"
     },
-    {
-      "implements": "part:@sanity/form-builder/validation-list",
-      "path": "sanity/validation/ValidationList.js"
-    },
-
     {
       "implements": "part:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
