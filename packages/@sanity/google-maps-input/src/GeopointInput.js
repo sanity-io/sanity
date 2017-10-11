@@ -9,7 +9,6 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import styles from '../styles/GeopointInput.css'
 import PatchEvent, {set} from '@sanity/form-builder/PatchEvent'
 
-
 const getLocale = context => {
   const intl = context.intl || {}
   return (
@@ -45,7 +44,6 @@ class GeopointInput extends React.Component {
     this.handleCloseModal = this.handleCloseModal.bind(this)
 
     this.state = {
-      dragMarkerInitialPosition: null,
       modalOpen: false
     }
   }
@@ -74,7 +72,8 @@ class GeopointInput extends React.Component {
       center: loc,
       markers: loc,
       zoom: 13,
-      size: '700x200'
+      scale: window.devicePixelRatio,
+      size: '1000x350'
     }
 
     const qs = Object.keys(params).reduce((res, param) => {
@@ -105,7 +104,7 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <Fieldset legend={type.title} descriptions={type.description} className={styles.root}>
+      <Fieldset legend={type.title} description={type.description} className={styles.root}>
         {value && <div>
           <img className={styles.previewImage} src={this.getStaticImageUrl(value)} />
         </div>}
