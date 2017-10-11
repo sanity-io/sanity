@@ -1,7 +1,6 @@
 // @flow
 import React from 'react'
 import client from 'part:@sanity/base/client'
-import {List as GridList, Item as GridListItem} from 'part:@sanity/components/lists/grid'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './SelectAsset.css'
 import {get} from 'lodash'
@@ -19,6 +18,11 @@ type State = {
 type Props = {
   onSelect: Asset => void
 }
+
+function createQuery(start = 0, end = PER_PAGE) {
+  return `*[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {_id,url,metadata {dimensions}}`
+}
+
 export default class SelectAsset extends React.Component<Props, State> {
 
   state = {
@@ -32,8 +36,7 @@ export default class SelectAsset extends React.Component<Props, State> {
   fetchPage(pageNo: number) {
     const start = pageNo * PER_PAGE
     const end = start + PER_PAGE
-    const slice = `${start}...${end}`
-    return client.fetch(`*[_type == "sanity.imageAsset"][${slice}] {_id, url, metadata {dimensions}}`).then(result => {
+    return client.fetch(createQuery(start, end)).then(result => {
       this.setState(prevState => ({
         isLastPage: result.length === 0,
         assets: prevState.assets.concat(result)
