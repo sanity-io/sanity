@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import moment from 'moment'
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import DocTitle from './DocTitle'
 
 const ACTIONS = [
@@ -65,7 +65,7 @@ export default class ConfirmPublish extends React.PureComponent {
             </strong>?
           </p>
           <p>
-            {published && `It was last published ${moment(published._updatedAt).fromNow()}`}
+            {published && `It was last published ${distanceInWordsToNow(published._updatedAt, {addSuffix: true})}.`}
           </p>
         </div>
       </Dialog>

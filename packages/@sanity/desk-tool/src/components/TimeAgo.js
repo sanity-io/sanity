@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import shallowEquals from 'shallow-equals'
-import moment from 'moment'
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 
 export default class TimeAgo extends React.PureComponent {
 
@@ -41,8 +41,7 @@ export default class TimeAgo extends React.PureComponent {
   stop() {
     clearInterval(this.intervalId)
   }
-
   render() {
-    return <span>{moment(this.props.time).fromNow()}</span>
+    return <span>{distanceInWordsToNow(this.props.time, {addSuffix: true})}</span>
   }
 }
