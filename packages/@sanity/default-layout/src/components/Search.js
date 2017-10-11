@@ -60,6 +60,7 @@ function search(query) {
   // Get all fields that we want to search in (text and string)
   const searchableFields = flatten(
     schema.getTypeNames()
+      .filter(typeName => !typeName.startsWith('sanity.'))
       .map(typeName => schema.get(typeName))
       .filter(type => type.type && type.type.name === 'object')
       .map(type => type.fields
