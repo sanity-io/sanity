@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import moment from 'moment'
 import DocTitle from './DocTitle'
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 
 const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 
@@ -52,10 +52,11 @@ export default class ConfirmDiscard extends React.PureComponent {
           </p>
           <p>
             This will {
-            published
-              ? `revert to the latest published version of this document (published ${moment(published._updatedAt).fromNow()}).`
-              : 'delete it entirely and there is no going back.'
-          }
+              published
+                ? `revert to the latest published version of this document (published ${
+                  distanceInWordsToNow(published._updatedAt, {addSuffix: true})}).`
+                : 'delete it entirely and there is no going back.'
+            }
           </p>
         </div>
       </Dialog>

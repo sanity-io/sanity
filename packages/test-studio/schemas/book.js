@@ -73,6 +73,7 @@ export default {
       title: 'title',
       translations: 'translations',
       createdAt: '_createdAt',
+      date: '_updatedAt',
       authorName: 'author.name',
       publicationYear: 'publicationYear',
       imageUrl: 'coverImage.asset.url'
