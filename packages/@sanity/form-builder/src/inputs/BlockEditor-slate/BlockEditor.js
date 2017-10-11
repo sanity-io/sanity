@@ -21,9 +21,6 @@ export default class BlockEditor extends React.Component {
     type: PropTypes.any,
     level: PropTypes.number,
     value: PropTypes.instanceOf(State),
-    validation: PropTypes.shape({
-      errors: PropTypes.array
-    }),
     onChange: PropTypes.func
   }
 
@@ -296,10 +293,9 @@ export default class BlockEditor extends React.Component {
   }
 
   renderBlockEditor() {
-    const {validation, value, type, level, onChange} = this.props
+    const {value, type, level, onChange} = this.props
     const {fullscreen} = this.state
 
-    const hasError = validation && validation.messages && validation.messages.length > 0
     return (
       <FormField
         label={type.title}
@@ -309,10 +305,7 @@ export default class BlockEditor extends React.Component {
         className={fullscreen ? styles.formFieldFullscreen : styles.formField}
       >
         <div
-          className={`
-            ${hasError ? styles.error : styles.root}
-            ${fullscreen ? styles.fullscreen : ''}
-          `}
+          className={fullscreen && styles.fullscreen}
         >
           <Toolbar
             className={styles.toolbar}

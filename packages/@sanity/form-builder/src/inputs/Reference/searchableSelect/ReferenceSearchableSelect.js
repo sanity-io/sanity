@@ -22,8 +22,7 @@ export default class ReferenceSearchableSelect extends React.Component {
     searchFn: PropTypes.func,
     valueToString: PropTypes.func,
     onChange: PropTypes.func,
-    level: PropTypes.number,
-    validation: PropTypes.object
+    level: PropTypes.number
   }
 
   static defaultProps = {
@@ -133,7 +132,6 @@ export default class ReferenceSearchableSelect extends React.Component {
       level,
       searchFn,
       valueToString,
-      validation,
       ...rest
     } = this.props
     const {valueAsString, fetching, hits} = this.state

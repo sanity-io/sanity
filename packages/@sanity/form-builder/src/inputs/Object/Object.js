@@ -13,7 +13,6 @@ export default class ObjectInput extends React.PureComponent {
 
   static propTypes = {
     type: FormBuilderPropTypes.type,
-    validation: PropTypes.shape(FormBuilderPropTypes.validation),
     value: PropTypes.object,
     onChange: PropTypes.func,
     level: PropTypes.number,
@@ -65,9 +64,7 @@ export default class ObjectInput extends React.PureComponent {
       return null
     }
 
-    const {value, validation, autoFocus} = this.props
-    const fieldValidation = validation && validation.fields[field.name]
-
+    const {value, autoFocus} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -76,7 +73,6 @@ export default class ObjectInput extends React.PureComponent {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
-        validation={fieldValidation}
         level={level}
         autoFocus={autoFocus && index === 0}
       />
