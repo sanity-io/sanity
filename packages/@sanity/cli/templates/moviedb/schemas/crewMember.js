@@ -28,19 +28,21 @@ export default {
       name: 'externalCreditId',
       title: 'External Credit ID',
       type: 'string'
-    },
+    }
   ],
   preview: {
     select: {
       name: 'person.name',
       job: 'job',
-      department: 'department'
+      department: 'department',
+      imageUrl: 'person.image.asset.url'
     },
     prepare(selection) {
-      const {name, job, department} = selection
+      const {name, job, department, imageUrl} = selection
       return {
         title: name,
-        subtitle: `${job} [${department}]`
+        subtitle: `${job} [${department}]`,
+        imageUrl: imageUrl
       }
     }
   }
