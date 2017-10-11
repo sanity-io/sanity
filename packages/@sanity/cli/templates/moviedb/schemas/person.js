@@ -22,10 +22,13 @@ export default {
     {
       name: 'image',
       title: 'Image',
-      type: 'image'
+      type: 'image',
+      options: {
+        hotspot: true
+      }
     }
   ],
   preview: {
-    select: {title: 'name', imageUrl: 'image.asset.url'},
+    select: {title: 'name', imageUrl: 'image.asset.url'}
   }
 }

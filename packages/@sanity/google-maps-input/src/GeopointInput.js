@@ -72,8 +72,8 @@ class GeopointInput extends React.Component {
       center: loc,
       markers: loc,
       zoom: 13,
-      scale: window.devicePixelRatio,
-      size: '1000x350'
+      scale: 2,
+      size: '640x300'
     }
 
     const qs = Object.keys(params).reduce((res, param) => {
@@ -89,15 +89,17 @@ class GeopointInput extends React.Component {
     if (!config || !config.apiKey) {
       return (
         <div>
-          <p>API key for Google Maps is not defined. This plugin needs API access to:</p>
+          <p>
+            The <a href="https://sanity.io/docs/schema-types/geopoint-type">Geopoint type</a> needs a Google Maps API key with access to:
+          </p>
           <ul>
             <li>Google Maps JavaScript API</li>
             <li>Google Places API Web Service</li>
             <li>Google Static Maps API</li>
           </ul>
           <p>
-            Please define an API key with access to these services in
-            <code style={{whitespace: 'nowrap'}}>`&lt;project-root&gt;/config/google-maps.json`</code>
+            Please enter the API key with access to these services in
+            <code style={{whitespace: 'nowrap'}}>`&lt;project-root&gt;/config/@sanity/google-maps-input.json`</code>
           </p>
         </div>
       )
