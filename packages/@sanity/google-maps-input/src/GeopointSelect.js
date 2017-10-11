@@ -50,7 +50,7 @@ class GeopointSelect extends React.Component {
     const input = this.elementRefs.searchInput
     this.autoComplete = new places.Autocomplete(input, {
       bounds: searchBounds,
-      types: ['geocode']
+      types: [] // return all kinds of places
     })
 
     event.addListener(
@@ -58,6 +58,10 @@ class GeopointSelect extends React.Component {
       'place_changed',
       this.handlePlaceChanged.bind(this)
     )
+
+    event.addListener(this.mapInstance, 'click', clickEvent => {
+      this.setValue(clickEvent.latLng)
+    })
   }
 
   getValueLatLng() {
