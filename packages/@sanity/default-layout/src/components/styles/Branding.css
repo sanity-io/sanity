@@ -10,15 +10,17 @@
 }
 
 .projectName {
-  font-size: 1em;
-  padding-left: var(--small-padding);
-  white-space: nowrap;
+  font-size: var(--font-size-tiny);
   font-weight: 300;
-}
+  color: var(--white);
+  padding: 0;
+  margin: 0;
+  padding-left: var(--small-padding);
+  margin-top: -0.25rem;
 
-.projectNameHidden {
-  composes: projectName;
-  display: none;
+  @media (--screen-medium) {
+    padding: 0 var(--small-padding);
+  }
 }
 
 .link {
@@ -32,9 +34,16 @@
 
   @nest & svg {
     fill: #fff;
-    height: auto;
-    width: 4rem;
-    margin-top: 1rem;
-    margin-left: 0.5rem;
+    height: 1rem;
+    margin-top: var(--medium-padding);
+    margin-left: var(--small-padding);
+    width: auto;
+
+    @media (--screen-medium) {
+      width: 4rem;
+      height: auto;
+      margin-top: 1rem;
+      margin-left: 0.5rem;
+    }
   }
 }
