@@ -2,10 +2,8 @@
 
 .textInput {
   appearance: none;
-  box-shadow: none !important;
   border: 0;
   border: var(--input-border-size) solid var(--input-border-color);
-  background-color: var(--input-bg);
   color: var(--input-color);
   display: block;
   width: 100%;
@@ -16,6 +14,9 @@
   box-sizing: border-box;
   padding: var(--input-padding-horizontal) var(--input-padding-vertical);
   border-radius: var(--input-border-radius);
+  background-color: var(--input-bg);
+  box-shadow: 0 0 4px color(#000 a(5%));
+  transition: all 0.1s linear;
 
   &:hover {
     border-color: var(--input-border-color-hover);
@@ -23,26 +24,12 @@
 
   &:focus {
     border-color: var(--input-border-color-focus);
+    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
   }
 
   &:active {
     border-color: var(--input-border-color-active);
   }
-}
-
-.focusHelper {
-  display: block;
-  width: calc(100% + (var(--extra-small-padding) * 2));
-  height: calc(100% + (var(--extra-small-padding) * 2));
-  position: absolute;
-  top: calc(var(--extra-small-padding) * -1);
-  left: calc(var(--extra-small-padding) * -1);
-  z-index: 0;
-  background-color: transparent;
-}
-
-.focusHelperActive {
-  background-color: var(--focus-color);
 }
 
 .disabled {

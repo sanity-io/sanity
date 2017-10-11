@@ -1,10 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --default-item-selected-color: var(--brand-primary);
-  --default-item-active-color: var(--brand-primary);
-}
-
 .root {
   max-height: 100%;
   height: 100%;
@@ -21,32 +16,25 @@
   overflow-y: auto;
 }
 
+.list {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
 .item {
-  @nest &:hover {
-    background-color: color(var(--gray-base) a(7%));
-  }
-
-  @nest &:focus {
-    background-color: color(var(--gray-base) a(10%));
-    outline: none;
-  }
-
-  @nest &:active {
-    background-color: color(var(--default-item-selected-color) a(100%));
-    color: var(--white);
-  }
+  display: block;
+  margin: 0;
+  padding: 0;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
 }
 
 .selected {
-  background-color: color(var(--default-item-selected-color) a(80%));
-  color: var(--white);
+  composes: item;
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .highlighted {
-  background-color: color(var(--default-item-selected-color) a(30%));
-
-  @nest &.selected {
-    background-color: color(var(--default-item-selected-color) a(90%));
-  }
-
+  composes: highlighted from 'part:@sanity/base/theme/layout/selectable-style';
 }

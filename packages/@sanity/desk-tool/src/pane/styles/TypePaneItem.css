@@ -2,24 +2,17 @@
 
 .item {
   position: relative;
-  color: #999;
   margin: 0;
   padding: 0;
 }
 
 .selected {
   composes: item;
-  color: #000;
+  background-color: var(--selected-item-color);
 }
 
 .link {
+  composes: link from './DocumentsPane.css';
   margin: 0;
-  padding: 0;
-  line-height: 2em;
-  text-decoration: none;
-  color: inherit;
-
-  @nest &:hover {
-    color: #666;
-  }
+  padding: var(--small-padding) var(--medium-padding);
 }

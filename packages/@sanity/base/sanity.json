@@ -184,6 +184,10 @@
       "description": "Provides backgrounds"
     },
     {
+      "name": "part:@sanity/base/theme/layout/selectable-style",
+      "description": "Provides pseudo styles for selectable items"
+    },
+    {
       "name": "part:@sanity/base/theme/forms/text-input-style",
       "description": "Styling for <input>"
     },
@@ -364,8 +368,8 @@
       "path": "styles/layout/box.css"
     },
     {
-      "implements": "part:@sanity/base/theme/layout/backgrounds-style",
-      "path": "styles/layout/backgrounds.css"
+      "implements": "part:@sanity/base/theme/layout/selectable-style",
+      "path": "styles/layout/selectable.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",
@@ -414,6 +418,10 @@
     {
       "implements": "part:@sanity/base/theme/body-style",
       "path": "styles/body.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/layout/backgrounds-style",
+      "path": "styles/layout/backgrounds.css"
     },
     {
       "name": "part:@sanity/base/close-icon",
@@ -684,6 +692,10 @@
       "path": "components/icons/CircleCheck.js"
     },
     {
+      "implements": "part:@sanity/base/check-icon",
+      "path": "components/icons/Check.js"
+    },
+    {
       "implements": "part:@sanity/base/circle-thin-icon",
       "path": "components/icons/CircleThin.js"
     },
@@ -718,9 +730,18 @@
     {
       "implements": "part:@sanity/base/plugin-icon",
       "path": "components/icons/Plug.js"
-    },{
+    },
+    {
       "implements": "part:@sanity/base/image-area-icon",
       "path": "components/icons/ImageArea.js"
+    },
+    {
+      "implements": "part:@sanity/base/sync-icon",
+      "path": "components/icons/Sync.js"
+    },
+    {
+      "implements": "part:@sanity/base/time-icon",
+      "path": "components/icons/Time.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",

@@ -2,46 +2,30 @@
 
 .root {
   font-size: 0.6rem;
-  margin-bottom: 0.5em;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  height: 2.5rem;
 
   @media (--screen-medium) {
     font-size: 0.8rem;
   }
-
-  @nest &:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-}
-
-.dividerLeft {
-  border-left: 1px solid #ccc;
-}
-
-.dividerRight {
-  border-right: 1px solid #ccc;
 }
 
 .insertContainer {
-  float: right;
+  display: block;
 }
 
 .decoratorContainer {
-  composes: dividerLeft;
-  float: left;
   padding-left: 0.5em;
 }
 
 .listFormatContainer {
-  composes: dividerLeft;
-  float: left;
   padding-left: 0.5em;
 }
 
 .blockFormatContainer {
   max-width: 5em;
-  float: left;
   min-width: 4em;
   padding-right: 0.5em;
 
@@ -53,20 +37,24 @@
 }
 
 .annotationsContainer {
-  composes: dividerRight;
-  composes: dividerLeft;
-  float: left;
-}
-
-.formatButtons {
   display: block;
 }
 
+.formatButtons {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
 .fullscreenButtonContainer {
-  float: right;
-  composes: dividerLeft;
+  margin-left: auto;
 
   @nest & svg {
     transform: scale(1.5);
   }
+}
+
+.canBeMinimized {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: nowrap;
 }

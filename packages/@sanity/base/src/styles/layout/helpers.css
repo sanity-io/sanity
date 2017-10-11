@@ -24,8 +24,10 @@
 }
 
 .movingItem {
-  background-color: var(--selectable-item-color-active);
-  opacity: 0.8;
-  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
   z-index: var(--zindex-moving-item);
+  position: relative;
+  background-color: var(--white);
+  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
+  box-sizing: content-box;
+  overflow: visible;
 }

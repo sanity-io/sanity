@@ -26,6 +26,8 @@ import TimeAgo from '../components/TimeAgo'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
+import SyncIcon from 'part:@sanity/base/sync-icon'
+import CheckIcon from 'part:@sanity/base/check-icon'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -77,13 +79,7 @@ const getInspectItem = (draft, published) => ({
   isDisabled: !(draft || published)
 })
 
-const getMenuItems = (draft, published) => ([
-  getDiscardItem,
-  getUnpublishItem,
-  getDuplicateItem,
-  getDeleteItem,
-  getInspectItem
-])
+const getMenuItems = (draft, published) => ([getDiscardItem, getUnpublishItem, getDuplicateItem, getDeleteItem, getInspectItem])
   .map(fn => fn(draft, published))
   .filter(Boolean)
 
@@ -302,17 +298,38 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
   renderFunctions = () => {
     const {draft, published} = this.props
+    const {
+      showSavingStatus
+    } = this.state
+
+    const value = draft || published
+
     return (
-      <div className={styles.publishButton}>
-        <Button
-          title="Ctrl+Alt+P"
-          disabled={!draft}
-          onClick={this.handlePublishButtonClick}
-          color="primary"
-          kind="simple"
-        >
-          {published ? 'Publish changes' : 'Publish'}
-        </Button>
+      <div className={styles.paneFunctions}>
+        {showSavingStatus && (
+          <div className={styles.syncStatusSyncing}>
+            <span className={styles.spinnerContainer}>
+              <span className={styles.spinner}>
+                <SyncIcon />
+              </span>
+            </span> Syncing…
+          </div>
+        )}
+        {value && !showSavingStatus && (
+          <div className={styles.syncStatusSynced}>
+            <CheckIcon /> Synced
+          </div>
+        )}
+        <div className={styles.publishButton}>
+          <Button
+            title="Ctrl+Alt+P"
+            disabled={!draft}
+            onClick={this.handlePublishButtonClick}
+            color="primary"
+          >
+            {published ? 'Publish changes' : 'Publish'}
+          </Button>
+        </div>
       </div>
     )
   }
@@ -345,7 +362,6 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
     const {
       inspect,
-      showSavingStatus,
       showConfirmPublish,
       showConfirmDelete,
       showConfirmDiscard,
@@ -389,28 +405,15 @@ export default withRouterHOC(class Editor extends React.PureComponent {
             <Spinner fullscreen message="Unpublishing…" />
           )}
           <div className={styles.top}>
-            <div className={styles.dates}>
-              <div>
-                {published
-                  ? <span>Published <TimeAgo time={published._updatedAt} /></span>
-                  : 'Not published'
-                }
-              </div>
-              <div>
-                {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
-              </div>
+            <div className={styles.editedDate}>
+              {value && <span>Edited <TimeAgo time={value._updatedAt} /></span>}
             </div>
-
-            {showSavingStatus && (
-              <div className={styles.savingStatus}>
-                <span className={styles.spinner}><Spinner /></span> Saving…
-              </div>
-            )}
-            {value && !showSavingStatus && (
-              <div className={styles.savingStatus}>
-                ✓ Saved
-              </div>
-            )}
+            <div className={styles.publishedDate}>
+              {published
+                ? <span>Published <TimeAgo time={published._updatedAt} /></span>
+                : 'Not published'
+              }
+            </div>
           </div>
           <form className={styles.editor} onSubmit={preventDefault} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
             <FormBuilder
@@ -423,8 +426,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
           </form>
 
           {afterEditorComponents.map((AfterEditorComponent, i) =>
-            <AfterEditorComponent key={i} documentId={published._id} />
-          )}
+            <AfterEditorComponent key={i} documentId={published._id} />)}
 
           {inspect && (
             <InspectView

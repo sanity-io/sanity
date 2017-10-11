@@ -4,6 +4,7 @@ import styles from './styles/TypePane.css'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import Pane from 'part:@sanity/components/panes/default'
 import TypePaneItem from './TypePaneItem'
+import contentStylesOverride from './styles/contentStylesOverride.css'
 
 export default withRouterHOC(class TypePane extends React.PureComponent {
 
@@ -33,7 +34,7 @@ export default withRouterHOC(class TypePane extends React.PureComponent {
     // const isActive = !selectedType && !action && !selectedDocumentId
 
     return (
-      <Pane {...this.props}>
+      <Pane {...this.props} styles={contentStylesOverride}>
         <ul className={styles.list}>
           {
             items.map((item, i) => {
