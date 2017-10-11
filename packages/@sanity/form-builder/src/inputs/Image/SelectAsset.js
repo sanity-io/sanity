@@ -4,6 +4,7 @@ import client from 'part:@sanity/base/client'
 import {List as GridList, Item as GridListItem} from 'part:@sanity/components/lists/grid'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './SelectAsset.css'
+import {get} from 'lodash'
 
 const PER_PAGE = 200
 
@@ -32,7 +33,7 @@ export default class SelectAsset extends React.Component<Props, State> {
     const start = pageNo * PER_PAGE
     const end = start + PER_PAGE
     const slice = `${start}...${end}`
-    return client.fetch(`*[_type == "sanity.imageAsset"][${slice}] {_id, url}`).then(result => {
+    return client.fetch(`*[_type == "sanity.imageAsset"][${slice}] {_id, url, metadata {dimensions}}`).then(result => {
       this.setState(prevState => ({
         isLastPage: result.length === 0,
         assets: prevState.assets.concat(result)
@@ -58,21 +59,33 @@ export default class SelectAsset extends React.Component<Props, State> {
   render() {
     const {assets, isLastPage} = this.state
     return (
-      <div>
-        <GridList>
+      <div className={styles.root}>
+        <div className={styles.imageList}>
           {assets.map(asset => {
+            const size = 75
+            const width = get(asset, 'metadata.dimensions.width') || 100
+            const height = get(asset, 'metadata.dimensions.height') || 100
             return (
-              <GridListItem className={styles.item} key={asset._id} data-id={asset._id} onClick={this.handleSelectItem}>
-                <div>
-                  <img src={`${asset.url}?w=100`} />
-                </div>
-              </GridListItem>
+              <div
+                key={asset._id}
+                className={styles.item}
+                data-id={asset._id}
+                onClick={this.handleSelectItem}
+                style={{width: `${(width * size) / height}px`, flexGrow: `${(width * size) / height}`}}
+              >
+                <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
+                <img src={`${asset.url}?w=100`} className={styles.image} />
+              </div>
             )
           })}
-        </GridList>
-        {isLastPage
-          ? <span>Nothing more to load…</span>
-          : <Button onClick={this.handleFetchNextPage}>Load more…</Button>}
+        </div>
+        <div className={styles.loadMore}>
+          {
+            isLastPage
+              ? <span>Nothing more to load…</span>
+              : <Button onClick={this.handleFetchNextPage}>Load more…</Button>
+          }
+        </div>
       </div>
     )
   }
