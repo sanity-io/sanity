@@ -19,7 +19,8 @@
     "prop-types": "^15.5.10"
   },
   "devDependencies": {
-    "@sanity/check": "^0.116.0",
+    "@sanity/check": "^0.115.2",
+    "babel-preset-env": "^1.6.0",
     "rimraf": "^2.6.1"
   },
   "repository": {
