@@ -1,7 +1,7 @@
 {
   "name": "test-studio",
   "private": true,
-  "version": "0.116.0-rc.0",
+  "version": "0.116.0-rc.1",
   "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "@sanity/core": "0.116.0-rc.0",
     "@sanity/date-input": "0.116.0-rc.0",
     "@sanity/default-layout": "0.116.0-rc.0",
-    "@sanity/default-login": "0.116.0-rc.0",
+    "@sanity/default-login": "0.116.0-rc.1",
     "@sanity/desk-tool": "0.116.0-rc.0",
     "@sanity/form-builder": "0.116.0-rc.0",
     "@sanity/google-maps-input": "0.116.0-rc.0",
