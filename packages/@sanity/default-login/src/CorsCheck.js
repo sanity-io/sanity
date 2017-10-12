@@ -48,7 +48,7 @@ class CorsCheck extends PureComponent {
       || window.location.href.replace(new RegExp(`${window.location.pathname}$`), '')
 
     if (isLoading) {
-      return <div><Spinner message="Running diagnostics..." inline /><p /></div>
+      return <Spinner fullscreen center />
     }
 
     const tld = client.config().apiHost.replace(/.*?sanity\.([a-z]+).*/, '$1')
