@@ -3,10 +3,9 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
-import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
-import ReferringDocumentLink from './ReferringDocumentLink'
 import DocTitle from './DocTitle'
+import ReferringDocumentsList from './ReferringDocumentsList'
 
 export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
   static propTypes = {
@@ -65,13 +64,7 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
               to be removed from
               the following document{referringDocuments.length > 1 && 's'}:
             </p>
-            <DefaultList>
-              {referringDocuments.map(document => (
-                <DefaultItem key={document._id}>
-                  <ReferringDocumentLink document={document} />
-                </DefaultItem>
-              ))}
-            </DefaultList>
+            <ReferringDocumentsList documents={referringDocuments} />
           </div>
         )}
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
