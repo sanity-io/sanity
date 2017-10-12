@@ -5,7 +5,7 @@ import LoginDialog from 'part:@sanity/base/login-dialog'
 import UnauthorizedUser from './UnauthorizedUser'
 import ErrorDialog from './ErrorDialog'
 import Spinner from 'part:@sanity/components/loading/spinner'
-
+import CookieTest from './CookieTest'
 export default class LoginWrapper extends React.PureComponent {
 
   static propTypes = {
@@ -43,7 +43,11 @@ export default class LoginWrapper extends React.PureComponent {
     }
 
     if (!user) {
-      return <LoginDialog />
+      return (
+        <CookieTest>
+          <LoginDialog />
+        </CookieTest>
+      )
     }
 
     if (!user.role) {
