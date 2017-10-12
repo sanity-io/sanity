@@ -123,6 +123,7 @@ export default enhanceClickOutside(class Search extends React.Component {
 
   handleInputChange = event => {
     this.input$.next(event)
+    this.open()
   }
 
   handleKeyPress = event => {
@@ -139,9 +140,17 @@ export default enhanceClickOutside(class Search extends React.Component {
     if (event.key === 'Enter') {
       this.listElement.querySelector(`[data-hit-index="${this.state.activeIndex}"]`).click()
     }
-    const {hits, activeIndex} = this.state
+    const {isOpen, hits, activeIndex} = this.state
+
+    const isArrowKey = ['ArrowUp', 'ArrowDown'].includes(event.key)
+
+    if (!isOpen && isArrowKey) {
+      this.open()
+      return
+    }
+
     const lastIndex = hits.length - 1
-    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+    if (isArrowKey) {
       event.preventDefault()
       let nextIndex = activeIndex + (event.key === 'ArrowUp' ? -1 : 1)
       if (nextIndex < 0) {
@@ -170,8 +179,12 @@ export default enhanceClickOutside(class Search extends React.Component {
     this.close()
   }
 
-  handleClick = el => {
+  handleHitClick = el => {
     this.close()
+  }
+
+  handleInputClick = el => {
+    this.open()
   }
 
   handleFocus = el => {
@@ -223,7 +236,7 @@ export default enhanceClickOutside(class Search extends React.Component {
         data-hit-index={index}
         onMouseDown={this.handleHitMouseDown}
         onMouseUp={this.handleHitMouseUp}
-        onClick={this.handleClick}
+        onClick={this.handleHitClick}
         tabIndex={-1}
       >
         <div className={styles.itemType}>{type.title}</div>
@@ -253,6 +266,7 @@ export default enhanceClickOutside(class Search extends React.Component {
             value={isOpen ? inputValue : ''}
             onInput={this.handleInputChange}
             onBlur={this.handleBlur}
+            onClick={this.handleInputClick}
             onFocus={this.handleFocus}
             onKeyDown={this.handleKeyDown}
             placeholder="Search…"
