@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import client from 'part:@sanity/base/client'
 import userStore from 'part:@sanity/base/user'
 import LoginDialog from 'part:@sanity/base/login-dialog'
 import UnauthorizedUser from './UnauthorizedUser'
 import ErrorDialog from './ErrorDialog'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CookieTest from './CookieTest'
+
+const isProjectLogin = client.config().useProjectHostname
+
 export default class LoginWrapper extends React.PureComponent {
 
   static propTypes = {
@@ -50,7 +54,7 @@ export default class LoginWrapper extends React.PureComponent {
       )
     }
 
-    if (!user.role) {
+    if (isProjectLogin && !user.role) {
       return <UnauthorizedUser user={user} />
     }
 
