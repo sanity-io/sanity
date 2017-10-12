@@ -67,7 +67,7 @@ class CookieCheck extends PureComponent {
     const {isLoading, result} = this.state
 
     if (isLoading) {
-      return <div><Spinner message="Running diagnostics..." inline /><p /></div>
+      return <Spinner fullscreen center />
     }
 
     if (result.isCookieError) {

@@ -35,7 +35,7 @@ export default class LoginWrapper extends React.PureComponent {
     const {error, user, isLoading} = this.state
 
     if (isLoading) {
-      return <Spinner fullscreen />
+      return <Spinner fullscreen center />
     }
 
     if (error) {
