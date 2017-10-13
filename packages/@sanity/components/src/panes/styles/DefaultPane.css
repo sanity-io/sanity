@@ -180,7 +180,7 @@
   bottom: 0;
   display: block;
   box-sizing: border-box;
-  overflow: overlay;
+  overflow: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 
