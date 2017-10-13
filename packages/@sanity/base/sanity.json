@@ -60,6 +60,10 @@
       "description": "A placeholder to override variables"
     },
     {
+      "name": "part:@sanity/base/theme/variables/fonts-style",
+      "description": "Put @font-face here"
+    },
+    {
       "name": "part:@sanity/base/theme/responsive-style",
       "description": "Responsive breakpoints"
     },
@@ -248,6 +252,10 @@
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
       "path": "styles/variables/override.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/fonts-style",
+      "path": "styles/fonts.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/brand-colors-style",
