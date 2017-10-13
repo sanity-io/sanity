@@ -1,5 +1,4 @@
 @import "part:@sanity/base/theme/variables-style";
-@import "part:@sanity/base/theme/body-style";
 
 :global(body) {
   overflow-x: hidden;
@@ -23,7 +22,7 @@
 
 :root {
   --tool-switcher-width: 5rem;
-  --secondary-menu-background-color: #333;
+  --secondary-menu-background-color: var(--main-navigation-background-color);
 }
 
 .defaultLayout {
