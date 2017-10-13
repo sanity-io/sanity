@@ -10,17 +10,12 @@
 }
 
 .projectName {
+  display: block;
   font-size: var(--font-size-tiny);
   font-weight: 300;
   color: var(--white);
-  padding: 0;
+  padding: var(--small-padding);
   margin: 0;
-  padding-left: var(--small-padding);
-  margin-top: -0.25rem;
-
-  @media (--screen-medium) {
-    padding: 0 var(--small-padding);
-  }
 }
 
 .link {

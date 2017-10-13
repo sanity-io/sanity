@@ -23,7 +23,7 @@
 
 :root {
   --tool-switcher-width: 5rem;
-  --secondary-menu-background-color: #333;
+  --secondary-menu-background-color: var(--main-navigation-background-color);
 }
 
 .defaultLayout {
