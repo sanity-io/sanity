@@ -32,6 +32,17 @@ export default {
           type: 'string'
         }
       ]
+    },
+    {
+      name: 'favoriteBooks',
+      title: 'Favorite books',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'book'}
+        }
+      ]
     }
   ]
 }
