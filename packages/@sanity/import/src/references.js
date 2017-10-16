@@ -36,7 +36,7 @@ function setTypeOnReferences(doc) {
   extractWithPath('..[_ref]', doc)
     .map(match => match.path.slice(0, -1))
     .map(path => ({path, ref: get(doc, path)}))
-    .filter(item => item.ref._type !== 'reference')
+    .filter(item => typeof item.ref._type === 'undefined')
     .forEach(item => {
       item.ref._type = 'reference'
     })
