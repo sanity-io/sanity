@@ -20,10 +20,10 @@ export default async (args, context) => {
   const flags = args.extOptions
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const config = getConfig(workDir).get('server')
+  const config = getConfig(workDir)
   const compilationConfig = {
     env: 'production',
-    staticPath: resolveStaticPath(workDir, config),
+    staticPath: resolveStaticPath(workDir, config.get('server')),
     basePath: workDir,
     outputPath: path.join(outputDir, 'static'),
     sourceMaps: flags['source-maps'],
@@ -90,7 +90,7 @@ export default async (args, context) => {
     // Build new index document with correct hashes
     const indexStart = Date.now()
     spin = output.spinner('Building index document').start()
-    const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap}, {
+    const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap, project: config.get('project')}, {
       scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
         const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
         return {
