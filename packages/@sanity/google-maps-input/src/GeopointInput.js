@@ -7,7 +7,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import styles from '../styles/GeopointInput.css'
-import PatchEvent, {set} from '@sanity/form-builder/PatchEvent'
+import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
 
 const getLocale = context => {
   const intl = context.intl || {}
@@ -59,6 +59,11 @@ class GeopointInput extends React.Component {
       lat: latLng.lat(),
       lng: latLng.lng()
     })))
+  }
+
+  handleClear = () => {
+    const {onChange} = this.props
+    onChange(PatchEvent.from(unset()))
   }
 
   handleCloseModal() {
@@ -117,7 +122,7 @@ class GeopointInput extends React.Component {
           </Button>
 
           {value && (
-            <Button type="button">
+            <Button type="button" onClick={this.handleClear}>
               Remove
             </Button>
           )}
