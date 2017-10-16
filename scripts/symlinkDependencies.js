@@ -31,8 +31,8 @@ const targetRootPackages = fs.readdirSync(targetDepsPath).filter(notSanity)
 const targetSanityPackages = fs.readdirSync(path.join(targetDepsPath, '@sanity')).map(prefix)
 const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
 
-const sharedPackages = packages.filter(pkg => targetPackages.includes(pkg))
-const sharedDeclared = packages.filter(pkg => targetDeps.includes(pkg))
+const sharedPackages = packages.filter(pkg => targetPackages.indexOf(pkg) > -1)
+const sharedDeclared = packages.filter(pkg => targetDeps.indexOf(pkg) > -1)
 
 const removeFolders = sharedPackages.map(normalize).map(dir => path.join(targetDepsPath, dir))
 
