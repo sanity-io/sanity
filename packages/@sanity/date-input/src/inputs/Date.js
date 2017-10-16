@@ -1,4 +1,4 @@
-import moment from 'moment-timezone'
+import moment from 'moment'
 import generateHelpUrl from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 import React from 'react'
