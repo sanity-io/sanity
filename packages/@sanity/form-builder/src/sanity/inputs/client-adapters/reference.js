@@ -15,18 +15,43 @@ function wrapIn(chars = '') {
 
 const wrapInParens = wrapIn('()')
 
+const stringFields = Symbol('__cachedStringFields')
+
+function getCachedStringFieldPaths(type, maxDepth) {
+  if (!type[stringFields]) {
+    type[stringFields] = getStringFieldPaths(type, maxDepth)
+  }
+  return type[stringFields]
+}
+
+function getStringFieldPaths(type, maxDepth = 2) {
+  if (maxDepth < 0) {
+    return []
+  }
+  return (type.fields || [])
+    .map(field => {
+      if (field.type.jsonType === 'string') {
+        return [[field.name]]
+      }
+      if (field.type.jsonType === 'object') {
+        return getCachedStringFieldPaths(field.type, maxDepth - 1).map(path => [field.name, ...flatten(path)])
+      }
+      return null
+    })
+    .filter(Boolean)
+
+}
+
 function buildConstraintFromType(type, terms) {
   const typeConstraint = `_type == '${type.name}'`
 
-  const stringFields = type.fields
-    .filter(field => field.type.jsonType === 'string')
-
-  if (stringFields.length === 0) {
+  const stringFieldPaths = flatten(getCachedStringFieldPaths(type, 2))
+  if (stringFieldPaths.length === 0) {
     return typeConstraint
   }
 
   const stringFieldConstraints = flatten(
-    stringFields.map(field => terms.map(term => `${field.name} match '${term}*'`))
+    stringFieldPaths.map(fieldPath => terms.map(term => `${fieldPath.join('.')} match '${term}*'`))
   )
 
   return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`

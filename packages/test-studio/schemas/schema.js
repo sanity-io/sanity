@@ -22,6 +22,7 @@ import slugs from './slugs'
 import geopoint from './geopoint'
 import customInputs from './customInputs'
 import notitle from './notitle'
+import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
 export default createSchema({
   name: 'test-examples',
@@ -48,6 +49,7 @@ export default createSchema({
     recursiveArray,
     myObject,
     codeInputType,
-    notitle
+    notitle,
+    typeWithNoToplevelStrings,
   ]
 })
