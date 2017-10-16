@@ -12,6 +12,11 @@ const getDefaultModule = mod => {
   return mod && mod.__esModule ? mod.default : mod
 }
 
+const getTitle = (project = {}) => {
+  const projectName = (project && project.name) || ''
+  return projectName ? `${projectName} - Sanity` : 'Sanity'
+}
+
 const assetify = (assetPath, hashes) => ({
   path: assetPath,
   hash: hashes[assetPath]
@@ -33,11 +38,12 @@ export function getBaseServer() {
   return express()
 }
 
-export function getDocumentElement({basePath, hashes}, props = {}) {
+export function getDocumentElement({project, basePath, hashes}, props = {}) {
   const assetHashes = hashes || {}
   return getDocumentComponent(basePath)
     .then(Document =>
       React.createElement(Document, Object.assign({
+        title: getTitle(project),
         stylesheets: ['css/main.css'].map(item => assetify(item, assetHashes)),
         scripts: [
           'js/vendor.bundle.js',
