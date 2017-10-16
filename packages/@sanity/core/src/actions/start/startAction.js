@@ -23,6 +23,7 @@ export default async (args, context) => {
     httpHost,
     httpPort,
     context,
+    project: sanityConfig.get('project')
   }
 
   const server = getServer(serverOptions)
