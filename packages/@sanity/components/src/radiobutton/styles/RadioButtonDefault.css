@@ -33,10 +33,6 @@
   composes: root;
 }
 
-.isDisabled {
-  opacity: 0.2;
-}
-
 .input {
   line-height: var(--radio-label-height);
 
@@ -49,6 +45,10 @@
   opacity: 0;
   appearance: none;
   border: none;
+
+  @nest &:disabled {
+    opacity: 0.2;
+  }
 }
 
 .circleOutline {

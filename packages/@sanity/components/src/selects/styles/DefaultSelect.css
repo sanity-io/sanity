@@ -22,7 +22,7 @@
   position: relative;
   color: var(--input-border-color);
 
-  &:hover {
+  @nest &:hover {
     color: var(--input-border-color-focus);
   }
 
@@ -31,12 +31,17 @@
   }
 }
 
-.focusHelper {
-  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
-  background-color: transparent;
+.selectContainerDisabled {
+  composes: selectContainer;
+  opacity: 0.5;
+  color: var(--input-color);
+
+  @nest &:hover {
+    color: inherit;
+  }
 
   @nest .hasFocus & {
-    background-color: var(--focus-color);
+    color: inherit;
   }
 }
 
@@ -54,5 +59,9 @@
 
   @nest & svg {
     color: inherit;
+  }
+
+  @nest .selectContainerDisabled & {
+    opacity: 0.5;
   }
 }

@@ -12,19 +12,16 @@ export default class DefaultTextArea extends React.Component {
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
-    error: PropTypes.bool,
-    placeholder: PropTypes.string,
     isClearable: PropTypes.bool,
     rows: PropTypes.number,
-    hasFocus: PropTypes.bool
+    hasFocus: PropTypes.bool,
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {
     value: '',
     rows: 10,
-    placeholder: '',
     isClearable: false,
-    hasFocus: false,
     onKeyPress: NOOP,
     onChange: NOOP,
     onFocus: NOOP,
@@ -37,33 +34,37 @@ export default class DefaultTextArea extends React.Component {
   }
 
   render() {
-    const {value, placeholder, error, isClearable, id, rows, onKeyPress, onChange, onFocus, onBlur, hasFocus} = this.props
+    const {
+      value,
+      isClearable,
+      rows,
+      onKeyPress,
+      onChange,
+      onFocus,
+      onBlur,
+      onClear,
+      ...rest
+    } = this.props
 
     return (
-      <div
-        className={`
-          ${error ? styles.error : styles.root}
-          ${hasFocus ? styles.hasFocus : ''}
-        `}
-      >
+      <div className={styles.root}>
         <textarea
-          className={`
-            ${styles.textarea}
-            ${error ? styles.inputError : styles.input}
-            ${isClearable ? styles.hasClearButton : ''}
-          `}
+          className={styles.textarea}
           rows={rows}
           value={value}
-          placeholder={placeholder}
           onChange={onChange}
           onKeyPress={onKeyPress}
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete="off"
+          {...rest}
         />
-        <div className={styles.focusHelper} />
         {
-          isClearable && <button className={styles.clearButton} onClick={this.handleClear}><IoAndroidClose color="inherit" /></button>
+          isClearable && !this.props.disabled && (
+            <button className={styles.clearButton} onClick={onClear}>
+              <IoAndroidClose color="inherit" />
+            </button>
+          )
         }
       </div>
     )

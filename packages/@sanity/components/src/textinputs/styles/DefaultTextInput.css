@@ -7,9 +7,8 @@
 .input {
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   position: relative;
-  z-index: 1;
 
-  @nest .disabled & {
+  @nest &:disabled {
     background-color: transparent;
   }
 }
@@ -24,6 +23,7 @@
 
 .clearButton {
   composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
+  position: absolute;
   z-index: 1;
   top: 0.5em;
   right: 0.1em;
@@ -31,8 +31,4 @@
   @nest & svg {
     color: inherit;
   }
-}
-
-.isDisabled {
-  opacity: 0.4;
 }
