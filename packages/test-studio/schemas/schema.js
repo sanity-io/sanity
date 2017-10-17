@@ -17,7 +17,8 @@ import recursive from './recursive'
 import recursiveArray from './recursiveArray'
 import numbers from './numbers'
 import booleans from './booleans'
-import dates from './dates'
+import date from './date'
+import richDate from './richDate'
 import slugs from './slugs'
 import geopoint from './geopoint'
 import customInputs from './customInputs'
@@ -33,7 +34,8 @@ export default createSchema({
     numbers,
     booleans,
     objects,
-    dates,
+    date,
+    richDate,
     arrays,
     uploads,
     code,
