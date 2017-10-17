@@ -6,7 +6,7 @@ export default {
     {
       name: 'system',
       title: 'System fields',
-      description: 'These are read only'
+      description: 'These fields are managed by the system and not editable'
     }
   ],
   fields: [
@@ -16,19 +16,23 @@ export default {
       title: 'Original file name'
     },
     {
+      name: 'label',
+      type: 'string',
+      title: 'Label'
+    },
+    {
       name: 'extension',
       type: 'string',
-      title: 'File extension'
+      title: 'File extension',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'mimeType',
       type: 'string',
-      title: 'Mime type'
-    },
-    {
-      name: 'label',
-      type: 'string',
-      title: 'Label'
+      title: 'Mime type',
+      readOnly: true,
+      fieldset: 'system'
     },
     {
       name: 'size',
@@ -61,7 +65,15 @@ export default {
   ],
   preview: {
     select: {
-      title: 'originalFilename'
+      title: 'originalFilename',
+      path: 'path',
+      mimeType: 'mimeType',
+    },
+    prepare(doc) {
+      return {
+        title: doc.title || doc.path.split('/').slice(-1)[0],
+        subtitle: doc.mimeType
+      }
     }
   }
 }

@@ -1,9 +1,10 @@
 const PALETTE_FIELDS = [
-  {name: 'background', type: 'string', title: 'Background'},
-  {name: 'foreground', type: 'string', title: 'Foreground'},
-  {name: 'population', type: 'number', title: 'Population'},
-  {name: 'title', type: 'string', title: 'String'},
+  {name: 'background', type: 'string', title: 'Background', readOnly: true},
+  {name: 'foreground', type: 'string', title: 'Foreground', readOnly: true},
+  {name: 'population', type: 'number', title: 'Population', readOnly: true},
+  {name: 'title', type: 'string', title: 'String', readOnly: true},
 ]
+
 export default {
   name: 'sanity.imageAsset',
   title: 'Image',
@@ -12,14 +13,7 @@ export default {
     {
       name: 'system',
       title: 'System fields',
-      description: 'These are read only'
-    },
-    {
-      name: 'metadata',
-      title: 'Extra metadata…',
-      options: {
-        collapsable: true
-      }
+      description: 'These fields are managed by the system and not editable'
     }
   ],
   fields: [
@@ -29,19 +23,23 @@ export default {
       title: 'Original file name'
     },
     {
+      name: 'label',
+      type: 'string',
+      title: 'Label'
+    },
+    {
       name: 'extension',
       type: 'string',
-      title: 'File extension'
+      readOnly: true,
+      title: 'File extension',
+      fieldset: 'system'
     },
     {
       name: 'mimeType',
       type: 'string',
-      title: 'Mime type'
-    },
-    {
-      name: 'label',
-      type: 'string',
-      title: 'Label'
+      readOnly: true,
+      title: 'Mime type',
+      fieldset: 'system'
     },
     {
       name: 'size',
@@ -75,8 +73,15 @@ export default {
       name: 'metadata',
       type: 'object',
       title: 'Metadata',
-      readOnly: true,
-      fieldset: 'metadata',
+      fieldsets: [
+        {
+          name: 'extra',
+          title: 'Extra metadata…',
+          options: {
+            collapsable: true
+          }
+        }
+      ],
       fields: [
         {
           name: 'location',
@@ -87,10 +92,11 @@ export default {
           type: 'object',
           title: 'Dimensions',
           fields: [
-            {name: 'height', type: 'number', title: 'Height'},
-            {name: 'width', type: 'number', title: 'Width'},
-            {name: 'aspectRatio', type: 'number', title: 'Aspect ratio'}
-          ]
+            {name: 'height', type: 'number', title: 'Height', readOnly: true},
+            {name: 'width', type: 'number', title: 'Width', readOnly: true},
+            {name: 'aspectRatio', type: 'number', title: 'Aspect ratio', readOnly: true}
+          ],
+          fieldset: 'extra'
         },
         {
           name: 'palette',
@@ -104,7 +110,8 @@ export default {
             {name: 'dominant', type: 'object', title: 'Dominant', fields: PALETTE_FIELDS},
             {name: 'lightMuted', type: 'object', title: 'Light Muted', fields: PALETTE_FIELDS},
             {name: 'muted', type: 'object', title: 'Muted', fields: PALETTE_FIELDS}
-          ]
+          ],
+          fieldset: 'extra'
         }
       ]
     }
@@ -112,7 +119,16 @@ export default {
   preview: {
     select: {
       title: 'originalFilename',
-      imageUrl: 'url'
+      imageUrl: 'url',
+      path: 'path',
+      mimeType: 'mimeType',
+    },
+    prepare(doc) {
+      return {
+        title: doc.title || doc.path.split('/').slice(-1)[0],
+        imageUrl: `${doc.imageUrl}?w=150`,
+        subtitle: doc.mimeType
+      }
     }
   }
 }
