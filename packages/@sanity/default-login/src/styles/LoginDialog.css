@@ -5,10 +5,16 @@
   text-align: center;
 }
 
-.headline {
+.title {
   text-align: center;
   font-weight: 100;
   text-transform: uppercase;
+}
+
+.description {
+  text-align: center;
+  font-size: var(--font-size-small);
+  color: var(--text-color);
 }
 
 .sanityStudioLogo {

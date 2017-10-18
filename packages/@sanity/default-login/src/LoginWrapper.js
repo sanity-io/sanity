@@ -13,8 +13,19 @@ const isProjectLogin = client.config().useProjectHostname
 export default class LoginWrapper extends React.PureComponent {
 
   static propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    sanityLogo: PropTypes.node,
+    showSanityLogo: PropTypes.bool
   }
+
+  static defaultProps = {
+    title: 'Choose login provider',
+    description: null,
+    sanityLogo: null,
+    showSanityLogo: true
+  };
 
   state = {isLoading: true, user: null, error: null}
 
@@ -49,7 +60,12 @@ export default class LoginWrapper extends React.PureComponent {
     if (!user) {
       return (
         <CookieTest>
-          <LoginDialog />
+          <LoginDialog
+            title={this.props.title}
+            description={this.props.description}
+            sanityLogo={this.props.sanityLogo}
+            showSanityLogo={this.props.showSanityLogo}
+          />
         </CookieTest>
       )
     }
