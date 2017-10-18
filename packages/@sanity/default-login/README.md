@@ -4,7 +4,7 @@ Let a user log into Sanity, and get access to the child content.
 
 ```
 <LoginWrapper>
-  {user => <Layout><div>{user.displayName} is logged in!</div></Layout>}
+  {user => <Layout><div>{user.name} is logged in!</div></Layout>}
 </LoginWrapper>
 
 ```
@@ -13,7 +13,10 @@ Let a user log into Sanity, and get access to the child content.
 
 ```
 static propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.func
+  ]).isRequired,
   title: PropTypes.string,
   description: PropTypes.string,
   sanityLogo: PropTypes.node
