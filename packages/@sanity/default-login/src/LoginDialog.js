@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
+import PropTypes from 'prop-types'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import client from 'part:@sanity/base/client'
 import cancelWrap from './cancelWrap'
@@ -28,6 +29,13 @@ const GoogleLogo = () => (
 /* eslint-enable max-len */
 
 export default class LoginDialog extends React.Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    sanityLogo: PropTypes.node.isRequired,
+    showSanityLogo: PropTypes.bool.isRequired
+  };
+
   state = {
     providers: [],
     error: null
@@ -55,9 +63,11 @@ export default class LoginDialog extends React.Component {
     return (
       <div className={styles.root}>
 
-        <div className={styles.sanityStudioLogo}>
-          <SanityStudioLogo />
-        </div>
+        { this.props.showSanityLogo && (
+          <div className={styles.sanityStudioLogo}>
+            { this.props.sanityLogo ? this.props.sanityLogo : <SanityStudioLogo />}
+          </div>
+        )}
 
         <div className={styles.branding}>
           <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
@@ -67,9 +77,12 @@ export default class LoginDialog extends React.Component {
         </div>
 
         <div className={styles.inner}>
-          <h2 className={styles.headline}>
-            Choose login provider
+          <h2 className={styles.title}>
+            {this.props.title}
           </h2>
+          { this.props.description && (
+            <div className={styles.description}>{this.props.description}</div>
+          )}
           <ul className={styles.providers}>
             {this.state.providers.map(provider => {
               const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
