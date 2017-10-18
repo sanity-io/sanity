@@ -18,7 +18,10 @@ const projectId = (isProjectLogin && client.config().projectId)
 export default class LoginWrapper extends React.PureComponent {
 
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func
+    ]).isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
     sanityLogo: PropTypes.node
@@ -51,7 +54,7 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-
+    const {children} = this.props
     if (isLoading) {
       return <Spinner fullscreen center />
     }
@@ -67,7 +70,6 @@ export default class LoginWrapper extends React.PureComponent {
             title={this.props.title}
             description={this.props.description}
             sanityLogo={this.props.sanityLogo}
-            showSanityLogo={this.props.showSanityLogo}
             projectId={projectId}
           />
         </CookieTest>
@@ -78,6 +80,6 @@ export default class LoginWrapper extends React.PureComponent {
       return <UnauthorizedUser user={user} />
     }
 
-    return this.props.children
+    return typeof children === 'function' ? children(user) : children
   }
 }
