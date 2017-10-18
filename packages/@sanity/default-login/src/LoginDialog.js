@@ -2,10 +2,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-import client from 'part:@sanity/base/client'
 import cancelWrap from './cancelWrap'
 import styles from './styles/LoginDialog.css'
-import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import config from 'config:sanity'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 
@@ -31,10 +29,16 @@ const GoogleLogo = () => (
 export default class LoginDialog extends React.Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    sanityLogo: PropTypes.node.isRequired,
-    showSanityLogo: PropTypes.bool.isRequired
+    description: PropTypes.string,
+    sanityLogo: PropTypes.node,
+    projectId: PropTypes.string
   };
+
+  static defaultProps = {
+    description: null,
+    sanityLogo: null,
+    projectId: null
+  }
 
   state = {
     providers: [],
@@ -54,18 +58,23 @@ export default class LoginDialog extends React.Component {
 
   handleLoginButtonClicked(provider, evnt) {
     evnt.preventDefault()
-    const projectId = client.config().projectId
+    const {projectId} = this.props
     const currentUrl = encodeURIComponent(window.location.toString())
-    window.location = `${provider.url}?origin=${currentUrl}&projectId=${projectId}`
+    const params = [
+      `origin=${currentUrl}`,
+      projectId && `projectId=${projectId}`
+    ].filter(Boolean)
+    window.location = `${provider.url}?${params.join('&')}`
   }
 
   renderLoginScreen() {
+    const {title, description, sanityLogo} = this.props
     return (
       <div className={styles.root}>
 
-        { this.props.showSanityLogo && (
-          <div className={styles.sanityStudioLogo}>
-            { this.props.sanityLogo ? this.props.sanityLogo : <SanityStudioLogo />}
+        { sanityLogo && (
+          <div className={styles.sanityLogo}>
+            {sanityLogo}
           </div>
         )}
 
@@ -78,10 +87,10 @@ export default class LoginDialog extends React.Component {
 
         <div className={styles.inner}>
           <h2 className={styles.title}>
-            {this.props.title}
+            {title}
           </h2>
-          { this.props.description && (
-            <div className={styles.description}>{this.props.description}</div>
+          { description && (
+            <div className={styles.description}>{description}</div>
           )}
           <ul className={styles.providers}>
             {this.state.providers.map(provider => {

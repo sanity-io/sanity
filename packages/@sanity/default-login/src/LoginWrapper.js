@@ -2,13 +2,18 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import client from 'part:@sanity/base/client'
 import userStore from 'part:@sanity/base/user'
-import LoginDialog from 'part:@sanity/base/login-dialog'
-import UnauthorizedUser from './UnauthorizedUser'
-import ErrorDialog from './ErrorDialog'
-import Spinner from 'part:@sanity/components/loading/spinner'
+
 import CookieTest from './CookieTest'
+import LoginDialog from 'part:@sanity/base/login-dialog'
+import ErrorDialog from './ErrorDialog'
+import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
+import Spinner from 'part:@sanity/components/loading/spinner'
+import UnauthorizedUser from './UnauthorizedUser'
+
 
 const isProjectLogin = client.config().useProjectHostname
+const projectId = (isProjectLogin && client.config().projectId)
+  ? client.config().projectId : null
 
 export default class LoginWrapper extends React.PureComponent {
 
@@ -16,15 +21,13 @@ export default class LoginWrapper extends React.PureComponent {
     children: PropTypes.node.isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
-    sanityLogo: PropTypes.node,
-    showSanityLogo: PropTypes.bool
+    sanityLogo: PropTypes.node
   }
 
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
-    sanityLogo: null,
-    showSanityLogo: true
+    sanityLogo: <SanityStudioLogo />,
   };
 
   state = {isLoading: true, user: null, error: null}
@@ -65,12 +68,13 @@ export default class LoginWrapper extends React.PureComponent {
             description={this.props.description}
             sanityLogo={this.props.sanityLogo}
             showSanityLogo={this.props.showSanityLogo}
+            projectId={projectId}
           />
         </CookieTest>
       )
     }
 
-    if (isProjectLogin && !user.role) {
+    if (projectId && !user.role) {
       return <UnauthorizedUser user={user} />
     }
 
