@@ -53,7 +53,11 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
 
 const getFormat = (options: ParsedOptions) => `${options.dateFormat} ${options.timeFormat}`
 
-export default class DateInput extends React.Component<Props> {
+type State = {
+  inputValue: ?string
+}
+
+export default class DateInput extends React.Component<Props, State> {
   inputId: string = uniqueId('date-input')
 
   state = {
@@ -113,7 +117,7 @@ export default class DateInput extends React.Component<Props> {
             showMonthDropdown
             showYearDropdown
             todayButton={options.calendarTodayLabel}
-            selected={momentValue || moment()}
+            selected={momentValue || undefined}
             placeholderText={placeholder}
             calendarClassName={styles.datepicker}
             className={styles.input}

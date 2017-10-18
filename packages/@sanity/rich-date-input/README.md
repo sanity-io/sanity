@@ -3,8 +3,7 @@ A richer date/time type and input component for Sanity form builder
 
 ## Usage
 
-- `npm i -S @sanity/rich-date-input`
-- Add `@sanity/rich-date-input` to `plugins` in `sanity.json`
+- `sanity plugin install @sanity/rich-date-input`
 - In your schema:
   ```js
   import richDate from 'part:@sanity/form-builder/input/rich-date/schema'

@@ -1,3 +1,5 @@
+import RichDateInput from './RichDate'
+
 export default {
   title: 'Rich Date',
   name: 'richDate',
@@ -24,5 +26,6 @@ export default {
       type: 'number',
       title: 'Offset'
     }
-  ]
+  ],
+  inputComponent: RichDateInput
 }

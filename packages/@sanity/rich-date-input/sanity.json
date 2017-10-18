@@ -11,11 +11,11 @@
     },
     {
       "implements": "part:@sanity/form-builder/input/rich-date/schema",
-      "path": "./schema"
+      "path": "schema"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "inputs/story.js"
+      "path": "story.js"
     }
   ]
 }

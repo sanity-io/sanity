@@ -11,46 +11,60 @@ export default {
     {
       name: 'justDefaults',
       type: 'datetime',
-      title: 'Datetime with default config',
-      description: 'A plain datetime field'
+      title: 'Datetime with default config'
     },
-    // {
-    //   name: 'myUtcStringDateField',
-    //   type: 'date',
-    //   title: 'String date with inputUtc: true',
-    //   description: 'A plain date field with inputUtc: true',
-    //   options: {
-    //     inputUtc: true
-    //   }
-    // },
-    // {
-    //   name: 'justARegularStringFieldInBetween',
-    //   type: 'string',
-    //   title: 'Some string',
-    //   description: 'A string field in between',
-    // },
-    // {
-    //   name: 'myUtcStringDateWithoutTimeField',
-    //   type: 'date',
-    //   title: 'String date without time',
-    //   description: 'A plain date field without time',
-    //   options: {
-    //     inputDate: true,
-    //     inputTime: false,
-    //     dateFormat: 'Do. MMMM YYYY'
-    //   }
-    // },
-    // {
-    //   name: 'myUtcStringDateWithoutDateField',
-    //   type: 'date',
-    //   title: 'String date without date',
-    //   description: 'A plain date field with timeStep, without date',
-    //   options: {
-    //     inputDate: false,
-    //     inputTime: true,
-    //     dateFormat: 'HH:mm',
-    //     timeStep: 30
-    //   }
-    // }
+    {
+      name: 'myUtcStringDateField',
+      type: 'datetime',
+      title: 'Datetime with inputUtc: true',
+      options: {
+        inputUtc: true
+      }
+    },
+    {
+      name: 'justARegularStringFieldInBetween',
+      type: 'string',
+      title: 'Some string',
+      description: 'A string field in between',
+    },
+    {
+      name: 'aDateTimeWithCustomDateFormat',
+      type: 'datetime',
+      title: 'A datetime field with custom date format',
+      options: {
+        dateFormat: 'Do. MMMM YYYY'
+      }
+    },
+    {
+      name: 'aDateTimeWithCustomTimeFormat',
+      type: 'datetime',
+      title: 'A datetime field with custom time format',
+      options: {
+        timeFormat: 'hh:mm'
+      }
+    },
+    {
+      name: 'aDateTimeWithCustomDateAndTimeFormat',
+      type: 'datetime',
+      title: 'A datetime field with a custom date AND time format',
+      options: {
+        dateFormat: 'Do. MMMM YYYY',
+        timeFormat: 'hh:mm'
+      }
+    },
+    {
+      name: 'aDateFieldWithTimeStep',
+      type: 'datetime',
+      title: 'A date field with timeStep',
+      options: {
+        timeStep: 30
+      }
+    },
+    {
+      name: 'customPlaceholder',
+      type: 'datetime',
+      title: 'Datetime without custom placeholder',
+      placeholder: 'Enter a date here'
+    }
   ]
 }
