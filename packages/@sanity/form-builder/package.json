@@ -28,6 +28,7 @@
     "attr-accept": "^1.1.0",
     "canvas-to-blob": "^0.0.0",
     "classnames": "^2.2.5",
+    "date-fns": "^1.29.0",
     "debug": "^2.6.3",
     "exif-component": "^1.0.1",
     "get-random-values": "^1.2.0",

@@ -19,7 +19,7 @@
     "@sanity/code-input": "^0.116.2",
     "@sanity/components": "^0.116.2",
     "@sanity/core": "^0.116.2",
-    "@sanity/rich-date-input": "^0.116.2",
+    "@sanity/date-input": "^0.116.2",
     "@sanity/default-layout": "^0.116.2",
     "@sanity/default-login": "^0.116.1",
     "@sanity/desk-tool": "^0.116.2",
