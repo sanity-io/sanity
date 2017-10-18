@@ -1,21 +1,20 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 import generateHelpUrl from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
-import styles from './Date.css'
+import styles from './RichDate.css'
 import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker-cssmodules.css'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import {getOptions, getTimeIntervals, getPlaceholderText} from './util'
 
-
 const DEPRECATION_WARNING = (
   <div className={styles.deprecationWarning}>
-    This field has <code>type: {'date'}</code>, but the data associated with
-    it has the richDate format. Either change the schema: {' '}
-    <code>type: {'richDate'}</code>. Or migrate your data. {' '}
+    This field has <code>type: {'date'}</code>, which is deprecated and should
+    be changed to <code>type: {'richDate'}</code>.
+    Please update your schema and migrate your data. {' '}
     <a
       href={generateHelpUrl('migrate-to-rich-date')}
       target="_blank"
@@ -26,16 +25,26 @@ const DEPRECATION_WARNING = (
   </div>
 )
 
-export default class DateInput extends React.PureComponent {
+export default class RichDateInput extends React.PureComponent {
 
   assembleOutgoingValue(newMoment) {
     if (!newMoment || !newMoment.isValid()) {
       return undefined
     }
+    const {name} = this.props.type
     if (getOptions(this.props).inputUtc) {
-      return newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
+      return {
+        _type: name,
+        utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
+      }
     }
-    return newMoment.format() // e.g. 2017-02-21T10:15:00+01:00
+    return {
+      _type: name,
+      local: newMoment.format(), // e.g. 2017-02-21T10:15:00+01:00
+      utc: newMoment.utc().format(), // e.g. 2017-02-12T09:15:00Z
+      timezone: moment.tz.guess(), // e.g. Europe/Oslo
+      offset: moment().utcOffset() // e.g. 60 (utc offset in minutes)
+    }
   }
 
   handleChange = nextValue => {
@@ -52,26 +61,31 @@ export default class DateInput extends React.PureComponent {
 
   getCurrentValue = () => {
     const {value} = this.props
-    return value ? value : null
+    if (!value) {
+      return null
+    }
+    return getOptions(this.props).inputUtc ? value.utc : value.local
   }
 
   render() {
     const {value, type, level} = this.props
     const {title, description} = type
     const options = getOptions(this.props)
-    const timeIntervals = getTimeIntervals(value, options)
-    const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
     const format = [
       options.inputDate ? options.dateFormat : null,
       options.inputTime ? options.timeFormat : null
     ].filter(Boolean).join(' ')
+    const timeIntervals = getTimeIntervals(value, options)
+    const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
+
     return (
-      <FormField labelFor={this.inputId} label={title} level={level} description={description}>
-        {type.name === 'date'
-          && value
-          && value.utc
-          && typeof value === 'object'
-          && DEPRECATION_WARNING}
+      <FormField
+        labelFor={this.inputId}
+        label={title}
+        level={level}
+        description={description}
+      >
+        {type.name === 'date' && DEPRECATION_WARNING}
         <div className={options.inputTime ? styles.rootWithTime : styles.root}>
           {options.inputDate && (
             <DatePicker
@@ -79,12 +93,12 @@ export default class DateInput extends React.PureComponent {
               showMonthDropdown
               showYearDropdown
               todayButton={options.calendarTodayLabel}
-              selected={value && moment(value)}
+              selected={value && moment(options.inputUtc ? value.utc : value.local)}
               placeholderText={getPlaceholderText(options)}
               calendarClassName={styles.datepicker}
               className={styles.input}
               onChange={this.handleChange}
-              value={value && moment(value).format(format)}
+              value={value && moment(options.inputUtc ? value.utc : value.local).format(format)}
               showTimeSelect={options.inputTime}
               dateFormat={options.dateFormat}
               timeFormat={options.timeFormat}
@@ -92,25 +106,38 @@ export default class DateInput extends React.PureComponent {
             />
           )}
 
-          {!options.inputDate
-            && options.inputTime && <DefaultSelect items={timeIntervals} value={activeTimeInterval} onChange={this.handleTimeChange} />}
+          {
+            !options.inputDate && options.inputTime && (
+              <DefaultSelect
+                items={timeIntervals}
+                value={activeTimeInterval}
+                onChange={this.handleTimeChange}
+              />
+            )
+          }
         </div>
       </FormField>
     )
   }
 }
 
-DateInput.propTypes = {
-  value: PropTypes.string,
+RichDateInput.propTypes = {
+  value: PropTypes.shape({
+    utc: PropTypes.string,
+    local: PropTypes.string,
+    timezone: PropTypes.string,
+    offset: PropTypes.number
+  }),
   type: PropTypes.shape({
     title: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     options: PropTypes.object
   }),
   onChange: PropTypes.func,
   level: PropTypes.number
 }
 
-DateInput.contextTypes = {
+RichDateInput.contextTypes = {
   resolveInputComponent: PropTypes.func,
   schema: PropTypes.object,
   intl: PropTypes.shape({

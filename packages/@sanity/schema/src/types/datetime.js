@@ -3,20 +3,20 @@ import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
-const DATE_CORE = {
-  name: 'date',
+const DATETIME_CORE = {
+  name: 'datetime',
   title: 'Datetime',
   type: null,
   jsonType: 'string'
 }
 
-export const DateType = {
+export const DateTimeType = {
   get() {
-    return DATE_CORE
+    return DATETIME_CORE
   },
   extend(subTypeDef) {
-    const parsed = Object.assign(pick(DATE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: DATE_CORE,
+    const parsed = Object.assign(pick(DATETIME_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
+      type: DATETIME_CORE,
       preview: primitivePreview
     })
     return subtype(parsed)

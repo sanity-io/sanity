@@ -1,17 +1,19 @@
+// Todo: remove this eventually
 export default {
+  __legacy: true,
   title: 'Rich Date',
   name: 'richDate',
   type: 'object',
   fields: [
     {
       name: 'utc',
-      type: 'date',
+      type: 'datetime',
       title: 'UTC',
       required: true
     },
     {
       name: 'local',
-      type: 'date',
+      type: 'datetime',
       title: 'Local'
     },
     {

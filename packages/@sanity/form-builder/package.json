@@ -39,6 +39,8 @@
     "nano-pubsub": "^1.0.1",
     "object-inspect": "^1.2.1",
     "react-click-outside": "^2.3.1",
+    "moment": "^2.19.1",
+    "react-datepicker": "^0.56.0",
     "react-portal": "^3.0.0",
     "shallow-equals": "^1.0.0",
     "slate": "^0.25.2",

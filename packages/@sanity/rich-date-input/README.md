@@ -1,19 +1,36 @@
-# @sanity/date-input
+### @sanity/rich-date-input
+A richer date/time type and input component for Sanity form builder
 
-Date/time input components for Sanity form builder
+## Usage
+
+- `npm i -S @sanity/rich-date-input`
+- Add `@sanity/rich-date-input` to `plugins` in `sanity.json`
+- In your schema:
+  ```js
+  import richDate from 'part:@sanity/form-builder/input/rich-date/schema'
+
+  // ...
+  export default createSchema({
+    name: 'mySchema',
+    types: [
+      //...
+      richDate
+    ]
+  })
+
+  ```
 
 Typical data output:
 
 ```js
 {
+  _type: 'richDate',
   local: '2017-02-21T10:15:00+01:00',
   utc: '2017-02-12T09:15:00Z',
   timezone: 'Europe/Oslo',
   offset: 60
 }
 ```
-
-Using https://github.com/dubert/react-kronos for date/time input.
 
 ## Options
 
