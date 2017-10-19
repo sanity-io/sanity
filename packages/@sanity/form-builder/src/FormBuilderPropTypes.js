@@ -23,15 +23,6 @@ const type = PropTypes.shape({
   of: lazy(() => PropTypes.arrayOf(type))
 })
 
-const validation = {
-  fields: PropTypes.objectOf(lazy(() => PropTypes.shape(validation))),
-  messages: PropTypes.arrayOf(PropTypes.shape({
-    type: PropTypes.oneOf(['error', 'warning']),
-    id: PropTypes.string,
-    message: PropTypes.string
-  }))
-}
-
 const schema = PropTypes.shape({
   name: PropTypes.string,
   fields: PropTypes.arrayOf(type)
@@ -40,6 +31,5 @@ const schema = PropTypes.shape({
 export default {
   type,
   field,
-  schema,
-  validation
+  schema
 }
