@@ -58,7 +58,7 @@ export default {
   richDate: {
     datetime: {
       test: has('utc'),
-      convert: value => new Date(value.utc).toJSON()
+      convert: value => value.utc
     }
   },
   number: {
