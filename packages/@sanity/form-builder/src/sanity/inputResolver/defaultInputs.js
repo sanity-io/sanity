@@ -4,6 +4,7 @@ import EmailInput from '../../inputs/Email'
 import NumberInput from '../../inputs/Number'
 import ObjectInput from '../../inputs/Object'
 import StringInput from '../../inputs/String'
+import DateTimeInput from '../../inputs/DateTime'
 import TextInput from '../../inputs/Text'
 import UrlInput from '../../inputs/Url'
 
@@ -19,6 +20,7 @@ export default {
   number: NumberInput,
   text: TextInput,
   email: EmailInput,
+  datetime: DateTimeInput,
   url: UrlInput,
   image: Image,
   file: File,

@@ -1,7 +1,7 @@
 export default {
-  name: 'datesTest',
+  name: 'richDateTest',
   type: 'object',
-  title: 'Date fields test',
+  title: 'RichDates test',
   fields: [
     {
       name: 'title',
@@ -17,7 +17,7 @@ export default {
     {
       name: 'myUtcDateField',
       type: 'richDate',
-      title: 'Rich date with inputUtc = true',
+      title: 'Rich date with inputUtc: true',
       description: 'A plain richDate field',
       options: {
         inputUtc: true
@@ -53,12 +53,6 @@ export default {
         dateFormat: 'MMMM Do YYYY',
         calendarTodayLabel: 'Klikk her for å gå til idag'
       }
-    },
-    {
-      name: 'myDeprecatedDateField',
-      type: 'date',
-      title: 'A field with type: date',
-      description: 'Should still work, but display a deprecation warning'
     }
   ]
 }
