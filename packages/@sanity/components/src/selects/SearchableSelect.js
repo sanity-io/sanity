@@ -41,7 +41,8 @@ export default class SearchableSelect extends React.Component {
       highlightIndex: -1,
       isInputSelected: false,
       arrowNavigationPosition: 0,
-      width: 448
+      width: 448,
+      hasFocus: false
     }
   }
 
@@ -132,8 +133,20 @@ export default class SearchableSelect extends React.Component {
     }
   }
 
+  handleFocus = event => {
+    this.setState({
+      hasFocus: true
+    })
+  }
+
+  handleBlur = event => {
+    this.setState({
+      hasFocus: false
+    })
+  }
+
   render() {
-    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width, hasFocus} = this.state
     const {onSearch, ...rest} = this.props
     return (
       <div ref={this.setRootElement}>
@@ -152,6 +165,7 @@ export default class SearchableSelect extends React.Component {
           onInputChange={this.handleInputChange}
           scrollContainer={scrollContainer}
           width={width}
+          isSelected={hasFocus}
         />
       </div>
     )

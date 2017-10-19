@@ -8,8 +8,8 @@
   composes: selectContainer from 'part:@sanity/components/selects/default-style';
 }
 
-.selectContainer {
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+.selectContainerDisabled {
+  composes: selectContainerDisabled from 'part:@sanity/components/selects/default-style';
 }
 
 .arrow {

@@ -189,6 +189,7 @@ storiesOf('Selects')
             onBlur={action('onBlur')}
             items={items}
             value={items[valueIndex]}
+            disabled={boolean('disabled (default prop)', false)}
           />
         </Sanity>
       )
@@ -207,6 +208,7 @@ storiesOf('Selects')
             onBlur={action('onBlur')}
             value={items[10]}
             items={items}
+            disabled={boolean('disabled (default prop)', false)}
           />
         </Sanity>
       )
@@ -242,10 +244,11 @@ storiesOf('Selects')
             onBlur={action('onBlur')}
             onOpen={action('onOpen')}
             value={selectedItem}
-            valueAsString={text('Value as string', selectedItem && selectedItem.title)}
+            inputValue={text('Inputvalue (prop)', selectedItem && selectedItem.title)}
             renderItem={renderItem}
             items={items}
-            isLoading={boolean('is loading', false)}
+            isLoading={boolean('isLoading (prop)', false)}
+            disabled={boolean('disabled (prop)', false)}
             onClear={hasOnclear ? action('onClear') : undefined}
           />
         </Sanity>

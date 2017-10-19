@@ -18,7 +18,7 @@ const VALID_TYPES = [
   'week',
 ]
 
-class DefaultTextInputTest extends React.Component {
+class DefaultTextInputTest extends React.PureComponent {
   constructor(...args) {
     super(...args)
     this.handleChange = this.handleChange.bind(this)
@@ -59,12 +59,10 @@ storiesOf('Text inputs')
         <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
           <DefaultTextInput
             placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            value={text('value (prop)', false)}
+            value={text('value (prop)', '')}
             type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
-            error={boolean('error (prop)', false)}
-            hasFocus={boolean('hasFocus (prop)', false)}
-            showClearButton={boolean('showClearButton (prop)', false)}
-            selected={boolean('selected (prop)', false)}
+            isSelected={boolean('isSelected (prop)', false)}
+            disabled={boolean('disabled (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
             onKeyPress={action('onKeyPress')}
@@ -84,9 +82,6 @@ storiesOf('Text inputs')
             placeholder={text('placeholder (prop)', 'This is the placeholder')}
             value={text('value (prop)', false)}
             type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
-            error={boolean('error (prop)', false)}
-            hasFocus={boolean('hasFocus (prop)', false)}
-            showClearButton={boolean('showClearButton (prop)', false)}
             selected={boolean('selected (prop)', false)}
             onChange={action('onChange')}
             onFocus={action('onFocus')}
@@ -109,7 +104,6 @@ storiesOf('Text inputs')
           value={text('value (prop)', '')}
           type={select('type (prop)', VALID_TYPES, 'text')}
           hasError={boolean('hasError (prop)', false)}
-          hasFocus={boolean('hasFocus (prop)', false)}
           isClearable={boolean('isClearable (prop)', false)}
           isSelected={boolean('isSelected (prop)', false)}
           onChange={action('onChange')}
