@@ -18,21 +18,22 @@
   box-shadow: 0 0 4px color(#000 a(5%));
   transition: all 0.1s linear;
 
-  &:hover {
-    border-color: var(--input-border-color-hover);
+  @nest &:not(:disabled) {
+    @nest &:hover {
+      border-color: var(--input-border-color-hover);
+    }
+
+    @nest &:focus {
+      border-color: var(--input-border-color-focus);
+      box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
+    }
+
+    @nest &:active {
+      border-color: var(--input-border-color-active);
+    }
   }
 
-  &:focus {
-    border-color: var(--input-border-color-focus);
-    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
+  @nest &:disabled {
+    opacity: 0.5;
   }
-
-  &:active {
-    border-color: var(--input-border-color-active);
-  }
-}
-
-.disabled {
-  composes: textInput;
-  background-color: var(--input-bg-disabled);
 }

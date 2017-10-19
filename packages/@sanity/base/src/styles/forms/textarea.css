@@ -14,31 +14,21 @@
   background-color: var(--input-bg);
   border-radius: var(--input-border-radius);
 
-  &:hover {
-    border-color: var(--input-border-color-hover);
+  @nest &:not(:disabled) {
+    @nest &:hover {
+      border-color: var(--input-border-color-hover);
+    }
+
+    @nest &:focus {
+      border-color: var(--input-border-color-focus);
+    }
+
+    @nest &:active {
+      border-color: var(--input-border-color-active);
+    }
   }
 
-  &:focus {
-    border-color: var(--input-border-color-focus);
+  @nest &:disabled {
+    background-color: var(--input-bg-disabled);
   }
-
-  &:active {
-    border-color: var(--input-border-color-active);
-  }
-}
-
-.focusHelper {
-  display: block;
-  width: calc(100% + (var(--extra-small-padding) * 2));
-  height: calc(100% + (var(--extra-small-padding) * 2));
-  position: absolute;
-  top: calc(var(--extra-small-padding) * -1);
-  left: calc(var(--extra-small-padding) * -1);
-  z-index: 0;
-  background-color: transparent;
-}
-
-.disabled {
-  composes: root;
-  background-color: var(--input-bg-disabled);
 }

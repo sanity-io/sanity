@@ -29,7 +29,8 @@ class StatelessSearchableSelect extends React.PureComponent {
     onHighlightIndexChange: PropTypes.func,
     isInputSelected: PropTypes.bool,
     scrollContainer: PropTypes.object,
-    width: PropTypes.number
+    width: PropTypes.number,
+    disabled: PropTypes.bool
   }
 
   static defaultProps = {
@@ -121,13 +122,14 @@ class StatelessSearchableSelect extends React.PureComponent {
       onOpen,
       onClose,
       scrollContainer,
+      disabled,
       onHighlightIndexChange,
       ...rest
     } = this.props
 
     return (
       <div>
-        <div className={styles.selectContainer}>
+        <div className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
           <DefaultTextInput
             {...rest}
             className={styles.select}
@@ -137,6 +139,7 @@ class StatelessSearchableSelect extends React.PureComponent {
             onKeyUp={this.handleKeyUp}
             value={inputValue || ''}
             selected={isInputSelected}
+            disabled={disabled}
           />
           {
             onClear && inputValue && (
@@ -147,7 +150,7 @@ class StatelessSearchableSelect extends React.PureComponent {
           }
           {isLoading && <div className={styles.spinner}><Spinner /></div>}
           {!isLoading && (
-            <div className={styles.arrow} onClick={this.handleArrowClick}>
+            <div className={styles.arrow} onClick={disabled ? null : this.handleArrowClick}>
               <FaAngleDown color="inherit" />
             </div>
           )}

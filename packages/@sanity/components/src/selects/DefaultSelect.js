@@ -11,6 +11,7 @@ export default class DefaultSelect extends React.Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
+    disabled: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -33,11 +34,11 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {hasError, items, value, onFocus, onBlur, hasFocus} = this.props
+    const {hasError, items, value, onFocus, onBlur, hasFocus, disabled, ...rest} = this.props
     return (
       <div
         className={`
-        ${styles.selectContainer}
+        ${disabled ? styles.selectContainerDisabled : styles.selectContainer}
         ${hasFocus ? styles.hasFocus : ''}
         ${hasError ? styles.hasError : ''}
       `}
@@ -49,6 +50,8 @@ export default class DefaultSelect extends React.Component {
           onBlur={onBlur}
           value={value && items.indexOf(value)}
           autoComplete="off"
+          disabled={disabled}
+          {...rest}
         >
           {!value && <option />}
           {

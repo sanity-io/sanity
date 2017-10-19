@@ -216,7 +216,7 @@ export default class SlugInput extends React.Component {
         <div className={InInputStyles.wrapper}>
           <DefaultTextInput
             id={inputId}
-            isDisabled={isAuto}
+            disabled={isAuto}
             placeholder={type.placeholder}
             onChange={this.handleChange}
             value={typeof inputText === 'string' ? inputText : value.current}

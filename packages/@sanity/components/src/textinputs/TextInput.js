@@ -31,7 +31,7 @@ export default class DefaultTextInput extends React.PureComponent {
     onBlur: PropTypes.func,
     isClearable: PropTypes.bool,
     isSelected: PropTypes.bool,
-    isDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
     autoComplete: PropTypes.string,
     hasError: PropTypes.bool,
     styles: PropTypes.shape({
@@ -52,7 +52,7 @@ export default class DefaultTextInput extends React.PureComponent {
     isSelected: false,
     hasError: false,
     isClearable: false,
-    isDisabled: false,
+    disabled: false,
     autoComplete: 'off',
     onClear: NOOP,
     onFocus: NOOP,
@@ -60,14 +60,16 @@ export default class DefaultTextInput extends React.PureComponent {
     styles: {}
   }
 
-  state = {
-    hasFocus: false
-  }
-
   componentDidMount() {
     const {isSelected} = this.props
     this.setSelected(isSelected)
-    this.setState({hasFocus: this._input === document.activeElement})
+    // this.setState({hasFocus: this._input === document.activeElement})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isSelected !== this.props.isSelected) {
+      this.setSelected(nextProps.isSelected)
+    }
   }
 
   select = () => {
@@ -80,18 +82,8 @@ export default class DefaultTextInput extends React.PureComponent {
 
   setSelected(isSelected) {
     if (isSelected) {
-      this.select()
+      this._input.select()
     }
-  }
-
-  handleFocus = event => {
-    this.props.onFocus(event)
-    this.setState({hasFocus: true})
-  }
-
-  handleBlur = event => {
-    this.props.onBlur(event)
-    this.setState({hasFocus: false})
   }
 
   render() {
@@ -99,35 +91,25 @@ export default class DefaultTextInput extends React.PureComponent {
       onClear,
       hasError,
       isClearable,
-      isDisabled,
+      disabled,
       isSelected,
       styles,
-      validation,
       ...rest
     } = this.props
-
-    const {hasFocus} = this.state
 
     return (
       <div
         className={classNames(styles.container, [
           hasError && styles.containerOnError,
           isClearable && styles.isClearable,
-          isDisabled && styles.isDisabled,
-          hasFocus && styles.hasFocus,
+          disabled && styles.isDisabled
         ])}
       >
         <input
           ref={this.setInputElement}
           {...rest}
-          className={classNames(styles.input, [
-            hasError && styles.inputOnError,
-            isDisabled && styles.isDisabled,
-            hasFocus && styles.hasFocus,
-          ])}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          disabled={isDisabled}
+          className={classNames(styles.input, [hasError && styles.inputOnError])}
+          disabled={disabled}
         />
         <div className={styles.focusHelper} />
         {isClearable && (
