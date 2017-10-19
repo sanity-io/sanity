@@ -14,11 +14,11 @@ export default {
       title: 'Datetime with default config'
     },
     {
-      name: 'myUtcStringDateField',
+      name: 'aDateTimeWithCustomDateFormat',
       type: 'datetime',
-      title: 'Datetime with inputUtc: true',
+      title: 'A datetime field with custom date format',
       options: {
-        inputUtc: true
+        dateFormat: 'Do. MMMM YYYY'
       }
     },
     {
@@ -26,14 +26,6 @@ export default {
       type: 'string',
       title: 'Some string',
       description: 'A string field in between',
-    },
-    {
-      name: 'aDateTimeWithCustomDateFormat',
-      type: 'datetime',
-      title: 'A datetime field with custom date format',
-      options: {
-        dateFormat: 'Do. MMMM YYYY'
-      }
     },
     {
       name: 'aDateTimeWithCustomTimeFormat',

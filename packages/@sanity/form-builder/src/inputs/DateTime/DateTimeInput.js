@@ -12,7 +12,6 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 type ParsedOptions = {
   dateFormat: string,
   timeFormat: string,
-  inputUtc: boolean,
   timeStep: number,
   calendarTodayLabel: string
 }
@@ -20,7 +19,6 @@ type ParsedOptions = {
 type SchemaOptions = {
   dateFormat?: string,
   timeFormat?: string,
-  inputUtc?: boolean,
   timeStep?: number,
   calendarTodayLabel?: string
 }
@@ -45,7 +43,6 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
-    inputUtc: options.inputUtc !== false,
     timeStep: (('timeStep' in options) && Number(options.timeStep)) || 15,
     calendarTodayLabel: options.calendarTodayLabel || 'Today'
   }
@@ -61,7 +58,7 @@ export default class DateInput extends React.Component<Props, State> {
   inputId: string = uniqueId('date-input')
 
   state = {
-    inputValue: ''
+    inputValue: null
   }
 
   handleInputChange = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -85,10 +82,10 @@ export default class DateInput extends React.Component<Props, State> {
   handleBlur = () => {
     this.setState({inputValue: null})
   }
-  setMoment(nextMoment: Moment) {
-    const options = parseOptions(this.props.type.options)
-    this.set((options.inputUtc ? nextMoment.utc() : nextMoment).format())
 
+  setMoment(nextMoment: Moment) {
+    this.set(nextMoment.toDate().toJSON())
+    this.setState({inputValue: null})
   }
 
   set(value: string) {
@@ -107,6 +104,7 @@ export default class DateInput extends React.Component<Props, State> {
     const momentValue: ?Moment = value ? moment(value) : null
 
     const options = parseOptions(type.options)
+
     const placeholder = type.placeholder || `e.g. ${moment().format(getFormat(options))}`
 
     return (
