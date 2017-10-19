@@ -27,11 +27,7 @@ export default {
     {
       name: 'releaseDate',
       title: 'Release date',
-      type: 'richDate',
-      options: {
-        inputTime: false,
-        inputUtc: true
-      }
+      type: 'datetime'
     },
     {
       name: 'externalId',

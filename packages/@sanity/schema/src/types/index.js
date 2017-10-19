@@ -1,6 +1,8 @@
 export {AnyType as any} from './any'
 export {StringType as string} from './string'
 export {TextType as text} from './text'
+export {DateTimeType as datetime} from './datetime'
+export {DateType as date} from './date'
 export {BooleanType as boolean} from './boolean'
 export {UrlType as url} from './url'
 export {EmailType as email} from './email'

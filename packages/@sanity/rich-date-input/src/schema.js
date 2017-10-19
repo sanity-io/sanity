@@ -1,3 +1,5 @@
+import RichDateInput from './RichDate'
+
 export default {
   title: 'Rich Date',
   name: 'richDate',
@@ -5,13 +7,13 @@ export default {
   fields: [
     {
       name: 'utc',
-      type: 'string', // todo: should be changed to 'date' when date strings are supported
+      type: 'datetime',
       title: 'UTC',
       required: true
     },
     {
       name: 'local',
-      type: 'string', // todo: should be changed to 'date' when date strings are supported
+      type: 'datetime',
       title: 'Local'
     },
     {
@@ -24,5 +26,6 @@ export default {
       type: 'number',
       title: 'Offset'
     }
-  ]
+  ],
+  inputComponent: RichDateInput
 }

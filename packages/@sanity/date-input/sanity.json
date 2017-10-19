@@ -1,17 +1,13 @@
 {
-  "paths": {
-    "source": "./src",
-    "compiled": "./lib"
-  },
-
   "parts": [
     {
       "implements": "part:@sanity/form-builder/input/rich-date",
-      "path": "inputs/RichDate"
+      "path": "./index.js"
     },
     {
-      "implements": "part:@sanity/base/component",
-      "path": "inputs/story.js"
+      "implements": "part:@sanity/form-builder/input/legacy-date/schema",
+      "path": "./schema"
     }
+
   ]
 }

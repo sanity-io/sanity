@@ -1,7 +1,4 @@
-import generateHelpUrl from '@sanity/generate-help-url'
 import * as types from './types'
-
-let hasWarned = false
 
 function compileRegistry(schemaDef) {
   const registry = Object.assign(Object.create(null), types)
@@ -28,16 +25,6 @@ function compileRegistry(schemaDef) {
 
   }
   function extendMember(memberDef) {
-    if (memberDef.type === 'date') {
-      if (!hasWarned) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          'Heads up! The `date` type has been renamed to `richDate`. Please update your schema. See %s for more info.',
-          generateHelpUrl('migrate-to-rich-date')
-        )
-        hasWarned = true
-      }
-    }
     ensure(memberDef.type)
     return registry[memberDef.type].extend(memberDef, extendMember).get()
   }
