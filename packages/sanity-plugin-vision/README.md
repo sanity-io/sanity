@@ -1,2 +1,3 @@
-# sanity-vision
-React-based data management tool for Sanity projects
+# sanity-plugin-vision
+
+[MOVED]: Use [@sanity/vision instead](https://www.npmjs.com/package/@sanity/vision)
