@@ -123,6 +123,7 @@ export default class DateInput extends React.Component<Props, State> {
             onChangeRaw={this.handleInputChange}
             value={inputValue ? inputValue : (momentValue && momentValue.format(getFormat(options)))}
             showTimeSelect
+            disabledKeyboardNavigation
             dateFormat={options.dateFormat}
             timeFormat={options.timeFormat}
             timeIntervals={options.timeStep}
