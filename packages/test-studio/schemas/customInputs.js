@@ -1,6 +1,7 @@
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
+import PertEstimateInput from '../src/components/PertEstimateInput'
 
 export default {
   name: 'customInputsTest',
@@ -28,6 +29,12 @@ export default {
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
       inputComponent: CustomFontStringInput
+    },
+    {
+      name: 'taskEstimate',
+      title: 'Task estimate',
+      type: 'pertEstimate',
+      inputComponent: PertEstimateInput
     }
   ]
 }

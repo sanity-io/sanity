@@ -1,4 +1,4 @@
 {
-  "hiddenTypes": ["block", "span", "richDate", "mark", "link", "address", "code", "myObject"],
+  "hiddenTypes": ["block", "span", "richDate", "mark", "link", "address", "code", "myObject", "pertEstimate"],
   "listOptions": {}
 }

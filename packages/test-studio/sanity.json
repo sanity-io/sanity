@@ -15,7 +15,6 @@
     "@sanity/rich-date-input",
     "@sanity/code-input",
     "@sanity/desk-tool",
-    "@sanity/storybook",
     "@sanity/google-maps-input",
     "vision"
   ],
@@ -27,6 +26,10 @@
     {
       "implements": "part:@sanity/base/brand-logo",
       "path": "src/components/BrandLogo.js"
+    },
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "src/components/PertEstimateSchema.js"
     }
   ]
 }
