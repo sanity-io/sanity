@@ -36,6 +36,12 @@ export default {
       }
     },
     {
+      name: 'aReadOnlyDateTime',
+      type: 'datetime',
+      title: 'A read only datetime',
+      readOnly: true
+    },
+    {
       name: 'aDateTimeWithCustomDateAndTimeFormat',
       type: 'datetime',
       title: 'A datetime field with a custom date AND time format',
