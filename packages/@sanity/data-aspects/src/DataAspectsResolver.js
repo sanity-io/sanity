@@ -1,5 +1,7 @@
 import config from 'config:@sanity/data-aspects'
 import {startCase} from 'lodash'
+import generateHelpUrl from '@sanity/generate-help-url'
+
 const bundledTypeNames = ['geopoint', 'richDate', 'date', 'sanity.imageAsset', 'sanity.fileAsset']
 
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
@@ -7,20 +9,39 @@ const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 function isDocumentType(type) {
   return type.type && type.type.name === 'document'
 }
+
+function isObjectType(type) {
+  return type.type !== null && type.jsonType === 'object'
+}
+
 function isBundledDocType(typeName) {
   return BUNDLED_DOC_TYPES.includes(typeName)
 }
+
 function schemaHasUserDefinedDocumentTypes(schema) {
   return schema.getTypeNames().some(typeName => {
     return !isBundledDocType(typeName) && isDocumentType(schema.get(typeName))
   })
 }
 
+let hasWarned = false
+function warnAboutHiddenTypes() {
+  if (hasWarned) {
+    return
+  }
+  hasWarned = true
+  // eslint-disable-next-line no-console, prefer-template
+  console.warn(
+    '👋 Hi there! Looks like you have hidden types configured in your studio\'s config/@sanity/data-aspects.json'
+    + ` This config is now obsolete and should be removed. Read more at ${generateHelpUrl('toplevel-objects-to-document-type')}`
+  )
+}
+
 class DataAspectsResolver {
 
   constructor(schema) {
     this.schema = schema
-    this.config = Object.assign({typeOptions: {}}, config || {})
+    this.config = Object.assign({hiddenTypes: [], typeOptions: {}}, config || {})
   }
 
   getConfig() {
@@ -36,25 +57,21 @@ class DataAspectsResolver {
   }
 
   inferTypesLegacy() {
-    let defaultTypes = this.schema.getTypeNames() || []
-    defaultTypes = defaultTypes.filter(typeName => {
-      // Exclude types which come bundled with Sanity
-      return !bundledTypeNames.includes(typeName)
-    })
-    if (this.config.hiddenTypes) {
-      // Exclude types which are explicitly named in hiddenTypes
-      defaultTypes = defaultTypes.filter(typeName => {
-        return !this.config.hiddenTypes.includes(typeName)
+    return (this.schema.getTypeNames() || [])
+      .filter(typeName => {
+        // Exclude types which come bundled with Sanity
+        return !bundledTypeNames.includes(typeName)
+          // Exclude types which are explicitly named in (legacy) hiddenTypes config
+          && !this.config.hiddenTypes.includes(typeName)
+          // Only include if its an object type
+          && isObjectType(this.getType(typeName))
       })
-    }
-    return defaultTypes.filter(typeName => {
-      const schemaType = this.getType(typeName)
-      return schemaType.type !== null
-        && schemaType.jsonType === 'object'
-    })
   }
 
   getDocumentTypes() {
+    if (this.config.hiddenTypes.length > 0) {
+      warnAboutHiddenTypes()
+    }
     return this.schema.getTypeNames()
       .filter(typeName => !isBundledDocType(typeName) && isDocumentType(this.schema.get(typeName)))
   }
