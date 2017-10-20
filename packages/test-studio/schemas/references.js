@@ -1,6 +1,6 @@
 export default {
   name: 'referenceTest',
-  type: 'object',
+  type: 'document',
   title: 'Reference test',
   description: 'Test cases for references',
   fields: [

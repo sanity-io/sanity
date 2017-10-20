@@ -17,7 +17,7 @@ export const myObject = {
 
 export default {
   name: 'objectsTest',
-  type: 'object',
+  type: 'document',
   title: 'Objects test',
   preview: {
     select: {

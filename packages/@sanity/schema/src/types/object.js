@@ -16,23 +16,21 @@ const OVERRIDABLE_FIELDS = [
   'inputComponent'
 ]
 
-const OBJECT_CORE = {
-  name: 'object',
-  type: null,
-  jsonType: 'object'
-}
-
 export const ObjectType = {
   get() {
-    return OBJECT_CORE
+    return {
+      name: 'object',
+      type: null,
+      jsonType: 'object'
+    }
   },
   extend(rawSubTypeDef, createMemberType) {
 
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
     const options = {...(subTypeDef.options || {})}
-    const parsed = Object.assign(pick(OBJECT_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: OBJECT_CORE,
+    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
+      type: this.get(),
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),

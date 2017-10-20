@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "in-publish": "^2.0.0",
+    "@sanity/generate-help-url": "^0.117.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

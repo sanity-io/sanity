@@ -1,7 +1,7 @@
 
 export default {
   name: 'codeTest',
-  type: 'object',
+  type: 'document',
   title: 'Code test',
   fields: [
     {

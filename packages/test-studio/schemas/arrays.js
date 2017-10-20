@@ -1,6 +1,6 @@
 export default {
   name: 'arraysTest',
-  type: 'object',
+  type: 'document',
   title: 'Arrays test',
   fields: [
     {

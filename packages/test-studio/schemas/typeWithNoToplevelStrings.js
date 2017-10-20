@@ -1,6 +1,6 @@
 export default {
   name: 'typeWithNoToplevelStrings',
-  type: 'object',
+  type: 'document',
   title: 'Type without strings',
   description: `This is an example of a type that has no meaningful top level strings.
    It is used to test/demonstrate that reference search also includes deeper fields`,

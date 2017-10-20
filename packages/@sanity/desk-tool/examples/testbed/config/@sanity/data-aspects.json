@@ -1,7 +1,4 @@
 {
-  "hiddenTypes": [
-    "latlon"
-  ],
   "typeOptions": {
     "article": {
       "displayName": "Article",

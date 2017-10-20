@@ -1,7 +1,7 @@
 export default {
   name: 'blocksTest',
   title: 'Blocks test',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       name: 'title',

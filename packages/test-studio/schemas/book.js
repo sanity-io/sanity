@@ -7,7 +7,7 @@ function formatSubtitle(book) {
 
 export default {
   name: 'book',
-  type: 'object',
+  type: 'document',
   title: 'Book',
   description: 'This is just a simple type for generating some test data',
   fields: [

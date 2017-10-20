@@ -15,9 +15,6 @@ The config file `config/@sanity/data-aspects.json` lets you control how your dat
 
 ```
 {
-  "hiddenTypes": [
-    "nameOfTypeToExcludeFromView"
-  ],
   "typeOptions": {
     "article": {
       "displayName": "Article",

@@ -1,7 +1,7 @@
 export default {
   name: 'screening',
   title: 'Screening',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       name: 'title',
