@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css' // eslint-disable
 import {uniqueId} from 'lodash'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
 import styles from './styles/DateTimeInput.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
@@ -33,11 +34,11 @@ type Props = {
     title: string,
     description: string,
     options?: SchemaOptions,
+    readOnly?: boolean,
   },
   onChange: PatchEvent => void,
   level: number
 }
-
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
@@ -99,7 +100,7 @@ export default class DateInput extends React.Component<Props, State> {
   render() {
     const {value, type, level} = this.props
     const {inputValue} = this.state
-    const {title, description} = type
+    const {title, description, readOnly} = type
 
     const momentValue: ?Moment = value ? moment(value) : null
 
@@ -109,27 +110,36 @@ export default class DateInput extends React.Component<Props, State> {
 
     return (
       <FormField labelFor={this.inputId} label={title} level={level} description={description}>
-        <div className={styles.root}>
-          <DatePicker
-            {...options}
-            showMonthDropdown
-            showYearDropdown
-            todayButton={options.calendarTodayLabel}
-            selected={momentValue || undefined}
-            placeholderText={placeholder}
-            calendarClassName={styles.datepicker}
-            className={styles.input}
-            onChange={this.handleChange}
-            onChangeRaw={this.handleInputChange}
-            value={inputValue ? inputValue : (momentValue && momentValue.format(getFormat(options)))}
-            showTimeSelect
-            disabledKeyboardNavigation
-            dateFormat={options.dateFormat}
-            timeFormat={options.timeFormat}
-            timeIntervals={options.timeStep}
-            onBlur={this.handleBlur}
-          />
-        </div>
+        {readOnly
+          ? (
+            <TextInput
+              readOnly
+              value={(momentValue && momentValue.format(getFormat(options)))}
+            />
+          )
+          : (
+            <div className={styles.root}>
+              <DatePicker
+                {...options}
+                showMonthDropdown
+                showYearDropdown
+                todayButton={options.calendarTodayLabel}
+                selected={momentValue || undefined}
+                placeholderText={placeholder}
+                calendarClassName={styles.datepicker}
+                className={styles.input}
+                onChange={this.handleChange}
+                onChangeRaw={this.handleInputChange}
+                value={inputValue ? inputValue : (momentValue && momentValue.format(getFormat(options)))}
+                showTimeSelect
+                disabledKeyboardNavigation
+                dateFormat={options.dateFormat}
+                timeFormat={options.timeFormat}
+                timeIntervals={options.timeStep}
+                onBlur={this.handleBlur}
+              />
+            </div>
+          )}
       </FormField>
     )
   }
