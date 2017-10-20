@@ -1,5 +1,5 @@
 export const myObject = {
-  type: 'document',
+  type: 'object',
   name: 'myObject',
   fields: [
     {

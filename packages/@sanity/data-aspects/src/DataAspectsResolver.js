@@ -2,6 +2,20 @@ import config from 'config:@sanity/data-aspects'
 import {startCase} from 'lodash'
 const bundledTypeNames = ['geopoint', 'richDate', 'date', 'sanity.imageAsset', 'sanity.fileAsset']
 
+const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
+
+function isDocumentType(type) {
+  return type.type && type.type.name === 'document'
+}
+function isBundledDocType(typeName) {
+  return BUNDLED_DOC_TYPES.includes(typeName)
+}
+function schemaHasUserDefinedDocumentTypes(schema) {
+  return schema.getTypeNames().some(typeName => {
+    return !isBundledDocType(typeName) && isDocumentType(schema.get(typeName))
+  })
+}
+
 class DataAspectsResolver {
 
   constructor(schema) {
@@ -21,7 +35,7 @@ class DataAspectsResolver {
     return this.schema.get(typeName)
   }
 
-  getInferredTypes() {
+  inferTypesLegacy() {
     let defaultTypes = this.schema.getTypeNames() || []
     defaultTypes = defaultTypes.filter(typeName => {
       // Exclude types which come bundled with Sanity
@@ -30,14 +44,25 @@ class DataAspectsResolver {
     if (this.config.hiddenTypes) {
       // Exclude types which are explicitly named in hiddenTypes
       defaultTypes = defaultTypes.filter(typeName => {
-        return !config.hiddenTypes.includes(typeName)
+        return !this.config.hiddenTypes.includes(typeName)
       })
     }
     return defaultTypes.filter(typeName => {
       const schemaType = this.getType(typeName)
-      return schemaType.type !== null // this is the test for whether it is an toplevel type // todo: provide a better test
+      return schemaType.type !== null
         && schemaType.jsonType === 'object'
     })
+  }
+
+  getDocumentTypes() {
+    return this.schema.getTypeNames()
+      .filter(typeName => !isBundledDocType(typeName) && isDocumentType(this.schema.get(typeName)))
+  }
+
+  getInferredTypes() {
+    return schemaHasUserDefinedDocumentTypes(this.schema)
+      ? this.getDocumentTypes(this.schema)
+      : this.inferTypesLegacy()
   }
 
   getDisplayName(typeName) {
