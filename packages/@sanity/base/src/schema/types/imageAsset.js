@@ -8,7 +8,7 @@ const PALETTE_FIELDS = [
 export default {
   name: 'sanity.imageAsset',
   title: 'Image',
-  type: 'object',
+  type: 'document',
   fieldsets: [
     {
       name: 'system',

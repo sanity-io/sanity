@@ -1,7 +1,7 @@
 export default {
   name: 'movie',
   title: 'Movie',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       name: 'title',

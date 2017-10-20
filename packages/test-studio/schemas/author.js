@@ -1,6 +1,6 @@
 export default {
   name: 'author',
-  type: 'object',
+  type: 'document',
   title: 'Author',
   description: 'This represents an author',
   preview: {

@@ -1,7 +1,7 @@
 export default {
   name: 'sanity.fileAsset',
   title: 'File',
-  type: 'object',
+  type: 'document',
   fieldsets: [
     {
       name: 'system',

@@ -1,6 +1,6 @@
 export default {
   name: 'geopointTest',
-  type: 'object',
+  type: 'document',
   title: 'Geopoint test',
   fields: [
     {

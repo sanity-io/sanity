@@ -1,6 +1,6 @@
 export default {
   name: 'richDateTest',
-  type: 'object',
+  type: 'document',
   title: 'RichDates test',
   fields: [
     {

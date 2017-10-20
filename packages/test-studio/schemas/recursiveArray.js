@@ -1,8 +1,6 @@
-import React from 'react'
-
 export default {
   name: 'recursiveArraysTest',
-  type: 'object',
+  type: 'document',
   title: 'Recursive Arrays test',
   fields: [
     {

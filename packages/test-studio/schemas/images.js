@@ -13,7 +13,7 @@ export const myImage = {
 
 export default {
   name: 'imagesTest',
-  type: 'object',
+  type: 'document',
   title: 'Images test',
   preview: {
     select: {

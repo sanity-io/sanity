@@ -5,7 +5,7 @@ import CustomFontStringInput from '../src/components/CustomFontStringInput'
 export default {
   name: 'customInputsTest',
   title: 'Custom input tests',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       name: 'title',

@@ -1,6 +1,6 @@
 export default {
   name: 'numbersTest',
-  type: 'object',
+  type: 'document',
   title: 'Numbers test',
   fields: [
     {
