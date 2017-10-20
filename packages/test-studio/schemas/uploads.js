@@ -1,7 +1,7 @@
 
 export default {
   name: 'uploadsTest',
-  type: 'object',
+  type: 'document',
   title: 'Uploads test',
   fields: [
     {

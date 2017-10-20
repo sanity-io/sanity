@@ -1,6 +1,6 @@
 export default {
   name: 'recursiveDocument',
-  type: 'object',
+  type: 'document',
   title: 'Recursive madness',
   fieldsets: [
     {name: 'recursive', title: 'Recursive madness', options: {collapsable: true}}

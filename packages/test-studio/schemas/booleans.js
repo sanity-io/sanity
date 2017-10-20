@@ -1,6 +1,6 @@
 export default {
   name: 'booleansTest',
-  type: 'object',
+  type: 'document',
   title: 'Booleans test',
   fields: [
     {

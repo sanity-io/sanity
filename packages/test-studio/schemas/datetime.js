@@ -1,6 +1,6 @@
 export default {
   name: 'datetimeTest',
-  type: 'object',
+  type: 'document',
   title: 'Datetime test',
   fields: [
     {

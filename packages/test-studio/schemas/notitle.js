@@ -1,7 +1,7 @@
 // Example type that has no obvious candidate fields for sort or preview
 export default {
   name: 'noTitleField',
-  type: 'object',
+  type: 'document',
   title: 'No title field',
   fields: [
     {
@@ -19,7 +19,7 @@ export default {
     },
     {
       name: 'something',
-      type: 'object',
+      type: 'document',
       title: 'Some thing',
       fields: [
         {name: 'first', type: 'string'},
