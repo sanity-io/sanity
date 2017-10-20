@@ -34,7 +34,7 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {hasError, items, value, onFocus, onBlur, hasFocus, disabled, ...rest} = this.props
+    const {hasError, items, value, disabled, hasFocus, ...rest} = this.props
     return (
       <div
         className={`
@@ -44,14 +44,12 @@ export default class DefaultSelect extends React.Component {
       `}
       >
         <select
+          {...rest}
           className={styles.select}
           onChange={this.handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          disabled={disabled}
           value={value && items.indexOf(value)}
           autoComplete="off"
-          disabled={disabled}
-          {...rest}
         >
           {!value && <option />}
           {
