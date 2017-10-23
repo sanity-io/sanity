@@ -24,13 +24,15 @@ class StatelessSearchableSelect extends React.PureComponent {
     isOpen: PropTypes.bool,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
+    onResize: PropTypes.func,
     items: PropTypes.array,
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
     isInputSelected: PropTypes.bool,
     scrollContainer: PropTypes.object,
     width: PropTypes.number,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    dropdownPosition: PropTypes.string
   }
 
   static defaultProps = {
@@ -42,7 +44,8 @@ class StatelessSearchableSelect extends React.PureComponent {
     renderItem: item => item,
     items: [],
     width: 100,
-    scrollContainer: undefined
+    scrollContainer: undefined,
+    dropdownPosition: 'bottom'
   }
 
   handleClickOutside = event => {
@@ -121,6 +124,8 @@ class StatelessSearchableSelect extends React.PureComponent {
       onInputChange,
       onOpen,
       onClose,
+      onResize,
+      dropdownPosition,
       scrollContainer,
       disabled,
       onHighlightIndexChange,
@@ -158,14 +163,17 @@ class StatelessSearchableSelect extends React.PureComponent {
         <StickyPortal
           isOpen={isOpen}
           scrollContainer={scrollContainer}
-          onResize={this.handleResize}
+          onResize={onResize}
           onlyBottomSpace={false}
           useOverlay={false}
           addPadding={false}
           scrollIntoView={false}
         >
           <div
-            className={`${isOpen ? styles.listContainer : styles.listContainerHidden}`}
+            className={`
+              ${isOpen ? styles.listContainer : styles.listContainerHidden}
+              ${dropdownPosition == 'top' ? styles.listContainerTop : styles.listContainerBottom}
+            `}
             style={{width: `${this.props.width}px`}}
             ref={this.setListElement}
           >

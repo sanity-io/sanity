@@ -7,6 +7,7 @@ import Portal from 'react-portal'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
+import {throttle} from 'lodash'
 
 //import {getComputedTranslateY} from './utils'
 
@@ -78,6 +79,7 @@ export default class StickyPortal extends React.Component {
 
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
+      window.addEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
     }
   }
 
@@ -89,6 +91,7 @@ export default class StickyPortal extends React.Component {
     }
     if (window) {
       window.removeEventListener('resize', this.handleWindowResize)
+      window.removeEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
     }
 
     if (this._scrollContainerElement) {
@@ -215,20 +218,18 @@ export default class StickyPortal extends React.Component {
   }
 
   handleBackdropClick = event => {
-    // console.log('handleBackdropClick')
     this.handleClose()
     event.stopPropagation()
     event.preventDefault()
   }
 
-  handleWindowResize = () => {
-    // console.log('handleWindowResize')
-    // clearTimeout(this._resizeTimeout)
-    // this.moveIntoPosition()
-    // this._resizeTimeout = setTimeout(() => {
+  handleWindowResize = throttle(() => {
     this.handleWindowResizeDone()
-    // }, 70)
-  }
+  }, 1000 / 60)
+
+  handleWindowScroll = throttle(() => {
+    this.moveIntoPosition()
+  }, 1000 / 60)
 
   appendPadding = () => {
     // console.log('appendPadding')
