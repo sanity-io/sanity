@@ -79,10 +79,17 @@ export default class StickyPortal extends React.Component {
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
     }
+
+    // Need this until we have control over all popovers with a global controller
+    // or can pass the actual scrollContainer through to this component
+    this.intervalId = window.setInterval(() => {
+      this.moveIntoPosition()
+    }, 500)
   }
 
   componentWillUnmount() {
     this.scrollBack()
+    window.clearInterval(this.intervalId)
 
     if (this._paddingDummy) {
       this._paddingDummy.style.height = '0'

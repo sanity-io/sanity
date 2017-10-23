@@ -19,7 +19,8 @@ export default class SearchableSelect extends React.Component {
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func.isRequired,
     items: PropTypes.array,
-    scrollContainer: PropTypes.object
+    scrollContainer: PropTypes.object,
+    dropdownPosition: PropTypes.string
   }
 
   static defaultProps = {
@@ -42,7 +43,8 @@ export default class SearchableSelect extends React.Component {
       isInputSelected: false,
       arrowNavigationPosition: 0,
       width: 448,
-      hasFocus: false
+      hasFocus: false,
+      dropdownPosition: props.dropdownPosition || 'bottom'
     }
   }
 
@@ -145,8 +147,20 @@ export default class SearchableSelect extends React.Component {
     })
   }
 
+  handleResize = dimensions => {
+    if ((dimensions.availableHeight - dimensions.rootTop) < dimensions.availableHeight / 2) {
+      this.setState({
+        dropdownPosition: 'top'
+      })
+    } else {
+      this.setState({
+        dropdownPosition: 'bottom'
+      })
+    }
+  }
+
   render() {
-    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width, hasFocus} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width, hasFocus, dropdownPosition} = this.state
     const {onSearch, ...rest} = this.props
     return (
       <div ref={this.setRootElement}>
@@ -158,6 +172,8 @@ export default class SearchableSelect extends React.Component {
           onOpen={this.handleOpen}
           onClose={this.handleClose}
           onChange={this.handleChange}
+          onResize={this.handleResize}
+          dropdownPosition={dropdownPosition}
           isOpen={isOpen}
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
