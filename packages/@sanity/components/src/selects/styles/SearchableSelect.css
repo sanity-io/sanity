@@ -56,6 +56,17 @@
   z-index: 2;
 }
 
+.openItem {
+  position: absolute;
+  top: 0.5em;
+  right: 3.25em;
+  z-index: 2;
+
+  @nest &:hover {
+    border: 1px solid red;
+  }
+}
+
 .clearButton {
   composes: clearButton from 'part:@sanity/components/textinputs/default-style';
   right: 1.5em;

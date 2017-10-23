@@ -7,6 +7,8 @@ import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import type {Reference, Type} from '../../typedefs'
 import type {ObservableI} from '../../typedefs/observable'
+import LinkIcon from 'part:@sanity/base/link-icon'
+import {IntentLink} from 'part:@sanity/base/router'
 
 type SearchHit = {
   _id: string,
@@ -138,6 +140,19 @@ export default class ReferenceInput extends React.Component<Props, State> {
     this.props.onChange(PatchEvent.from(unset()))
   }
 
+  createOpenItemElement = value => {
+    console.log('value', value)
+    return (
+      <IntentLink
+        title={`Open ${value.title}`}
+        intent="edit"
+        params={{id: value._ref}}
+      >
+        <LinkIcon />
+      </IntentLink>
+    )
+  }
+
   render() {
     const {
       type,
@@ -154,6 +169,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
 
     return (
       <FormField label={type.title} level={level} description={type.description}>
+        test
         <SearchableSelect
           {...rest}
           placeholder="Type to search…"
@@ -162,7 +178,8 @@ export default class ReferenceInput extends React.Component<Props, State> {
           onSearch={this.handleSearch}
           onChange={this.handleChange}
           onClear={this.handleClear}
-          value={valueFromHit}
+          openItemElement={this.createOpenItemElement}
+          value={valueFromHit || value}
           inputValue={valueAsString}
           renderItem={this.renderHit}
           isLoading={isFetching}

@@ -25,6 +25,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
     onResize: PropTypes.func,
+    openItemElement: PropTypes.func,
     items: PropTypes.array,
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
@@ -129,8 +130,23 @@ class StatelessSearchableSelect extends React.PureComponent {
       scrollContainer,
       disabled,
       onHighlightIndexChange,
+      openItemElement,
       ...rest
     } = this.props
+
+
+    if (openItemElement) {
+      console.log('has openItemElement')
+    }
+
+    if (value) {
+      console.log('has value')
+    }
+
+    if (inputValue) {
+      console.log('has inputValue')
+    }
+
 
     return (
       <div>
@@ -154,6 +170,11 @@ class StatelessSearchableSelect extends React.PureComponent {
             )
           }
           {isLoading && <div className={styles.spinner}><Spinner /></div>}
+          {
+            openItemElement && value && (
+              <span className={styles.openItem}>{openItemElement(value)}</span>
+            )
+          }
           {!isLoading && (
             <div className={styles.arrow} onClick={disabled ? null : this.handleArrowClick}>
               <FaAngleDown color="inherit" />
