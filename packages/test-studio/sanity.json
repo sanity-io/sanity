@@ -15,6 +15,7 @@
     "@sanity/date-input",
     "@sanity/code-input",
     "@sanity/desk-tool",
+    "@sanity/schema-inspector",
     "@sanity/storybook",
     "@sanity/google-maps-input",
     "vision"

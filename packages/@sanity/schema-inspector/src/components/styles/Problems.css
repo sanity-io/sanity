@@ -1,0 +1,33 @@
+.root {
+
+}
+
+.list {
+  list-style: none;
+  margin-left: 0;
+}
+
+.listItem {
+  list-style: none;
+  padding-left: 1.5em;
+}
+
+.listItem_warning {
+  composes: listItem;
+}
+
+.listItem_error {
+  composes: listItem;
+}
+
+.listItem_warning:before {
+  position: absolute;
+  margin-left: -1.5em;
+  content: '⚠️';
+}
+
+.listItem_error:before {
+  position: absolute;
+  margin-left: -1.5em;
+  content: '🚫';
+}

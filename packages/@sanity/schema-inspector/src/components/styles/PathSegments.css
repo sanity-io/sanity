@@ -1,0 +1,23 @@
+@import 'part:@sanity/base/theme/variables/state-colors-style';
+
+.root {
+}
+.name {
+  margin-left: 0.2em;
+  composes: root;
+  color: black;
+  font-weight: bold;
+}
+
+.type {
+  composes: root;
+  margin-left: 0.2em;
+  font-size: 75%;
+  color: #647d85;
+  font-style: italic;
+}
+
+.staticPathSegment {
+  composes: root;
+  color: gray;
+}

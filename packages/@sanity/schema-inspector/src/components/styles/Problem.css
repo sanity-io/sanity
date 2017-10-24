@@ -1,0 +1,13 @@
+@import 'part:@sanity/base/theme/variables/state-colors-style';
+
+.root {
+
+}
+
+.error {
+  color: var(--state-danger-color);
+}
+
+.warning {
+  color: var(--state-warning-color);
+}

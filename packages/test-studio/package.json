@@ -25,6 +25,7 @@
     "@sanity/desk-tool": "^0.117.1",
     "@sanity/form-builder": "^0.117.1",
     "@sanity/google-maps-input": "^0.117.1",
+    "@sanity/schema-inspector": "^0.117.0",
     "@sanity/storybook": "^0.117.0",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.28.4",

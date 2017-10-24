@@ -1,0 +1,22 @@
+{
+  "env": {
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "extends": [
+    "sanity",
+    "sanity/react",
+    "prettier",
+    "prettier/flowtype",
+    "prettier/react"
+  ],
+  "plugins": [
+    "prettier",
+    "flowtype",
+    "react"
+  ],
+  "rules": {
+    "flowtype/define-flow-type": 1,
+    "prettier/prettier": "error"
+  }
+}
