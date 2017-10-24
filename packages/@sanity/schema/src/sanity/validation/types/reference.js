@@ -1,6 +1,6 @@
 // @flow
 import type {TypeDef, ValidationResult} from '../../typedefs'
-import {error, warning} from '../createValidationResult'
+import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
 
 type MemberValidator = TypeDef => Array<ValidationResult>
@@ -46,7 +46,7 @@ export default {
           error(
             `Found ${dupes.length} members with type "${dupes[0]
               .type}" in ${inspect(typeDef)}`,
-            'schema-reference-type-to-must-have-unique-types'
+            HELP_IDS.REFERENCE_TO_NOT_UNIQUE
           )
         )
       })
@@ -54,7 +54,7 @@ export default {
       result.push(
         error(
           'The reference type is missing or having an invalid value for the "to" property',
-          'schema-reference-type-to-must-be-array'
+          HELP_IDS.REFERENCE_TO_INVALID
         )
       )
     }

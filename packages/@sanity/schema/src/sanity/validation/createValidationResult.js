@@ -2,32 +2,29 @@
 import type {Severity, ValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
-const KNOWN_HELP_IDS = [
-  'schema-invalid-name',
-  'schema-type-duplicate-name',
-  'schema-type-missing-type',
-  'schema-type-invalid-or-missing-attr-name',
-  'schema-type-invalid-or-missing-attr-type',
-  'schema-subtype-inheritance',
-  'schema-object-type-missing-required-props',
-  'schema-member-type-cannot-be-named',
-  'schema-object-type-fields-must-be-array',
-  'schema-object-type-fields-not-unique',
-  'field-names-must-be-defined',
-  'field-names-must-be-strings',
-  'schema-type-invalid-or-missing-attr-title',
-  'schema-array-type-of-must-be-array',
-  'schema-array-type-of-must-have-unique-types',
-  'schema-reference-type-to-must-be-array',
-  'schema-reference-type-to-must-have-unique-types'
-]
+export const HELP_IDS = {
+  TYPE_NAME_NOT_UNIQUE: 'schema-type-name-not-unique',
+  TYPE_NAME_RESERVED: 'schema-type-name-reserved',
+  TYPE_MISSING_NAME: 'schema-type-missing-name',
+  TYPE_MISSING_TYPE: 'schema-type-missing-type',
+  TYPE_UNKNOWN_TYPE: 'schema-type-unknown-type',
+  TYPE_TITLE_RECOMMENDED: 'schema-type-title-is-recommended',
+  TYPE_TITLE_INVALID: 'schema-type-title-invalid',
+  OBJECT_FIELDS_INVALID: 'schema-object-fields-invalid',
+  OBJECT_FIELD_NOT_UNIQUE: 'schema-object-field-not-unique',
+  OBJECT_FIELD_NAME_INVALID: 'schema-object-type-field-name-invalid',
+  ARRAY_OF_INVALID: 'schema-array-of-invalid',
+  ARRAY_OF_NOT_UNIQUE: 'schema-array-of-not-unique',
+  REFERENCE_TO_INVALID: 'schema-reference-to-invalid',
+  REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-not-unique'
+}
 
 function createValidationResult(
   severity: Severity,
   message: string,
   helpId: ?string
 ): ValidationResult {
-  if (helpId && !KNOWN_HELP_IDS.includes(helpId)) {
+  if (helpId && !Object.keys(HELP_IDS).some(id => (HELP_IDS[id] === helpId))) {
     throw new Error(
       `Used the unknown helpId "${helpId}", please add it to the array in createValidationResult.js`
     )

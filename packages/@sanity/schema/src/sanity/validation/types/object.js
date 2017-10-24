@@ -1,5 +1,5 @@
 // @flow
-import {error, warning} from '../createValidationResult'
+import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_\s-]*$/
@@ -10,14 +10,15 @@ function validateFieldName(name): Array<any> {
     return [
       error(
         `Field names must be strings. Saw "${inspect(name)}"`,
-        'field-names-must-be-strings'
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
   }
   if (name.startsWith('_')) {
     return [
       error(
-        `Invalid field name "${name}". Field names cannot start with underscores "_" as it's reserved for system fields.`
+        `Invalid field name "${name}". Field names cannot start with underscores "_" as it's reserved for system fields.`,
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
   }
@@ -29,7 +30,8 @@ function validateFieldName(name): Array<any> {
         }. Fields can only contain characters from a-z, numbers and underscores and should not start with a number (${
           String(
             VALID_FIELD_RE
-          )})`
+          )})`,
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
   }
@@ -38,7 +40,8 @@ function validateFieldName(name): Array<any> {
       warning(
         'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?'
       + ' It may be wise to keep special character out of field names for easier access later on.'
-      )
+      ),
+      HELP_IDS.OBJECT_FIELD_NAME_INVALID
     ]
   }
   return []
@@ -48,7 +51,7 @@ function validateField(field, visitorContext) {
   const {name, fieldset, ...fieldType} = field
   return ('name' in field)
     ? validateFieldName(name)
-    : [error('Missing field name', 'field-names-must-be-defined')]
+    : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]
 
 }
 
@@ -78,21 +81,21 @@ export default (typeDef, visitorContext) => {
         error(
           `Found ${dupes.length} fields with name "${dupes[0]
             .name}" in object`,
-          'schema-object-type-fields-not-unique'
+          HELP_IDS.OBJECT_FIELD_NOT_UNIQUE
         )
       )
     })
     if (typeDef.fields.length === 0) {
       problems.push(error(
         'Object should have at least one field',
-        'schema-object-type-fields-must-be-array'
+        HELP_IDS.OBJECT_FIELDS_INVALID
       ))
     }
   } else {
     problems.push(
       error(
         `The "fields" property must be an array of fields. Instead saw "${typeof typeDef.fields}"`,
-        'schema-object-type-fields-must-be-array'
+        HELP_IDS.OBJECT_FIELDS_INVALID
       )
     )
   }
