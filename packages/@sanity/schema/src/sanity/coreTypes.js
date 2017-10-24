@@ -16,7 +16,7 @@ export default [
   {name: 'richDate', jsonType: 'object'},
   {name: 'slug', jsonType: 'object'},
   {name: 'string', jsonType: 'string'},
+  {name: 'telephone', jsonType: 'string'},
   {name: 'text', jsonType: 'string'},
   {name: 'url', jsonType: 'string'},
-  {name: 'telephone', jsonType: 'string'},
 ].map(t => ({...t, type: 'type'}))

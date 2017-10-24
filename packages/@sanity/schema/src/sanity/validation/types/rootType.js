@@ -5,19 +5,18 @@ export default (typeDef, visitorContext) => {
   if (!typeDef.name) {
     problems.push(error('Missing type name', HELP_IDS.TYPE_MISSING_NAME))
   } else if (visitorContext.isReserved(typeDef.name)) {
-    problems.push(error(`Invalid type name: "${typeDef.name}" is reserved`, HELP_IDS.TYPE_NAME_RESERVED))
+    problems.push(error(`Invalid type name: "${typeDef.name}" is a reserved name.`, HELP_IDS.TYPE_NAME_RESERVED))
   }
 
   if (visitorContext.isDuplicate(typeDef.name)) {
     problems.push(error(
-      `Invalid type name: A type with name "${typeDef.name}" is already defined.`,
-      HELP_IDS.TYPE_NAME_NOT_UNIQUE
+      `Invalid type name: A type with name "${typeDef.name}" is already defined in the schema.`
     ))
   }
 
   if (!('title' in typeDef)) {
     problems.push(warning(
-      'Type is missing title. It\'s recommended to always set a descriptive title',
+      'Type is missing title. It\'s recommended to always set a descriptive title.',
       HELP_IDS.TYPE_TITLE_RECOMMENDED
     ))
   } else if (typeof typeDef.title !== 'string') {

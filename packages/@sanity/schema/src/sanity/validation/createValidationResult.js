@@ -3,7 +3,6 @@ import type {Severity, ValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {
-  TYPE_NAME_NOT_UNIQUE: 'schema-type-name-not-unique',
   TYPE_NAME_RESERVED: 'schema-type-name-reserved',
   TYPE_MISSING_NAME: 'schema-type-missing-name',
   TYPE_MISSING_TYPE: 'schema-type-missing-type',
