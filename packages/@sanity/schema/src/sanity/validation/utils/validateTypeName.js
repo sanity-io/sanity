@@ -31,8 +31,7 @@ export function validateTypeName(typeName: string, visitorContext) {
 
     return [
       error(
-        `Invalid type: ${typeName}.${suggestion} Valid types are: ${humanize(possibleTypeNames)}`,
-        HELP_IDS.TYPE_UNKNOWN_TYPE
+        `Unknown type: ${typeName}.${suggestion} Valid types are: ${humanize(possibleTypeNames)}`
       )
     ]
   }

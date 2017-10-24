@@ -4,18 +4,17 @@ import type {Severity, ValidationResult} from '../typedefs'
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {
   TYPE_NAME_RESERVED: 'schema-type-name-reserved',
-  TYPE_MISSING_NAME: 'schema-type-missing-name',
-  TYPE_MISSING_TYPE: 'schema-type-missing-type',
-  TYPE_UNKNOWN_TYPE: 'schema-type-unknown-type',
+  TYPE_MISSING_NAME: 'schema-type-missing-name-or-type',
+  TYPE_MISSING_TYPE: 'schema-type-missing-name-or-type',
   TYPE_TITLE_RECOMMENDED: 'schema-type-title-is-recommended',
-  TYPE_TITLE_INVALID: 'schema-type-title-invalid',
+  TYPE_TITLE_INVALID: 'schema-type-title-is-recommended',
   OBJECT_FIELDS_INVALID: 'schema-object-fields-invalid',
-  OBJECT_FIELD_NOT_UNIQUE: 'schema-object-field-not-unique',
-  OBJECT_FIELD_NAME_INVALID: 'schema-object-type-field-name-invalid',
+  OBJECT_FIELD_NOT_UNIQUE: 'schema-object-fields-invalid',
+  OBJECT_FIELD_NAME_INVALID: 'schema-object-fields-invalid',
   ARRAY_OF_INVALID: 'schema-array-of-invalid',
-  ARRAY_OF_NOT_UNIQUE: 'schema-array-of-not-unique',
+  ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',
-  REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-not-unique'
+  REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-invalid'
 }
 
 function createValidationResult(
