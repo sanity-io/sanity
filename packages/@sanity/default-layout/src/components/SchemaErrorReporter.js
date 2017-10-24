@@ -57,10 +57,7 @@ export class SchemaErrorReporter extends React.Component {
 
     if (groupsWithErrors.length > 0) {
       return (
-        <div style={{padding: '3em', width: '100%', height: '100%', overflow: 'auto'}}>
-          <h2>Uh oh… found errors in schema</h2>
-          <SchemaErrors problemGroups={groupsWithErrors} />
-        </div>
+        <SchemaErrors problemGroups={groupsWithErrors} />
       )
     }
 
