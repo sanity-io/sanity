@@ -1,63 +1,35 @@
-// @flow
-import type {TypeDef, ValidationResult} from '../../typedefs'
-import {error, HELP_IDS, warning} from '../createValidationResult'
-import inspect from '../../inspect'
+import {error, HELP_IDS} from '../createValidationResult'
+import {flatten, isObject} from 'lodash'
+import {getDupes} from '../utils/getDupes'
 
-type MemberValidator = TypeDef => Array<ValidationResult>
-
-function validateToType(
-  ofType: TypeDef,
-  validateMember: MemberValidator
-): Array<ValidationResult> {
-  // todo: check for mix of primitive / complex values
-  return validateMember(ofType)
+function normalizeToProp(typeDef) {
+  if (Array.isArray(typeDef.to)) {
+    return typeDef.to
+  }
+  return typeDef.to ? [typeDef.to] : typeDef.to
 }
+export default (typeDef, visitorContext) => {
 
-type ToType = {
-  type: string
-}
+  const to = normalizeToProp(typeDef)
+  const toIsArray = Array.isArray(to)
 
-function getDuplicateTypes(array: Array<ToType>): Array<Array<ToType>> {
-  const dupes: {[string]: Array<ToType>} = {}
-  array.forEach(field => {
-    if (!dupes[field.type]) {
-      dupes[field.type] = []
-    }
-    dupes[field.type].push(field)
-  })
-  return Object.keys(dupes)
-    .map(typeName => (dupes[typeName].length > 1 ? dupes[typeName] : null))
-    .filter(Boolean)
-}
-
-export default {
-  validate(
-    typeDef: TypeDef,
-    validateMember: MemberValidator
-  ): Array<ValidationResult> {
-    let result = []
-    if (Array.isArray(typeDef.to)) {
-      typeDef.to.forEach(toType => {
-        result = result.concat(validateToType(toType, validateMember))
-      })
-
-      getDuplicateTypes(typeDef.to).forEach(dupes => {
-        result.push(
-          error(
-            `Found ${dupes.length} members with type "${dupes[0]
-              .type}" in ${inspect(typeDef)}`,
-            HELP_IDS.REFERENCE_TO_NOT_UNIQUE
-          )
-        )
-      })
-    } else {
-      result.push(
+  const problems = flatten([
+    toIsArray
+      ? getDupes(to, t => `${t.name};${t.type}`).map(dupes =>
         error(
-          'The reference type is missing or having an invalid value for the "to" property',
+          `Found ${dupes.length} members with same type, but not unique names "${dupes[0]
+            .type}" in reference. This makes it impossible to tell their values apart and you should consider naming them`,
           HELP_IDS.REFERENCE_TO_INVALID
-        )
+        ))
+      : error(
+        'The reference type is missing or having an invalid value for the required "to" property',
+        HELP_IDS.REFERENCE_TO_INVALID
       )
-    }
-    return result
+  ])
+
+  return {
+    ...typeDef,
+    to: to.map(visitorContext.visit),
+    _problems: problems
   }
 }

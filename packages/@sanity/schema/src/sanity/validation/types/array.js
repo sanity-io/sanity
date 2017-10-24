@@ -3,10 +3,11 @@ import {flatten} from 'lodash'
 import {getDupes} from '../utils/getDupes'
 
 
-export default (typeDef, visitor) => {
+export default (typeDef, visitorContext) => {
   // name should already have been marked
+  const ofIsArray = Array.isArray(typeDef.of)
   const problems = flatten([
-    Array.isArray(typeDef.of)
+    ofIsArray
       ? getDupes(typeDef.of, t => `${t.name};${t.type}`).map(dupes =>
         error(
           `Found ${dupes.length} members with same type, but not unique names "${dupes[0]
@@ -21,7 +22,7 @@ export default (typeDef, visitor) => {
 
   return {
     ...typeDef,
-    of: (typeDef.of || []).map(visitor.visit),
+    of: (ofIsArray ? typeDef.of : []).map(visitorContext.visit),
     _problems: problems
   }
 }
