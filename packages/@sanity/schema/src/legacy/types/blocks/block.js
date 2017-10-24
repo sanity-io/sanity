@@ -7,10 +7,9 @@ import {
   DEFAULT_BLOCK_STYLES,
   DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES, DEFAULT_MARKS_FIELD,
-  DEFAULT_TEXT_FIELD
+  DEFAULT_TEXT_FIELD,
+  DEFAULT_DECORATORS
 } from './defaults'
-
-import {DEFAULT_DECORATORS} from '../../../lib/types/blocks/defaults'
 
 const INHERITED_FIELDS = [
   'type',

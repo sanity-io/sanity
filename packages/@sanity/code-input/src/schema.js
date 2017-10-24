@@ -3,6 +3,7 @@ import Preview from './Preview'
 export default {
   name: 'code',
   type: 'object',
+  title: 'Code',
   fields: [
     {
       title: 'Code',
