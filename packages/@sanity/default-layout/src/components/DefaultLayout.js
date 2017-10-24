@@ -15,6 +15,7 @@ import Branding from './Branding'
 import Ink from 'react-ink'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {SchemaErrorReporter} from './SchemaErrorReporter'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -73,7 +74,7 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     })
   }
 
-  render() {
+  renderContent = () => {
     const {tools, router} = this.props
     const {createMenuIsOpen, mobileMenuIsOpen} = this.state
 
@@ -137,6 +138,14 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
 
         {absolutes.map((Abs, i) => <Abs key={i} />)}
       </div>
+    )
+  }
+
+  render() {
+    return (
+      <SchemaErrorReporter>
+        {this.renderContent}
+      </SchemaErrorReporter>
     )
   }
 })

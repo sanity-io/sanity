@@ -1,7 +1,8 @@
+[include]
+./src
+./test
+
 [ignore]
 
-[include]
-
-[libs]
-
 [options]
+module.name_mapper='.*:.*' -> 'empty/object'
