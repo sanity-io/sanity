@@ -50,7 +50,10 @@ async function copyConfiguration(rootDir, fullName, shortName, output) {
   }
 
   // Configuration exists, check if user has local configuration already
-  if (fse.existsSync(dstPath)) {
+  if ( // eslint-disable-line no-constant-condition
+    false /* disabled for now until we can offer the user a way to fix this */
+    && fse.existsSync(dstPath)
+  ) {
     const distChecksum = await generateConfigChecksum(configPath)
     const sameChecksum = await hasSameChecksum(rootDir, fullName, distChecksum)
     warnOnDifferentChecksum(shortName, sameChecksum, output.print)
