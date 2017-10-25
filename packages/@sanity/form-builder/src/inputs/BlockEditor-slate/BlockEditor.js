@@ -3,7 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {State, Data} from 'slate'
 import {Editor} from 'slate-react'
-import Portal from 'react-portal'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 import {uniqueId} from 'lodash'
 
 import FormField from 'part:@sanity/components/formfields/default'
@@ -363,6 +363,12 @@ export default class BlockEditor extends React.Component {
     }
   }
 
+  handleFullScreenClose = () => {
+    this.setState({
+      fullscreen: false
+    })
+  }
+
   render() {
     const {type, level} = this.props
     const {fullscreen} = this.state
@@ -376,11 +382,11 @@ export default class BlockEditor extends React.Component {
       >
         {
           fullscreen ? (
-            <Portal isOpened>
+            <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
               <div className={styles.portal} onScroll={this.handleFullScreenScroll}>
                 {blockEditor}
               </div>
-            </Portal>
+            </FullscreenDialog>
           ) : blockEditor
         }
       </FormField>
