@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "0.117.0",
+  "version": "0.118.0",
   "description": "",
   "main": "lib/legacy/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sanity/generate-help-url": "^0.117.0",
+    "@sanity/generate-help-url": "^0.118.0",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "json-reduce": "^1.0.0",

@@ -1,13 +1,13 @@
 {
   "name": "@sanity/date-input",
-  "version": "0.117.1",
+  "version": "0.118.0",
   "description": "[DEPRECATED] Use @sanity/rich-date-input instead",
   "main": "index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@sanity/generate-help-url": "^0.117.0",
-    "@sanity/rich-date-input": "^0.117.1"
+    "@sanity/generate-help-url": "^0.118.0",
+    "@sanity/rich-date-input": "^0.118.0"
   },
   "repository": {
     "type": "git",
