@@ -74,7 +74,7 @@ function search(query) {
 
   const searchableFields = flatten(
     candidateTypes.filter(filterFn)
-      .map(type => type.fields
+      .map(type => (type.fields || [])
         .filter(field => field.type.jsonType === 'string')
         .map(field => field.name))
   )
