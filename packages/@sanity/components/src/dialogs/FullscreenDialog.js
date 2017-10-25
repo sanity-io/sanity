@@ -5,6 +5,7 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Portal from 'react-portal'
 import Button from 'part:@sanity/components/buttons/default'
+import LayerStack from 'part:@sanity/components/layer-stack'
 
 export default class FullScreenDialog extends React.PureComponent {
   static propTypes = {
@@ -33,17 +34,26 @@ export default class FullScreenDialog extends React.PureComponent {
     actions: []
   }
 
+  state = {
+    isFocused: true
+  }
+
+  componentWillMount() {
+    LayerStack.addLayer(this)
+  }
+
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown, false)
+    LayerStack.removeLayer()
   }
 
   handleKeyDown = event => {
     if (event.key === 'Escape' && this.isClosable()) {
-      this.props.onClose()
+      this.handleClose()
     }
   }
 
@@ -54,6 +64,13 @@ export default class FullScreenDialog extends React.PureComponent {
 
   isClosable() {
     return typeof this.props.onClose === 'function'
+  }
+
+  handleClose = event => {
+    if (!this.state.isFocused) {
+      return
+    }
+    this.props.onClose()
   }
 
   render() {
@@ -69,11 +86,11 @@ export default class FullScreenDialog extends React.PureComponent {
       .join(' ')
 
     return (
-      <Portal closeOnEsc={this.isClosable()} isOpened={isOpen}>
+      <Portal isOpened={isOpen}>
         <div className={classNames}>
           {
             onClose && (
-              <button className={styles.closeButton} onClick={onClose}>
+              <button className={styles.closeButton} onClick={this.handleClose}>
                 <CloseIcon color="inherit" />
               </button>
             )
@@ -84,31 +101,33 @@ export default class FullScreenDialog extends React.PureComponent {
               {this.props.children}
               <div className={styles.actions}>
                 {
-                  actions.length > 0 && <div className={styles.functions}>
-                    {
-                      actions.map((action, i) => {
-                        return (
-                          <Button
-                            key={i}
-                            onClick={this.handleActionClick}
-                            data-action-index={i}
-                            color={color === 'default' ? action.color : 'white'}
-                            disabled={action.disabled}
-                            inverted={!action.secondary}
-                            kind={action.kind}
-                            autoFocus={action.autoFocus}
-                            className={`
-                              ${styles.button}
-                              ${styles[`button_${action.kind}`] || styles.button}
-                            `
-                            }
-                          >
-                            {action.title}
-                          </Button>
-                        )
-                      })
-                    }
-                  </div>
+                  actions.length > 0 && (
+                    <div className={styles.functions}>
+                      {
+                        actions.map((action, i) => {
+                          return (
+                            <Button
+                              key={i}
+                              onClick={this.handleActionClick}
+                              data-action-index={i}
+                              color={color === 'default' ? action.color : 'white'}
+                              disabled={action.disabled}
+                              inverted={!action.secondary}
+                              kind={action.kind}
+                              autoFocus={action.autoFocus}
+                              className={`
+                                ${styles.button}
+                                ${styles[`button_${action.kind}`] || styles.button}
+                              `
+                              }
+                            >
+                              {action.title}
+                            </Button>
+                          )
+                        })
+                      }
+                    </div>
+                  )
                 }
               </div>
             </div>

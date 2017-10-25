@@ -6,16 +6,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 
-const popOverStack = []
 const PADDING = 10
 
-function setFocus(focusedPopOver) {
-  popOverStack.forEach(popOver => {
-    popOver.setState({isFocused: popOver === focusedPopOver})
-  })
-}
-
-export default class EditItemPopOver extends React.Component {
+export default class EditItemPopOver extends React.PureComponent {
 
   static propTypes = {
     title: PropTypes.string,
@@ -28,32 +21,24 @@ export default class EditItemPopOver extends React.Component {
       handleClick: PropTypes.func
     })),
     isOpen: PropTypes.bool,
-    scrollContainer: PropTypes.object
+    scrollContainer: PropTypes.object,
+    onClickOutside: PropTypes.func
   };
 
   static defaultProps = {
     title: undefined,
     scrollContainer: undefined,
     onClose() {}, // eslint-disable-line
+    onClickOutside() {},
     actions: [],
     isOpen: true
   }
 
   state = {
-    isFocused: true,
     arrowLeft: 0,
     popoverLeft: 0,
     scrollContainer: undefined,
     isResizing: false
-  }
-
-  componentWillMount() {
-    // Set all underlaying modals as unfocused
-    popOverStack.forEach(popOver => {
-      popOver.setState({isFocused: false})
-    })
-    // Add it to the stack
-    popOverStack.push(this)
   }
 
   componentDidMount() {
@@ -70,7 +55,6 @@ export default class EditItemPopOver extends React.Component {
     } else {
       this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
     }
-    window.addEventListener('keydown', this.handleKeyDown)
   }
 
   setScrollContainerElement = element => {
@@ -79,32 +63,17 @@ export default class EditItemPopOver extends React.Component {
     })
   }
 
-  componentWillUnmount() {
-    popOverStack.pop()
-    const prevPopOver = popOverStack.slice(-1)[0]
-    if (prevPopOver) {
-      setFocus(prevPopOver)
-    }
-    window.removeEventListener('keydown', this.handleKeyDown)
-  }
-
   handleClose = () => {
-    if (!this.state.isFocused) {
-      return
-    }
     this.props.onClose()
   }
 
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.handleClose()
-    }
+  handleStickyClose = event => {
+    this.handleClose()
   }
 
-  handleBackdropClick = event => {
+  handleClickOutside = event => {
     this.handleClose()
-    event.stopPropagation()
-    event.preventDefault()
+    this.props.onClickOutside()
   }
 
   setArrowElement = element => {
@@ -184,6 +153,7 @@ export default class EditItemPopOver extends React.Component {
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
           stickToTop
+          onClose={this.handleClose}
         >
           <div
             ref={this.setPopoverInnerElement}
@@ -221,6 +191,7 @@ export default class EditItemPopOver extends React.Component {
                 style={{
                   maxHeight: `${availableHeight}px`
                 }}
+                data-no-sticky-extra-padding
               >
                 {children}
               </div>
