@@ -34,22 +34,20 @@ export default class SelectMenu extends React.Component {
   render() {
     const {items, renderItem, highlightIndex, value} = this.props
     return (
-      <div className={styles.root}>
-        <div className={styles.scrollContainer} ref={this.setScrollContainer}>
-          <List className={styles.list}>
-            {items.map((item, index) => {
-              const classes = cx(styles.item, {
-                [styles.highlighted]: index === highlightIndex,
-                [styles.selected]: item === value
-              })
-              return (
-                <Item key={index} data-item-index={index} onClick={this.handleItemClick} className={classes}>
-                  {renderItem(item, index)}
-                </Item>
-              )
-            })}
-          </List>
-        </div>
+      <div className={styles.scrollContainer} ref={this.setScrollContainer}>
+        <List className={styles.list}>
+          {items.map((item, index) => {
+            const classes = cx(styles.item, {
+              [styles.highlighted]: index === highlightIndex,
+              [styles.selected]: item === value
+            })
+            return (
+              <Item key={index} data-item-index={index} onClick={this.handleItemClick} className={classes}>
+                {renderItem(item, index)}
+              </Item>
+            )
+          })}
+        </List>
       </div>
     )
   }
