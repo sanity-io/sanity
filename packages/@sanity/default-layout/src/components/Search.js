@@ -4,11 +4,12 @@ import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import Multicast from '@sanity/observable/multicast'
 import {IntentLink} from 'part:@sanity/base/router'
-import {union, flatten} from 'lodash'
+import {flatten, union} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceClickOutside from 'react-click-outside'
 import Ink from 'react-ink'
+import styles from './styles/Search.css'
 
 function isParentOf(possibleParent, possibleChild) {
   let current = possibleChild
@@ -20,8 +21,6 @@ function isParentOf(possibleParent, possibleChild) {
   }
   return false
 }
-
-import styles from './styles/Search.css'
 
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
@@ -52,17 +51,29 @@ function removeDupes(documents) {
     })
 }
 
+function is(typeName, type) {
+  return type.name === typeName || (type.type && is(typeName, type.type))
+}
+
 function search(query) {
   if (!client) {
     throw new Error('Sanity client is missing')
   }
 
-  // Get all fields that we want to search in (text and string)
+  const candidateTypes = schema.getTypeNames()
+    .filter(typeName => !typeName.startsWith('sanity.'))
+    .map(typeName => schema.get(typeName))
+
+  const hasDocuments = candidateTypes.some(type => is('document', type))
+
+  const filterFn = hasDocuments
+    ? type => is('document', type)
+    : type => is('object', type) /* this is only for maintaining backwards compatibility after
+                                    introducing the 'document' type. Should be removed eventually
+                                  */
+
   const searchableFields = flatten(
-    schema.getTypeNames()
-      .filter(typeName => !typeName.startsWith('sanity.'))
-      .map(typeName => schema.get(typeName))
-      .filter(type => type.type && type.type.name === 'object')
+    candidateTypes.filter(filterFn)
       .map(type => type.fields
         .filter(field => field.type.jsonType === 'string')
         .map(field => field.name))
@@ -74,7 +85,6 @@ function search(query) {
   const constraintString = constraints.map(constraint => `(${constraint.join(' || ')})`).join(' && ')
   return client.observable.fetch(`*[${constraintString}][0...10]`)
 }
-
 
 export default enhanceClickOutside(class Search extends React.Component {
   input$ = new Multicast()
