@@ -228,7 +228,14 @@
       "name": "part:@sanity/base/schema-type",
       "description": "Schema types provided by plugins, for easy usage in studio schemas"
     },
-
+    {
+      "name": "part:@sanity/components/layer-stack",
+      "description": "Keep control over stacking layers in portals"
+    },
+    {
+      "implements": "part:@sanity/components/layer-stack",
+      "path": "components/LayerStack.js"
+    },
     {
       "implements": "part:@sanity/base/sanity-root",
       "path": "components/SanityRoot.js"
