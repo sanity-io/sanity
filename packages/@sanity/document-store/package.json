@@ -9,9 +9,16 @@
     "tap": "tap --node-arg=--require --node-arg=babel-register test/*.test.js",
     "test": "npm run tap && npm run examples"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "document-store"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@sanity/mutator": "^0.118.0",
     "@sanity/observable": "^0.118.0",
@@ -24,5 +31,13 @@
     "in-publish": "^2.0.0",
     "rimraf": "^2.6.1",
     "tap": "^10.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
   }
 }

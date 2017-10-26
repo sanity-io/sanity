@@ -8,10 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "storybook"
   ],
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/sanity#readme",
+  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/server": "^0.118.0",
     "@sanity/webpack-integration": "^0.118.0",

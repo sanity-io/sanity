@@ -12,6 +12,11 @@
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "rich-date-input",
     "sanity-plugin"
   ],
   "dependencies": {
@@ -31,6 +36,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:sanity-io/sanity.git"
-  }
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
 }

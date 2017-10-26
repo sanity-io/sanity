@@ -12,18 +12,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/base.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "base"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/base/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/base#readme",
+  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/client": "^0.118.0",
     "@sanity/document-store": "^0.118.0",

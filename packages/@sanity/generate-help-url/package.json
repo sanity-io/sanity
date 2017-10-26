@@ -9,17 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/generate-help-url.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
-    "sanity"
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "generate-help-url"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/generate-help-url/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/generate-help-url#readme",
+  "homepage": "https://www.sanity.io/",
   "devDependencies": {
     "eslint": "^4.6.1",
     "tape": "^4.7.0"

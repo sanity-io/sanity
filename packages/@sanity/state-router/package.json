@@ -14,7 +14,14 @@
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
     "clean": "rimraf lib"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "state-router"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
@@ -56,10 +63,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/state-router.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/state-router/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/state-router#readme"
+  "homepage": "https://www.sanity.io/"
 }

@@ -20,7 +20,8 @@
     "watch": "gulp watch",
     "install-husky": "node node_modules/husky/bin/install",
     "commitmsg": "node scripts/validateCommitMessage.js",
-    "versions": "node scripts/normalizeDependencyVersions.js"
+    "versions": "node scripts/normalizeDependencyVersions.js",
+    "normalize-pkgfields": "node scripts/normalizePackageFields.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
