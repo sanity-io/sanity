@@ -71,12 +71,7 @@ export default class DefaultButton extends React.Component {
       this.state.recentlyHovered ? styles.recentlyHovered : styles.notRecentlyHovered
     ].filter(Boolean).join(' ')
 
-    let padContent = false
-
-    if (Icon && children && typeof (children) === 'string') {
-      padContent = true
-    }
-
+    const padContent = (Icon && children && (typeof children === 'string'))
 
     return (
       <button
