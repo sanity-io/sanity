@@ -4,7 +4,6 @@ import React from 'react'
 import dataAspects from './utils/dataAspects'
 import schema from 'part:@sanity/base/schema'
 import styles from './styles/SchemaPaneResolver.css'
-import {withRouterHOC} from 'part:@sanity/base/router'
 
 import TypePane from './pane/TypePane'
 import DocumentsPane from './pane/DocumentsPane'
@@ -20,7 +19,7 @@ const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
   title: dataAspects.getDisplayName(typeName)
 }))
 
-export default withRouterHOC(class SchemaPaneResolver extends React.Component {
+export default class SchemaPaneResolver extends React.Component {
   static propTypes = {
     router: PropTypes.shape({
       state: PropTypes.object
@@ -149,4 +148,4 @@ export default withRouterHOC(class SchemaPaneResolver extends React.Component {
       </div>
     )
   }
-})
+}
