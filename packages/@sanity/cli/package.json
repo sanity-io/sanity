@@ -19,19 +19,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/cli.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "cli",
     "tool"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/cli/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/cli#readme",
+  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/client": "^0.118.0",
     "@sanity/resolver": "^0.118.0",

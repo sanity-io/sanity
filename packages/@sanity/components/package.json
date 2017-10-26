@@ -4,7 +4,7 @@
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
     "stylelint": "stylelint \"src/**/*.css\"",
@@ -19,6 +19,11 @@
   ],
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "components",
     "sanity-plugin"
   ],
   "dependencies": {
@@ -74,10 +79,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/components.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/components/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/components#readme"
+  "homepage": "https://www.sanity.io/"
 }

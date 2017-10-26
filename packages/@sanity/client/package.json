@@ -50,10 +50,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "client",
     "fetch",
     "api",
@@ -64,7 +68,7 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/sanity/tree/master/packages/%40sanity/client",
+  "homepage": "https://www.sanity.io/",
   "nyc": {
     "include": [
       "src/**/*.js"

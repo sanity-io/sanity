@@ -10,9 +10,16 @@
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "schema"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^0.118.0",
     "arrify": "^1.0.1",
@@ -53,5 +60,13 @@
     "prettier": "^1.7.4",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.6.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
   }
 }

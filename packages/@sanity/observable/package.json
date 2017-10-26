@@ -7,7 +7,14 @@
     "clean": "rimraf lib",
     "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js test/**/*.test.js"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "observable"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
@@ -23,10 +30,10 @@
   "runkitExampleFilename": "./example.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/observable.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/observable/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/observable#readme"
+  "homepage": "https://www.sanity.io/"
 }

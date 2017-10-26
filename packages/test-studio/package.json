@@ -11,7 +11,12 @@
     "clean": "rimraf dist"
   },
   "keywords": [
-    "sanity"
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "test-studio"
   ],
   "dependencies": {
     "@sanity/base": "^0.118.0",
@@ -39,5 +44,13 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
   }
 }

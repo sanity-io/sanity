@@ -9,18 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/webpack-loader.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "webpack-loader"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/webpack-loader/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/webpack-loader#readme",
+  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/resolver": "^0.118.0",
     "@sanity/util": "^0.118.0",

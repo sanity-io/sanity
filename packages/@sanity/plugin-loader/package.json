@@ -10,10 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/plugin-loader.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
     "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "plugin-loader",
     "plugin",
     "parts",
     "require"
@@ -21,9 +26,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/plugin-loader/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/plugin-loader#readme",
+  "homepage": "https://www.sanity.io/",
   "ava": {
     "files": [
       "test/*.test.js"
