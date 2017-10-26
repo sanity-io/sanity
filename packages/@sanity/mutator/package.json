@@ -9,7 +9,14 @@
     "lint": "eslint .",
     "typecheck": "flow check"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "mutator"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
@@ -34,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/mutator.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/mutator/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/mutator#readme"
+  "homepage": "https://www.sanity.io/"
 }

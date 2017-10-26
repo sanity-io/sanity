@@ -16,7 +16,14 @@
     "example-undo": "cd examples/undo && sanity start",
     "example-quickstart": "cd examples/quickstart && sanity start"
   },
-  "keywords": [],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "form-builder"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
@@ -106,10 +113,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/form-builder.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "bugs": {
-    "url": "https://github.com/sanity-io/form-builder/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/form-builder#readme"
+  "homepage": "https://www.sanity.io/"
 }

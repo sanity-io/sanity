@@ -9,18 +9,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/eventsource.git"
+    "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
     "eventsource",
     "polyfill"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sanity-io/eventsource/issues"
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://github.com/sanity-io/eventsource#readme",
+  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "eventsource": "^1.0.4",
     "eventsource-polyfill": "^0.9.6"
