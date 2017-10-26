@@ -8,7 +8,7 @@ import styles from './styles/SchemaPaneResolver.css'
 import TypePane from './pane/TypePane'
 import DocumentsPane from './pane/DocumentsPane'
 import EditorWrapper from './pane/EditorWrapper'
-
+import GetStartedPane from './pane/GetStartedPane'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -74,20 +74,18 @@ export default class SchemaPaneResolver extends React.Component {
             paneId="typePane"
             isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
           >
-            <TypePane
-              isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
-              title="Content"
-              paneId="typePane"
-              items={TYPE_ITEMS}
-              router={router}
-              onExpand={this.handleShouldExpand}
-              onCollapse={this.handleShouldCollapse}
-            >
-              test
-            </TypePane>
+            {TYPE_ITEMS.length === 0 ? <GetStartedPane title="Get started" /> : (
+              <TypePane
+                isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
+                title="Content"
+                paneId="typePane"
+                items={TYPE_ITEMS}
+                router={router}
+                onExpand={this.handleShouldExpand}
+                onCollapse={this.handleShouldCollapse}
+              />
+            )}
           </SplitPaneWrapper>
-
-
           {
             schemaType && selectedType && (
               <SplitPaneWrapper
@@ -139,10 +137,10 @@ export default class SchemaPaneResolver extends React.Component {
         </SplitController>
         {
           selectedType && schemaType && action && action !== 'edit' && (
-          // this would normally never happen
-          <Snackbar kind="error">
-            Invalid action: {action}
-          </Snackbar>
+            // this would normally never happen
+            <Snackbar kind="error">
+              Invalid action: {action}
+            </Snackbar>
           )
         }
       </div>
