@@ -18,12 +18,15 @@ import recursiveArray from './recursiveArray'
 import numbers from './numbers'
 import booleans from './booleans'
 import datetime from './datetime'
-import richDate from './richDate'
+import richDateTest from './richDate'
 import slugs from './slugs'
 import geopoint from './geopoint'
+
 import customInputs from './customInputs'
 import notitle from './notitle'
 import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
+
+import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 
 export default createSchema({
   name: 'test-examples',
@@ -33,9 +36,10 @@ export default createSchema({
     strings,
     numbers,
     booleans,
+    richDateType,
     objects,
     datetime,
-    richDate,
+    richDateTest,
     arrays,
     uploads,
     code,
