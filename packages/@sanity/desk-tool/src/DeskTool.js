@@ -14,18 +14,18 @@ export default withRouterHOC(class DeskTool extends React.Component {
   componentDidMount() {
     const {router} = this.props
     const {selectedType, selectedDocumentId} = router.state
-    if (selectedDocumentId && selectedType === '*') {
-      client.fetch('*[_id == $id][0]{_type}', {id: selectedDocumentId}).then(res => res._type)
-        .then(type => router.navigate({...router.state, selectedType: type}))
+    if (selectedDocumentId && selectedType) {
+      client.fetch('*[_id == $id][0]._type', {id: selectedDocumentId})
+        .then(type => {
+          if (type !== selectedType) {
+            router.navigate({...router.state, selectedType: type})
+          }
+        })
     }
   }
 
   render() {
     const {router} = this.props
-
-    if (router.state.selectedType === '*') {
-      return <div>Loading…</div>
-    }
 
     return (
       <div className={styles.deskTool}>
