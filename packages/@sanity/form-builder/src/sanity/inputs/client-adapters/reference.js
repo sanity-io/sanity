@@ -15,48 +15,16 @@ function wrapIn(chars = '') {
 
 const wrapInParens = wrapIn('()')
 
-const stringFieldsSymbol = Symbol('__cachedStringFields')
-
-function getCachedStringFieldPaths(type, maxDepth) {
-  if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = getStringFieldPaths(type, maxDepth)
-  }
-  return type[stringFieldsSymbol]
-}
-
-function reduceType(type, reducer, accumulator, path = [], maxDepth = 10) {
-  if (maxDepth < 0) {
-    return accumulator
-  }
-  if (Array.isArray(type.fields)) {
-    return type.fields.reduce(
-      (acc, field, index) => reduceType(field.type, reducer, acc, path.concat(field.name), maxDepth - 1),
-      reducer(accumulator, type, path)
-    )
-  }
-  return reducer(accumulator, type, path)
-}
-
-function getStringFieldPaths(type, maxDepth) {
-  const reducer = (accumulator, childType, path) =>
-    (childType.jsonType === 'string'
-      ? [...accumulator, path]
-      : accumulator
-    )
-
-  return reduceType(type, reducer, [], [], maxDepth)
-}
-
 function buildConstraintFromType(type, terms) {
   const typeConstraint = `_type == '${type.name}'`
 
-  const stringFieldPaths = getCachedStringFieldPaths(type, 4)
+  const stringFieldPaths = type.__unstable_searchFields || []
   if (stringFieldPaths.length === 0) {
     return typeConstraint
   }
 
   const stringFieldConstraints = flatten(
-    stringFieldPaths.map(fieldPath => terms.map(term => `${fieldPath.join('.')} match '${term}*'`))
+    stringFieldPaths.map(fieldPath => terms.map(term => `${fieldPath} match '${term}*'`))
   )
 
   return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
