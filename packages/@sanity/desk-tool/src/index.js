@@ -10,12 +10,12 @@ export default {
     ])
   ]),
   canHandleIntent(intentName, params) {
-    return (intentName === 'edit' && params.type && params.id)
+    return (intentName === 'edit' && params.id)
             || (intentName === 'create' && params.type)
   },
   getIntentState(intentName, params) {
     return {
-      selectedType: params.type,
+      selectedType: params.type || '*',
       action: 'edit',
       selectedDocumentId: params.id || UUID()
     }
