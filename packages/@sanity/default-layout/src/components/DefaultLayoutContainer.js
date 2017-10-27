@@ -8,7 +8,7 @@ import getOrderedTools from '../util/getOrderedTools'
 import rootRouter from '../defaultLayoutRouter'
 
 function maybeHandleIntent(urlStateEvent) {
-  if (urlStateEvent.state.intent) {
+  if (urlStateEvent.state && urlStateEvent.state.intent) {
     const {intent, params} = urlStateEvent.state
     const matchingTool = getOrderedTools().find(tool => tool.canHandleIntent && tool.canHandleIntent(intent, params))
     if (matchingTool) {
@@ -21,9 +21,15 @@ function maybeHandleIntent(urlStateEvent) {
       locationStore.actions.navigate(redirectUrl, {replace: true})
       return null
     }
+    return {
+      isNotFound: true,
+      intent: {name: intent, params}
+    }
+
   }
   return urlStateEvent
 }
+
 function decodeUrlState(locationEvent) {
   return {
     type: locationEvent.type,
@@ -32,9 +38,8 @@ function decodeUrlState(locationEvent) {
   }
 }
 
-class DefaultLayoutContainer extends React.PureComponent {
-  state = {
-  }
+export default class DefaultLayoutContainer extends React.PureComponent {
+  state = {}
 
   componentWillMount() {
     this.pathSubscription = locationStore
@@ -42,7 +47,13 @@ class DefaultLayoutContainer extends React.PureComponent {
       .map(decodeUrlState)
       .map(maybeHandleIntent)
       .filter(Boolean)
-      .subscribe({next: event => this.setState({urlState: event.state, isNotFound: event.isNotFound})})
+      .subscribe({
+        next: event => this.setState({
+          urlState: event.state,
+          isNotFound: event.isNotFound,
+          intent: event.intent
+        })
+      })
   }
 
   componentWillUnmount() {
@@ -54,30 +65,29 @@ class DefaultLayoutContainer extends React.PureComponent {
   }
 
   render() {
-    const {urlState, isNotFound} = this.state
+    const {intent, urlState, isNotFound} = this.state
     const tools = getOrderedTools()
 
-    if (urlState.intent) {
-      // whoops could not handle intent
-      return (
-        <div>No tool can handle the intent:{' '}
-          <strong>{JSON.stringify(urlState.intent)}</strong>
-          {' '} with parameters <pre>{JSON.stringify(urlState.params)}</pre>
-        </div>
-      )
-    }
+    const content = isNotFound
+      ? (
+        <NotFound>{
+          intent && (
+            <div>
+              No tool can handle the intent:
+              {' '} <strong>{intent.name}</strong> {' '}
+              with parameters <pre>{JSON.stringify(intent.params)}</pre>
+            </div>
+          )}
+        </NotFound>
+      ) : <DefaultLayout tools={tools} />
 
     const router = (
       <RouterProvider router={rootRouter} state={urlState} onNavigate={this.handleNavigate}>
-        {isNotFound ? <NotFound /> : <DefaultLayout tools={tools} />}
+        {content}
       </RouterProvider>
     )
 
-    if (LoginWrapper) {
-      return <LoginWrapper>{router}</LoginWrapper>
-    }
-    return router
+    return LoginWrapper ? <LoginWrapper>{router}</LoginWrapper> : router
   }
 }
 
-export default DefaultLayoutContainer
