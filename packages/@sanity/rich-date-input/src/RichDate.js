@@ -78,6 +78,10 @@ export default class RichDateInput extends React.PureComponent {
     const timeIntervals = getTimeIntervals(value, options)
     const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
 
+    const placeholder = typeof type.placeholder === 'function'
+      ? type.placeholder()
+      : type.placeholder
+
     return (
       <FormField
         labelFor={this.inputId}
@@ -94,7 +98,7 @@ export default class RichDateInput extends React.PureComponent {
               showYearDropdown
               todayButton={options.calendarTodayLabel}
               selected={value && moment(options.inputUtc ? value.utc : value.local)}
-              placeholderText={getPlaceholderText(options)}
+              placeholderText={placeholder}
               calendarClassName={styles.datepicker}
               className={styles.input}
               onChange={this.handleChange}
