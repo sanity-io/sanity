@@ -143,9 +143,18 @@ export default class EditItemPopOver extends React.Component {
       popoverLeft = availableWidth - width - PADDING
     }
 
+    let maxHeight = 500
+
+    if (availableHeight && this.state.scrollContainer) {
+      maxHeight = Math.min(
+        availableHeight - 16,
+        this.state.scrollContainer.offsetHeight - 200
+      )
+    }
+
     this.setState({
       popoverLeft: popoverLeft,
-      availableHeight: availableHeight,
+      availableHeight: maxHeight,
       arrowLeft: rootLeft,
       isResizing: isScrolling
     })
@@ -209,7 +218,7 @@ export default class EditItemPopOver extends React.Component {
                 ref={this.setContentElement}
                 className={isResizing ? styles.contentIsResizing : styles.content}
                 style={{
-                  maxHeight: `${availableHeight - 16}px`
+                  maxHeight: `${availableHeight}px`
                 }}
               >
                 {children}
