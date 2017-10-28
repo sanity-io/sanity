@@ -1,7 +1,7 @@
-export function lazyGetter(target, key, getter) {
+export function lazyGetter(target, key, getter, config = {}) {
   Object.defineProperty(target, key, {
     configurable: true,
-    enumerable: true,
+    enumerable: config.enumerable !== false,
     get() {
       const val = getter()
       Object.defineProperty(target, key, {
@@ -14,6 +14,7 @@ export function lazyGetter(target, key, getter) {
   })
   return target
 }
+
 //
 // const o = lazyGetter({}, 'expensive', function() {
 //   console.log('doing expensive calculations')
