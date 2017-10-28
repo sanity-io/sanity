@@ -161,18 +161,18 @@ export default class StickyPortal extends React.Component {
 
     const neededHeight = this._contentElement.offsetHeight
 
-    if (this.props.addPadding) {
-      const extraHeight = this._contentElement.offsetHeight
+    if (this.props.addPadding && neededHeight > this._scrollContainerElement.offsetHeight) {
+      const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight - 200)
       this._paddingDummy.style.height = `${extraHeight}px`
     }
 
     const scrollTop = this._scrollContainerElement.scrollTop
-    this._extraScrollTop = -window.innerHeight + neededHeight + this._rootTop
-
-    if (this._extraScrollTop > 0) {
+    this._extraScrollTop = -this._scrollContainerElement.offsetHeight + neededHeight + this._rootTop
+    if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
       this._initialScrollTop = scrollTop
       this._isScrolling = true
-      scroll.top(this._scrollContainerElement, scrollTop + this._extraScrollTop, scrollOptions, () => {
+      const newScrollTop = scrollTop + this._extraScrollTop
+      scroll.top(this._scrollContainerElement, newScrollTop, scrollOptions, () => {
         this._isScrolling = false
         this.props.onResize({
           isScrolling: this._isScrolling
