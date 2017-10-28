@@ -4,7 +4,7 @@ import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import Multicast from '@sanity/observable/multicast'
 import {IntentLink} from 'part:@sanity/base/router'
-import {flatten, union} from 'lodash'
+import {flow, compact, flatten, union} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceClickOutside from 'react-click-outside'
@@ -51,9 +51,7 @@ function removeDupes(documents) {
     })
 }
 
-function is(typeName, type) {
-  return type.name === typeName || (type.type && is(typeName, type.type))
-}
+const combineFields = flow([flatten, union, compact])
 
 function search(query) {
   if (!client) {
@@ -64,23 +62,9 @@ function search(query) {
     .filter(typeName => !typeName.startsWith('sanity.'))
     .map(typeName => schema.get(typeName))
 
-  const hasDocuments = candidateTypes.some(type => is('document', type))
-
-  const filterFn = hasDocuments
-    ? type => is('document', type)
-    : type => is('object', type) /* this is only for maintaining backwards compatibility after
-                                    introducing the 'document' type. Should be removed eventually
-                                  */
-
-  const searchableFields = flatten(
-    candidateTypes.filter(filterFn)
-      .map(type => (type.fields || [])
-        .filter(field => field.type.jsonType === 'string')
-        .map(field => field.name))
-  )
-
   const terms = query.split(/\s+/).filter(Boolean)
-  const uniqueFields = union(searchableFields)
+
+  const uniqueFields = combineFields(candidateTypes.map(type => type.__unstable_searchFields))
   const constraints = terms.map(term => uniqueFields.map(field => `${field} match '${term}*'`))
   const constraintString = constraints.map(constraint => `(${constraint.join(' || ')})`).join(' && ')
   return client.observable.fetch(`*[${constraintString}][0...10]`)

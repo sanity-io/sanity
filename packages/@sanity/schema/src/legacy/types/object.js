@@ -2,6 +2,7 @@ import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
+import resolveSearchFields from '../resolveSearchFields'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -12,6 +13,7 @@ const OVERRIDABLE_FIELDS = [
   'readOnly',
   'hidden',
   'description',
+  '__unstable_searchFields',
   'options',
   'inputComponent'
 ]
@@ -57,6 +59,8 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
+    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFields(parsed), {enumerable: false})
+
     return subtype(parsed)
 
     function subtype(parent) {
@@ -72,6 +76,7 @@ export const ObjectType = {
             title: extensionDef.title || subTypeDef.title,
             type: parent
           })
+          lazyGetter(current, '__unstable_searchFields', () => parent.__unstable_searchFields)
           return subtype(current)
         }
       }
