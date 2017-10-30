@@ -11,17 +11,34 @@ export default withRouterHOC(class DeskTool extends React.Component {
       state: PropTypes.object
     }).isRequired
   }
+
+  componentWillReceiveProps(nextProps) {
+    this.checkRedirect(nextProps)
+  }
+
   componentDidMount() {
-    const {router} = this.props
+    this.checkRedirect(this.props)
+  }
+
+  checkRedirect(props) {
+    const {router} = props
     const {selectedType, selectedDocumentId} = router.state
-    if (selectedDocumentId && selectedType) {
-      client.fetch(`*[_id == "${selectedDocumentId}" || _id == "drafts.${selectedDocumentId}"][0]._type`)
-        .then(type => {
-          if (type && type !== selectedType) {
-            router.navigate({...router.state, selectedType: type}, {replace: true})
-          }
-        })
+    if (selectedType === '*' && selectedDocumentId && selectedType) {
+      this.checkType(selectedDocumentId, selectedType)
     }
+  }
+
+  checkType(documentId, expectedType) {
+    if (this._checkTypeSubscription) {
+      this._checkTypeSubscription.unsubscribe()
+    }
+    this._checkTypeSubscription = client.observable.fetch(`*[_id == "${documentId}" || _id == "drafts.${documentId}"][0]._type`)
+      .subscribe(actualType => {
+        if (actualType && actualType !== expectedType) {
+          const {router} = this.props
+          router.navigate({...router.state, selectedType: actualType}, {replace: true})
+        }
+      })
   }
 
   render() {
