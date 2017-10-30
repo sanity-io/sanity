@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.118.3",
+  "version": "0.118.4",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,10 +25,10 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/data-aspects": "^0.118.0",
-    "@sanity/form-builder": "^0.118.3",
-    "@sanity/mutator": "^0.118.0",
-    "@sanity/uuid": "^0.118.0",
+    "@sanity/data-aspects": "^0.118.4",
+    "@sanity/form-builder": "^0.118.4",
+    "@sanity/mutator": "^0.118.4",
+    "@sanity/uuid": "^0.118.4",
     "classnames": "^2.2.5",
     "date-fns": "^1.28.5",
     "diff": "^3.2.0",
@@ -43,11 +43,11 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.118.3",
-    "@sanity/check": "^0.118.0",
-    "@sanity/client": "^0.118.0",
-    "@sanity/components": "^0.118.3",
-    "@sanity/core": "^0.118.0",
+    "@sanity/base": "^0.118.4",
+    "@sanity/check": "^0.118.4",
+    "@sanity/client": "^0.118.4",
+    "@sanity/components": "^0.118.4",
+    "@sanity/core": "^0.118.4",
     "babel-plugin-lodash": "^3.2.11",
     "eslint": "^4.6.1",
     "eslint-config-sanity": "^3.1.0",
