@@ -187,6 +187,16 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     })
   }
 
+  handleEditAsActualType = () => {
+    const {router, draft, published} = this.props
+    const actualTypeName = (draft._type || published._type)
+    router.navigate({
+      ...router.state,
+      selectedType: actualTypeName,
+      action: 'edit'
+    })
+  }
+
   handleChange = changeEvent => {
     const {onChange} = this.props
     onChange(changeEvent)
@@ -383,6 +393,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       return (
         <div className={styles.typeMisMatchMessage}>
           This document is of type <code>{value._type}</code> and cannot be edited as <code>{type.name}</code>
+          <div>
+            <Button onClick={this.handleEditAsActualType}>Edit as {value._type} instead</Button>
+          </div>
         </div>
       )
     }
