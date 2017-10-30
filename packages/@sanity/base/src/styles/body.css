@@ -11,6 +11,10 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+:global(a) {
+  color: var(--link-color);
+}
+
 :global(::selection) {
   background: var(--text-selection-color);
 }
