@@ -24,7 +24,7 @@ const getBody = event => event.body
 
 const toPromise = observable => observable.toPromise()
 
-const getQuerySizeLimit = 1948
+const getQuerySizeLimit = 11264
 
 module.exports = {
   listen: listen,
