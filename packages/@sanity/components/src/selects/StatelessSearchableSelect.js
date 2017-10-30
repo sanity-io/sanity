@@ -134,20 +134,6 @@ class StatelessSearchableSelect extends React.PureComponent {
       ...rest
     } = this.props
 
-
-    if (openItemElement) {
-      console.log('has openItemElement')
-    }
-
-    if (value) {
-      console.log('has value')
-    }
-
-    if (inputValue) {
-      console.log('has inputValue')
-    }
-
-
     return (
       <div>
         <div className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
