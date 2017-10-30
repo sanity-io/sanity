@@ -8,7 +8,7 @@ import styles from './styles/SchemaPaneResolver.css'
 import TypePane from './pane/TypePane'
 import DocumentsPane from './pane/DocumentsPane'
 import EditorWrapper from './pane/EditorWrapper'
-import GetStartedPane from './pane/GetStartedPane'
+import GetStarted from './GetStarted'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -62,6 +62,10 @@ export default class SchemaPaneResolver extends React.Component {
     const {selectedType, selectedDocumentId, action} = router.state
     const schemaType = schema.get(router.state.selectedType)
 
+    if (TYPE_ITEMS.length === 0) {
+      return <GetStarted />
+    }
+
     return (
       <div className={styles.container}>
         <SplitController
@@ -74,17 +78,15 @@ export default class SchemaPaneResolver extends React.Component {
             paneId="typePane"
             isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
           >
-            {TYPE_ITEMS.length === 0 ? <GetStartedPane title="Get started" /> : (
-              <TypePane
-                isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
-                title="Content"
-                paneId="typePane"
-                items={TYPE_ITEMS}
-                router={router}
-                onExpand={this.handleShouldExpand}
-                onCollapse={this.handleShouldCollapse}
-              />
-            )}
+            <TypePane
+              isCollapsed={!!collapsedPanes.find(pane => pane === 'typePane')}
+              title="Content"
+              paneId="typePane"
+              items={TYPE_ITEMS}
+              router={router}
+              onExpand={this.handleShouldExpand}
+              onCollapse={this.handleShouldCollapse}
+            />
           </SplitPaneWrapper>
           {
             schemaType && selectedType && (
