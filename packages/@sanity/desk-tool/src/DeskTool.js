@@ -15,9 +15,9 @@ export default withRouterHOC(class DeskTool extends React.Component {
     const {router} = this.props
     const {selectedType, selectedDocumentId} = router.state
     if (selectedDocumentId && selectedType) {
-      client.fetch('*[_id == $id][0]._type', {id: selectedDocumentId})
+      client.fetch(`*[_id == "${selectedDocumentId}" || _id == "drafts.${selectedDocumentId}"][0]._type`)
         .then(type => {
-          if (type !== selectedType) {
+          if (type && type !== selectedType) {
             router.navigate({...router.state, selectedType: type}, {replace: true})
           }
         })
