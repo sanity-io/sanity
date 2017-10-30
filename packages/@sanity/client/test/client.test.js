@@ -513,6 +513,35 @@ test('mutate() accepts multiple mutations', t => {
   getClient().mutate(mutations).catch(t.ifError).then(() => t.end())
 })
 
+test('uses GET for queries below limit', t => {
+  // Please dont ever do this. Just... don't.
+  const clause = []
+  const qParams = {}
+  const params = {}
+  for (let i = 1950; i <= 2016; i++) {
+    clause.push(`title == $beerName${i}`)
+    params[`beerName${i}`] = `some beer ${i}`
+    qParams[`$beerName${i}`] = JSON.stringify(`some beer ${i}`)
+  }
+
+  // Again, just... don't do this.
+  const query = `*[is "beer" && (${clause.join(' || ')})]`
+
+  nock(projectHost())
+    .get('/v1/data/query/foo')
+    .query(Object.assign({query}, qParams))
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{_id: 'njgNkngskjg', rating: 5}]
+    })
+
+  getClient().fetch(query, params).then(res => {
+    t.equal(res.length, 1, 'length should match')
+    t.equal(res[0].rating, 5, 'data should match')
+  }).catch(t.ifError).then(t.end)
+})
+
 test('uses POST for long queries', t => {
   // Please dont ever do this. Just... don't.
   const clause = []
