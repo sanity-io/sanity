@@ -155,20 +155,12 @@ export default class Item extends React.Component<Props> {
             />
           </div>
 
-          {
-            value._ref && console.log('type', type)
-          }
-
-          {
-            value._ref && console.log('value', value)
-          }
-
           <div className={styles.functions}>
             {
               value._ref && (
                 <IntentLink
                   className={styles.linkToReference}
-                  intent="open"
+                  intent="edit"
                   params={{id: value._ref}}
                 >
                   <LinkIcon />

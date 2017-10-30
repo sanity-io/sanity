@@ -141,7 +141,6 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   createOpenItemElement = value => {
-    console.log('value', value)
     return (
       <IntentLink
         title={`Open ${value.title}`}
