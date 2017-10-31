@@ -1,5 +1,5 @@
 .list {
-  margin: 4rem;
+  padding: 4rem;
   overflow: hidden;
 }
 
@@ -21,14 +21,13 @@
 }
 
 .sanityIcons {
-  max-width: 30em;
-  margin: 1em auto;
+  padding: 2rem;
 }
 
 .sanityIcon {
   display: block;
-  border-bottom: 1px solid #ccc;
   padding-top: 1em;
+  color: inherit;
 }
 
 .title {
@@ -37,6 +36,8 @@
 
 .role {
   composes: root from 'part:@sanity/base/theme/typography/code-style';
+  background-color: inherit;
+  color: inherit;
 }
 
 .iconPreview {
