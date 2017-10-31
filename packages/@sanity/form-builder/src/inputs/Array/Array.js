@@ -56,6 +56,9 @@ type Props = {
   value: Array<ItemValue>,
   level: number,
   onChange: (event: PatchEvent) => void,
+  onFocus: (Array) => void,
+  onBlur: () => void,
+  focusPath: (Array) => void,
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
@@ -67,13 +70,18 @@ type State = {
 }
 
 export default class ArrayInput extends React.Component<Props, State> {
-  state = {
-    editItemKey: null,
-    rejected: [],
-    ambiguous: [],
-    isMoving: false
-  }
+  constructor(props) {
+    super()
+    const immediateChildPathItem = props.focusPath.length > 0 ? props.focusPath[0] : null
 
+    this.state = {
+      editItemKey: immediateChildPathItem ? immediateChildPathItem._key : null,
+      rejected: [],
+      ambiguous: [],
+      isMoving: false
+    }
+
+  }
   uploadSubscriptions: {}
   uploadSubscriptions = {}
 
@@ -242,6 +250,13 @@ export default class ArrayInput extends React.Component<Props, State> {
     }
   }
 
+  handleItemFocus = (path: Array, item: ItemValue) => {
+    const key = item._key || randomKey(12)
+    this.props.onFocus([{_key: key}, ...path])
+  }
+  handleItemBlur = () => {
+    this.props.onBlur()
+  }
   handleItemChange = (event: PatchEvent, item: ItemValue) => {
     const {onChange, value} = this.props
 
@@ -309,7 +324,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   renderList = () => {
-    const {type, value} = this.props
+    const {type, value, focusPath} = this.props
     const {isMoving} = this.state
     const options = type.options || {}
 
@@ -336,6 +351,7 @@ export default class ArrayInput extends React.Component<Props, State> {
         {value.map((item, index) => {
           const {editItemKey} = this.state
           const itemProps = isSortable ? {index} : {}
+          const itemFocusPath = focusPath.slice(1)
           return (
             <Item
               key={item._key}
@@ -351,6 +367,9 @@ export default class ArrayInput extends React.Component<Props, State> {
                 value={item}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
+                focusPath={itemFocusPath}
+                onFocus={this.handleItemFocus}
+                onBlur={this.handleItemBlur}
                 onEditStart={this.handleItemEditStart}
                 onEditStop={this.handleItemEditStop}
                 isEditing={editItemKey === item._key}

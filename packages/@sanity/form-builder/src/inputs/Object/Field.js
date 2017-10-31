@@ -16,9 +16,11 @@ export default class Field extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.any,
-    onChange: PropTypes.func,
-    level: PropTypes.number,
-    autoFocus: PropTypes.bool
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
+    focusPath: PropTypes.array,
+    level: PropTypes.number
   };
 
   handleChange = event => {
@@ -28,8 +30,18 @@ export default class Field extends React.Component {
     }
   }
 
+  handleFocus = path => {
+    const {field, onFocus} = this.props
+    onFocus(path, field)
+  }
+
+  handleBlur = path => {
+    const {field, onBlur} = this.props
+    onBlur(path, field)
+  }
+
   render() {
-    const {value, field, level, autoFocus} = this.props
+    const {value, field, level, focusPath} = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -60,8 +72,10 @@ export default class Field extends React.Component {
             value={value}
             type={field.type}
             onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            focusPath={focusPath}
             level={level}
-            autoFocus={autoFocus}
           />
         </MemberValue>
       </div>

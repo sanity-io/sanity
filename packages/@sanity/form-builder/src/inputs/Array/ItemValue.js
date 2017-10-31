@@ -31,10 +31,13 @@ type Props = {
   onChange: (PatchEvent, ItemValue) => void,
   onEditStart: (ItemValue) => void,
   onEditStop: (ItemValue) => void,
+  focusPath: Array,
+  onFocus: Array => void,
+  onBlur: () => void,
   isEditing: boolean
 }
 
-export default class Item extends React.Component<Props> {
+export default class RenderItemValue extends React.Component<Props> {
 
   domElement: ?HTMLElement
 
@@ -65,6 +68,21 @@ export default class Item extends React.Component<Props> {
     }
   }
 
+  handleRemove = () => {
+    const {onRemove, value} = this.props
+    onRemove(value)
+  }
+
+  handleFocus = path => {
+    const {onFocus, value} = this.props
+    onFocus(path, value)
+  }
+
+  handleBlur = () => {
+    const {onBlur} = this.props
+    onBlur()
+  }
+
   getMemberType(): ?Type {
     const {value, type} = this.props
     const itemTypeName = resolveTypeName(value)
@@ -72,7 +90,7 @@ export default class Item extends React.Component<Props> {
   }
 
   renderEditItemForm(item: ItemValue): Node {
-    const {type, onChange, onRemove} = this.props
+    const {type, onChange, focusPath} = this.props
     const options = type.options || {}
 
     const memberType = this.getMemberType() || {}
@@ -88,8 +106,11 @@ export default class Item extends React.Component<Props> {
           type={memberType}
           level={level}
           value={item}
+          onRemove={this.handleRemove}
           onChange={onChange}
-          onRemove={onRemove}
+          onFocus={this.handleFocus}
+          focusPath={focusPath}
+          onBlur={this.handleBlur}
         />
       </MemberValue>
     )

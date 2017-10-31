@@ -4,7 +4,7 @@ import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Field from './Field'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {set, unset, setIfMissing} from '../../PatchEvent'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
@@ -15,6 +15,9 @@ export default class ObjectInput extends React.PureComponent {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     onChange: PropTypes.func,
+    onFocus: PropTypes.func.isRequired,
+    focusPath: PropTypes.array,
+    onBlur: PropTypes.func.isRequired,
     level: PropTypes.number,
     isRoot: PropTypes.bool,
     autoFocus: PropTypes.bool
@@ -59,13 +62,22 @@ export default class ObjectInput extends React.PureComponent {
     onChange(event)
   }
 
+  handleFieldFocus = (path, field) => {
+    this.props.onFocus([field.name, ...path])
+  }
+
+  handleFieldBlur = (path, field) => {
+    this.props.onBlur()
+  }
+
   renderField(field, level, index) {
     if (field.type.hidden) {
       return null
     }
 
-    const {value, autoFocus} = this.props
+    const {value, focusPath} = this.props
     const fieldValue = value && value[field.name]
+    const fieldFocusPath = focusPath.slice(1)
 
     return (
       <Field
@@ -73,16 +85,21 @@ export default class ObjectInput extends React.PureComponent {
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
+        onFocus={this.handleFieldFocus}
+        focusPath={fieldFocusPath}
+        onBlur={this.handleFieldBlur}
         level={level}
-        autoFocus={autoFocus && index === 0}
       />
     )
   }
 
   renderFieldset(fieldset, fieldsetIndex) {
-    const {level} = this.props
+    const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsable = fieldset.options && fieldset.options.collapsable
+    const hasFocus = focusPath.length > 0 && fieldset.fields.some(field => (
+      focusPath[0] === field.name
+    ))
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
@@ -90,7 +107,7 @@ export default class ObjectInput extends React.PureComponent {
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          collapsable={collapsable}
+          isExpanded={collapsable === false || hasFocus}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)

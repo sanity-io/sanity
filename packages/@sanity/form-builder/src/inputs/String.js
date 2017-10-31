@@ -10,7 +10,10 @@ export default class StringInput extends React.PureComponent {
     type: FormBuilderPropTypes.type.isRequired,
     level: PropTypes.number.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onFocus: PropTypes.func.isRequired,
+    focusPath: PropTypes.array,
+    onBlur: PropTypes.func.isRequired
   };
 
   static defaultProps = {
@@ -23,8 +26,24 @@ export default class StringInput extends React.PureComponent {
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
+  handleFocus = () => {
+    this.props.onFocus([true])
+  }
+
+  handleBlur = () => {
+    this.props.onBlur([])
+  }
+
+  focus() {
+    this._input.focus()
+  }
+
+  setInput = el => {
+    this._input = el
+  }
+
   render() {
-    const {value, type, level, ...rest} = this.props
+    const {value, type, focusPath, level, ...rest} = this.props
 
     return (
       <FormField
@@ -39,6 +58,9 @@ export default class StringInput extends React.PureComponent {
           readOnly={type.readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          ref={this.setInput}
         />
       </FormField>
     )

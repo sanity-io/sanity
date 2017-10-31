@@ -17,11 +17,14 @@ export default class ItemForm extends React.Component<*, *, *> {
   }
 
   render() {
-    const {value, type, level} = this.props
+    const {value, type, level, onFocus, onBlur, focusPath} = this.props
     return (
       <FormBuilderInput
         value={value}
         type={type}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
         level={level}
         onChange={this.handleChange}
         autoFocus

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
+import defaultStyles from 'part:@sanity/components/textinputs/default-style'
 
 const NOOP = () => {}
 
@@ -76,6 +77,11 @@ export default class DefaultTextInput extends React.PureComponent {
     this._input.select()
   }
 
+  focus = () => {
+    console.log('FOCUS', this._input)
+    this._input.focus()
+  }
+
   setInputElement = element => {
     this._input = element
   }
@@ -93,9 +99,14 @@ export default class DefaultTextInput extends React.PureComponent {
       isClearable,
       disabled,
       isSelected,
-      styles,
+      styles: passedStyles,
       ...rest
     } = this.props
+
+    const styles = {
+      ...defaultStyles,
+      ...passedStyles
+    }
 
     return (
       <div

@@ -2,6 +2,7 @@
 import React from 'react'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
+import FocusManager from './FocusManager'
 
 type PatchChannel = {
   subscribe: () => () => {},
@@ -23,14 +24,20 @@ export default function SanityFormBuilder(props: Props) {
       schema={props.schema}
       patchChannel={props.patchChannel}
     >
-      <FormBuilderInput
-        type={props.type}
-        onChange={props.onChange}
-        level={0}
-        value={props.value}
-        isRoot
-        autoFocus
-      />
+      <FocusManager>
+        {({onFocus, onBlur, focusPath}) => (
+          <FormBuilderInput
+            type={props.type}
+            onChange={props.onChange}
+            level={0}
+            value={props.value}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            focusPath={focusPath}
+            isRoot
+          />
+        )}
+      </FocusManager>
     </SanityFormBuilderContext>
   )
 }

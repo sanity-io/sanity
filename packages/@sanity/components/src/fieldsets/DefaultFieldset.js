@@ -11,7 +11,7 @@ class Fieldset extends React.Component {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
     columns: PropTypes.number,
-    collapsable: PropTypes.bool,
+    isExpanded: PropTypes.bool,
     fieldset: PropTypes.shape({
       description: PropTypes.string,
       legend: PropTypes.string
@@ -23,8 +23,12 @@ class Fieldset extends React.Component {
     styles: PropTypes.object
   }
 
-  state = {
-    isOpen: (typeof (this.props.collapsable) == 'undefined')
+  constructor(props) {
+    super()
+    this.state = {
+      isOpen: props.isExpanded !== false
+    }
+
   }
 
   static defaultProps = {
@@ -34,15 +38,11 @@ class Fieldset extends React.Component {
   }
 
   handleToggle = () => {
-    if (this.props.collapsable) {
-      this.setState({
-        isOpen: !this.state.isOpen
-      })
-    }
+    this.setState(prevState => ({isOpen: !prevState.isOpen}))
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, styles, ...rest} = this.props
+    const {fieldset, legend, description, columns, level, className, children, isExpanded, transparent, styles, ...rest} = this.props
     const {isOpen} = this.state
     const levelString = `level${level}`
     const rootClass = `
@@ -52,12 +52,13 @@ class Fieldset extends React.Component {
       ${transparent ? styles.transparent : ''}
       ${className || ''}
     `
+    const canExpand = typeof isExpanded !== 'undefined'
     return (
       <fieldset {...rest} className={rootClass} data-nesting-level={level}>
         <div className={styles.inner}>
           <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
             {
-              collapsable && (
+              canExpand && (
                 <div className={`${styles.arrow} ${isOpen ? styles.isOpen : ''}`}>
                   <ArrowDropDown />
                 </div>
