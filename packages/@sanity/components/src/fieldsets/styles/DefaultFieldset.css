@@ -92,6 +92,7 @@
     border: 1px solid var(--component-border-color);
     box-shadow: var(--component-box-shadow);
     padding: var(--medium-padding);
+    border-radius: var(--border-radius-base);
   }
 
   @nest .transparent & {

@@ -6,6 +6,7 @@
   --default-button-color--text: var(--black);
   --default-button-color--hover: var(--gray-light);
   --default-button-color--active: var(--gray);
+  --button-border-radius: var(--border-radius-base);
   --input-bg: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);

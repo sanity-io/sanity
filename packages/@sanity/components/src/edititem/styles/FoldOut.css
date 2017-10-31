@@ -30,6 +30,7 @@
   box-sizing: border-box;
   border: 1px solid var(--edit-item-fold-border-color);
   background-color: var(--component-bg);
+  border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
   margin-left: calc(var(--edit-item-fold-padding) * -1);
   margin-right: calc(var(--edit-item-fold-padding) * -1);
   position: relative;
