@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {State, Data} from 'slate'
+import {Data, State} from 'slate'
 import {Editor} from 'slate-react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 import {uniqueId} from 'lodash'
@@ -14,6 +14,7 @@ import initializeSlatePlugins from './util/initializeSlatePlugins'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
+import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
 
 export default class BlockEditor extends React.Component {
 
@@ -83,12 +84,10 @@ export default class BlockEditor extends React.Component {
     this.operations.toggleListItem(listItem, isActive)
   }
 
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.setState({
-        fullscreen: false
-      })
-    }
+  handleEscape = event => {
+    this.setState({
+      fullscreen: false
+    })
   }
 
   handleAnnotationButtonClick = annotation => {
@@ -137,6 +136,7 @@ export default class BlockEditor extends React.Component {
     function Preview(props) {
       return <span>{props.children}</span>
     }
+
     const items = this.textStyles
       .map((style, index) => {
         return {
@@ -382,11 +382,13 @@ export default class BlockEditor extends React.Component {
       >
         {
           fullscreen ? (
-            <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
-              <div className={styles.portal} onScroll={this.handleFullScreenScroll}>
-                {blockEditor}
-              </div>
-            </FullscreenDialog>
+            <StackedEscapable onEscape={this.handleFullScreenClose}>
+              <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
+                <div className={styles.portal} onScroll={this.handleFullScreenScroll}>
+                  {blockEditor}
+                </div>
+              </FullscreenDialog>
+            </StackedEscapable>
           ) : blockEditor
         }
       </FormField>
