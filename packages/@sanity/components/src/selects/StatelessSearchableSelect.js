@@ -174,7 +174,7 @@ class StatelessSearchableSelect extends React.PureComponent {
                 useOverlay={false}
                 addPadding={false}
                 scrollIntoView={false}
-                onClose={this.props.onClose}
+                onClose={onClose}
               >
                 <div
                   className={`

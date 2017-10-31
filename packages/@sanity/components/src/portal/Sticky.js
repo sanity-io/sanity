@@ -7,7 +7,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
 import {throttle} from 'lodash'
-import LayerStack from 'part:@sanity/components/layer-stack'
+import StackedEscapable from '../utilities/StackedEscapable'
 
 const scrollOptions = {
   duration: 200,
@@ -68,10 +68,6 @@ export default class StickyPortal extends React.PureComponent {
   _scrollContainerLeft = 0
   _scrollContainerWidth = 0
 
-  componentWillMount() {
-    LayerStack.addLayer(this)
-  }
-
   componentDidMount() {
     const {
       scrollContainer
@@ -85,7 +81,6 @@ export default class StickyPortal extends React.PureComponent {
       window.addEventListener('resize', this.handleWindowResize)
       window.addEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
       window.addEventListener('mouseup', this.handleWindowClick)
-      window.addEventListener('keydown', this.handleKeyDown)
     }
   }
 
@@ -99,7 +94,6 @@ export default class StickyPortal extends React.PureComponent {
       window.removeEventListener('resize', this.handleWindowResize)
       window.removeEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
       window.removeEventListener('mouseup', this.handleWindowClick)
-      window.removeEventListener('keydown', this.handleKeyDown)
     }
 
     if (this._scrollContainerElement) {
@@ -115,7 +109,6 @@ export default class StickyPortal extends React.PureComponent {
         this._paddingDummy.remove()
       }, false)
     }
-    LayerStack.removeLayer()
   }
 
   componentDidUpdate(prevProps) {
@@ -220,19 +213,6 @@ export default class StickyPortal extends React.PureComponent {
 
   handleContentScroll = event => {
     //this._contentScrollTop = event.target.scrollTop
-  }
-
-  handleClose = () => {
-    if (!this.state.isFocused) {
-      return
-    }
-    this.props.onClose()
-  }
-
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.handleClose()
-    }
   }
 
   handleWindowResize = throttle(() => {
@@ -387,6 +367,7 @@ export default class StickyPortal extends React.PureComponent {
     const {
       useOverlay,
       children,
+      onClose,
       isOpen
     } = this.props
     const {
@@ -397,41 +378,44 @@ export default class StickyPortal extends React.PureComponent {
       contentLeft,
       portalIsOpen
     } = this.state
+
     return (
-      <span ref={this.setRootElement} className={styles.root}>
-        <Portal
-          isOpened={isOpen && portalIsOpen}
-          closeOnEsc={false}
-          onOpen={this.handlePortalOpened}
-          className={styles.portal}
-        >
-          <div className={styles.portalInner}>
-            {
-              useOverlay && <div className={styles.overlay} />
-            }
-            <div
-              className={styles.availableSpace}
-              ref={this.setAvailableSpaceElement}
-              style={{
-                top: `${availableSpaceTop}px`,
-                width: `${availableWidth}px`,
-                height: `${availableHeight}px`
-              }}
-            >
+      <StackedEscapable onEscape={onClose}>
+        <span ref={this.setRootElement} className={styles.root}>
+          <Portal
+            isOpened={isOpen && portalIsOpen}
+            closeOnEsc={false}
+            onOpen={this.handlePortalOpened}
+            className={styles.portal}
+          >
+            <div className={styles.portalInner}>
+              {
+                useOverlay && <div className={styles.overlay} />
+              }
               <div
-                ref={this.setContentElement}
-                className={styles.content}
+                className={styles.availableSpace}
+                ref={this.setAvailableSpaceElement}
                 style={{
-                  top: `${contentTop}px`,
-                  left: `${contentLeft}px`
+                  top: `${availableSpaceTop}px`,
+                  width: `${availableWidth}px`,
+                  height: `${availableHeight}px`
                 }}
               >
-                {children}
+                <div
+                  ref={this.setContentElement}
+                  className={styles.content}
+                  style={{
+                    top: `${contentTop}px`,
+                    left: `${contentLeft}px`
+                  }}
+                >
+                  {children}
+                </div>
               </div>
             </div>
-          </div>
-        </Portal>
-      </span>
+          </Portal>
+        </span>
+      </StackedEscapable>
     )
   }
 }

@@ -45,14 +45,6 @@ export default class EditItemFoldOut extends React.PureComponent {
     })
   }
 
-  handleClickOutside = event => {
-    this.handleClose()
-  }
-
-  handleClose = event => {
-    this.props.onClose()
-  }
-
   setRootElement = element => {
     this._rootElement = element
   }
@@ -70,7 +62,7 @@ export default class EditItemFoldOut extends React.PureComponent {
   }
 
   render() {
-    const {title, children} = this.props
+    const {title, onClose, children} = this.props
     const {scrollContainer, width, left, height} = this.state
     return (
       <div
@@ -86,8 +78,8 @@ export default class EditItemFoldOut extends React.PureComponent {
           addPadding={false}
           scrollIntoView={false}
           onResize={this.handleResize}
-          onClose={this.handleClose}
-          onClickOutside={this.handleClickOutside}
+          onClose={onClose}
+          onClickOutside={onClose}
         >
           <div
             className={styles.wrapper}

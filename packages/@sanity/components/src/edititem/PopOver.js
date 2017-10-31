@@ -28,7 +28,7 @@ export default class EditItemPopOver extends React.PureComponent {
   static defaultProps = {
     title: undefined,
     scrollContainer: undefined,
-    onClose() {}, // eslint-disable-line
+    onClose() {},
     onClickOutside() {},
     actions: [],
     isOpen: true
@@ -61,19 +61,6 @@ export default class EditItemPopOver extends React.PureComponent {
     this.setState({
       scrollContainer: element
     })
-  }
-
-  handleClose = () => {
-    this.props.onClose()
-  }
-
-  handleStickyClose = event => {
-    this.handleClose()
-  }
-
-  handleClickOutside = event => {
-    this.handleClose()
-    this.props.onClickOutside()
   }
 
   setArrowElement = element => {
@@ -134,6 +121,8 @@ export default class EditItemPopOver extends React.PureComponent {
       title,
       children,
       actions,
+      onClose,
+      onClickOutside,
       isOpen,
     } = this.props
 
@@ -152,8 +141,9 @@ export default class EditItemPopOver extends React.PureComponent {
           isOpen={isOpen}
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
+          onClickOutside={onClickOutside}
+          onClose={onClose}
           stickToTop
-          onClose={this.handleClose}
         >
           <div
             ref={this.setPopoverInnerElement}

@@ -233,10 +233,6 @@
       "description": "Keep control over stacking layers in portals"
     },
     {
-      "implements": "part:@sanity/components/layer-stack",
-      "path": "components/LayerStack.js"
-    },
-    {
       "implements": "part:@sanity/base/sanity-root",
       "path": "components/SanityRoot.js"
     },
