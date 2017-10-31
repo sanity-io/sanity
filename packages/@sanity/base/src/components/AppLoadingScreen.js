@@ -37,7 +37,6 @@ const AppLoadingScreenStyles = `
 export default class AppLoadingScreen extends React.PureComponent {
   static propTypes = {
     text: PropTypes.string,
-    logo: PropTypes.node
   }
 
   static defaultProps = {
