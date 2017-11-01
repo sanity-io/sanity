@@ -26,6 +26,7 @@
   cursor: default;
   user-select: none;
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+  border-radius: var(--button-border-radius);
   padding: 0.8em 0.9em;
 
   @nest &.notRecentlyHovered:focus:not(:hover) {
