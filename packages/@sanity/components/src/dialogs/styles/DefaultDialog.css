@@ -75,6 +75,7 @@
   z-index: var(--zindex-modal);
   position: absolute;
   border: 0;
+  border-radius: var(--border-radius-base);
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
