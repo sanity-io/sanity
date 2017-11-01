@@ -461,7 +461,11 @@
     },
     {
       "name": "part:@sanity/base/sanity-logo",
-      "description": "Black sanity logo"
+      "description": "Monochrome sanity logo."
+    },
+    {
+      "name": "part:@sanity/base/sanity-logo-alpha",
+      "description": "Sanity logo with alpha transparancy parts"
     },
     {
       "name": "part:@sanity/base/sanity-studio-logo",
@@ -762,6 +766,10 @@
     {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
+    },
+    {
+      "implements": "part:@sanity/base/sanity-logo-alpha",
+      "path": "components/logos/SanityLogoAlpha.js"
     },
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
