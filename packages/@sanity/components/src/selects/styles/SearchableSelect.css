@@ -56,6 +56,39 @@
   z-index: 2;
 }
 
+.openItem {
+  position: absolute;
+  top: 0.5em;
+  right: 3.25em;
+  z-index: 2;
+  color: var(--text-color);
+  transition: transform 0.1s linear, opacity 0.1s linear;
+  opacity: 0.6;
+
+  @nest &:hover {
+    opacity: 1;
+    transform: scale(1.3);
+    color: var(--link-color);
+
+    @nest & svg {
+      color: var(--link-color);
+    }
+  }
+
+  @nest &:active {
+    opacity: 1;
+    color: var(--text-color);
+
+    @nest & svg {
+      color: var(--text-color);
+    }
+  }
+
+  @nest & svg {
+    color: var(--text-color);
+  }
+}
+
 .clearButton {
   composes: clearButton from 'part:@sanity/components/textinputs/default-style';
   right: 1.5em;
