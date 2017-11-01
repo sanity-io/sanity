@@ -5,7 +5,8 @@ import React from 'react'
 import type {Node} from 'react'
 import styles from './styles/ItemValue.css'
 import ConfirmButton from './ConfirmButton'
-
+import LinkIcon from 'part:@sanity/base/link-icon'
+import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
@@ -17,6 +18,7 @@ import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
+import {IntentLink} from 'part:@sanity/base/router'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 
 type Props = {
@@ -154,6 +156,17 @@ export default class Item extends React.Component<Props> {
           </div>
 
           <div className={styles.functions}>
+            {
+              value._ref && (
+                <IntentLink
+                  className={styles.linkToReference}
+                  intent="edit"
+                  params={{id: value._ref}}
+                >
+                  <LinkIcon />
+                </IntentLink>
+              )
+            }
             {!type.readOnly && (
               <ConfirmButton
                 tabIndex={0}
