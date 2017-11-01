@@ -1,5 +1,5 @@
 import {error, HELP_IDS} from '../createValidationResult'
-import {flatten, isObject} from 'lodash'
+import {flatten, isPlainObject} from 'lodash'
 import {getDupes} from '../utils/getDupes'
 
 function normalizeToProp(typeDef) {
@@ -8,28 +8,36 @@ function normalizeToProp(typeDef) {
   }
   return typeDef.to ? [typeDef.to] : typeDef.to
 }
+
 export default (typeDef, visitorContext) => {
 
-  const to = normalizeToProp(typeDef)
-  const toIsArray = Array.isArray(to)
+  const isValidTo = Array.isArray(typeDef.to) || isPlainObject(typeDef.to)
+  const normalizedTo = normalizeToProp(typeDef)
 
   const problems = flatten([
-    toIsArray
-      ? getDupes(to, t => `${t.name};${t.type}`).map(dupes =>
+    isValidTo
+      ? getDupes(normalizedTo, t => `${t.name};${t.type}`).map(dupes =>
         error(
           `Found ${dupes.length} members with same type, but not unique names "${dupes[0]
             .type}" in reference. This makes it impossible to tell their values apart and you should consider naming them`,
           HELP_IDS.REFERENCE_TO_INVALID
         ))
       : error(
-        'The reference type is missing or having an invalid value for the required "to" property',
+        'The reference type is missing or having an invalid value for the required "to" property. It should be an array of accepted types.',
         HELP_IDS.REFERENCE_TO_INVALID
       )
   ])
 
+  if (isValidTo && normalizedTo.length === 0) {
+    problems.push(error(
+      'The reference type should define at least one accepted type. Please check the "to" property.',
+      HELP_IDS.REFERENCE_TO_INVALID
+    ))
+  }
+
   return {
     ...typeDef,
-    to: to.map(visitorContext.visit),
+    to: (isValidTo ? normalizedTo : []).map(visitorContext.visit),
     _problems: problems
   }
 }
