@@ -1,7 +1,7 @@
 {
   "name": "reflector-client",
-  "version": "0.119.0",
   "description": "A client for the client to client message bus",
+  "version": "0.119.0",
   "main": "lib/Connector.js",
   "scripts": {
     "clean": "rimraf lib",
