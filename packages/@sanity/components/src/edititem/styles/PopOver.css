@@ -71,6 +71,7 @@
 .popover {
   composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
+  border-radius: var(--border-radius-base);
   z-index: 2;
   padding: 0;
   margin-bottom: var(--large-padding);
@@ -171,6 +172,7 @@
   padding: var(--small-padding);
   font-size: 1rem;
   font-weight: 400;
+  border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
 
   @media (--max-screen-medium) {
     height: var(--header-height);
