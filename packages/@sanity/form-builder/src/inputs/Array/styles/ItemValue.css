@@ -45,6 +45,36 @@
   composes: default from 'part:@sanity/components/drag-handle-style';
 }
 
+.linkToReference {
+  z-index: 2;
+  color: var(--text-color);
+  transition: transform 0.1s linear, opacity 0.1s linear;
+  opacity: 0.6;
+  transform: scale(1.2);
+
+  @nest &:hover {
+    opacity: 1;
+    color: var(--link-color);
+
+    @nest & svg {
+      color: var(--link-color);
+    }
+  }
+
+  @nest &:active {
+    opacity: 1;
+    color: var(--text-color);
+
+    @nest & svg {
+      color: var(--text-color);
+    }
+  }
+
+  @nest & svg {
+    color: var(--text-color);
+  }
+}
+
 .preview {
   flex-grow: 1;
   outline: none;
