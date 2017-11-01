@@ -264,15 +264,28 @@
     }
   }
 
-  @nest &.inverted,
-  &.simple {
+  @nest &.inverted {
     border-color: var(--white);
     background-color: transparent;
     color: var(--white);
 
     @nest &:not(.disabled) {
-      @nest &:hover. &:focus {
-        background-color: color(var(--white) lightness(- 5%));
+      @nest &:hover, &:focus {
+        background-color: color(var(--white) a(40%));
+        color: var(--white);
+      }
+    }
+  }
+
+  @nest &.simple {
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--white);
+
+    @nest &:not(.disabled) {
+      @nest &:hover, &:focus {
+        background-color: color(var(--white) a(40%));
+        color: var(--white);
       }
     }
   }

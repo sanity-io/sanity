@@ -173,6 +173,9 @@ storiesOf('Buttons', module)
             <Button onClick={action('clicked')} color="white" disabled={disabled}>
               White
             </Button>
+            <Button onClick={action('clicked')} kind="simple" color="white" disabled={disabled}>
+              White simple
+            </Button>
             <Button onClick={action('clicked')} inverted disabled={disabled}>
               Inverted
             </Button>
