@@ -1,7 +1,7 @@
 import CustomObjectInput from '../components/CustomObjectInput'
 
 export default {
-  type: 'object',
+  type: 'document',
   name: 'customObject',
   title: 'Custom object',
   fields: [

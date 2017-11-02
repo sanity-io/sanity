@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
-import {setIfMissing} from '@sanity/form-builder/PatchEvent'
+import {setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import {FormBuilderInput} from 'part:@sanity/form-builder'
 
 export default class CustomObjectInput extends React.PureComponent {

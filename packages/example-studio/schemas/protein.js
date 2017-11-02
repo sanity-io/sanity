@@ -1,9 +1,16 @@
 import ProteinInput from '../components/ProteinInput/ProteinInput'
 
+// todo
+const XYZ = ['v0', 'v1', 'v2'].map(n => ({
+  name: n,
+  title: n.toUpperCase(),
+  type: 'number'
+}))
+
 export default {
   name: 'protein',
   title: 'Protein',
-  type: 'object',
+  type: 'document',
   inputComponent: ProteinInput,
   fields: [
     {
@@ -18,15 +25,18 @@ export default {
       fields: [
         {
           name: 'rotation',
-          type: 'object'
+          type: 'object',
+          fields: XYZ
         },
         {
           name: 'center',
-          type: 'object'
+          type: 'object',
+          fields: XYZ
         },
         {
           name: 'zoom',
-          type: 'object'
+          type: 'object',
+          fields: XYZ
         }
       ]
     }

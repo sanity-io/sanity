@@ -2,7 +2,7 @@ import AuthorPreview from '../parts/AuthorPreview'
 
 export default {
   name: 'author',
-  type: 'object',
+  type: 'document',
   title: 'Author',
   preview: {
     select: {
