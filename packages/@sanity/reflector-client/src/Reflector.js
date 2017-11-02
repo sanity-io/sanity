@@ -1,4 +1,4 @@
-/* global window */
+/* global window, navigator */
 
 import getIt from 'get-it'
 import getItJsonResponse from 'get-it/lib/middleware/jsonResponse'
@@ -16,7 +16,7 @@ function parseEvent(event) {
     return err
   }
 }
-export default class Connector {
+export default class Reflector {
   constructor(sanityClient) {
     this.sanityClient = sanityClient
     this.request = getIt([
@@ -79,11 +79,25 @@ export default class Connector {
     })
   }
 
+  // Sends a message using the beacon api which in some browsers lets us send a little bit of
+  // data while the window is closing. Returns true if the message was successfully submitted,
+  // false if it failed or if status is unknown.
+  sendBeacon(channel, message) {
+    if (typeof navigator == 'undefined' || typeof navigator.sendBeacon != 'function') {
+      // If sendBeacon is not supported, just try to send it the old fashioned way
+      this.send(channel, message)
+      return false
+    }
+    const url = this.sanityClient.getUrl(`presence/send/${channel}`)
+    return navigator.sendBeacon(url, JSON.stringify(message))
+  }
+
   // Create a connection to a specific reflector channel
   connect(channel) {
     return {
       listen: () => this.listen(channel),
-      send: message => this.send(channel, message)
+      send: message => this.send(channel, message),
+      sendBeacon: message => this.sendBeacon(channel, message)
     }
   }
 }
