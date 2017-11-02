@@ -16,8 +16,8 @@ export default class PresenceStore {
     this.connection = connection
     this.unsubscribeListener = this.connection.listen().subscribe(this.handleMessage).unsubscribe
     this.myState = {}
-    this.states = {}
-    this.timestamps = {}
+    this.states = new Map()
+    this.timestamps = new Map()
     this.resendReportTimer = null
     this.changeReportDebounceTimer = null
     this.performPurgeTimer = setInterval(this.performPurge, 2000)
@@ -34,6 +34,7 @@ export default class PresenceStore {
     this.unsubscribeListener()
     clearTimeout(this.resendReportTimer)
     clearInterval(this.performPurgeTimer)
+    clearTimeout(this.changeReportDebounceTimer)
   }
 
   // The observable that all subscribers will use to track state changes
@@ -72,12 +73,12 @@ export default class PresenceStore {
     const key = hashKeyForState(msg.i, msg.m.session)
 
     // Only update state if state is actually changed
-    if (!deepEqual(state, this.states[key])) {
-      this.states[key] = state
+    if (!deepEqual(state, this.states.get(key))) {
+      this.states.set(key, state)
       this.handleRemoteChange()
     }
     // Update timestamp for this cache key
-    this.timestamps[key] = new Date()
+    this.timestamps.set(key, Date.now())
   }
 
   handleMessage = msg => {
@@ -94,7 +95,7 @@ export default class PresenceStore {
         this.sendMyState()
         break
       case 'disconnect':
-        delete this.states[hashKeyForState(msg.i, msg.m.session)]
+        this.states.delete(hashKeyForState(msg.i, msg.m.session))
         this.handleRemoteChange()
         break
       default:
@@ -103,12 +104,12 @@ export default class PresenceStore {
 
   // Purge state objects for clients that have not reported for STATE_TIMEOUT_INTERVAL millis
   performPurge = () => {
-    const now = new Date()
-    Object.keys(this.states).forEach(key => {
-      const age = now - this.timestamps[key].timestamp
+    const now = Date.now()
+    this.states.keys().forEach(key => {
+      const age = now - this.timestamps.get(key)
       if (age > STATE_TIMEOUT_INTERVAL) {
-        delete this.states[key]
-        delete this.timestamps[key]
+        this.states.delete(key)
+        this.timestamps.delete(key)
         this.handleRemoteChange()
       }
     })
@@ -122,7 +123,7 @@ export default class PresenceStore {
   }
 
   getStateReport() {
-    return Object.keys(this.states).sort().map(key => this.states[key])
+    return Array.from(this.states.keys()).sort().map(key => this.states.get(key))
   }
 
   reportChangesToAllSubscribers = () => {
