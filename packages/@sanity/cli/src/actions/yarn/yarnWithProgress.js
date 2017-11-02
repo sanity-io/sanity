@@ -37,7 +37,7 @@ export default function yarnWithProgress(args, options = {}) {
   const nodePath = process.argv[0]
   const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive'])
 
-  const state = {firstStepReceived: false}
+  const state = {firstStepReceived: false, currentProgressStep: null}
 
   // Yarn takes a while before starting to emit events, we want to show
   // some sort of indication while it's getting started
@@ -128,11 +128,18 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   function onProgressStart(event) {
+    // For some events (Linking dependencies, for instance), multiple progress
+    // start events are emitted, which doesn't look great. Skip those.
+    if (state.step.message === state.currentProgressStep) {
+      return
+    }
+
     if (state.spinner) {
       state.spinner.stop()
     }
 
-    if (useProgress) {
+    if (useProgress && event.data.total) {
+      state.currentProgressStep = state.step.message
       state.progress = progrescii.create({
         template: getProgressTemplate(chalk.yellow('●'), state.step.message),
         total: event.data.total
