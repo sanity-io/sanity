@@ -32,12 +32,12 @@
     "@sanity/form-builder": "^0.118.4",
     "babel-plugin-lodash": "^3.2.11",
     "lodash": "^4.17.4",
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "rimraf": "^2.6.1"
+    "prop-types": "^15.6.0",
+    "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "react": "15.x || ^16.0.0-rc.2",
-    "react-dom": "15.x || ^16.0.0-rc.2"
+    "react": "^15.6 || ^16",
+    "react-dom": "^15.6 || ^16"
   },
   "repository": {
     "type": "git",

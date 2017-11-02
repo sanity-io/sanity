@@ -51,18 +51,18 @@
     "@sanity/plugin-loader": "^0.118.4",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^4.6.1",
+    "eslint": "^4.9.0",
     "mocha": "^3.2.0",
     "nyc": "^11.0.3",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "proxyquire": "^1.7.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "react": "15.x || ^16.0.0-rc.2",
-    "react-dom": "15.x || ^16.0.0-rc.2"
+    "prop-types": "^15.6 || ^16",
+    "react": "^15.6 || ^16",
+    "react-dom": "^15.6 || ^16"
   }
 }

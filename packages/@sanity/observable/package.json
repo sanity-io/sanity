@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "is-observable": "^0.2.0",
-    "rimraf": "^2.6.1",
+    "rimraf": "^2.6.2",
     "tap": "^10.3.0",
     "zen-observable": "^0.4.0"
   },

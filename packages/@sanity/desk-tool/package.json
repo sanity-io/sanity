@@ -30,7 +30,7 @@
     "@sanity/mutator": "^0.118.4",
     "@sanity/uuid": "^0.118.4",
     "classnames": "^2.2.5",
-    "date-fns": "^1.28.5",
+    "date-fns": "^1.29.0",
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.10",
     "hashlru": "^2.1.0",
@@ -49,19 +49,19 @@
     "@sanity/components": "^0.118.4",
     "@sanity/core": "^0.118.4",
     "babel-plugin-lodash": "^3.2.11",
-    "eslint": "^4.6.1",
+    "eslint": "^4.9.0",
     "eslint-config-sanity": "^3.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-react": "^7.4.0",
     "history": "^4.6.3",
     "postcss-cssnext": "^3.0.2",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "react": "15.x || ^16.0.0-rc.2"
+    "prop-types": "^15.6 || ^16",
+    "react": "^15.6 || ^16"
   },
   "repository": {
     "type": "git",
