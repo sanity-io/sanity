@@ -12,7 +12,7 @@ const LANGUAGE_PRIORITY = ['nb', 'nn', 'en']
 
 export default {
   name: 'blogpost',
-  type: 'object',
+  type: 'document',
   title: 'Blogpost',
   preview: {
     select: {
@@ -45,16 +45,13 @@ export default {
     {
       name: 'publishAt',
       title: 'Publish at',
-      type: 'richDate',
+      type: 'datetime',
       description: 'Blogpost goes live at this date/time',
       options: {
         dateFormat: 'YYYY-MM-DD',
         timeFormat: 'HH:mm',
         timeStep: 60,
-        calendarTodayLabel: 'Today',
-        inputUtc: false,
-        inputDate: true,
-        inputTime: true
+        calendarTodayLabel: 'Today'
       }
     },
     {
