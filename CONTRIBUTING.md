@@ -35,6 +35,9 @@ npm start
 - When the `next`-branch is throughly tested and ready to be released (either as a minor or major version bump), it should be merged into master and bumped.
 - Critical fixes goes straight into master (preferably through a pull request)
 
+## Merging
+Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people has been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in paranthesis, e.g. `[some-package] Fix stuff (#22)`
+
 ## Publishing official releases
 [**NOTE** Only publish _minor_ releases until Sanity passes the 1.0 mark]
 
