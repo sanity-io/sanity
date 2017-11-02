@@ -168,7 +168,6 @@ export default class ReferenceInput extends React.Component<Props, State> {
 
     return (
       <FormField label={type.title} level={level} description={type.description}>
-        test
         <SearchableSelect
           {...rest}
           placeholder="Type to search…"
