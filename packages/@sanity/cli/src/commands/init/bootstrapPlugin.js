@@ -16,7 +16,8 @@ export default function bootstrapPlugin(data, opts = {}) {
     readme: `# ${data.name}\n\n${data.description}\n`,
     sanity: createSanityManifest(data, {
       isPlugin: true,
-      isSanityStyle: opts.sanityStyle
+      isSanityStyle: opts.sanityStyle,
+      serialize: true
     })
   }
 
