@@ -1,25 +1,7 @@
-import HtmlDeserializer from '../conversion/slateHTMLDeserializer'
+import blockTools from '@sanity/block-tools'
+import {Document} from 'slate'
 
 function onPasteHtml(blockEditor) {
-
-  function resolveEnabledStyles() {
-    return blockEditor.textStyles
-      .map(style => style.value)
-  }
-
-  function resolveEnabledAnnotationTypes() {
-    return blockEditor.annotationTypes.map(type => type.name)
-  }
-
-  function resolveEnabledDecorators() {
-    return Object.keys(blockEditor.slateSchema.marks)
-  }
-
-  const deserializer = new HtmlDeserializer({
-    enabledStyles: resolveEnabledStyles(),
-    enabledDecorators: resolveEnabledDecorators(),
-    enabledAnnotations: resolveEnabledAnnotationTypes()
-  })
 
   function onPaste(event, data, change) {
     if (data.type != 'html') {
@@ -28,10 +10,10 @@ function onPasteHtml(blockEditor) {
     if (data.isShift) {
       return null
     }
-    const {document} = deserializer.deserialize(
-      data.html
-    )
-    return change.insertFragment(document)
+    const blockContentType = blockEditor.props.type
+    const blocks = blockTools.htmlToBlocks(data.html, {blockContentType})
+    const {document} = blockTools.blocksToSlateState(blocks, blockContentType)
+    return change.insertFragment(Document.fromJSON(document))
   }
 
   return {

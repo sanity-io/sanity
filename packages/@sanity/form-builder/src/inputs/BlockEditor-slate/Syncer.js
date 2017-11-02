@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import blockTools from '@sanity/block-tools'
 import generateHelpUrl from '@sanity/generate-help-url'
 import FormField from 'part:@sanity/components/formfields/default'
 import BlockEditor from './BlockEditor'
 import {State} from 'slate'
-import sanityToSlateRaw from './conversion/sanityToSlateRaw'
-import slateRawToSanity from './conversion/slateRawToSanity'
 import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
@@ -13,10 +12,10 @@ import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/Syncer.css'
 
 function deserialize(value, type) {
-  return State.fromJSON(sanityToSlateRaw(value, type))
+  return State.fromJSON(blockTools.blocksToSlateState(value, type))
 }
-function serialize(state) {
-  return slateRawToSanity(state.toJSON({preserveKeys: true}))
+function serialize(state, type) {
+  return blockTools.slateStateToBlocks(state.toJSON({preserveKeys: true}), type)
 }
 
 function isDocumentEqual(slateState, otherSlateState) {
