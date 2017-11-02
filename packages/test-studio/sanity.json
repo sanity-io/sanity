@@ -25,6 +25,10 @@
       "path": "./schemas/schema.js"
     },
     {
+      "implements": "part:@sanity/base/tool",
+      "path": "./plugins/bundle-report"
+    },
+    {
       "implements": "part:@sanity/base/brand-logo",
       "path": "src/components/BrandLogo.js"
     }

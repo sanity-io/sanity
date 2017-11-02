@@ -1,6 +1,8 @@
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
+import path from 'path'
+import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 
 export default config => {
   const baseConfig = getBaseConfig(config)
@@ -21,7 +23,14 @@ export default config => {
     },
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin()
+      new webpack.NoEmitOnErrorsPlugin(),
+      new BundleAnalyzerPlugin(
+        {
+          analyzerMode: 'static',
+          reportFilename: path.join(process.cwd(), 'static/bundle-analyzer-report.html'),
+          openAnalyzer: false
+        }
+      )
     ]),
     module: Object.assign({}, baseConfig.module, {
       rules: applyStaticLoaderFix(baseConfig, config)

@@ -10,3 +10,5 @@ node_modules
 
 # Built assets
 dist
+
+static/bundle-analyzer-report.html
