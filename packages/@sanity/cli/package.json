@@ -51,7 +51,7 @@
     "gitconfiglocal": "^2.0.1",
     "inquirer": "^2.0.0",
     "latest-version": "^3.1.0",
-    "leven": "^2.0.0",
+    "leven": "^2.1.0",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
     "opn": "^4.0.2",
@@ -65,7 +65,7 @@
     "semver-compare": "^1.0.0",
     "simple-get": "^2.7.0",
     "split2": "^2.1.1",
-    "thenify": "^3.2.0",
+    "thenify": "^3.3.0",
     "update-notifier": "^1.0.3",
     "validate-npm-package-name": "^3.0.0",
     "xdg-basedir": "^3.0.0"
@@ -76,10 +76,10 @@
     "babel-preset-stage-2": "^6.22.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^4.6.1",
+    "eslint": "^4.9.0",
     "eslint-config-sanity": "^3.1.0",
     "mocha": "^3.2.0",
-    "rimraf": "^2.6.1",
+    "rimraf": "^2.6.2",
     "source-map-support": "^0.4.11"
   }
 }

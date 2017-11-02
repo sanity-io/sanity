@@ -35,11 +35,11 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.0",
-    "eslint": "^4.6.1",
-    "eslint-config-prettier": "^2.4.0",
+    "eslint": "^4.9.0",
+    "eslint-config-prettier": "^2.6.0",
     "eslint-config-sanity": "^3.1.0",
-    "prettier": "^1.6.1",
-    "rimraf": "^2.6.1"
+    "prettier": "^1.7.4",
+    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",
