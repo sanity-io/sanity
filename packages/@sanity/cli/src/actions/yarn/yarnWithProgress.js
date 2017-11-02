@@ -11,6 +11,13 @@ import {noop, padEnd, throttle} from 'lodash'
 const useProgress = (process.stderr && process.stderr.isTTY) && !process.env.CI
 const binDir = path.join(__dirname, '..', '..', '..', 'vendor')
 const yarnPath = require.resolve(path.join(binDir, 'yarn'))
+const parseJson = data => {
+  try {
+    return JSON.parse(data)
+  } catch (err) {
+    return undefined
+  }
+}
 
 export default function yarnWithProgress(args, options = {}) {
   /* eslint-disable no-console */
@@ -47,7 +54,7 @@ export default function yarnWithProgress(args, options = {}) {
 
   [proc.stdout, proc.stderr].forEach(stream => {
     stream
-      .pipe(split2(JSON.parse))
+      .pipe(split2(parseJson))
       .on('data', onChunk)
       .on('error', onNativeError)
   })
