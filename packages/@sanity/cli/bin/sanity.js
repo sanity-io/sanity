@@ -12,8 +12,8 @@
 
 var nodeVersion = Number(process.version.replace(/^v/i, '').split('.', 2)[0])
 
-if (nodeVersion < 4) {
-  console.error('ERROR: Node.js version 4 or higher required. You are running ' + process.version)
+if (nodeVersion < 6) {
+  console.error('ERROR: Node.js version 6 or higher required. You are running ' + process.version)
   process.exit(1)
 } else {
   require('../lib/cli')()
