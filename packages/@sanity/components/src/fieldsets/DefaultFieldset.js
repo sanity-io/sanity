@@ -4,9 +4,8 @@ import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
-import Styleable from '../utilities/Styleable'
 
-class Fieldset extends React.Component {
+export default class Fieldset extends React.Component {
   static propTypes = {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
@@ -37,12 +36,25 @@ class Fieldset extends React.Component {
     className: ''
   }
 
+  focus() {
+    this.fieldSetEl.focus()
+    console.log('focused fieldset')
+  }
+
+  setFieldset = el => {
+    this.fieldSetEl = el
+  }
+
   handleToggle = () => {
     this.setState(prevState => ({isOpen: !prevState.isOpen}))
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, isExpanded, transparent, styles, ...rest} = this.props
+    const {fieldset, legend, description, columns, level, className, children, isExpanded, transparent, ...rest} = this.props
+    const styles = {
+      ...defaultStyles,
+      ...this.props.styles
+    }
     const {isOpen} = this.state
     const levelString = `level${level}`
     const rootClass = `
@@ -54,7 +66,7 @@ class Fieldset extends React.Component {
     `
     const canExpand = typeof isExpanded !== 'undefined'
     return (
-      <fieldset {...rest} className={rootClass} data-nesting-level={level}>
+      <fieldset {...rest} tabIndex={0} className={rootClass} ref={this.setFieldset} data-nesting-level={level}>
         <div className={styles.inner}>
           <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
             {
@@ -83,5 +95,3 @@ class Fieldset extends React.Component {
     )
   }
 }
-
-export default Styleable(Fieldset, defaultStyles)

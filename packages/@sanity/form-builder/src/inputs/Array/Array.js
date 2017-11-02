@@ -11,11 +11,12 @@ import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
 import humanize from 'humanize-list'
 import randomKey from './randomKey'
-import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
+import PatchEvent, {insert, set, setIfMissing, unset} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type} from '../../typedefs'
+import type {Path} from '../../typedefs/path'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -56,32 +57,25 @@ type Props = {
   value: Array<ItemValue>,
   level: number,
   onChange: (event: PatchEvent) => void,
-  onFocus: (Array) => void,
+  onFocus: (Path) => void,
   onBlur: () => void,
-  focusPath: (Array) => void,
+  focusPath: (Path) => void,
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
 type State = {
-  editItemKey: ?string,
   rejected: Array<UploadTask>,
   ambiguous: Array<UploadTask>,
   isMoving: ?boolean
 }
 
 export default class ArrayInput extends React.Component<Props, State> {
-  constructor(props) {
-    super()
-    const immediateChildPathItem = props.focusPath.length > 0 ? props.focusPath[0] : null
-
-    this.state = {
-      editItemKey: immediateChildPathItem ? immediateChildPathItem._key : null,
-      rejected: [],
-      ambiguous: [],
-      isMoving: false
-    }
-
+  state = {
+    rejected: [],
+    ambiguous: [],
+    isMoving: false
   }
+
   uploadSubscriptions: {}
   uploadSubscriptions = {}
 
@@ -106,21 +100,25 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   handleItemEditStop = (item: ItemValue) => {
-    const itemValue = this.getEditItem()
+    const itemValue = this.getEditItemKey()
     if (itemValue && isEmpty(itemValue)) {
       this.removeItem(itemValue)
     }
-    this.setState({editItemKey: null})
+    this.props.onFocus([])
   }
 
   handleItemEditStart = (item: ItemValue) => {
-    this.setState({editItemKey: item._key})
+    this.focusItem(item)
+  }
+
+  focusItem(item: ItemValue) {
+    this.props.onFocus([{_key: item._key}, true])
   }
 
   handleDropDownAction = (menuItem: { type: Type }) => {
     const item = createProtoValue(menuItem.type)
     this.append(item)
-    this.setState({editItemKey: item._key})
+    this.focusItem(item)
   }
 
   handleAddBtnClick = () => {
@@ -130,22 +128,24 @@ export default class ArrayInput extends React.Component<Props, State> {
       throw new Error('Nothing to add')
     }
     const item = createProtoValue(memberType)
+    this.focusItem(item)
     this.append(item)
-    this.setState({editItemKey: item._key})
   }
 
   removeItem(item: ItemValue) {
-    const {onChange, value} = this.props
-    if (item._key === this.state.editItemKey) {
-      this.setState({editItemKey: null})
-    }
+    const {onChange, onFocus, value} = this.props
     onChange(
       PatchEvent.from(
         unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
       )
     )
+
     if (item._key in this.uploadSubscriptions) {
       this.uploadSubscriptions[item._key].unsubscribe()
+    }
+
+    if (item._key === this.getEditItemKey()) {
+      onFocus([])
     }
   }
 
@@ -250,13 +250,15 @@ export default class ArrayInput extends React.Component<Props, State> {
     }
   }
 
-  handleItemFocus = (path: Array, item: ItemValue) => {
+  handleItemFocus = (path: Path, item: ItemValue) => {
     const key = item._key || randomKey(12)
     this.props.onFocus([{_key: key}, ...path])
   }
-  handleItemBlur = () => {
-    this.props.onBlur()
+
+  handleFocus = () => {
+    this.props.onFocus([true])
   }
+
   handleItemChange = (event: PatchEvent, item: ItemValue) => {
     const {onChange, value} = this.props
 
@@ -309,12 +311,10 @@ export default class ArrayInput extends React.Component<Props, State> {
     ))
   }
 
-  getEditItem(): ? ItemValue {
-    const {editItemKey} = this.state
-    const {value} = this.props
-    return typeof editItemKey === 'number'
-      ? value[editItemKey]
-      : value.find(item => item._key === editItemKey)
+  getEditItemKey(): ? ItemValue {
+    const {focusPath} = this.props
+    const immediateChildPathItem = focusPath.length > 0 ? focusPath[0] : null
+    return immediateChildPathItem ? immediateChildPathItem._key : null
   }
 
   getMemberTypeOfItem(item: ItemValue): ? Type {
@@ -324,7 +324,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   renderList = () => {
-    const {type, value, focusPath} = this.props
+    const {type, value, focusPath, onBlur, level} = this.props
     const {isMoving} = this.state
     const options = type.options || {}
 
@@ -341,6 +341,7 @@ export default class ArrayInput extends React.Component<Props, State> {
       }
       : {}
     const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
+    const editItemKey = this.getEditItemKey()
     return (
       <List
         lockToContainerEdges
@@ -349,9 +350,8 @@ export default class ArrayInput extends React.Component<Props, State> {
         {...listProps}
       >
         {value.map((item, index) => {
-          const {editItemKey} = this.state
           const itemProps = isSortable ? {index} : {}
-          const itemFocusPath = focusPath.slice(1)
+          const itemFocusPath = (focusPath[0] && focusPath[0]._key === item._key) ? focusPath.slice(1) : []
           return (
             <Item
               key={item._key}
@@ -365,11 +365,12 @@ export default class ArrayInput extends React.Component<Props, State> {
               <RenderItemValue
                 type={type}
                 value={item}
+                level={level}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
                 focusPath={itemFocusPath}
                 onFocus={this.handleItemFocus}
-                onBlur={this.handleItemBlur}
+                onBlur={onBlur}
                 onEditStart={this.handleItemEditStart}
                 onEditStop={this.handleItemEditStop}
                 isEditing={editItemKey === item._key}
@@ -381,6 +382,14 @@ export default class ArrayInput extends React.Component<Props, State> {
     )
   }
 
+  focus() {
+    this._fieldset.focus()
+  }
+
+  setFieldset = el => {
+    this._fieldset = el
+  }
+
   render() {
     const {type, level, value} = this.props
     const {rejected, ambiguous} = this.state
@@ -390,7 +399,9 @@ export default class ArrayInput extends React.Component<Props, State> {
         legend={type.title}
         description={type.description}
         level={level}
-        tabIndex="0"
+        tabIndex={0}
+        onFocus={this.handleFocus}
+        ref={this.setFieldset}
         onPaste={this.handlePaste} /* note: the onPaste must be on fieldset for it to work in chrome */
         onDragOver={this.handleDragOver}
         onDrop={this.handleDrop}
@@ -423,8 +434,8 @@ export default class ArrayInput extends React.Component<Props, State> {
           >
             {ambiguous.map(task => (
               <div key={task.file.name}>
-                  The file {task.file.name} can be converted to several types of content.
-                  Please select how you want to represent it:
+                The file {task.file.name} can be converted to several types of content.
+                Please select how you want to represent it:
                 <ul>
                   {task.uploaderCandidates.map(uploaderCandidate => (
                     <li key={uploaderCandidate.type.name}>
@@ -434,7 +445,7 @@ export default class ArrayInput extends React.Component<Props, State> {
                           this.setState({ambiguous: ambiguous.filter(t => t !== task)})
                         }}
                       >
-                          Represent as {uploaderCandidate.type.name}
+                        Represent as {uploaderCandidate.type.name}
                       </Button>
                     </li>
                   ))}

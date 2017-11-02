@@ -1,12 +1,6 @@
 // @flow
 
-type KeyedSegment = {
-  _key: string
-}
-
-export type PathSegment = string | number | KeyedSegment
-
-type Path = Array<PathSegment>
+import type {Path, PathSegment} from '../typedefs/path'
 
 type HasPath = {
   path: Path
@@ -14,6 +8,7 @@ type HasPath = {
 type HasOrigin = {
   origin?: 'remote' | 'local'
 }
+
 type SetPatch = HasPath & HasOrigin & {
   type: 'set',
   value: any

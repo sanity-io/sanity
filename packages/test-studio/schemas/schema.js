@@ -28,12 +28,14 @@ import notitle from './notitle'
 import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
 import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
+import testFocus from './testFocus'
 
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
     book,
     author,
+    testFocus,
     strings,
     numbers,
     booleans,

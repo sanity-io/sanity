@@ -11,9 +11,7 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import PopOver from 'part:@sanity/components/dialogs/popover'
-
-import ItemForm from './ItemForm'
+import {FormBuilderInput} from '../../FormBuilderInput'
 import MemberValue from '../../Member'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
@@ -21,34 +19,27 @@ import Preview from '../../Preview'
 import {DragHandle} from 'part:@sanity/components/lists/sortable'
 import {IntentLink} from 'part:@sanity/base/router'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import type {Path} from '../../typedefs/path'
+import type {Type} from '../../typedefs'
 
 type Props = {
   type: ArrayType,
   value: ItemValue,
   level: number,
-  layout: 'media' | 'default',
+  layout?: 'media' | 'default',
   onRemove: (ItemValue) => void,
   onChange: (PatchEvent, ItemValue) => void,
+  onFocus: (Path, ItemValue) => void,
+  onBlur: void => void,
   onEditStart: (ItemValue) => void,
   onEditStop: (ItemValue) => void,
-  focusPath: Array,
-  onFocus: Array => void,
-  onBlur: () => void,
+  focusPath: Path,
   isEditing: boolean
 }
 
 export default class RenderItemValue extends React.Component<Props> {
 
   domElement: ?HTMLElement
-
-  state = {
-    showConfirmDialog: false
-  }
-
-  handleRemove = () => {
-    const {onRemove, value} = this.props
-    onRemove(value)
-  }
 
   handleEditStart = () => {
     const {value, onEditStart} = this.props
@@ -73,7 +64,7 @@ export default class RenderItemValue extends React.Component<Props> {
     onRemove(value)
   }
 
-  handleFocus = path => {
+  handleFocus = (path: Path) => {
     const {onFocus, value} = this.props
     onFocus(path, value)
   }
@@ -81,6 +72,10 @@ export default class RenderItemValue extends React.Component<Props> {
   handleBlur = () => {
     const {onBlur} = this.props
     onBlur()
+  }
+  handleChange = (event: PatchEvent) => {
+    const {onChange, value} = this.props
+    onChange(event, value)
   }
 
   getMemberType(): ?Type {
@@ -90,7 +85,7 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   renderEditItemForm(item: ItemValue): Node {
-    const {type, onChange, focusPath} = this.props
+    const {type, focusPath} = this.props
     const options = type.options || {}
 
     const memberType = this.getMemberType() || {}
@@ -100,14 +95,11 @@ export default class RenderItemValue extends React.Component<Props> {
 
     const content = (
       <MemberValue path={{_key: item._key}}>
-        <ItemForm
-          autoFocus
-          itemKey={item._key}
+        <FormBuilderInput
           type={memberType}
           level={level}
           value={item}
-          onRemove={this.handleRemove}
-          onChange={onChange}
+          onChange={this.handleChange}
           onFocus={this.handleFocus}
           focusPath={focusPath}
           onBlur={this.handleBlur}
@@ -152,18 +144,6 @@ export default class RenderItemValue extends React.Component<Props> {
     this.domElement = el
   }
 
-  handleDeleteButtonClick = event => {
-    this.setState({
-      showConfirmDialog: true
-    })
-  }
-
-  handleConfirmDialogClose = event => {
-    this.setState({
-      showConfirmDialog: false
-    })
-  }
-
   render() {
     const {value, type, isEditing} = this.props
 
@@ -206,34 +186,16 @@ export default class RenderItemValue extends React.Component<Props> {
               )
             }
             {!type.readOnly && (
-              <Button
+              <ConfirmButton
                 tabIndex={0}
                 kind="simple"
                 color="danger"
                 icon={TrashIcon}
                 title="Delete"
-                onClick={this.handleDeleteButtonClick}
+                onClick={this.handleRemove}
               >
-                <div className={styles.popoverAnchor}>
-                  {
-                    this.state.showConfirmDialog && (
-                      <PopOver
-                        color="danger"
-                        useOverlay={false}
-                        onClose={this.handleConfirmDialogClose}
-                      >
-                        <Button
-                          kind="simple"
-                          onClick={this.handleRemove}
-                          icon={TrashIcon}
-                        >
-                          Confirm delete
-                        </Button>
-                      </PopOver>
-                    )
-                  }
-                </div>
-              </Button>
+                {doConfirm => doConfirm && 'Confirm delete'}
+              </ConfirmButton>
             )}
           </div>
         </div>

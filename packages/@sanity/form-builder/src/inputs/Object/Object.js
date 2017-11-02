@@ -77,7 +77,7 @@ export default class ObjectInput extends React.PureComponent {
 
     const {value, focusPath} = this.props
     const fieldValue = value && value[field.name]
-    const fieldFocusPath = focusPath.slice(1)
+    const fieldFocusPath = focusPath[0] === field.name ? focusPath.slice(1) : []
 
     return (
       <Field
@@ -157,6 +157,14 @@ export default class ObjectInput extends React.PureComponent {
     )
   }
 
+  setFieldset = el => {
+    this.fieldset = el
+  }
+
+  focus() {
+    this.fieldset.focus()
+  }
+
   render() {
     const {type, level} = this.props
 
@@ -177,6 +185,8 @@ export default class ObjectInput extends React.PureComponent {
 
     return (
       <Fieldset
+        tabIndex={0}
+        ref={this.setFieldset}
         level={level}
         legend={type.title}
         description={type.description}

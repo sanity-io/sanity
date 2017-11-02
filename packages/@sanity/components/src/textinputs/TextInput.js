@@ -6,27 +6,13 @@ import defaultStyles from 'part:@sanity/components/textinputs/default-style'
 
 const NOOP = () => {}
 
-const VALID_TYPES = [
-  'color',
-  'date',
-  'email',
-  'month',
-  'password',
-  'search',
-  'tel',
-  'text',
-  'number',
-  'url',
-  'week',
-]
-
 export default class DefaultTextInput extends React.PureComponent {
   static propTypes = {
     value: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
     ]),
-    type: PropTypes.oneOf(VALID_TYPES),
+    type: PropTypes.string,
     onClear: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
@@ -78,7 +64,6 @@ export default class DefaultTextInput extends React.PureComponent {
   }
 
   focus = () => {
-    console.log('FOCUS', this._input)
     this._input.focus()
   }
 

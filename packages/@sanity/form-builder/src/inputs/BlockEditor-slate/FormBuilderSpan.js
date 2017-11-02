@@ -254,7 +254,6 @@ export default class FormBuilderSpan extends React.Component {
                 type={annotationTypeInFocus}
                 level={0}
                 onChange={this.handleAnnotationChange}
-                autoFocus
               />
             </div>
           )}

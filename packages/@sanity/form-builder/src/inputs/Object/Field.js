@@ -40,6 +40,18 @@ export default class Field extends React.Component {
     onBlur(path, field)
   }
 
+  hasFocus() {
+    return this.props.focusPath[0] === true
+  }
+
+  focus() {
+    console.log('FOCUS')
+    this._input.focus()
+  }
+
+  setInput = input => {
+    this._input = input
+  }
   render() {
     const {value, field, level, focusPath} = this.props
 
@@ -67,6 +79,7 @@ export default class Field extends React.Component {
 
     return (
       <div className={styles.root}>
+        {<div>HAS FOcus {JSON.stringify(focusPath, null, 2)}</div>}
         <MemberValue path={field.name}>
           <FormBuilderInput
             value={value}
@@ -76,6 +89,7 @@ export default class Field extends React.Component {
             onBlur={this.handleBlur}
             focusPath={focusPath}
             level={level}
+            ref={this.setInput}
           />
         </MemberValue>
       </div>
