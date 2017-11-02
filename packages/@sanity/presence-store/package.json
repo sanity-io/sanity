@@ -1,11 +1,12 @@
 {
-  "name": "reflector-client",
-  "version": "0.119.0",
-  "description": "A client for the client to client message bus",
-  "main": "lib/Reflector.js",
+  "name": "presence-store",
+  "version": "0.118.5",
+  "description": "Client side presence channel handler",
+  "main": "lib/Connector.js",
   "scripts": {
     "clean": "rimraf lib",
-    "compile": "babel src --copy-files --out-dir lib"
+    "compile": "babel src --copy-files --out-dir lib",
+    "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -16,19 +17,20 @@
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-class-properties": "^6.23.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-comments": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.24.0",
     "eslint": "^3.19.0",
     "eslint-config-sanity": "^2.1.4",
     "eslint-plugin-import": "^2.2.0",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "tape": "^4.8.0"
   },
   "dependencies": {
-    "@sanity/eventsource": "^0.118.4",
-    "@sanity/observable": "^0.119.0",
-    "get-it": "^4.0.0"
+    "@sanity/observable": "^0.118.4",
+    "@sanity/uuid": "^0.118.4",
+    "deep-equal": "^1.0.1"
   },
   "publishConfig": {
     "access": "public"
@@ -42,7 +44,7 @@
     "headless",
     "realtime",
     "content",
-    "reflector-client"
+    "presence-store"
   ],
   "homepage": "https://www.sanity.io/",
   "repository": {
