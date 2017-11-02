@@ -1,6 +1,6 @@
 import path from 'path'
 
-const datasetUrl = 'https://storage.googleapis.com/sanity/docsite-assets/moviedb.ndjson'
+const datasetUrl = 'https://public.sanity.io/moviesdb.ndjson'
 const indent = line => `  ${line}`
 
 export const dependencies = {
