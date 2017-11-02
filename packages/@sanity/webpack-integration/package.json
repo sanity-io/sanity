@@ -1,8 +1,7 @@
 {
   "name": "@sanity/webpack-integration",
-  "version": "0.118.4",
-  "description":
-    "Tools and modules required for making partisan (the part system) work with webpack",
+  "version": "0.119.0",
+  "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
   "scripts": {
     "test": "eslint ."
@@ -27,8 +26,8 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/resolver": "^0.118.4",
-    "@sanity/webpack-loader": "^0.118.4",
+    "@sanity/resolver": "^0.119.0",
+    "@sanity/webpack-loader": "^0.119.0",
     "fs.realpath": "^1.0.0",
     "lost": "^8.0.0",
     "p-async-cache": "^1.0.2",
