@@ -35,7 +35,7 @@
     "chance": "^1.0.4",
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
-    "date-fns": "^1.28.5",
+    "date-fns": "^1.29.0",
     "detect-it": "^2.0.0",
     "dialog-polyfill": "^0.4.3",
     "dom-scroll-into-view": "^1.2.1",
@@ -64,18 +64,18 @@
     "@sanity/base": "^0.118.4",
     "@sanity/check": "^0.118.4",
     "@sanity/core": "^0.118.4",
-    "eslint": "^4.6.1",
+    "eslint": "^4.9.0",
     "eslint-config-sanity": "^3.1.0",
     "eslint-plugin-react": "^7.4.0",
     "pre-commit": "^1.2.2",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-styleguidist": "^2.3.1",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "react": "15.x || ^16.0.0-rc.2"
+    "prop-types": "^15.6 || ^16",
+    "react": "^15.6 || ^16"
   },
   "repository": {
     "type": "git",

@@ -50,14 +50,14 @@
     "in-publish": "^2.0.0",
     "mocha": "^3.2.0",
     "nyc": "^11.0.3",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "react": "15.x || ^16.0.0-rc.2",
-    "react-dom": "15.x || ^16.0.0-rc.2"
+    "prop-types": "^15.6 || ^16",
+    "react": "^15.6 || ^16",
+    "react-dom": "^15.6 || ^16"
   }
 }

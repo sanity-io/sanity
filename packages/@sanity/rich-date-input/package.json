@@ -26,13 +26,13 @@
     "moment": "^2.19.1",
     "moment-timezone": "^0.5.11",
     "postcss-cssnext": "^3.0.2",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "react-datepicker": "^0.55.0"
   },
   "devDependencies": {
     "@sanity/check": "^0.118.4",
     "in-publish": "^2.0.0",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",
