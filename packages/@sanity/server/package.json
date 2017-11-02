@@ -35,7 +35,7 @@
     "@sanity/resolver": "^0.118.4",
     "@sanity/webpack-integration": "^0.118.4",
     "@sanity/webpack-loader": "^0.118.4",
-    "babel-core": "^6.24.0",
+    "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-syntax-class-properties": "^6.13.0",
@@ -73,8 +73,8 @@
     "rimraf": "^2.6.2"
   },
   "peerDependencies": {
-    "prop-types": "15.x || ^16.0.0-rc.2",
-    "react": "15.x || ^16.0.0-rc.2",
-    "react-dom": "15.x || ^16.0.0-rc.2"
+    "prop-types": "^15.6 || ^16",
+    "react": "^15.6 || ^16",
+    "react-dom": "^15.6 || ^16"
   }
 }

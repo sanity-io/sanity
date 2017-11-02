@@ -31,7 +31,7 @@
     "loader-utils": "^1.1.0"
   },
   "devDependencies": {
-    "eslint": "^4.6.1",
-    "rimraf": "^2.6.1"
+    "eslint": "^4.9.0",
+    "rimraf": "^2.6.2"
   }
 }

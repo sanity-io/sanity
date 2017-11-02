@@ -59,7 +59,7 @@
     "lint-staged": "^4.2.3",
     "prettier": "^1.7.4",
     "recursive-readdir": "^2.1.0",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.2"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

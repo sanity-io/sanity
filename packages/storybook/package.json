@@ -19,7 +19,7 @@
     "@sanity/google-maps-input": "^0.118.4",
     "@sanity/server": "^0.118.4",
     "@sanity/storybook": "^0.118.4",
-    "prop-types": "^15.5.10",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },
