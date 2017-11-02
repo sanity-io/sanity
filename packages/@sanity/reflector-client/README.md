@@ -1,10 +1,11 @@
 # Low level client for the Reflector client to client messaging system
 
-See also [the server project](https://github.com/sanity-io/reflector).
+Implements the messaging protocol that supports the Sanity real time presence
+exprience.
 
 ## Initializing
 
-```
+``` js
   import Reflector from '@sanity/reflector-client'
   import myConfiguredSanityClient from './myConfiguredSanityClient'
 
@@ -13,13 +14,13 @@ See also [the server project](https://github.com/sanity-io/reflector).
 
 ## Listening
 
-```
+``` js
   channel.listen().subscribe(msg => {
     console.log(msg) // => {i: <sanity-identity>, m: <message>}
   })
 ```
 
 ## Sending
-```
+``` js
   channel.send({'hello': 'sanity!'})
 ```
