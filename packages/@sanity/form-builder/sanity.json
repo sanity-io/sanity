@@ -74,6 +74,10 @@
     {
       "implements": "part:@sanity/form-builder",
       "path": "sanity/index.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/patch-event",
+      "path": "PatchEvent.js"
     }
   ]
 }
