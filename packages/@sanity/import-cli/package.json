@@ -7,7 +7,7 @@
     "sanity-import": "./lib/sanity-import.js"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

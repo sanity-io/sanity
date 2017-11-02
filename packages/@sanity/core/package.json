@@ -10,6 +10,9 @@
     "test": "mocha --recursive test/**/*.test.js",
     "posttest": "eslint ."
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "keywords": [
     "sanity",
     "cms",
