@@ -3,7 +3,7 @@ import React from 'react'
 import styles from '../styles/contentStyles/Normal.css'
 
 function Normal(props) {
-  return <p {...props.attributes} className={styles.root}>{props.children}</p>
+  return <div {...props.attributes} className={styles.root}>{props.children}</div>
 }
 
 Normal.propTypes = {
