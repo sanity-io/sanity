@@ -1,4 +1,3 @@
-
 export default {
   name: 'uploadsTest',
   type: 'document',
@@ -15,6 +14,37 @@ export default {
       description: 'An array that accepts image',
       type: 'array',
       of: [{type: 'image', title: 'Image'}]
+    },
+    {
+      name: 'blocks',
+      title: 'Blocks',
+      description: 'Upload to array of images in block text',
+      type: 'array',
+      of: [
+        {type: 'block'},
+        {
+          type: 'object',
+          title: 'Gallery',
+          fields: [
+            {
+              name: 'title',
+              title: 'Title',
+              type: 'string'
+            },
+            {
+              name: 'images',
+              type: 'array',
+              of: [{type: 'image', title: 'Image'}]
+            }
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              imageUrl: 'images.0.asset.url'
+            }
+          }
+        }
+      ]
     },
     {
       name: 'imagesAndFiles',
