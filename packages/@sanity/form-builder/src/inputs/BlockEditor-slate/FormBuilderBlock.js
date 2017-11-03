@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
+import {get} from 'lodash'
 import ReactDOM from 'react-dom'
 import OffsetKey from 'slate-react/lib/utils/offset-key'
 import setTransferData from 'slate-react/lib/utils/set-transfer-data'
@@ -9,6 +9,8 @@ import Base64 from 'slate-base64-serializer'
 import {findDOMNode} from 'slate-react'
 import ItemForm from './ItemForm'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
@@ -253,21 +255,77 @@ export default class FormBuilderBlock extends React.Component {
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
 
+    const fieldsQty = (get(memberType, 'fields') || []).length
+
+    let editModalLayout = get(this, 'props.type.options.editModal')
+
+    // Choose editModal based on number of fields
+    if (!editModalLayout) {
+      if (fieldsQty < 3) {
+        editModalLayout = 'popover'
+      } else {
+        editModalLayout = 'fullscreen'
+      }
+    }
+
+    if (editModalLayout === 'fullscreen') {
+      return (
+        <FullscreenDialog
+          isOpen
+          title={this.props.node.title}
+          onClose={this.handleClose}
+        >
+          <ItemForm
+            onDrop={this.handleCancelEvent}
+            type={memberType}
+            level={0}
+            value={this.getValue()}
+            onChange={this.handleChange}
+          />
+        </FullscreenDialog>
+      )
+    }
+
+    if (editModalLayout === 'fold') {
+      return (
+        <div className={styles.editBlockContainerFold}>
+          <EditItemFold
+            isOpen
+            title={this.props.node.title}
+            onClose={this.handleClose}
+          >
+            <ItemForm
+              onDrop={this.handleCancelEvent}
+              type={memberType}
+              level={0}
+              value={this.getValue()}
+              onChange={this.handleChange}
+            />
+          </EditItemFold>
+        </div>
+      )
+    }
+
+    // default
     return (
-      <FullscreenDialog
-        isOpen
-        title={this.props.node.title}
-        onClose={this.handleClose}
-      >
-        <ItemForm
-          onDrop={this.handleCancelEvent}
-          type={memberType}
-          level={0}
-          value={this.getValue()}
-          onChange={this.handleChange}
-        />
-      </FullscreenDialog>
+      <div className={styles.editBlockContainerPopOver}>
+        <EditItemPopOver
+          isOpen
+          title={this.props.node.title}
+          onClose={this.handleClose}
+        >
+          <ItemForm
+            onDrop={this.handleCancelEvent}
+            type={memberType}
+            level={0}
+            value={this.getValue()}
+            onChange={this.handleChange}
+          />
+        </EditItemPopOver>
+      </div>
     )
+
+
   }
 
   showBlockDragMarker(pos, node) {
@@ -314,11 +372,7 @@ export default class FormBuilderBlock extends React.Component {
           {this.renderPreview()}
         </span>
 
-        {isEditing && (
-          <div className={styles.editBlockContainer}>
-            {this.renderInput()}
-          </div>
-        )}
+        {isEditing && this.renderInput()}
       </div>
     )
   }
