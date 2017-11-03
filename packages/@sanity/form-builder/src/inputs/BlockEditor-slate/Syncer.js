@@ -10,10 +10,12 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/Syncer.css'
+import apply from '../../simplePatch'
 
 function deserialize(value, type) {
   return State.fromJSON(blockTools.blocksToSlateState(value, type))
 }
+
 function serialize(state, type) {
   return blockTools.slateStateToBlocks(state.toJSON({preserveKeys: true}), type)
 }
@@ -64,12 +66,28 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
     this.unsubscribe = props.subscribe(this.receivePatches)
   }
 
+  handleNodePatch = patchEvent => {
+    this.setState(prevState => {
+      if (prevState.isOutOfSync) {
+        return prevState
+      }
+      const nextValue = patchEvent.patches.reduce((state, patch) => {
+        const [key, ...path] = patch.path
+        const nodeValue = state.document.getDescendant(key).data.get('value')
+        const change = state.change()
+          .setNodeByKey(key, {
+            data: {value: apply(nodeValue, {...patch, path})}
+          })
+        return change.state
+      }, prevState.value)
+
+      return {value: nextValue}
+    })
+  }
   handleChange = slateChange => {
     this.setState(prevState => (prevState.isOutOfSync ? {} : {value: slateChange.state}))
   }
-
   receivePatches = ({snapshot, shouldReset, patches}) => {
-
     if (patches.some(patch => patch.origin === 'remote')) {
       this.setState({isOutOfSync: true})
     }
@@ -125,11 +143,12 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
     const {type} = this.props
     return (
       <div className={styles.root}>
-        { !isDeprecated && (
+        {!isDeprecated && (
           <BlockEditor
             {...this.props}
             disabled={isOutOfSync}
             onChange={this.handleChange}
+            onNodePatch={this.handleNodePatch}
             value={value}
           />)
         }

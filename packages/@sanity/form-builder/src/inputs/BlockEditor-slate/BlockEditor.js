@@ -21,7 +21,8 @@ export default class BlockEditor extends React.Component {
     type: PropTypes.any,
     level: PropTypes.number,
     value: PropTypes.instanceOf(State),
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onNodePatch: PropTypes.func
   }
 
   static defaultProps = {
@@ -62,6 +63,8 @@ export default class BlockEditor extends React.Component {
     window.removeEventListener('keydown', this.handleKeyDown)
     // this._inputContainer.removeEventListener('mousewheel', this.handleInputScroll)
   }
+
+  handleNodePatch = event => this.props.onNodePatch(event)
 
   handleInsertBlock = item => {
     if (item.options && item.options.inline) {

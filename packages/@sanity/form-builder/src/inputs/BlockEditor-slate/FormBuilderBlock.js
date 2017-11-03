@@ -23,7 +23,8 @@ export default class FormBuilderBlock extends React.Component {
     node: PropTypes.object,
     editor: PropTypes.object,
     state: PropTypes.object,
-    attributes: PropTypes.object
+    attributes: PropTypes.object,
+    onPatch: PropTypes.func
   }
 
   state = {
@@ -44,30 +45,13 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   handleChange = event => {
-    const {node, editor} = this.props
-    const change = editor.getState()
-      .change()
-      .setNodeByKey(node.key, {
-        data: {value: applyAll(node.data.get('value'), event.patches)}
-      })
-    editor.onChange(change)
+    const {onPatch, node} = this.props
+    onPatch(event.prefixAll(node.key))
   }
 
   handleInvalidValueChange = event => {
-    // the setimeout is a workaround because there seems to be a race condition with clicks and state updates
-    setTimeout(() => {
-      const {node, editor} = this.props
-
-      const nextValue = applyAll(node.data.get('value'), event.patches)
-      const change = editor.getState().change()
-      const nextChange = (nextValue === undefined)
-        ? change.removeNodeByKey(node.key)
-        : change.setNodeByKey(node.key, {
-          data: {value: nextValue}
-        })
-
-      editor.onChange(nextChange)
-    }, 0)
+    const {onPatch, node} = this.props
+    onPatch(event.prefixAll(node.key))
   }
 
   handleDragStart = event => {
