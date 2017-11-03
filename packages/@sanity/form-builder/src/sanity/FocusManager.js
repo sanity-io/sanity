@@ -33,7 +33,7 @@ function getHash() {
 }
 function getPathFromHash() {
   const hash = getHash()
-  return hash ? parseSimplePath().concat(true) : []
+  return hash ? parseSimplePath(hash).concat(true) : []
 }
 
 export default class FocusManager extends React.Component<Props, State> {

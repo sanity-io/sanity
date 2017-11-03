@@ -15,7 +15,10 @@ export default {
       of: [
         {
           type: 'object',
-          fields: [{name: 'first', type: 'string'}]
+          fields: [
+            {name: 'first', type: 'string'},
+            {name: 'focusTest', type: 'focusTest'}
+          ]
         }
       ],
     },

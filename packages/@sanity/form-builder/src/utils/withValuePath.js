@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 export default function withValuePath(ComposedComponent: any) {
-
   return class WithValuePath extends React.PureComponent {
     static displayName = `withValuePath(${ComposedComponent.displayName || ComposedComponent.name})`
 
@@ -11,9 +10,17 @@ export default function withValuePath(ComposedComponent: any) {
       formBuilder: PropTypes.any,
     }
 
+    focus() {
+      this._input.focus()
+    }
+
+    setInput = input => {
+      this._input = input
+    }
+
     render() {
       const {getValuePath} = this.context
-      return <ComposedComponent {...this.props} getValuePath={getValuePath} />
+      return <ComposedComponent ref={this.setInput} {...this.props} getValuePath={getValuePath} />
     }
   }
 }
