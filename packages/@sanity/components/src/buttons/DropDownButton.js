@@ -96,7 +96,7 @@ class DropDownButton extends React.PureComponent {
   }
 
   handleResize = dimensions => {
-    if (this._menuElement.offsetHeight < (window.innerHeight - dimensions.rootTop)) {
+    if (this._menuElement && this._menuElement.offsetHeight < (window.innerHeight - dimensions.rootTop)) {
       this.setState({
         stickToBottom: true
       })
