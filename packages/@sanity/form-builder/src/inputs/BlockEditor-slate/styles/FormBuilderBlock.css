@@ -39,8 +39,16 @@
   background-color: var(--form-builder-block-background-selected);
 }
 
-.editBlockContainer {
+.editBlockContainerPopOver {
   position: absolute;
   top: 50%;
   left: 25%;
+}
+
+.editBlockContainerFold {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  width: 100%;
 }

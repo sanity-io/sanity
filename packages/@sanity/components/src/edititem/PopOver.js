@@ -183,6 +183,7 @@ export default class EditItemPopOver extends React.Component {
           isOpen={isOpen}
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
+          stickToTop
         >
           <div
             ref={this.setPopoverInnerElement}
