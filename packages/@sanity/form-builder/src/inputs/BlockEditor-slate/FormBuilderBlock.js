@@ -255,7 +255,7 @@ export default class FormBuilderBlock extends React.Component {
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
 
-    const fieldsQty = (get(memberType, 'fields') || []).length
+    const fieldsQty = ((memberType && memberType.fields) || []).length
 
     let editModalLayout = get(this, 'props.type.options.editModal')
 
