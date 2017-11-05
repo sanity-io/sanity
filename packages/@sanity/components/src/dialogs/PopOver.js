@@ -7,7 +7,7 @@ import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 
 const PADDING = 5
 
-export default class EditItemPopOver extends React.Component {
+export default class PopOver extends React.Component {
 
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -61,12 +61,6 @@ export default class EditItemPopOver extends React.Component {
     this.props.onClose()
   }
 
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.handleClose()
-    }
-  }
-
   setArrowElement = element => {
     this._arrowElement = element
   }
@@ -113,6 +107,8 @@ export default class EditItemPopOver extends React.Component {
     const {
       children,
       isOpen,
+      onClickOutside,
+      onClose,
       color,
       useOverlay
     } = this.props
@@ -130,11 +126,11 @@ export default class EditItemPopOver extends React.Component {
         <StickyPortal
           isOpen={isOpen}
           scrollContainer={scrollContainer}
-          onClickOutside={this.props.onClickOutside}
+          onClickOutside={onClickOutside}
           onResize={this.handlePortalResize}
           onClick={this.handleClick}
           useOverlay={useOverlay}
-          onClose={this.handleClose}
+          onClose={onClose}
         >
           <div
             ref={this.setPopoverInnerElement}

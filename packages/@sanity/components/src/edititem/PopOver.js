@@ -21,15 +21,13 @@ export default class EditItemPopOver extends React.PureComponent {
       handleClick: PropTypes.func
     })),
     isOpen: PropTypes.bool,
-    scrollContainer: PropTypes.object,
-    onClickOutside: PropTypes.func
+    scrollContainer: PropTypes.object
   };
 
   static defaultProps = {
     title: undefined,
     scrollContainer: undefined,
     onClose() {},
-    onClickOutside() {},
     actions: [],
     isOpen: true
   }
@@ -122,7 +120,6 @@ export default class EditItemPopOver extends React.PureComponent {
       children,
       actions,
       onClose,
-      onClickOutside,
       isOpen,
     } = this.props
 
@@ -141,8 +138,8 @@ export default class EditItemPopOver extends React.PureComponent {
           isOpen={isOpen}
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
-          onClickOutside={onClickOutside}
           onClose={onClose}
+          onClickOutside={onClose}
           stickToTop
         >
           <div
