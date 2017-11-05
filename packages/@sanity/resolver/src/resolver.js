@@ -6,6 +6,7 @@ import {resolvePlugins, resolvePlugin} from './resolvePlugins'
 import resolveSanityRoot from './resolveProjectRoot'
 import removeDuplicatePlugins from './removeDuplicatePlugins'
 
+export default resolveTree
 export const resolveProjectRoot = resolveSanityRoot
 export {resolvePlugin}
 
@@ -29,7 +30,7 @@ function resolveTreeSync(options) {
   return plugins.reduce(flattenTree, plugins.slice())
 }
 
-export default function resolveTree(opts = {}) {
+async function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
 
   if (options.resolveProjectRoot) {
@@ -38,17 +39,12 @@ export default function resolveTree(opts = {}) {
     options.basePath = resolveSanityRoot(resolveOpts)
   }
 
-  let projectManifest = null
-
   if (options.sync) {
     return resolveTreeSync(options)
   }
 
-  return readManifest(options)
-    .then(manifest => {
-      projectManifest = manifest
-      return resolvePlugins(manifest.plugins || [], options)
-    })
+  const projectManifest = await readManifest(options)
+  return resolvePlugins(projectManifest.plugins || [], options)
     .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
     .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
     .then(removeDuplicatePlugins)

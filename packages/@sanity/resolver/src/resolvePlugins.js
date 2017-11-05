@@ -7,7 +7,15 @@ import promiseProps from 'promise-props-recursive'
 
 const dirMatcher = /^\.\.?[/\\]?/
 
-export function resolvePlugin(options) {
+export function resolvePlugins(pluginNames, options) {
+  const plugins = pluginNames.map(pluginName => {
+    return resolvePlugin(Object.assign({name: pluginName}, options))
+  })
+
+  return options.sync ? plugins : Promise.all(plugins)
+}
+
+export async function resolvePlugin(options) {
   const {name, basePath, parentPluginPath, sync} = options
   const resolver = sync ? dir => dir : dir => Promise.resolve(dir)
   const parentDir = parentPluginPath || basePath
@@ -17,11 +25,10 @@ export function resolvePlugin(options) {
     ? readPluginName(parentDir, name)
     : name
 
-  const manifestDir = isDirPlugin
+  const manifestDir = await (isDirPlugin
     ? resolver(path.resolve(parentDir, name))
     : resolvePluginPath({name, basePath, parentPluginPath}, sync)
-
-  const plugin = {name: pluginName}
+  )
 
   if (sync) {
     const manifest = readManifest({
@@ -43,9 +50,8 @@ export function resolvePlugin(options) {
     }
   }
 
-  return manifestDir
-    .then(resolvedPath => Object.assign(plugin, {path: resolvedPath}))
-    .then(() => readManifest({basePath, manifestDir: plugin.path, plugin: pluginName}))
+  const plugin = {name: pluginName, path: manifestDir}
+  return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName})
     .then(manifest => promiseProps(Object.assign(plugin, {
       manifest,
       plugins: resolvePlugins(manifest.plugins || [], {
@@ -53,14 +59,6 @@ export function resolvePlugin(options) {
         parentPluginPath: plugin.path
       })
     })))
-}
-
-export function resolvePlugins(pluginNames, options) {
-  const plugins = pluginNames.map(pluginName =>
-    resolvePlugin(Object.assign({name: pluginName}, options))
-  )
-
-  return options.sync ? plugins : Promise.all(plugins)
 }
 
 function resolvePluginPath(plugin, sync) {
@@ -113,6 +111,7 @@ function getPluginNotFoundError(pluginName, locations) {
     locations.join('\n  * ')
   ].join(''))
 
+  err.code = 'PluginNotFound'
   err.plugin = pluginName
   err.locations = locations
 
