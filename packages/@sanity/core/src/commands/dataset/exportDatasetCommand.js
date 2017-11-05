@@ -45,7 +45,8 @@ export default {
 
     const startTime = Date.now()
 
-    streamDataset(client, dataset)
+    const stream = await streamDataset(client, dataset)
+    stream
       .pipe(split())
       .pipe(skipSystemDocuments)
       .pipe(outputPath ? fse.createWriteStream(outputPath) : process.stdout)
