@@ -36,7 +36,10 @@ export default {
 
     let targetDataset = target
     if (!targetDataset) {
-      targetDataset = await chooseDatasetPrompt(context, 'Select target dataset')
+      targetDataset = await chooseDatasetPrompt(context, {
+        message: 'Select target dataset',
+        allowCreation: true
+      })
     } else if (!datasets.find(dataset => dataset.name === targetDataset)) {
       debug('Target dataset does not exist, prompting for creation')
       const shouldCreate = await prompt.single({
@@ -142,11 +145,7 @@ export default {
 
       endTask({success: true})
 
-      output.print(
-        'Done! Imported %d documents to dataset "%s"',
-        imported,
-        targetDataset
-      )
+      output.print('Done! Imported %d documents to dataset "%s"', imported, targetDataset)
     } catch (err) {
       endTask({success: false})
 
