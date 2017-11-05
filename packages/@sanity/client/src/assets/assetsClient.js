@@ -83,24 +83,19 @@ assign(AssetsClient.prototype, {
   },
 
   delete(type, id) {
-    let assetType = type
-    let docId = id
+    // eslint-disable-next-line no-console
+    console.warn('client.assets.delete() is deprecated, please use client.delete(<document-id>)')
 
-    // We could be passing an entire asset document instead of an ID
-    if (type._type) {
-      assetType = type._type.replace(/(^sanity\.|Asset$)/g, '')
+    let docId = id || ''
+    if (!/^(image|file)-/.test(docId)) {
+      docId = `${type}-${docId}`
+    } else if (type._id) {
+      // We could be passing an entire asset document instead of an ID
       docId = type._id
     }
 
-    const dataset = validators.hasDataset(this.client.clientConfig)
-    validators.validateAssetType(assetType)
-    validators.validateDocumentId('delete', docId)
-
-    const assetEndpoint = assetType === 'image' ? 'images' : 'files'
-    return this.client.request({
-      method: 'DELETE',
-      uri: `/assets/${assetEndpoint}/${dataset}/${docId}`
-    })
+    validators.hasDataset(this.client.clientConfig)
+    return this.client.delete(docId)
   },
 
   getImageUrl(ref, query) {
@@ -111,7 +106,7 @@ assign(AssetsClient.prototype, {
       )
     }
 
-    if (!/^image-[A-Za-z0-9]+-\d+x\d+-[a-z]{1,5}$/.test(id)) {
+    if (!/^image-[A-Za-z0-9_]+-\d+x\d+-[a-z]{1,5}$/.test(id)) {
       throw new Error(
         `Unsupported asset ID "${id}". URL generation only works for auto-generated IDs.`
       )
