@@ -8,6 +8,7 @@ import ease from 'ease-component'
 import scroll from 'scroll'
 import {throttle} from 'lodash'
 import StackedEscapable from '../utilities/StackedEscapable'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 
 const scrollOptions = {
   duration: 200,
@@ -49,7 +50,6 @@ export default class StickyPortal extends React.PureComponent {
 
   state = {
     portalIsOpen: false,
-    isFocused: true,
     availableSpaceTop: 0,
     contentTop: 0,
     contentLeft: 0,
@@ -80,7 +80,6 @@ export default class StickyPortal extends React.PureComponent {
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
       window.addEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
-      window.addEventListener('mouseup', this.handleWindowClick)
     }
   }
 
@@ -93,7 +92,6 @@ export default class StickyPortal extends React.PureComponent {
     if (window) {
       window.removeEventListener('resize', this.handleWindowResize)
       window.removeEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
-      window.removeEventListener('mouseup', this.handleWindowClick)
     }
 
     if (this._scrollContainerElement) {
@@ -112,7 +110,7 @@ export default class StickyPortal extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.scrollContainer != this.props.scrollContainer) {
+    if (prevProps.scrollContainer !== this.props.scrollContainer) {
       this.setScrollContainerElement(this.props.scrollContainer)
     }
     if (prevProps.onlyBottomSpace !== this.props.onlyBottomSpace) {
@@ -181,10 +179,6 @@ export default class StickyPortal extends React.PureComponent {
         })
       })
     }
-  }
-
-  setContentScrollTop = event => {
-    //this._contentElement.scrollTop = this._contentScrollTop
   }
 
   addMovingListeners = () => {
@@ -346,21 +340,8 @@ export default class StickyPortal extends React.PureComponent {
     this._availableSpaceElement = element
   }
 
-  setContentElement = element => {
-    this._contentElement = element
-  }
-
   setRootElement = element => {
     this._rootElement = element
-  }
-
-  handleWindowClick = event => {
-    if (!this.state.isFocused) {
-      return
-    }
-    if (this._contentElement && !this._contentElement.contains(event.target)) {
-      this.props.onClickOutside(event)
-    }
   }
 
   render() {
@@ -368,8 +349,10 @@ export default class StickyPortal extends React.PureComponent {
       useOverlay,
       children,
       onClose,
+      onClickOutside,
       isOpen
     } = this.props
+
     const {
       availableSpaceTop,
       availableWidth,
@@ -401,16 +384,17 @@ export default class StickyPortal extends React.PureComponent {
                   height: `${availableHeight}px`
                 }}
               >
-                <div
-                  ref={this.setContentElement}
-                  className={styles.content}
-                  style={{
-                    top: `${contentTop}px`,
-                    left: `${contentLeft}px`
-                  }}
-                >
-                  {children}
-                </div>
+                <CaptureOutsideClicks onClickOutside={onClickOutside}>
+                  <div
+                    className={styles.content}
+                    style={{
+                      top: `${contentTop}px`,
+                      left: `${contentLeft}px`
+                    }}
+                  >
+                    {children}
+                  </div>
+                </CaptureOutsideClicks>
               </div>
             </div>
           </Portal>
