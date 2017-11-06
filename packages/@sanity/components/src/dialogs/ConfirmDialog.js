@@ -7,7 +7,7 @@ import styles from './styles/ConfirmDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
 
-export default class DefaultDialog extends React.Component {
+export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
     confirmColor: PropTypes.oneOf(['success', 'danger']),

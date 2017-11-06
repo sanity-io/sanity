@@ -57,6 +57,9 @@ export default {
               type: 'array',
               title: 'Array of named references',
               description: 'The values here should get _type == authorReference or _type == bookReference',
+              options: {
+                editModal: 'fold'
+              },
               of: [
                 {
                   type: 'reference',

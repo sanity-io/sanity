@@ -65,10 +65,6 @@ export default class SearchableSelect extends React.Component {
     })
   }
 
-  handleClickOutside = () => {
-    this.setState({isOpen: false})
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.items != this.props.items) {
       this.setState({
@@ -89,28 +85,21 @@ export default class SearchableSelect extends React.Component {
       isInputSelected: true,
     })
     onChange(item)
-    this.close()
+    this.handleClose()
   }
 
-  open = () => {
+  handleOpen = () => {
     this.setState({
       isOpen: true,
     })
     this.props.onOpen()
   }
 
-  close = () => {
+  handleClose = () => {
     this.setState({
-      isOpen: false,
+      isOpen: false
     })
     this.props.onClose()
-  }
-
-  handleOpen = () => {
-    this.open()
-  }
-  handleClose = () => {
-    this.close()
   }
 
   handleInputChange = inputValue => {
@@ -148,13 +137,16 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleResize = dimensions => {
-    if ((dimensions.availableHeight - dimensions.rootTop) < dimensions.availableHeight / 2) {
+    const width = this._rootElement.clientWidth
+    if ((window.innerHeight - dimensions.rootTop) < window.innerHeight / 3) {
       this.setState({
-        dropdownPosition: 'top'
+        dropdownPosition: 'top',
+        width: width
       })
     } else {
       this.setState({
-        dropdownPosition: 'bottom'
+        dropdownPosition: 'bottom',
+        width: width
       })
     }
   }
