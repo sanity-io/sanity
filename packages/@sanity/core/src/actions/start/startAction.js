@@ -1,4 +1,5 @@
 import path from 'path'
+import fse from 'fs-extra'
 import chalk from 'chalk'
 import thenify from 'thenify'
 import {getProdServer, getDevServer} from '@sanity/server'
@@ -26,27 +27,52 @@ export default async (args, context) => {
     project: sanityConfig.get('project')
   }
 
+  let compileSpinner
+  const configSpinner = output.spinner('Checking configuration files...')
+  try {
+    await reinitializePluginConfigs({workDir, output})
+  } catch (err) {
+    if (err.code !== 'PluginNotFound') {
+      throw err
+    }
+
+    const manifest = await fse.readJson(path.join(workDir, 'package.json')).catch(() => ({}))
+    const dependencies = Object.keys(Object.assign({}, manifest.dependencies, manifest.devDependencies))
+    const depName = err.plugin[0] === '@' ? err.plugin : `sanity-plugin-${err.plugin}`
+    if (dependencies.includes(depName)) {
+      err.message = `${err.message}\n\nTry running "sanity install"?`
+    } else {
+      err.message = `${err.message}\n\nTry running "sanity install ${depName}"?`
+    }
+
+    throw err
+  }
+
+  configSpinner.succeed()
+
   const server = getServer(serverOptions)
   const compiler = server.locals.compiler
-  const configSpinner = output.spinner('Checking configuration files...')
 
   // "invalid" doesn't mean the bundle is invalid, but that it is *invalidated*,
   // in other words, it's recompiling
-  let compileSpinner
   compiler.plugin('invalid', () => {
     output.clear()
     resetSpinner()
   })
 
-  // Once the server(s) are listening, show a compiling spinner
+  // Start the server and try to create more user-friendly errors if we encounter issues
   try {
     await thenify(server.listen.bind(server))(httpPort, httpHost)
   } catch (err) {
     gracefulDeath(httpHost, config, err)
   }
 
+  // Hold off on showing the spinner until compilation has started
+  compiler.plugin('compile', () => resetSpinner())
+
   // "done" event fires when Webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
+
   compiler.plugin('done', stats => {
     if (compileSpinner) {
       compileSpinner.succeed()
@@ -73,11 +99,6 @@ export default async (args, context) => {
 
     output.print(chalk.green(`Server listening on http://${httpHost}:${httpPort}`))
   })
-
-  await reinitializePluginConfigs({workDir, output})
-
-  configSpinner.succeed()
-  resetSpinner()
 
   function resetSpinner() {
     if (compileSpinner) {
