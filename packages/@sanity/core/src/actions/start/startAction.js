@@ -6,6 +6,7 @@ import {getProdServer, getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
 import isProduction from '../../util/isProduction'
 import reinitializePluginConfigs from '../../actions/config/reinitializePluginConfigs'
+import checkReactCompatibility from '../../util/checkReactCompatibility'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
 
 export default async (args, context) => {
@@ -26,6 +27,8 @@ export default async (args, context) => {
     context,
     project: sanityConfig.get('project')
   }
+
+  checkReactCompatibility(workDir)
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
