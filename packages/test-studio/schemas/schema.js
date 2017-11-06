@@ -1,5 +1,6 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
+import schemaTypes from 'all:part:@sanity/base/schema-type'
 
 import book from './book'
 import author from './author'
@@ -30,7 +31,7 @@ import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 
 export default createSchema({
   name: 'test-examples',
-  types: [
+  types: schemaTypes.concat([
     book,
     author,
     strings,
@@ -57,5 +58,5 @@ export default createSchema({
     codeInputType,
     notitle,
     typeWithNoToplevelStrings,
-  ]
+  ])
 })

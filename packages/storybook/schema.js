@@ -1,8 +1,9 @@
 import createSchema from 'part:@sanity/base/schema-creator'
+import schemaTypes from 'all:part:@sanity/base/schema-type'
 
 export default createSchema({
   name: 'example-blog',
-  types: [
+  types: schemaTypes.concat([
     {
       name: 'blogpost',
       type: 'object',
@@ -138,5 +139,5 @@ export default createSchema({
         }
       ]
     }
-  ]
+  ])
 })

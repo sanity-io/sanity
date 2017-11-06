@@ -224,6 +224,10 @@
       "name": "part:@sanity/base/app-loading-screen",
       "description": "Loading screen when sanity is initializing. Only static html and css. No javascript."
     },
+    {
+      "name": "part:@sanity/base/schema-type",
+      "description": "Schema types provided by plugins, for easy usage in studio schemas"
+    },
 
     {
       "implements": "part:@sanity/base/sanity-root",
