@@ -6,6 +6,7 @@ import filesize from 'filesize'
 import compressJavascript from './compressJavascript'
 import getConfig from '@sanity/util/lib/getConfig'
 import sortModulesBySize from '../../stats/sortModulesBySize'
+import checkReactCompatibility from '../../util/checkReactCompatibility'
 import {
   getWebpackCompiler,
   getDocumentElement,
@@ -30,6 +31,8 @@ export default async (args, context) => {
     skipMinify: flags['skip-minify'] || false,
     profile: flags.profile || false
   }
+
+  checkReactCompatibility(workDir)
 
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = thenify(compiler.run.bind(compiler))
