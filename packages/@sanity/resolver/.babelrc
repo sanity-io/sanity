@@ -1,4 +1,9 @@
 {
-  "presets": ["es2015"],
-  "plugins": ["lodash"]
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "6.0"
+      }
+    }]
+  ]
 }
