@@ -1231,22 +1231,31 @@ test('uploads images and can cast to promise', t => {
 })
 
 test('delete assets', t => {
-  nock(projectHost()).delete('/v1/assets/images/foo/image.abc123').reply(200, {some: 'prop'})
+  const expectedBody = {mutations: [{delete: {id: 'image-abc123_foobar-123x123-png'}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  getClient().assets.delete('image', 'image.abc123').then(body => {
-    t.equal(body.some, 'prop')
-    t.end()
-  }, ifError(t))
+  getClient().assets.delete('image', 'image-abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
+})
+
+test('delete assets with prefix', t => {
+  const expectedBody = {mutations: [{delete: {id: 'image-abc123_foobar-123x123-png'}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
+
+  getClient().assets.delete('image', 'abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
 })
 
 test('delete assets given whole asset document', t => {
-  nock(projectHost()).delete('/v1/assets/images/foo/moo987').reply(200, {some: 'prop'})
+  const expectedBody = {mutations: [{delete: {id: 'image-abc123_foobar-123x123-png'}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  const doc = {_id: 'moo987', _type: 'sanity.imageAsset'}
-  getClient().assets.delete(doc).then(body => {
-    t.equal(body.some, 'prop')
-    t.end()
-  }, ifError(t))
+  const doc = {_id: 'image-abc123_foobar-123x123-png', _type: 'sanity.imageAsset'}
+  getClient().assets.delete(doc, 'image-abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
 })
 
 test('can get an image URL from a reference ID string', t => {

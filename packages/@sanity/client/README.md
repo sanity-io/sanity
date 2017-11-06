@@ -329,12 +329,14 @@ client.assets.upload('image', someFile, {extract: ['palette', 'location']})
 
 ### Deleting an asset
 
+Deleting an asset document will also trigger deletion of the actual asset.
+
 ```
-client.assets.delete(type: 'image' | 'file', id: string): Promise
+client.delete(id: string): Promise
 ```
 
 ```js
-client.assets.delete('image', '1a2b3c')
+client.delete('image-abc123_someAssetId-500x500-png')
   .then(result => {
     console.log('deleted imageAsset', result)
   })
