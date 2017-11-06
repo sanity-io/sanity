@@ -1,47 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {set} from '@sanity/form-builder/PatchEvent'
-import {Viewer, io, viewpoint, color} from 'bio-pv'
-import {debounce, values, get} from 'lodash'
+import PatchEvent, {unset, set, setIfMissing} from '@sanity/form-builder/PatchEvent'
+import {io, Viewer} from 'bio-pv'
 import Select from 'part:@sanity/components/selects/default'
 import TextField from 'part:@sanity/components/textfields/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
-// import fetch from 'fetch'
+import PDBS from './PDBS'
 
-const pdbs = [
-  {
-    title: ''
-  },
-  {
-    title: 'Adenovirus',
-    pdb: '3IYN'
-  },
-  {
-    title: 'Insect Flight Muscle',
-    pdb: '2W49'
-  },
-  {
-    title: '4HHB',
-    pdb: '4HHB'
-  },
-  {
-    title: 'Crystal structure of Myosin VIIa ',
-    pdb: '5WSU'
-  },
-  {
-    title: 'Protonation-mediated structural flexibility in the F conjugation regulatory protein.',
-    pdb: '2G7O'
-  },
-  {
-    title: 'Escherichia coli Hfq-RNA',
-    pdb: '4PNO'
-  }
-]
-
-const options = {
+const VIEWER_OPTIONS = {
   width: 'auto',
   height: '500',
   antialias: true,
@@ -56,196 +25,151 @@ const options = {
   doubleClick: null
 }
 
+const DEFAULT_PDB = PDBS[0].id
+
+const getAttr = (value, propName) => value && value[propName]
+
 export default class ProteinInput extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
       title: PropTypes.string
     }).isRequired,
-    value: PropTypes.object,
+    value: PropTypes.shape({
+      _type: PropTypes.string,
+      pdb: PropTypes.string,
+      camera: PropTypes.shape({
+        rotation: PropTypes.arrayOf(PropTypes.number),
+        center: PropTypes.arrayOf(PropTypes.number),
+        zoom: PropTypes.number
+      })
+    }),
     level: PropTypes.number,
     onChange: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      isLoading: (props.value && props.value.pdb),
-      pdb: (props.value && props.value.pdb) || '1R6A',
-      newPdb: false
-    }
+  state = {
+    isLoading: true
   }
 
   componentDidMount() {
-    this.structure = ''
-    this.fetchPdb(this.state.pdb)
-    // this.loadPDB('1r6a')
-    this.viewer = new Viewer(this._viewerElement, options)
-    this._viewerElement.addEventListener('mousemove', this.mouseMoveHandler)
-    this._viewerElement.addEventListener('mousewheel', this.mouseWheelHandler)
+    const {value} = this.props
+    this.viewer = new Viewer(this._viewerElement, VIEWER_OPTIONS)
+    this._viewerElement.addEventListener('mousemove', this.handleMouseMove)
+    this._viewerElement.addEventListener('mousewheel', this.handleMouseWheel)
+    this.loadPdb((value && value.pdb) || DEFAULT_PDB)
   }
 
-
   componentWillUnmount() {
-    this._viewerElement.removeEventListener('mousemove', this.mouseMoveHandler)
-    this._viewerElement.removeEventListener('mousewheel', this.mouseWheelHandler)
+    this._viewerElement.removeEventListener('mousemove', this.handleMouseMove)
+    this._viewerElement.removeEventListener('mousewheel', this.handleMouseWheel)
     this.viewer.destroy()
   }
 
-  componentWillReceiveProps(nextProps) {
-    const nextPdb = get(nextProps, 'value.pdb')
-    const currentPdb = get(this.props, 'value.pdb')
-
-    if (nextPdb !== currentPdb) {
-      this.fetchPdb(nextPdb)
-      this.setState({pdb: nextPdb})
-      this.handleResetCamera()
-    }
-  }
-
   componentDidUpdate(prevProps) {
-    const newCamera = get(this.props, 'value.camera')
-    const prevCamera = get(prevProps, 'value.camera')
+    const camera = getAttr(this.props.value, 'camera')
 
-    if (newCamera !== prevCamera) {
-      if (newCamera) {
-        this.updateCamera(newCamera)
-      }
+    const prevPdb = getAttr(prevProps.value, 'pdb')
+    const pdb = getAttr(this.props.value, 'pdb')
+
+    if (prevPdb !== pdb) {
+      this.loadPdb(pdb)
+      return
     }
-
-    if (!newCamera) {
-      this.handleResetCamera()
+    if (camera) {
+      this.updateViewerCamera(camera)
+    } else {
+      this.resetViewerCamera()
     }
   }
 
-  fetchPdb = id => {
+  loadPdb(id) {
     const url = `http://www.rcsb.org/pdb/files/${id}.pdb`
 
     this.setState({
       isLoading: true
     })
-
-    io.fetchPdb(url, struct => {
-      this.structure = struct
-      this.preset()
-      this.viewer.on('viewerReady', viewer => {
-        if (get(this, 'props.value.camera') && !this.state.newPdb) {
-          this.updateCamera(this.props.value.camera)
-        } else {
-          viewer.autoZoom()
-        }
-        this.setState({
-          isLoading: false
-        })
+    this.viewer.clear()
+    io.fetchPdb(url, structure => {
+      const ligand = structure.select({rnames: ['SAH', 'RVP']})
+      this.viewer.spheres('structure.ligand', ligand, {})
+      this.viewer.cartoon('structure.protein', structure, {boundingSpheres: false})
+      this.setState({
+        isLoading: false
       })
     })
   }
 
-  updateCamera = camera => {
+  updateViewerCamera = camera => {
     this.viewer.setCamera(
-      values(camera.rotation),
-      values(camera.center),
+      camera.rotation,
+      camera.center,
       camera.zoom
     )
   }
 
-  handleResetCamera = () => {
+  resetViewerCamera = () => {
     this.viewer.autoZoom()
-    this.saveCamera(this.viewer._cam)
   }
 
-  mouseMoveHandler = () => {
+  handleMouseMove = () => {
     if (this.viewer._redrawRequested) {
-      this.saveCamera(this.viewer._cam)
+      this.saveCamera()
     }
   }
 
-  mouseWheelHandler = event => {
+  handleMouseWheel = () => {
     if (this.viewer._redrawRequested) {
-      this.saveCamera(this.viewer._cam)
+      this.saveCamera()
     }
   }
 
-  saveCamera = debounce(cam => {
-    const {onChange} = this.props
-    const {_rotation, _center, _zoom} = cam
+  saveCamera = () => {
+    const {onChange, type} = this.props
+    const {_rotation, _center, _zoom} = this.viewer._cam
     onChange(PatchEvent.from([
-      set(_rotation, ['camera.rotation']),
-      set(_center, ['camera.center']),
-      set(_zoom, ['camera.zoom'])
+      setIfMissing({_type: type.name, pdb: DEFAULT_PDB}),
+      set({
+        rotation: Array.from(_rotation),
+        center: Array.from(_center),
+        zoom: _zoom
+      }, ['camera'])
     ]))
-  }, 1000 / 3)
-
-  cartoon = () => {
-    this.viewer.clear()
-    const go = this.viewer.cartoon('structure', this.structure, {
-      color: color.ssSuccession(), showRelated: '1',
-    })
-    const rotation = viewpoint.principalAxes(go)
-    this.viewer.setRotation(rotation)
   }
 
-  spheres = () => {
-    this.viewer.clear()
-    this.viewer.spheres('structure', this.structure, {showRelated: '1'})
+  handleSelectChange = item => {
+    this.setPdb(item.id)
   }
 
-  preset = () => {
-    this.viewer.clear()
-    const ligand = this.structure.select({rnames: ['SAH', 'RVP']})
-    this.viewer.spheres('structure.ligand', ligand, {})
-    this.viewer.cartoon('structure.protein', this.structure, {boundingSpheres: false})
+  handlePdbStringChange = event => {
+    const pdbId = event.target.value
+    if (pdbId && (pdbId.length === 4)) {
+      this.setPdb(pdbId)
+    }
+  }
+
+  handleResetCamera = () => {
+    this.props.onChange(PatchEvent.from([unset(['camera'])]))
+  }
+
+  setPdb(pdbId: string) {
+    const {onChange, type} = this.props
+    onChange(PatchEvent.from([set({_type: type.name, pdb: pdbId})]))
+  }
+
+  getPdbById = id => {
+    return PDBS.find(item => item.id === id)
   }
 
   setViewerElement = element => {
     this._viewerElement = element
   }
 
-  handleSelectChange = item => {
-    const {onChange} = this.props
-    onChange(PatchEvent.from([
-      set(item.pdb, ['pdb'])
-    ]))
-  }
-
-  handlePdbChange = pdb => {
-    const {onChange} = this.props
-    this.viewer.autoZoom()
-    this.setState({
-      newPdb: true
-    })
-    onChange(PatchEvent.from([
-      set(pdb, ['pdb'])
-    ]))
-  }
-
-  handlePdbStringChange = event => {
-    const {onChange} = this.props
-    const pdb = event.target.value
-    this.setState({
-      pdb: pdb
-    })
-    if (pdb && (pdb.length === 4)) {
-      this.setState({
-        newPdb: true
-      })
-      onChange(PatchEvent.from([
-        set(pdb, ['pdb'])
-      ]))
-    }
-  }
-
-  getPdbItem = pdb => {
-    if (!pdb) {
-      return pdbs[0]
-    }
-    return pdbs.find(item => {
-      return item.pdb === pdb
-    })
-  }
-
   render() {
-    const {type, level} = this.props
-    const {isLoading, pdb} = this.state
+    const {value, type, level} = this.props
+
+    const pdbId = (value && value.pdb) || DEFAULT_PDB
+
+    const {isLoading} = this.state
 
     return (
       <Fieldset
@@ -253,14 +177,19 @@ export default class ProteinInput extends React.Component {
         level={level}
         description={type.description}
       >
-        <Select label="Choose existing…" items={pdbs} onChange={this.handleSelectChange} value={this.getPdbItem(pdb)} />
-        <TextField label="PDB" value={pdb} onChange={this.handlePdbStringChange} />
+        <Select
+          label="Choose existing…"
+          items={PDBS}
+          onChange={this.handleSelectChange}
+          value={this.getPdbById(pdbId)}
+        />
+        <TextField label="PDB" value={pdbId} onChange={this.handlePdbStringChange} />
         <div style={{height: '500px', width: '100%', position: 'relative', overflow: 'hidden'}}>
-          {
-            isLoading && <div style={{zIndex: 100, backgroundColor: 'rgba(255,255,255,0.8)', width: '100%', height: '100%'}}>
+          {isLoading && (
+            <div style={{zIndex: 100, backgroundColor: 'rgba(255,255,255,0.8)', width: '100%', height: '100%'}}>
               <Spinner center />
             </div>
-          }
+          )}
           <ActivateOnFocus>
             <div ref={this.setViewerElement} />
           </ActivateOnFocus>

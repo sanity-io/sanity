@@ -6,8 +6,9 @@ import blogpost from './blogpost'
 import videoEmbed from './videoEmbed'
 import localeString from './localeString'
 import localeSlug from './localeSlug'
-import protein from './protein'
+import proteinTest from './proteinTest'
 import customObject from './customObject'
+import protein from '../components/ProteinInput/schema'
 
 export default createSchema({
   name: 'example-blog',
@@ -19,6 +20,7 @@ export default createSchema({
     localeString,
     localeSlug,
     videoEmbed,
-    protein
+    proteinTest,
+    protein,
   ]
 })
