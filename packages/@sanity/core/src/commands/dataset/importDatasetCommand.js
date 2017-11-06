@@ -1,11 +1,12 @@
 import path from 'path'
-import got from 'got'
-import padStart from 'lodash/padStart'
+import simpleGet from 'simple-get'
 import fse from 'fs-extra'
+import sanityImport from '@sanity/import'
+import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
 import linecount from 'linecount/promise'
+import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import debug from '../../debug'
-import sanityImport from '@sanity/import'
 
 export default {
   name: 'import',
@@ -13,11 +14,13 @@ export default {
   signature: '[FILE] [TARGET_DATASET]',
   description: 'Import dataset from local filesystem',
   action: async (args, context) => {
-    const {apiClient, output, chalk} = context
+    const {apiClient, output, chalk, prompt} = context
 
+    let spinner = null
     const operation = getMutationOperation(args.extOptions)
+    const client = apiClient()
 
-    const [file, targetDataset] = args.argsWithoutOptions
+    const [file, target] = args.argsWithoutOptions
     if (!file) {
       throw new Error(
         `Source file name and target dataset must be specified ("sanity dataset import ${chalk.bold(
@@ -26,21 +29,38 @@ export default {
       )
     }
 
+    debug('[  0%] Fetching available datasets')
+    spinner = output.spinner('Fetching available datasets').start()
+    const datasets = await client.datasets.list()
+    spinner.succeed('[100%] Fetching available datasets')
+
+    let targetDataset = target
     if (!targetDataset) {
-      // @todo ask which dataset the user wants to use
-      throw new Error(
-        `Target dataset must be specified ("sanity dataset import [file] ${chalk.bold(
-          '[dataset]'
-        )}")`
-      )
+      targetDataset = await chooseDatasetPrompt(context, {
+        message: 'Select target dataset',
+        allowCreation: true
+      })
+    } else if (!datasets.find(dataset => dataset.name === targetDataset)) {
+      debug('Target dataset does not exist, prompting for creation')
+      const shouldCreate = await prompt.single({
+        type: 'confirm',
+        message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
+        default: true
+      })
+
+      if (!shouldCreate) {
+        throw new Error(`Dataset "${targetDataset}" does not exist`)
+      }
+
+      await client.datasets.create(targetDataset)
     }
+
+    debug(`Target dataset has been set to "${targetDataset}"`)
 
     const isUrl = /^https?:\/\//i.test(file)
     const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
-    const inputStream = isUrl
-      ? got.stream(sourceFile)
-      : fse.createReadStream(sourceFile)
-    const client = apiClient()
+    const inputSource = isUrl ? getUrlStream(sourceFile) : fse.createReadStream(sourceFile)
+    const inputStream = await inputSource
 
     const documentCount = isUrl ? 0 : await linecount(sourceFile)
     debug(
@@ -48,27 +68,6 @@ export default {
         ? 'Could not count documents in source'
         : `Found ${documentCount} lines in source file`
     )
-    debug(`Target dataset has been set to "${targetDataset}"`)
-
-    let spinner = null
-
-    // Verify existence of dataset before trying to import to it
-    debug('Verifying if dataset already exists')
-    spinner = output.spinner('Checking if destination dataset exists').start()
-    const datasets = await client.datasets.list()
-    if (!datasets.find(set => set.name === targetDataset)) {
-      // @todo ask if user wants to create it
-      spinner.fail()
-      throw new Error(
-        [
-          `Dataset with name "${targetDataset}" not found.`,
-          `Create it by running "${chalk.cyan(
-            `sanity dataset create ${targetDataset}`
-          )}" first`
-        ].join('\n')
-      )
-    }
-    spinner.succeed()
 
     const importClient = client.clone().config({dataset: targetDataset})
 
@@ -146,14 +145,22 @@ export default {
 
       endTask({success: true})
 
-      output.print(
-        'Done! Imported %d documents to dataset "%s"',
-        imported,
-        targetDataset
-      )
+      output.print('Done! Imported %d documents to dataset "%s"', imported, targetDataset)
     } catch (err) {
       endTask({success: false})
-      output.error(err)
+
+      let error = err.message
+      if (err.response && err.response.statusCode === 409) {
+        error = [
+          err.message,
+          '',
+          'You probably want either:',
+          ' --replace (replace existing documents with same IDs)',
+          ' --missing (only import documents that do not already exist)'
+        ].join('\n')
+      }
+
+      output.error(chalk.red(`\n${error}\n`))
     }
   }
 }
@@ -182,4 +189,10 @@ function getPercentage(opts) {
 
   const percent = Math.floor(opts.current / opts.total * 100)
   return `[${padStart(percent, 3, ' ')}%] `
+}
+
+function getUrlStream(url) {
+  return new Promise((resolve, reject) => {
+    simpleGet(url, (err, res) => (err ? reject(err) : resolve(res)))
+  })
 }

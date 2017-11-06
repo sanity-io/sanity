@@ -2,8 +2,10 @@ import path from 'path'
 import fse from 'fs-extra'
 import split from 'split2'
 import prettyMs from 'pretty-ms'
+import {pathTools} from '@sanity/util'
 import streamDataset from '../../actions/dataset/streamDataset'
 import skipSystemDocuments from '../../util/skipSystemDocuments'
+import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 
 export default {
   name: 'export',
@@ -11,21 +13,14 @@ export default {
   signature: '[NAME] [DESTINATION]',
   description: 'Export dataset to local filesystem',
   action: async (args, context) => {
-    const {apiClient, output, chalk} = context
+    const {apiClient, output, chalk, workDir, prompt} = context
     const client = apiClient()
-    const [dataset, destination] = args.argsWithoutOptions
-    const signature = 'sanity dataset export [dataset] [destination]'
+    const [targetDataset, targetDestination] = args.argsWithoutOptions
+    const {absolutify} = pathTools
 
+    let dataset = targetDataset
     if (!dataset) {
-      throw new Error(
-        `Dataset must be specified ("${signature}")`
-      )
-    }
-
-    if (!destination) {
-      throw new Error(
-        `Destination filename must be specified. Use "-" to print to stdout. ("${signature}")`
-      )
+      dataset = await chooseDatasetPrompt(context, {message: 'Select dataset to export'})
     }
 
     // Verify existence of dataset before trying to export from it
@@ -36,7 +31,17 @@ export default {
       )
     }
 
-    const outputPath = await getOutputPath(destination, dataset)
+    let destinationPath = targetDestination
+    if (!destinationPath) {
+      destinationPath = await prompt.single({
+        type: 'input',
+        message: 'Output path:',
+        default: path.join(workDir, `${dataset}.ndjson`),
+        filter: absolutify
+      })
+    }
+
+    const outputPath = await getOutputPath(destinationPath, dataset)
 
     // If we are dumping to a file, let the user know where it's at
     if (outputPath) {
@@ -45,7 +50,8 @@ export default {
 
     const startTime = Date.now()
 
-    streamDataset(client, dataset)
+    const stream = await streamDataset(client, dataset)
+    stream
       .pipe(split())
       .pipe(skipSystemDocuments)
       .pipe(outputPath ? fse.createWriteStream(outputPath) : process.stdout)
