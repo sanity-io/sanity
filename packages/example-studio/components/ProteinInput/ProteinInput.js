@@ -83,13 +83,11 @@ export default class ProteinInput extends React.Component {
   }
 
   loadPdb(id) {
-    const url = `http://www.rcsb.org/pdb/files/${id}.pdb`
-
     this.setState({
       isLoading: true
     })
     this.viewer.clear()
-    io.fetchPdb(url, structure => {
+    io.fetchPdb(`//www.rcsb.org/pdb/files/${id}.pdb`, structure => {
       const ligand = structure.select({rnames: ['SAH', 'RVP']})
       this.viewer.spheres('structure.ligand', ligand, {})
       this.viewer.cartoon('structure.protein', structure, {boundingSpheres: false})
