@@ -71,6 +71,8 @@ export default class DefaultButton extends React.Component {
       this.state.recentlyHovered ? styles.recentlyHovered : styles.notRecentlyHovered
     ].filter(Boolean).join(' ')
 
+    const padContent = (Icon && children && (typeof children === 'string'))
+
     return (
       <button
         {...rest}
@@ -83,10 +85,10 @@ export default class DefaultButton extends React.Component {
             loading && <span className={styles.spinner}><Spinner inline /></span>
           }
           {
-            Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
+            Icon && <Icon className={styles.icon} />
           }
           {
-            children && <span className={styles.content}>{children}</span>
+            children && <span className={padContent ? styles.contentWithPad : styles.content}>{children}</span>
           }
           {
             ripple && !disabled && <Ink duration={200} opacity={0.10} radius={200} />

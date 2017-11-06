@@ -1,0 +1,144 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: scaleY(0);
+  }
+
+  100% {
+    opacity: 1;
+    max-height: 100vh;
+    transform: scaleY(1);
+  }
+}
+
+.root {
+  padding: 0;
+  margin: 0;
+}
+
+.arrow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+
+  @media (--max-screen-medium) {
+    display: none;
+  }
+
+  @nest &::before {
+    content: "";
+    z-index: 5;
+    position: absolute;
+    height: 1em;
+    width: 1em;
+    background-color: var(--component-bg);
+    transform: translateX(-0.4em) rotate(45deg);
+
+    @nest .colorDanger & {
+      background-color: var(--state-danger-color);
+    }
+
+    @nest .colorSuccess & {
+      background-color: var(--state-success-color);
+    }
+
+    @nest .colorWarning & {
+      background-color: var(--state-warning-color);
+    }
+
+    @nest .colorInfo & {
+      background-color: var(--state-info-color);
+    }
+  }
+}
+
+.popover {
+  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+  background-color: var(--component-bg);
+  font-size: var(--font-size-xsmall);
+  z-index: 2;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  transform: translateY(0.5rem);
+  min-width: 10em;
+  max-width: 90vw;
+  transition: transform 0.25s cubic-bezier(0.77, 0, 0.175, 1); /* easeInOutQuart */
+
+  @nest .colorDanger & {
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--text);
+  }
+
+  @nest .colorSuccess & {
+    background-color: var(--state-success-color);
+    color: var(--state-success-color--text);
+  }
+
+  @nest .colorWarning & {
+    background-color: var(--state-warning-color);
+    color: var(--state-warning-color--text);
+  }
+
+  @nest .colorInfo & {
+    background-color: var(--state-info-color);
+    color: var(--state-info-color--text);
+  }
+}
+
+.close {
+  position: absolute;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 1em;
+  cursor: pointer;
+  outline: none;
+  color: var(--text-color);
+  top: 0;
+  right: 0;
+
+  @nest &:hover {
+    color: var(--black);
+  }
+
+  @nest .colorDanger & {
+    color: var(--state-danger-color--text);
+  }
+
+  @nest .colorSuccess & {
+    color: var(--state-success-color--text);
+  }
+
+  @nest .colorWarning & {
+    color: var(--state-warning-color--text);
+  }
+
+  @nest .colorInfo & {
+    color: var(--state-info-color--text);
+  }
+}
+
+.closeInverted {
+  composes: close;
+  color: #fff;
+  top: 0;
+  right: 0;
+}
+
+.content {
+  padding: var(--small-padding);
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: overlay;
+}
+
+.paddingDummy {
+  padding: 0;
+  margin: 0;
+}

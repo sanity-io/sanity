@@ -267,6 +267,10 @@
       "description": "Confirm dialog"
     },
     {
+      "name": "part:@sanity/components/dialogs/popover",
+      "description": "Popover dialog. Points an arrow to parent element"
+    },
+    {
       "name": "part:@sanity/components/snackbar/default",
       "description": "Shows messages with an action and a timeout."
     },
@@ -518,6 +522,10 @@
     {
       "implements":  "part:@sanity/components/dialogs/fullscreen",
       "path": "dialogs/FullscreenDialog.js"
+    },
+    {
+      "implements":  "part:@sanity/components/dialogs/popover",
+      "path": "dialogs/PopOver.js"
     },
     {
       "implements": "part:@sanity/components/fieldsets/default",
