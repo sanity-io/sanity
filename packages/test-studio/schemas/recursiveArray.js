@@ -14,6 +14,7 @@ export default {
       description: 'This array contains objects of type as defined inline',
       type: 'array',
       of: [
+        {type: 'recursiveArraysTest'},
         {
           type: 'object',
           title: 'Something',

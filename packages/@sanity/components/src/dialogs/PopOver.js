@@ -4,10 +4,9 @@ import styles from './styles/PopOver.css'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
-
 const PADDING = 5
 
-export default class EditItemPopOver extends React.Component {
+export default class PopOver extends React.Component {
 
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -15,7 +14,6 @@ export default class EditItemPopOver extends React.Component {
     isOpen: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger', 'success', 'warning', 'info']),
     scrollContainer: PropTypes.object,
-    onClickOutside: PropTypes.func,
     useOverlay: PropTypes.bool
   }
 
@@ -23,7 +21,6 @@ export default class EditItemPopOver extends React.Component {
     color: 'default',
     scrollContainer: undefined,
     onClose() {}, // eslint-disable-line
-    onClickOutside() {},
     isOpen: true,
     useOverlay: true
   }
@@ -59,12 +56,6 @@ export default class EditItemPopOver extends React.Component {
 
   handleClose = () => {
     this.props.onClose()
-  }
-
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.handleClose()
-    }
   }
 
   setArrowElement = element => {
@@ -113,6 +104,7 @@ export default class EditItemPopOver extends React.Component {
     const {
       children,
       isOpen,
+      onClose,
       color,
       useOverlay
     } = this.props
@@ -130,11 +122,10 @@ export default class EditItemPopOver extends React.Component {
         <StickyPortal
           isOpen={isOpen}
           scrollContainer={scrollContainer}
-          onClickOutside={this.props.onClickOutside}
           onResize={this.handlePortalResize}
-          onClick={this.handleClick}
           useOverlay={useOverlay}
-          onClose={this.handleClose}
+          onEscape={onClose}
+          onClickOutside={onClose}
         >
           <div
             ref={this.setPopoverInnerElement}
@@ -159,7 +150,7 @@ export default class EditItemPopOver extends React.Component {
                 left: `${popoverLeft}px`
               }}
             >
-              <button className={styles.close} type="button" onClick={this.handleClose}>
+              <button className={styles.close} type="button" onClick={onClose}>
                 <CloseIcon />
               </button>
 

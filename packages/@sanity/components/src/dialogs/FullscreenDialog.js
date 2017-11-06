@@ -5,6 +5,8 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Portal from 'react-portal'
 import Button from 'part:@sanity/components/buttons/default'
+import Escapable from '../utilities/Escapable'
+import StackedEscapable from '../utilities/StackedEscapable'
 
 export default class FullScreenDialog extends React.PureComponent {
   static propTypes = {
@@ -30,30 +32,13 @@ export default class FullScreenDialog extends React.PureComponent {
     showHeader: false,
     onAction() {},
     onOpen() {},
+    onClose() {},
     actions: []
-  }
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown, false)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown, false)
-  }
-
-  handleKeyDown = event => {
-    if (event.key === 'Escape' && this.isClosable()) {
-      this.props.onClose()
-    }
   }
 
   handleActionClick = event => {
     const actionIndex = event.currentTarget.getAttribute('data-action-index')
     this.props.onAction(this.props.actions[actionIndex])
-  }
-
-  isClosable() {
-    return typeof this.props.onClose === 'function'
   }
 
   render() {
@@ -69,54 +54,56 @@ export default class FullScreenDialog extends React.PureComponent {
       .join(' ')
 
     return (
-      <Portal isOpened={isOpen}>
-        <div className={classNames}>
-          {
-            onClose && (
-              <button className={styles.closeButton} onClick={onClose}>
-                <CloseIcon color="inherit" />
-              </button>
-            )
-          }
-          <div className={styles.inner}>
-            <h1 className={styles.heading}>{title}</h1>
-            <div className={styles.content}>
-              {this.props.children}
-              <div className={styles.actions}>
-                {
-                  actions.length > 0 && (
-                    <div className={styles.functions}>
-                      {
-                        actions.map((action, i) => {
-                          return (
-                            <Button
-                              key={i}
-                              onClick={this.handleActionClick}
-                              data-action-index={i}
-                              color={color === 'default' ? action.color : 'white'}
-                              disabled={action.disabled}
-                              inverted={!action.secondary}
-                              kind={action.kind}
-                              autoFocus={action.autoFocus}
-                              className={`
-                                ${styles.button}
-                                ${styles[`button_${action.kind}`] || styles.button}
-                              `
-                              }
-                            >
-                              {action.title}
-                            </Button>
-                          )
-                        })
-                      }
-                    </div>
-                  )
-                }
+      <StackedEscapable onEscape={onClose}>
+        <Portal isOpened={isOpen}>
+          <div className={classNames}>
+            {
+              onClose && (
+                <button className={styles.closeButton} onClick={onClose}>
+                  <CloseIcon color="inherit" />
+                </button>
+              )
+            }
+            <div className={styles.inner}>
+              <h1 className={styles.heading}>{title}</h1>
+              <div className={styles.content}>
+                {this.props.children}
+                <div className={styles.actions}>
+                  {
+                    actions.length > 0 && (
+                      <div className={styles.functions}>
+                        {
+                          actions.map((action, i) => {
+                            return (
+                              <Button
+                                key={i}
+                                onClick={this.handleActionClick}
+                                data-action-index={i}
+                                color={color === 'default' ? action.color : 'white'}
+                                disabled={action.disabled}
+                                inverted={!action.secondary}
+                                kind={action.kind}
+                                autoFocus={action.autoFocus}
+                                className={`
+                                  ${styles.button}
+                                  ${styles[`button_${action.kind}`] || styles.button}
+                                `
+                                }
+                              >
+                                {action.title}
+                              </Button>
+                            )
+                          })
+                        }
+                      </div>
+                    )
+                  }
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Portal>
+        </Portal>
+      </StackedEscapable>
     )
   }
 }
