@@ -198,18 +198,6 @@ export default class Sticky extends React.PureComponent {
     }
   }
 
-  removeMovingListeners = () => {
-    if (this._contentElement) {
-      this._contentElement.removeEventListener('scroll', this.handleContentScroll)
-    }
-    if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
-      this._elementResizeDetector.removeListener(
-        this._contentElement.firstChild,
-        this.handleElementResize
-      )
-    }
-  }
-
   handleContentScroll = event => {
     //this._contentScrollTop = event.target.scrollTop
   }
