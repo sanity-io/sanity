@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-window",
-  "version": "0.114.0",
+  "version": "0.119.0",
   "description": "Utility to keep a window of documents in sync",
   "main": "src/DocumentWindow.js",
   "scripts": {
@@ -17,8 +17,16 @@
     ]
   },
   "keywords": [
-    "sanity"
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "document-window"
   ],
+  "publishConfig": {
+    "access": true
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
@@ -47,5 +55,13 @@
     "collectCoverageFrom": [
       "src/**.js"
     ]
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
   }
 }
