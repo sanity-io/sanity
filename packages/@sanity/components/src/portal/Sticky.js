@@ -363,11 +363,9 @@ export default class Sticky extends React.PureComponent {
     } = this.state
 
     return (
-      <Stacked>
-        {isActive => (
-          <span ref={this.setRootElement} className={styles.root}>
-            <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
-
+      <span ref={this.setRootElement} className={styles.root}>
+        <Stacked>
+          {isActive => (
             <Portal
               isOpened={isOpen && portalIsOpen}
               closeOnEsc={false}
@@ -387,6 +385,7 @@ export default class Sticky extends React.PureComponent {
                     height: `${availableHeight}px`
                   }}
                 >
+                  <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
                   <CaptureOutsideClicks
                     onClickOutside={isActive && onClickOutside}
                     className={styles.content}
@@ -400,9 +399,9 @@ export default class Sticky extends React.PureComponent {
                 </div>
               </div>
             </Portal>
-          </span>
-        )}
-      </Stacked>
+          )}
+        </Stacked>
+      </span>
     )
   }
 }
