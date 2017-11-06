@@ -344,6 +344,10 @@ export default class Sticky extends React.PureComponent {
     this._rootElement = element
   }
 
+  setContentElement = element => {
+    this._contentElement = element
+  }
+
   render() {
     const {
       useOverlay,
@@ -386,16 +390,17 @@ export default class Sticky extends React.PureComponent {
                   }}
                 >
                   <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
-                  <CaptureOutsideClicks
-                    onClickOutside={isActive ? onClickOutside : null}
+                  <div
                     className={styles.content}
+                    ref={this.setContentElement}
                     style={{
                       top: `${contentTop}px`,
                       left: `${contentLeft}px`
-                    }}
-                  >
-                    {children}
-                  </CaptureOutsideClicks>
+                    }}>
+                    <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : null}>
+                      {children}
+                    </CaptureOutsideClicks>
+                  </div>
                 </div>
               </div>
             </Portal>
