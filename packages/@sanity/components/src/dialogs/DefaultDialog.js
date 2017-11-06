@@ -4,8 +4,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
+import LayerStack from 'part:@sanity/components/layer-stack'
 
-export default class DefaultDialog extends React.Component {
+export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
@@ -33,6 +34,14 @@ export default class DefaultDialog extends React.Component {
     kind: 'default'
   }
 
+  state = {
+    isFocused: true
+  }
+
+  componentWillMount() {
+    LayerStack.addLayer(this)
+  }
+
   componentDidUpdate(prevProps) {
     const isOpen = this.props.isOpen
     const wasOpen = prevProps.isOpen
@@ -49,6 +58,7 @@ export default class DefaultDialog extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown, false)
+    LayerStack.removeLayer()
   }
 
   isClosable() {
@@ -57,7 +67,7 @@ export default class DefaultDialog extends React.Component {
 
   handleKeyDown = event => {
     if (event.key === 'Escape' && this.isClosable()) {
-      this.props.onClose()
+      this.handleClose()
     }
   }
 
@@ -66,7 +76,7 @@ export default class DefaultDialog extends React.Component {
   }
 
   handleCloseClick = event => {
-    this.props.onClose()
+    this.handleClose()
   }
 
   handleDialogClick = event => {
@@ -82,6 +92,13 @@ export default class DefaultDialog extends React.Component {
     this.dialog = element
   }
 
+  handleClose = event => {
+    if (!this.state.isFocused) {
+      return
+    }
+    this.props.onClose()
+  }
+
   render() {
     const {title, actions, isOpen, showHeader, kind, onClose, className} = this.props
     const classNames = `
@@ -93,7 +110,7 @@ export default class DefaultDialog extends React.Component {
     `
 
     return (
-      <Portal isOpened={isOpen} onClose={onClose}>
+      <Portal isOpened={isOpen}>
         <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
           <div className={styles.dialog} onClick={this.handleDialogClick}>
             {

@@ -6,8 +6,9 @@ import CheckIcon from 'part:@sanity/base/circle-check-icon'
 import styles from './styles/ConfirmDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
+import LayerStack from 'part:@sanity/components/layer-stack'
 
-export default class DefaultDialog extends React.Component {
+export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
     confirmColor: PropTypes.oneOf(['success', 'danger']),
@@ -32,12 +33,21 @@ export default class DefaultDialog extends React.Component {
     cancelButtonText: 'Cancel'
   }
 
+  state = {
+    hasFocus: true
+  }
+
+  componentWillMount() {
+    LayerStack.addLayer(this)
+  }
+
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown, false)
+    LayerStack.removeLayer(this)
   }
 
   isClosable() {
@@ -46,7 +56,7 @@ export default class DefaultDialog extends React.Component {
 
   handleKeyDown = event => {
     if (event.key === 'Escape') {
-      this.props.onCancel()
+      this.handleCancel(event)
     }
   }
 
@@ -58,6 +68,23 @@ export default class DefaultDialog extends React.Component {
     this.dialog = element
   }
 
+  handleConfirm = event => {
+    this.props.onConfirm(event)
+    this.handleClose()
+  }
+
+  handleCancel = event => {
+    this.props.onCancel(event)
+    this.handleClose()
+  }
+
+  handleClose = () => {
+    if (!this.state.isFocused) {
+      return
+    }
+    this.props.onClose()
+  }
+
   render() {
     const {
       color,
@@ -65,7 +92,6 @@ export default class DefaultDialog extends React.Component {
       confirmColor,
       confirmButtonText,
       cancelButtonText,
-      onConfirm,
       onCancel
     } = this.props
 
@@ -84,14 +110,14 @@ export default class DefaultDialog extends React.Component {
 
               <div className={styles.footer}>
                 <Button
-                  onClick={onCancel}
+                  onClick={this.handleCancel}
                   icon={CloseIcon}
                   kind="secondary"
                 >
                   {cancelButtonText}
                 </Button>
                 <Button
-                  onClick={onConfirm}
+                  onClick={this.handleConfirm}
                   color={confirmColor}
                   icon={CheckIcon}
                   autoFocus

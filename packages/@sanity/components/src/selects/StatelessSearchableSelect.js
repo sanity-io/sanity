@@ -73,13 +73,9 @@ class StatelessSearchableSelect extends React.PureComponent {
   }
 
   handleKeyDown = event => {
-    const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen, onClose} = this.props
+    const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen} = this.props
     if (!items || items.length === 0) {
       return
-    }
-
-    if (event.key === 'Escape' && isOpen) {
-      onClose()
     }
 
     const lastIndex = items.length - 1
@@ -167,40 +163,48 @@ class StatelessSearchableSelect extends React.PureComponent {
             </div>
           )}
         </div>
-        <StickyPortal
-          isOpen={isOpen}
-          scrollContainer={scrollContainer}
-          onResize={onResize}
-          onlyBottomSpace={false}
-          useOverlay={false}
-          addPadding={false}
-          scrollIntoView={false}
-        >
-          <div
-            className={`
-              ${isOpen ? styles.listContainer : styles.listContainerHidden}
-              ${dropdownPosition == 'top' ? styles.listContainerTop : styles.listContainerBottom}
-            `}
-            style={{width: `${this.props.width}px`}}
-            ref={this.setListElement}
-          >
-            {
-              items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
-            }
-            {
-              items.length === 0 && isLoading && <Spinner message="Loading items…" center />
-            }
-            {isOpen && items.length > 0 && (
-              <SelectMenu
-                items={items}
-                value={value}
-                onSelect={this.handleSelect}
-                renderItem={renderItem}
-                highlightIndex={highlightIndex}
-              />
-            )}
-          </div>
-        </StickyPortal>
+        <div className={styles.stickyContainer} style={{width: `${this.props.width}px`}}>
+          {
+            isOpen && (
+              <StickyPortal
+                isOpen={isOpen}
+                scrollContainer={scrollContainer}
+                onResize={onResize}
+                onlyBottomSpace={false}
+                useOverlay={false}
+                addPadding={false}
+                scrollIntoView={false}
+                onClose={this.props.onClose}
+              >
+                <div
+                  className={`
+                    ${isOpen ? styles.listContainer : styles.listContainerHidden}
+                    ${dropdownPosition == 'top' ? styles.listContainerTop : styles.listContainerBottom}
+                    ${items.length === 0 ? styles.listContainerEmpty : ''}
+                  `}
+                  style={{width: `${this.props.width}px`}}
+                  ref={this.setListElement}
+                >
+                  {
+                    items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+                  }
+                  {
+                    items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
+                  }
+                  {items.length > 0 && (
+                    <SelectMenu
+                      items={items}
+                      value={value}
+                      onSelect={this.handleSelect}
+                      renderItem={renderItem}
+                      highlightIndex={highlightIndex}
+                    />
+                  )}
+                </div>
+              </StickyPortal>
+            )
+          }
+        </div>
       </div>
     )
   }

@@ -45,17 +45,12 @@ export default class EditItemFoldOut extends React.PureComponent {
     })
   }
 
-  handleClose = event => {
-    if (event) {
-      event.stopPropagation()
-    }
-    this.props.onClose()
+  handleClickOutside = event => {
+    this.handleClose()
   }
 
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.handleClose()
-    }
+  handleClose = event => {
+    this.props.onClose()
   }
 
   setRootElement = element => {
@@ -91,6 +86,8 @@ export default class EditItemFoldOut extends React.PureComponent {
           addPadding={false}
           scrollIntoView={false}
           onResize={this.handleResize}
+          onClose={this.handleClose}
+          onClickOutside={this.handleClickOutside}
         >
           <div
             className={styles.wrapper}

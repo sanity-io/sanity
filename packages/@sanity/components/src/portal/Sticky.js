@@ -3,13 +3,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/Sticky.css'
 import Portal from 'react-portal'
-//import getComputedTranslateY from './utils/getComputedTranslateY'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
 import {throttle} from 'lodash'
-
-//import {getComputedTranslateY} from './utils'
+import LayerStack from 'part:@sanity/components/layer-stack'
 
 const scrollOptions = {
   duration: 200,
@@ -18,7 +16,7 @@ const scrollOptions = {
 
 const PADDING_DUMMY_TRANSITION = 'height 0.2s linear'
 
-export default class StickyPortal extends React.Component {
+export default class StickyPortal extends React.PureComponent {
 
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -31,6 +29,7 @@ export default class StickyPortal extends React.Component {
     useOverlay: PropTypes.bool,
     scrollIntoView: PropTypes.bool,
     addPadding: PropTypes.bool,
+    onClickOutside: PropTypes.func,
     scrollContainer: PropTypes.object // DOM element
   }
 
@@ -44,7 +43,8 @@ export default class StickyPortal extends React.Component {
     scrollIntoView: true,
     addPadding: true,
     onClose: () => {},
-    onResize: () => {}
+    onResize: () => {},
+    onClickOutside: () => {}
   }
 
   state = {
@@ -68,6 +68,10 @@ export default class StickyPortal extends React.Component {
   _scrollContainerLeft = 0
   _scrollContainerWidth = 0
 
+  componentWillMount() {
+    LayerStack.addLayer(this)
+  }
+
   componentDidMount() {
     const {
       scrollContainer
@@ -80,6 +84,8 @@ export default class StickyPortal extends React.Component {
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
       window.addEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
+      window.addEventListener('mouseup', this.handleWindowClick)
+      window.addEventListener('keydown', this.handleKeyDown)
     }
   }
 
@@ -92,6 +98,8 @@ export default class StickyPortal extends React.Component {
     if (window) {
       window.removeEventListener('resize', this.handleWindowResize)
       window.removeEventListener('scroll', this.handleWindowScroll, {passive: true, capture: true})
+      window.removeEventListener('mouseup', this.handleWindowClick)
+      window.removeEventListener('keydown', this.handleKeyDown)
     }
 
     if (this._scrollContainerElement) {
@@ -107,6 +115,7 @@ export default class StickyPortal extends React.Component {
         this._paddingDummy.remove()
       }, false)
     }
+    LayerStack.removeLayer()
   }
 
   componentDidUpdate(prevProps) {
@@ -213,14 +222,17 @@ export default class StickyPortal extends React.Component {
     //this._contentScrollTop = event.target.scrollTop
   }
 
-  handleClose() {
+  handleClose = () => {
+    if (!this.state.isFocused) {
+      return
+    }
     this.props.onClose()
   }
 
-  handleBackdropClick = event => {
-    this.handleClose()
-    event.stopPropagation()
-    event.preventDefault()
+  handleKeyDown = event => {
+    if (event.key == 'Escape') {
+      this.handleClose()
+    }
   }
 
   handleWindowResize = throttle(() => {
@@ -232,17 +244,13 @@ export default class StickyPortal extends React.Component {
   }, 1000 / 60)
 
   appendPadding = () => {
-    // console.log('appendPadding')
-    if (!this._paddingDummy && this._contentElement) {
+    if (this.props.addPadding && !this._paddingDummy && this._contentElement) {
       this._paddingDummy = document.createElement('div')
       this._paddingDummy.style.clear = 'both'
       this._paddingDummy.style.height = 0
       this._paddingDummy.style.transition = PADDING_DUMMY_TRANSITION
       if (this._scrollContainerElement) {
-        //console.info('appendPadding: added padding element', this._paddingDummy)
         this._scrollContainerElement.appendChild(this._paddingDummy)
-      } else {
-        //console.error('appendPadding: no scrollContainer to add padding to')
       }
     }
 
@@ -264,7 +272,6 @@ export default class StickyPortal extends React.Component {
 
   setScrollContainerElement = element => {
     if (!element) {
-      //console.error('setScrollContainerElement: No scrollcontainer')
       return
     }
     this._scrollContainerElement = element
@@ -316,7 +323,6 @@ export default class StickyPortal extends React.Component {
   }
 
   resizeAvailableSpace() {
-    // console.log('resizeAvailableSpace')
     const {stickToTop, onlyBottomSpace} = this.props
     const availableWidth = window.innerWidth
 
@@ -338,9 +344,6 @@ export default class StickyPortal extends React.Component {
 
 
   moveIntoPosition = () => {
-    // Remove listeners, as we don't want anything the be triggered while
-    // we are manipulating the modal
-    //this.removeMovingListeners()
     this.stickToRoot()
 
     this.props.onResize({
@@ -365,19 +368,19 @@ export default class StickyPortal extends React.Component {
 
   setContentElement = element => {
     this._contentElement = element
-    // if (this._contentElement) {
-    //   const neededHeight = this._contentElement.offsetHeight
-    //   const padding = -window.innerHeight + this._rootTop + neededHeight
-    //   if (padding > 0) {
-    //     this._paddingDummy.style.height = `${padding}px`
-    //   }
-    // } else {
-    //   console.error('setContentElement: no content element')
-    // }
   }
 
   setRootElement = element => {
     this._rootElement = element
+  }
+
+  handleWindowClick = event => {
+    if (!this.state.isFocused) {
+      return
+    }
+    if (this._contentElement && !this._contentElement.contains(event.target)) {
+      this.props.onClickOutside(event)
+    }
   }
 
   render() {
@@ -394,10 +397,14 @@ export default class StickyPortal extends React.Component {
       contentLeft,
       portalIsOpen
     } = this.state
-
     return (
       <span ref={this.setRootElement} className={styles.root}>
-        <Portal isOpened={isOpen && portalIsOpen} closeOnEsc={false} onOpen={this.handlePortalOpened} className={styles.portal}>
+        <Portal
+          isOpened={isOpen && portalIsOpen}
+          closeOnEsc={false}
+          onOpen={this.handlePortalOpened}
+          className={styles.portal}
+        >
           <div className={styles.portalInner}>
             {
               useOverlay && <div className={styles.overlay} />
@@ -417,8 +424,6 @@ export default class StickyPortal extends React.Component {
                 style={{
                   top: `${contentTop}px`,
                   left: `${contentLeft}px`
-                  // maxWidth: `${availableWidth}px`,
-                  // maxHeight: `${availableHeight}px`,
                 }}
               >
                 {children}
