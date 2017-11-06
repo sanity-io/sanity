@@ -162,14 +162,18 @@ export default class Sticky extends React.PureComponent {
 
     const neededHeight = this._contentElement.offsetHeight
 
-    if (this.props.addPadding && neededHeight > this._scrollContainerElement.offsetHeight) {
-      const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight - 200)
+    if (this.props.addPadding && neededHeight) {
+      const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight)
       this._paddingDummy.style.height = `${extraHeight}px`
     }
 
     const scrollTop = this._scrollContainerElement.scrollTop
-    this._extraScrollTop = -this._scrollContainerElement.offsetHeight + neededHeight + this._rootTop
     if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
+    this._extraScrollTop
+      = -window.innerHeight
+      + neededHeight
+      + this._rootTop
+
       this._initialScrollTop = scrollTop
       this._isScrolling = true
       const newScrollTop = scrollTop + this._extraScrollTop
