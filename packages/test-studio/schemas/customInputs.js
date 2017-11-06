@@ -1,7 +1,6 @@
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
-import PertEstimateInput from '../src/components/PertEstimateInput'
 
 export default {
   name: 'customInputsTest',
@@ -33,8 +32,7 @@ export default {
     {
       name: 'taskEstimate',
       title: 'Task estimate',
-      type: 'pertEstimate',
-      inputComponent: PertEstimateInput
+      type: 'pertEstimate'
     }
   ]
 }

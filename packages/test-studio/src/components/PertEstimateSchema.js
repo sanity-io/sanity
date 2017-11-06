@@ -1,7 +1,10 @@
+import PertEstimateInput from './PertEstimateInput'
+
 export default {
   name: 'pertEstimate',
   type: 'object',
   title: 'PERT-estimate',
+  inputComponent: PertEstimateInput,
   fields: [
     {
       title: 'Optimistic estimate',
