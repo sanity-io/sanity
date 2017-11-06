@@ -107,16 +107,16 @@ async function checkDir(sourceDir) {
 
 function validateHostname(value, client) {
   const projectId = client.config().projectId
-  const uri = `/projects/${projectId}/host`
-  const host = value || ''
+  const uri = `/projects/${projectId}`
+  const studioHost = value || ''
 
   // Check that it matches allowed character range
-  if (!/^[a-z0-9_-]+$/i.test(host)) {
+  if (!/^[a-z0-9_-]+$/i.test(studioHost)) {
     return 'Hostname can contain only A-Z, 0-9, _ and -'
   }
 
   // Check that the hostname is not already taken
-  return client.request({uri, method: 'PUT', body: {studio: host}})
+  return client.request({uri, method: 'PATCH', body: {studioHost}})
     .then(() => true)
     .catch(() => 'Hostname already taken')
 }
