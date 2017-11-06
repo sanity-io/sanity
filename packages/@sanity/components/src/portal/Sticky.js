@@ -262,19 +262,6 @@ export default class Sticky extends React.PureComponent {
     })
   }
 
-  initScrollContainer = element => {
-    if (!element) {
-      return
-    }
-    const {width, left} = element.getBoundingClientRect()
-    this._scrollContainerLeft = left
-    this._scrollContainerWidth = width
-    if (!this.props.ignoreScroll && element) {
-      element.addEventListener('scroll', this.handleContainerScroll, {passive: true})
-    }
-    this.setRootRects()
-  }
-
   stickToRoot = () => {
     const {stickToTop, onlyBottomSpace} = this.props
     this.setRootRects()
