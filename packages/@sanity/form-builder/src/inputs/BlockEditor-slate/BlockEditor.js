@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {State, Data} from 'slate'
+import {Data, State} from 'slate'
 import {Editor} from 'slate-react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 import {uniqueId} from 'lodash'
@@ -83,14 +83,6 @@ export default class BlockEditor extends React.Component {
     this.operations.toggleListItem(listItem, isActive)
   }
 
-  handleKeyDown = event => {
-    if (event.key == 'Escape') {
-      this.setState({
-        fullscreen: false
-      })
-    }
-  }
-
   handleAnnotationButtonClick = annotation => {
     this.editor.focus()
     if (annotation.active) {
@@ -137,6 +129,7 @@ export default class BlockEditor extends React.Component {
     function Preview(props) {
       return <span>{props.children}</span>
     }
+
     const items = this.textStyles
       .map((style, index) => {
         return {

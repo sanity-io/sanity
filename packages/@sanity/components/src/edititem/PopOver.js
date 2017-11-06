@@ -21,15 +21,13 @@ export default class EditItemPopOver extends React.PureComponent {
       handleClick: PropTypes.func
     })),
     isOpen: PropTypes.bool,
-    scrollContainer: PropTypes.object,
-    onClickOutside: PropTypes.func
-  };
+    scrollContainer: PropTypes.object
+  }
 
   static defaultProps = {
     title: undefined,
     scrollContainer: undefined,
-    onClose() {}, // eslint-disable-line
-    onClickOutside() {},
+    onClose() {},
     actions: [],
     isOpen: true
   }
@@ -61,19 +59,6 @@ export default class EditItemPopOver extends React.PureComponent {
     this.setState({
       scrollContainer: element
     })
-  }
-
-  handleClose = () => {
-    this.props.onClose()
-  }
-
-  handleStickyClose = event => {
-    this.handleClose()
-  }
-
-  handleClickOutside = event => {
-    this.handleClose()
-    this.props.onClickOutside()
   }
 
   setArrowElement = element => {
@@ -134,9 +119,9 @@ export default class EditItemPopOver extends React.PureComponent {
       title,
       children,
       actions,
+      onClose,
       isOpen,
     } = this.props
-
 
     const {
       popoverLeft,
@@ -152,8 +137,9 @@ export default class EditItemPopOver extends React.PureComponent {
           isOpen={isOpen}
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
+          onEscape={onClose}
+          onClickOutside={onClose}
           stickToTop
-          onClose={this.handleClose}
         >
           <div
             ref={this.setPopoverInnerElement}
@@ -173,7 +159,7 @@ export default class EditItemPopOver extends React.PureComponent {
                 left: `${popoverLeft}px`
               }}
             >
-              <button className={title ? styles.closeInverted : styles.close} type="button" onClick={this.handleClose}>
+              <button className={title ? styles.closeInverted : styles.close} type="button" onClick={onClose}>
                 <CloseIcon />
               </button>
 

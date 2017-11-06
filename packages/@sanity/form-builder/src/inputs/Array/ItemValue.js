@@ -8,7 +8,6 @@ import ConfirmButton from './ConfirmButton'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import Button from 'part:@sanity/components/buttons/default'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
@@ -201,7 +200,6 @@ export default class Item extends React.Component<Props> {
                         color="danger"
                         useOverlay={false}
                         onClose={this.handleConfirmDialogClose}
-                        onClickOutside={this.handleConfirmDialogClose}
                       >
                         <Button
                           kind="simple"
