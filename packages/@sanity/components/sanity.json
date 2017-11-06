@@ -612,6 +612,14 @@
       "path": "utilities/StackedEscapable.js"
     },
     {
+      "implements": "part:@sanity/components/utilities/escapable",
+      "path": "utilities/Escapable.js"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/stacked",
+      "path": "utilities/Stacked.js"
+    },
+    {
       "implements": "part:@sanity/components/imageinput/image-select",
       "path": "imageinput/common/ImageSelect.js"
     },

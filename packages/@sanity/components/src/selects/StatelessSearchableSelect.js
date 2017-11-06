@@ -5,13 +5,12 @@ import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import enhanceWithClickOutside from 'react-click-outside'
 import SelectMenu from './SelectMenu'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 
 const noop = () => {}
 
-class StatelessSearchableSelect extends React.PureComponent {
+export default class StatelessSearchableSelect extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.any,
@@ -49,14 +48,13 @@ class StatelessSearchableSelect extends React.PureComponent {
     dropdownPosition: 'bottom'
   }
 
-  handleClickOutside = event => {
-    if (this.props.isOpen && !this._listElement.contains(event.target)) {
-      this.props.onClose()
-    }
-  }
-
   handleSelect = item => {
     this.props.onChange(item)
+  }
+  handlePortalOutsideClick = event => {
+    if (!this._rootNode.contains(event.target)) {
+      this.props.onClose()
+    }
   }
 
   handleArrowClick = () => {
@@ -105,6 +103,10 @@ class StatelessSearchableSelect extends React.PureComponent {
     this._listElement = element
   }
 
+  setRootNode = node => {
+    this._rootNode = node
+  }
+
   render() {
     const {
       onClear,
@@ -131,7 +133,7 @@ class StatelessSearchableSelect extends React.PureComponent {
     } = this.props
 
     return (
-      <div>
+      <div ref={this.setRootNode}>
         <div className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
           <DefaultTextInput
             {...rest}
@@ -174,12 +176,13 @@ class StatelessSearchableSelect extends React.PureComponent {
                 useOverlay={false}
                 addPadding={false}
                 scrollIntoView={false}
-                onClose={onClose}
+                onClickOutside={this.handlePortalOutsideClick}
+                onEscape={onClose}
               >
                 <div
                   className={`
                     ${isOpen ? styles.listContainer : styles.listContainerHidden}
-                    ${dropdownPosition == 'top' ? styles.listContainerTop : styles.listContainerBottom}
+                    ${dropdownPosition === 'top' ? styles.listContainerTop : styles.listContainerBottom}
                     ${items.length === 0 ? styles.listContainerEmpty : ''}
                   `}
                   style={{width: `${this.props.width}px`}}
@@ -209,5 +212,3 @@ class StatelessSearchableSelect extends React.PureComponent {
     )
   }
 }
-
-export default enhanceWithClickOutside(StatelessSearchableSelect)

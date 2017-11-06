@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 export default class CaptureOutsideClicks extends React.Component {
   static propTypes = {
-    onClickOutside: PropTypes.func.isRequired,
+    onClickOutside: PropTypes.func,
     wrapperElement: PropTypes.string
   }
   static defaultProps = {
@@ -11,15 +11,15 @@ export default class CaptureOutsideClicks extends React.Component {
   }
 
   componentWillMount() {
-    document.addEventListener('click', this.handleDocumentClick)
+    document.addEventListener('mouseup', this.handleDocumentClick)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleDocumentClick)
+    document.removeEventListener('mouseup', this.handleDocumentClick)
   }
 
   handleDocumentClick = event => {
-    if (this._wrapperElement && !this._wrapperElement.contains(event.target)) {
+    if (this.props.onClickOutside && this._wrapperElement && !this._wrapperElement.contains(event.target)) {
       this.props.onClickOutside(event)
     }
   }

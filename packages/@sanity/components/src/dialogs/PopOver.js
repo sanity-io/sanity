@@ -4,7 +4,6 @@ import styles from './styles/PopOver.css'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
-
 const PADDING = 5
 
 export default class PopOver extends React.Component {
@@ -15,7 +14,6 @@ export default class PopOver extends React.Component {
     isOpen: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger', 'success', 'warning', 'info']),
     scrollContainer: PropTypes.object,
-    onClickOutside: PropTypes.func,
     useOverlay: PropTypes.bool
   }
 
@@ -23,7 +21,6 @@ export default class PopOver extends React.Component {
     color: 'default',
     scrollContainer: undefined,
     onClose() {}, // eslint-disable-line
-    onClickOutside() {},
     isOpen: true,
     useOverlay: true
   }
@@ -107,7 +104,6 @@ export default class PopOver extends React.Component {
     const {
       children,
       isOpen,
-      onClickOutside,
       onClose,
       color,
       useOverlay
@@ -126,11 +122,10 @@ export default class PopOver extends React.Component {
         <StickyPortal
           isOpen={isOpen}
           scrollContainer={scrollContainer}
-          onClickOutside={onClickOutside}
           onResize={this.handlePortalResize}
-          onClick={this.handleClick}
           useOverlay={useOverlay}
-          onClose={onClose}
+          onEscape={onClose}
+          onClickOutside={onClose}
         >
           <div
             ref={this.setPopoverInnerElement}
@@ -155,7 +150,7 @@ export default class PopOver extends React.Component {
                 left: `${popoverLeft}px`
               }}
             >
-              <button className={styles.close} type="button" onClick={this.handleClose}>
+              <button className={styles.close} type="button" onClick={onClose}>
                 <CloseIcon />
               </button>
 

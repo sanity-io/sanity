@@ -22,7 +22,7 @@ export default class EditItemPopOver extends React.PureComponent {
     })),
     isOpen: PropTypes.bool,
     scrollContainer: PropTypes.object
-  };
+  }
 
   static defaultProps = {
     title: undefined,
@@ -123,7 +123,6 @@ export default class EditItemPopOver extends React.PureComponent {
       isOpen,
     } = this.props
 
-
     const {
       popoverLeft,
       arrowLeft,
@@ -138,7 +137,7 @@ export default class EditItemPopOver extends React.PureComponent {
           isOpen={isOpen}
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
-          onClose={onClose}
+          onEscape={onClose}
           onClickOutside={onClose}
           stickToTop
         >
@@ -160,7 +159,7 @@ export default class EditItemPopOver extends React.PureComponent {
                 left: `${popoverLeft}px`
               }}
             >
-              <button className={title ? styles.closeInverted : styles.close} type="button" onClick={this.handleClose}>
+              <button className={title ? styles.closeInverted : styles.close} type="button" onClick={onClose}>
                 <CloseIcon />
               </button>
 

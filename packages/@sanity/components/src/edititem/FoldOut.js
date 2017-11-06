@@ -78,7 +78,7 @@ export default class EditItemFoldOut extends React.PureComponent {
           addPadding={false}
           scrollIntoView={false}
           onResize={this.handleResize}
-          onClose={onClose}
+          onEscape={onClose}
           onClickOutside={onClose}
         >
           <div
@@ -93,7 +93,7 @@ export default class EditItemFoldOut extends React.PureComponent {
               title && (
                 <div className={styles.head}>
                   {title}
-                  <button className={styles.close} type="button" onClick={this.handleClose}>
+                  <button className={styles.close} type="button" onClick={onClose}>
                     <CloseIcon />
                   </button>
                 </div>

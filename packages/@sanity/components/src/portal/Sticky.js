@@ -7,8 +7,9 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
 import {throttle} from 'lodash'
-import StackedEscapable from '../utilities/StackedEscapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
+import Escapable from '../utilities/Escapable'
+import Stacked from '../utilities/Stacked'
 
 const scrollOptions = {
   duration: 200,
@@ -17,7 +18,7 @@ const scrollOptions = {
 
 const PADDING_DUMMY_TRANSITION = 'height 0.2s linear'
 
-export default class StickyPortal extends React.PureComponent {
+export default class Sticky extends React.PureComponent {
 
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -25,12 +26,12 @@ export default class StickyPortal extends React.PureComponent {
     onlyBottomSpace: PropTypes.bool,
     stickToTop: PropTypes.bool,
     ignoreScroll: PropTypes.bool,
-    onClose: PropTypes.func,
     onResize: PropTypes.func,
     useOverlay: PropTypes.bool,
     scrollIntoView: PropTypes.bool,
     addPadding: PropTypes.bool,
     onClickOutside: PropTypes.func,
+    onEscape: PropTypes.func,
     scrollContainer: PropTypes.object // DOM element
   }
 
@@ -43,9 +44,9 @@ export default class StickyPortal extends React.PureComponent {
     useOverlay: true,
     scrollIntoView: true,
     addPadding: true,
-    onClose: () => {},
     onResize: () => {},
-    onClickOutside: () => {}
+    onClickOutside: () => {},
+    onEscape: () => {}
   }
 
   state = {
@@ -316,7 +317,6 @@ export default class StickyPortal extends React.PureComponent {
     this.setRootRects()
   }
 
-
   moveIntoPosition = () => {
     this.stickToRoot()
 
@@ -348,8 +348,8 @@ export default class StickyPortal extends React.PureComponent {
     const {
       useOverlay,
       children,
-      onClose,
       onClickOutside,
+      onEscape,
       isOpen
     } = this.props
 
@@ -363,29 +363,32 @@ export default class StickyPortal extends React.PureComponent {
     } = this.state
 
     return (
-      <StackedEscapable onEscape={onClose}>
-        <span ref={this.setRootElement} className={styles.root}>
-          <Portal
-            isOpened={isOpen && portalIsOpen}
-            closeOnEsc={false}
-            onOpen={this.handlePortalOpened}
-            className={styles.portal}
-          >
-            <div className={styles.portalInner}>
-              {
-                useOverlay && <div className={styles.overlay} />
-              }
-              <div
-                className={styles.availableSpace}
-                ref={this.setAvailableSpaceElement}
-                style={{
-                  top: `${availableSpaceTop}px`,
-                  width: `${availableWidth}px`,
-                  height: `${availableHeight}px`
-                }}
-              >
-                <CaptureOutsideClicks onClickOutside={onClickOutside}>
-                  <div
+      <Stacked>
+        {isActive => (
+          <span ref={this.setRootElement} className={styles.root}>
+            <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
+
+            <Portal
+              isOpened={isOpen && portalIsOpen}
+              closeOnEsc={false}
+              onOpen={this.handlePortalOpened}
+              className={styles.portal}
+            >
+              <div className={styles.portalInner}>
+                {
+                  useOverlay && <div className={styles.overlay} />
+                }
+                <div
+                  className={styles.availableSpace}
+                  ref={this.setAvailableSpaceElement}
+                  style={{
+                    top: `${availableSpaceTop}px`,
+                    width: `${availableWidth}px`,
+                    height: `${availableHeight}px`
+                  }}
+                >
+                  <CaptureOutsideClicks
+                    onClickOutside={isActive && onClickOutside}
                     className={styles.content}
                     style={{
                       top: `${contentTop}px`,
@@ -393,13 +396,13 @@ export default class StickyPortal extends React.PureComponent {
                     }}
                   >
                     {children}
-                  </div>
-                </CaptureOutsideClicks>
+                  </CaptureOutsideClicks>
+                </div>
               </div>
-            </div>
-          </Portal>
-        </span>
-      </StackedEscapable>
+            </Portal>
+          </span>
+        )}
+      </Stacked>
     )
   }
 }
