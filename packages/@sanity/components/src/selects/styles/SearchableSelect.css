@@ -18,6 +18,12 @@
   z-index: 2;
 }
 
+.stickyContainer {
+  position: relative;
+  height: 0;
+  box-sizing: border-box;
+}
+
 .listContainer {
   display: block;
   position: absolute;
@@ -27,6 +33,11 @@
   border: 1px solid var(--component-border-color);
   box-sizing: border-box;
   background-color: var(--component-bg);
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+}
+
+.listContainerEmpty {
+  max-height: 4.5rem;
 }
 
 .listContainerTop {
@@ -47,6 +58,7 @@
 .noResultText {
   text-align: center;
   padding: 0.5em;
+  opacity: 0.5;
 }
 
 .spinner {
@@ -87,6 +99,14 @@
   @nest & svg {
     color: var(--text-color);
   }
+}
+
+.listSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.5;
 }
 
 .clearButton {

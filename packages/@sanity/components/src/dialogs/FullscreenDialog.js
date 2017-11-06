@@ -69,7 +69,7 @@ export default class FullScreenDialog extends React.PureComponent {
       .join(' ')
 
     return (
-      <Portal closeOnEsc={this.isClosable()} isOpened={isOpen}>
+      <Portal isOpened={isOpen}>
         <div className={classNames}>
           {
             onClose && (
@@ -84,31 +84,33 @@ export default class FullScreenDialog extends React.PureComponent {
               {this.props.children}
               <div className={styles.actions}>
                 {
-                  actions.length > 0 && <div className={styles.functions}>
-                    {
-                      actions.map((action, i) => {
-                        return (
-                          <Button
-                            key={i}
-                            onClick={this.handleActionClick}
-                            data-action-index={i}
-                            color={color === 'default' ? action.color : 'white'}
-                            disabled={action.disabled}
-                            inverted={!action.secondary}
-                            kind={action.kind}
-                            autoFocus={action.autoFocus}
-                            className={`
-                              ${styles.button}
-                              ${styles[`button_${action.kind}`] || styles.button}
-                            `
-                            }
-                          >
-                            {action.title}
-                          </Button>
-                        )
-                      })
-                    }
-                  </div>
+                  actions.length > 0 && (
+                    <div className={styles.functions}>
+                      {
+                        actions.map((action, i) => {
+                          return (
+                            <Button
+                              key={i}
+                              onClick={this.handleActionClick}
+                              data-action-index={i}
+                              color={color === 'default' ? action.color : 'white'}
+                              disabled={action.disabled}
+                              inverted={!action.secondary}
+                              kind={action.kind}
+                              autoFocus={action.autoFocus}
+                              className={`
+                                ${styles.button}
+                                ${styles[`button_${action.kind}`] || styles.button}
+                              `
+                              }
+                            >
+                              {action.title}
+                            </Button>
+                          )
+                        })
+                      }
+                    </div>
+                  )
                 }
               </div>
             </div>

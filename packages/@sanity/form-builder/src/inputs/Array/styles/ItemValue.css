@@ -85,3 +85,11 @@
   flex-grow: 0;
   font-size: 0.9rem;
 }
+
+.popoverAnchor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  top: 50%;
+  left: 50%;
+}

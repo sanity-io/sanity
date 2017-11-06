@@ -65,7 +65,6 @@ class DropDownButton extends React.PureComponent {
 
   handleClickOutside = event => {
     this.setState({menuOpened: false})
-    event.stopPropagation()
   }
 
   handleClose = () => {
@@ -161,6 +160,7 @@ class DropDownButton extends React.PureComponent {
                   useOverlay={false}
                   addPadding={false}
                   scrollIntoView={false}
+                  onClose={this.handleClose}
                 >
                   <div
                     ref={this.setMenuElement}

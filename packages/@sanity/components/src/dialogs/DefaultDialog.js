@@ -5,7 +5,7 @@ import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
 
-export default class DefaultDialog extends React.Component {
+export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
