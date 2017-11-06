@@ -82,6 +82,12 @@ class DropDownButton extends React.PureComponent {
     this._menuElement = element
   }
 
+  handleCloseMenu = () => {
+    this.setState({
+      menuOpened: !this.state.menuOpened
+    })
+  }
+
   handleOnClick = event => {
     this.setState({
       menuOpened: !this.state.menuOpened,
@@ -160,7 +166,8 @@ class DropDownButton extends React.PureComponent {
                   useOverlay={false}
                   addPadding={false}
                   scrollIntoView={false}
-                  onClose={this.handleClose}
+                  onClickOutside={this.handleClose}
+                  onEscape={this.handleClose}
                 >
                   <div
                     ref={this.setMenuElement}
@@ -171,8 +178,8 @@ class DropDownButton extends React.PureComponent {
                       isOpen
                       className={menuClassName}
                       onAction={this.handleAction}
-                      onClickOutside={this.handleClickOutside}
-                      onClose={this.handleClose}
+                      onClickOutside={this.handleCloseMenu}
+                      onClose={this.handleCloseMenu}
                     />
                   </div>
                 </StickyPortal>

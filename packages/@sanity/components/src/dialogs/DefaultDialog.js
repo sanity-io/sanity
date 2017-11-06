@@ -4,7 +4,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
-import LayerStack from 'part:@sanity/components/layer-stack'
+import StackedEscapable from '../utilities/StackedEscapable'
 
 export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
@@ -34,14 +34,6 @@ export default class DefaultDialog extends React.PureComponent {
     kind: 'default'
   }
 
-  state = {
-    isFocused: true
-  }
-
-  componentWillMount() {
-    LayerStack.addLayer(this)
-  }
-
   componentDidUpdate(prevProps) {
     const isOpen = this.props.isOpen
     const wasOpen = prevProps.isOpen
@@ -52,31 +44,8 @@ export default class DefaultDialog extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown, false)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown, false)
-    LayerStack.removeLayer()
-  }
-
-  isClosable() {
-    return typeof this.props.onClose === 'function'
-  }
-
-  handleKeyDown = event => {
-    if (event.key === 'Escape' && this.isClosable()) {
-      this.handleClose()
-    }
-  }
-
   openDialogElement() {
     this.props.onOpen()
-  }
-
-  handleCloseClick = event => {
-    this.handleClose()
   }
 
   handleDialogClick = event => {
@@ -92,13 +61,6 @@ export default class DefaultDialog extends React.PureComponent {
     this.dialog = element
   }
 
-  handleClose = event => {
-    if (!this.state.isFocused) {
-      return
-    }
-    this.props.onClose()
-  }
-
   render() {
     const {title, actions, isOpen, showHeader, kind, onClose, className} = this.props
     const classNames = `
@@ -110,63 +72,65 @@ export default class DefaultDialog extends React.PureComponent {
     `
 
     return (
-      <Portal isOpened={isOpen}>
-        <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
-          <div className={styles.dialog} onClick={this.handleDialogClick}>
-            {
-              !showHeader && onClose && (
-                <button className={styles.closeButtonOutside} onClick={this.handleCloseClick}>
-                  <CloseIcon color="inherit" />
-                </button>
-              )
-            }
-            <div className={styles.inner}>
+      <StackedEscapable onEscape={onClose}>
+        <Portal isOpened={isOpen}>
+          <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
+            <div className={styles.dialog} onClick={this.handleDialogClick}>
               {
-                showHeader && onClose && (
-                  <div className={styles.header}>
-                    <h1 className={styles.title}>{title}</h1>
-                    <button className={styles.closeButton} onClick={this.handleCloseClick}>
-                      <CloseIcon color="inherit" />
-                    </button>
-                  </div>
+                !showHeader && onClose && (
+                  <button className={styles.closeButtonOutside} onClick={onClose}>
+                    <CloseIcon color="inherit" />
+                  </button>
                 )
               }
-              <div className={styles.content}>
-                {this.props.children}
-              </div>
-
-              <div className={styles.footer}>
+              <div className={styles.inner}>
                 {
-                  actions.length > 0 && <div className={styles.functions}>
-                    {
-                      actions.map((action, i) => {
-                        return (
-                          <Button
-                            key={i}
-                            onClick={this.handleActionClick}
-                            data-action-index={i}
-                            color={action.color}
-                            disabled={action.disabled}
-                            kind={action.kind}
-                            autoFocus={action.autoFocus}
-                            className={`
+                  showHeader && onClose && (
+                    <div className={styles.header}>
+                      <h1 className={styles.title}>{title}</h1>
+                      <button className={styles.closeButton} onClick={onClose}>
+                        <CloseIcon color="inherit" />
+                      </button>
+                    </div>
+                  )
+                }
+                <div className={styles.content}>
+                  {this.props.children}
+                </div>
+
+                <div className={styles.footer}>
+                  {
+                    actions.length > 0 && <div className={styles.functions}>
+                      {
+                        actions.map((action, i) => {
+                          return (
+                            <Button
+                              key={i}
+                              onClick={this.handleActionClick}
+                              data-action-index={i}
+                              color={action.color}
+                              disabled={action.disabled}
+                              kind={action.kind}
+                              autoFocus={action.autoFocus}
+                              className={`
                               ${styles.button}
                               ${styles[`button_${action.kind}`] || styles.button}
                             `
-                            }
-                          >
-                            {action.title}
-                          </Button>
-                        )
-                      })
-                    }
-                  </div>
-                }
+                              }
+                            >
+                              {action.title}
+                            </Button>
+                          )
+                        })
+                      }
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Portal>
+        </Portal>
+      </StackedEscapable>
     )
   }
 }
