@@ -28,6 +28,11 @@ export default {
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
       inputComponent: CustomFontStringInput
+    },
+    {
+      name: 'taskEstimate',
+      title: 'Task estimate',
+      type: 'pertEstimate'
     }
   ]
 }

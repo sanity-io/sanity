@@ -1,4 +1,5 @@
 import createSchema from 'part:@sanity/base/schema-creator'
+import schemaTypes from 'all:part:@sanity/base/schema-type'
 import code from 'part:@sanity/form-builder/input/code/schema'
 
 import author from './author'
@@ -12,7 +13,7 @@ import protein from '../components/ProteinInput/schema'
 
 export default createSchema({
   name: 'example-blog',
-  types: [
+  types: schemaTypes.concat([
     blogpost,
     author,
     code,
@@ -22,5 +23,5 @@ export default createSchema({
     videoEmbed,
     proteinTest,
     protein,
-  ]
+  ])
 })
