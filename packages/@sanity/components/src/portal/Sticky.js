@@ -162,14 +162,18 @@ export default class Sticky extends React.PureComponent {
 
     const neededHeight = this._contentElement.offsetHeight
 
-    if (this.props.addPadding && neededHeight > this._scrollContainerElement.offsetHeight) {
-      const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight - 200)
+    if (this.props.addPadding && neededHeight) {
+      const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight)
       this._paddingDummy.style.height = `${extraHeight}px`
     }
 
     const scrollTop = this._scrollContainerElement.scrollTop
-    this._extraScrollTop = -this._scrollContainerElement.offsetHeight + neededHeight + this._rootTop
     if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
+    this._extraScrollTop
+      = -window.innerHeight
+      + neededHeight
+      + this._rootTop
+
       this._initialScrollTop = scrollTop
       this._isScrolling = true
       const newScrollTop = scrollTop + this._extraScrollTop
@@ -188,18 +192,6 @@ export default class Sticky extends React.PureComponent {
     //}
     if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
       this._elementResizeDetector.listenTo(
-        this._contentElement.firstChild,
-        this.handleElementResize
-      )
-    }
-  }
-
-  removeMovingListeners = () => {
-    if (this._contentElement) {
-      this._contentElement.removeEventListener('scroll', this.handleContentScroll)
-    }
-    if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
-      this._elementResizeDetector.removeListener(
         this._contentElement.firstChild,
         this.handleElementResize
       )
@@ -260,19 +252,6 @@ export default class Sticky extends React.PureComponent {
     this.setState({
       portalIsOpen: true
     })
-  }
-
-  initScrollContainer = element => {
-    if (!element) {
-      return
-    }
-    const {width, left} = element.getBoundingClientRect()
-    this._scrollContainerLeft = left
-    this._scrollContainerWidth = width
-    if (!this.props.ignoreScroll && element) {
-      element.addEventListener('scroll', this.handleContainerScroll, {passive: true})
-    }
-    this.setRootRects()
   }
 
   stickToRoot = () => {
@@ -344,6 +323,10 @@ export default class Sticky extends React.PureComponent {
     this._rootElement = element
   }
 
+  setContentElement = element => {
+    this._contentElement = element
+  }
+
   render() {
     const {
       useOverlay,
@@ -386,16 +369,17 @@ export default class Sticky extends React.PureComponent {
                   }}
                 >
                   <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
-                  <CaptureOutsideClicks
-                    onClickOutside={isActive ? onClickOutside : null}
+                  <div
                     className={styles.content}
+                    ref={this.setContentElement}
                     style={{
                       top: `${contentTop}px`,
                       left: `${contentLeft}px`
-                    }}
-                  >
-                    {children}
-                  </CaptureOutsideClicks>
+                    }}>
+                    <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : null}>
+                      {children}
+                    </CaptureOutsideClicks>
+                  </div>
                 </div>
               </div>
             </Portal>
