@@ -4,6 +4,9 @@ import styles from 'part:@sanity/components/edititem/fold-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
+import Stacked from '../utilities/Stacked'
+import Escapable from '../utilities/Escapable'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 
 export default class EditItemFoldOut extends React.PureComponent {
 
@@ -78,39 +81,44 @@ export default class EditItemFoldOut extends React.PureComponent {
           addPadding={false}
           scrollIntoView={false}
           onResize={this.handleResize}
-          onEscape={onClose}
-          onClickOutside={onClose}
         >
-          <div
-            className={styles.wrapper}
-            ref={this.setPortalModalElement}
-            style={{
-              left: `${left}px`,
-              width: `calc(${width}px + (${styles.padding} * 2))`
-            }}
-          >
-            {
-              title && (
-                <div className={styles.head}>
-                  {title}
-                  <button className={styles.close} type="button" onClick={onClose}>
-                    <CloseIcon />
-                  </button>
-                </div>
-              )
-            }
+          <Stacked>
+            {isActive => (
+              <div
+                className={styles.wrapper}
+                ref={this.setPortalModalElement}
+                style={{
+                  left: `${left}px`,
+                  width: `calc(${width}px + (${styles.padding} * 2))`
+                }}
+              >
+                <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                  {
+                    title && (
+                      <div className={styles.head}>
+                        {title}
+                        <button className={styles.close} type="button" onClick={onClose}>
+                          <CloseIcon />
+                        </button>
+                      </div>
+                    )
+                  }
 
-            {
-              !title && (
-                <button className={styles.closeDark} type="button" onClick={this.handleClose}>
-                  <CloseIcon />
-                </button>
-              )
-            }
-            <div className={styles.content}>
-              {children}
-            </div>
-          </div>
+                  {
+                    !title && (
+                      <button className={styles.closeDark} type="button" onClick={this.handleClose}>
+                        <CloseIcon />
+                      </button>
+                    )
+                  }
+                  <div className={styles.content}>
+                    {children}
+                  </div>
+                </CaptureOutsideClicks>
+              </div>
+            )}
+          </Stacked>
         </StickyPortal>
       </div>
     )

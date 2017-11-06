@@ -12,7 +12,7 @@
 
 .root {
   display: block;
-
+  padding-bottom: 100vh;
   /*
     TODO Remove this this when supporting mobile navigation in js
   */
