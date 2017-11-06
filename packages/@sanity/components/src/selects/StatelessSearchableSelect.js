@@ -7,6 +7,9 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SelectMenu from './SelectMenu'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
+import Stacked from '../utilities/Stacked'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
+import Escapable from '../utilities/Escapable'
 
 const noop = () => {}
 
@@ -176,34 +179,39 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 useOverlay={false}
                 addPadding={false}
                 scrollIntoView={false}
-                onClickOutside={this.handlePortalOutsideClick}
-                onEscape={onClose}
               >
-                <div
-                  className={`
-                    ${isOpen ? styles.listContainer : styles.listContainerHidden}
-                    ${dropdownPosition === 'top' ? styles.listContainerTop : styles.listContainerBottom}
-                    ${items.length === 0 ? styles.listContainerEmpty : ''}
-                  `}
-                  style={{width: `${this.props.width}px`}}
-                  ref={this.setListElement}
-                >
-                  {
-                    items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
-                  }
-                  {
-                    items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
-                  }
-                  {items.length > 0 && (
-                    <SelectMenu
-                      items={items}
-                      value={value}
-                      onSelect={this.handleSelect}
-                      renderItem={renderItem}
-                      highlightIndex={highlightIndex}
-                    />
+                <Stacked>
+                  {isActive => (
+                    <div
+                      className={`
+                        ${isOpen ? styles.listContainer : styles.listContainerHidden}
+                        ${dropdownPosition === 'top' ? styles.listContainerTop : styles.listContainerBottom}
+                        ${items.length === 0 ? styles.listContainerEmpty : ''}
+                      `}
+                      style={{width: `${this.props.width}px`}}
+                      ref={this.setListElement}
+                    >
+                      {
+                        items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+                      }
+                      {
+                        items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
+                      }
+                      {items.length > 0 && (
+                        <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                          <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                          <SelectMenu
+                            items={items}
+                            value={value}
+                            onSelect={this.handleSelect}
+                            renderItem={renderItem}
+                            highlightIndex={highlightIndex}
+                          />
+                        </CaptureOutsideClicks>
+                      )}
+                    </div>
                   )}
-                </div>
+                </Stacked>
               </StickyPortal>
             )
           }

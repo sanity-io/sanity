@@ -5,6 +5,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 const PADDING = 5
+import Stacked from '../utilities/Stacked'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
+import Escapable from '../utilities/Escapable'
 
 export default class PopOver extends React.Component {
 
@@ -124,47 +127,52 @@ export default class PopOver extends React.Component {
           scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
           useOverlay={useOverlay}
-          onEscape={onClose}
-          onClickOutside={onClose}
         >
-          <div
-            ref={this.setPopoverInnerElement}
-            className={`
-              ${styles.root}
-              ${color === 'danger' ? styles.colorDanger : ''}
-              ${color === 'warning' ? styles.colorWarning : ''}
-              ${color === 'info' ? styles.colorInfo : ''}
-              ${color === 'success' ? styles.colorSuccess : ''}
-            `}
-          >
-            <div
-              className={styles.arrow}
-              ref={this.setArrowElement}
-              style={{
-                left: `${arrowLeft}px`
-              }}
-            />
-            <div
-              className={styles.popover}
-              style={{
-                left: `${popoverLeft}px`
-              }}
-            >
-              <button className={styles.close} type="button" onClick={onClose}>
-                <CloseIcon />
-              </button>
-
+          <Stacked>
+            {isActive => (
               <div
-                ref={this.setContentElement}
-                className={styles.content}
-                style={{
-                  maxHeight: `${availableHeight - 16}px`
-                }}
+                ref={this.setPopoverInnerElement}
+                className={`
+                  ${styles.root}
+                  ${color === 'danger' ? styles.colorDanger : ''}
+                  ${color === 'warning' ? styles.colorWarning : ''}
+                  ${color === 'info' ? styles.colorInfo : ''}
+                  ${color === 'success' ? styles.colorSuccess : ''}
+                `}
               >
-                {children}
+                <div
+                  className={styles.arrow}
+                  ref={this.setArrowElement}
+                  style={{
+                    left: `${arrowLeft}px`
+                  }}
+                />
+                <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                  <div
+                    className={styles.popover}
+                    style={{
+                      left: `${popoverLeft}px`
+                    }}
+                  >
+                    <button className={styles.close} type="button" onClick={onClose}>
+                      <CloseIcon />
+                    </button>
+
+                    <div
+                      ref={this.setContentElement}
+                      className={styles.content}
+                      style={{
+                        maxHeight: `${availableHeight - 16}px`
+                      }}
+                    >
+                      {children}
+                    </div>
+                  </div>
+                </CaptureOutsideClicks>
               </div>
-            </div>
-          </div>
+            )}
+          </Stacked>
         </StickyPortal>
       </div>
     )

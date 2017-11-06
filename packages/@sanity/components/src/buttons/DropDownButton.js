@@ -7,6 +7,8 @@ import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
 import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
+import Stacked from '../utilities/Stacked'
+import Escapable from '../utilities/Escapable'
 
 class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -158,31 +160,34 @@ class DropDownButton extends React.PureComponent {
           >
             {
               menuOpened && (
-                <StickyPortal
-                  isOpen
-                  scrollContainer={scrollContainer}
-                  onResize={this.handleResize}
-                  onlyBottomSpace={false}
-                  useOverlay={false}
-                  addPadding={false}
-                  scrollIntoView={false}
-                  onClickOutside={this.handleClose}
-                  onEscape={this.handleClose}
-                >
-                  <div
-                    ref={this.setMenuElement}
-                    style={{minWidth: `${width}px`}}
-                  >
-                    <Menu
-                      items={items}
+                <Stacked>
+                  {isActive => (
+                    <StickyPortal
                       isOpen
-                      className={menuClassName}
-                      onAction={this.handleAction}
-                      onClickOutside={this.handleCloseMenu}
-                      onClose={this.handleCloseMenu}
-                    />
-                  </div>
-                </StickyPortal>
+                      scrollContainer={scrollContainer}
+                      onResize={this.handleResize}
+                      onlyBottomSpace={false}
+                      useOverlay={false}
+                      addPadding={false}
+                      scrollIntoView={false}
+                    >
+                      <div
+                        ref={this.setMenuElement}
+                        style={{minWidth: `${width}px`}}
+                      >
+                        <Escapable onEscape={event => ((isActive || event.shiftKey) && this.handleCloseMenu())} />
+                        <Menu
+                          items={items}
+                          isOpen
+                          className={menuClassName}
+                          onAction={this.handleAction}
+                          onClickOutside={this.handleCloseMenu}
+                          onClose={this.handleCloseMenu}
+                        />
+                      </div>
+                    </StickyPortal>
+                  )}
+                </Stacked>
               )
             }
           </span>

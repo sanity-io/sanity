@@ -7,9 +7,6 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
 import {throttle} from 'lodash'
-import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
-import Escapable from '../utilities/Escapable'
-import Stacked from '../utilities/Stacked'
 
 const scrollOptions = {
   duration: 200,
@@ -30,8 +27,6 @@ export default class Sticky extends React.PureComponent {
     useOverlay: PropTypes.bool,
     scrollIntoView: PropTypes.bool,
     addPadding: PropTypes.bool,
-    onClickOutside: PropTypes.func,
-    onEscape: PropTypes.func,
     scrollContainer: PropTypes.object // DOM element
   }
 
@@ -44,9 +39,7 @@ export default class Sticky extends React.PureComponent {
     useOverlay: true,
     scrollIntoView: true,
     addPadding: true,
-    onResize: () => {},
-    onClickOutside: () => {},
-    onEscape: () => {}
+    onResize: () => {}
   }
 
   state = {
@@ -169,7 +162,7 @@ export default class Sticky extends React.PureComponent {
 
     const scrollTop = this._scrollContainerElement.scrollTop
     if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
-    this._extraScrollTop
+      this._extraScrollTop
       = -window.innerHeight
       + neededHeight
       + this._rootTop
@@ -331,8 +324,6 @@ export default class Sticky extends React.PureComponent {
     const {
       useOverlay,
       children,
-      onClickOutside,
-      onEscape,
       isOpen
     } = this.props
 
@@ -347,44 +338,38 @@ export default class Sticky extends React.PureComponent {
 
     return (
       <span ref={this.setRootElement} className={styles.root}>
-        <Stacked>
-          {isActive => (
-            <Portal
-              isOpened={isOpen && portalIsOpen}
-              closeOnEsc={false}
-              onOpen={this.handlePortalOpened}
-              className={styles.portal}
+        <Portal
+          isOpened={isOpen && portalIsOpen}
+          closeOnEsc={false}
+          onOpen={this.handlePortalOpened}
+          className={styles.portal}
+        >
+          <div className={styles.portalInner}>
+            {
+              useOverlay && <div className={styles.overlay} />
+            }
+            <div
+              className={styles.availableSpace}
+              ref={this.setAvailableSpaceElement}
+              style={{
+                top: `${availableSpaceTop}px`,
+                width: `${availableWidth}px`,
+                height: `${availableHeight}px`
+              }}
             >
-              <div className={styles.portalInner}>
-                {
-                  useOverlay && <div className={styles.overlay} />
-                }
-                <div
-                  className={styles.availableSpace}
-                  ref={this.setAvailableSpaceElement}
-                  style={{
-                    top: `${availableSpaceTop}px`,
-                    width: `${availableWidth}px`,
-                    height: `${availableHeight}px`
-                  }}
-                >
-                  <Escapable onEscape={event => ((isActive || event.shiftKey) && onEscape(event))} />
-                  <div
-                    className={styles.content}
-                    ref={this.setContentElement}
-                    style={{
-                      top: `${contentTop}px`,
-                      left: `${contentLeft}px`
-                    }}>
-                    <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : null}>
-                      {children}
-                    </CaptureOutsideClicks>
-                  </div>
-                </div>
+              <div
+                className={styles.content}
+                ref={this.setContentElement}
+                style={{
+                  top: `${contentTop}px`,
+                  left: `${contentLeft}px`
+                }}
+              >
+                {children}
               </div>
-            </Portal>
-          )}
-        </Stacked>
+            </div>
+          </div>
+        </Portal>
       </span>
     )
   }
