@@ -5,17 +5,14 @@ import gatherInput from './gatherInput'
 
 export default async function initPlugin(args, context, initOpts = {}) {
   const {output, prompt, workDir} = context
-  if (initOpts.sanityStyle) {
-    output.print('[WARNING]: Bootstrapping with Sanity.io style guide')
-  }
 
   output.print('This utility will walk you through creating a new Sanity plugin.')
   output.print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   output.print('Press ^C at any time to quit.\n')
 
   output.print(
-    'If you intend to publish the plugin for reuse by others, it is '
-    + 'recommended that the plugin name is prefixed with `sanity-plugin-`'
+    'If you intend to publish the plugin for reuse by others, it is ' +
+      'recommended that the plugin name is prefixed with `sanity-plugin-`'
   )
 
   const pluginOpts = {isPlugin: true, workDir, context}
