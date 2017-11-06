@@ -20,7 +20,7 @@ module.exports = function runCli() {
 
   const devMode = hasDevMode()
   const args = parseArguments()
-  const isInit = args.groupOrCommand === 'init'
+  const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
   const options = {
@@ -29,11 +29,13 @@ module.exports = function runCli() {
   }
 
   if (sanityEnv !== 'production') {
-    console.warn(chalk.yellow(
-      knownEnvs.includes(sanityEnv)
-        ? `[WARN] Running in ${sanityEnv} environment mode\n`
-        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
-    ))
+    console.warn(
+      chalk.yellow(
+        knownEnvs.includes(sanityEnv)
+          ? `[WARN] Running in ${sanityEnv} environment mode\n`
+          : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
+      )
+    )
   }
 
   if (!isInit && workDir !== cwd) {
@@ -70,7 +72,7 @@ module.exports = function runCli() {
     .catch(err => {
       const debug = core.d || core.debug
       const error = (debug && err.details) || err
-      const errMessage = debug ? (error.stack || error) : (error.message || error)
+      const errMessage = debug ? error.stack || error : error.message || error
       console.error(chalk.red(errMessage)) // eslint-disable-line no-console
       process.exit(1) // eslint-disable-line no-process-exit
     })
@@ -100,12 +102,16 @@ function hasDevMode() {
 function resolveRootDir(cwd) {
   // Resolve project root directory
   try {
-    return resolveProjectRoot({
-      basePath: cwd,
-      sync: true
-    }) || cwd
+    return (
+      resolveProjectRoot({
+        basePath: cwd,
+        sync: true
+      }) || cwd
+    )
   } catch (err) {
-    console.warn(chalk.red(['Error occured trying to resolve project root:', err.message].join('\n')))
+    console.warn(
+      chalk.red(['Error occured trying to resolve project root:', err.message].join('\n'))
+    )
     process.exit(1)
   }
 
@@ -120,10 +126,14 @@ function getCoreModulePath(workDir) {
 
   const hasManifest = fse.existsSync(path.join(workDir, 'sanity.json'))
   if (hasManifest && process.argv.indexOf('install') === -1) {
-    console.warn(chalk.yellow([
-      '@sanity/core not installed in current project',
-      'Project-specific commands not available until you run `sanity install`'
-    ].join('\n')))
+    console.warn(
+      chalk.yellow(
+        [
+          '@sanity/core not installed in current project',
+          'Project-specific commands not available until you run `sanity install`'
+        ].join('\n')
+      )
+    )
   }
 
   return undefined

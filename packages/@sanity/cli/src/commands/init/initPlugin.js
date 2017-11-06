@@ -1,33 +1,57 @@
 import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
-import getProjectDefaults from '../../util/getProjectDefaults'
-import bootstrapPlugin from './bootstrapPlugin'
-import gatherInput from './gatherInput'
+import bootstrapFromTemplate from '../../actions/init-plugin/bootstrapFromTemplate'
+import pluginTemplates from './pluginTemplates'
 
 export default async function initPlugin(args, context, initOpts = {}) {
-  const {output, prompt, workDir} = context
+  const {output, prompt} = context
+  const [, specifiedTemplateUrl] = args.argsWithoutOptions
 
   output.print('This utility will walk you through creating a new Sanity plugin.')
-  output.print('It only covers the basic configuration, and tries to guess sensible defaults.\n')
   output.print('Press ^C at any time to quit.\n')
 
-  output.print(
-    'If you intend to publish the plugin for reuse by others, it is ' +
-      'recommended that the plugin name is prefixed with `sanity-plugin-`'
-  )
+  const hasTemplateUrl = /^https?:\/\//.test(specifiedTemplateUrl || '')
 
-  const pluginOpts = {isPlugin: true, workDir, context}
-  const defaults = await getProjectDefaults(workDir, pluginOpts)
-  const answers = await gatherInput(prompt, defaults, pluginOpts)
-  const finalAnswers = {outputPath: workDir, ...answers}
+  if (hasTemplateUrl) {
+    return bootstrapFromUrl(context, specifiedTemplateUrl)
+  }
 
-  await bootstrapPlugin(finalAnswers, {output, ...initOpts})
-  await addPluginOnUserConfirm(workDir, finalAnswers)
+  let specifiedTemplate = null
+  if (specifiedTemplateUrl) {
+    specifiedTemplate = pluginTemplates.find(tpl => tpl.value === specifiedTemplateUrl)
+  }
 
-  output.print(`Success! Plugin initialized at ${finalAnswers.outputPath}`)
+  if (specifiedTemplate) {
+    return bootstrapFromUrl(context, specifiedTemplate.url)
+  } else if (specifiedTemplateUrl) {
+    throw new Error(`Cannot find template with name "${specifiedTemplateUrl}"`)
+  }
+
+  const templateChoices = pluginTemplates.map(({value, name}) => ({value, name}))
+  const selected = await prompt.single({
+    message: 'Select template to use',
+    type: 'list',
+    choices: templateChoices
+  })
+
+  specifiedTemplate = pluginTemplates.find(tpl => tpl.value === selected)
+  return bootstrapFromUrl(context, specifiedTemplate.url)
 }
 
-function addPluginOnUserConfirm(workDir, answers) {
-  return answers.addPluginToManifest
-    ? addPluginToManifest(workDir, answers.name.replace(/^sanity-plugin-/, ''))
-    : Promise.resolve()
+async function bootstrapFromUrl(context, url) {
+  const {output, prompt, workDir} = context
+  const {name, outputPath, inPluginsPath} = await bootstrapFromTemplate(context, url)
+
+  if (inPluginsPath) {
+    const addIt = await prompt.single({
+      type: 'confirm',
+      message: 'Enable plugin in current Sanity installation?',
+      default: true
+    })
+
+    if (addIt) {
+      await addPluginToManifest(workDir, name.replace(/^sanity-plugin-/, ''))
+    }
+  }
+
+  output.print(`Success! Plugin initialized at ${outputPath}`)
 }
