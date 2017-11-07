@@ -3,11 +3,11 @@ import React from 'react'
 import styles from './styles/PopOver.css'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
-import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
-const PADDING = 5
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
+
+const PADDING = 20
 
 export default class PopOver extends React.Component {
 
@@ -16,13 +16,11 @@ export default class PopOver extends React.Component {
     onClose: PropTypes.func,
     isOpen: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger', 'success', 'warning', 'info']),
-    scrollContainer: PropTypes.object,
     useOverlay: PropTypes.bool
   }
 
   static defaultProps = {
     color: 'default',
-    scrollContainer: undefined,
     onClose() {}, // eslint-disable-line
     isOpen: true,
     useOverlay: true
@@ -30,31 +28,7 @@ export default class PopOver extends React.Component {
 
   state = {
     arrowLeft: 0,
-    popoverLeft: 0,
-    scrollContainer: undefined,
-    isResizing: false
-  }
-
-  componentDidMount() {
-    const {
-      scrollContainer
-    } = this.props
-
-    if (!this._rootElement) {
-      // console.error('no root element')
-    }
-
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    } else {
-      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
-    }
-  }
-
-  setScrollContainerElement = element => {
-    this.setState({
-      scrollContainer: element
-    })
+    popoverLeft: 0
   }
 
   handleClose = () => {
@@ -117,14 +91,12 @@ export default class PopOver extends React.Component {
       popoverLeft,
       arrowLeft,
       availableHeight,
-      scrollContainer,
     } = this.state
 
     return (
       <div style={{display: 'span'}} ref={this.setRootElement}>
         <StickyPortal
           isOpen={isOpen}
-          scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
           useOverlay={useOverlay}
         >
@@ -163,7 +135,7 @@ export default class PopOver extends React.Component {
                       ref={this.setContentElement}
                       className={styles.content}
                       style={{
-                        maxHeight: `${availableHeight - 16}px`
+                        maxHeight: `${availableHeight - PADDING}px`
                       }}
                     >
                       {children}

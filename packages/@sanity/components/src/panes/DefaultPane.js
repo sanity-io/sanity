@@ -4,6 +4,7 @@ import defaultStyles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Styleable from '../utilities/Styleable'
+import ScrollContainer from '../utilities/ScrollContainer'
 
 class Pane extends React.PureComponent {
   static propTypes = {
@@ -47,18 +48,10 @@ class Pane extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
-    this._contentElement.addEventListener('scroll', this.handleContentScroll, {passive: true})
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.scrollTop !== this.props.scrollTop) {
       this.setScrollShadow(nextProps.scrollTop)
     }
-  }
-
-  componentWillUnmount() {
-    this._contentElement.removeEventListener('scroll', this.handleContentScroll, {passive: true})
   }
 
   state = {
@@ -116,10 +109,6 @@ class Pane extends React.PureComponent {
     this.setScrollShadow(event.target.scrollTop)
   }
 
-  setContentElement = element => {
-    this._contentElement = element
-  }
-
   render() {
     const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, styles} = this.props
 
@@ -171,9 +160,9 @@ class Pane extends React.PureComponent {
           />
         </div>
         <div className={styles.main}>
-          <div className={styles.content} ref={this.setContentElement}>
+          <ScrollContainer className={styles.content} onScroll={this.handleContentScroll}>
             {children}
-          </div>
+          </ScrollContainer>
         </div>
       </div>
     )

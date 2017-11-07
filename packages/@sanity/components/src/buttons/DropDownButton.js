@@ -6,7 +6,6 @@ import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
-import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
 
@@ -19,7 +18,6 @@ class DropDownButton extends React.PureComponent {
         icon: PropTypes.func
       })
     ),
-    scrollContainer: PropTypes.element,
     onAction: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
     inverted: PropTypes.bool,
@@ -42,28 +40,6 @@ class DropDownButton extends React.PureComponent {
   }
 
   width = 100
-
-  componentDidMount() {
-    const {
-      scrollContainer
-    } = this.props
-
-    if (!this._rootElement) {
-      // console.error('no root element')
-    }
-
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    } else {
-      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
-    }
-  }
-
-  setScrollContainerElement = element => {
-    this.setState({
-      scrollContainer: element
-    })
-  }
 
   handleClickOutside = event => {
     this.setState({menuOpened: false})
@@ -116,7 +92,7 @@ class DropDownButton extends React.PureComponent {
 
   render() {
     const {items, children, kind, className, origin, ...rest} = omit(this.props, 'onAction')
-    const {menuOpened, scrollContainer, width, stickToBottom} = this.state
+    const {menuOpened, width, stickToBottom} = this.state
 
 
     let menuClassName = styles.menu
@@ -164,18 +140,18 @@ class DropDownButton extends React.PureComponent {
                   {isActive => (
                     <StickyPortal
                       isOpen
-                      scrollContainer={scrollContainer}
                       onResize={this.handleResize}
                       onlyBottomSpace={false}
                       useOverlay={false}
                       addPadding={false}
                       scrollIntoView={false}
+                      onClickOutside={this.handleClose}
+                      onEscape={this.handleClose}
                     >
                       <div
                         ref={this.setMenuElement}
                         style={{minWidth: `${width}px`}}
                       >
-                        <Escapable onEscape={event => ((isActive || event.shiftKey) && this.handleCloseMenu())} />
                         <Menu
                           items={items}
                           isOpen
