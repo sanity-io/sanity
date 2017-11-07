@@ -16,7 +16,7 @@ const scrollOptions = {
   ease: ease.easeInOutQuart
 }
 
-const PADDING = 10
+const PADDING = 50
 const PADDING_DUMMY_TRANSITION = 'height 0.2s linear'
 
 export default class Sticky extends React.PureComponent {
@@ -70,9 +70,12 @@ export default class Sticky extends React.PureComponent {
   _scrollContainerWidth = 0
 
   componentDidMount() {
-    const scrollContainer = this.context.getScrollContainer()
 
-    this.setScrollContainerElement(scrollContainer)
+    if (this.context.getScrollContainer) {
+      this.setScrollContainerElement(this.context.getScrollContainer())
+    } else {
+      this.setScrollContainerElement(document.body)
+    }
 
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
@@ -111,7 +114,6 @@ export default class Sticky extends React.PureComponent {
       this.moveIntoPosition()
     }
     if (prevProps.wantedHeight !== this.props.wantedHeight) {
-      console.log('new props.wantedHeight', this.props.wantedHeight)
       this.scrollIntoView()
     }
     if (prevProps.stickToTop !== this.props.stickToTop) {
