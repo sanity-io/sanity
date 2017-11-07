@@ -69,7 +69,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
 
 function sanityBlockToRawNode(sanityBlock, type) {
   // eslint-disable-next-line no-unused-vars
-  const {children, _type, ...rest} = sanityBlock
+  const {children, _type, markDefs, ...rest} = sanityBlock
 
   const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
 
