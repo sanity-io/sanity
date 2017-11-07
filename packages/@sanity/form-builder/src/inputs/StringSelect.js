@@ -56,7 +56,6 @@ export default class StringSelect extends React.PureComponent {
           ? <RadioSelect
             name={type.name}
             legend={type.title}
-            level={level}
             items={items}
             onChange={this.handleChange}
             value={currentItem}
@@ -64,7 +63,6 @@ export default class StringSelect extends React.PureComponent {
           />
           : <Select
             label={type.title}
-            level={level}
             value={currentItem}
             placeholder={type.placeholder}
             onChange={this.handleChange}
