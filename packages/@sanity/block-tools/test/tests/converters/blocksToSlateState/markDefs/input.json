@@ -1,0 +1,32 @@
+[
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "4713633924e9"
+        ],
+        "text": "Link"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      }
+    ],
+    "markDefs": [
+      {
+        "_key": "4713633924e9",
+        "_type": "link",
+        "href": "1234"
+      }
+    ],
+    "style": "normal"
+  }
+]
