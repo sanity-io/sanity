@@ -1,9 +1,12 @@
 const path = require('path')
+const semver = require('semver')
 const fse = require('fs-extra')
 const simpleGet = require('simple-get')
 const decompress = require('decompress')
+const resolveFrom = require('resolve-from')
 const validateNpmPackageName = require('validate-npm-package-name')
 const {pathTools} = require('@sanity/util')
+const pkg = require('../../../package.json')
 const {absolutify, pathIsEmpty} = pathTools
 
 module.exports = async (context, url) => {
@@ -23,6 +26,16 @@ module.exports = async (context, url) => {
   const templateFiles = zip.filter(file => file.type === 'file' && file.path.indexOf(baseDir) === 0)
   const manifestContent = manifest.data.toString()
   const tplVars = parseJson(manifestContent).sanityTemplate || {}
+  const {minimumBaseVersion} = tplVars
+
+  if (minimumBaseVersion) {
+    const installed = getSanityVersion(workDir)
+    if (semver.lt(installed, minimumBaseVersion)) {
+      throw new Error(
+        `Template requires Sanity at version ${minimumBaseVersion}, installed is ${installed}`
+      )
+    }
+  }
 
   const name = await prompt.single({
     type: 'input',
@@ -89,4 +102,9 @@ function parseJson(json) {
   } catch (err) {
     return {}
   }
+}
+
+function getSanityVersion(workDir) {
+  const basePkg = resolveFrom.silent(workDir, '@sanity/base/package.json')
+  return basePkg ? require(basePkg).version : pkg.version
 }

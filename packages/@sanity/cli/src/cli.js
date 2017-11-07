@@ -67,15 +67,14 @@ module.exports = function runCli() {
     args.groupOrCommand = 'help'
   }
 
-  Promise.resolve(getCliRunner(commands))
-    .then(cliRunner => cliRunner.runCommand(args.groupOrCommand, args, options))
-    .catch(err => {
-      const debug = core.d || core.debug
-      const error = (debug && err.details) || err
-      const errMessage = debug ? error.stack || error : error.message || error
-      console.error(chalk.red(errMessage)) // eslint-disable-line no-console
-      process.exit(1) // eslint-disable-line no-process-exit
-    })
+  const cliRunner = getCliRunner(commands)
+  cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
+    const debug = core.d || core.debug
+    const error = (debug && err.details) || err
+    const errMessage = debug ? error.stack || error : error.message || error
+    console.error(chalk.red(errMessage)) // eslint-disable-line no-console
+    process.exit(1) // eslint-disable-line no-process-exit
+  })
 }
 
 // Weird edge case where the folder the terminal is currently in has been removed
