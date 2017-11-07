@@ -39,7 +39,7 @@ function validateFieldName(name): Array<any> {
     return [
       warning(
         'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?'
-      + ' It may be wise to keep special character out of field names for easier access later on.'
+      + ' It may be wise to keep special characters out of field names for easier access later on.'
       ),
       HELP_IDS.OBJECT_FIELD_NAME_INVALID
     ]
