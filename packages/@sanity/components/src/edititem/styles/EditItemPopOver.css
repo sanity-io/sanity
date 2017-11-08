@@ -115,6 +115,8 @@
   color: var(--text-color);
   top: var(--small-padding);
   right: var(--small-padding);
+  background-color: color(var(--component-bg) a(50%));
+  z-index: 1;
 
   @nest &:hover {
     color: var(--black);

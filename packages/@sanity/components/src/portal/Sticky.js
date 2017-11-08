@@ -13,6 +13,7 @@ const scrollOptions = {
   ease: ease.easeInOutQuart
 }
 
+const PADDING = 50
 const PADDING_DUMMY_TRANSITION = 'height 0.2s linear'
 
 export default class Sticky extends React.PureComponent {
@@ -22,11 +23,11 @@ export default class Sticky extends React.PureComponent {
     isOpen: PropTypes.bool,
     onlyBottomSpace: PropTypes.bool,
     stickToTop: PropTypes.bool,
-    ignoreScroll: PropTypes.bool,
     onResize: PropTypes.func,
     useOverlay: PropTypes.bool,
     scrollIntoView: PropTypes.bool,
     addPadding: PropTypes.bool,
+    wantedHeight: PropTypes.number,
     scrollContainer: PropTypes.object // DOM element
   }
 
@@ -35,11 +36,14 @@ export default class Sticky extends React.PureComponent {
     stickToTop: false,
     onlyBottomSpace: true,
     isOpen: true,
-    ignoreScroll: false,
     useOverlay: true,
     scrollIntoView: true,
     addPadding: true,
-    onResize: () => {}
+    onResize: () => {},
+  }
+
+  static contextTypes = {
+    getScrollContainer: PropTypes.func
   }
 
   state = {
@@ -63,13 +67,10 @@ export default class Sticky extends React.PureComponent {
   _scrollContainerWidth = 0
 
   componentDidMount() {
-    const {
-      scrollContainer
-    } = this.props
 
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    }
+    const {getScrollContainer} = this.context
+    const scrollContainer = (typeof getScrollContainer === 'function' && getScrollContainer()) || document.body
+    this.setScrollContainerElement(scrollContainer)
 
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
@@ -104,11 +105,11 @@ export default class Sticky extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.scrollContainer !== this.props.scrollContainer) {
-      this.setScrollContainerElement(this.props.scrollContainer)
-    }
     if (prevProps.onlyBottomSpace !== this.props.onlyBottomSpace) {
       this.moveIntoPosition()
+    }
+    if (prevProps.wantedHeight !== this.props.wantedHeight) {
+      this.scrollIntoView()
     }
     if (prevProps.stickToTop !== this.props.stickToTop) {
       this.moveIntoPosition()
@@ -116,9 +117,6 @@ export default class Sticky extends React.PureComponent {
   }
 
   handlePortalOpened = () => {
-    if (this._scrollContainerElement) {
-      this._initialScrollTop = this._scrollContainerElement.scrollTop
-    }
     this.moveIntoPosition()
     this.addMovingListeners()
     this.handleWindowResize()
@@ -144,16 +142,14 @@ export default class Sticky extends React.PureComponent {
       return
     }
     if (!this._scrollContainerElement) {
-      //console.error('scrollIntoView: Missing scrollContainer element')
       return
     }
 
     if (!this._contentElement) {
-      //console.error('scrollIntoView: Missing content element')
       return
     }
 
-    const neededHeight = this._contentElement.offsetHeight
+    const neededHeight = this.props.wantedHeight || this._contentElement.offsetHeight
 
     if (this.props.addPadding && neededHeight) {
       const extraHeight = Math.min(this._contentElement.offsetHeight, window.innerHeight)
@@ -161,7 +157,10 @@ export default class Sticky extends React.PureComponent {
     }
 
     const scrollTop = this._scrollContainerElement.scrollTop
-    if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
+
+    const scrollContainerHeight = this._scrollContainerElement.offsetHeight
+
+    if ((this._rootTop + neededHeight) > scrollContainerHeight) {
       this._extraScrollTop
       = -window.innerHeight
       + neededHeight
@@ -169,7 +168,8 @@ export default class Sticky extends React.PureComponent {
 
       this._initialScrollTop = scrollTop
       this._isScrolling = true
-      const newScrollTop = scrollTop + this._extraScrollTop
+      const newScrollTop = scrollTop + this._extraScrollTop + PADDING
+
       scroll.top(this._scrollContainerElement, newScrollTop, scrollOptions, () => {
         this._isScrolling = false
         this.props.onResize({
@@ -180,9 +180,6 @@ export default class Sticky extends React.PureComponent {
   }
 
   addMovingListeners = () => {
-    //if (this._contentElement) {
-    //  this._contentElement.addEventListener('scroll', this.handleContentScroll)
-    //}
     if (this._elementResizeDetector && this._contentElement && this._contentElement.firstChild) {
       this._elementResizeDetector.listenTo(
         this._contentElement.firstChild,
@@ -191,12 +188,8 @@ export default class Sticky extends React.PureComponent {
     }
   }
 
-  handleContentScroll = event => {
-    //this._contentScrollTop = event.target.scrollTop
-  }
-
   handleWindowResize = throttle(() => {
-    this.handleWindowResizeDone()
+    this.moveIntoPosition()
   }, 1000 / 60)
 
   handleWindowScroll = throttle(() => {
@@ -213,12 +206,7 @@ export default class Sticky extends React.PureComponent {
         this._scrollContainerElement.appendChild(this._paddingDummy)
       }
     }
-
     this.scrollIntoView()
-  }
-
-  handleWindowResizeDone() {
-    this.moveIntoPosition()
   }
 
   setRootRects() {
@@ -235,12 +223,6 @@ export default class Sticky extends React.PureComponent {
       return
     }
     this._scrollContainerElement = element
-
-    this._scrollContainerElement.addEventListener(
-      'scroll',
-      this.handleContainerScroll,
-      {passive: true}
-    )
 
     this.setState({
       portalIsOpen: true
