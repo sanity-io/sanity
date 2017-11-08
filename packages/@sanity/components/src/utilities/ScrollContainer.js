@@ -24,15 +24,19 @@ export default class ScrollContainer extends React.PureComponent {
   }
 
   componentDidMount() {
-    this._scrollContainerElement.addEventListener('scroll', this.props.onScroll, {passive: true})
+    this._scrollContainerElement.addEventListener('scroll', this.handleScroll, {passive: true})
   }
 
   componentWillUnmount() {
-    this._scrollContainerElement.removeEventListener('scroll', this.props.onScroll, {passive: true})
+    this._scrollContainerElement.removeEventListener('scroll', this.handleScroll, {passive: true})
   }
 
   static childContextTypes = {
     getScrollContainer: PropTypes.func
+  }
+
+  handleScroll = event => {
+    this.props.onScroll(event)
   }
 
   setScrollContainerElement = element => {
