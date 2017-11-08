@@ -12,7 +12,7 @@
 
 .root {
   display: block;
-  padding-bottom: 100vh;
+
   /*
     TODO Remove this this when supporting mobile navigation in js
   */
@@ -39,7 +39,6 @@
 
 .top {
   display: flex;
-  /*justify-content: space-between;*/
   margin: 0 var(--medium-padding);
   color: #aaaaaa;
 }

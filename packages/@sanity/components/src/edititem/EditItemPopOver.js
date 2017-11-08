@@ -4,7 +4,6 @@ import styles from 'part:@sanity/components/edititem/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
-import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
@@ -23,13 +22,11 @@ export default class EditItemPopOver extends React.PureComponent {
       key: PropTypes.string,
       handleClick: PropTypes.func
     })),
-    isOpen: PropTypes.bool,
-    scrollContainer: PropTypes.object
+    isOpen: PropTypes.bool
   }
 
   static defaultProps = {
     title: undefined,
-    scrollContainer: undefined,
     onClose() {},
     actions: [],
     isOpen: true
@@ -38,47 +35,7 @@ export default class EditItemPopOver extends React.PureComponent {
   state = {
     arrowLeft: 0,
     popoverLeft: 0,
-    scrollContainer: undefined,
     isResizing: false
-  }
-
-  componentDidMount() {
-    const {
-      scrollContainer
-    } = this.props
-
-    if (!this._rootElement) {
-      // console.error('no root element')
-    }
-
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    } else {
-      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._contentElement) {
-      this._contentElement.removeEventListener('wheel', this.handleWheel, {passive: true})
-      this._contentElement.removeEventListener('touchmove', this.handleTouchMove, {passive: true})
-      this._contentElement.removeEventListener('touchstart', this.handleTouchStart, {passive: true})
-    }
-  }
-
-  setScrollContainerElement = element => {
-    this.setState({
-      scrollContainer: element
-    })
-  }
-
-  handleWheel = event => {
-    const scrollContainer = this.state.scrollContainer
-    const scrollBottom = this._contentElement.scrollTop >= this._contentElement.scrollHeight - this._contentElement.clientHeight
-    if (scrollContainer && (this._contentElement.scrollTop <= 0 || scrollBottom)) {
-      const scrollTo = (event.wheelDelta * -1) + scrollContainer.scrollTop
-      scrollContainer.scrollTop = scrollTo
-    }
   }
 
   setArrowElement = element => {
@@ -86,28 +43,7 @@ export default class EditItemPopOver extends React.PureComponent {
   }
 
   setContentElement = element => {
-    if (element) {
-      element.addEventListener('wheel', this.handleWheel, {passive: true})
-      element.addEventListener('touchmove', this.handleTouchMove, {passive: true})
-      element.addEventListener('touchstart', this.handleTouchStart, {passive: true})
-    }
     this._contentElement = element
-  }
-
-  handleTouchStart = event => {
-    this.lastY = event.targetTouches[0].clientY
-  }
-
-  handleTouchMove = event => {
-    const scrollContainer = this.state.scrollContainer
-    const currentY = event.touches[0].clientY
-    const scrollBottom = this._contentElement.scrollTop >= this._contentElement.scrollHeight - this._contentElement.clientHeight
-    if (scrollContainer && (this._contentElement.scrollTop <= 0 || scrollBottom)) {
-      const delta = this.lastY - currentY
-      const scrollTo = delta + scrollContainer.scrollTop
-      scrollContainer.scrollTop = scrollTo
-    }
-    this.lastY = currentY
   }
 
   setPopoverInnerElement = element => {
@@ -138,22 +74,12 @@ export default class EditItemPopOver extends React.PureComponent {
       popoverLeft = availableWidth - width - PADDING
     }
 
-    let maxHeight = 500
-    if (!this.state.initialHeight) {
-      this.setState({
-        initialHeight: this._contentElement.offsetHeight
-      })
-    }
-
-    if (availableHeight && this.state.scrollContainer) {
-      maxHeight = availableHeight
-    }
-
     this.setState({
       popoverLeft: popoverLeft,
-      availableHeight: maxHeight,
+      maxHeight: availableHeight,
       arrowLeft: rootLeft,
-      isResizing: isScrolling
+      isResizing: isScrolling,
+      wantedHeight: this._contentElement.scrollHeight
     })
   }
 
@@ -169,19 +95,18 @@ export default class EditItemPopOver extends React.PureComponent {
     const {
       popoverLeft,
       arrowLeft,
-      initialHeight,
-      availableHeight,
-      scrollContainer,
-      isResizing
+      maxHeight,
+      isResizing,
+      wantedHeight
     } = this.state
 
     return (
       <div style={{display: 'span'}} ref={this.setRootElement}>
         <StickyPortal
           isOpen={isOpen}
-          scrollContainer={scrollContainer}
           onResize={this.handlePortalResize}
           stickToTop
+          wantedHeight={wantedHeight}
         >
           <Stacked>
             {isActive => (
@@ -219,7 +144,7 @@ export default class EditItemPopOver extends React.PureComponent {
                       ref={this.setContentElement}
                       className={isResizing ? styles.contentIsResizing : styles.content}
                       style={{
-                        maxHeight: `${Math.min(initialHeight + 16, availableHeight)}px`
+                        maxHeight: `${maxHeight}px`
                       }}
                     >
                       {children}

@@ -32,7 +32,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
     isInputSelected: PropTypes.bool,
-    scrollContainer: PropTypes.object,
     width: PropTypes.number,
     disabled: PropTypes.bool,
     dropdownPosition: PropTypes.string
@@ -47,7 +46,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     renderItem: item => item,
     items: [],
     width: 100,
-    scrollContainer: undefined,
     dropdownPosition: 'bottom'
   }
 
@@ -128,7 +126,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       onClose,
       onResize,
       dropdownPosition,
-      scrollContainer,
       disabled,
       onHighlightIndexChange,
       openItemElement,
@@ -173,7 +170,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             isOpen && (
               <StickyPortal
                 isOpen={isOpen}
-                scrollContainer={scrollContainer}
                 onResize={onResize}
                 onlyBottomSpace={false}
                 useOverlay={false}

@@ -3,7 +3,6 @@ import React from 'react'
 import styles from 'part:@sanity/components/edititem/fold-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import StickyPortal from 'part:@sanity/components/portal/sticky'
-import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
@@ -14,27 +13,14 @@ export default class EditItemFoldOut extends React.PureComponent {
     title: PropTypes.string,
     children: PropTypes.node.isRequired,
     onClose: PropTypes.func,
-    scrollContainer: PropTypes.node
   }
 
   static defaultProps = {
     title: '',
-    scrollContainer: undefined,
     onClose() {}, // eslint-disable-line
   }
 
-  state = {
-    scrollContainer: undefined
-  }
-
   componentDidMount() {
-    const {scrollContainer} = this.props
-
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    } else {
-      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
-    }
     window.addEventListener('keydown', this.handleKeyDown)
   }
 
@@ -42,10 +28,10 @@ export default class EditItemFoldOut extends React.PureComponent {
     window.removeEventListener('keydown', this.handleKeyDown)
   }
 
-  setScrollContainerElement = element => {
-    this.setState({
-      scrollContainer: element
-    })
+  state = {
+    left: 0,
+    width: 500,
+    height: 500
   }
 
   setRootElement = element => {
@@ -66,7 +52,7 @@ export default class EditItemFoldOut extends React.PureComponent {
 
   render() {
     const {title, onClose, children} = this.props
-    const {scrollContainer, width, left, height} = this.state
+    const {width, left, height} = this.state
     return (
       <div
         ref={this.setRootElement}
@@ -77,7 +63,6 @@ export default class EditItemFoldOut extends React.PureComponent {
           isOpen
           onlyBottomSpace
           useOverlay
-          scrollContainer={scrollContainer}
           addPadding={false}
           scrollIntoView={false}
           onResize={this.handleResize}

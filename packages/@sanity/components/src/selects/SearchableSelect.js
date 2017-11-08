@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
-import tryFindScrollContainer from '../utilities/tryFindScrollContainer'
 
 export default class SearchableSelect extends React.Component {
   static propTypes = {
@@ -19,14 +18,12 @@ export default class SearchableSelect extends React.Component {
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func.isRequired,
     items: PropTypes.array,
-    scrollContainer: PropTypes.object,
     dropdownPosition: PropTypes.string
   }
 
   static defaultProps = {
     placeholder: 'Type to search…',
     isLoading: false,
-    scrollContainer: undefined,
     onChange() {},
     onSearch() {},
     onOpen() {},
@@ -46,23 +43,6 @@ export default class SearchableSelect extends React.Component {
       hasFocus: false,
       dropdownPosition: props.dropdownPosition || 'bottom'
     }
-  }
-
-  componentDidMount() {
-    const {
-      scrollContainer
-    } = this.props
-    if (scrollContainer) {
-      this.setScrollContainerElement(scrollContainer)
-    } else {
-      this.setScrollContainerElement(tryFindScrollContainer(this._rootElement))
-    }
-  }
-
-  setScrollContainerElement = element => {
-    this.setState({
-      scrollContainer: element
-    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -152,7 +132,7 @@ export default class SearchableSelect extends React.Component {
   }
 
   render() {
-    const {isOpen, highlightIndex, isInputSelected, inputValue, scrollContainer, width, hasFocus, dropdownPosition} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue, width, hasFocus, dropdownPosition} = this.state
     const {onSearch, ...rest} = this.props
     return (
       <div ref={this.setRootElement}>
@@ -171,7 +151,6 @@ export default class SearchableSelect extends React.Component {
           isInputSelected={isInputSelected}
           inputValue={inputValue}
           onInputChange={this.handleInputChange}
-          scrollContainer={scrollContainer}
           width={width}
           isSelected={hasFocus}
         />
