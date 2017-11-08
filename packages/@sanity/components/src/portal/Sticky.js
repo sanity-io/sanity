@@ -144,12 +144,10 @@ export default class Sticky extends React.PureComponent {
       return
     }
     if (!this._scrollContainerElement) {
-      //console.error('scrollIntoView: Missing scrollContainer element')
       return
     }
 
     if (!this._contentElement) {
-      //console.error('scrollIntoView: Missing content element')
       return
     }
 
@@ -161,8 +159,6 @@ export default class Sticky extends React.PureComponent {
     }
 
     const scrollTop = this._scrollContainerElement.scrollTop
-    // if (this._extraScrollTop > 0 && this._contentElement.offsetHeight < this._scrollContainerElement.offsetHeight) {
-    // this._extraScrollTop
 
     const scrollContainerHeight = this._scrollContainerElement.offsetHeight
 
@@ -292,7 +288,6 @@ export default class Sticky extends React.PureComponent {
   }
 
   handleElementResize = el => {
-    // console.log('element resize')
     this.moveIntoPosition()
   }
 
