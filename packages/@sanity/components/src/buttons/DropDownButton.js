@@ -73,7 +73,8 @@ class DropDownButton extends React.PureComponent {
   }
 
   handleResize = dimensions => {
-    if (this._menuElement.offsetHeight < (window.innerHeight - dimensions.rootTop)) {
+    const buttonHeight = this._rootElement.offsetHeight
+    if (this._menuElement.offsetHeight + buttonHeight < (window.innerHeight - dimensions.rootTop)) {
       this.setState({
         stickToBottom: true
       })
@@ -144,13 +145,13 @@ class DropDownButton extends React.PureComponent {
                         ref={this.setMenuElement}
                         style={{minWidth: `${width}px`}}
                       >
-                        <Escapable onEscape={event => ((isActive || event.shiftKey) && this.handleClose())} />
+                        <Escapable onEscape={event => (isActive && this.handleClose())} />
                         <Menu
                           items={items}
                           isOpen
                           className={menuClassName}
                           onAction={this.handleAction}
-                          onClickOutside={event => ((isActive || event.shiftKey) && this.handleClose())}
+                          onClickOutside={event => (isActive && this.handleClose())}
                         />
                       </div>
                     </StickyPortal>
