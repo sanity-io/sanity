@@ -68,11 +68,9 @@ export default class Sticky extends React.PureComponent {
 
   componentDidMount() {
 
-    if (this.context.getScrollContainer) {
-      this.setScrollContainerElement(this.context.getScrollContainer())
-    } else {
-      this.setScrollContainerElement(document.body)
-    }
+    const {getScrollContainer} = this.context
+    const scrollContainer = (typeof getScrollContainer === 'function' && getScrollContainer()) || document.body
+    this.setScrollContainerElement(scrollContainer)
 
     if (window) {
       window.addEventListener('resize', this.handleWindowResize)
