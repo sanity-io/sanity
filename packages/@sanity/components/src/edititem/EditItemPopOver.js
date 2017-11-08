@@ -105,7 +105,6 @@ export default class EditItemPopOver extends React.PureComponent {
         <StickyPortal
           isOpen={isOpen}
           onResize={this.handlePortalResize}
-          stickToTop
           wantedHeight={wantedHeight}
         >
           <Stacked>
