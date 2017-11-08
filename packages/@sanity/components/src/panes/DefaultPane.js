@@ -4,7 +4,7 @@ import defaultStyles from './styles/DefaultPane.css'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Styleable from '../utilities/Styleable'
-import ScrollContainer from '../utilities/ScrollContainer'
+import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 
 class Pane extends React.PureComponent {
   static propTypes = {

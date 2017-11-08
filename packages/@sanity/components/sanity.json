@@ -829,11 +829,11 @@
       "path": "portal/Sticky.js"
     },
     {
-      "name": "part:@sanity/components/utilities/scrollContainer",
+      "name": "part:@sanity/components/utilities/scroll-container",
       "description": "Portal that sticks to scrollContainer"
     },
     {
-      "implements": "part:@sanity/components/utilities/scrollContainer",
+      "implements": "part:@sanity/components/utilities/scroll-container",
       "path": "utilities/ScrollContainer.js"
     },
     {

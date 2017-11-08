@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import {Data, State} from 'slate'
 import {Editor} from 'slate-react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
-import ScrollContainer from 'part:@sanity/components/utilities/scrollContainer?'
+import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import {uniqueId} from 'lodash'
 
 import FormField from 'part:@sanity/components/formfields/default'
