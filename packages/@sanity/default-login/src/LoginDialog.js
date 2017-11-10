@@ -28,8 +28,14 @@ const GoogleLogo = () => (
 
 export default class LoginDialog extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string,
+    title: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.node
+    ]).isRequired,
+    description: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.node
+    ]),
     sanityLogo: PropTypes.node,
     projectId: PropTypes.string
   };
