@@ -22,8 +22,14 @@ export default class LoginWrapper extends React.PureComponent {
       PropTypes.node,
       PropTypes.func
     ]).isRequired,
-    title: PropTypes.string,
-    description: PropTypes.string,
+    title: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.node
+    ]),
+    description: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.node
+    ]),
     sanityLogo: PropTypes.node
   }
 
