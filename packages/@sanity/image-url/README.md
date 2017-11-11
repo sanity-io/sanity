@@ -2,7 +2,7 @@
 
 Quickly generate image urls from Sanity image records.
 
-This helper will by default respect any crops/hotspots specified in the Sanity content provided to it. The most typical use case for this is to give it a sanity image and specify a width, height or both and get a nice, cropped and resized image according to the wishes of the content editor and the front end developers specifications.
+This helper will by default respect any crops/hotspots specified in the Sanity content provided to it. The most typical use case for this is to give it a sanity image and specify a width, height or both and get a nice, cropped and resized image according to the wishes of the content editor and the specifications of the front end developer.
 
 In addition to the core use case, this library provides a handy builder to access the rich selection of processing options available in the Sanity image pipeline.
 
@@ -48,7 +48,7 @@ There are a huge number of useful options you can specify, like e.g. blur:
 
 ### `image(source)`
 
-Specify the image to be rendered. Accepts either a Sanity image record, an asset record, or just the asset id as a string. In order for hotspot/crop processing to be applied, the image record must be supplied.
+Specify the image to be rendered. Accepts either a Sanity `image` record, an `asset` record, or just the asset id as a string. In order for hotspot/crop processing to be applied, the `image` record must be supplied.
 
 ### `dataset(dataset)`, `projectId(projectId)`
 
