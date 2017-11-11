@@ -1,12 +1,14 @@
 {
   "name": "@sanity/image-url",
-  "version": "0.119.0",
+  "version": "0.120.0",
   "description": "Tools to generate image urls from Sanity content",
   "main": "index.js",
   "scripts": {
+    "build": "npm run clean && npm run compile",
+    "compile": "babel --source-maps --copy-files -d lib/ src/",
     "clean": "rimraf lib",
-    "bloat":
-      "browserify -t babelify --full-paths ./src/index.js | discify --open",
+    "postpublish": "npm run clean",
+    "posttest": "npm run lint",
     "lint": "eslint .",
     "pre-commit-check":
       "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
@@ -16,10 +18,10 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "babelify": "^7.3.0",
-    "browserify": "^14.3.0",
+    "babel-register": "^6.26.0",
+    "eslint": "^4.11.0",
+    "eslint-config-sanity": "^3.1.0",
     "mocha": "^3.2.0",
-    "remon": "^1.0.2",
     "rimraf": "^2.6.2",
     "should": "^11.1.0"
   },

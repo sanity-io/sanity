@@ -1,1 +1,1 @@
-module.exports = require('./lib/urlForImage')
+module.exports = require('./lib/urlForImage').default

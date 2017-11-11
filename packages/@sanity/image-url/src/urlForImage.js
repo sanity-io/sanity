@@ -1,3 +1,19 @@
+const SPEC_NAME_TO_URL_NAME_MAPPINGS = [
+  ['width', 'w'],
+  ['height', 'h'],
+  ['format', 'fm'],
+  ['download', 'dl'],
+  ['blur', 'blur'],
+  ['sharpen', 'sharp'],
+  ['invert', 'invert'],
+  ['orientation', 'or'],
+  ['minHeight', 'min-h'],
+  ['maxHeight', 'max-h'],
+  ['minWidth', 'min-w'],
+  ['maxWidth', 'max-w'],
+  ['quality', 'q']
+]
+
 export default function urlForImage(options) {
   let spec = Object.assign({}, options || {})
   const source = spec.source
@@ -105,6 +121,7 @@ function parseAssetId(ref) {
   return {id, width, height, format}
 }
 
+/* eslint-disable complexity */
 function specToImageUrl(spec) {
   const baseUrl
     = `https://cdn.sanity.io/images/${spec.projectId}/${spec.dataset}/${spec.asset.id}-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
@@ -129,21 +146,7 @@ function specToImageUrl(spec) {
   }
 
   // Map from spec name to url param name
-  [
-    ['width', 'w'],
-    ['height', 'h'],
-    ['format', 'fm'],
-    ['download', 'dl'],
-    ['blur', 'blur'],
-    ['sharpen', 'sharp'],
-    ['invert', 'invert'],
-    ['orientation', 'or'],
-    ['minHeight', 'min-h'],
-    ['maxHeight', 'max-h'],
-    ['minWidth', 'min-w'],
-    ['maxWidth', 'max-w'],
-    ['quality', 'q']
-  ].forEach(mapping => {
+  SPEC_NAME_TO_URL_NAME_MAPPINGS.forEach(mapping => {
     const [specName, param] = mapping
     if (typeof spec[specName] != 'undefined') {
       params.push(`${param}=${encodeURIComponent(spec[specName])}`)
@@ -156,6 +159,7 @@ function specToImageUrl(spec) {
 
   return `${baseUrl}?${params.join('&')}`
 }
+/* eslint-enable complexity */
 
 function fit(source, spec) {
   const result = {
@@ -183,8 +187,8 @@ function fit(source, spec) {
     const width = height * desiredAspectRatio
     const top = crop.top
     // Center output horizontally over hotspot
-    const hotspotXCenter = (hotspot.right - hotspot.left) / 2 + hotspot.left
-    let left = hotspotXCenter - width / 2
+    const hotspotXCenter = ((hotspot.right - hotspot.left) / 2) + hotspot.left
+    let left = hotspotXCenter - (width / 2)
     // Keep output within crop
     if (left < crop.left) {
       left = crop.left
@@ -198,26 +202,25 @@ function fit(source, spec) {
       height: Math.round(height)
     }
     return result
-  } else {
-    // The crop is taller than the desired ratio, we are cutting from top and bottom
-    const width = crop.width
-    const height = width / desiredAspectRatio
-    const left = crop.left
-    // Center output vertically over hotspot
-    const hotspotYCenter = (hotspot.bottom - hotspot.top) / 2 + hotspot.top
-    let top = hotspotYCenter - height / 2
-    // Keep output rect within crop
-    if (top < crop.top) {
-      top = crop.top
-    } else if (top + height > crop.top + crop.height) {
-      top = crop.top + crop.height - height
-    }
-    result.rect = {
-      left: Math.floor(left),
-      top: Math.floor(top),
-      width: Math.round(width),
-      height: Math.round(height)
-    }
-    return result
   }
+  // The crop is taller than the desired ratio, we are cutting from top and bottom
+  const width = crop.width
+  const height = width / desiredAspectRatio
+  const left = crop.left
+  // Center output vertically over hotspot
+  const hotspotYCenter = ((hotspot.bottom - hotspot.top) / 2) + hotspot.top
+  let top = hotspotYCenter - (height / 2)
+  // Keep output rect within crop
+  if (top < crop.top) {
+    top = crop.top
+  } else if (top + height > crop.top + crop.height) {
+    top = crop.top + crop.height - height
+  }
+  result.rect = {
+    left: Math.floor(left),
+    top: Math.floor(top),
+    width: Math.round(width),
+    height: Math.round(height)
+  }
+  return result
 }

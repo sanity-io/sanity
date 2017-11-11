@@ -89,10 +89,6 @@ class ImageUrlBuilder {
     return this._withOptions({invert})
   }
 
-  sharpen(sharpen) {
-    return this._withOptions({sharpen})
-  }
-
   // Rotation in degrees 0, 90, 180, 270
   orientation(orientation) {
     return this._withOptions({orientation})
@@ -120,14 +116,13 @@ class ImageUrlBuilder {
 
   // Ignore crop/hotspot from image record, even when present
   ignoreImageParams() {
-    return urlForImage({ignoreImageParams: true})
+    return this._withOptions({ignoreImageParams: true})
   }
 
   // Gets the url based on the submitted parameters
   url() {
     return urlForImage(this.options)
   }
-
 
   // Synonym for url()
   toString() {
@@ -137,7 +132,7 @@ class ImageUrlBuilder {
 
 export default function urlBuilder(options) {
   // Did we get a SanityClient?
-  if (options.clientConfig) {
+  if (options && typeof options.clientConfig == 'object') {
     // Inherit config from client
     return new ImageUrlBuilder(null, {
       projectId: options.clientConfig.projectId,

@@ -1,6 +1,6 @@
 import sanityImage from '../src/builder'
 import should from 'should'
-import {uncroppedImage, croppedImage, noHostpotImage} from './fixtures'
+import {croppedImage} from './fixtures'
 
 const urlFor = sanityImage().projectId('zp7mbokg').dataset('production')
 
@@ -31,8 +31,7 @@ const cases = [
       .forceDownload('a.png')
       .flipHorizontal()
       .flipVertical()
-      .url()
-    ),
+      .url()),
     expect: 'rect=10,20,30,40&fp-x=10&fp-x=20&flip=hv&fm=png&dl=a.png&blur=50&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50'
   }
 ]
