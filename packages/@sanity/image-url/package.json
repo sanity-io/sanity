@@ -1,0 +1,38 @@
+{
+  "name": "@sanity/image-url",
+  "version": "0.119.0",
+  "description": "Tools to generate image urls from Sanity content",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf lib",
+    "bloat":
+      "browserify -t babelify --full-paths ./src/index.js | discify --open",
+    "lint": "eslint .",
+    "pre-commit-check":
+      "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
+    "test": "mocha --recursive --require babel-register test"
+  },
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "babelify": "^7.3.0",
+    "browserify": "^14.3.0",
+    "mocha": "^3.2.0",
+    "remon": "^1.0.2",
+    "rimraf": "^2.6.2",
+    "should": "^11.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": ["sanity", "cms", "headless", "realtime", "content", "image-url"]
+}
