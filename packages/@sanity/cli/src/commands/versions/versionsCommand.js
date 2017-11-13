@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import printVersionResult from './printVersionResult'
 
 const help = `
 Shows a list of installed Sanity modules and their respective versions, and
@@ -9,5 +9,5 @@ export default {
   signature: '',
   description: 'Shows the installed versions of Sanity CLI and core components',
   helpText: help,
-  action: lazyRequire(require.resolve('./printVersionResult'))
+  action: printVersionResult
 }

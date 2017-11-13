@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import showHelp from './showHelp'
 
 const help = `
 With no options and no COMMAND given, the synopsis of the sanity command and a
@@ -13,6 +13,6 @@ export default {
   name: 'help',
   signature: '[COMMAND]',
   description: 'Displays help information about Sanity',
-  action: lazyRequire(require.resolve('./showHelp')),
+  action: showHelp,
   helpText: help
 }

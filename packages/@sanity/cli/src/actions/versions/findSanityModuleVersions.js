@@ -3,16 +3,14 @@ import {values} from 'lodash'
 import promiseProps from 'promise-props-recursive'
 import getPackageJson from 'package-json'
 import semverCompare from 'semver-compare'
+import dynamicRequire from '../../util/dynamicRequire'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
 export default async (context, target) => {
   const {spinner} = context.output
 
-  const sanityModules = filterSanityModules(
-    getLocalManifest(context.workDir)
-  )
-
+  const sanityModules = filterSanityModules(getLocalManifest(context.workDir))
   const resolveOpts = {includeCli: true, target}
   const spin = spinner('Resolving latest versions').start()
   const versions = await promiseProps(
@@ -23,16 +21,17 @@ export default async (context, target) => {
   spin.stop()
 
   return packages.map(mod => {
-    mod.needsUpdate = target === 'latest'
-      ? semverCompare(mod.version, mod.latest) === -1
-      : mod.version !== mod.latest
+    mod.needsUpdate =
+      target === 'latest'
+        ? semverCompare(mod.version, mod.latest) === -1
+        : mod.version !== mod.latest
     return mod
   })
 }
 
 function getLocalManifest(workDir) {
   try {
-    return require(path.join(workDir, 'package.json'))
+    return dynamicRequire(path.join(workDir, 'package.json'))
   } catch (err) {
     return {}
   }
@@ -59,13 +58,14 @@ function filterSanityModules(manifest) {
 function buildPackageArray(packages, workDir, options = {}) {
   const {includeCli, target} = options
 
-  const initial = includeCli ? [
-    {
+  const initial = []
+  if (includeCli) {
+    initial.push({
       name: pkg.name,
       version: pkg.version,
       latest: tryFindLatestVersion(pkg.name, target)
-    }
-  ] : []
+    })
+  }
 
   return Object.keys(packages).reduce((result, pkgName) => {
     result.push({
@@ -81,7 +81,7 @@ function tryFindLatestVersion(pkgName, range = 'latest') {
   return getLatestVersion(pkgName, range).catch(() => 'unknown')
 }
 
-function getLatestVersion(pkgName, range = 'latest') {
-  return getPackageJson(pkgName.toLowerCase(), {version: range})
-    .then(data => data.version)
+async function getLatestVersion(pkgName, range = 'latest') {
+  const data = await getPackageJson(pkgName.toLowerCase(), {version: range})
+  return data.version
 }

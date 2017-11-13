@@ -1,7 +1,8 @@
-import minimist from 'minimist'
+/* eslint-disable id-length */
+const minimist = require('minimist')
 
 module.exports = function parseArguments(argv = process.argv) {
-  /* eslint-disable id-length */
+  // prettier-ignore
   const {
     _,
     h, help,
@@ -18,14 +19,16 @@ module.exports = function parseArguments(argv = process.argv) {
 
   return {
     groupOrCommand,
+
+    // prettier-ignore
     coreOptions: {
       h, help,
       d, debug,
       v, version,
     },
+
     extOptions, // forwarded to commands
     argsWithoutOptions, // remaining arguments
-    extraArguments, // arguments after the ended argument list (--)
+    extraArguments // arguments after the ended argument list (--)
   }
-  /* eslint-enable id-length */
 }

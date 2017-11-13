@@ -15,15 +15,17 @@ import baseCommands from './commands'
 const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
 
-module.exports = function runCli() {
+module.exports = function runCli(cliRoot) {
+  installUnhandledRejectionsHandler()
   updateNotifier({pkg}).notify({defer: false})
 
-  const devMode = hasDevMode()
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+
   const options = {
+    cliRoot: cliRoot,
     workDir: workDir,
     corePath: getCoreModulePath(workDir)
   }
@@ -40,14 +42,6 @@ module.exports = function runCli() {
 
   if (!isInit && workDir !== cwd) {
     console.log(`Not in project directory, assuming context of project at ${workDir}`)
-  }
-
-  if (devMode) {
-    require('source-map-support').install()
-
-    process.on('unhandledRejection', (reason, promise) => {
-      console.error('Unhandled Rejection:', reason.stack)
-    })
   }
 
   const core = args.coreOptions
@@ -77,44 +71,10 @@ module.exports = function runCli() {
   })
 }
 
-// Weird edge case where the folder the terminal is currently in has been removed
-function checkCwdPresence() {
-  let cwd = null
-  try {
-    cwd = process.cwd()
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.error('[ERR] Could not resolve working directory, does the current folder exist?')
-      process.exit(1)
-    } else {
-      throw err
-    }
-  }
-
-  return cwd
-}
-
-function hasDevMode() {
-  return fse.existsSync(path.join(__dirname, '..', 'src'))
-}
-
-function resolveRootDir(cwd) {
-  // Resolve project root directory
-  try {
-    return (
-      resolveProjectRoot({
-        basePath: cwd,
-        sync: true
-      }) || cwd
-    )
-  } catch (err) {
-    console.warn(
-      chalk.red(['Error occured trying to resolve project root:', err.message].join('\n'))
-    )
-    process.exit(1)
-  }
-
-  return false
+function installUnhandledRejectionsHandler() {
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled rejection:', reason.stack)
+  })
 }
 
 function getCoreModulePath(workDir) {
@@ -136,4 +96,40 @@ function getCoreModulePath(workDir) {
   }
 
   return undefined
+}
+
+// Weird edge case where the folder the terminal is currently in has been removed
+function checkCwdPresence() {
+  let pwd
+  try {
+    pwd = process.cwd()
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.error('[ERR] Could not resolve working directory, does the current folder exist?')
+      process.exit(1)
+    } else {
+      throw err
+    }
+  }
+
+  return pwd
+}
+
+function resolveRootDir(cwd) {
+  // Resolve project root directory
+  try {
+    return (
+      resolveProjectRoot({
+        basePath: cwd,
+        sync: true
+      }) || cwd
+    )
+  } catch (err) {
+    console.warn(
+      chalk.red(['Error occured trying to resolve project root:', err.message].join('\n'))
+    )
+    process.exit(1)
+  }
+
+  return false
 }

@@ -7,12 +7,24 @@ before_script:
   - travis_wait yarn run bootstrap
   - yarn run build
 script:
+  # Build CLI to a single file
+  - cd packages/@sanity/cli
+  - npm run pack
+
+  # Remove source and dependencies from CLI to ensure it works standalone
+  - rm -rf packages/@sanity/cli/node_modules
+  - rm -rf packages/@sanity/cli/src && rm -rf packages/@sanity/cli/lib
+
   # Test building the test studio with all customizations
-  - cd packages/test-studio
+  - cd $TRAVIS_BUILD_DIR/packages/test-studio
   - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build
 
-  # Test initializing a project in unattended mode and building it
+  # Test initializing a project in unattended mode
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
+
+  # Use the newly commited changes instead of the latest dependencies from NPM
   - cd /tmp/test-project
   - $TRAVIS_BUILD_DIR/scripts/symlinkDependencies.js .
+
+  # Test building the project with latest dependencies
   - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build --skip-minify
