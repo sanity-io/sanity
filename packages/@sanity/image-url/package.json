@@ -1,6 +1,6 @@
 {
   "name": "@sanity/image-url",
-  "version": "0.120.0",
+  "version": "0.121.0",
   "description": "Tools to generate image urls from Sanity content",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,7 @@
     "postpublish": "npm run clean",
     "posttest": "npm run lint",
     "lint": "eslint .",
-    "pre-commit-check":
-      "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
+    "pre-commit-check": "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
     "test": "mocha --recursive --require babel-register test"
   },
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +18,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {},
   "devDependencies": {
     "babel-register": "^6.26.0",
     "eslint": "^4.11.0",
@@ -39,5 +37,12 @@
   "directories": {
     "test": "test"
   },
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "image-url"]
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "image-url"
+  ]
 }
