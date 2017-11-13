@@ -7,6 +7,7 @@ import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import createProject from '../../actions/project/createProject'
 import login from '../../actions/login/login'
+import dynamicRequire from '../../util/dynamicRequire'
 import promptForDatasetName from './promptForDatasetName'
 import gatherInput from './gatherInput'
 import bootstrapTemplate from './bootstrapTemplate'
@@ -78,20 +79,22 @@ export default async function initSanity(args, context) {
 
   // Prompt for template to use
   const defaultTemplate = unattended ? flags.template || 'clean' : null
-  const templateName = defaultTemplate || await prompt.single({
-    message: 'Select project template',
-    type: 'list',
-    choices: [
-      {
-        value: 'moviedb',
-        name: 'Movie database (schema + sample data)'
-      },
-      {
-        value: 'clean',
-        name: 'Clean, minimal project'
-      }
-    ]
-  })
+  const templateName =
+    defaultTemplate ||
+    (await prompt.single({
+      message: 'Select project template',
+      type: 'list',
+      choices: [
+        {
+          value: 'moviedb',
+          name: 'Movie database (schema + sample data)'
+        },
+        {
+          value: 'clean',
+          name: 'Clean, minimal project'
+        }
+      ]
+    }))
 
   // Build a full set of resolved options
   const initOptions = {
@@ -115,7 +118,7 @@ export default async function initSanity(args, context) {
   }
 
   // Make sure we have the required configs
-  const coreCommands = require(resolveFrom.silent(outputPath, '@sanity/core')).commands
+  const coreCommands = dynamicRequire(resolveFrom.silent(outputPath, '@sanity/core')).commands
   const configCheckCmd = coreCommands.find(cmd => cmd.name === 'configcheck')
   await configCheckCmd.action(
     {extOptions: {quiet: true}},
@@ -196,7 +199,11 @@ export default async function initSanity(args, context) {
     const selected = await prompt.single({
       message: 'Select project to use',
       type: 'list',
-      choices: [{value: 'new', name: 'Create new project'}, new prompt.Separator(), ...projectChoices]
+      choices: [
+        {value: 'new', name: 'Create new project'},
+        new prompt.Separator(),
+        ...projectChoices
+      ]
     })
 
     if (selected === 'new') {
@@ -240,7 +247,11 @@ export default async function initSanity(args, context) {
     const selected = await prompt.single({
       message: 'Select dataset to use',
       type: 'list',
-      choices: [{value: 'new', name: 'Create new dataset'}, new prompt.Separator(), ...datasetChoices]
+      choices: [
+        {value: 'new', name: 'Create new dataset'},
+        new prompt.Separator(),
+        ...datasetChoices
+      ]
     })
 
     if (selected === 'new') {

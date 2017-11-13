@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import upgradeDependencies from './upgradeDependencies'
 
 const help = `
 Upgrades installed Sanity modules to the latest available version within the
@@ -14,6 +14,6 @@ export default {
   name: 'upgrade',
   signature: '[MODULE_NAME] [--tag DIST_TAG] [--range SEMVER_RANGE] [--save-exact]',
   description: 'Upgrades all (or some) Sanity modules to their latest versions',
-  action: lazyRequire(require.resolve('./upgradeDependencies')),
+  action: upgradeDependencies,
   helpText: help
 }

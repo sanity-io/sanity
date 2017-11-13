@@ -6,7 +6,9 @@ const decompress = require('decompress')
 const resolveFrom = require('resolve-from')
 const validateNpmPackageName = require('validate-npm-package-name')
 const {pathTools} = require('@sanity/util')
+const dynamicRequire = require('../../util/dynamicRequire')
 const pkg = require('../../../package.json')
+
 const {absolutify, pathIsEmpty} = pathTools
 
 module.exports = async (context, url) => {
@@ -65,10 +67,11 @@ module.exports = async (context, url) => {
 
   let outputPath = path.join(workDir, 'plugins', name)
   if (!inProjectContext) {
+    const cwdIsEmpty = await pathIsEmpty(workDir)
     outputPath = await prompt.single({
       type: 'input',
       message: 'Output path:',
-      default: workDir,
+      default: cwdIsEmpty ? workDir : path.join(workDir, name),
       validate: validateEmptyPath,
       filter: absolutify
     })
@@ -122,5 +125,5 @@ function parseJson(json) {
 
 function getSanityVersion(workDir) {
   const basePkg = resolveFrom.silent(workDir, '@sanity/base/package.json')
-  return basePkg ? require(basePkg).version : pkg.version
+  return basePkg ? dynamicRequire(basePkg).version : pkg.version
 }

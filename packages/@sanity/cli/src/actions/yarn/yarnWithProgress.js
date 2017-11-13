@@ -7,10 +7,15 @@ import chalk from 'chalk'
 import progrescii from 'progrescii'
 import {noop, padEnd, throttle} from 'lodash'
 
-// Use require.resolve to ensure it actually exists
-const useProgress = (process.stderr && process.stderr.isTTY) && !process.env.CI
+const useProgress = process.stderr && process.stderr.isTTY && !process.env.CI
+const isBundled = typeof __SANITY_IS_BUNDLED__ !== 'undefined'
+
+// Use require.resolve to ensure it actually exists in development mode
 const binDir = path.join(__dirname, '..', '..', '..', 'vendor')
-const yarnPath = require.resolve(path.join(binDir, 'yarn'))
+const yarnPath = isBundled
+  ? path.join(__dirname, '..', 'vendor', 'yarn')
+  : require.resolve(path.join(binDir, 'yarn'))
+
 const parseJson = data => {
   try {
     return JSON.parse(data)
@@ -26,13 +31,15 @@ export default function yarnWithProgress(args, options = {}) {
   /* eslint-enable no-console */
 
   const padLength = 'Resolving dependencies'.length
-  const getProgressTemplate = (symbol, msg) =>
-    `${symbol} ${padEnd(msg, padLength)} :b :p% (:ts)`
+  const getProgressTemplate = (symbol, msg) => `${symbol} ${padEnd(msg, padLength)} :b :p% (:ts)`
 
-  const execOpts = Object.assign({
-    cwd: options.rootDir || process.cwd(),
-    env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
-  }, options.execOpts || {})
+  const execOpts = Object.assign(
+    {
+      cwd: options.rootDir || process.cwd(),
+      env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
+    },
+    options.execOpts || {}
+  )
 
   const nodePath = process.argv[0]
   const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive'])
@@ -52,7 +59,7 @@ export default function yarnWithProgress(args, options = {}) {
     return proc
   }
 
-  [proc.stdout, proc.stderr].forEach(stream => {
+  ;[proc.stdout, proc.stderr].forEach(stream => {
     stream
       .pipe(split2(parseJson))
       .on('data', onChunk)
@@ -62,7 +69,8 @@ export default function yarnWithProgress(args, options = {}) {
   const interceptors = options.interceptors || {}
   const throttledOnProgressTick = throttle(onProgressTick, 50)
 
-  function onChunk(event) { // eslint-disable-line complexity
+  function onChunk(event) {
+    // eslint-disable-line complexity
     if (interceptors[event.type]) {
       return interceptors[event.type](event)
     }
@@ -220,7 +228,8 @@ export default function yarnWithProgress(args, options = {}) {
     throw err
   }
 
-  function holdSpinner(op) { // eslint-disable-line no-unused-vars
+  function holdSpinner(op) {
+    // eslint-disable-line no-unused-vars
     if (state.spinner) {
       state.spinner.stop()
     }
@@ -240,7 +249,6 @@ export default function yarnWithProgress(args, options = {}) {
     throw detailed
   })
 }
-
 
 const ignoredMessages = ['install script for optional dependency', 'Command failed: yarn']
 

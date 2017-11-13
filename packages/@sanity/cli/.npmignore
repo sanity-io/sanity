@@ -1,1 +1,8 @@
-src/
+/src
+/test
+/.babelrc
+/.editorconfig
+/.eslintignore
+/.eslintrc
+/yarn.lock
+/package-lock.json

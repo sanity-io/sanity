@@ -1,11 +1,12 @@
 import {find} from 'lodash'
+import dynamicRequire from './dynamicRequire'
 
 export default (baseCommands, corePath) => {
   if (!corePath) {
     return baseCommands
   }
 
-  const core = require(corePath)
+  const core = dynamicRequire(corePath)
   const merged = baseCommands.concat(core.commands).map(addDefaultGroup)
 
   // Remove duplicate commands when within the same group,

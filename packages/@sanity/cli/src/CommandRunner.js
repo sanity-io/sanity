@@ -1,22 +1,24 @@
 import path from 'path'
 import chalk from 'chalk'
+import yarn from './actions/yarn/yarnWithProgress'
 import {groupBy, sortBy, cloneDeep} from 'lodash'
 import {loadJson} from '@sanity/util/lib/safeJson'
-import {lazyRequire, reduceConfig} from '@sanity/util'
+import {reduceConfig} from '@sanity/util'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
 import noSuchCommandText from './util/noSuchCommandText'
-import {generateCommandsDocumentation, generateCommandDocumentation} from './util/generateCommandsDocumentation'
 import defaultCommands from './commands'
 import debug from './debug'
+import {
+  generateCommandsDocumentation,
+  generateCommandDocumentation
+} from './util/generateCommandsDocumentation'
 
 /* eslint-disable no-process-env */
 const sanityEnv = process.env.SANITY_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
-
-const yarn = lazyRequire(require.resolve('./actions/yarn/yarnWithProgress'))
 
 const cmdHasName = cmdName => {
   return cmd => cmd.name === cmdName
@@ -47,11 +49,7 @@ export default class CommandRunner {
 
     const commandInfo = this.resolveCommand(commandOrGroup, subCommandName)
     if (!commandInfo) {
-      throw new Error(noSuchCommandText(
-        commandOrGroup,
-        subCommandName,
-        this.commandGroups
-      ))
+      throw new Error(noSuchCommandText(commandOrGroup, subCommandName, this.commandGroups))
     }
 
     const command = commandInfo.command
@@ -81,21 +79,14 @@ export default class CommandRunner {
     }
 
     if (command.isGroupRoot) {
-      return context.output.print(generateCommandsDocumentation(
-        this.commandGroups,
-        command.name
-      ))
+      return context.output.print(generateCommandsDocumentation(this.commandGroups, command.name))
     }
 
     if (typeof command.action !== 'function') {
       const cmdName = command.name || commandOrGroup || '<unknown>'
       debug(`Command "${cmdName}" doesnt have a valid "action"-property, showing help`)
       const groupName = command.group && command.group !== 'default' ? command.group : null
-      return context.output.print(generateCommandDocumentation(
-        command,
-        groupName,
-        subCommandName
-      ))
+      return context.output.print(generateCommandDocumentation(command, groupName, subCommandName))
     }
 
     debug(`Running command "${command.name}"`)
@@ -113,9 +104,11 @@ export default class CommandRunner {
         commandOrGroup
       )
 
-      debug(subCommand
-        ? `Subcommand resolved to "${subCommand.commandName}"`
-        : `Subcommand with name "${subCommandName}" not found`)
+      debug(
+        subCommand
+          ? `Subcommand resolved to "${subCommand.commandName}"`
+          : `Subcommand with name "${subCommandName}" not found`
+      )
 
       return subCommand
     }
@@ -145,11 +138,7 @@ export default class CommandRunner {
 
     const subCommand = group.find(cmdHasName(subCommandName))
     if (!subCommand) {
-      throw new Error(noSuchCommandText(
-        subCommandName,
-        parentGroupName,
-        this.commandGroups
-      ))
+      throw new Error(noSuchCommandText(subCommandName, parentGroupName, this.commandGroups))
     }
 
     return {
@@ -172,8 +161,11 @@ export default class CommandRunner {
 }
 
 export function getCliRunner(...args) {
-  return new CommandRunner({
-    outputter: cliOutputter,
-    prompter: cliPrompter
-  }, ...args)
+  return new CommandRunner(
+    {
+      outputter: cliOutputter,
+      prompter: cliPrompter
+    },
+    ...args
+  )
 }
