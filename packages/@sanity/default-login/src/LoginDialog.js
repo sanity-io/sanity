@@ -78,20 +78,20 @@ export default class LoginDialog extends React.Component {
     return (
       <div className={styles.root}>
 
-        { sanityLogo && (
-          <div className={styles.sanityLogo}>
-            {sanityLogo}
-          </div>
-        )}
-
-        <div className={styles.branding}>
-          <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
-          {
-            BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
-          }
-        </div>
-
         <div className={styles.inner}>
+          { sanityLogo && (
+            <div className={styles.sanityLogo}>
+              {sanityLogo}
+            </div>
+          )}
+
+          <div className={styles.branding}>
+            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
+            {
+              BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
+            }
+          </div>
+
           <h2 className={styles.title}>
             {title}
           </h2>

@@ -71,7 +71,7 @@ export default class LoginWrapper extends React.PureComponent {
 
     if (!user) {
       return (
-        <CookieTest>
+        <CookieTest {...this.props}>
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
