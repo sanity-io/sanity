@@ -12,10 +12,5 @@ export default (args, context) => {
     return initPlugin(args, context)
   }
 
-  // Do not use this, unless you're really sure you know what you're doing
-  if (type === 'blåbær') {
-    return initPlugin(args, context, {sanityStyle: true})
-  }
-
   return Promise.reject(new Error(`Unknown init type "${type}"`))
 }
