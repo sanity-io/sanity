@@ -20,30 +20,11 @@
 .sanityLogo {
   width: 8rem;
   margin: 4rem auto;
-
-  @media (--screen-medium) {
-    margin: 0;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 10em;
-    height: 1em;
-    top: 10vh;
-  }
 }
 
 .branding {
   margin: 0 auto;
   margin-bottom: 4rem;
-
-  @media (--screen-medium) {
-    margin: 0;
-    top: 20vh;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
 }
 
 .projectName {
@@ -58,7 +39,6 @@
 
 .brandLogoContainer {
   height: 3em;
-
   @nest & svg {
     height: 4em;
     width: auto;
@@ -74,12 +54,7 @@
 }
 
 .inner {
-  @media (--screen-medium) {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-  }
+  display: block;
 }
 
 .provider {
@@ -119,4 +94,9 @@
       height: 7em;
     }
   }
+}
+
+.acceptCookieForm {
+  margin-top: 2em;
+  margin-bottom: 2em;
 }

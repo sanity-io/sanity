@@ -1,27 +1,30 @@
 import PropTypes from 'prop-types'
 import React, {PureComponent} from 'react'
 import client from 'part:@sanity/base/client'
+import config from 'config:sanity'
 import styles from './styles/LoginDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
+import BrandLogo from 'part:@sanity/base/brand-logo?'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
+
+const projectName = (config.project && config.project.name) || ''
 
 const checkCookies = () => {
-  return client.request({method: 'post', uri: '/auth/testCookie', withCredentials: true}).then(() => true)
+  return client.request({method: 'post', uri: '/auth/testCookie', withCredentials: true})
     .then(() => {
       return client.request({uri: '/auth/testCookie', withCredentials: true})
         .then(() => true)
         .catch(() => false)
     })
-    .then(get => ({isCookieError: !get}))
+    .then(result => ({isCookieError: !result}))
     .catch(error => ({error}))
 }
 
-class CookieCheck extends PureComponent {
+class CookieTest extends PureComponent {
 
   static propTypes = {
     children: PropTypes.node.isRequired
-  }
+  };
 
   constructor(...args) {
     super(...args)
@@ -36,22 +39,34 @@ class CookieCheck extends PureComponent {
   }
 
   renderWhiteListForm() { // eslint-disable-line class-methods-use-this
+    const {sanityLogo} = this.props
     const redirectTo = `${client.clientConfig.url}/auth/whitelist?redirectTo=${encodeURIComponent(window.location.toString())}`
     return (
       <div className={styles.root}>
 
-        <div className={styles.sanityStudioLogo}>
-          <SanityStudioLogo />
-        </div>
-
         <div className={styles.inner}>
 
-          <h2 className={styles.headline}>Accept the Cookie</h2>
-          <p>Your browser didn&apos;t accept our cookie so we&apos;re having trouble logging you in.</p>
-          <p>You can explicitly accept it though by clicking below.</p>
 
+          <div className={styles.sanityLogo}>
+            {sanityLogo}
+          </div>
+          <div className={styles.branding}>
+            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
+            {
+              BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
+            }
+          </div>
+
+          <div className={styles.title}>
+            <h2 className={styles.headline}>Accept the Cookie</h2>
+          </div>
+          <div className={styles.description}>
+            <p>Your browser didn&apos;t accept our cookie so we&apos;re having trouble logging you in.</p>
+            <p>You can explicitly accept it though by clicking below.</p>
+          </div>
           <form
             method="post"
+            className={styles.acceptCookieForm}
             action={`${client.clientConfig.url}/auth/testCookie`}
             encType="application/x-www-form-urlencoded"
           >
@@ -82,4 +97,8 @@ class CookieCheck extends PureComponent {
   }
 }
 
-export default CookieCheck
+CookieTest.propTypes = {
+  sanityLogo: PropTypes.node.isRequired
+}
+
+export default CookieTest

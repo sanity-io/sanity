@@ -22,10 +22,6 @@ export default function ErrorDialog(props) {
   )
 }
 
-ErrorDialog.defaultProps = {
-  isNetworkError: false
-}
-
 ErrorDialog.propTypes = {
   error: PropTypes.shape({
     isNetworkError: PropTypes.boolean,

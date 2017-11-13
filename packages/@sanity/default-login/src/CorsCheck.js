@@ -53,7 +53,7 @@ class CorsCheck extends PureComponent {
 
     const tld = client.config().apiHost.replace(/.*?sanity\.([a-z]+).*/, '$1')
     const projectId = client.config().projectId
-    const corsUrl = `https://sanity.${tld}/manage/projects/${projectId}/#cors`
+    const corsUrl = `https://manage.sanity.${tld}/projects/${projectId}/settings/api`
     const response = result.error && result.error.response
 
     if (response) {
