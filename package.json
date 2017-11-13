@@ -20,6 +20,7 @@
     "watch": "gulp watch",
     "install-husky": "node node_modules/husky/bin/install",
     "commitmsg": "node scripts/validateCommitMessage.js",
+    "release-notes": "node scripts/printReleaseNotesTemplate.js",
     "versions": "node scripts/normalizeDependencyVersions.js",
     "normalize-pkgfields": "node scripts/normalizePackageFields.js"
   },
@@ -43,6 +44,7 @@
     "eslint-config-sanity": "^3.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-react": "^7.4.0",
+    "execa": "^0.8.0",
     "glob": "^7.1.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
