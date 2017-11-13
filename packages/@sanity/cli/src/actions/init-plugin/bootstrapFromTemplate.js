@@ -11,7 +11,13 @@ const {absolutify, pathIsEmpty} = pathTools
 
 module.exports = async (context, url) => {
   const {prompt, workDir} = context
-  const inProjectContext = workDir !== process.cwd()
+  let inProjectContext = false
+  try {
+    const projectManifest = await fse.readJson(path.join(workDir, 'sanity.json'))
+    inProjectContext = Boolean(projectManifest.root)
+  } catch (err) {
+    // Intentional noop
+  }
 
   let zip
   try {
@@ -41,9 +47,19 @@ module.exports = async (context, url) => {
     type: 'input',
     message: 'Plugin name:',
     default: tplVars.suggestedName || '',
-    validate: pkgName => {
+    validate: async pkgName => {
       const {validForNewPackages, errors} = validateNpmPackageName(pkgName)
-      return validForNewPackages ? true : errors[0]
+      if (!validForNewPackages) {
+        return errors[0]
+      }
+
+      const outputPath = path.join(workDir, 'plugins', pkgName)
+      const isEmpty = await pathIsEmpty(outputPath)
+      if (inProjectContext && !isEmpty) {
+        return 'Plugin with given name already exists in project'
+      }
+
+      return true
     }
   })
 
