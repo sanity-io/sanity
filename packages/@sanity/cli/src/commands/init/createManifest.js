@@ -1,5 +1,4 @@
 import sortObject from 'deep-sort-object'
-import versionRanges from '../../versionRanges'
 
 const manifestPropOrder = [
   'name',
@@ -41,43 +40,29 @@ function getCommonManifest(data) {
 
 export function createPackageManifest(data) {
   const deps = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
-  const pkg = Object.assign(getCommonManifest(data), {
-    main: 'package.json',
-    keywords: ['sanity'],
-    scripts: {
-      start: 'sanity start',
-      test: 'sanity check'
-    }
-  }, deps)
+  const pkg = Object.assign(
+    getCommonManifest(data),
+    {
+      main: 'package.json',
+      keywords: ['sanity'],
+      scripts: {
+        start: 'sanity start',
+        test: 'sanity check'
+      }
+    },
+    deps
+  )
 
   return serializeManifest(pkg)
 }
 
-function getSanityStyleManifestProps() {
-  return {
-    main: 'lib/index.js',
-    dependencies: versionRanges.plugin.prod,
-    devDependencies: versionRanges.plugin.dev,
-    scripts: {
-      compile: 'babel src --copy-files --out-dir lib',
-      prepublish: 'in-publish && npm run compile && sanity-check || not-in-publish',
-      postpublish: 'rimraf lib',
-      test: 'eslint .'
-    }
-  }
-}
-
 export function createPluginManifest(data, opts = {}) {
-  const sanityStyleProps = opts.sanityStyle
-    ? getSanityStyleManifestProps()
-    : {}
-
   const pkg = Object.assign(getCommonManifest(data), {
     main: 'src/plugin.js',
     scripts: {test: 'echo "Error: no test specified" && exit 1'},
     keywords: ['sanity', 'sanity-plugin'],
     dependencies: {}
-  }, sanityStyleProps)
+  })
 
   return serializeManifest(pkg)
 }
@@ -104,7 +89,8 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
     parts: [
       {
         implements: `part:${prefix}/my-component`,
-        description: 'Description for this role. Change `implements` to `name` if it should be non-overridable.',
+        description:
+          'Description for this role. Change `implements` to `name` if it should be non-overridable.',
         path: 'lib/MyComponent.js'
       }
     ]
@@ -112,33 +98,38 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
 }
 
 export function createSanityManifest(data, opts) {
-  const manifest = opts.isPlugin ? getSanityPluginManifest(data, opts) : {
-    root: true,
+  let manifest
+  if (opts.isPlugin) {
+    manifest = getSanityPluginManifest(data, opts)
+  } else {
+    manifest = {
+      root: true,
 
-    project: {
-      name: data.displayName
-    },
+      project: {
+        name: data.displayName
+      },
 
-    api: {
-      projectId: data.projectId,
-      dataset: data.dataset,
-      token: data.provisionalToken || undefined
-    },
+      api: {
+        projectId: data.projectId,
+        dataset: data.dataset,
+        token: data.provisionalToken || undefined
+      },
 
-    plugins: [
-      '@sanity/base',
-      '@sanity/components',
-      '@sanity/default-layout',
-      '@sanity/default-login',
-      '@sanity/desk-tool'
-    ],
+      plugins: [
+        '@sanity/base',
+        '@sanity/components',
+        '@sanity/default-layout',
+        '@sanity/default-login',
+        '@sanity/desk-tool'
+      ],
 
-    parts: [
-      {
-        name: 'part:@sanity/base/schema',
-        path: './schemas/schema.js'
-      }
-    ]
+      parts: [
+        {
+          name: 'part:@sanity/base/schema',
+          path: './schemas/schema.js'
+        }
+      ]
+    }
   }
 
   return opts.serialize ? `${JSON.stringify(manifest, null, 2)}\n` : manifest
