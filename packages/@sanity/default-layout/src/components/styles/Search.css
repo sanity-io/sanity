@@ -54,7 +54,7 @@
 }
 
 .hits {
-  color: var(--black);
+  color: var(--text-color);
   composes: resetList from "part:@sanity/base/theme/layout/helpers";
   width: 100%;
 }

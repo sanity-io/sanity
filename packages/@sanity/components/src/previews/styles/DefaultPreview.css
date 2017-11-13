@@ -134,7 +134,6 @@
 }
 
 .animation {
-  /* composes: animated-loading-background from 'part:@sanity/base/theme/animation-style'; */
   position: absolute;
   top: 0;
   left: 0;
@@ -171,5 +170,4 @@
   background-color: var(--progress-bar-bg);
   box-shadow: 0 0 3px var(--progress-bar-bg);
   z-index: 2;
-  /*animation: progressGlow 0.5s linear infinite alternate;*/
 }
