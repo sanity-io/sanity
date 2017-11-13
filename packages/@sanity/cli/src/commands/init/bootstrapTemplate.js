@@ -5,21 +5,18 @@ import debug from '../../debug'
 import versionRanges from '../../versionRanges'
 import resolveLatestVersions from '../../util/resolveLatestVersions'
 import {createPackageManifest, createSanityManifest} from './createManifest'
-
-const templatesDir = path.join(__dirname, '..', '..', '..', 'templates')
+import templates from './templates'
 
 export default async (opts, context) => {
-  const {output} = context
+  const {output, cliRoot} = context
+  const templatesDir = path.join(cliRoot, 'templates')
   const sourceDir = path.join(templatesDir, opts.template)
-  const templateConfigPath = path.join(__dirname, 'templates', `${opts.template}.js`)
   const outputDir = opts.outputDir
 
   // Check that we have a template info file (dependencies, plugins etc)
-  let template = null
-  try {
-    template = require(templateConfigPath)
-  } catch (err) {
-    throw new Error(`Failed to read template info from "${templateConfigPath}"`)
+  const template = templates[opts.template]
+  if (!template) {
+    throw new Error(`Template "${opts.template}" not defined`)
   }
 
   // Copy template files
@@ -33,10 +30,7 @@ export default async (opts, context) => {
 
   // Merge global and template-specific plugins and dependencies
   const allModules = Object.assign({}, versionRanges.core, template.dependencies || {})
-  const modules = union(
-    Object.keys(versionRanges.core),
-    Object.keys(template.dependencies || {})
-  )
+  const modules = union(Object.keys(versionRanges.core), Object.keys(template.dependencies || {}))
 
   // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
@@ -99,7 +93,6 @@ export default async (opts, context) => {
     }
   }
 }
-
 
 function isFirstParty(pkg) {
   return pkg.indexOf('@sanity/') === 0

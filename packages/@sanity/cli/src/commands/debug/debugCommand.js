@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import printDebugInfo from './printDebugInfo'
 
 const help = `
 Gathers information on user and local/global Sanity environment, to help
@@ -9,5 +9,5 @@ export default {
   signature: '[--full]',
   description: 'Gathers information on Sanity environment',
   helpText: help,
-  action: lazyRequire(require.resolve('./printDebugInfo'))
+  action: printDebugInfo
 }

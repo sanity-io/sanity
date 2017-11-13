@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import installDependencies from './installDependencies'
 
 const help = `
 Looks for a "package.json" and/or a "yarn.lock"-file in the current directory,
@@ -12,6 +12,6 @@ export default {
   name: 'install',
   signature: '',
   description: 'Installs dependencies of the current project',
-  action: lazyRequire(require.resolve('./installDependencies')),
+  action: installDependencies,
   helpText: help
 }

@@ -19,17 +19,16 @@ export default async function login(args, context) {
 
   const provider = await promptProviders(prompt, providers)
 
-  return new Promise((resolve, reject) =>
-    loginFlow({provider, ...context}, resolve, reject))
+  return new Promise((resolve, reject) => loginFlow({provider, ...context}, resolve, reject))
 }
 
-function loginFlow({output, provider, apiClient}, resolve, reject) {
+function loginFlow({output, provider, apiClient, cliRoot}, resolve, reject) {
   debug('Starting OAuth receiver webserver')
   const client = apiClient({requireUser: false, requireProject: false})
-  const spin = output.spinner('Waiting for browser login flow to complete... Press Ctrl + C to cancel')
-  const server = http
-    .createServer(onServerRequest)
-    .listen(0, '127.0.0.1', onListen)
+  const spin = output.spinner(
+    'Waiting for browser login flow to complete... Press Ctrl + C to cancel'
+  )
+  const server = http.createServer(onServerRequest).listen(0, '127.0.0.1', onListen)
 
   server.on('connection', socket => socket.unref())
 
@@ -80,10 +79,13 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
         JSON.stringify(returnUrl.query || {}, null, 2)
       )
       debug('URL: %s', req.url)
-      return onTokenExchangeError(new Error('OAuth exchange failed because of a missing token', req, res))
+      return onTokenExchangeError(
+        new Error('OAuth exchange failed because of a missing token', req, res)
+      )
     }
 
-    return client.request({uri: fetchUrl.replace(/.*?\/v\d+/, '')})
+    return client
+      .request({uri: fetchUrl.replace(/.*?\/v\d+/, '')})
       .then(httpRes => onTokenExchanged(httpRes, req, res))
       .catch(err => onTokenExchangeError(err, req, res))
   }
@@ -107,7 +109,10 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
     // Serve the "login successful"-page
     debug('Token exchange complete, serving page')
     res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
-    const successPage = await fse.readFile(path.join(__dirname, 'loginResponse.html'), 'utf8')
+    const successPage = await fse.readFile(
+      path.join(cliRoot, 'assets', 'loginResponse.html'),
+      'utf8'
+    )
     res.end(successPage, () => {
       req.connection.unref()
 
@@ -130,7 +135,7 @@ function loginFlow({output, provider, apiClient}, resolve, reject) {
 
   async function onTokenExchangeError(err, req, res) {
     res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8', Connection: 'close'})
-    const errorPage = await fse.readFile(path.join(__dirname, 'loginError.html'), 'utf8')
+    const errorPage = await fse.readFile(path.join(cliRoot, 'assets', 'loginError.html'), 'utf8')
 
     res.end(errorPage.replace(/%error%/g, err.message), 'utf8', () => {
       debug('Error page served')
@@ -155,9 +160,11 @@ function promptProviders(prompt, providers) {
     return providers[0]
   }
 
-  return prompt.single({
-    type: 'list',
-    message: 'Login type',
-    choices: providers.map(provider => provider.title)
-  }).then(provider => providers.find(prov => prov.title === provider))
+  return prompt
+    .single({
+      type: 'list',
+      message: 'Login type',
+      choices: providers.map(provider => provider.title)
+    })
+    .then(provider => providers.find(prov => prov.title === provider))
 }
