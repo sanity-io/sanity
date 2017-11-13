@@ -16,6 +16,9 @@
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {},
   "devDependencies": {
     "babel-register": "^6.26.0",
