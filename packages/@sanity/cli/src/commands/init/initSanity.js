@@ -139,9 +139,12 @@ export default async function initSanity(args, context) {
   const successMessage = template.getSuccessMessage
     ? template.getSuccessMessage(initOptions, context)
     : ''
+
   if (successMessage) {
     print(`\n${successMessage}`)
   }
+
+  print('\nNeed some help to get you started? Run "sanity docs" for documentation!\n')
 
   async function getOrCreateUser() {
     print("We can't find any auth credentials in your Sanity config - looks like you")
