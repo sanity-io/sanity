@@ -1,4 +1,4 @@
-# Sanity
+[![Sanity Logo](https://www.sanity.io/static/images/logo_red.svg)](https://www.sanity.io)
 
 [![Join the chat at https://gitter.im/sanity-io/sanity](https://badges.gitter.im/sanity-io/sanity.svg)](https://gitter.im/sanity-io/sanity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
