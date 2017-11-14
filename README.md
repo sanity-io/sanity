@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/sanity-io/sanity](https://badges.gitter.im/sanity-io/sanity.svg)](https://gitter.im/sanity-io/sanity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Sanity is a CMS a construction kit with a rich data model and real-time collaboration.
+*Sanity is a headless, real-time CMS where the front end is an open source React-based construction kit and the back end is a graph-oriented cloud datastore with a globally distributed CDN.*
 
 This repository contains the core Sanity front-end modules. It uses [Lerna](https://lernajs.io/) to manage cross-dependencies, publishing and to simplify workflows.
 
