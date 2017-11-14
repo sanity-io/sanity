@@ -59,7 +59,7 @@ export default function yarnWithProgress(args, options = {}) {
     return proc
   }
 
-  ;[proc.stdout, proc.stderr].forEach(stream => {
+  [proc.stdout, proc.stderr].forEach(stream => {
     stream
       .pipe(split2(parseJson))
       .on('data', onChunk)
@@ -226,19 +226,6 @@ export default function yarnWithProgress(args, options = {}) {
     }
 
     throw err
-  }
-
-  function holdSpinner(op) {
-    // eslint-disable-line no-unused-vars
-    if (state.spinner) {
-      state.spinner.stop()
-    }
-
-    op()
-
-    if (state.spinner) {
-      state.spinner.start()
-    }
   }
 
   return proc.catch(err => {
