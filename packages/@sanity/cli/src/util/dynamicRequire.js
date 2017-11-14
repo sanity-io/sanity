@@ -1,9 +1,13 @@
-const requireFunc =
+// Prevent webpack from bundling in webpack context,
+// use regular node require for unbundled context
+
+/* eslint-disable camelcase, no-undef */
+const requireFunc = (
   typeof __webpack_require__ === 'function'
-    ? // Prevent webpack from throwing
-      __non_webpack_require__
-    : // Allow dynamic requires to work in regular node context
-      require
+    ? __non_webpack_require__
+    : require
+)
+/* eslint-enable camelcase, no-undef */
 
 module.exports = request => {
   const mod = requireFunc(request)
