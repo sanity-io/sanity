@@ -75,7 +75,7 @@ class VersionChecker extends PureComponent {
     }
 
     if (__DEV__ && res.result.outdated) {
-      const modules = res.result.outdated.join('\n  - ')
+      const modules = res.result.outdated.map(mod => mod.name).join('\n  - ')
       const instructions = 'Run `sanity upgrade` to update them'
       // eslint-disable-next-line no-console
       console.warn(`The following modules are outdated:\n  - ${modules}\n\n${instructions}`)
