@@ -71,7 +71,7 @@ const subscription = client.listen(query, params)
 
 `client.listen(query, params = {}, options = {includeResult: true})`
 
-Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [Observable](https://github.com/sanity-io/observable). When calling `subscribe()` on the observable, a subscription is returned which can be used to unsubscribe from the query.
+Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [Observable](https://github.com/sanity-io/sanity/tree/master/packages/@sanity/observable). When calling `subscribe()` on the observable, a subscription is returned which can be used to unsubscribe from the query.
 
 The objects which are emitted always contain `mutation`, which is an object containing the mutation which triggered the document to appear as part of the query.
 
