@@ -9,14 +9,25 @@ Options
   --template <template> Project template to use [default: "clean"]
 
 Examples
+  # Initialize a new project, prompt for required information along the way
+  sanity init
+
+  # Initialize a new plugin
+  sanity init plugin
+
+  # Initialize a project with the given project ID and dataset to the given path
   sanity init -y --project abc123 --dataset production --output-path ~/myproj
+
+  # Initialize a project with the given project ID and dataset using the moviedb
+  # template to the given path
   sanity init -y --project abc123 --dataset staging --template moviedb --output-path .
+
 `
 
 export default {
   name: 'init',
   signature: 'init [plugin]',
-  description: 'Initialize a new Sanity project',
+  description: 'Initialize a new Sanity project or plugin',
   action: lazyRequire(require.resolve('./initAction')),
   helpText
 }
