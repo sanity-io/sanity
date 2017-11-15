@@ -9,17 +9,23 @@ import type {Reference, Type} from '../../typedefs'
 import type {ObservableI} from '../../typedefs/observable'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
+import styles from './styles/ReferenceInput.css'
 
 type SearchHit = {
   _id: string,
   _type: string
 }
 
+type PreviewSnapshot = {
+  title: string,
+  description: string
+}
+
 type Props = {
   value: ?Reference,
   type: Type,
   onSearch: (query: string, type: Type) => ObservableI<Array<SearchHit>>,
-  valueToString: Reference => any,
+  getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>,
   onChange: PatchEvent => void,
   level: number
 }
@@ -27,15 +33,17 @@ type Props = {
 type State = {
   isFetching: boolean,
   hits: Array<SearchHit>,
-  valueAsString: ?string,
-  refCache: {[string]: SearchHit}
+  previewSnapshot: ?PreviewSnapshot,
+  refCache: { [string]: SearchHit }
 }
+
+const MISSING_SNAPSHOT = {}
 
 const getInitialState = (): State => {
   return {
     isFetching: false,
     hits: [],
-    valueAsString: null,
+    previewSnapshot: null,
     refCache: {}
   }
 }
@@ -44,7 +52,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
   _lastQuery: string
 
   state = getInitialState()
-  subscriptions = subscriptionManager('search', 'valueToString')
+  subscriptions = subscriptionManager('search', 'previewSnapshot')
   _lastQuery = ''
 
   componentWillUnmount() {
@@ -52,25 +60,25 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.fetchValueAsString(this.props.value)
+    this.getPreviewSnapshot(this.props.value)
   }
 
   componentWillReceiveProps(nextProps: Props) {
     if (nextProps.value !== this.props.value) {
       this.setState(getInitialState())
-      this.fetchValueAsString(nextProps.value)
+      this.getPreviewSnapshot(nextProps.value)
     }
   }
 
-  fetchValueAsString(value: Reference) {
+  getPreviewSnapshot(value: Reference) {
     if (!value || !value._ref) {
       return
     }
-    const {valueToString, type} = this.props
+    const {getPreviewSnapshot, type} = this.props
 
-    this.subscriptions.replace('valueToString', valueToString(value, type)
-      .subscribe(valueAsString => {
-        this.setState({valueAsString})
+    this.subscriptions.replace('previewSnapshot', getPreviewSnapshot(value, type)
+      .subscribe(snapshot => {
+        this.setState({previewSnapshot: snapshot || MISSING_SNAPSHOT})
       }))
   }
 
@@ -86,13 +94,19 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   handleChange = (item: SearchHit) => {
+    const {type} = this.props
     this.props.onChange(PatchEvent.from(
       setIfMissing({
-        _type: 'reference',
-        _ref: item._id
+        _type: type.name,
+        _ref: item._id,
       }),
+      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
       set(item._id, ['_ref'])
     ))
+  }
+
+  handleClear = () => {
+    this.props.onChange(PatchEvent.from(unset()))
   }
 
   handleSearch = (query: string) => {
@@ -136,14 +150,12 @@ export default class ReferenceInput extends React.Component<Props, State> {
     )
   }
 
-  handleClear = () => {
-    this.props.onChange(PatchEvent.from(unset()))
-  }
-
-  createOpenItemElement = value => {
-    return (
+  renderOpenItemElement = () => {
+    const {value} = this.props
+    const {previewSnapshot} = this.state
+    return (value && previewSnapshot !== MISSING_SNAPSHOT) && (
       <IntentLink
-        title={`Open ${value.title}`}
+        title={previewSnapshot && `Open ${previewSnapshot.title}`}
         intent="edit"
         params={{id: value._ref}}
       >
@@ -158,31 +170,35 @@ export default class ReferenceInput extends React.Component<Props, State> {
       value,
       level,
       onSearch,
-      valueToString,
+      getPreviewSnapshot,
       ...rest
     } = this.props
 
-    const {valueAsString, isFetching, hits} = this.state
+    const {previewSnapshot, isFetching, hits} = this.state
 
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
 
+    const isMissing = value && previewSnapshot === MISSING_SNAPSHOT
     return (
       <FormField label={type.title} level={level} description={type.description}>
-        <SearchableSelect
-          {...rest}
-          placeholder="Type to search…"
-          onOpen={this.handleOpen}
-          onFocus={this.handleFocus}
-          onSearch={this.handleSearch}
-          onChange={this.handleChange}
-          onClear={this.handleClear}
-          openItemElement={this.createOpenItemElement}
-          value={valueFromHit || value}
-          inputValue={valueAsString}
-          renderItem={this.renderHit}
-          isLoading={isFetching}
-          items={hits}
-        />
+        <div className={isMissing ? styles.brokenReferenceWarning : ''}>
+          <SearchableSelect
+            {...rest}
+            placeholder="Type to search…"
+            title={(isMissing && value) ? `Document id: ${value._ref}` : (previewSnapshot && previewSnapshot.description)}
+            onOpen={this.handleOpen}
+            onFocus={this.handleFocus}
+            onSearch={this.handleSearch}
+            onChange={this.handleChange}
+            onClear={this.handleClear}
+            openItemElement={this.renderOpenItemElement}
+            value={valueFromHit || value}
+            inputValue={isMissing ? '<Unpublished or missing document>' : (previewSnapshot && previewSnapshot.title)}
+            renderItem={this.renderHit}
+            isLoading={isFetching}
+            items={hits}
+          />
+        </div>
       </FormField>
     )
   }

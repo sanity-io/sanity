@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.brokenReferenceWarning {
+
+}
+
+.brokenReferenceWarning input {
+  border: 1px dashed var(--state-warning-color);
+  color: var(--legend-color);
+}
