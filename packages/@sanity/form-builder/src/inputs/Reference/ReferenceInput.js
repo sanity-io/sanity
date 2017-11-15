@@ -10,6 +10,7 @@ import type {ObservableI} from '../../typedefs/observable'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from './styles/ReferenceInput.css'
+import Button from 'part:@sanity/components/buttons/default'
 
 type SearchHit = {
   _id: string,
@@ -105,6 +106,13 @@ export default class ReferenceInput extends React.Component<Props, State> {
     ))
   }
 
+  handleFixWeak = () => {
+    const {type} = this.props
+    this.props.onChange(PatchEvent.from(
+      type.weak === true ? set(true, ['_weak']) : unset(['_weak'])
+    ))
+  }
+
   handleClear = () => {
     this.props.onChange(PatchEvent.from(unset()))
   }
@@ -175,13 +183,25 @@ export default class ReferenceInput extends React.Component<Props, State> {
     } = this.props
 
     const {previewSnapshot, isFetching, hits} = this.state
-
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
 
+    const weakIs = value && value._weak ? 'weak' : 'strong'
+    const weakShouldBe = type.weak === true ? 'weak' : 'strong'
+
     const isMissing = value && previewSnapshot === MISSING_SNAPSHOT
+    const hasWeakMismatch = !isMissing && weakIs !== weakShouldBe
+
     return (
       <FormField label={type.title} level={level} description={type.description}>
-        <div className={isMissing ? styles.brokenReferenceWarning : ''}>
+        <div className={(hasWeakMismatch || isMissing) ? styles.hasWarnings : ''}>
+          {hasWeakMismatch && (
+            <div className={styles.weakRefMismatchWarning}>
+              Warning: This reference is <em>{weakIs}</em>, but should be <em>{weakShouldBe}</em> according to schema.
+              <div>
+                <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
+              </div>
+            </div>
+          )}
           <SearchableSelect
             {...rest}
             placeholder="Type to search…"
