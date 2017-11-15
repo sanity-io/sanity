@@ -28,6 +28,7 @@
     "@sanity/data-aspects": "^0.120.0",
     "@sanity/form-builder": "^0.121.0",
     "@sanity/mutator": "^0.120.0",
+    "@sanity/observable": "^0.120.0",
     "@sanity/uuid": "^0.120.0",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
