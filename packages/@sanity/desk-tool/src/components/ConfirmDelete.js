@@ -32,15 +32,14 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
 
     const hasReferringDocuments = referringDocuments.length > 0
 
-    const canContinue = !isCheckingReferringDocuments && !hasReferringDocuments
+    const canContinue = !isCheckingReferringDocuments
 
     const actions = [
-      canContinue && {name: 'confirm', title: 'Delete now'},
-      {name: 'cancel', title: hasReferringDocuments ? 'Ok, got it' : 'Cancel', kind: 'secondary'}
+      canContinue && {name: 'confirm', title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now'},
+      {name: 'cancel', title: 'Cancel', kind: 'secondary'}
     ].filter(Boolean)
 
-    const title = (isCheckingReferringDocuments && 'Checking…')
-      || (hasReferringDocuments ? 'Cannot delete' : 'Confirm delete')
+    const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
 
     return (
       <Dialog
@@ -57,15 +56,14 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
         {hasReferringDocuments && (
           <div>
             <h3>
+              Warning:
               Found {referringDocuments.length === 1 ? 'a document' : `${referringDocuments.length} documents`} that
-              refers to <DocTitle document={(draft || published)} />
+              refers to {'"'}<DocTitle document={(draft || published)} />{'"'}
             </h3>
             <p>
-              You cannot delete a document that other documents are referring to.
-              In order to continue, every reference
-              to <strong><DocTitle document={(draft || published)} /></strong> needs
-              to be removed from
-              the following document{referringDocuments.length > 1 && 's'}:
+              You may not be allowed to delete
+              {' "'}<DocTitle document={(draft || published)} />{'" '}
+              as the following document{referringDocuments.length === 1 ? '' : 's'} refers to it:
             </p>
             <ReferringDocumentsList documents={referringDocuments} />
           </div>

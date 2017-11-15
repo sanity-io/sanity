@@ -6,7 +6,7 @@ import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import DocTitle from './DocTitle'
 
 const ACTIONS = [
-  {name: 'confirm', title: 'Yes, publish now', color: 'success', autoFocus: true},
+  {name: 'confirm', title: 'Publish now', color: 'success', autoFocus: true},
   {name: 'cancel', title: 'Cancel', kind: 'secondary'}
 ]
 const NOTHING_TO_PUBLISH_ACTIONS = [

@@ -10,6 +10,22 @@ export default {
       name: 'refToTypeWithNoToplevelStrings',
       type: 'reference',
       to: {type: 'typeWithNoToplevelStrings'}
+    },
+    {
+      name: 'someWeakRef',
+      type: 'reference',
+      weak: true,
+      to: {type: 'author'}
+    },
+    {
+      name: 'array',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'author'}
+        }
+      ]
     }
   ]
 }

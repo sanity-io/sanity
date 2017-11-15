@@ -1,0 +1,13 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.weakRefMismatchWarning {
+  padding: var(--medium-padding);
+}
+
+.hasWarnings {
+  border: 1px dashed var(--state-warning-color);
+}
+
+.hasWarnings input {
+  color: var(--legend-color);
+}

@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
+import Observable from '@sanity/observable'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
 import FormBuilder, {checkout} from 'part:@sanity/form-builder'
-import {throttle, omit} from 'lodash'
+import {omit, throttle} from 'lodash'
 import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
+import client from 'part:@sanity/base/client'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -17,6 +19,7 @@ const INITIAL_DOCUMENT_STATE = {
 const INITIAL_STATE = {
   isSaving: true,
   isCreatingDraft: false,
+  transactionResult: null,
   draft: INITIAL_DOCUMENT_STATE,
   published: INITIAL_DOCUMENT_STATE
 }
@@ -147,25 +150,62 @@ export default class EditorPane extends React.Component {
   }
 
   handleDelete = () => {
-    this.draft.delete()
-    this.published.delete()
-    this.draft.commit()
-      .merge(this.published.commit())
-      .subscribe(() => {})
+    const {documentId} = this.props
+    const tx = client.observable.transaction()
+      .delete(getPublishedId(documentId))
+      .delete(getDraftId(documentId))
+
+    Observable.from(tx.commit())
+      .map(result => ({
+        type: 'success',
+        result: result
+      }))
+      .catch(error => Observable.of({
+        type: 'error',
+        message: `An error occurred while attempting to delete document.
+        This usually means that you attempted to delete a document that other documents
+        refers to.`,
+        error
+      }))
+      .subscribe(result => {
+        this.setState({transactionResult: result})
+      })
+  }
+
+  handleClearTransactionResult = () => {
+    this.setState({transactionResult: null})
   }
 
   handleUnpublish = () => {
+    const {documentId} = this.props
     const {published} = this.state
+
+    let tx = client.observable
+      .transaction()
+      .delete(getPublishedId(documentId))
+
     if (published.snapshot) {
-      this.draft.createIfNotExists({
+      tx = tx.createIfNotExists({
         ...omit(published.snapshot, '_createdAt', '_updatedAt'),
-        _id: this.getDraftId()
+        _id: getDraftId(documentId)
       })
-      this.draft.commit().subscribe(() => {})
     }
 
-    this.published.delete()
-    this.published.commit().subscribe(() => {})
+    Observable.from(tx.commit())
+      .map(result => ({
+        type: 'success',
+        result: result
+      }))
+      .catch(error => Observable.of({
+        type: 'error',
+        message: `An error occurred while attempting to unpublish document.
+        This usually means that you attempted to {transactionResult.action} a document that other documents
+        refers to.`,
+        error
+      }))
+      .subscribe(result => {
+        this.setState({transactionResult: result})
+      })
   }
 
   handlePublish = draft => {
@@ -250,7 +290,7 @@ export default class EditorPane extends React.Component {
 
   render() {
     const {typeName} = this.props
-    const {draft, published, isCreatingDraft, isUnpublishing, isPublishing, isSaving} = this.state
+    const {draft, published, isCreatingDraft, isUnpublishing, transactionResult, isPublishing, isSaving} = this.state
 
     if (isRecoverable(draft, published)) {
       return this.renderDeleted()
@@ -266,8 +306,10 @@ export default class EditorPane extends React.Component {
         isSaving={isSaving}
         isPublishing={isPublishing}
         isUnpublishing={isUnpublishing}
+        transactionResult={transactionResult}
         isCreatingDraft={isCreatingDraft}
         onDelete={this.handleDelete}
+        onClearTransactionResult={this.handleClearTransactionResult}
         onDiscardDraft={this.handleDiscardDraft}
         onPublish={this.handlePublish}
         onUnpublish={this.handleUnpublish}
