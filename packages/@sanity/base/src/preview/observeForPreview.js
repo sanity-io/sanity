@@ -16,13 +16,17 @@ export default function observeForPreview(value, type, fields, viewOptions) {
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
     if (!value._ref) {
-      return Observable.of({snapshot: null, type: type})
+      return Observable.of({snapshot: null})
     }
     // Previewing references actually means getting the referenced value,
     // and preview using the preview config of its type
     // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
     return resolveRefType(value, type)
-      .switchMap(refType => observeForPreview(value, refType))
+      .switchMap(refType =>
+        (refType
+          ? observeForPreview(value, refType)
+          : Observable.of({snapshot: null})
+        ))
   }
 
   const selection = type.preview.select
