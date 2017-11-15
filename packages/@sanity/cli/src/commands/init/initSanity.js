@@ -124,16 +124,17 @@ export default async function initSanity(args, context) {
     })
   )
 
-  // Check if we're currently in the output path, so we can give a better start message
-  if (outputPath === process.cwd()) {
-    print(`\n${chalk.green('Success!')} You can now run "${chalk.cyan('sanity start')}"`)
-  } else {
-    print(
-      `\n${chalk.green('Success!')} You can now change to directory "${chalk.cyan(
-        outputPath
-      )}" and run "${chalk.cyan('sanity start')}"`
-    )
+  const isCurrentDir = outputPath === process.cwd()
+
+  print(`\n${chalk.green('Success!')} Now what?`)
+
+  if (!isCurrentDir) {
+    print(`▪ ${chalk.cyan(`cd ${outputPath}`)}, then:`)
   }
+
+  print(`▪ ${chalk.cyan('sanity start')} to run your studio`)
+  print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
+  print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
 
   // See if the template has a success message handler and print it
   const successMessage = template.getSuccessMessage
@@ -143,8 +144,6 @@ export default async function initSanity(args, context) {
   if (successMessage) {
     print(`\n${successMessage}`)
   }
-
-  print('\nNeed some help to get you started? Run "sanity docs" for documentation!\n')
 
   async function getOrCreateUser() {
     print("We can't find any auth credentials in your Sanity config - looks like you")
