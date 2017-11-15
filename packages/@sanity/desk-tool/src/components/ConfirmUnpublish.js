@@ -7,7 +7,7 @@ import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
-export default enhanceWithReferringDocuments(class ConfirmDelete extends React.PureComponent {
+export default enhanceWithReferringDocuments(class ConfirmUnpublish extends React.PureComponent {
   static propTypes = {
     onCancel: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
@@ -31,14 +31,15 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
     const {isCheckingReferringDocuments, referringDocuments, draft, published, onCancel} = this.props
 
     const hasReferringDocuments = referringDocuments.length > 0
-    const canContinue = !isCheckingReferringDocuments && !hasReferringDocuments
+
+    const canContinue = !isCheckingReferringDocuments
+
     const actions = [
-      canContinue && {name: 'confirm', title: 'Unpublish now'},
-      {name: 'cancel', title: hasReferringDocuments ? 'Ok, got it' : 'Cancel', kind: 'secondary'}
+      canContinue && {name: 'confirm', title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'},
+      {name: 'cancel', title: 'Cancel', kind: 'secondary'}
     ].filter(Boolean)
 
-    const title = (isCheckingReferringDocuments && 'Checking…')
-      || (hasReferringDocuments ? 'Cannot unpublish' : 'Confirm unpublish')
+    const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'
 
     return (
       <Dialog
@@ -54,15 +55,14 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
         {hasReferringDocuments && (
           <div>
             <h3>
+              Warning:
               Found {referringDocuments.length === 1 ? 'a document' : `${referringDocuments.length} documents`} that
-              refers to <DocTitle document={(draft || published)} />
+              refers to {'"'}<DocTitle document={(draft || published)} />{'"'}
             </h3>
             <p>
-              You cannot unpublish a document that other documents are referring to.
-              In order to continue, every reference
-              to <strong><DocTitle document={(draft || published)} /></strong> needs
-              to be removed from
-              the following document{referringDocuments.length > 1 && 's'}:
+              You may not be allowed to unpublish
+              {' "'}<DocTitle document={(draft || published)} />{'" '}
+              as the following document{referringDocuments.length === 1 ? '' : 's'} refers to it:
             </p>
             <ReferringDocumentsList documents={referringDocuments} />
           </div>

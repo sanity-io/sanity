@@ -28,6 +28,7 @@ import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -128,6 +129,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     onDiscardDraft: PropTypes.func,
     onPublish: PropTypes.func,
     onUnpublish: PropTypes.func,
+    transactionResult: PropTypes.func,
+    onClearTransactionResult: PropTypes.func,
 
     isCreatingDraft: PropTypes.bool,
     isUnpublishing: PropTypes.bool,
@@ -144,9 +147,11 @@ export default withRouterHOC(class Editor extends React.PureComponent {
     isPublishing: false,
     isCreatingDraft: false,
     deletedSnapshot: null,
+    transactionResult: null,
     onDelete() {},
     onCreate() {},
     onChange() {},
+    onClearTransactionResult() {}
   }
 
   state = INITIAL_STATE
@@ -367,7 +372,9 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       isPublishing,
       isUnpublishing,
       isCreatingDraft,
-      patchChannel
+      patchChannel,
+      transactionResult,
+      onClearTransactionResult
     } = this.props
 
     const {
@@ -478,6 +485,19 @@ export default withRouterHOC(class Editor extends React.PureComponent {
               onCancel={this.handleCancelUnpublish}
               onConfirm={this.handleConfirmUnpublish}
             />
+          )}
+
+          {transactionResult && transactionResult.type === 'error' && (
+            <Snackbar
+              kind={'danger'}
+              action={{title: 'Ok, got it'}}
+              onAction={onClearTransactionResult}
+            >
+              <div>
+                {transactionResult.message}
+                <details>{transactionResult.error.message}</details>
+              </div>
+            </Snackbar>
           )}
         </div>
       </Pane>

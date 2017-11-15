@@ -3,9 +3,8 @@ import {flatten} from 'lodash'
 
 import {observeForPreview} from 'part:@sanity/base/preview'
 
-export function valueToString(value, referenceType) {
-  return observeForPreview(value, referenceType)
-    .map(result => result.snapshot.title)
+export function getPreviewSnapshot(value, referenceType) {
+  return observeForPreview(value, referenceType).map(result => result.snapshot)
 }
 
 function wrapIn(chars = '') {

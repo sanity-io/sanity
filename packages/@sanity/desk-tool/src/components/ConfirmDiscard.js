@@ -29,7 +29,7 @@ export default class ConfirmDiscard extends React.PureComponent {
     const {draft, published, onCancel} = this.props
     const confirmAction = {
       name: 'confirm',
-      title: `Yes, discard ${published ? 'changes' : 'document'}`,
+      title: `Discard ${published ? 'changes' : 'draft'} now`,
       color: 'danger'
     }
     return (
