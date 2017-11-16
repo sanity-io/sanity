@@ -1,0 +1,17 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  text-align: center;
+}
+
+.currentSpace {
+  white-space: nowrap;
+  color: #fff;
+}
+
+.menu {
+  position: absolute;
+  left: 0;
+  z-index: 10;
+}

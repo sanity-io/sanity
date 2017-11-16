@@ -1,14 +1,25 @@
 import getOrderedTools from '../util/getOrderedTools'
 import rootRouter from '../defaultLayoutRouter'
 import locationStore from 'part:@sanity/base/location'
+import getConfiguredSpaces from '../util/getConfiguredSpaces'
+import reconfigureClient from '../util/reconfigureClient'
 
-function resolveUrlStateWithDefaultTool(state) {
-  if (!state || state.tool) {
-    return state
+function getUrlStateWithDefaultSpace(state) {
+  if (state && !state.space) {
+    const spaces = getConfiguredSpaces()
+    const defaultSpace = spaces.find(ds => ds.default) || spaces[0]
+    return Object.assign({}, state, {space: defaultSpace.name})
   }
-  return Object.assign({}, state, {
-    tool: getOrderedTools()[0].name
-  })
+  return null
+}
+
+function getUrlStateWithDefaultTool(state) {
+  if (state && !state.tool) {
+    return Object.assign({}, state, {
+      tool: getOrderedTools()[0].name
+    })
+  }
+  return null
 }
 
 function resolveIntentState(currentState, intentState) {
@@ -25,8 +36,8 @@ function resolveIntentState(currentState, intentState) {
 
   if (matchingTool) {
     const toolState = matchingTool.getIntentState(intent, params)
-    const prevWithDefaults = resolveUrlStateWithDefaultTool(currentState) || currentState
-    return Object.assign({}, prevWithDefaults, {
+    const currentWithState = getUrlStateWithDefaultSpace(currentState) || currentState
+    return Object.assign({}, currentWithState, {
       tool: matchingTool.name,
       [matchingTool.name]: toolState
     })
@@ -56,9 +67,19 @@ function decodeUrlState(locationEvent) {
   }
 }
 
-function maybeRedirectDefaultState(event) {
-  const redirectState = resolveUrlStateWithDefaultTool(event.state)
-  if (redirectState !== event.state) {
+function maybeRedirectDefaultSpace(event) {
+
+  const redirectState = getUrlStateWithDefaultSpace(event.state)
+  if (redirectState) {
+    navigate(rootRouter.encode(redirectState), {replace: true})
+    return null
+  }
+  return event
+}
+
+function maybeRedirectFirstTool(event) {
+  const redirectState = getUrlStateWithDefaultTool(event.state)
+  if (redirectState) {
     navigate(rootRouter.encode(redirectState), {replace: true})
     return null
   }
@@ -74,8 +95,15 @@ export const state = locationStore
   .map(decodeUrlState)
   .scan(maybeHandleIntent)
   .filter(Boolean)
-  .map(maybeRedirectDefaultState)
+  .map(maybeRedirectDefaultSpace)
+  .filter(Boolean)
+  .map(maybeRedirectFirstTool)
   .filter(Boolean)
   .publishReplay(1)
   .refCount()
 
+// Uglybugly mutation ahead.
+state.map(event => event.state)
+  .filter(Boolean)
+  .do(reconfigureClient)
+  .subscribe()

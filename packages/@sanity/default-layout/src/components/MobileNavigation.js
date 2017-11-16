@@ -8,6 +8,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Search from './Search'
 import {WithRouter} from 'part:@sanity/base/router'
+import SpaceSwitcher from './SpaceSwitcher'
 
 export default class MobileNavigation extends React.Component {
   static propTypes = {
@@ -55,6 +56,7 @@ export default class MobileNavigation extends React.Component {
           <div className={styles.searchContainer}>
             <Search onSelect={this.handleClose} />
           </div>
+          <SpaceSwitcher />
           <LoginStatus className={styles.loginStatus} />
           <WithRouter>
             {router => (

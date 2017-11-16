@@ -4,6 +4,7 @@ import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import styles from './styles/ToolSwitcher.css'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import Ink from 'react-ink'
+import {withRouterHOC} from '../../../state-router/src/components'
 
 function ToolSwitcher(props) {
   const {tools, router, activeToolName, onSwitchTool} = props
