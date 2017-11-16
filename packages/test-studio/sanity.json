@@ -3,7 +3,41 @@
   "project": {
     "name": "Test studio"
   },
-
+  "spaces": [
+    {
+      "name": "oslo",
+      "title": "🇳🇴 Oslo",
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "oslo"
+      }
+    },
+    {
+      "name": "trondheim",
+      "title": "🇳🇴 Trondheim",
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "oslo"
+      }
+    },
+    {
+      "name": "madrid",
+      "title": "🇪🇸 Madrid",
+      "default": true,
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "madrid"
+      }
+    },
+    {
+      "name": "barcelona",
+      "title": "🇪🇸 Barcelona",
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "barcelona"
+      }
+    }
+  ],
   "api": {
     "projectId": "ppsg7ml5",
     "dataset": "test"
