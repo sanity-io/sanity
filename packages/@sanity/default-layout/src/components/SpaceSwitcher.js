@@ -49,14 +49,15 @@ class SpaceSwitcher extends React.PureComponent {
   }
 
   render() {
-    if (configuredSpaces.length === 1) {
+    if (configuredSpaces.length === 1) {
       return null
     }
     const {menuOpen, currentSpace} = this.state
+    const title = currentSpace && currentSpace.title
     return (
       <div className={styles.root}>
-        <div onClick={this.handleMenuToggle} className={styles.currentSpace}>
-          {currentSpace && `${currentSpace.title} ▼`}
+        <div title={title} onClick={this.handleMenuToggle} className={styles.currentSpace}>
+          {title && `${title} ▼`}
         </div>
         {menuOpen && (
           <div className={styles.menu}>
