@@ -3,15 +3,13 @@ import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
 import Menu from 'part:@sanity/components/menus/default'
 import styles from './styles/SpaceSwitcher.css'
-import getConfiguredSpaces from '../util/getConfiguredSpaces'
+import {CONFIGURED_SPACES} from '../util/spaces'
 import {state as urlState} from '../datastores/urlState'
 import {withRouterHOC} from 'part:@sanity/base/router'
 
-const configuredSpaces = getConfiguredSpaces()
-
 const currentSpace$ = urlState
   .map(event => event.state && event.state.space)
-  .map(spaceName => configuredSpaces.find(sp => sp.name === spaceName))
+  .map(spaceName => CONFIGURED_SPACES.find(sp => sp.name === spaceName))
 
 class SpaceSwitcher extends React.PureComponent {
   static propTypes = {
@@ -49,9 +47,6 @@ class SpaceSwitcher extends React.PureComponent {
   }
 
   render() {
-    if (configuredSpaces.length === 1) {
-      return null
-    }
     const {menuOpen, currentSpace} = this.state
     const title = currentSpace && currentSpace.title
     return (
@@ -63,7 +58,7 @@ class SpaceSwitcher extends React.PureComponent {
           <div className={styles.menu}>
             <Menu
               onAction={this.handleMenuItemClick}
-              items={configuredSpaces}
+              items={CONFIGURED_SPACES}
               opened
               origin="top-right"
               onClickOutside={this.handleMenuClose}

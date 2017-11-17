@@ -3,38 +3,22 @@
   "project": {
     "name": "Test studio"
   },
-  "spaces": [
+  "__experimental_spaces": [
     {
-      "name": "oslo",
-      "title": "Oslo",
-      "api": {
-        "projectId": "ppsg7ml5",
-        "dataset": "oslo"
-      }
-    },
-    {
-      "name": "trondheim",
-      "title": "Trondheim",
-      "api": {
-        "projectId": "ppsg7ml5",
-        "dataset": "oslo"
-      }
-    },
-    {
-      "name": "madrid",
-      "title": "Madrid",
+      "name": "production",
+      "title": "Prod",
       "default": true,
       "api": {
         "projectId": "ppsg7ml5",
-        "dataset": "madrid"
+        "dataset": "production"
       }
     },
     {
-      "name": "barcelona",
-      "title": "Barcelona",
+      "name": "staging",
+      "title": "Staging",
       "api": {
         "projectId": "ppsg7ml5",
-        "dataset": "barcelona"
+        "dataset": "staging"
       }
     }
   ],

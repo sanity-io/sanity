@@ -1,15 +1,18 @@
 import {route} from 'part:@sanity/base/router'
 import tools from 'all:part:@sanity/base/tool'
-import getConfiguredSpaces from './util/getConfiguredSpaces.js'
+import {CONFIGURED_SPACES, HAS_SPACES} from './util/spaces'
+
+const toolRoute = route('/:tool', toolParams => {
+  const foundTool = tools.find(current => current.name === toolParams.tool)
+  return foundTool ? route.scope(foundTool.name, '/', foundTool.router) : route('/')
+})
+
+const spaceRoute = route('/:space', params => {
+  const foundSpace = CONFIGURED_SPACES.find(sp => sp.name === params.space)
+  return foundSpace ? toolRoute : route('/')
+})
 
 export default route('/', [
   route.intents('/intent'),
-  route('/:space', params => {
-    const foundSpace = getConfiguredSpaces().find(sp => sp.name === params.space)
-    return foundSpace && route('/:tool', toolParams => {
-      const foundTool = tools.find(current => current.name === toolParams.tool)
-      return foundTool && route.scope(foundTool.name, '/', foundTool.router)
-    })
-
-  })
+  HAS_SPACES ? spaceRoute : toolRoute
 ])

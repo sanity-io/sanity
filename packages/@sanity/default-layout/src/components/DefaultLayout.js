@@ -17,6 +17,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SpaceSwitcher from './SpaceSwitcher'
+import {HAS_SPACES} from '../util/spaces'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -83,9 +84,11 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
           <div className={styles.branding}>
             <Branding />
           </div>
-          <div className={styles.spaceSwitcher}>
-            <SpaceSwitcher />
-          </div>
+          {HAS_SPACES && (
+            <div className={styles.spaceSwitcher}>
+              <SpaceSwitcher />
+            </div>
+          )}
           <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
             <span className={styles.createButtonIcon}><PlusIcon /></span>
             <span className={styles.createButtonText}>New</span>
