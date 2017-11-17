@@ -6,7 +6,7 @@
   "spaces": [
     {
       "name": "oslo",
-      "title": "🇳🇴 Oslo",
+      "title": "Oslo",
       "api": {
         "projectId": "ppsg7ml5",
         "dataset": "oslo"
@@ -14,7 +14,7 @@
     },
     {
       "name": "trondheim",
-      "title": "🇳🇴 Trondheim",
+      "title": "Trondheim",
       "api": {
         "projectId": "ppsg7ml5",
         "dataset": "oslo"
@@ -22,7 +22,7 @@
     },
     {
       "name": "madrid",
-      "title": "🇪🇸 Madrid",
+      "title": "Madrid",
       "default": true,
       "api": {
         "projectId": "ppsg7ml5",
@@ -31,7 +31,7 @@
     },
     {
       "name": "barcelona",
-      "title": "🇪🇸 Barcelona",
+      "title": "Barcelona",
       "api": {
         "projectId": "ppsg7ml5",
         "dataset": "barcelona"
