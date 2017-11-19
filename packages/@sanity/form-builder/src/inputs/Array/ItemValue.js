@@ -6,12 +6,9 @@ import type {Node} from 'react'
 import styles from './styles/ItemValue.css'
 import ConfirmButton from './ConfirmButton'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import Button from 'part:@sanity/components/buttons/default'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import PopOver from 'part:@sanity/components/dialogs/popover'
 
 import ItemForm from './ItemForm'
 import MemberValue from '../../Member'
@@ -37,10 +34,6 @@ type Props = {
 export default class Item extends React.Component<Props> {
 
   domElement: ?HTMLElement
-
-  state = {
-    showConfirmDialog: false
-  }
 
   handleRemove = () => {
     const {onRemove, value} = this.props
@@ -131,18 +124,6 @@ export default class Item extends React.Component<Props> {
     this.domElement = el
   }
 
-  handleDeleteButtonClick = event => {
-    this.setState({
-      showConfirmDialog: true
-    })
-  }
-
-  handleConfirmDialogClose = event => {
-    this.setState({
-      showConfirmDialog: false
-    })
-  }
-
   render() {
     const {value, type, isEditing} = this.props
 
@@ -185,34 +166,10 @@ export default class Item extends React.Component<Props> {
               )
             }
             {!type.readOnly && (
-              <Button
-                tabIndex={0}
-                kind="simple"
-                color="danger"
-                icon={TrashIcon}
-                title="Delete"
-                onClick={this.handleDeleteButtonClick}
-              >
-                <div className={styles.popoverAnchor}>
-                  {
-                    this.state.showConfirmDialog && (
-                      <PopOver
-                        color="danger"
-                        useOverlay={false}
-                        onClose={this.handleConfirmDialogClose}
-                      >
-                        <Button
-                          kind="simple"
-                          onClick={this.handleRemove}
-                          icon={TrashIcon}
-                        >
-                          Confirm delete
-                        </Button>
-                      </PopOver>
-                    )
-                  }
-                </div>
-              </Button>
+              <ConfirmButton
+                title="Remove this item"
+                onConfirm={this.handleRemove}
+              />
             )}
           </div>
         </div>
