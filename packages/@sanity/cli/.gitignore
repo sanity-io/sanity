@@ -16,3 +16,6 @@ node_modules
 
 # Packed version of Sanity binary
 /bin/sanity
+
+# Dependency of opn module
+/bin/xdg-open

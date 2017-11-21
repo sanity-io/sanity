@@ -19,6 +19,10 @@ if (bindings.length > 0) {
   process.exit(1)
 }
 
+const opnDir = path.dirname(require.resolve('opn'))
+const xdgPath = path.join(opnDir, 'xdg-open')
+fse.copy(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
+
 const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
 
 // Use the real node __dirname and __filename in order to get Yarn's source
