@@ -1,6 +1,6 @@
 # @sanity/client
 
-[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](http://browsenpm.org/package/@sanity/client)
+[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](https://www.npmjs.com/package/@sanity/client)
 
 Javascript client for Sanity. Works in browsers (IE9+) and node.js.
 
@@ -42,7 +42,7 @@ client.getDocument('bike-123').then(bike => {
 ### Performing queries
 
 ```js
-const query = '*[is "bike" && seats >= $minSeats] {name, seats}'
+const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
 const params = {minSeats: 2}
 
 client.fetch(query, params).then(bikes => {
@@ -60,7 +60,7 @@ Perform a query using the given parameters (if any).
 ### Listening to queries
 
 ```js
-const query = '*[is "comment" && authorId != $ownerId]'
+const query = '*[_type == "comment" && authorId != $ownerId]'
 const params = {ownerId: 'bikeOwnerUserId'}
 
 const subscription = client.listen(query, params)
