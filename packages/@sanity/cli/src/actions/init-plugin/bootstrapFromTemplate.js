@@ -8,6 +8,7 @@ const validateNpmPackageName = require('validate-npm-package-name')
 const {pathTools} = require('@sanity/util')
 const dynamicRequire = require('../../util/dynamicRequire')
 const pkg = require('../../../package.json')
+const debug = require('../../debug')
 
 const {absolutify, pathIsEmpty} = pathTools
 
@@ -29,8 +30,19 @@ module.exports = async (context, url) => {
     throw err
   }
 
-  const manifest = zip.find(file => path.basename(file.path) === 'package.json')
+  const manifest = zip.find(
+    file =>
+      path.basename(file.path) === 'package.json'
+      && !file.path.includes('node_modules')
+  )
+
+  if (!manifest) {
+    throw new Error('Could not find `package.json` in template')
+  }
+
   const baseDir = path.join(path.dirname(manifest.path), 'template')
+  debug('Base directory resolved to %s', baseDir)
+
   const templateFiles = zip.filter(file => file.type === 'file' && file.path.indexOf(baseDir) === 0)
   const manifestContent = manifest.data.toString()
   const tplVars = parseJson(manifestContent).sanityTemplate || {}
