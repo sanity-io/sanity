@@ -106,7 +106,7 @@ module.exports = async (context, url) => {
     })
   )
 
-  return {name, outputPath, inPluginsPath: inProjectContext}
+  return {name, outputPath, inPluginsPath: inProjectContext, dependencies: tplVars.dependencies}
 }
 
 async function validateEmptyPath(dir) {
