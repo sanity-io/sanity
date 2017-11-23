@@ -1,5 +1,5 @@
 {
-  "name": "presence-store",
+  "name": "@sanity/presence-store",
   "version": "0.120.0",
   "description": "Client side presence channel handler",
   "main": "lib/Connector.js",
