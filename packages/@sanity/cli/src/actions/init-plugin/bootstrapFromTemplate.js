@@ -46,7 +46,7 @@ module.exports = async (context, url) => {
   const templateFiles = zip.filter(file => file.type === 'file' && file.path.indexOf(baseDir) === 0)
   const manifestContent = manifest.data.toString()
   const tplVars = parseJson(manifestContent).sanityTemplate || {}
-  const {minimumBaseVersion} = tplVars
+  const {minimumBaseVersion, minimumCliVersion} = tplVars
 
   if (minimumBaseVersion) {
     const installed = getSanityVersion(workDir)
@@ -55,6 +55,12 @@ module.exports = async (context, url) => {
         `Template requires Sanity at version ${minimumBaseVersion}, installed is ${installed}`
       )
     }
+  }
+
+  if (minimumCliVersion && semver.lt(pkg.version, minimumCliVersion)) {
+    throw new Error(
+      `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${pkg.version}`
+    )
   }
 
   const name = await prompt.single({
