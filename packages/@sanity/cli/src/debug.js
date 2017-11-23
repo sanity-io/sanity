@@ -1,3 +1,3 @@
-import debug from 'debug'
+const debug = require('debug')
 
-export default debug('sanity:cli')
+module.exports = debug('sanity:cli')
