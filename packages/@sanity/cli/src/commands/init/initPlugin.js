@@ -38,8 +38,8 @@ export default async function initPlugin(args, context, initOpts = {}) {
 }
 
 async function bootstrapFromUrl(context, url) {
-  const {output, prompt, workDir} = context
-  const {name, outputPath, inPluginsPath} = await bootstrapFromTemplate(context, url)
+  const {output, prompt, yarn, workDir} = context
+  const {name, outputPath, inPluginsPath, dependencies} = await bootstrapFromTemplate(context, url)
 
   if (inPluginsPath) {
     const addIt = await prompt.single({
@@ -53,5 +53,32 @@ async function bootstrapFromUrl(context, url) {
     }
   }
 
-  output.print(`Success! Plugin initialized at ${outputPath}`)
+  if (dependencies) {
+    const dependencyString = JSON.stringify(dependencies, null, 2)
+      .split('\n')
+      .slice(1, -1)
+      .join('\n')
+      .replace(/"/g, '')
+
+    output.print('\nThe following dependencies are required for this template:')
+    output.print(`${dependencyString}\n`)
+  }
+
+  if (dependencies && inPluginsPath) {
+    const addDeps = await prompt.single({
+      type: 'confirm',
+      message: 'Install dependencies in current project?',
+      default: true
+    })
+
+    if (addDeps) {
+      const deps = Object.keys(dependencies).map(dep => `${dep}@${dependencies[dep]}`)
+      await yarn(['add'].concat(deps), {...output, rootDir: workDir})
+
+      output.print('Dependencies installed.')
+      output.print('Remember to remove them from `package.json` if you no longer need them!')
+    }
+  }
+
+  output.print(`\nSuccess! Plugin initialized at ${outputPath}`)
 }
