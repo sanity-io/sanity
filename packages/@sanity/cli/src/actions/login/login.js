@@ -113,12 +113,12 @@ function loginFlow({output, provider, apiClient, cliRoot}, resolve, reject) {
       path.join(cliRoot, 'assets', 'loginResponse.html'),
       'utf8'
     )
+
     res.end(successPage, () => {
       req.connection.unref()
 
       server.close(() => {
         debug('Server closed')
-        resolve()
       })
     })
 
@@ -131,6 +131,7 @@ function loginFlow({output, provider, apiClient, cliRoot}, resolve, reject) {
 
     spin.stop()
     output.print(chalk.green('Login successful'))
+    resolve()
   }
 
   async function onTokenExchangeError(err, req, res) {

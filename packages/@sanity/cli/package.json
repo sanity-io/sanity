@@ -7,11 +7,11 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "npm test && npm run package-yarn",
+    "build": "npm test && npm run package-yarn && npm run pack",
     "pack": "node scripts/pack.js",
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib bin/sanity",
     "prepublishOnly": "npm run build",
     "posttest": "eslint ."
   },
