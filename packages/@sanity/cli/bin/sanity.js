@@ -15,6 +15,12 @@ if (nodeVersion < 6) {
   process.exit(1)
 }
 
+if (process.version === 'v8.1.0' || process.version === 'v8.1.1') {
+  console.error('ERROR: Node.js v8.1.0 and v8.1.1 has a bug that prevents the Sanity CLI')
+  console.error('from receiving input. Please upgrade to a newer version of Node.js.')
+  process.exit(1)
+}
+
 var path = require('path')
 var runCli = require('../lib/cli')
 runCli(path.join(__dirname, '..'))
