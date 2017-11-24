@@ -3,7 +3,7 @@ import path from 'path'
 import fse from 'fs-extra'
 import simpleGet from 'simple-get'
 
-const version = '1.0.2'
+const version = '1.3.2'
 const baseUrl = 'https://github.com/yarnpkg/yarn/releases/download'
 const bundleUrl = `${baseUrl}/v${version}/yarn-legacy-${version}.js`
 const licenseUrl = 'https://raw.githubusercontent.com/yarnpkg/yarn/master/LICENSE'
