@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "0.121.0",
+  "version": "0.122.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -22,16 +22,23 @@
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
   },
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "cli", "tool"],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "cli",
+    "tool"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
-  "dependencies": {},
   "devDependencies": {
-    "@sanity/client": "^0.121.0",
+    "@sanity/client": "^0.122.0",
     "@sanity/resolver": "^0.120.0",
     "@sanity/util": "^0.120.0",
     "babel-loader": "^7.1.2",
