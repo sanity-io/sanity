@@ -16,7 +16,7 @@ function setupJSDom() {
 setupJSDom()
 
 const registerLoader = require('@sanity/plugin-loader')
-registerLoader({basePath: __dirname})
+registerLoader({basePath: __dirname, allowLocalDependencies: true})
 
 require('babel-register')
 require('babel-polyfill')
