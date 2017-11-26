@@ -15,7 +15,8 @@ function findTargetIndex(array, pathSegment) {
   if (typeof pathSegment === 'number') {
     return pathSegment
   }
-  return findIndex(array, pathSegment)
+  const index = findIndex(array, pathSegment)
+  return index === -1 ? false : index
 }
 
 export default function apply(value, patch) {
@@ -47,6 +48,11 @@ export default function apply(value, patch) {
   const [head, ...tail] = patch.path
 
   const index = findTargetIndex(value, head)
+
+  // If the given selector could not be found, return as-is
+  if (index === false) {
+    return nextValue
+  }
 
   if (tail.length === 0) {
     if (patch.type === 'insert') {
