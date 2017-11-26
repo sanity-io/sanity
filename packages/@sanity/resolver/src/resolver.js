@@ -30,7 +30,16 @@ function resolveTreeSync(options) {
   return plugins.reduce(flattenTree, plugins.slice())
 }
 
-async function resolveTree(opts = {}) {
+async function resolveTreeAsync(options) {
+  const projectManifest = await readManifest(options)
+  const plugins = await resolvePlugins(projectManifest.plugins || [], options)
+  const withRoot = plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)])
+  const flattened = withRoot.reduce(flattenTree, withRoot)
+  const deduped = removeDuplicatePlugins(flattened)
+  return deduped
+}
+
+function resolveTree(opts = {}) {
   const options = Object.assign({basePath: process.cwd()}, opts)
 
   if (options.resolveProjectRoot) {
@@ -39,16 +48,11 @@ async function resolveTree(opts = {}) {
     options.basePath = resolveSanityRoot(resolveOpts)
   }
 
-  if (options.sync) {
-    return resolveTreeSync(options)
-  }
-
-  const projectManifest = await readManifest(options)
-  return resolvePlugins(projectManifest.plugins || [], options)
-    .then(plugins => plugins.concat([getProjectRootPlugin(options.basePath, projectManifest)]))
-    .then(plugins => plugins.reduce(flattenTree, plugins.slice()))
-    .then(removeDuplicatePlugins)
+  return options.sync
+    ? resolveTreeSync(options)
+    : resolveTreeAsync(options)
 }
+
 
 function getProjectRootPlugin(basePath, manifest) {
   return {

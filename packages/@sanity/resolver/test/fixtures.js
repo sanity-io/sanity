@@ -22,27 +22,29 @@ function instagramManifest() {
       compiled: 'lib'
     },
 
-    parts: [{
-      name: 'part:instagram/commentsList',
-      description: 'List of comments...'
-    }, {
-      name: 'part:instagram/comment',
-      description: 'A comment on instagram'
-    }, {
-      implements: 'part:instagram/commentsList',
-      path: 'components/CommentsList'
-    }, {
-      implements: 'part:instagram/comment',
-      path: 'components/Comment'
-    }, {
-      name: 'part:instagram/instagramTool',
-      implements: 'part:@sanity/default-layout/tool',
-      path: 'components/InstagramTool'
-    }, {
-      name: 'part:instagram/instagramDiscoverTool',
-      implements: 'part:@sanity/default-layout/tool',
-      path: 'components/InstaDiscoverTool'
-    }]
+    parts: [
+      {
+        name: 'part:instagram/commentsList',
+        description: 'List of comments...'
+      }, {
+        name: 'part:instagram/comment',
+        description: 'A comment on instagram'
+      }, {
+        implements: 'part:instagram/commentsList',
+        path: 'components/CommentsList'
+      }, {
+        implements: 'part:instagram/comment',
+        path: 'components/Comment'
+      }, {
+        name: 'part:instagram/instagramTool',
+        implements: 'part:@sanity/default-layout/tool',
+        path: 'components/InstagramTool'
+      }, {
+        name: 'part:instagram/instagramDiscoverTool',
+        implements: 'part:@sanity/default-layout/tool',
+        path: 'components/InstaDiscoverTool'
+      }
+    ]
   })
 }
 
@@ -54,31 +56,33 @@ function defaultLayout() {
         compiled: 'lib'
       },
 
-      parts: [{
-        name: 'part:@sanity/default-layout/tool',
-        description: 'A generic UI tool'
-      }, {
-        name: 'part:@sanity/default-layout/settingsPane',
-        description: 'One "tab" of the default layout settings'
-      }, {
-        implements: 'part:@sanity/core/root',
-        path: 'components/Root'
-      }]
+      parts: [
+        {
+          name: 'part:@sanity/default-layout/tool',
+          description: 'A generic UI tool'
+        }, {
+          name: 'part:@sanity/default-layout/settingsPane',
+          description: 'One "tab" of the default layout settings'
+        }, {
+          implements: 'part:@sanity/core/root',
+          path: 'components/Root'
+        }
+      ]
     })
   }
 }
 
 function sanityCore() {
   return {
-    'core': {
+    core: {
       'sanity.json': pluginManifest({
-        plugins: [
-          '@sanity/default-layout'
-        ],
-        parts: [{
-          name: 'part:@sanity/core/root',
-          description: 'The main component in the UI hierarchy. Usually a layout.'
-        }]
+        plugins: ['@sanity/default-layout'],
+        parts: [
+          {
+            name: 'part:@sanity/core/root',
+            description: 'The main component in the UI hierarchy. Usually a layout.'
+          }
+        ]
       })
     },
     'default-layout': defaultLayout()
@@ -115,18 +119,22 @@ export function getDuplicatePartTree() {
     '/sanity/plugins': {
       snarkel: {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:snarkel/foo',
-            description: 'Foo'
-          }]
+          parts: [
+            {
+              name: 'part:snarkel/foo',
+              description: 'Foo'
+            }
+          ]
         })
       },
       snuffel: {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:snarkel/foo',
-            description: 'Dupe'
-          }]
+          parts: [
+            {
+              name: 'part:snarkel/foo',
+              description: 'Dupe'
+            }
+          ]
         })
       }
     }
@@ -140,19 +148,23 @@ export function getDuplicatePluginTree() {
       'form-builder': {
         'sanity.json': pluginManifest({
           plugins: ['google-maps-input'],
-          parts: [{
-            name: 'part:form-builder/thing',
-            description: 'Yup'
-          }]
+          parts: [
+            {
+              name: 'part:form-builder/thing',
+              description: 'Yup'
+            }
+          ]
         })
       },
       'google-maps-input': {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:google-maps-input/thing',
-            description: 'Map thing',
-            path: './Thing.js'
-          }]
+          parts: [
+            {
+              name: 'part:google-maps-input/thing',
+              description: 'Map thing',
+              path: './Thing.js'
+            }
+          ]
         })
       }
     }
@@ -188,13 +200,15 @@ export function getMixedPluginTree() {
             source: './src'
           },
 
-          parts: [{
-            implements: 'part:@sanity/default-layout/tool',
-            path: 'File'
-          }, {
-            implements: 'part:instagram/commentsList',
-            path: 'InstaComments'
-          }]
+          parts: [
+            {
+              implements: 'part:@sanity/default-layout/tool',
+              path: 'File'
+            }, {
+              implements: 'part:instagram/commentsList',
+              path: 'InstaComments'
+            }
+          ]
         })
       }
     }
@@ -212,16 +226,18 @@ export function getPathAlternatives() {
             source: './src'
           },
 
-          parts: [{
-            implements: 'part:foo/relative',
-            path: 'relative/Path.js'
-          }, {
-            implements: 'part:foo/absolute',
-            path: '/absolute/path/to/File.js'
-          }, {
-            implements: 'part:foo/dot-path',
-            path: './locale/en-us.json'
-          }]
+          parts: [
+            {
+              implements: 'part:foo/relative',
+              path: 'relative/Path.js'
+            }, {
+              implements: 'part:foo/absolute',
+              path: '/absolute/path/to/File.js'
+            }, {
+              implements: 'part:foo/dot-path',
+              path: './locale/en-us.json'
+            }
+          ]
         })
       }
     }
@@ -243,33 +259,40 @@ export function getDeepTree({missingPlugin, missingManifest} = {}) {
     plugins.push('missing')
   }
 
+  const baz = {
+    'sanity-plugin-baz': missingManifest ? {} : {
+      'sanity.json': pluginManifest({
+        parts: []
+      })
+    }
+  }
+
   return merge(getBasicTree(), {
     '/sanity/sanity.json': sanityManifest(plugins),
-    '/sanity/node_modules': {
+    '/sanity/node_modules': merge({
       'sanity-plugin-foo': {
         'sanity.json': pluginManifest({
           plugins: ['bar'],
-          parts: [{
-            implements: 'part:bar/baz',
-            path: 'someFile'
-          }]
+          parts: [
+            {
+              implements: 'part:bar/baz',
+              path: 'someFile'
+            }
+          ]
         })
       },
       'sanity-plugin-bar': {
         'sanity.json': pluginManifest({
           plugins: ['baz'],
-          parts: [{
-            name: 'part:bar/baz',
-            description: 'The baz of the bar'
-          }]
+          parts: [
+            {
+              name: 'part:bar/baz',
+              description: 'The baz of the bar'
+            }
+          ]
         })
       },
-      'sanity-plugin-baz': !missingManifest && {
-        'sanity.json': pluginManifest({
-          parts: []
-        })
-      }
-    }
+    }, baz)
   })
 }
 
@@ -284,9 +307,11 @@ export function getInvalidManifest({atRoot}) {
   return {
     '/sanity/sanity.json': atRoot ? '{"plugins":"foo"}' : sanityManifest('instagram'),
     '/sanity/node_modules/sanity-plugin-instagram/sanity.json': pluginManifest({
-      parts: [{
-        name: 'path'
-      }]
+      parts: [
+        {
+          name: 'path'
+        }
+      ]
     })
   }
 }
@@ -346,31 +371,37 @@ export function getStyleTree() {
     '/sanity/node_modules': {
       'sanity-plugin-material-design': {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:@sanity/default-layout/header-style',
-            path: 'css/header.css'
-          }]
+          parts: [
+            {
+              implements: 'part:@sanity/default-layout/header-style',
+              path: 'css/header.css'
+            }
+          ]
         }),
       },
       '@sanity': {
         'default-layout': {
           'sanity.json': pluginManifest({
-            parts: [{
-              name: 'part:@sanity/default-layout/header-style',
-              description: 'Styling for the header'
-            }, {
-              implements: 'part:@sanity/default-layout/header-style',
-              path: 'css/header.css'
-            }]
+            parts: [
+              {
+                name: 'part:@sanity/default-layout/header-style',
+                description: 'Styling for the header'
+              }, {
+                implements: 'part:@sanity/default-layout/header-style',
+                path: 'css/header.css'
+              }
+            ]
           })
         }
       },
       'sanity-plugin-screaming-dev-badge': {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:@sanity/default-layout/header-style',
-            path: 'css/scream.css'
-          }]
+          parts: [
+            {
+              implements: 'part:@sanity/default-layout/header-style',
+              path: 'css/scream.css'
+            }
+          ]
         })
       }
     }
@@ -383,32 +414,38 @@ export function getMultiTree() {
     '/sanity/node_modules/@sanity': {
       base: {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:@sanity/base/root',
-            description: 'Root component...',
-          }, {
-            name: 'part:@sanity/base/absolute',
-            description: 'UI elements that position themselves statically'
-          }]
+          parts: [
+            {
+              name: 'part:@sanity/base/root',
+              description: 'Root component...',
+            }, {
+              name: 'part:@sanity/base/absolute',
+              description: 'UI elements that position themselves statically'
+            }
+          ]
         })
       }
     },
     '/sanity/plugins': {
       'sanity-plugin-absolute-thing': {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:@sanity/base/absolute',
-            path: 'DevBadge.js',
+          parts: [
+            {
+              implements: 'part:@sanity/base/absolute',
+              path: 'DevBadge.js',
 
-          }]
+            }
+          ]
         })
       },
       'another-thing': {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:@sanity/base/absolute',
-            path: 'foo/bar.js'
-          }]
+          parts: [
+            {
+              implements: 'part:@sanity/base/absolute',
+              path: 'foo/bar.js'
+            }
+          ]
         })
       }
     }
@@ -421,22 +458,26 @@ export function getStyleOverriderTree() {
     '/sanity/plugins': {
       foo: {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:foo/button-style',
-            description: 'Styles for the foo button'
-          }, {
-            name: 'part:foo/button-default-style',
-            implements: 'part:foo/button-style',
-            path: 'components/Button.css'
-          }]
+          parts: [
+            {
+              name: 'part:foo/button-style',
+              description: 'Styles for the foo button'
+            }, {
+              name: 'part:foo/button-default-style',
+              implements: 'part:foo/button-style',
+              path: 'components/Button.css'
+            }
+          ]
         })
       },
       bar: {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:foo/button-style',
-            path: 'bar/button.css'
-          }]
+          parts: [
+            {
+              implements: 'part:foo/button-style',
+              path: 'bar/button.css'
+            }
+          ]
         })
       }
     }
@@ -449,34 +490,40 @@ export function getStyleVarTree() {
     '/sanity/node_modules/@sanity': {
       base: {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'part:@sanity/base/root',
-            description: 'Root component of the system'
-          }, {
-            name: 'style-variables',
-            description: 'All style variables available in CSS-context'
-          }, {
-            name: 'style-variables',
-            path: 'styleVariables.js'
-          }]
+          parts: [
+            {
+              name: 'part:@sanity/base/root',
+              description: 'Root component of the system'
+            }, {
+              name: 'style-variables',
+              description: 'All style variables available in CSS-context'
+            }, {
+              name: 'style-variables',
+              path: 'styleVariables.js'
+            }
+          ]
         })
       }
     },
     '/sanity/plugins': {
       'some-overrider': {
         'sanity.json': pluginManifest({
-          parts: [{
-            name: 'style-variables',
-            path: 'css/vars.js'
-          }]
+          parts: [
+            {
+              name: 'style-variables',
+              path: 'css/vars.js'
+            }
+          ]
         })
       },
       'another-thing': {
         'sanity.json': pluginManifest({
-          parts: [{
-            part: 'part:@sanity/base/root',
-            path: 'foo/bar.js'
-          }]
+          parts: [
+            {
+              part: 'part:@sanity/base/root',
+              path: 'foo/bar.js'
+            }
+          ]
         })
       }
     }
@@ -489,27 +536,31 @@ export function getNonAbstractPartTree() {
     '/sanity/plugins': {
       base: {
         'sanity.json': pluginManifest({
-          parts: [{
+          parts: [
+            {
             // Abstract
-            name: 'part:base/thing',
-            description: 'Root component of the system'
-          }, {
+              name: 'part:base/thing',
+              description: 'Root component of the system'
+            }, {
             // Non-abstract
-            name: 'part:base/specific',
-            description: 'Specific thingyjane',
-            path: 'base/specific.js'
-          }]
+              name: 'part:base/specific',
+              description: 'Specific thingyjane',
+              path: 'base/specific.js'
+            }
+          ]
         })
       },
       overrider: {
         'sanity.json': pluginManifest({
-          parts: [{
-            implements: 'part:base/thing',
-            path: 'thing.js'
-          }, {
-            implements: 'part:base/specific',
-            path: 'specific'
-          }]
+          parts: [
+            {
+              implements: 'part:base/thing',
+              path: 'thing.js'
+            }, {
+              implements: 'part:base/specific',
+              path: 'specific'
+            }
+          ]
         })
       }
     }
@@ -520,13 +571,15 @@ export function getRootLevelPartsTree() {
   return Object.assign({}, getBasicTree(), {
     '/sanity/sanity.json': sanityManifest(
       ['@sanity/core', 'instagram'],
-      [{
-        name: 'part:@sanity/config/schema',
-        path: 'schema/schema.js'
-      }, {
-        implements: 'part:@sanity/core/root',
-        path: 'myRootComponent.js'
-      }]
+      [
+        {
+          name: 'part:@sanity/config/schema',
+          path: 'schema/schema.js'
+        }, {
+          implements: 'part:@sanity/core/root',
+          path: 'myRootComponent.js'
+        }
+      ]
     )
   })
 }
@@ -545,10 +598,12 @@ export function getParentDirTree() {
       version: '1.0.0'
     }),
     '/sanity/my-parent-plugin/sanity.json': pluginManifest({
-      parts: [{
-        name: 'part:my-parent-plugin/foo/bar',
-        path: 'foobar.js'
-      }]
+      parts: [
+        {
+          name: 'part:my-parent-plugin/foo/bar',
+          path: 'foobar.js'
+        }
+      ]
     })
   }
 }

@@ -15,7 +15,7 @@ export function resolvePlugins(pluginNames, options) {
   return options.sync ? plugins : Promise.all(plugins)
 }
 
-export async function resolvePlugin(options) {
+export function resolvePlugin(options) {
   const {name, basePath, parentPluginPath, sync} = options
   const resolver = sync ? dir => dir : dir => Promise.resolve(dir)
   const parentDir = parentPluginPath || basePath
@@ -25,12 +25,11 @@ export async function resolvePlugin(options) {
     ? readPluginName(parentDir, name)
     : name
 
-  const manifestDir = await (isDirPlugin
-    ? resolver(path.resolve(parentDir, name))
-    : resolvePluginPath({name, basePath, parentPluginPath}, sync)
-  )
-
   if (sync) {
+    const manifestDir = isDirPlugin
+      ? resolver(path.resolve(parentDir, name))
+      : resolvePluginPath({name, basePath, parentPluginPath}, sync)
+
     const manifest = readManifest({
       sync,
       basePath,
@@ -50,15 +49,21 @@ export async function resolvePlugin(options) {
     }
   }
 
-  const plugin = {name: pluginName, path: manifestDir}
-  return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName})
-    .then(manifest => promiseProps(Object.assign(plugin, {
-      manifest,
-      plugins: resolvePlugins(manifest.plugins || [], {
-        basePath,
-        parentPluginPath: plugin.path
-      })
-    })))
+  const dirResolver = Promise.resolve(isDirPlugin
+    ? resolver(path.resolve(parentDir, name))
+    : resolvePluginPath({name, basePath, parentPluginPath}, sync))
+
+  return dirResolver.then(manifestDir => {
+    const plugin = {name: pluginName, path: manifestDir}
+    return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName})
+      .then(manifest => promiseProps(Object.assign(plugin, {
+        manifest,
+        plugins: resolvePlugins(manifest.plugins || [], {
+          basePath,
+          parentPluginPath: plugin.path
+        })
+      })))
+  })
 }
 
 function resolvePluginPath(plugin, sync) {
