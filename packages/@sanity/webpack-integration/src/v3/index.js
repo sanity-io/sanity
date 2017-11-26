@@ -50,7 +50,9 @@ function getPostcssImportPlugin(options) {
 
 function getPostcssPlugins(options) {
   const importer = getPostcssImportPlugin(options)
-  return [importer, postcssCssnext, lost]
+  const nextOpts = options.cssnext
+  const lostOpts = options.lost
+  return [importer, postcssCssnext(nextOpts), lost(lostOpts)]
 }
 
 function getConfig(options) {
