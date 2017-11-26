@@ -2,6 +2,7 @@ const path = require('path')
 const Module = require('module')
 const interopRequire = require('interop-require')
 const cssHook = require('css-modules-require-hook')
+const postcss = require('@sanity/webpack-integration/v3')
 const resolver = require('@sanity/resolver')
 const util = require('@sanity/util')
 const reduceConfig = util.reduceConfig
@@ -121,7 +122,20 @@ function registerLoader(options) {
         return request
       }
 
-      return realResolve(request, parent)
+      if (!options.allowLocalDependencies) {
+        return realResolve(request, parent)
+      }
+
+      try {
+        return realResolve(request, parent)
+      } catch (err) { /* intentional noop */ }
+
+      // Attempt local resolve
+      try {
+        return realResolve(request, module.parent)
+      } catch (deepErr) {
+        return undefined
+      }
     }
 
     // "Most significant"-imports can be directly resolved to their implementation,
@@ -138,7 +152,9 @@ function registerLoader(options) {
 
   // Register CSS hook
   cssHook({
-    generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]'
+    generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]',
+    prepend: postcss.getPostcssPlugins({basePath: basePath})
+      .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
   })
 }
 
