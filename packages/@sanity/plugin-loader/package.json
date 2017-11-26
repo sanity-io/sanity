@@ -42,7 +42,8 @@
   "dependencies": {
     "@sanity/resolver": "^0.120.0",
     "@sanity/util": "^0.120.0",
-    "css-modules-require-hook": "^4.2.2",
+    "@sanity/webpack-integration": "^0.120.0",
+    "css-modules-require-hook": "4.1.0",
     "interop-require": "^1.0.0"
   }
 }
