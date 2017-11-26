@@ -280,8 +280,7 @@ describe('plugin resolver', () => {
     mockFs(getScopedPluginsTree())
     return resolveParts(opts).catch(err => {
       err.locations.some((location, index) =>
-        err.locations.indexOf(location, index + 1) !== -1
-      ).should.equal(false)
+        err.locations.indexOf(location, index + 1) !== -1).should.equal(false)
     })
   })
 
@@ -450,10 +449,12 @@ describe('plugin resolver', () => {
         name: 'my-parent-plugin',
         path: '/sanity/my-parent-plugin',
         manifest: {
-          parts: [{
-            name: 'part:my-parent-plugin/foo/bar',
-            path: 'foobar.js'
-          }]
+          parts: [
+            {
+              name: 'part:my-parent-plugin/foo/bar',
+              path: 'foobar.js'
+            }
+          ]
         }
       })
 
