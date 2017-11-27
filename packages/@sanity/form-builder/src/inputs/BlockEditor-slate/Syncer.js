@@ -120,6 +120,16 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
     }
   }
 
+  focus() {
+    if (this._blockEditor) {
+      this._blockEditor.focus()
+    }
+  }
+
+  setBlockEditor = el => {
+    this._blockEditor = el
+  }
+
   handleSynchronize = () => {
     this.setState({
       value: deserialize(this.props.value, this.props.type),
@@ -150,6 +160,7 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
             onChange={this.handleChange}
             onNodePatch={this.handleNodePatch}
             value={value}
+            ref={this.setBlockEditor}
           />)
         }
 

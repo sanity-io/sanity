@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Data, State} from 'slate'
+
+import {Data, setKeyGenerator, State} from 'slate'
 import {Editor} from 'slate-react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import {uniqueId} from 'lodash'
+import pubsub from 'nano-pubsub'
 
 import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
@@ -15,6 +17,12 @@ import initializeSlatePlugins from './util/initializeSlatePlugins'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
+import createSlateSchema from './util/createSlateSchema'
+
+import randomKey from './util/randomKey'
+// Set our own key generator for Slate
+const keyGenerator = () => randomKey(12)
+setKeyGenerator(keyGenerator)
 
 export default class BlockEditor extends React.Component {
 
@@ -23,7 +31,10 @@ export default class BlockEditor extends React.Component {
     level: PropTypes.number,
     value: PropTypes.instanceOf(State),
     onChange: PropTypes.func,
-    onNodePatch: PropTypes.func
+    onNodePatch: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
+    focusPath: PropTypes.array
   }
 
   static defaultProps = {
@@ -45,8 +56,18 @@ export default class BlockEditor extends React.Component {
 
     super(props, context)
 
-    const preparation = prepareSlateForBlockEditor(this)
-    this.slateSchema = preparation.slateSchema
+    this.focusPathChanges = pubsub()
+
+    const preparation = prepareSlateForBlockEditor(props.type)
+
+    this.slateSchema = createSlateSchema(props.type, {
+      onNodePatch: props.onNodePatch,
+      onFocus: props.onFocus,
+      onBlur: props.onBlur,
+      focusPath: props.focusPath,
+      focusPathChanges: this.focusPathChanges
+    })
+
     this.textStyles = preparation.textStyles
     this.listItems = preparation.listItems
     this.annotationTypes = preparation.annotationTypes
@@ -65,7 +86,12 @@ export default class BlockEditor extends React.Component {
     // this._inputContainer.removeEventListener('mousewheel', this.handleInputScroll)
   }
 
-  handleNodePatch = event => this.props.onNodePatch(event)
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.focusPath !== this.props.focusPath) {
+      console.log('signal focus path change')
+      this.focusPathChanges.publish(nextProps.focusPath)
+    }
+  }
 
   handleInsertBlock = item => {
     if (item.options && item.options.inline) {
@@ -257,7 +283,7 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorContainerClick = () => {
-    this.editor.focus()
+    // this.editor.focus()
   }
 
   handleInputScroll = event => {
@@ -295,7 +321,7 @@ export default class BlockEditor extends React.Component {
   }
 
   renderBlockEditor() {
-    const {value, onChange} = this.props
+    const {value, onChange, onFocus} = this.props
     const {fullscreen, toolbarStyle} = this.state
 
     return (
@@ -329,7 +355,9 @@ export default class BlockEditor extends React.Component {
             <Editor
               ref={this.refEditor}
               className={styles.input}
+              tabIndex={0}
               onChange={onChange}
+              onFocus={onFocus}
               placeholder=""
               state={value}
               blockEditor={this}

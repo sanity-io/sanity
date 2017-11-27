@@ -7,16 +7,16 @@ import setTransferData from 'slate-react/lib/utils/set-transfer-data'
 import TRANSFER_TYPES from 'slate-react/lib/constants/transfer-types'
 import Base64 from 'slate-base64-serializer'
 import {findDOMNode} from 'slate-react'
-import ItemForm from './ItemForm'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
-import EditItemFold from 'part:@sanity/components/edititem/fold'
+import {FormBuilderInput} from '../../FormBuilderInput'
+
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
-import {applyAll} from '../../simplePatch'
+
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
+import * as PathUtils from '../../utils/pathUtils'
+import EditBlockWrapper from './EditBlockWrapper'
 
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
@@ -26,7 +26,10 @@ export default class FormBuilderBlock extends React.Component {
     editor: PropTypes.object,
     state: PropTypes.object,
     attributes: PropTypes.object,
-    onPatch: PropTypes.func
+    onPatch: PropTypes.func,
+    focusPath: PropTypes.array,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func
   }
 
   state = {
@@ -91,7 +94,7 @@ export default class FormBuilderBlock extends React.Component {
   handleSelectionChange = event => {
     const selection = document.getSelection()
     const isSelected = selection.containsNode
-        && selection.containsNode(this.formBuilderBlock)
+      && selection.containsNode(this.formBuilderBlock)
     this.setState({isSelected})
   }
 
@@ -190,12 +193,15 @@ export default class FormBuilderBlock extends React.Component {
     return this.props.node.data.get('value')
   }
 
-  handleToggleEdit = () => {
-    this.setState({isEditing: true})
+  handleEditStart = () => {
+    this.props.onFocus([{_key: this.getValue()._key}, PathUtils.FIRST_META_KEY])
+  }
+
+  handleEditStop = () => {
+    this.props.onFocus([{_key: this.getValue()._key}])
   }
 
   handleClose = () => {
-    this.setState({isEditing: false})
   }
 
   getMemberTypeOf(value) {
@@ -219,11 +225,13 @@ export default class FormBuilderBlock extends React.Component {
       )
     }
     return (
-      <Preview
-        type={memberType}
-        value={this.getValue()}
-        layout="block"
-      />
+      <div onClick={this.handleEditStart}>
+        <Preview
+          type={memberType}
+          value={this.getValue()}
+          layout="block"
+        />
+      </div>
     )
   }
 
@@ -236,79 +244,28 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   renderInput() {
+    const {focusPath, onFocus, onBlur} = this.props
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
 
-    const fieldsQty = ((memberType && memberType.fields) || []).length
-
-    let editModalLayout = get(this, 'props.type.options.editModal')
-
-    // Choose editModal based on number of fields
-    if (!editModalLayout) {
-      if (fieldsQty < 3) {
-        editModalLayout = 'popover'
-      } else {
-        editModalLayout = 'fullscreen'
-      }
-    }
-
-    if (editModalLayout === 'fullscreen') {
-      return (
-        <FullscreenDialog
-          isOpen
-          title={this.props.node.title}
-          onClose={this.handleClose}
-        >
-          <ItemForm
-            onDrop={this.handleCancelEvent}
-            type={memberType}
-            level={0}
-            value={this.getValue()}
-            onChange={this.handleChange}
-          />
-        </FullscreenDialog>
-      )
-    }
-
-    if (editModalLayout === 'fold') {
-      return (
-        <div className={styles.editBlockContainerFold}>
-          <EditItemFold
-            isOpen
-            title={this.props.node.title}
-            onClose={this.handleClose}
-          >
-            <ItemForm
-              onDrop={this.handleCancelEvent}
-              type={memberType}
-              level={0}
-              value={this.getValue()}
-              onChange={this.handleChange}
-            />
-          </EditItemFold>
-        </div>
-      )
-    }
-
-    // default
-    return (
-      <div className={styles.editBlockContainerPopOver}>
-        <EditItemPopOver
-          isOpen
-          title={this.props.node.title}
-          onClose={this.handleClose}
-        >
-          <ItemForm
-            onDrop={this.handleCancelEvent}
-            type={memberType}
-            level={0}
-            value={this.getValue()}
-            onChange={this.handleChange}
-          />
-        </EditItemPopOver>
-      </div>
+    const content = (
+      <FormBuilderInput
+        type={memberType}
+        level={0}
+        value={value}
+        onChange={this.handleChange}
+        onFocus={this.handleFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
+        path={[{_key: value._key}]}
+      />
     )
 
+    return (
+      <EditBlockWrapper onClose={this.handleEditStop} key={value._key}>
+        {content}
+      </EditBlockWrapper>
+    )
 
   }
 
@@ -323,9 +280,13 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   render() {
-    const {isEditing} = this.state
-    const {attributes, node, editor} = this.props
+    const {attributes, node, editor, focusPath} = this.props
+
+    const value = this.getValue()
+
     const isFocused = editor.props.blockEditor.props.value.selection.hasFocusIn(node)
+
+    const isEditing = PathUtils.isExpanded(value, focusPath || [])
 
     let className
     if (isFocused && !this.state.isSelected) {
