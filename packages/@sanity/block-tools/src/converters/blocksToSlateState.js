@@ -22,7 +22,7 @@ function toRawMark(markName) {
   }
 }
 
-function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
+function sanitySpanToRawSlateBlockNode(span, sanityBlock, spanIndex) {
   if (span._type !== 'span') {
     return {
       kind: 'inline',
@@ -47,7 +47,6 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
       annotations[annotation._type] = annotation
     })
   }
-
   const range = {
     kind: 'range',
     text: text,
@@ -55,33 +54,37 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
   }
 
   if (!annotations) {
-    return {kind: 'text', ranges: [range]}
+    return {kind: 'text', key: span._key, ranges: [range]}
   }
 
   return {
     kind: 'inline',
     isVoid: false,
+    key: span._key,
     type: 'span',
     data: {annotations},
     nodes: [{kind: 'text', ranges: [range]}]
   }
 }
 
+// Block type object
 function sanityBlockToRawNode(sanityBlock, type) {
   // eslint-disable-next-line no-unused-vars
   const {children, _type, markDefs, ...rest} = sanityBlock
 
   const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
-
+  let spanIndex = 0
   return {
     kind: 'block',
+    key: sanityBlock._key,
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: children.map(child => sanitySpanToRawSlateBlockNode(child, sanityBlock))
+    nodes: children.map(child => sanitySpanToRawSlateBlockNode(child, sanityBlock, spanIndex++))
   }
 }
 
+// Embedded object
 function sanityBlockItemToRaw(blockItem, type) {
   return {
     kind: 'block',
