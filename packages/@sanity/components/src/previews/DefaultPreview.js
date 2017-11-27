@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
-import MediaRender from './common/MediaRender.js'
 import SvgPlaceholder from './common/SvgPlaceholder'
 import Styleable from '../utilities/Styleable'
 
@@ -13,20 +12,16 @@ const PLACEHOLDER = (
 
 class DefaultPreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
+    title: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
+    subtitle: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    emptyText: PropTypes.string,
+    renderMedia: PropTypes.func,
+    status: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
     styles: PropTypes.object,
@@ -34,16 +29,26 @@ class DefaultPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 40, height: 40},
+    title: 'Untitled',
+    mediaDimensions: {width: 40, height: 40, aspect: 1, fit: 'crop'},
+    subtitle: undefined,
     progress: undefined,
-    item: {}
   }
 
   render() {
-    const {item, assetSize, emptyText, children, isPlaceholder, progress, styles} = this.props
+    const {
+      title,
+      subtitle,
+      renderMedia,
+      mediaDimensions,
+      children,
+      status,
+      isPlaceholder,
+      progress,
+      styles
+    } = this.props
 
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
         <div>
           {PLACEHOLDER}
@@ -51,35 +56,34 @@ class DefaultPreview extends React.PureComponent {
       )
     }
 
-    const hasMedia = item.media || item.sanityImage || item.imageUrl || true
-
     return (
       <div
         className={`
           ${styles.root}
-          ${item.subtitle ? styles.hasSubtitle : ''}
-          ${hasMedia ? styles.hasMedia : ''}
+          ${subtitle ? styles.hasSubtitle : ''}
+          ${renderMedia ? styles.hasMedia : ''}
         `}
       >
         {
-          hasMedia && (
+          renderMedia && (
             <div className={`${styles.media}`}>
-              <MediaRender size={assetSize} item={item} />
+              {renderMedia(mediaDimensions)}
             </div>
           )
         }
         <div className={styles.heading}>
           <h2 className={styles.title}>
-            {item.title || emptyText}
+            {title}
           </h2>
           {
-            item.subtitle && (
+            subtitle && (
               <h3 className={styles.subtitle}>
-                {item.subtitle}
+                {subtitle}
               </h3>
             )
           }
         </div>
+        <div className={styles.status}>{status}</div>
         {
           children && <div className={styles.children}>{children}</div>
         }

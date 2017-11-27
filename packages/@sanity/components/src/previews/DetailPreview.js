@@ -2,72 +2,80 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
 import {truncate} from 'lodash'
-import MediaRender from './common/MediaRender.js'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
 
-export default class DetailPreview extends React.Component {
+export default class DetailPreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
+    title: PropTypes.string,
+    subtitle: PropTypes.string,
+    description: PropTypes.string,
+    renderMedia: PropTypes.func,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    emptyText: PropTypes.string,
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 80, height: 80},
+    title: undefined,
+    subtitle: undefined,
+    description: undefined,
+    renderMedia: undefined,
+    children: undefined,
+    isPlaceholder: false,
+    mediaDimensions: {width: 80, height: 80, fit: 'crop', aspect: 1}
   }
 
   index = index++
 
   render() {
-    const {item, emptyText, assetSize, children, isPlaceholder} = this.props
+    const {
+      title,
+      subtitle,
+      description,
+      mediaDimensions,
+      renderMedia,
+      children,
+      isPlaceholder
+    } = this.props
 
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
-        <div className={`${styles.root}`}>
+        <div className={styles.root}>
           <SvgPlaceholder styles={styles} />
         </div>
       )
     }
 
     return (
-      <div className={`${styles.root}`}>
-        <div className={`${styles.media}`}>
-          <MediaRender size={assetSize} item={item} fallbackText="No media" />
+      <div className={styles.root}>
+        <div className={styles.media}>
+          {renderMedia(mediaDimensions)}
         </div>
         <div className={styles.content}>
           <div className={styles.heading}>
             <h2 className={styles.title}>
-              {item.title || emptyText}
+              {title}
             </h2>
             {
-              item.subtitle && (
+              subtitle && (
                 <h3 className={styles.subtitle}>
-                  {item.subtitle}
+                  {subtitle}
                 </h3>
               )
             }
           </div>
           {
-            item.description && (
+            description && (
               <p className={styles.description}>
                 {
-                  truncate(item.description, {
+                  truncate(description, {
                     length: 70,
                     separator: /,? +/
                   })
@@ -76,7 +84,6 @@ export default class DetailPreview extends React.Component {
             )
           }
         </div>
-
         {children}
       </div>
     )

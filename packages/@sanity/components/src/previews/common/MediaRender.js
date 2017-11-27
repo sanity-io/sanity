@@ -14,12 +14,10 @@ export default class MediaRender extends React.Component {
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
     }),
-    item: PropTypes.shape({
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object,
-      aspect: PropTypes.number
-    })
+    media: PropTypes.node,
+    imageUrl: PropTypes.string,
+    sanityImage: PropTypes.object,
+    aspect: PropTypes.number
   }
 
   static defaultProps = {

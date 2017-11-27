@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import UploadProgressBar from './UploadProgressBar'
-
+import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
 import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
@@ -33,6 +33,14 @@ export default class SanityDefaultPreview extends React.PureComponent {
     value: PropTypes.object
   }
 
+  renderMedia = settings => {
+    if (this.props.value.imageUrl) {
+      const assetUrl = assetUrlBuilder({...this.props.assetSize, url: imageUrl})
+      return <img src={this.item.imageUrl} alt="" />
+    }
+    return undefined
+  }
+
   render() {
     const {layout, ...rest} = this.props
 
@@ -50,7 +58,14 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
     return (
       <div>
-        <PreviewComponent item={item} {...rest} progress={_upload && _upload.progress} />
+        <PreviewComponent
+          title={item.title}
+          subtitle={item.subtitle}
+          description={item.description}
+          renderMedia={this.renderMedia}
+          {...rest}
+          progress={_upload && _upload.progress}
+        />
       </div>
     )
   }

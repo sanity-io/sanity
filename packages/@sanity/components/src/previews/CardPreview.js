@@ -3,38 +3,30 @@ import React from 'react'
 import formatDate from 'date-fns/format'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'
-import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
 
 export default class CardPreview extends React.Component {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      date: PropTypes.object,
-      media: PropTypes.element,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object,
-      aspect: PropTypes.number
-    }),
-    assetSize: PropTypes.shape({
+    title: PropTypes.string,
+    subtitle: PropTypes.string,
+    description: PropTypes.string,
+    date: PropTypes.object,
+    renderMedia: PropTypes.func,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    aspect: PropTypes.number,
-    emptyText: PropTypes.string,
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
-    assetSize: {width: 400},
-    emptyText: 'Untitled',
-    aspect: 16 / 9
+    title: 'Untitled…',
+    mediaDimensions: {width: 160, height: 160, aspect: 16 / 9, fit: 'crop'}
   }
 
   index = index++
@@ -71,74 +63,59 @@ export default class CardPreview extends React.Component {
   }
 
   render() {
-    const {item, emptyText, children, aspect, isPlaceholder} = this.props
+    const {
+      title,
+      subtitle,
+      description,
+      date,
+      renderMedia,
+      mediaDimensions,
+      children,
+      isPlaceholder
+    } = this.props
     const {emWidth} = this.state
 
-    const containerAspect = aspect
-    const imageAspect = this.state.aspect || (this.props.item && this.props.item.aspect) || 1
-
-
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
         <SvgPlaceholder styles={styles} />
       )
     }
-
-    const {imageUrl, sanityImage, media} = item
-    const assetUrl = assetUrlBuilder({...this.props.assetSize, url: imageUrl})
 
     return (
       <div className={`${styles.root}`}>
         <div className={styles.inner} ref={this.setInnerElement}>
           <div className={`${styles.mediaContainer}`}>
             {
-              (!imageUrl && !sanityImage && !media) && (
+              renderMedia && (
                 <div className={styles.media}>
-                  <div style={{paddingTop: `${100 / containerAspect}%`}} />
-                </div>
-              )
-            }
-            {
-              imageUrl && (
-                <img src={assetUrl} className={imageAspect >= containerAspect ? styles.imgLandscape : styles.imgPortrait} />
-              )
-            }
-            {
-              sanityImage && (
-                <div className={styles.sanityImage}>SanityImage</div>
-              )
-            }
-
-            {
-              media && (
-                <div className={styles.media}>
-                  {media}
+                  {renderMedia(mediaDimensions)}
                 </div>
               )
             }
           </div>
-          <div className={styles.meta} ref="meta">
+          <div className={styles.meta}>
             <div className={styles.heading}>
               {
-                item.date
-                && <p className={styles.date}>
-                  {
-                    emWidth <= 20 && formatDate(item.date, 'DD.MM.YY')
-                  }
-                  {
-                    emWidth <= 30 && emWidth > 20 && formatDate(item.date, 'DD.MM.YY hh:mm A')
-                  }
-                  {
-                    emWidth > 30 && formatDate(item.date, 'ddd, MMM Do, YYYY hh:mm A')
-                  }
-                </p>
+                date && (
+                  <p className={styles.date}>
+                    {
+                      emWidth <= 20 && formatDate(date, 'DD.MM.YY')
+                    }
+                    {
+                      emWidth <= 30 && emWidth > 20 && formatDate(date, 'DD.MM.YY hh:mm A')
+                    }
+                    {
+                      emWidth > 30 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')
+                    }
+                  </p>
+                )
               }
               <h2 className={styles.title}>
-                {item.title || emptyText}
+                {title}
               </h2>
               <h3 className={styles.subtitle}>
                 {
-                  truncate(item.subtitle, {
+                  truncate(subtitle, {
                     length: 30,
                     separator: /,? +/
                   })
@@ -147,7 +124,7 @@ export default class CardPreview extends React.Component {
             </div>
             <p className={styles.description}>
               {
-                truncate(item.description, {
+                truncate(description, {
                   length: 100,
                   separator: /,? +/
                 })

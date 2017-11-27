@@ -1,54 +1,40 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/inline-style'
-import MediaRender from './common/MediaRender.js'
 
-export default class InlinePreview extends React.Component {
+export default class InlinePreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
-    }),
-    emptyText: PropTypes.string,
+    title: PropTypes.string,
+    renderMedia: PropTypes.func,
     children: PropTypes.node
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 40, height: 40},
+    title: undefined,
   }
 
   render() {
-    const {item, emptyText, assetSize, children} = this.props
+    const {
+      title,
+      renderMedia,
+      children
+    } = this.props
 
-    if (!item) {
-      return (
-        <span className={styles.empty}>
-          {emptyText}
-        </span>
-      )
+    if (!title && !renderMedia) {
+      return <span />
     }
 
     return (
-      <span className={`${styles.root}`}>
+      <span className={styles.root}>
         {
-          (item.media || item.sanityImage || item.imageUrl) && (
-            <span className={`${styles.media}`}>
-              <MediaRender size={assetSize} item={item} />
+          (renderMedia) && (
+            <span className={styles.media}>
+              {renderMedia()}
             </span>
           )
         }
         <span className={styles.title}>
-          {item.title || emptyText}
+          {title}
         </span>
         {children && <span>{children}</span>}
       </span>
