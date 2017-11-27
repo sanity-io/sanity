@@ -209,6 +209,10 @@ export default class BlockEditor extends React.Component {
     this.setState(prevState => ({fullscreen: !prevState.fullscreen}))
   }
 
+  focus() {
+    this.editor.focus()
+  }
+
   refEditor = editor => {
     this.editor = editor
   }
@@ -374,6 +378,7 @@ export default class BlockEditor extends React.Component {
         labelFor={this._inputId}
         level={level}
       >
+        <button tabIndex={0} className={styles.focusSkipper} onClick={() => this.focus()}>Jump to editor</button>
         {
           fullscreen ? (
             <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
