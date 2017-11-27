@@ -1,6 +1,7 @@
 // @flow
 
 import {get, flatten} from 'lodash'
+import randomKey from '../util/randomKey'
 
 function toSanitySpan(node, sanityBlock, spanIndex) {
   if (node.kind === 'text') {
@@ -50,7 +51,7 @@ function toSanityBlock(block) {
     const sanityBlock = {
       ...block.data,
       _type: 'block',
-      _key: block.key,
+      _key: block.key || block.data._key || randomKey(12),
       markDefs: block.data.markDefs || []
     }
     let index = 0

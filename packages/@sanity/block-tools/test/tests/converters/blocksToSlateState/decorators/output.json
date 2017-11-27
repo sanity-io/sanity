@@ -7,6 +7,7 @@
       {
         "kind": "block",
         "isVoid": false,
+        "key": "37369d86a5ce",
         "type": "contentBlock",
         "data": {
           "_type": "block",
@@ -15,6 +16,7 @@
         },
         "nodes": [
           {
+            "key": "randomKey0",
             "kind": "text",
             "ranges": [
               {
@@ -25,6 +27,7 @@
             ]
           },
           {
+            "key": "randomKey1",
             "kind": "text",
             "ranges": [
               {
@@ -41,6 +44,7 @@
       },
       {
         "kind": "block",
+        "key": "745d6428661b",
         "isVoid": false,
         "type": "contentBlock",
         "data": {
@@ -50,6 +54,7 @@
         },
         "nodes": [
           {
+            "key": "randomKey2",
             "kind": "text",
             "ranges": [
               {
@@ -64,6 +69,7 @@
       {
         "kind": "block",
         "isVoid": false,
+        "key": "5c7d58f13d18",
         "type": "contentBlock",
         "data": {
           "_type": "block",
@@ -72,6 +78,7 @@
         },
         "nodes": [
           {
+            "key": "randomKey3",
             "kind": "text",
             "ranges": [
               {

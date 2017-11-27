@@ -1,6 +1,8 @@
 // @flow
 
+import randomKey from '../util/randomKey'
 import resolveJsType from '../util/resolveJsType'
+
 import {SLATE_DEFAULT_BLOCK} from '../constants'
 
 function resolveTypeName(value) {
@@ -22,7 +24,12 @@ function toRawMark(markName) {
   }
 }
 
-function sanitySpanToRawSlateBlockNode(span, sanityBlock, spanIndex) {
+function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
+
+  if (!span._key) {
+    span._key = randomKey(12)
+  }
+
   if (span._type !== 'span') {
     return {
       kind: 'inline',
@@ -63,7 +70,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, spanIndex) {
     key: span._key,
     type: 'span',
     data: {annotations},
-    nodes: [{kind: 'text', ranges: [range]}]
+    nodes: [{kind: 'text', key: `${span._key}0`, ranges: [range]}]
   }
 }
 
@@ -73,21 +80,29 @@ function sanityBlockToRawNode(sanityBlock, type) {
   const {children, _type, markDefs, ...rest} = sanityBlock
 
   const restData = hasKeys(rest) ? {data: {_type, ...rest}} : {}
-  let spanIndex = 0
+
+  if (!sanityBlock._key) {
+    sanityBlock._key = randomKey(12)
+  }
+
   return {
     kind: 'block',
     key: sanityBlock._key,
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: children.map(child => sanitySpanToRawSlateBlockNode(child, sanityBlock, spanIndex++))
+    nodes: children.map(child => sanitySpanToRawSlateBlockNode(child, sanityBlock))
   }
 }
 
 // Embedded object
 function sanityBlockItemToRaw(blockItem, type) {
+  if (!blockItem._key) {
+    blockItem._key = randomKey(12)
+  }
   return {
     kind: 'block',
+    key: blockItem._key,
     type: type ? type.name : '__unknown', // __unknown is needed to map to component in slate schema, see prepareSlateForBlockEditor.js
     isVoid: true,
     data: {value: blockItem},
