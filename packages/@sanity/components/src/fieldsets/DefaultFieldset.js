@@ -4,14 +4,13 @@ import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
-import Styleable from '../utilities/Styleable'
 
-class Fieldset extends React.Component {
+export default class Fieldset extends React.Component {
   static propTypes = {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
     columns: PropTypes.number,
-    collapsable: PropTypes.bool,
+    isExpanded: PropTypes.bool,
     fieldset: PropTypes.shape({
       description: PropTypes.string,
       legend: PropTypes.string
@@ -23,8 +22,12 @@ class Fieldset extends React.Component {
     styles: PropTypes.object
   }
 
-  state = {
-    isOpen: (typeof (this.props.collapsable) == 'undefined')
+  constructor(props) {
+    super()
+    this.state = {
+      isOpen: props.isExpanded !== false
+    }
+
   }
 
   static defaultProps = {
@@ -35,29 +38,38 @@ class Fieldset extends React.Component {
 
   handleToggle = () => {
     if (this.props.collapsable) {
-      this.setState({
-        isOpen: !this.state.isOpen
-      })
+      this.setState(prevState => ({isOpen: !prevState.isOpen}))
     }
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, styles, ...rest} = this.props
+    const {fieldset, legend, description, columns, level, className, children, isExpanded, collapsable, transparent, ...rest} = this.props
+
     const {isOpen} = this.state
-    const levelString = `level${level}`
-    const rootClass = `
-      ${styles.root}
-      ${styles[`columns${columns}`] || ''}
-      ${styles[levelString] || ''}
-      ${transparent ? styles.transparent : ''}
-      ${className || ''}
-    `
+
+
+    const styles = {
+      ...defaultStyles,
+      ...this.props.styles
+    }
+
+    const rootClassName = [
+      styles.root,
+      styles[`columns${columns}`],
+      styles[`level${level}`],
+      transparent && styles.transparent,
+      className
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    const canExpand = typeof isExpanded !== 'undefined'
     return (
-      <fieldset {...rest} className={rootClass} data-nesting-level={level}>
+      <fieldset {...rest} className={rootClassName} data-nesting-level={level}>
         <div className={styles.inner}>
           <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
             {
-              collapsable && (
+              canExpand && (
                 <div className={`${styles.arrow} ${isOpen ? styles.isOpen : ''}`}>
                   <ArrowDropDown />
                 </div>
@@ -74,7 +86,7 @@ class Fieldset extends React.Component {
           }
           <div className={`${styles.content} ${isOpen ? styles.isOpen : ''}`}>
             <div className={styles.fieldWrapper}>
-              {isOpen && children}
+              {(!canExpand || isOpen) && children}
             </div>
           </div>
         </div>
@@ -82,5 +94,3 @@ class Fieldset extends React.Component {
     )
   }
 }
-
-export default Styleable(Fieldset, defaultStyles)

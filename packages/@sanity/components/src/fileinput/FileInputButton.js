@@ -12,7 +12,7 @@ export default class FileInputButton extends React.PureComponent {
     return (
       <Button ripple={false}>
         <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0}}>
-          <FileInput {...this.props} style={{height: '100%', width: '100%', display: 'block'}}>
+          <FileInput {...this.props} tabIndex={-1} style={{height: '100%', width: '100%', display: 'block'}}>
             {this.props.children}
           </FileInput>
         </div>

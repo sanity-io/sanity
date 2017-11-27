@@ -9,12 +9,7 @@ export default class FileSelect extends React.PureComponent {
     className: PropTypes.string,
     style: PropTypes.object
   }
-  static defaultProps = {
-    onSelect() {}
-  }
-  componentWillMount() {
-    this._inputId = uniqueId('FileSelect')
-  }
+  _inputId = uniqueId('FileSelect')
   componentDidMount() {
     if ('value' in this.props) {
       // eslint-disable-next-line

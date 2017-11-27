@@ -9,12 +9,32 @@
   justify-content: space-between;
 }
 
-.listItem {
-  composes: root;
+.expanded {
+  position: relative;
+  background-color: white;
+  outline: 1px #aaa solid;
+  z-index: 3;
+  @media (--max-large) {
+    position: fixed;
+    top: 0;
+    padding-top: 0.2em;
+    padding-right: 0.2em;
+    height: 3em;
+    left: 0;
+    right: 0;
+  }
+}
+
+.expandedInner {
+  composes: inner;
+}
+
+.expandedPreview {
+  width: 100%;
 }
 
 .gridItem {
-  composes: root;
+  position: inherit;
 
   @nest & .functions {
     position: absolute;
@@ -43,6 +63,29 @@
 
 .dragHandle {
   composes: default from 'part:@sanity/components/drag-handle-style';
+}
+
+.closeButton {
+  composes: dragHandle;
+  border: 0;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  @nest &:hover {
+    color: var(--black);
+  }
+  @nest & .arrow {
+    display: none;
+    @media (--max-large ){
+      display: inline;
+    }
+  }
+  @nest & .x {
+    display: inline;
+    @media (--max-large) {
+      display: none;
+    }
+  }
 }
 
 .linkToReference {

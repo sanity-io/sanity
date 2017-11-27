@@ -100,12 +100,20 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     }
   }
 
+  focus() {
+    this._input.focus()
+  }
+
   setListElement = element => {
     this._listElement = element
   }
 
   setRootNode = node => {
     this._rootNode = node
+  }
+
+  setInput = input => {
+    this._input = input
   }
 
   render() {
@@ -145,6 +153,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             value={inputValue || ''}
             selected={isInputSelected}
             disabled={disabled}
+            ref={this.setInput}
           />
           {
             onClear && inputValue && (

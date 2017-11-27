@@ -10,8 +10,6 @@
 }
 
 .listItemStates {
-  position: relative;
-
   @nest &:active {
     @nest &::after {
       z-index: 1;

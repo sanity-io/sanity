@@ -44,117 +44,117 @@ export default {
         {type: 'block'},
       ]
     },
-    {
-      name: 'minimal',
-      title: 'Reset all options',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-          styles: [],
-          lists: [],
-          marks: {
-            decorators: [],
-            annotations: []
-          }
-        }
-      ]
-    },
-    {
-      name: 'customized',
-      title: 'Customized with block types',
-      type: 'array',
-      of: [
-        {type: 'image', title: 'Image', options: {inline: true}},
-        {type: 'author', title: 'Author'},
-        {
-          type: 'block',
-          styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'H1', value: 'h1'},
-            {title: 'H2', value: 'h2'},
-            {title: 'Quote', value: 'blockquote'}
-          ],
-          lists: [
-            {title: 'Bullet', value: 'bullet'},
-            {title: 'Numbered', value: 'number'}
-          ],
-          marks: {
-            decorators: [
-              {title: 'Strong', value: 'strong'},
-              {title: 'Emphasis', value: 'em'}
-            ],
-            annotations: [
-              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-            ]
-          }
-        }
-      ]
-    },
-    {
-      name: 'deep',
-      title: 'Blocks deep down',
-      type: 'object',
-      fields: [
-        {name: 'something', title: 'Something', type: 'string'},
-        {
-          name: 'blocks',
-          type: 'array',
-          title: 'Blocks',
-          of: [
-            {type: 'image', title: 'Image'},
-            {type: 'author', title: 'Author'},
-            {
-              type: 'block',
-              styles: [
-                {title: 'Normal', value: 'normal'},
-                {title: 'H1', value: 'h1'},
-                {title: 'H2', value: 'h2'},
-                {title: 'Quote', value: 'blockquote'}
-              ],
-              lists: [
-                {title: 'Bullet', value: 'bullet'},
-                {title: 'Numbered', value: 'number'}
-              ],
-              marks: {
-                decorators: [
-                  {title: 'Strong', value: 'strong'},
-                  {title: 'Emphasis', value: 'em'}
-                ],
-                annotations: [
-                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'recursive',
-      type: 'object',
-      fields: [
-        {
-          name: 'blocks',
-          type: 'array',
-          title: 'Blocks',
-          of: [
-            {
-              type: 'block',
-              styles: [],
-              lists: [],
-              marks: {
-                decorators: [],
-                annotations: []
-              }
-            },
-            {
-              type: 'blocksTest',
-              title: 'Blocks test!'
-            }
-          ]
-        }
-      ]
-    }
+    // {
+    //   name: 'minimal',
+    //   title: 'Reset all options',
+    //   type: 'array',
+    //   of: [
+    //     {
+    //       type: 'block',
+    //       styles: [],
+    //       lists: [],
+    //       marks: {
+    //         decorators: [],
+    //         annotations: []
+    //       }
+    //     }
+    //   ]
+    // },
+    // {
+    //   name: 'customized',
+    //   title: 'Customized with block types',
+    //   type: 'array',
+    //   of: [
+    //     {type: 'image', title: 'Image', options: {inline: true}},
+    //     {type: 'author', title: 'Author'},
+    //     {
+    //       type: 'block',
+    //       styles: [
+    //         {title: 'Normal', value: 'normal'},
+    //         {title: 'H1', value: 'h1'},
+    //         {title: 'H2', value: 'h2'},
+    //         {title: 'Quote', value: 'blockquote'}
+    //       ],
+    //       lists: [
+    //         {title: 'Bullet', value: 'bullet'},
+    //         {title: 'Numbered', value: 'number'}
+    //       ],
+    //       marks: {
+    //         decorators: [
+    //           {title: 'Strong', value: 'strong'},
+    //           {title: 'Emphasis', value: 'em'}
+    //         ],
+    //         annotations: [
+    //           {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+    //         ]
+    //       }
+    //     }
+    //   ]
+    // },
+    // {
+    //   name: 'deep',
+    //   title: 'Blocks deep down',
+    //   type: 'object',
+    //   fields: [
+    //     {name: 'something', title: 'Something', type: 'string'},
+    //     {
+    //       name: 'blocks',
+    //       type: 'array',
+    //       title: 'Blocks',
+    //       of: [
+    //         {type: 'image', title: 'Image'},
+    //         {type: 'author', title: 'Author'},
+    //         {
+    //           type: 'block',
+    //           styles: [
+    //             {title: 'Normal', value: 'normal'},
+    //             {title: 'H1', value: 'h1'},
+    //             {title: 'H2', value: 'h2'},
+    //             {title: 'Quote', value: 'blockquote'}
+    //           ],
+    //           lists: [
+    //             {title: 'Bullet', value: 'bullet'},
+    //             {title: 'Numbered', value: 'number'}
+    //           ],
+    //           marks: {
+    //             decorators: [
+    //               {title: 'Strong', value: 'strong'},
+    //               {title: 'Emphasis', value: 'em'}
+    //             ],
+    //             annotations: [
+    //               {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+    //             ]
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // },
+    // {
+    //   name: 'recursive',
+    //   type: 'object',
+    //   fields: [
+    //     {
+    //       name: 'blocks',
+    //       type: 'array',
+    //       title: 'Blocks',
+    //       of: [
+    //         {
+    //           type: 'block',
+    //           styles: [],
+    //           lists: [],
+    //           marks: {
+    //             decorators: [],
+    //             annotations: []
+    //           }
+    //         },
+    //         {
+    //           type: 'blocksTest',
+    //           title: 'Blocks test!'
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // }
   ]
 }

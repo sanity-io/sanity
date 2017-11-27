@@ -1,0 +1,22 @@
+.root {
+
+}
+
+.root {
+}
+
+.copyPathAnchor {
+  text-decoration: none;
+  position: relative;
+  display: inline;
+  background: white;
+  border-radius: 1em;
+  margin-left: -1.4em;
+  padding: 2px 2px 2px 2px;
+  opacity: 0.5;
+  top: 21px;
+  left: 3px;
+  @nest &:hover {
+    opacity: 1
+  }
+}

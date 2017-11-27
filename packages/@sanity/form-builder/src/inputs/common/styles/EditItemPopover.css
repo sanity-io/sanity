@@ -1,0 +1,49 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: absolute;
+  background: white;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+
+  /* Note: these margins are just educated guesses about how much space each the input adds */
+  margin-left: -0.5em;
+  margin-right: -0.5em;
+  z-index: 3;
+  border: 1px solid #aaaaaa;
+  box-shadow: 3px 3px 6px 6px rgba(170, 170, 170, .4);
+  padding: 10px;
+
+  @media (--max-large) {
+    position: fixed;
+    margin: 0;
+    top: 3em;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: auto;
+  }
+
+  @nest & .root {
+    @nest & .root {
+      /* Note: these margins are just educated guesses about how much space each the input adds */
+      margin-left: -2em;
+      margin-right: -2em;
+      @media (--max-large) {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.backdrop {
+  z-index: 2;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  box-shadow: 0 0 0 200em rgba(152, 212, 231, .2);
+  @media (max-width: 52em) {
+    position: fixed;
+  }
+}

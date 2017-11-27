@@ -1,13 +1,11 @@
-import PropTypes from 'prop-types'
 // @flow
 import React from 'react'
 import {get} from 'lodash'
-import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
-import {List as SortableList, Item as SortableItem} from 'part:@sanity/components/lists/sortable'
+import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/lists/default'
+import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Item from './Item'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import styles from './styles/ArrayOfPrimitives.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
@@ -15,6 +13,10 @@ import getEmptyValue from './getEmptyValue'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
+import {FocusArea} from '../../FocusArea'
+import type {ItemValue} from '../Array/typedefs'
+import type {Path} from '../../typedefs/path'
+import type {Type} from '../../typedefs'
 
 function move(arr, from, to) {
   const copy = arr.slice()
@@ -24,17 +26,19 @@ function move(arr, from, to) {
   return copy
 }
 
-export default class ArrayOfPrimitivesInput extends React.PureComponent {
-  static propTypes = {
-    type: FormBuilderPropTypes.type,
-    value: PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-      PropTypes.bool
-    ])),
-    level: PropTypes.number,
-    onChange: PropTypes.func
-  }
+type Props = {
+  type: Type,
+  value: Array<ItemValue>,
+  level: number,
+  onChange: (event: PatchEvent) => void,
+  onFocus: Path => void,
+  onBlur: () => void,
+  focusPath: Path
+}
+
+export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
+  _focusArea: ?FocusArea
+
 
   set(nextValue: any[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
@@ -77,7 +81,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
   }
 
   renderItem = (item, index) => {
-    const {type, level, value, onChange} = this.props
+    const {type, level, value, focusPath, onChange, onFocus, onBlur} = this.props
 
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
@@ -94,16 +98,19 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
       )
     }
 
-    const sortable = get(type, 'options.sortable') !== false
-    const ListItem = sortable ? SortableItem : DefaultItem
+    const isSortable = get(type, 'options.sortable') !== false
+    const ListItem = isSortable ? SortableItem : DefaultItem
     return (
       <ListItem key={index} index={index} className={styles.item}>
         <Item
           level={level + 1}
           index={index}
           value={item}
-          sortable={sortable}
+          isSortable={isSortable}
           type={itemMemberType}
+          focusPath={focusPath}
+          onFocus={onFocus}
+          onBlur={onBlur}
           onChange={this.handleItemChange}
           onRemove={this.handleRemoveItem}
         />
@@ -116,7 +123,12 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
     const isSortable = get(type, 'options.sortable') !== false
     return isSortable
       ? (
-        <SortableList className={styles.list} onSort={this.handleSort} movingItemClass={styles.movingItem} useDragHandle>
+        <SortableList
+          className={styles.list}
+          onSort={this.handleSort}
+          movingItemClass={styles.movingItem}
+          useDragHandle
+        >
           {value.map(this.renderItem)}
         </SortableList>
       )
@@ -126,6 +138,16 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
         </DefaultList>
       )
 
+  }
+
+  _setFocusArea = (el: ?FocusArea) => {
+    this._focusArea = el
+  }
+
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
+    }
   }
 
   renderSelectType() {
@@ -144,17 +166,17 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent {
   }
 
   render() {
-    const {type, value, level} = this.props
+    const {type, value, onFocus, level} = this.props
     return (
       <Fieldset legend={type.title} description={type.description} level={level}>
         <div className={styles.root}>
-          {value && value.length > 0 && (
+          <FocusArea onFocus={onFocus} ref={this._setFocusArea}>
             <div className={styles.list}>
-              {this.renderList(value)}
+              {value && value.length > 0 && this.renderList(value)}
             </div>
-          )}
+          </FocusArea>
           <div className={styles.functions}>
-            {this.props.type.of.length === 1 ? (
+            {type.of.length === 1 ? (
               <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
                 Add
               </Button>

@@ -5,18 +5,18 @@
   position: relative;
 }
 
+.focusArea {
+}
+
 .list {
   composes: root from 'part:@sanity/components/lists/default-style';
 }
 
 .list + .functions {
-  padding-top: var(--medium-padding);
-}
-
-.popupAnchor {
-  position: absolute;
-  top: 75%;
-  left: 2em;
+  padding: var(--medium-padding);
+  margin-left: calc(var(--medium-padding) * -1);
+  margin-right: calc(var(--medium-padding) * -1);
+  margin-bottom: calc(var(--medium-padding) * -1);
 }
 
 .movingItem {
@@ -24,28 +24,29 @@
 }
 
 .listItem {
-  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
-  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+  list-style: none;
+  position: initial;
+}
+
+.expandedListItem {
+  composes: listItem;
+  z-index: 4;
 }
 
 .listItemMute {
   composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
 }
 
-.gridItem {
-  display: block;
-}
-
+/*
 .popupAnchorRelative {
   margin-left: calc(var(--medium-padding) * -1);
   margin-right: calc(var(--medium-padding) * -1);
 
-  /* Hack for the draghandle */
   @nest &.sortable {
     margin-left: calc(var(--medium-padding) * -1 - 2.5rem);
   }
 }
-
+*/
 .warning {
   composes: root from 'part:@sanity/components/fieldsets/default-style';
   padding: var(--medium-padding);

@@ -12,6 +12,7 @@
   @custom-media --min-default (min-width: 40em);
   @custom-media --screen-large (min-width: 60em);
   @custom-media --min-large (min-width: 60em);
+  @custom-media --max-large (max-width: 60em);
   @custom-media --screen-xlarge (min-width: 100em);
   @custom-media --print(print);
 }

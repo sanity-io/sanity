@@ -1,113 +1,112 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {uniqueId} from 'lodash'
 
 import styles from 'part:@sanity/components/tags/textfield-style'
 
+function removeAt(array, index) {
+  const copy = array ? array.slice() : []
+  copy.splice(index, 1)
+  return copy
+}
+
 export default class TagsTextField extends React.Component {
   static propTypes = {
-    label: PropTypes.string.isRequired,
-    onAddTag: PropTypes.func.isRequired,
-    onRemoveTag: PropTypes.func.isRequired,
-    error: PropTypes.bool,
-    hasFocus: PropTypes.bool,
-    isClearable: PropTypes.bool,
-    tags: PropTypes.arrayOf(PropTypes.string),
-    description: PropTypes.string,
-    level: PropTypes.number
+    onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func,
+    value: PropTypes.arrayOf(PropTypes.string)
   }
 
   static defaultProps = {
-    tags: []
+    value: [],
+    onBlur: () => {}
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleSetFocus = this.handleSetFocus.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.handleBlur = this.handleBlur.bind(this)
-
-    this.state = {
-      length: 4,
-      hasFocus: this.props.hasFocus
-    }
+  state = {
+    inputValue: ''
   }
 
-  addTag(title) {
-    this.props.onAddTag(title)
+  addTag(tagValue) {
+    const {value, onChange} = this.props
+    onChange((value || []).concat(tagValue))
   }
 
-  removeTag(i) {
-    this.props.onRemoveTag(i)
+  removeTag(index) {
+    const {value, onChange} = this.props
+    onChange(removeAt(value, index))
   }
 
-  handleKeyDown(event) {
-    const value = this._input.value
-    if (event.key === 'Backspace' && value === '') {
-      this.removeTag(this.props.tags.length - 1)
-    }
-
-    // length is used for styling purpose
+  addAndClearInput(tagValue) {
+    this.addTag(tagValue)
+    // clear input value
     this.setState({
-      length: value.length > 3 ? value.length : 3
+      inputValue: ''
     })
   }
 
-  handleKeyPress(event) {
-    const value = this._input.value
+  handleRemoveTagClick = event => {
+    this.removeTag(Number(event.currentTarget.getAttribute('data-index')))
+  }
 
-    if (event.key === 'Enter') {
-      if (value) {
-        this.addTag(value)
-      }
-      this._input.value = ''
+  handleKeyDown = event => {
+    const {value} = this.props
+    const {inputValue} = this.state
+
+    if (event.key === 'Backspace' && inputValue === '') {
+      this.removeTag(value.length - 1)
     }
   }
 
-  handleSetFocus() {
-    this._input.focus()
-  }
+  handleKeyPress = event => {
+    const {inputValue} = this.state
 
-  handleFocus() {
-    this.setState({
-      hasFocus: true
-    })
-  }
-
-  handleBlur() {
-    const value = this._input.value
-    if (value) {
-      this.addTag(value)
-      this._input.value = ''
+    if (inputValue && event.key === 'Enter') {
+      this.addAndClearInput(inputValue)
     }
-    this.setState({
-      hasFocus: false
-    })
   }
 
-  componentWillMount() {
-    this._inputId = uniqueId('DefaultTextField')
+  handleBlur = event => {
+    const {inputValue} = this.state
+    if (inputValue) {
+      this.addAndClearInput(inputValue)
+    }
+    this.props.onBlur(event)
+  }
+
+  handleInputChange = event => {
+    this.setState({inputValue: event.currentTarget.value})
+  }
+
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = el => {
+    this._input = el
   }
 
   render() {
-    const {tags} = this.props
-    const setInput = component => {
-      this._input = component
-    }
+    const {inputValue} = this.state
+    const {
+      onChange,
+      value,
+      ...rest
+    } = this.props
+
     return (
       <div className={styles.wrapper}>
         <div className={`${styles.inner}`}>
-          <div className={styles.content} onClick={this.handleSetFocus}>
+          <div className={styles.content}>
             <ul className={styles.tags}>
               {
-                tags && tags.map((tag, i) => {
+                value && value.map((tag, i) => {
                   return (
                     <li key={i} className={styles.tag}>
                       {tag}
                       <a
-                        onClick={this.removeTag.bind(this, i)} // eslint-disable-line react/jsx-no-bind
+                        onClick={this.handleRemoveTagClick}
+                        data-index={i}
                         className={styles.clearTag}
                       >
                         ×
@@ -118,18 +117,18 @@ export default class TagsTextField extends React.Component {
               }
             </ul>
             <input
+              {...rest}
+              value={inputValue}
               className={styles.input}
               onKeyDown={this.handleKeyDown}
               onKeyPress={this.handleKeyPress}
-              style={{width: `${this.state.length * 0.8}em`}}
+              onChange={this.handleInputChange}
+              style={{width: `${Math.max(3, inputValue.length) * 0.8}em`}}
               onBlur={this.handleBlur}
-              onFocus={this.handleFocus}
-              ref={setInput}
-              id={this._inputId}
+              ref={this.setInput}
               autoComplete="off"
             />
           </div>
-          <div className={styles.focusHelper} />
         </div>
       </div>
     )

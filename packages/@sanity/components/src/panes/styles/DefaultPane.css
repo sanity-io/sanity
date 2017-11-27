@@ -47,8 +47,10 @@
   transition: width 0.8s linear, border 0.8s linear;
   user-select: none;
   background-color: inherit;
-  z-index: 2;
-
+  z-index: 6;
+  @media (--max-large) {
+    z-index: 2;
+  }
   @nest .isCollapsed & {
     flex-direction: row;
     flex-grow: 1;

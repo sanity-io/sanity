@@ -2,7 +2,7 @@
 import React from 'react'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
-import styles from './SelectAsset.css'
+import styles from './styles/SelectAsset.css'
 import {get} from 'lodash'
 
 const PER_PAGE = 200
@@ -19,8 +19,8 @@ type Props = {
   onSelect: Asset => void
 }
 
-function createQuery(start = 0, end = PER_PAGE) {
-  return `*[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {_id,url,metadata {dimensions}}`
+function createQuery(type = 'sanity.imageAsset', start = 0, end = PER_PAGE) {
+  return `*[_type == "${type}"] | order(_updatedAt desc) [${start}...${end}] {_id,url,metadata {dimensions}}`
 }
 
 export default class SelectAsset extends React.Component<Props, State> {

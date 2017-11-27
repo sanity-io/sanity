@@ -11,11 +11,14 @@ import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
 import humanize from 'humanize-list'
 import randomKey from './randomKey'
-import PatchEvent, {insert, setIfMissing, unset, set} from '../../PatchEvent'
+import PatchEvent, {insert, set, setIfMissing, unset} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type} from '../../typedefs'
+import type {Path} from '../../typedefs/path'
+import {FocusArea} from '../../FocusArea'
+import {FIRST_META_KEY, isExpanded} from '../../utils/pathUtils'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -56,19 +59,25 @@ type Props = {
   value: Array<ItemValue>,
   level: number,
   onChange: (event: PatchEvent) => void,
+  onFocus: Path => void,
+  onBlur: () => void,
+  focusPath: Path,
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
 type State = {
-  editItemKey: ?string,
   rejected: Array<UploadTask>,
   ambiguous: Array<UploadTask>,
   isMoving: ?boolean
 }
 
 export default class ArrayInput extends React.Component<Props, State> {
+  _focusArea: ?FocusArea
+
+  static defaultProps = {
+    focusPath: []
+  }
   state = {
-    editItemKey: null,
     rejected: [],
     ambiguous: [],
     isMoving: false
@@ -98,21 +107,21 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   handleItemEditStop = (item: ItemValue) => {
-    const itemValue = this.getEditItem()
+    const itemValue = this.getExpandedItem()
     if (itemValue && isEmpty(itemValue)) {
       this.removeItem(itemValue)
     }
-    this.setState({editItemKey: null})
+    this.props.onFocus([{_key: item._key}])
   }
 
-  handleItemEditStart = (item: ItemValue) => {
-    this.setState({editItemKey: item._key})
+  setItemExpanded(item: ItemValue) {
+    this.props.onFocus([{_key: item._key}, FIRST_META_KEY])
   }
 
   handleDropDownAction = (menuItem: { type: Type }) => {
     const item = createProtoValue(menuItem.type)
     this.append(item)
-    this.setState({editItemKey: item._key})
+    this.setItemExpanded(item)
   }
 
   handleAddBtnClick = () => {
@@ -122,22 +131,24 @@ export default class ArrayInput extends React.Component<Props, State> {
       throw new Error('Nothing to add')
     }
     const item = createProtoValue(memberType)
+    this.setItemExpanded(item)
     this.append(item)
-    this.setState({editItemKey: item._key})
   }
 
   removeItem(item: ItemValue) {
-    const {onChange, value} = this.props
-    if (item._key === this.state.editItemKey) {
-      this.setState({editItemKey: null})
-    }
+    const {onChange, onFocus, value} = this.props
     onChange(
       PatchEvent.from(
         unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])
       )
     )
+
     if (item._key in this.uploadSubscriptions) {
       this.uploadSubscriptions[item._key].unsubscribe()
+    }
+
+    if (item === this.getExpandedItem()) {
+      onFocus([])
     }
   }
 
@@ -294,12 +305,10 @@ export default class ArrayInput extends React.Component<Props, State> {
     ))
   }
 
-  getEditItem(): ? ItemValue {
-    const {editItemKey} = this.state
-    const {value} = this.props
-    return typeof editItemKey === 'number'
-      ? value[editItemKey]
-      : value.find(item => item._key === editItemKey)
+  getExpandedItem(): ?ItemValue {
+    const {focusPath, value} = this.props
+    const [head] = focusPath || []
+    return head && value.find(item => item._key === head._key)
   }
 
   getMemberTypeOfItem(item: ItemValue): ? Type {
@@ -309,11 +318,12 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   renderList = () => {
-    const {type, value} = this.props
-    const {isMoving} = this.state
+    const {type, value, focusPath, onBlur, onFocus, level} = this.props
+    // todo: why this? const {isMoving} = this.state
     const options = type.options || {}
 
-    const isSortable = options.sortable !== false
+    const isSortable = options.sortable !== false && !value.some(item => isExpanded(item, focusPath))
+
     const isGrid = options.layout === 'grid'
 
     const {List, Item} = resolveListComponents(isSortable, isGrid)
@@ -325,35 +335,34 @@ export default class ArrayInput extends React.Component<Props, State> {
         onSortStart: this.handleSortStart
       }
       : {}
-    const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
+
     return (
       <List
         lockToContainerEdges
-        className={isGrid ? undefined : styles.list}
+        className={isGrid ? null : styles.list}
         useDragHandle={!isGrid}
         {...listProps}
       >
         {value.map((item, index) => {
-          const {editItemKey} = this.state
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
               key={item._key}
-              className={
-                isGrid
-                  ? styles.gridItem
-                  : listItemClassName
-              }
+              className={styles.listItem}
               {...itemProps}
             >
+              {/*{JSON.stringify({item, focusPath})}*/}
+              {/*{isExpanded(item, focusPath) && 'EXPANDED'}*/}
               <RenderItemValue
                 type={type}
                 value={item}
+                level={level}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
-                onEditStart={this.handleItemEditStart}
-                onEditStop={this.handleItemEditStop}
-                isEditing={editItemKey === item._key}
+                focusPath={focusPath}
+                onFocus={onFocus}
+                disableSort={options.sortable === true && !isSortable}
+                onBlur={onBlur}
               />
             </Item>
           )
@@ -362,21 +371,36 @@ export default class ArrayInput extends React.Component<Props, State> {
     )
   }
 
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
+    }
+  }
+
+  setFocusArea = (el: ?FocusArea) => {
+    this._focusArea = el
+  }
+
   render() {
-    const {type, level, value} = this.props
+    const {type, level, value, onFocus, focusPath} = this.props
     const {rejected, ambiguous} = this.state
 
+    const isSomeExpanded = value && !value.some(item => isExpanded(item, focusPath))
     return (
       <Fieldset
         legend={type.title}
         description={type.description}
         level={level}
-        tabIndex="0"
-        onPaste={this.handlePaste} /* note: the onPaste must be on fieldset for it to work in chrome */
-        onDragOver={this.handleDragOver}
-        onDrop={this.handleDrop}
+        className={styles.root}
       >
-        <div className={styles.root}>
+        <FocusArea
+          className={styles.focusArea}
+          onPaste={this.handlePaste}
+          onDragOver={this.handleDragOver}
+          onDrop={this.handleDrop}
+          onFocus={isSomeExpanded && onFocus}
+          ref={this.setFocusArea}
+        >
           {
             value && value.length > 0 && (
               <div className={styles.list}>
@@ -384,17 +408,17 @@ export default class ArrayInput extends React.Component<Props, State> {
               </div>
             )
           }
-          {!type.readOnly && (
-            <div className={styles.functions}>
-              {this.props.type.of.length === 1 && (
-                <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-                  Add
-                </Button>
-              )}
-              {this.props.type.of.length > 1 && this.renderSelectType()}
-            </div>
-          )}
-        </div>
+        </FocusArea>
+        {!type.readOnly && (
+          <div className={styles.functions}>
+            {this.props.type.of.length === 1 && (
+              <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+                Add
+              </Button>
+            )}
+            {this.props.type.of.length > 1 && this.renderSelectType()}
+          </div>
+        )}
         {ambiguous.length > 0 && ( // not in use right now as we just pick the first uploader
           <Dialog
             isOpen
@@ -404,8 +428,8 @@ export default class ArrayInput extends React.Component<Props, State> {
           >
             {ambiguous.map(task => (
               <div key={task.file.name}>
-                  The file {task.file.name} can be converted to several types of content.
-                  Please select how you want to represent it:
+                The file {task.file.name} can be converted to several types of content.
+                Please select how you want to represent it:
                 <ul>
                   {task.uploaderCandidates.map(uploaderCandidate => (
                     <li key={uploaderCandidate.type.name}>
@@ -415,7 +439,7 @@ export default class ArrayInput extends React.Component<Props, State> {
                           this.setState({ambiguous: ambiguous.filter(t => t !== task)})
                         }}
                       >
-                          Represent as {uploaderCandidate.type.name}
+                        Represent as {uploaderCandidate.type.name}
                       </Button>
                     </li>
                   ))}
