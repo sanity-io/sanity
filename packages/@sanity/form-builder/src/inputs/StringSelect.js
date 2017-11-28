@@ -1,47 +1,52 @@
-import PropTypes from 'prop-types'
+//@flow
 import React from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
 import FormField from 'part:@sanity/components/formfields/default'
+import type {Type} from '../typedefs'
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
-export default class StringSelect extends React.PureComponent {
+function toSelectItems(list) {
+  return (typeof list[0] === 'string')
+    ? list.map(item => ({title: item, value: item}))
+    : list
+}
 
-  static propTypes = {
-    type: FormBuilderPropTypes.type.isRequired,
-    level: PropTypes.number.isRequired,
-    value: PropTypes.string,
-    onChange: PropTypes.func
-  }
+type Props = {
+  type: Type,
+  level: number,
+  value: ?string,
+  onChange: PatchEvent => void
+}
 
+export default class StringSelect extends React.Component<Props> {
+  _input: ?(RadioSelect | Select)
   static defaultProps = {
-    value: '',
-    onChange() {}
+    value: ''
   }
 
-  handleChange = item => {
+  handleChange = (item: Object) => {
     const {onChange} = this.props
 
     onChange(PatchEvent.from(set(typeof item === 'string' ? item : item.value)))
   }
 
-  render() {
-    const {value, type, level} = this.props
-
-    // Support array of string if not objects
-    let items = type.options.list
-
-    if ((typeof items[0]) === 'string') {
-      items = items.map(item => {
-        return {
-          title: item,
-          value: item
-        }
-      })
+  focus() {
+    if (this._input) {
+      this._input.focus()
     }
+  }
+
+  setInput = (input: ?(RadioSelect | Select)) => {
+    this._input = input
+  }
+
+  render() {
+    const {value, type, level, ...rest} = this.props
+
+    const items = toSelectItems(type.options.list || [])
 
     const currentItem = items.find(item => item.value === value)
 
@@ -53,20 +58,25 @@ export default class StringSelect extends React.PureComponent {
         description={type.description}
       >
         {isRadio
+          // todo: make separate inputs
           ? <RadioSelect
+            {...rest}
             name={type.name}
             legend={type.title}
             items={items}
             onChange={this.handleChange}
             value={currentItem}
             direction={type.options.direction || 'vertical'}
+            ref={this.setInput}
           />
           : <Select
+            {...rest}
             label={type.title}
             value={currentItem}
             placeholder={type.placeholder}
             onChange={this.handleChange}
             items={[EMPTY_ITEM].concat(items)}
+            ref={this.setInput}
           />
         }
       </FormField>

@@ -1,40 +1,52 @@
-import PropTypes from 'prop-types'
-// @flow weak
+//@flow
 import React from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import type {Type} from '../typedefs'
 
-export default class TextInput extends React.PureComponent {
+type Props = {
+  type: Type,
+  level: number,
+  value: ?string,
+  onChange: PatchEvent => void
+}
 
-  static propTypes = {
-    type: FormBuilderPropTypes.type.isRequired,
-    level: PropTypes.number.isRequired,
-    value: PropTypes.string,
-    onChange: PropTypes.func
-  };
+export default class TextInput extends React.Component<Props> {
+  _input: ?TextArea
 
-  static defaultProps = {
-    value: '',
-    onChange() {}
-  };
-
-  handleChange = event => {
-    const value = event.target.value || undefined
+  handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
+  }
+
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = (input: ?TextArea) => {
+    this._input = input
   }
 
   render() {
     const {value, type, level, ...rest} = this.props
+
     return (
-      <FormField label={type.title} level={level} description={type.description}>
+      <FormField
+        level={level}
+        label={type.title}
+        description={type.description}
+      >
         <TextArea
           {...rest}
+          value={value}
+          readOnly={type.readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
           rows={type.rows}
-          value={value}
+          ref={this.setInput}
         />
       </FormField>
     )

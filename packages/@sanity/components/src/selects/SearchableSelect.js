@@ -104,6 +104,14 @@ export default class SearchableSelect extends React.Component {
     }
   }
 
+  setInput = input => {
+    this._input = input
+  }
+
+  focus() {
+    this._input.focus()
+  }
+
   handleFocus = event => {
     this.setState({
       hasFocus: true
@@ -153,6 +161,7 @@ export default class SearchableSelect extends React.Component {
           onInputChange={this.handleInputChange}
           width={width}
           isSelected={hasFocus}
+          ref={this.setInput}
         />
       </div>
     )

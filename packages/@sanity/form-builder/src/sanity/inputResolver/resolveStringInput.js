@@ -1,14 +1,11 @@
 import {get} from 'lodash'
 import StringSelect from '../../inputs/StringSelect'
-import SearchableStringSelect from '../../inputs/SearchableStringSelect'
+import StringInput from '../../inputs/String'
 
 export function getOption(type, optionName) {
   return get(type.options, optionName)
 }
 
-export default function resolveArrayInput(type) {
-  if (getOption(type, 'list')) {
-    return getOption(type, 'searchable') ? SearchableStringSelect : StringSelect
-  }
-  return null
+export default function resolveStringInput(type) {
+  return getOption(type, 'list') ? StringSelect : StringInput
 }

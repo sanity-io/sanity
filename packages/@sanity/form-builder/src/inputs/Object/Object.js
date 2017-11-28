@@ -4,7 +4,7 @@ import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Field from './Field'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {set, unset, setIfMissing} from '../../PatchEvent'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
@@ -15,6 +15,9 @@ export default class ObjectInput extends React.PureComponent {
     type: FormBuilderPropTypes.type,
     value: PropTypes.object,
     onChange: PropTypes.func,
+    onFocus: PropTypes.func.isRequired,
+    focusPath: PropTypes.array,
+    onBlur: PropTypes.func.isRequired,
     level: PropTypes.number,
     isRoot: PropTypes.bool,
     autoFocus: PropTypes.bool
@@ -23,6 +26,7 @@ export default class ObjectInput extends React.PureComponent {
   static defaultProps = {
     onChange() {},
     level: 0,
+    focusPath: [],
     isRoot: false
   }
 
@@ -64,25 +68,30 @@ export default class ObjectInput extends React.PureComponent {
       return null
     }
 
-    const {value, autoFocus} = this.props
+    const {value, focusPath, onFocus, onBlur} = this.props
     const fieldValue = value && value[field.name]
-
     return (
       <Field
         key={field.name}
         field={field}
         value={fieldValue}
         onChange={this.handleFieldChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
         level={level}
-        autoFocus={autoFocus && index === 0}
+        ref={index === 0 && this.setFirstField}
       />
     )
   }
 
   renderFieldset(fieldset, fieldsetIndex) {
-    const {level} = this.props
+    const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsable = fieldset.options && fieldset.options.collapsable
+    const isExpanded = focusPath.length > 0 && fieldset.fields.some(field => (
+      focusPath[0] === field.name
+    ))
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
@@ -90,7 +99,7 @@ export default class ObjectInput extends React.PureComponent {
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          collapsable={collapsable}
+          isExpanded={collapsable === false || isExpanded}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -114,7 +123,6 @@ export default class ObjectInput extends React.PureComponent {
         ? this.renderField(fieldset.field, level + 1, i)
         : this.renderFieldset(fieldset, i)
     })
-
   }
 
   renderUnknownFields() {
@@ -138,6 +146,16 @@ export default class ObjectInput extends React.PureComponent {
         onChange={onChange}
       />
     )
+  }
+
+  setFirstField = el => {
+    this._firstField = el
+  }
+
+  focus() {
+    if (this._firstField) {
+      this._firstField.focus()
+    }
   }
 
   render() {

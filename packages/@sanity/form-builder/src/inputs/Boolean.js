@@ -1,29 +1,36 @@
-import PropTypes from 'prop-types'
+// @flow
 import React from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import PatchEvent, {set} from '../PatchEvent'
+import type {Type} from '../typedefs'
+
+type Props = {
+  type: Type,
+  value: ?boolean,
+  onChange: PatchEvent => void
+}
 
 // Todo: support indeterminate state, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
-export default class BooleanInput extends React.Component {
+export default class BooleanInput extends React.Component<Props> {
+  _input: ?(Checkbox | Switch)
 
-  static propTypes = {
-    type: FormBuilderPropTypes.type,
-    value: PropTypes.bool,
-    onChange: PropTypes.func
+  handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
+    this.props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
   }
 
-  static defaultProps = {
-    onChange() {}
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
   }
 
-  handleChange = event => {
-    this.props.onChange(PatchEvent.from(set(event.target.checked)))
+  setInput = (input: ?(Checkbox | Switch)) => {
+    this._input = input
   }
 
   render() {
-    const {value, type, ...rest} = this.props
+    const {value, type, level, description, ...rest} = this.props
 
     const isCheckbox = type.options && type.options.layout === 'checkbox'
     return isCheckbox
@@ -32,7 +39,7 @@ export default class BooleanInput extends React.Component {
           {...rest}
           onChange={this.handleChange}
           checked={!!value}
-          description={type.description}
+          ref={this.setInput}
         >
           {type.title}
         </Checkbox>
@@ -43,7 +50,7 @@ export default class BooleanInput extends React.Component {
           onChange={this.handleChange}
           checked={!!value}
           label={type.title}
-          description={type.description}
+          ref={this.setInput}
         />
       )
   }
