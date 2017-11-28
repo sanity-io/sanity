@@ -41,10 +41,21 @@
   },
   {
     "_type": "block",
-    "children": [{ "_type": "span", "marks": [], "text": "1 b" }],
+    "children": [
+      { "_type": "span", "marks": [], "text": "1 " },
+      { "_type": "span", "marks": ["strong"], "text": "b" }
+    ],
     "level": 1,
     "listItem": "bullet",
     "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [{ "_type": "span", "marks": ["randomKey0"], "text": "Link" }],
+    "level": 1,
+    "listItem": "bullet",
+    "markDefs": [{ "_key": "randomKey0", "_type": "link", "href": "/" }],
     "style": "normal"
   }
 ]

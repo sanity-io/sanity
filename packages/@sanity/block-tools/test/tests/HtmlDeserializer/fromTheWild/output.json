@@ -474,7 +474,13 @@
   },
   {
     "_type": "block",
-    "markDefs": [],
+    "markDefs": [
+      {
+        "_key": "randomKey8",
+        "_type": "link",
+        "href": "https://lovdata.no/dokument/LTI/lov/2008-06-20-42/%C2%A79#§9"
+      }
+    ],
     "style": "normal",
     "level": 1,
     "listItem": "bullet",
@@ -489,13 +495,7 @@
   },
   {
     "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey8",
-        "_type": "link",
-        "href": "https://lovdata.no/dokument/LTI/lov/2008-06-20-42/%C2%A79#§9"
-      }
-    ],
+    "markDefs": [],
     "style": "normal",
     "children": [
       {

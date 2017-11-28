@@ -141,13 +141,6 @@ export default class HtmlDeserializer {
         continue
       } else if (ret === null) {
         return null
-      } else if (ret && ret._type === 'block' && ret.listItem) {
-        let parent = element.parentNode.parentNode
-        while (tagName(parent) === 'li') { // eslint-disable-line max-depth
-          parent = parent.parentNode.parentNode
-          ret.level++
-        }
-        node = ret
       } else if (ret._type === '__decorator') {
         node = this.deserializeDecorator(ret)
       } else if (ret._type === '__annotation') {
@@ -159,7 +152,14 @@ export default class HtmlDeserializer {
       } else {
         node = ret
       }
-
+      // Set list level on list item
+      if (ret && ret._type === 'block' && ret.listItem) {
+        let parent = element.parentNode.parentNode
+        while (tagName(parent) === 'li') {
+          parent = parent.parentNode.parentNode
+          ret.level++
+        }
+      }
       break
     }
     return node || next(element.childNodes)
