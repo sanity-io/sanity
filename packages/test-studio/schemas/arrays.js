@@ -97,6 +97,26 @@ export default {
       ]
     },
     {
+      name: 'arrayOfPrimitives',
+      title: 'Array with primitive types',
+      description: 'This array contains only strings, values and booleans',
+      type: 'array',
+      of: [
+        {
+          type: 'string',
+          title: 'String'
+        },
+        {
+          type: 'number',
+          title: 'Number'
+        },
+        {
+          type: 'boolean',
+          title: 'Boolean'
+        }
+      ]
+    },
+    {
       name: 'arrayOfStringsWithLegacyList',
       title: 'Array of strings with legacy format on lists',
       description: 'Previously the `list` option took an array of {title, value} items. It should still be possible to check these values.',

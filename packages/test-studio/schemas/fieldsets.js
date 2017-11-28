@@ -16,7 +16,7 @@ export default {
       description: 'The first field here should be the title'
     },
     {
-      name: 'Person',
+      name: 'person',
       type: 'object',
       fieldsets: [{name: 'social', title: 'Social media handles'}],
       fields: [
