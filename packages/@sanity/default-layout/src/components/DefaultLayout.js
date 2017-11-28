@@ -35,21 +35,6 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     mobileMenuIsOpen: false
   }
 
-  maybeRedirectToFirstTool() {
-    const {router} = this.props
-    if (!router.state.tool && this.props.tools.length > 0) {
-      router.navigate({tool: this.props.tools[0].name}, {replace: true})
-    }
-  }
-
-  componentWillMount() {
-    this.maybeRedirectToFirstTool()
-  }
-
-  componentDidUpdate() {
-    this.maybeRedirectToFirstTool()
-  }
-
   handleCreateButtonClick = () => {
     this.setState({
       createMenuIsOpen: !this.state.createMenuIsOpen

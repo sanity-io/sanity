@@ -31,6 +31,10 @@
     {
       "implements": "part:@sanity/base/schema-type",
       "path": "src/components/PertEstimateSchema.js"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/test-intent-tool"
     }
   ],
   "env": {
