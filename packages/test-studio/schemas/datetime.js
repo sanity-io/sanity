@@ -63,6 +63,22 @@ export default {
       type: 'datetime',
       title: 'Datetime without custom placeholder',
       placeholder: 'Enter a date here'
+    },
+    {
+      name: 'inArray',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'date',
+              type: 'datetime',
+              title: 'A datetime field with custom date format',
+            }
+          ]
+        }
+      ]
     }
   ]
 }
