@@ -1,4 +1,3 @@
 {
-  "hiddenTypes": ["block", "span", "richDate", "mark", "link", "address", "code", "myObject"],
   "listOptions": {}
 }

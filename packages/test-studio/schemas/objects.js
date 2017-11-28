@@ -1,6 +1,7 @@
 export const myObject = {
   type: 'object',
   name: 'myObject',
+  title: 'My object',
   fields: [
     {
       name: 'first',
