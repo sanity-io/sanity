@@ -9,6 +9,7 @@ import localeString from './localeString'
 import localeSlug from './localeSlug'
 import proteinTest from './proteinTest'
 import customObject from './customObject'
+import richText from './richText'
 import protein from '../components/ProteinInput/schema'
 
 export default createSchema({
@@ -23,5 +24,6 @@ export default createSchema({
     videoEmbed,
     proteinTest,
     protein,
+    richText
   ])
 })

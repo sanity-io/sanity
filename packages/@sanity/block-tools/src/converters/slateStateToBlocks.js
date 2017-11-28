@@ -1,26 +1,28 @@
 // @flow
 
 import {get, flatten} from 'lodash'
+import randomKey from '../util/randomKey'
 
-function toSanitySpan(blockNode, sanityBlock) {
-  if (blockNode.kind === 'text') {
-    return blockNode.ranges
+function toSanitySpan(node, sanityBlock, spanIndex) {
+  if (node.kind === 'text') {
+    return node.ranges
       .map(range => {
         return {
           _type: 'span',
+          _key: `${sanityBlock._key}${spanIndex()}`,
           text: range.text,
           marks: range.marks.map(mark => mark.type)
         }
       })
   }
-  if (blockNode.kind === 'inline') {
-    const {nodes, data} = blockNode
-    return flatten(nodes.map(node => {
-      if (node.kind !== 'text') {
-        throw new Error(`Unexpected non-text child node for inline text: ${node.kind}`)
+  if (node.kind === 'inline') {
+    const {nodes, data} = node
+    return flatten(nodes.map(nodesNode => {
+      if (nodesNode.kind !== 'text') {
+        throw new Error(`Unexpected non-text child node for inline text: ${nodesNode.kind}`)
       }
-      if (blockNode.type !== 'span') {
-        return blockNode.data.value
+      if (node.type !== 'span') {
+        return node.data.value
       }
       const annotations = data.annotations
       const annotationKeys = []
@@ -32,15 +34,16 @@ function toSanitySpan(blockNode, sanityBlock) {
           annotationKeys.push(annotationKey)
         })
       }
-      return node.ranges
+      return nodesNode.ranges
         .map(range => ({
           _type: 'span',
+          _key: `${sanityBlock._key}${spanIndex()}`,
           text: range.text,
           marks: range.marks.map(mark => mark.type).concat(annotationKeys),
         }))
     }))
   }
-  throw new Error(`Unsupported kind ${blockNode.kind}`)
+  throw new Error(`Unsupported kind ${node.kind}`)
 }
 
 function toSanityBlock(block) {
@@ -48,10 +51,15 @@ function toSanityBlock(block) {
     const sanityBlock = {
       ...block.data,
       _type: 'block',
+      _key: block.key || block.data._key || randomKey(12),
       markDefs: block.data.markDefs || []
     }
+    let index = 0
+    const spanIndex = () => {
+      return index++
+    }
     sanityBlock.children = flatten(block.nodes.map(node => {
-      return toSanitySpan(node, sanityBlock)
+      return toSanitySpan(node, sanityBlock, spanIndex)
     }))
     return sanityBlock
   }

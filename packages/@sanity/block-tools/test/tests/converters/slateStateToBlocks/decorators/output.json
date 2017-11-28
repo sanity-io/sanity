@@ -3,8 +3,8 @@
     "_key": "37369d86a5ce",
     "_type": "block",
     "children": [
-      { "_type": "span", "marks": ["strong"], "text": "Bold " },
-      { "_type": "span", "marks": ["strong", "em"], "text": "italic" }
+      { "_type": "span", "_key": "37369d86a5ce0", "marks": ["strong"], "text": "Bold " },
+      { "_type": "span", "_key": "37369d86a5ce1", "marks": ["strong", "em"], "text": "italic" }
     ],
     "markDefs": [],
     "style": "normal"
@@ -12,14 +12,14 @@
   {
     "_key": "745d6428661b",
     "_type": "block",
-    "children": [{ "_type": "span", "marks": ["em"], "text": "Italic" }],
+    "children": [{ "_type": "span", "_key": "745d6428661b0", "marks": ["em"], "text": "Italic" }],
     "markDefs": [],
     "style": "normal"
   },
   {
     "_key": "5c7d58f13d18",
     "_type": "block",
-    "children": [{ "_type": "span", "marks": ["code"], "text": "Code" }],
+    "children": [{ "_type": "span", "_key": "5c7d58f13d180", "marks": ["code"], "text": "Code" }],
     "markDefs": [],
     "style": "normal"
   }
