@@ -23,6 +23,15 @@ export default {
       of: [
         {
           type: 'reference',
+          name: 'strongAuthorRef',
+          title: 'A strong author ref',
+          to: {type: 'author'}
+        },
+        {
+          type: 'reference',
+          name: 'weakAuthorRef',
+          title: 'A weak author ref',
+          weak: true,
           to: {type: 'author'}
         }
       ]
