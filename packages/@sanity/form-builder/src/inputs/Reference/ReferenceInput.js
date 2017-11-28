@@ -188,8 +188,9 @@ export default class ReferenceInput extends React.Component<Props, State> {
     const weakIs = value && value._weak ? 'weak' : 'strong'
     const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 
-    const isMissing = value && previewSnapshot === MISSING_SNAPSHOT
-    const hasWeakMismatch = !isMissing && weakIs !== weakShouldBe
+    const isMissing = previewSnapshot === MISSING_SNAPSHOT
+    const hasRef = value && value._ref
+    const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
 
     return (
       <FormField label={type.title} level={level} description={type.description}>
@@ -205,7 +206,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
           <SearchableSelect
             {...rest}
             placeholder="Type to search…"
-            title={(isMissing && value) ? `Document id: ${value._ref}` : (previewSnapshot && previewSnapshot.description)}
+            title={(isMissing && hasRef) ? `Document id: ${value._ref || 'unknown'}` : (previewSnapshot && previewSnapshot.description)}
             onOpen={this.handleOpen}
             onFocus={this.handleFocus}
             onSearch={this.handleSearch}
