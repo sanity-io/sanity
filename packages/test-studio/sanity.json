@@ -3,6 +3,25 @@
   "project": {
     "name": "Test studio"
   },
+  "__experimental_spaces": [
+    {
+      "name": "production",
+      "title": "Prod",
+      "default": true,
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "test"
+      }
+    },
+    {
+      "name": "staging",
+      "title": "Staging",
+      "api": {
+        "projectId": "ppsg7ml5",
+        "dataset": "staging"
+      }
+    }
+  ],
   "api": {
     "projectId": "ppsg7ml5",
     "dataset": "test"

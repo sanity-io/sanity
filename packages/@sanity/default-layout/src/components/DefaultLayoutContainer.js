@@ -1,7 +1,7 @@
 import React from 'react'
 import DefaultLayout from './DefaultLayout'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
-import {RouterProvider} from 'part:@sanity/base/router'
+import {RouterProvider, RouteScope} from 'part:@sanity/base/router'
 import NotFound from './NotFound'
 import getOrderedTools from '../util/getOrderedTools'
 import rootRouter from '../defaultLayoutRouter'
