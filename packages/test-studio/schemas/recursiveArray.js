@@ -21,16 +21,19 @@ export default {
           fields: [
             {name: 'first', type: 'string', title: 'First string'},
             {name: 'second', type: 'string', title: 'Second string'},
+            {name: 'image', type: 'image', title: 'An image'},
             {
-              name: 'imageArrayNotSortable',
-              title: 'Image array in grid, *not* sortable',
-              description: 'Images here should be append-only',
+              name: 'gallery',
+              title: 'Image array',
               type: 'array',
               options: {
-                sortable: false,
                 layout: 'grid'
               },
               of: [
+                {
+                  title: 'Book',
+                  type: 'book'
+                },
                 {
                   title: 'Image',
                   type: 'image',
@@ -73,6 +76,15 @@ export default {
                   to: [{type: 'book', title: 'Reference to book'}]
                 }
               ]
+            },
+            {
+              name: 'aReferenceAtTheEnd',
+              type: 'reference',
+              to: [{type: 'book', title: 'Reference to book'}]
+            },
+            {
+              name: 'aDateTimeAtTheEnd',
+              type: 'datetime'
             }
           ]
         }
