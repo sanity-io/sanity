@@ -170,7 +170,9 @@ export default enhanceClickOutside(class Search extends React.Component {
   }
 
   handleClickOutside = el => {
-    this.close()
+    if (this.state.isOpen) {
+      this.close()
+    }
   }
 
   handleHitClick = el => {
