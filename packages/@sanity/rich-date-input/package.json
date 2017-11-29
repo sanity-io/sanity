@@ -1,6 +1,6 @@
 {
   "name": "@sanity/rich-date-input",
-  "version": "0.122.2",
+  "version": "0.122.4",
   "description": "Date/time input components for Sanity form builder",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,7 +20,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.122.2",
+    "@sanity/form-builder": "^0.122.4",
     "@sanity/generate-help-url": "^0.120.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
@@ -30,7 +30,7 @@
     "react-datepicker": "^0.55.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.120.0",
+    "@sanity/check": "^0.122.4",
     "in-publish": "^2.0.0",
     "rimraf": "^2.6.2"
   },
