@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "0.122.2",
+  "version": "0.122.3",
   "description": "Ace editor for editing code",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,12 +21,12 @@
     "code-editor"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.122.2",
+    "@sanity/form-builder": "^0.122.3",
     "lodash": "^4.17.4",
     "react-ace": "^5.0.1"
   },
   "devDependencies": {
-    "@sanity/check": "^0.120.0",
+    "@sanity/check": "^0.122.3",
     "babel-plugin-lodash": "^3.2.11",
     "rimraf": "^2.6.2"
   },
