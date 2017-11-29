@@ -1,7 +1,8 @@
 {
   "name": "@sanity/cli",
   "version": "0.122.4",
-  "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
+  "description":
+    "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
     "sanity": "./bin/sanity"
@@ -22,15 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
   },
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "cli",
-    "tool"
-  ],
+  "keywords": ["sanity", "cms", "headless", "realtime", "content", "cli", "tool"],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
@@ -54,6 +47,7 @@
     "deep-sort-object": "^1.0.1",
     "eslint": "^4.9.0",
     "eslint-config-sanity": "^3.1.0",
+    "eventsource": "^1.0.5",
     "execa": "^0.6.0",
     "fs-extra": "^4.0.2",
     "git-user-info": "^1.0.1",
