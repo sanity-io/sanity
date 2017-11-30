@@ -54,7 +54,7 @@
   overflow: hidden;
   padding-left: 0.3em;
 
-  @nest .isFocused & {
+  @nest :focus-within & {
     border-color: var(--input-border-color-focus);
   }
 }
@@ -80,14 +80,4 @@
 
 .wrapper {
   position: relative;
-}
-
-.focusHelper {
-  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
-  background-color: transparent;
-}
-
-.label {
-  composes: label from 'part:@sanity/components/labels/default-style';
-  display: block;
 }
