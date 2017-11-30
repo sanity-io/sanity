@@ -86,8 +86,15 @@ export default function withPatchSubscriber(ComposedComponent: any) {
       })
     }
 
+    focus() {
+      this._input.focus()
+    }
+    setInput = input => {
+      this._input = input
+    }
+
     render() {
-      return <ComposedComponent {...this.props} subscribe={this.subscribe} />
+      return <ComposedComponent ref={this.setInput} {...this.props} subscribe={this.subscribe} />
     }
   }
 }

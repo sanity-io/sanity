@@ -12,10 +12,6 @@ export type SchemaDef = {
   types: Array<TypeDef>
 }
 
-export type Type = {
-  name: string
-}
-
 export type Severity = 'warning' | 'info' | 'error'
 
 export type ValidationResult = {

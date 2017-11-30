@@ -29,8 +29,14 @@ export default function withDocument(ComposedComponent: any) {
     componentWillUnmount() {
       this.unsubscribe()
     }
+    focus() {
+      this._input.focus()
+    }
+    setInput = input => {
+      this._input = input
+    }
     render() {
-      return <ComposedComponent document={this.state.document} {...this.props} />
+      return <ComposedComponent ref={this.setInput} document={this.state.document} {...this.props} />
     }
   }
 }

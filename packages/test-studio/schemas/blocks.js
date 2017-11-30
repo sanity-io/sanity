@@ -30,15 +30,22 @@ export default {
         {type: 'code', title: 'Code'},
         {
           type: 'object', title: 'Test object', name: 'testObject',
-          fields: [
-            {name: 'field1', type: 'string'}
-          ]
+          fields: [{name: 'field1', type: 'string'}]
         },
         {
           type: 'object', title: 'Other test object', name: 'otherTestObject',
           fields: [
             {name: 'field1', type: 'string'},
-            {name: 'field2', type: 'string'}
+            {
+              name: 'field3',
+              type: 'array',
+              of: [
+                {type: 'object', fields: [
+                  {name: 'aString', type: 'string'},
+                  {name: 'aNumber', type: 'number'},
+                ]}
+              ]
+            }
           ]
         },
         {type: 'block'},
@@ -84,9 +91,7 @@ export default {
               {title: 'Strong', value: 'strong'},
               {title: 'Emphasis', value: 'em'}
             ],
-            annotations: [
-              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-            ]
+            annotations: [{name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}]
           }
         }
       ]
@@ -121,9 +126,7 @@ export default {
                   {title: 'Strong', value: 'strong'},
                   {title: 'Emphasis', value: 'em'}
                 ],
-                annotations: [
-                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-                ]
+                annotations: [{name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}]
               }
             }
           ]

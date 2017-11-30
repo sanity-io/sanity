@@ -5,59 +5,66 @@ import styles from 'part:@sanity/components/toggles/switch-style'
 export default class Switch extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    hasFocus: PropTypes.bool
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
   }
 
-  static defaultProps = {
-    onChange() {},
-    onBlur() {},
-    onFocus() {}
+  state = {
+    hasFocus: false
   }
 
-  handleMouseUp = event => {
-    this.handleBlur()
+  handleFocus = event => {
+    this.setState({hasFocus: true})
+    this.props.onFocus(event)
   }
 
   handleBlur = event => {
-    window.setTimeout(() => {
-      this.props.onBlur()
-    }, 0.001)
+    this.setState({hasFocus: false})
+    this.props.onBlur(event)
+  }
+
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = el => {
+    this._input = el
   }
 
   render() {
-    const {disabled, checked, onChange, onFocus, hasFocus} = this.props
+    const {disabled, checked, label, ...rest} = this.props
+    const {hasFocus} = this.state
 
     return (
       <label
         className={`
-          ${disabled ? styles.disabled : styles.enabled}
-          ${checked ? styles.isChecked : styles.unchecked}
+          ${styles.root}
+          ${disabled ? styles.isDisabled : styles.isEnabled}
+          ${checked ? styles.isChecked : styles.unChecked}
           ${hasFocus ? styles.hasFocus : ''}
         `}
-        onMouseUp={this.handleMouseUp}
+        onBlur={this.handleBlur}
       >
         <div className={styles.track} />
-
-
         <div className={`${checked ? styles.thumbChecked : styles.thumb}`}>
           <div className={styles.focusHelper} />
         </div>
+
         <input
+          {...rest}
           className={styles.input}
           type="checkbox"
+          disabled={disabled}
           checked={checked}
-          readOnly={disabled}
-          onFocus={onFocus}
-          onBlur={this.handleBlur}
-          onChange={onChange}
+          ref={this.setInput}
+          onFocus={this.handleFocus}
         />
         <div className={styles.label}>
-          {this.props.label}
+          {label}
         </div>
 
       </label>
