@@ -4,9 +4,6 @@ import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValue'
-import MemberValue from '../../Member'
-
-import styles from './styles/Field.css'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
@@ -16,10 +13,17 @@ export default class Field extends React.Component {
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.any,
-    onChange: PropTypes.func,
-    level: PropTypes.number,
-    autoFocus: PropTypes.bool
-  };
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
+    focusPath: PropTypes.array,
+    level: PropTypes.number
+  }
+
+  static defaultProps = {
+    level: 0,
+    focusPath: []
+  }
 
   handleChange = event => {
     const {field, onChange} = this.props
@@ -28,8 +32,16 @@ export default class Field extends React.Component {
     }
   }
 
+  focus() {
+    this._input.focus()
+  }
+
+  setInput = input => {
+    this._input = input
+  }
+
   render() {
-    const {value, field, level, autoFocus} = this.props
+    const {value, field, level, onFocus, onBlur, focusPath} = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -54,17 +66,17 @@ export default class Field extends React.Component {
     }
 
     return (
-      <div className={styles.root}>
-        <MemberValue path={field.name}>
-          <FormBuilderInput
-            value={value}
-            type={field.type}
-            onChange={this.handleChange}
-            level={level}
-            autoFocus={autoFocus}
-          />
-        </MemberValue>
-      </div>
+      <FormBuilderInput
+        value={value}
+        type={field.type}
+        onChange={this.handleChange}
+        path={[field.name]}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
+        level={level}
+        ref={this.setInput}
+      />
     )
   }
 }

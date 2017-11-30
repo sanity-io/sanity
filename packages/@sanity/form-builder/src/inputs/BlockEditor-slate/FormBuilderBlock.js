@@ -7,16 +7,16 @@ import setTransferData from 'slate-react/lib/utils/set-transfer-data'
 import TRANSFER_TYPES from 'slate-react/lib/constants/transfer-types'
 import Base64 from 'slate-base64-serializer'
 import {findDOMNode} from 'slate-react'
-import ItemForm from './ItemForm'
+import {FormBuilderInput} from '../../FormBuilderInput'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
 import createRange from './util/createRange'
-import {applyAll} from '../../simplePatch'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
+import FocusManager from '../../sanity/focusManagers/SimpleFocusManager'
 
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
@@ -235,6 +235,23 @@ export default class FormBuilderBlock extends React.Component {
     this.previewContainer = previewContainer
   }
 
+  renderFormBuilderInput = ({onFocus, onBlur, focusPath}) => {
+    const value = this.getValue()
+    const memberType = this.getMemberTypeOf(value)
+
+    return (
+      <FormBuilderInput
+        type={memberType}
+        level={0}
+        value={value}
+        onChange={this.handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
+        path={[{_key: value._key}]}
+      />
+    )
+  }
   renderInput() {
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
@@ -252,6 +269,10 @@ export default class FormBuilderBlock extends React.Component {
       }
     }
 
+    const input = (
+      <FocusManager>{this.renderFormBuilderInput}</FocusManager>
+    )
+
     if (editModalLayout === 'fullscreen') {
       return (
         <FullscreenDialog
@@ -259,13 +280,7 @@ export default class FormBuilderBlock extends React.Component {
           title={this.props.node.title}
           onClose={this.handleClose}
         >
-          <ItemForm
-            onDrop={this.handleCancelEvent}
-            type={memberType}
-            level={0}
-            value={this.getValue()}
-            onChange={this.handleChange}
-          />
+          {input}
         </FullscreenDialog>
       )
     }
@@ -278,13 +293,7 @@ export default class FormBuilderBlock extends React.Component {
             title={this.props.node.title}
             onClose={this.handleClose}
           >
-            <ItemForm
-              onDrop={this.handleCancelEvent}
-              type={memberType}
-              level={0}
-              value={this.getValue()}
-              onChange={this.handleChange}
-            />
+            {input}
           </EditItemFold>
         </div>
       )
@@ -298,13 +307,7 @@ export default class FormBuilderBlock extends React.Component {
           title={this.props.node.title}
           onClose={this.handleClose}
         >
-          <ItemForm
-            onDrop={this.handleCancelEvent}
-            type={memberType}
-            level={0}
-            value={this.getValue()}
-            onChange={this.handleChange}
-          />
+          {input}
         </EditItemPopOver>
       </div>
     )

@@ -51,6 +51,7 @@ const getInitialState = (): State => {
 
 export default class ReferenceInput extends React.Component<Props, State> {
   _lastQuery: string
+  _input: SearchableSelect
 
   state = getInitialState()
   subscriptions = subscriptionManager('search', 'previewSnapshot')
@@ -172,6 +173,16 @@ export default class ReferenceInput extends React.Component<Props, State> {
     )
   }
 
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = (input: ?SearchableSelect) => {
+    this._input = input
+  }
+
   render() {
     const {
       type,
@@ -218,6 +229,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             renderItem={this.renderHit}
             isLoading={isFetching}
             items={hits}
+            ref={this.setInput}
           />
         </div>
       </FormField>

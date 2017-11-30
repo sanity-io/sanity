@@ -1,6 +1,7 @@
 export type Type = {
   type: Type,
   name: string,
+  title: string,
   options: ?Object
 }
 
