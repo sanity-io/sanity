@@ -56,6 +56,7 @@ type State = {
 }
 
 export default class DateInput extends React.Component<Props, State> {
+  _datepicker: ?DatePicker
   inputId: string = uniqueId('date-input')
 
   state = {
@@ -96,9 +97,18 @@ export default class DateInput extends React.Component<Props, State> {
   unset() {
     this.props.onChange(PatchEvent.from([unset()]))
   }
+  focus() {
+    if (this._datepicker) {
+      this._datepicker.input.focus()
+    }
+  }
+
+  setDatePicker = (datePicker: ?DatePicker) => {
+    this._datepicker = datePicker
+  }
 
   render() {
-    const {value, type, level} = this.props
+    const {value, type, level, ...rest} = this.props
     const {inputValue} = this.state
     const {title, description, readOnly} = type
 
@@ -114,13 +124,14 @@ export default class DateInput extends React.Component<Props, State> {
           ? (
             <TextInput
               readOnly
-              value={(momentValue && momentValue.format(getFormat(options)))}
+              value={(momentValue ? momentValue.format(getFormat(options)) : '')}
             />
           )
           : (
             <div className={styles.root}>
               <DatePicker
                 {...options}
+                {...rest}
                 showMonthDropdown
                 showYearDropdown
                 todayButton={options.calendarTodayLabel}
@@ -137,6 +148,7 @@ export default class DateInput extends React.Component<Props, State> {
                 timeFormat={options.timeFormat}
                 timeIntervals={options.timeStep}
                 onBlur={this.handleBlur}
+                ref={this.setDatePicker}
               />
             </div>
           )}
