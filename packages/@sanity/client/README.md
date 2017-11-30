@@ -1,6 +1,6 @@
 # @sanity/client
 
-[![npm version](http://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](https://www.npmjs.com/package/@sanity/client)
+[![npm version](https://img.shields.io/npm/v/@sanity/client.svg?style=flat-square)](https://www.npmjs.com/package/@sanity/client)
 
 Javascript client for Sanity. Works in browsers (IE9+) and node.js.
 
