@@ -88,10 +88,11 @@ export default class ObjectInput extends React.PureComponent {
   renderFieldset(fieldset, fieldsetIndex) {
     const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
-    const collapsable = fieldset.options && fieldset.options.collapsable
+    const isCollapsible = fieldset.options && (fieldset.options.collapsable || fieldset.options.collapsible)
     const isExpanded = focusPath.length > 0 && fieldset.fields.some(field => (
       focusPath[0] === field.name
     ))
+
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
@@ -99,7 +100,8 @@ export default class ObjectInput extends React.PureComponent {
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          isExpanded={collapsable === false || isExpanded}
+          isCollapsible={isCollapsible}
+          isCollapsed={!isExpanded}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -174,7 +176,7 @@ export default class ObjectInput extends React.PureComponent {
     }
 
     const columns = type.options && type.options.columns
-    const collapsable = type.options && type.options.collapsable
+    const isCollapsible = type.options && (type.options.collapsable || type.options.collapsible)
 
     return (
       <Fieldset
@@ -182,7 +184,8 @@ export default class ObjectInput extends React.PureComponent {
         legend={type.title}
         description={type.description}
         columns={columns}
-        collapsable={collapsable}
+        isCollapsible={isCollapsible}
+        isCollapsed={isCollapsible}
       >
         {renderedFields}
         {renderedUnknownFields}
