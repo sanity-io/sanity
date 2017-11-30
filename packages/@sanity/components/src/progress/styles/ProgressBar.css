@@ -5,7 +5,7 @@
 }
 
 .root {
-  border: 1px solid #000;
+  border: 1px solid var(--brand-darkest);
   height: var(--progress-bar-height);
   width: 100%;
   clear: both;
@@ -34,7 +34,7 @@
 }
 
 .bar {
-  background-color: black;
+  background-color: var(--brand-darkest);
   height: calc(var(--progress-bar-height) - 0.2em);
   transition-property: width;
   transition-duration: 0.1s;

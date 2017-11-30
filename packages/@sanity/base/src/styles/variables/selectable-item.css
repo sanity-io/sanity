@@ -6,7 +6,7 @@
     Selectable item
   */
   --selectable-item-color: transparent;
-  --selectable-item-text-color: var(--black);
+  --selectable-item-text-color: var(--text-color);
   --selectable-item-color--inverted: var(--selectable-item-text-color);
   --selectable-item-color-hover: color(var(--brand-primary) lightness(- 20%) a(20%));
   --selectable-item-color-hover--inverted: var(--selectable-item-text-color);
