@@ -20,7 +20,7 @@ export default class Spinner extends React.Component {
           cy="50"
           r="49.5"
           strokeDasharray="202.1614872585032 108.85618544688634"
-          stroke="#000000"
+          stroke="currentColor"
           fill="none"
           strokeWidth="1"
         >
