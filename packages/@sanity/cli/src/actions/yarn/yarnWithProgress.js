@@ -6,6 +6,7 @@ import split2 from 'split2'
 import chalk from 'chalk'
 import progrescii from 'progrescii'
 import {noop, padEnd, throttle} from 'lodash'
+import dynamicRequire from '../../util/dynamicRequire'
 
 const useProgress = process.stderr && process.stderr.isTTY && !process.env.CI
 const isBundled = typeof __SANITY_IS_BUNDLED__ !== 'undefined'
@@ -14,7 +15,7 @@ const isBundled = typeof __SANITY_IS_BUNDLED__ !== 'undefined'
 const binDir = path.join(__dirname, '..', '..', '..', 'vendor')
 const yarnPath = isBundled
   ? path.join(__dirname, '..', 'vendor', 'yarn')
-  : require.resolve(path.join(binDir, 'yarn'))
+  : dynamicRequire.resolve(path.join(binDir, 'yarn'))
 
 const parseJson = data => {
   try {
@@ -59,7 +60,8 @@ export default function yarnWithProgress(args, options = {}) {
     return proc
   }
 
-  [proc.stdout, proc.stderr].forEach(stream => {
+  const streams = [proc.stdout, proc.stderr]
+  streams.forEach(stream => {
     stream
       .pipe(split2(parseJson))
       .on('data', onChunk)

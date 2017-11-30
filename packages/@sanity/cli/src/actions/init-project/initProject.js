@@ -1,15 +1,16 @@
+import os from 'os'
 import path from 'path'
+import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import debug from '../../debug'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
-import createProject from '../../actions/project/createProject'
-import login from '../../actions/login/login'
+import createProject from '../project/createProject'
+import login from '../login/login'
 import dynamicRequire from '../../util/dynamicRequire'
 import promptForDatasetName from './promptForDatasetName'
-import gatherInput from './gatherInput'
 import bootstrapTemplate from './bootstrapTemplate'
 
 export default async function initSanity(args, context) {
@@ -71,7 +72,20 @@ export default async function initSanity(args, context) {
       outputPath: path.resolve(flags['output-path'])
     })
   } else {
-    answers = await gatherInput(prompt, defaults, {workDir, sluggedName})
+    answers = {}
+    answers.description = answers.description || defaults.description
+    answers.gitRemote = defaults.gitRemote
+    answers.author = defaults.author
+    answers.license = 'UNLICENSED'
+
+    const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
+    answers.outputPath = await prompt.single({
+      type: 'input',
+      message: 'Output path:',
+      default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
+      validate: validateEmptyPath,
+      filter: absolutify
+    })
   }
 
   // Ensure we are using the output path provided by user
@@ -79,9 +93,9 @@ export default async function initSanity(args, context) {
 
   // Prompt for template to use
   const defaultTemplate = unattended ? flags.template || 'clean' : null
-  const templateName
-    = defaultTemplate
-    || (await prompt.single({
+  const templateName =
+    defaultTemplate ||
+    (await prompt.single({
       message: 'Select project template',
       type: 'list',
       choices: [
@@ -267,4 +281,40 @@ export default async function initSanity(args, context) {
     debug(`Returning selected dataset (${selected})`)
     return {datasetName: selected}
   }
+}
+
+async function validateEmptyPath(dir) {
+  const checkPath = absolutify(dir)
+  return (await pathIsEmpty(checkPath)) ? true : 'Given path is not empty'
+}
+
+function pathIsEmpty(dir) {
+  return fse
+    .readdir(dir)
+    .then(content => content.length === 0)
+    .catch(err => {
+      if (err.code === 'ENOENT') {
+        return true
+      }
+
+      throw err
+    })
+}
+
+function expandHome(filePath) {
+  if (filePath.charCodeAt(0) === 126 /* ~ */) {
+    if (filePath.charCodeAt(1) === 43 /* + */) {
+      return path.join(process.cwd(), filePath.slice(2))
+    }
+
+    const home = os.homedir()
+    return home ? path.join(home, filePath.slice(1)) : filePath
+  }
+
+  return filePath
+}
+
+function absolutify(dir) {
+  const pathName = expandHome(dir)
+  return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
 }
