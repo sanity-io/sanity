@@ -1,4 +1,6 @@
-export default id => (...args) => {
-  const mod = require(id)
-  return mod.__esModule ? mod.default(...args) : mod(...args)
+const dynamicRequire = require('./dynamicRequire')
+
+module.exports = id => (...args) => {
+  const mod = dynamicRequire(id)
+  return mod(...args)
 }

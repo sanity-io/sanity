@@ -80,6 +80,20 @@ compiler.run((err, stats) => {
     throw err
   }
 
+  if (stats.compilation.warnings.length > 0) {
+    console.warn('=== [  Warnings  ]========')
+    stats.compilation.warnings.forEach(warn => {
+      if (!warn.name === 'ModuleDependencyWarning') {
+        console.warn(warn)
+        return
+      }
+
+      console.warn(`\n${warn.origin.userRequest}:`)
+      console.warn(`${warn}\n`)
+    })
+    console.warn('=== [ /Warnings  ]========\n')
+  }
+
   if (stats.compilation.errors.length > 0) {
     console.error(stats.compilation.errors)
     process.exit(1)
