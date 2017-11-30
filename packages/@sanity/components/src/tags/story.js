@@ -11,26 +11,12 @@ class DefaultTextFieldTagsImplementation extends React.Component {
   }
   constructor(...args) {
     super(...args)
-
-    this.handleAddTag = this.handleAddTag.bind(this)
-    this.handleRemoveTag = this.handleRemoveTag.bind(this)
-
     this.state = {
       tags: this.props.tags || []
     }
   }
 
-  handleAddTag(tag) {
-    const tags = this.state.tags.concat()
-    tags.push(tag)
-    this.setState({
-      tags: tags
-    })
-  }
-
-  handleRemoveTag(i) {
-    const tags = this.state.tags.concat()
-    tags.splice(i, 1)
+  handleChange = tags => {
     this.setState({
       tags: tags
     })
@@ -41,9 +27,8 @@ class DefaultTextFieldTagsImplementation extends React.Component {
       <TagsTextField
         label="Tags"
         placeholder="This is the placeholder"
-        tags={this.state.tags}
-        onAddTag={this.handleAddTag}
-        onRemoveTag={this.handleRemoveTag}
+        value={this.state.tags}
+        onChange={this.handleChange}
       />
     )
   }
@@ -61,9 +46,8 @@ storiesOf('Tags')
         <TagsTextField
           label={text('label (prop)', 'Tags')}
           placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          tags={array('tags (prop)', tags)}
-          onAddTag={action('onAddTag')}
-          onRemoveTag={action('onRemoveTag')}
+          value={array('value (prop)', tags)}
+          onChange={action('onChange')}
         />
       </Sanity>
     )
