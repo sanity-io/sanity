@@ -52,7 +52,6 @@ export default class FormBuilder extends React.Component {
           onChange={onChange}
           level={0}
           isRoot
-          autoFocus
         />
       </FormBuilderContext>
     )

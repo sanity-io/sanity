@@ -4,47 +4,41 @@ import styles from 'part:@sanity/components/toggles/checkbox-style'
 
 export default class Checkbox extends React.Component {
   static propTypes = {
-    value: PropTypes.bool,
     label: PropTypes.string,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    hasFocus: PropTypes.bool,
-    children: PropTypes.node
-  }
-
-  static defaultProps = {
-    onChange() {},
-    onFocus() {},
-    onBlur() {}
+    children: PropTypes.any,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
   }
 
   state = {
     hasFocus: false
   }
 
-  handleMouseUp = () => {
-    this.setState({hasFocus: false})
-  }
-
-  handleFocus = () => {
+  handleFocus = event => {
     this.setState({hasFocus: true})
+    this.props.onFocus(event)
   }
 
-  handleChange = event => {
-    this.props.onChange(event, this.props.value)
+  handleBlur = event => {
+    this.setState({hasFocus: false})
+    this.props.onBlur(event)
   }
 
-  handleBlur = () => {
-    window.setTimeout(() => {
-      this.props.onBlur(this.props.value)
-    }, 0.001)
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = el => {
+    this._input = el
   }
 
   render() {
-    const {disabled, hasFocus, value, checked, label, children} = this.props
+    const {disabled, checked, label, children, ...rest} = this.props
+    const {hasFocus} = this.state
 
     return (
       <label
@@ -55,16 +49,16 @@ export default class Checkbox extends React.Component {
           ${checked ? styles.isChecked : styles.unChecked}
           ${hasFocus ? styles.hasFocus : ''}
         `}
-        onMouseUp={this.handleMouseUp}
+        onBlur={this.handleBlur}
       >
         <input
+          {...rest}
           className={styles.input}
           type="checkbox"
-          value={String(value)}
-          onChange={this.handleChange}
+          disabled={disabled}
           checked={checked}
+          ref={this.setInput}
           onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
         />
         <div className={styles.label}>
           {children || label}

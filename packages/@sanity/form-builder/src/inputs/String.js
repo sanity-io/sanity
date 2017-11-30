@@ -1,26 +1,33 @@
-import PropTypes from 'prop-types'
+//@flow
 import React from 'react'
-import FormBuilderPropTypes from '../FormBuilderPropTypes'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import type {Type} from '../typedefs'
 
-export default class StringInput extends React.PureComponent {
-  static propTypes = {
-    type: FormBuilderPropTypes.type.isRequired,
-    level: PropTypes.number.isRequired,
-    value: PropTypes.string,
-    onChange: PropTypes.func
-  };
+type Props = {
+  type: Type,
+  level: number,
+  value: ?string,
+  onChange: PatchEvent => void
+}
 
-  static defaultProps = {
-    value: '',
-    onChange() {}
+export default class StringInput extends React.Component<Props> {
+  _input: ?TextInput
+
+  handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value
+    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
   }
 
-  handleChange = event => {
-    const value = event.target.value || undefined
-    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = (input: ?TextInput) => {
+    this._input = input
   }
 
   render() {
@@ -39,6 +46,7 @@ export default class StringInput extends React.PureComponent {
           readOnly={type.readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
+          ref={this.setInput}
         />
       </FormField>
     )

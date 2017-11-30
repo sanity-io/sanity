@@ -26,15 +26,6 @@
   padding-right: 2em;
 }
 
-.focusHelper {
-  composes: focusHelper from 'part:@sanity/base/theme/forms/text-input-style';
-  background-color: transparent;
-
-  @nest .hasFocus & {
-    background-color: var(--brand-primary);
-  }
-}
-
 .clearButton {
   z-index: 1;
   top: 0.35em;
