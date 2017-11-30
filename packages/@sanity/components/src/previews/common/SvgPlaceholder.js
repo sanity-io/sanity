@@ -12,9 +12,9 @@ const SvgPlaceholder = ({styles}) => {
     <div className={styles.placeholder}>
       <svg x="0" y="0" className={styles.svg} style={svgStyles}>
         <linearGradient id="loader_gradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
-          <stop offset="0.5" style={{stopColor: '#eee'}} />
-          <stop offset="1" style={{stopColor: '#ddd'}} stopOpacity="0.5" />
+          <stop offset="0" style={{stopColor: 'currentColor'}} stopOpacity="0.2" />
+          <stop offset="0.5" style={{stopColor: 'currentColor'}} stopOpacity="0.3" />
+          <stop offset="1" style={{stopColor: 'currentColor'}} stopOpacity="0.2" />
           {
           /*
             Animation disabled due to performance issues. Do not re-enable before verifying that it doesn't cause
