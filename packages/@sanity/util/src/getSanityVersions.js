@@ -1,13 +1,14 @@
 const path = require('path')
 const uniq = require('lodash/uniq')
 const resolveFrom = require('resolve-from')
+const dynamicRequire = require('./dynamicRequire')
 
 const getSanityVersions = basePath => {
   const manifestPath = path.join(basePath, 'package.json')
 
   let pkg
   try {
-    pkg = require(manifestPath)
+    pkg = dynamicRequire(manifestPath)
   } catch (err) {
     throw new Error(`Could not load package.json from ${manifestPath}`)
   }
@@ -16,7 +17,7 @@ const getSanityVersions = basePath => {
   const sanityDeps = dependencies.filter(depName => depName.indexOf('@sanity/') === 0)
   const versions = uniq(sanityDeps).reduce((target, moduleId) => {
     const modulePath = resolveFrom.silent(basePath, path.join(moduleId, 'package.json'))
-    target[moduleId] = modulePath && require(modulePath).version
+    target[moduleId] = modulePath && dynamicRequire(modulePath).version
     return target
   }, {})
 

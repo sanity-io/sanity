@@ -1,4 +1,5 @@
-import initAction from './initAction'
+import initProject from '../../actions/init-project/initProject'
+import initPlugin from '../../actions/init-plugin/initPlugin'
 
 const helpText = `
 Options
@@ -28,6 +29,18 @@ export default {
   name: 'init',
   signature: 'init [plugin]',
   description: 'Initialize a new Sanity project or plugin',
-  action: initAction,
-  helpText
+  helpText,
+  action: (args, context) => {
+    const [type] = args.argsWithoutOptions
+
+    if (!type) {
+      return initProject(args, context)
+    }
+
+    if (type === 'plugin') {
+      return initPlugin(args, context)
+    }
+
+    return Promise.reject(new Error(`Unknown init type "${type}"`))
+  }
 }
