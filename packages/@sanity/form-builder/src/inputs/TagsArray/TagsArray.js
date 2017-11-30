@@ -13,23 +13,29 @@ type Props = {
 }
 
 export default class TagsArrayInput extends React.PureComponent<Props> {
+  _input: TagInput
+
   set(nextValue: string[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
   }
 
-  handleAddItem = (itemValue: string) => {
-    this.set((this.props.value || []).concat(itemValue))
+  handleChange = (nextValue: Array<string>) => {
+    this.set(nextValue)
   }
 
-  handleRemoveItem = (index: number) => {
-    const copy = [].concat(this.props.value)
-    copy.splice(index, 1)
-    this.set(copy)
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = (el: ?TagInput) => {
+    this._input = el
   }
 
   render() {
-    const {type, value, level} = this.props
+    const {type, value, level, ...rest} = this.props
     return (
       <FormField
         level={level}
@@ -37,12 +43,10 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
         description={type.description}
       >
         <TagInput
-          label={type.title}
-          level={level}
-          description={type.description}
-          tags={value || []}
-          onRemoveTag={this.handleRemoveItem}
-          onAddTag={this.handleAddItem}
+          {...rest}
+          value={value}
+          onChange={this.handleChange}
+          ref={this.setInput}
         />
       </FormField>
     )

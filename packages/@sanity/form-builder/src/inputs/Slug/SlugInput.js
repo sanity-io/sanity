@@ -196,6 +196,14 @@ export default class SlugInput extends React.Component {
     this.updateValue({current: value.current, auto: true})
   }
 
+  focus() {
+    this._input.focus()
+  }
+
+  setInput = input => {
+    this._input = input
+  }
+
   render() {
     const {value, type, level} = this.props
     const hasSourceField = type.options && type.options.source
@@ -216,6 +224,7 @@ export default class SlugInput extends React.Component {
         <div className={InInputStyles.wrapper}>
           <DefaultTextInput
             id={inputId}
+            ref={this.setInput}
             disabled={isAuto}
             placeholder={type.placeholder}
             onChange={this.handleChange}

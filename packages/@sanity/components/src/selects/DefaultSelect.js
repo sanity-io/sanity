@@ -33,6 +33,16 @@ export default class DefaultSelect extends React.Component {
     this.props.onChange(this.props.items[event.target.value])
   }
 
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = el => {
+    this._input = el
+  }
+
   render() {
     const {hasError, items, value, disabled, hasFocus, ...rest} = this.props
     return (
@@ -50,6 +60,7 @@ export default class DefaultSelect extends React.Component {
           disabled={disabled}
           value={value && items.indexOf(value)}
           autoComplete="off"
+          ref={this.setInput}
         >
           {!value && <option />}
           {
@@ -60,7 +71,6 @@ export default class DefaultSelect extends React.Component {
             })
           }
         </select>
-        <div className={styles.focusHelper} />
         <div className={styles.icon}>
           <FaAngleDown color="inherit" />
         </div>

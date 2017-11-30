@@ -11,15 +11,19 @@ import getEmptyValue from './getEmptyValue'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import type {Type} from '../../typedefs'
+import type {Path} from '../../typedefs/path'
 
 const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
 
 type Props = {
   type: Type,
   onChange: PatchEvent => void,
+  onFocus: (Path) => void,
+  onBlur: () => void,
+  focusPath: Path,
   index: number,
   value: string | number | boolean,
-  sortable: boolean,
+  isSortable: boolean,
   level: number
 }
 export default class Item extends React.PureComponent<Props> {
@@ -40,13 +44,17 @@ export default class Item extends React.PureComponent<Props> {
   }
 
   render() {
-    const {value, level, type, sortable} = this.props
+    const {value, level, index, focusPath, onFocus, onBlur, type, isSortable} = this.props
     return (
       <div className={styles.root}>
-        {sortable && <DragHandle className={styles.dragHandle} />}
+        {isSortable && <DragHandle className={styles.dragHandle} />}
         <div className={styles.input}>
           <FormBuilderInput
             value={value}
+            path={[index]}
+            focusPath={focusPath}
+            onFocus={onFocus}
+            onBlur={onBlur}
             type={type}
             onChange={this.handleChange}
             level={level}

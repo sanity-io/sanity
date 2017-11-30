@@ -4,9 +4,8 @@ import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
-import Styleable from '../utilities/Styleable'
 
-class Fieldset extends React.Component {
+export default class Fieldset extends React.Component {
   static propTypes = {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
@@ -42,16 +41,24 @@ class Fieldset extends React.Component {
   }
 
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, styles, ...rest} = this.props
+    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, ...rest} = this.props
     const {isOpen} = this.state
-    const levelString = `level${level}`
-    const rootClass = `
-      ${styles.root}
-      ${styles[`columns${columns}`] || ''}
-      ${styles[levelString] || ''}
-      ${transparent ? styles.transparent : ''}
-      ${className || ''}
-    `
+
+    const styles = {
+      ...defaultStyles,
+      ...this.props.styles
+    }
+
+    const rootClass = [
+      styles.root,
+      styles[`columns${columns}`],
+      styles[`level${level}`],
+      transparent && styles.transparent,
+      className
+    ]
+      .filter(Boolean)
+      .join(' ')
+
     return (
       <fieldset {...rest} className={rootClass} data-nesting-level={level}>
         <div className={styles.inner}>
@@ -82,5 +89,3 @@ class Fieldset extends React.Component {
     )
   }
 }
-
-export default Styleable(Fieldset, defaultStyles)
