@@ -16,7 +16,7 @@ export default {
         },
         {
           name: 'author',
-          title: 'Author details (collapsable)',
+          title: 'Author details (collapsible)',
           description: 'Author details with 2 column grid',
           options: {
             columns: 2,
@@ -25,7 +25,7 @@ export default {
         },
         {
           name: 'checkboxes',
-          title: 'Checkbox (collapsable)',
+          title: 'Checkbox (collapsible)',
           description: 'Lets put 3 checkboxes in an a 3 column',
           options: {
             columns: 3,
