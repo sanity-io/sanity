@@ -10,7 +10,8 @@ export default class Fieldset extends React.Component {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
     columns: PropTypes.number,
-    collapsable: PropTypes.bool,
+    isCollapsible: PropTypes.bool,
+    isCollapsed: PropTypes.bool,
     fieldset: PropTypes.shape({
       description: PropTypes.string,
       legend: PropTypes.string
@@ -22,34 +23,48 @@ export default class Fieldset extends React.Component {
     styles: PropTypes.object
   }
 
-  state = {
-    isOpen: (typeof (this.props.collapsable) == 'undefined')
-  }
-
   static defaultProps = {
     level: 1,
     fieldset: {},
-    className: ''
+    className: '',
+    isCollapsed: false,
+    isCollapsible: false // can collapsing be toggled by user?
   }
 
-  handleToggle = () => {
-    if (this.props.collapsable) {
-      this.setState({
-        isOpen: !this.state.isOpen
-      })
+  constructor(props) {
+    super()
+    this.state = {
+      isCollapsed: props.isCollapsed
     }
   }
 
+  handleToggle = () => {
+    this.setState(prevState => ({isCollapsed: !prevState.isCollapsed}))
+  }
+
   render() {
-    const {fieldset, legend, description, columns, level, className, children, collapsable, transparent, ...rest} = this.props
-    const {isOpen} = this.state
+    const {
+      fieldset,
+      legend,
+      description,
+      columns,
+      level,
+      className,
+      isCollapsible,
+      isCollapsed: _ignore,
+      children,
+      transparent,
+      ...rest
+    } = this.props
+
+    const {isCollapsed} = this.state
 
     const styles = {
       ...defaultStyles,
       ...this.props.styles
     }
 
-    const rootClass = [
+    const rootClassName = [
       styles.root,
       styles[`columns${columns}`],
       styles[`level${level}`],
@@ -60,28 +75,24 @@ export default class Fieldset extends React.Component {
       .join(' ')
 
     return (
-      <fieldset {...rest} className={rootClass} data-nesting-level={level}>
+      <fieldset {...rest} className={rootClassName} data-nesting-level={level}>
         <div className={styles.inner}>
-          <legend className={`${styles.legend} ${isOpen ? styles.isOpen : ''}`} onClick={this.handleToggle}>
-            {
-              collapsable && (
-                <div className={`${styles.arrow} ${isOpen ? styles.isOpen : ''}`}>
-                  <ArrowDropDown />
-                </div>
-              )
-            }
+          <legend className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`} onClick={isCollapsible && this.handleToggle}>
+            {isCollapsible && (
+              <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
+                <ArrowDropDown />
+              </div>
+            )}
             {legend || fieldset.legend}
           </legend>
-          {
-            (description || fieldset.description) && (
-              <p className={`${styles.description} ${isOpen ? styles.isOpen : ''}`}>
-                {description || fieldset.description}
-              </p>
-            )
-          }
-          <div className={`${styles.content} ${isOpen ? styles.isOpen : ''}`}>
+          {(description || fieldset.description) && (
+            <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
+              {description || fieldset.description}
+            </p>
+          )}
+          <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
             <div className={styles.fieldWrapper}>
-              {isOpen && children}
+              {!isCollapsed && children}
             </div>
           </div>
         </div>

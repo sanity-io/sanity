@@ -74,33 +74,33 @@ storiesOf('Fieldsets')
 )
 
 .add(
-  'Collapsable (demo)',
+  'Collapsible (demo)',
   () => {
     const level = number('start level', 0)
-    const collapsable = boolean('collapsable', true)
+    const isCollapsible = boolean('isCollapsible', true)
     return (
       <Sanity part="part:@sanity/components/fieldsets/default" propTables={[Fieldset]}>
         <div>
-          <Fieldset collapsable={collapsable} legend="Noooo, pick me, pick me!" description={chance.sentence()} level={level}>
+          <Fieldset isCollapsible={isCollapsible} legend="Noooo, pick me, pick me!" description={chance.sentence()} level={level}>
             <DefaultTextField label="Content" level={level + 1} />
             <DefaultTextField label="Content" level={level + 1} description="Test this one" />
             <DefaultTextField label="Content" level={level + 1} />
             <DefaultTextField label="Content" level={level + 1} />
           </Fieldset>
           <Fieldset legend="Fieldsets can be collapsed" description={chance.sentence()} level={level}>
-            <Fieldset collapsable={collapsable} legend="Open me" description={chance.sentence()} level={level + 1}>
+            <Fieldset isCollapsible={isCollapsible} legend="Open me" description={chance.sentence()} level={level + 1}>
               <DefaultTextField label="Content" level={level + 2} />
               <DefaultTextField label="Content" level={level + 2} description="Test this one" />
               <DefaultTextField label="Content" level={level + 2} />
               <DefaultTextField label="Content" level={level + 2} />
             </Fieldset>
-            <Fieldset collapsable={collapsable} legend="No, open me!" description={chance.sentence()} level={level + 1}>
+            <Fieldset isCollapsible={isCollapsible} legend="No, open me!" description={chance.sentence()} level={level + 1}>
               <DefaultTextField label="Content" level={level + 2} />
               <DefaultTextField label="Content" level={level + 2} description="Test this one" />
               <DefaultTextField label="Content" level={level + 2} />
               <DefaultTextField label="Content" level={level + 2} />
             </Fieldset>
-            <Fieldset collapsable={collapsable} legend="Noooo, pick me, pick me!" description={chance.sentence()} level={level + 1}>
+            <Fieldset isCollapsible={isCollapsible} legend="Noooo, pick me, pick me!" description={chance.sentence()} level={level + 1}>
               <DefaultTextField label="Content" level={level + 2} />
               <DefaultTextField label="Content" level={level + 2} description="Test this one" />
               <DefaultTextField label="Content" level={level + 2} />
@@ -151,10 +151,10 @@ storiesOf('Fieldsets')
               <DefaultTextField label="Content" level={2} />
             </Fieldset>
           </Fieldset>
-          <Fieldset collapsable legend="Collapsable Level 0" level={0}>
+          <Fieldset isCollapsible legend="Collapsible Level 0" level={0}>
             <DefaultTextField label="Content" level={1} />
           </Fieldset>
-          <Fieldset collapsable legend="Collapsable Level 0, 2 columns" level={0} columns={2}>
+          <Fieldset isCollapsible legend="Collapsible Level 0, 2 columns" level={0} columns={2}>
             <Fieldset legend="Level 1" description="This is the desription" level={1}>
               <DefaultTextField label="Content" level={2} />
             </Fieldset>
@@ -197,11 +197,11 @@ storiesOf('Fieldsets')
             <Fieldset legend="Level 1" level={1}><DefaultTextField label="Content" level={1} /></Fieldset>
           </Fieldset>
 
-          <Fieldset legend="Level 0 with 2 columns. Collapsable" level={0} columns={2}>
-            <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
-            <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
-            <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
-            <Fieldset collapsable legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+          <Fieldset legend="Level 0 with 2 columns. Collapsible" level={0} columns={2}>
+            <Fieldset isCollapsible legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+            <Fieldset isCollapsible legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+            <Fieldset isCollapsible legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
+            <Fieldset isCollapsible legend="Level 1" level={1}><DefaultTextField label="Content" level={2} /></Fieldset>
           </Fieldset>
 
           <Fieldset legend="Level 0 with 3 columns. No desriptions" level={0} columns={3}>
