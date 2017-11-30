@@ -2,22 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
+import defaultStyles from 'part:@sanity/components/textinputs/default-style'
 
 const NOOP = () => {}
-
-const VALID_TYPES = [
-  'color',
-  'date',
-  'email',
-  'month',
-  'password',
-  'search',
-  'tel',
-  'text',
-  'number',
-  'url',
-  'week',
-]
 
 export default class DefaultTextInput extends React.PureComponent {
   static propTypes = {
@@ -25,12 +12,11 @@ export default class DefaultTextInput extends React.PureComponent {
       PropTypes.string,
       PropTypes.number
     ]),
-    type: PropTypes.oneOf(VALID_TYPES),
+    type: PropTypes.string,
     onClear: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     isClearable: PropTypes.bool,
-    isSelected: PropTypes.bool,
     disabled: PropTypes.bool,
     autoComplete: PropTypes.string,
     hasError: PropTypes.bool,
@@ -38,7 +24,6 @@ export default class DefaultTextInput extends React.PureComponent {
       container: PropTypes.string,
       input: PropTypes.string,
       isClearable: PropTypes.string,
-      focusHelper: PropTypes.string,
       clearButton: PropTypes.string,
       inputOnDisabled: PropTypes.string,
       inputOnError: PropTypes.string,
@@ -49,7 +34,6 @@ export default class DefaultTextInput extends React.PureComponent {
   static defaultProps = {
     value: '',
     type: 'text',
-    isSelected: false,
     hasError: false,
     isClearable: false,
     disabled: false,
@@ -60,30 +44,20 @@ export default class DefaultTextInput extends React.PureComponent {
     styles: {}
   }
 
-  componentDidMount() {
-    const {isSelected} = this.props
-    this.setSelected(isSelected)
-    // this.setState({hasFocus: this._input === document.activeElement})
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isSelected !== this.props.isSelected) {
-      this.setSelected(nextProps.isSelected)
-    }
-  }
-
-  select = () => {
-    this._input.select()
-  }
-
-  setInputElement = element => {
-    this._input = element
-  }
-
-  setSelected(isSelected) {
-    if (isSelected) {
+  select() {
+    if (this._input) {
       this._input.select()
     }
+  }
+
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = element => {
+    this._input = element
   }
 
   render() {
@@ -92,10 +66,14 @@ export default class DefaultTextInput extends React.PureComponent {
       hasError,
       isClearable,
       disabled,
-      isSelected,
-      styles,
+      styles: passedStyles,
       ...rest
     } = this.props
+
+    const styles = {
+      ...defaultStyles,
+      ...passedStyles
+    }
 
     return (
       <div
@@ -106,12 +84,11 @@ export default class DefaultTextInput extends React.PureComponent {
         ])}
       >
         <input
-          ref={this.setInputElement}
+          ref={this.setInput}
           {...rest}
           className={classNames(styles.input, [hasError && styles.inputOnError])}
           disabled={disabled}
         />
-        <div className={styles.focusHelper} />
         {isClearable && (
           <button className={styles.clearButton} onClick={onClear}>
             <CloseIcon color="inherit" />

@@ -2,6 +2,7 @@
 import React from 'react'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
+import FocusManager from './focusManagers/SimpleFocusManager'
 
 type PatchChannel = {
   subscribe: () => () => {},
@@ -13,26 +14,53 @@ type Props = {
   schema: any,
   type: Object,
   patchChannel: PatchChannel,
-  onChange: () => {}
+  onChange: () => {},
+  autoFocus: boolean
 }
 
-export default function SanityFormBuilder(props: Props) {
-  return (
-    <SanityFormBuilderContext
-      value={props.value}
-      schema={props.schema}
-      patchChannel={props.patchChannel}
-    >
+export default class SanityFormBuilder extends React.Component<Props> {
+  _input: ?FormBuilderInput
+
+  setInput = (input: ?FormBuilderInput) => {
+    this._input = input
+  }
+
+  componentDidMount() {
+    const {autoFocus} = this.props
+    if (this._input && autoFocus) {
+      this._input.focus()
+    }
+  }
+
+  renderInput = ({onFocus, onBlur, focusPath}) => {
+    const {value, type, onChange} = this.props
+    return (
       <FormBuilderInput
-        type={props.type}
-        onChange={props.onChange}
+        type={type}
+        onChange={onChange}
         level={0}
-        value={props.value}
+        value={value}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
         isRoot
-        autoFocus
+        ref={this.setInput}
       />
-    </SanityFormBuilderContext>
-  )
+    )
+  }
+
+  render() {
+    const {value, schema, patchChannel} = this.props
+    return (
+      <SanityFormBuilderContext
+        value={value}
+        schema={schema}
+        patchChannel={patchChannel}
+      >
+        <FocusManager>{this.renderInput}</FocusManager>
+      </SanityFormBuilderContext>
+    )
+  }
 }
 
 SanityFormBuilder.createPatchChannel = SanityFormBuilderContext.createPatchChannel
