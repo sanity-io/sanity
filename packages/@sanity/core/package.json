@@ -54,7 +54,7 @@
     "tar-fs": "^1.15.2",
     "thenify": "^3.3.0",
     "through2": "^2.0.3",
-    "uglify-js": "^3.0.23"
+    "uglify-js": "3.1.10"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",
