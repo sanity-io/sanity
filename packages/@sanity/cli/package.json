@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "0.122.4",
+  "version": "0.122.5",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -11,7 +11,7 @@
     "pack": "node scripts/pack.js",
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
-    "clean": "rimraf lib bin/sanity",
+    "clean": "rimraf lib",
     "prepublishOnly": "npm run build",
     "posttest": "eslint ."
   },
