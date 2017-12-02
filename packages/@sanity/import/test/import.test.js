@@ -12,6 +12,7 @@ const defaultClient = sanityClient({
   token: 'foo'
 })
 
+const uuidMatcher = /^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$/
 const importOptions = {client: defaultClient}
 const fixturesDir = path.join(__dirname, 'fixtures')
 const getFixturePath = fix => path.join(fixturesDir, `${fix}.ndjson`)
@@ -51,6 +52,13 @@ test('rejects on invalid `_id` property', async () => {
   )
 })
 
+test('rejects on invalid `_id` property format', async () => {
+  await expect(importer(getFixtureStream('invalid-id-format'), importOptions)).rejects.toHaveProperty(
+    'message',
+    'Failed to parse line #2: Document ID "pk#123" is not valid: Please use alphanumeric document IDs. Dashes (-) and underscores (_) are also allowed.'
+  )
+})
+
 test('rejects on missing `_type` property', async () => {
   await expect(importer(getFixtureStream('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
@@ -67,25 +75,43 @@ test('rejects on missing `_type` property (from array)', async () => {
 
 test('accepts an array as source', async () => {
   const docs = getFixtureArray('employees')
-  const client = getSanityClient(getMockEmployeeHandler())
+  const client = getSanityClient(getMockMutationHandler())
   const res = await importer(docs, {client})
   expect(res).toBe(2)
 })
 
 test('accepts a stream as source', async () => {
-  const client = getSanityClient(getMockEmployeeHandler())
+  const client = getSanityClient(getMockMutationHandler())
   const res = await importer(getFixtureStream('employees'), {client})
   expect(res).toBe(2)
 })
 
-function getMockEmployeeHandler() {
+test('generates uuids for documents without id', async () => {
+  const match = body => {
+    expect(body.mutations[0].create._id).toMatch(uuidMatcher)
+    expect(body.mutations[1].create._id).toBe('pk')
+    expect(body.mutations[2].create._id).toMatch(uuidMatcher)
+  }
+
+  const client = getSanityClient(getMockMutationHandler(match))
+  const res = await importer(getFixtureStream('valid-but-missing-ids'), {client})
+  expect(res).toBe(3)
+})
+
+function getMockMutationHandler(match = 'employee creation') {
   return req => {
     const options = req.context.options
     const uri = options.uri || options.url
 
     if (uri.includes('/data/mutate')) {
       const body = JSON.parse(options.body)
-      expect(body).toMatchSnapshot('employee creation')
+
+      if (typeof match === 'function') {
+        match(body)
+      } else {
+        expect(body).toMatchSnapshot(match)
+      }
+
       const results = body.mutations.map(mut => ({
         id: mut.create.id,
         operation: 'create'
