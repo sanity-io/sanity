@@ -1,5 +1,5 @@
 import path from 'path'
-import opn from 'opn'
+import open from 'opn'
 import fse from 'fs-extra'
 
 export default {
@@ -24,6 +24,6 @@ export default {
       : 'https://manage.sanity.io/'
 
     print(`Opening ${url}`)
-    opn(url)
+    open(url, {wait: false})
   }
 }
