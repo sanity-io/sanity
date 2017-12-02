@@ -4,6 +4,7 @@ const validateOptions = require('./validateOptions')
 const streamToArray = require('./streamToArray')
 const {getAssetRefs, unsetAssetRefs} = require('./assetRefs')
 const assignArrayKeys = require('./assignArrayKeys')
+const assignDocumentId = require('./assignDocumentId')
 const uploadAssets = require('./uploadAssets')
 const documentHasErrors = require('./documentHasErrors')
 const batchDocuments = require('./batchDocuments')
@@ -28,9 +29,13 @@ async function importDocuments(input, opts) {
     documents.some(documentHasErrors.validate)
   }
 
+  // Assign document IDs for document that do not have one. This is necessary
+  // for us to strengthen references and import assets properly.
+  const ided = documents.map(doc => assignDocumentId(doc))
+
   // User might not have applied `_key` on array elements which are objects;
   // if this is the case, generate random keys to help realtime engine
-  const keyed = documents.map(doc => assignArrayKeys(doc))
+  const keyed = ided.map(doc => assignArrayKeys(doc))
 
   // Sanity prefers to have a `_type` on every object. Make sure references
   // has `_type` set to `reference`.

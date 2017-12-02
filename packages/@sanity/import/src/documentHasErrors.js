@@ -3,6 +3,10 @@ function documentHasErrors(doc) {
     return `Document contained an invalid "_id" property - must be a string`
   }
 
+  if (typeof doc._id !== 'undefined' && !/^[a-z0-9_.-]+$/i.test(doc._id)) {
+    return `Document ID "${doc._id}" is not valid: Please use alphanumeric document IDs. Dashes (-) and underscores (_) are also allowed.`
+  }
+
   if (typeof doc._type !== 'string') {
     return `Document did not contain required "_type" property of type string`
   }
