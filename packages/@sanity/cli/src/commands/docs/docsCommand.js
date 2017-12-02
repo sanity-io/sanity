@@ -1,4 +1,4 @@
-import opn from 'opn'
+import open from 'opn'
 
 export default {
   name: 'docs',
@@ -10,6 +10,6 @@ export default {
     const url = 'https://www.sanity.io/docs/content-studio'
 
     print(`Opening ${url}`)
-    opn(url)
+    open(url, {wait: false})
   }
 }
