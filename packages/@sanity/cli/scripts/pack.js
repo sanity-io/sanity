@@ -8,10 +8,17 @@ const klawSync = require('klaw-sync')
 const lazyLoader = require.resolve('./lazy-loader')
 const shebangLoader = require.resolve('./shebang-loader')
 const basedir = path.join(__dirname, '..')
+const modulesDir = path.join(basedir, 'node_modules')
+const whitelistNative = mod => {
+  const modName = mod.path.slice(modulesDir.length + 1).split(path.sep)[0]
+  return !['fsevents'].includes(modName)
+}
+
+console.log('Building CLI to a single file')
 
 // Make sure there are no native modules
 const isBinding = file => path.basename(file.path) === 'binding.gyp'
-const bindings = klawSync(basedir, {nodir: true, filter: isBinding})
+const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(whitelistNative)
 
 if (bindings.length > 0) {
   console.error('Eek! Found native module at:')
