@@ -17,6 +17,7 @@ export default class DefaultTextInput extends React.PureComponent {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     isClearable: PropTypes.bool,
+    isSelected: PropTypes.bool,
     disabled: PropTypes.bool,
     autoComplete: PropTypes.string,
     hasError: PropTypes.bool,
@@ -35,6 +36,7 @@ export default class DefaultTextInput extends React.PureComponent {
     value: '',
     type: 'text',
     hasError: false,
+    isSelected: false,
     isClearable: false,
     disabled: false,
     autoComplete: 'off',
@@ -65,6 +67,7 @@ export default class DefaultTextInput extends React.PureComponent {
       onClear,
       hasError,
       isClearable,
+      isSelected,
       disabled,
       styles: passedStyles,
       ...rest
