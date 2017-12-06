@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "0.122.6",
+  "version": "0.122.7",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -37,10 +37,10 @@
   "devDependencies": {
     "@sanity/base": "^0.122.4",
     "@sanity/check": "^0.122.4",
-    "@sanity/cli": "^0.122.6",
-    "@sanity/components": "^0.122.6",
+    "@sanity/cli": "^0.122.7",
+    "@sanity/components": "^0.122.7",
     "@sanity/core": "^0.122.5",
-    "@sanity/form-builder": "^0.122.6",
+    "@sanity/form-builder": "^0.122.7",
     "@sanity/generate-help-url": "^0.120.0",
     "@sanity/observable": "^0.121.0",
     "@sanity/schema": "^0.120.0",
