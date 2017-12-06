@@ -25,6 +25,17 @@ const rules = [
         text: text
       }
     }
+  },
+  {
+    deserialize(el, next) {
+      if (el.tagName.toLowerCase() !== 'img') {
+        return undefined
+      }
+      return {
+        _type: 'image',
+        src: el.getAttribute('src')
+      }
+    }
   }
 ]
 
