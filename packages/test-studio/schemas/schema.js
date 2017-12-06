@@ -1,5 +1,6 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
+import colorInputType from 'part:@sanity/form-builder/input/color/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 
 import book from './book'
@@ -14,6 +15,7 @@ import arrays from './arrays'
 import files from './files'
 import uploads from './uploads'
 import code from './code'
+import color from './color'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
 import numbers from './numbers'
@@ -48,6 +50,7 @@ export default createSchema({
     arrays,
     uploads,
     code,
+    color,
     images,
     files,
     references,
@@ -60,6 +63,7 @@ export default createSchema({
     recursiveArray,
     myObject,
     codeInputType,
+    colorInputType,
     notitle,
     typeWithNoToplevelStrings
   ])
