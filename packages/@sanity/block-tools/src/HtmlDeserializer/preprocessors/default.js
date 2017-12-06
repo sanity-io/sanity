@@ -7,8 +7,6 @@ export default (html, doc) => {
     '/html/text()',
     '/html/head/text()',
     '/html/body/text()',
-    '//p[not(.//text())]',
-    '//span[not(.//text())]',
     '//comment()',
     '//style',
     '//xml',

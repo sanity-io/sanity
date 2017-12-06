@@ -160,6 +160,17 @@ export default class HtmlDeserializer {
           ret.level++
         }
       }
+      // Set newlines on spans orginating from a block element within a blockquote
+      if (ret && ret._type === 'block' && ret.style === 'blockquote') {
+        ret.children.forEach((child, index) => {
+          if (child._type === 'span' && child.text === '\r') {
+            child.text = '\n\n'
+            if (index === 0 || index === ret.children.length - 1) {
+              ret.children.splice(index, 1)
+            }
+          }
+        })
+      }
       break
     }
     return node || next(element.childNodes)

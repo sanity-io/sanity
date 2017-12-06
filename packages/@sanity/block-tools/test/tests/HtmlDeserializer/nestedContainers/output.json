@@ -43,9 +43,28 @@
         "marks": [],
         "text":
           "And I'm a quote within a quote within a quote within a quote."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n\n"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "I am a stupid paragraph within with a stupid "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey0"],
+        "text": "link"
       }
     ],
-    "markDefs": [],
+    "markDefs": [{
+      "_key": "randomKey0",
+      "_type": "link",
+      "href": "foo"
+    }],
     "style": "blockquote"
   },
   {
