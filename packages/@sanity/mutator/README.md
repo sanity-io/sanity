@@ -20,9 +20,8 @@
 import {Patcher} from '@sanity/mutator'
 
 const document = {
-  a: {
-    _id: 'a1b2c3'
-  }
+  _id: 'a1b2c3',
+  a: {}
 }
 
 const patcher = new Patcher({
