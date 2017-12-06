@@ -45,6 +45,41 @@ export default function createDefaultRules(blockContentType, options = {}) {
       }
     },
 
+    // Blockquote element
+    {
+      deserialize(el, next) {
+        if (tagName(el) !== 'blockquote') {
+          return undefined
+        }
+        const blocks = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
+        delete blocks.blockquote
+        const children = []
+        el.childNodes.forEach((node, index) => {
+          if (node.nodeType === 1
+              && Object.keys(blocks).includes(node.localName.toLowerCase())) {
+            const span = el.ownerDocument.createElement('span')
+            span.appendChild(el.ownerDocument.createTextNode('\r'))
+            node.childNodes.forEach(cn => {
+              span.appendChild(cn.cloneNode(true))
+            })
+            if (index !== el.childNodes.length) {
+              span.appendChild(el.ownerDocument.createTextNode('\r'))
+            }
+            children.push(span)
+          } else {
+            children.push(node)
+          }
+        })
+
+        return {
+          _type: 'block',
+          style: 'blockquote',
+          markDefs: [],
+          children: next(children)
+        }
+      }
+    },
+
     // Block elements
     {
       deserialize(el, next) {
