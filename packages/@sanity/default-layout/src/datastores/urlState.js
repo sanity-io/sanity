@@ -66,7 +66,7 @@ function resolveIntentState(currentState, intentState) {
 
 function maybeHandleIntent(prevEvent, currentEvent) {
   if (currentEvent.state && currentEvent.state.intent) {
-    const redirectState = resolveIntentState(prevEvent.state, currentEvent.state)
+    const redirectState = resolveIntentState(prevEvent ? prevEvent.state : {}, currentEvent.state)
     if (redirectState) {
       navigate(rootRouter.encode(redirectState), {replace: true})
       return null
