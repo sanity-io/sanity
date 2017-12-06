@@ -170,7 +170,6 @@ export default class HtmlDeserializer {
             }
           }
         })
-        delete ret.__blockStyleSpans
       }
       break
     }
