@@ -87,14 +87,6 @@
     display: block;
   }
 
-  @nest .level1 & {
-    background-color: var(--component-bg);
-    border: 1px solid var(--component-border-color);
-    box-shadow: var(--component-box-shadow);
-    padding: var(--medium-padding);
-    border-radius: var(--border-radius-base);
-  }
-
   @nest .transparent & {
     background-color: transparent;
   }
@@ -105,6 +97,14 @@
     padding: 0;
     box-shadow: none;
   }
+}
+
+.level1 > .inner > .content {
+  background-color: var(--component-bg);
+  border: 1px solid var(--component-border-color);
+  box-shadow: var(--component-box-shadow);
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
 }
 
 .inner {
