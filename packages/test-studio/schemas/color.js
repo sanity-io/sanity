@@ -14,11 +14,12 @@ export default {
     prepare({title, color}) {
       let subtitle = (color && color.hex) || 'No color set'
       if (color && color.hsl) {
-        subtitle = `${color.hex} H:${Math.round(color.hsl.l * 100)} S:${Math.round(color.hsl.l * 100)} L:${Math.round(color.hsl.l * 100)} A:${Math.round(color.hsl.a * 100)}` //eslint-disable-line max-len
+        subtitle = `${color.hex}` //eslint-disable-line max-len
       }
       return {
         title: title,
         subtitle: subtitle,
+        description: color && color.hsl && `H:${Math.round(color.hsl.l * 100)} S:${Math.round(color.hsl.l * 100)} L:${Math.round(color.hsl.l * 100)} A:${Math.round(color.hsl.a * 100)}`,
         media: () => {
           return (
             <div

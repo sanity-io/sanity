@@ -8,8 +8,15 @@ export default {
       title: 'name',
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
-      imageUrl: 'image.asset.url',
       lastUpdated: '_updatedAt'
+      media: 'image',
+    },
+    prepare({title, media, awards}) {
+      return {
+        title: title,
+        media: media,
+        subtitle: awards && awards.join(', ')
+      }
     }
   },
   fields: [
