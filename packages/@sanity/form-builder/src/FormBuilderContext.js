@@ -28,7 +28,9 @@ function memoizeMap(method) {
       return map.get(arg)
     }
     const val = method.call(this, arg)
-    map.set(arg, val)
+    if (arg) {
+      map.set(arg, val)
+    }
     return val
   }
 }
