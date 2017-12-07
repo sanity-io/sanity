@@ -31,8 +31,9 @@ const cases = [
       .forceDownload('a.png')
       .flipHorizontal()
       .flipVertical()
+      .fit('crop')
       .url()),
-    expect: 'rect=10,20,30,40&fp-x=10&fp-x=20&flip=hv&fm=png&dl=a.png&blur=50&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50'
+    expect: 'rect=10,20,30,40&fp-x=10&fp-x=20&flip=hv&fm=png&dl=a.png&blur=50&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50&fit=crop'
   }
 ]
 
