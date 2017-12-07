@@ -24,10 +24,10 @@
     "ndjson"
   ],
   "dependencies": {
+    "@rexxars/get-uri": "^2.0.2",
     "@sanity/mutator": "^0.120.0",
     "@sanity/uuid": "^0.120.0",
     "debug": "^2.6.3",
-    "get-uri": "^2.0.1",
     "lodash": "^4.17.4",
     "p-map": "^1.2.0",
     "simple-concat": "^1.0.0",
