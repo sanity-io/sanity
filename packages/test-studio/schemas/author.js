@@ -8,7 +8,7 @@ export default {
       title: 'name',
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
-      lastUpdated: '_updatedAt'
+      lastUpdated: '_updatedAt',
       media: 'image',
     },
     prepare({title, media, awards}) {
