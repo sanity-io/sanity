@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import PatchEvent, {set, setIfMissing} from '@sanity/form-builder/PatchEvent'
+import PatchEvent, {set, merge} from '@sanity/form-builder/PatchEvent'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ColorPicker from './ColorPicker'
 
@@ -40,7 +40,7 @@ export default class ColorInput extends PureComponent {
 
   handleColorChangeComplete = (color, event) => {
     const {onChange} = this.props
-    console.log('event', event, event.type)
+
     if (!color) {
       console.error('Color missing') //eslint-disable-line
     }
@@ -48,7 +48,9 @@ export default class ColorInput extends PureComponent {
     color._type = 'color'
     color.alpha = color.rgb.a
 
-    onChange(PatchEvent.from(set(color)))
+    onChange(PatchEvent.from(
+      Object.keys(color).map(key => set(color[key], [key]))
+    ))
   }
 
   render() {
