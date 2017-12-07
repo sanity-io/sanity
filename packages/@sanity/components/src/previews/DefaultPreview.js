@@ -3,6 +3,7 @@ import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
 import SvgPlaceholder from './common/SvgPlaceholder'
 import Styleable from '../utilities/Styleable'
+import TextEllipsis from 'react-text-ellipsis'
 
 const PLACEHOLDER = (
   <div className={defaultStyles.root}>
@@ -10,18 +11,20 @@ const PLACEHOLDER = (
   </div>
 )
 
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
+
 class DefaultPreview extends React.PureComponent {
   static propTypes = {
-    title: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
-    subtitle: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
+    title: fieldProp,
+    subtitle: fieldProp,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
       aspect: PropTypes.number,
     }),
-    renderMedia: PropTypes.func,
-    status: PropTypes.oneOf([PropTypes.string, PropTypes.node]),
+    status: fieldProp,
+    media: fieldProp,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
     styles: PropTypes.object,
@@ -29,28 +32,29 @@ class DefaultPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled',
-    mediaDimensions: {width: 40, height: 40, aspect: 1, fit: 'crop'},
+    title: 'Untitled…',
     subtitle: undefined,
     progress: undefined,
+    media: undefined,
+    mediaDimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'}
   }
 
   render() {
     const {
       title,
       subtitle,
-      renderMedia,
-      mediaDimensions,
+      media,
       children,
       status,
       isPlaceholder,
       progress,
+      mediaDimensions,
       styles
     } = this.props
 
     if (isPlaceholder) {
       return (
-        <div>
+        <div className={media ? styles.hasMedia : ''}>
           {PLACEHOLDER}
         </div>
       )
@@ -61,34 +65,59 @@ class DefaultPreview extends React.PureComponent {
         className={`
           ${styles.root}
           ${subtitle ? styles.hasSubtitle : ''}
-          ${renderMedia ? styles.hasMedia : ''}
+          ${media ? styles.hasMedia : ''}
         `}
       >
         {
-          renderMedia && (
+          media && (
             <div className={`${styles.media}`}>
-              {renderMedia(mediaDimensions)}
+              {
+                typeof media === 'function' && (
+                  media({dimensions: mediaDimensions, layout: 'default'})
+                  || <div className={styles.noMedia} />
+                )
+              }
+              {
+                typeof media !== 'function' && media
+              }
             </div>
           )
         }
         <div className={styles.heading}>
           <h2 className={styles.title}>
-            {title}
+            {
+              typeof title !== 'function' && title
+            }
+            {
+              typeof title === 'function' && title({layout: 'default'})
+            }
           </h2>
           {
             subtitle && (
               <h3 className={styles.subtitle}>
-                {subtitle}
+                {
+                  (typeof subtitle === 'function' && subtitle({layout: 'default'}))
+                  || subtitle
+                }
               </h3>
             )
           }
         </div>
-        <div className={styles.status}>{status}</div>
+        {
+          status && (
+            <div className={styles.status}>
+              {
+                (typeof status === 'function' && status({layout: 'default'}))
+                || status
+              }
+            </div>
+          )
+        }
         {
           children && <div className={styles.children}>{children}</div>
         }
         {
-          progress && (
+          typeof progress === 'number' && progress > -1 && (
             <div className={styles.progress}>
               <div className={styles.progressBar} style={{width: `${progress}%`}} />
             </div>

@@ -2,13 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
 import SvgPlaceholder from './common/SvgPlaceholder'
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
 export default class MediaPreview extends React.PureComponent {
   static propTypes = {
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-    description: PropTypes.string,
-    renderMedia: PropTypes.func,
+    title: fieldProp,
+    subtitle: fieldProp,
+    description: fieldProp,
+    media: fieldProp,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
@@ -20,6 +21,12 @@ export default class MediaPreview extends React.PureComponent {
   }
 
   static defaultProps = {
+    title: undefined,
+    subtitle: undefined,
+    description: undefined,
+    media: undefined,
+    isPlaceholder: false,
+    children: undefined,
     mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'}
   }
 
@@ -28,7 +35,7 @@ export default class MediaPreview extends React.PureComponent {
       title,
       subtitle,
       description,
-      renderMedia,
+      media,
       mediaDimensions,
       children,
       isPlaceholder
@@ -49,7 +56,15 @@ export default class MediaPreview extends React.PureComponent {
       <div className={styles.root} title={title}>
         <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
         <div className={styles.mediaContainer}>
-          {renderMedia(mediaDimensions)}
+          {
+            typeof media === 'function' && (
+              media({dimensions: mediaDimensions, layout: 'default'})
+              || <div className={styles.noMedia} />
+            )
+          }
+          {
+            typeof media !== 'function' && media
+          }
         </div>
         <div className={styles.meta}>
           <div className={styles.metaInner}>

@@ -17,7 +17,9 @@
 }
 
 .root {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
   padding: 0;
   user-select: none;
   height: 2.5em;
@@ -26,17 +28,10 @@
 }
 
 .heading {
-  position: absolute;
-  top: 0;
-  right: var(--small-padding);
-  height: var(--height);
-  box-sizing: border-box;
-  left: var(--small-padding);
-
-  @nest .hasMedia & {
-    left: var(--media-width);
-    padding-left: var(--small-padding);
-  }
+  min-width: 0; /* making ellipsis work */
+  margin-right: var(--small-padding);
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .ellipsis {
@@ -54,6 +49,7 @@
   text-transform: none;
   padding: 0;
   margin: 0;
+  max-width: 100%;
 
   @nest .hasSubtitle & {
     line-height: 1.3em;
@@ -70,28 +66,26 @@
   font-size: 0.7em;
   font-weight: 300;
   line-height: 1.5em;
-  width: calc(100% - 1em);
 }
 
 .media {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: var(--media-width);
-  width: var(--media-width);
-  overflow: hidden;
+  position: relative;
   background-color: var(--gray-lighter);
+  flex-basis: 2.5rem;
+  min-width: 2.5rem;
+  margin-right: var(--small-padding);
+  font-size: 0.5em;
+  overflow: hidden;
 
-  @nest & div {
-    position: relative;
-    height: var(--media-width);
-    width: var(--media-width);
-    overflow: hidden;
+  @nest .placeholder & {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   @nest & img {
     display: block;
-    object-fit: cover;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 }
 
@@ -106,29 +100,29 @@
     y: 0.25rem;
 
     @nest .hasMedia & {
-      width: calc(100% - 3rem);
-      x: 2.5rem;
+      width: calc(100% - 3.5rem);
+      x: 3rem;
     }
   }
 
   @nest & .subtitle {
     height: 0.5rem;
     width: 40%;
-    x: 0.25em;
+    x: 0.25rem;
     y: 1.7rem;
 
     @nest .hasMedia & {
-      x: 2.5rem;
+      x: 3rem;
     }
   }
 
   @nest & .media {
-    display: none;
-
     @nest .hasMedia & {
       display: block;
-      x: 0.25rem;
-      y: 0.25rem;
+      height: 2.5rem;
+      width: 2.5rem;
+      x: 0;
+      y: 0;
     }
   }
 }
@@ -140,6 +134,12 @@
   height: 100%;
   width: 100%;
   z-index: -1;
+}
+
+.status {
+  vertical-align: middle;
+  line-height: 2.5rem;
+  margin-left: auto;
 }
 
 .progress {

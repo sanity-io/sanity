@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
-import {truncate} from 'lodash'
+import TextEllipsis from 'react-text-ellipsis'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
 export default class DetailPreview extends React.PureComponent {
   static propTypes = {
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-    description: PropTypes.string,
-    renderMedia: PropTypes.func,
+    title: fieldProp,
+    subtitle: fieldProp,
+    description: fieldProp,
+    status: fieldProp,
+    media: fieldProp,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
@@ -23,13 +25,14 @@ export default class DetailPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: undefined,
-    subtitle: undefined,
-    description: undefined,
-    renderMedia: undefined,
+    title: 'Untitled…',
+    subtitle: 'No subtitle…',
+    description: 'No description…',
+    media: undefined,
+    status: undefined,
     children: undefined,
     isPlaceholder: false,
-    mediaDimensions: {width: 80, height: 80, fit: 'crop', aspect: 1}
+    mediaDimensions: {width: 120, height: 120, fit: 'crop', aspect: 1}
   }
 
   index = index++
@@ -40,7 +43,8 @@ export default class DetailPreview extends React.PureComponent {
       subtitle,
       description,
       mediaDimensions,
-      renderMedia,
+      media,
+      status,
       children,
       isPlaceholder
     } = this.props
@@ -55,19 +59,49 @@ export default class DetailPreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        <div className={styles.media}>
-          {renderMedia(mediaDimensions)}
-        </div>
+        {
+          media && (
+            <div className={styles.media}>
+              {
+                typeof media === 'function' && (
+                  media({dimensions: mediaDimensions, layout: 'default'})
+                  || <div className={styles.noMedia} />
+                )
+              }
+              {
+                typeof media !== 'function' && media
+              }
+            </div>
+          )
+        }
         <div className={styles.content}>
-          <div className={styles.heading}>
-            <h2 className={styles.title}>
-              {title}
-            </h2>
+          <div className={styles.top}>
+            <div className={styles.heading}>
+              <h2 className={styles.title}>
+                {
+                  (typeof title === 'function' && title({layout: 'detail'}))
+                  || title
+                }
+              </h2>
+              {
+                subtitle && (
+                  <h3 className={styles.subtitle}>
+                    {
+                      (typeof subtitle === 'function' && subtitle({layout: 'detail'}))
+                      || subtitle
+                    }
+                  </h3>
+                )
+              }
+            </div>
             {
-              subtitle && (
-                <h3 className={styles.subtitle}>
-                  {subtitle}
-                </h3>
+              status && (
+                <div className={status}>
+                  {
+                    (typeof status === 'function' && status({layout: 'detail'}))
+                    || status
+                  }
+                </div>
               )
             }
           </div>
@@ -75,10 +109,24 @@ export default class DetailPreview extends React.PureComponent {
             description && (
               <p className={styles.description}>
                 {
-                  truncate(description, {
-                    length: 70,
-                    separator: /,? +/
-                  })
+                  typeof description === 'function' && description({layout: 'detail'})
+                }
+                {
+                  typeof description === 'string' && (
+                    <TextEllipsis
+                      lines={2}
+                      tag={'span'}
+                      ellipsisChars={'…'}
+                      tagClass={'className'}
+                      debounceTimeoutOnResize={200}
+                      useJsOnly
+                    >
+                      {description}
+                    </TextEllipsis>
+                  )
+                }
+                {
+                  typeof description === 'object' && description
                 }
               </p>
             )

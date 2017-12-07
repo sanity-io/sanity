@@ -7,14 +7,14 @@ export default class BlockPreview extends React.PureComponent {
     title: PropTypes.string,
     subtitle: PropTypes.string,
     description: PropTypes.string,
-    renderMedia: PropTypes.func,
+    me: PropTypes.func,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
       aspect: PropTypes.number,
     }),
-    children: PropTypes.node,
+    children: PropTypes.func,
     type: PropTypes.shape({
       title: PropTypes.string,
       name: PropTypes.string
@@ -22,7 +22,11 @@ export default class BlockPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'}
+    mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'},
+    type: {
+      title: undefined,
+      name: undefined
+    }
   }
 
   render() {

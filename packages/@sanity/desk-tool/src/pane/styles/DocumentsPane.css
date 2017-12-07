@@ -53,13 +53,6 @@
 }
 
 .itemStatus {
-  position: absolute;
-  top: 50%;
-  right: 0.5em;
-  transform: translateY(-50%);
-  opacity: 0.5;
-  z-index: 1;
-
   @nest .selectedItem & {
     color: var(--selected-item-color--inverted);
   }
