@@ -194,7 +194,7 @@ export default class HtmlDeserializer {
         if (node.text.trim()) { // Only apply marks if this is an actual text
           node.marks.unshift(name)
         }
-      } else {
+      } else if (node.children) {
         node.children = node.children.map(applyDecorator)
       }
       return node
@@ -228,7 +228,7 @@ export default class HtmlDeserializer {
         if (node.text.trim()) { // Only apply marks if this is an actual text
           node.marks.unshift(markDef._key)
         }
-      } else {
+      } else if (node.children) {
         node.children = node.children.map(applyAnnotation)
       }
       return node
