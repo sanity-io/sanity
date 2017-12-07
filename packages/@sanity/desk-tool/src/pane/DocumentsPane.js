@@ -304,7 +304,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             const items = removePublishedWithDrafts(result ? result.documents : [])
 
             return (
-              <div className={styles.root}>
+              <div className={styles[`layout__${settings.listLayout}`]}>
                 {loading && (
                   <div className={styles.spinner}>
                     <Spinner center message="Loading items…" />

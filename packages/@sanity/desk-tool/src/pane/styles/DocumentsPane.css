@@ -17,6 +17,22 @@
   position: relative;
 }
 
+.layout__default {
+  composes: root;
+}
+
+.layout__detail {
+  composes: root;
+}
+
+.layout__card {
+  composes: root;
+}
+
+.layout__media {
+  composes: root;
+}
+
 .spinner {
   height: 100vh;
   transform: translateY(-30%);
@@ -40,11 +56,21 @@
   text-decoration: inherit;
   outline: none;
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  height: 100%;
 }
 
 .item {
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
-  padding: var(--small-padding) var(--medium-padding);
+  height: 100%;
+  box-sizing: border-box;
+
+  @nest .layout__default & {
+    padding: var(--small-padding) var(--medium-padding);
+  }
+
+  @nest .layout__detail & {
+    padding: var(--small-padding) var(--medium-padding);
+  }
 }
 
 .selectedItem {
