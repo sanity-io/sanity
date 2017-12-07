@@ -58,12 +58,16 @@ export default class MediaPreview extends React.PureComponent {
         <div className={styles.mediaContainer}>
           {
             typeof media === 'function' && (
-              media({dimensions: mediaDimensions, layout: 'default'})
-              || <div className={styles.noMedia} />
+              media({dimensions: mediaDimensions, layout: 'media'})
             )
           }
           {
-            typeof media !== 'function' && media
+            typeof media === 'string' && (
+              <div className={styles.mediaString}>{media}</div>
+            )
+          }
+          {
+            typeof media === 'object' && media
           }
         </div>
         <div className={styles.meta}>

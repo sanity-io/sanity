@@ -22,7 +22,7 @@ export default class CardPreview extends React.PureComponent {
     description: fieldProp,
     date: PropTypes.instanceOf(Date),
     status: fieldProp,
-    renderMedia: PropTypes.func,
+    media: fieldProp,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
@@ -39,7 +39,7 @@ export default class CardPreview extends React.PureComponent {
     description: undefined,
     date: undefined,
     status: undefined,
-    renderMedia: undefined,
+    media: undefined,
     isPlaceholder: false,
     children: undefined,
     mediaDimensions: {width: 300, height: 225, aspect: 4 / 3, fit: 'crop'}
@@ -96,7 +96,7 @@ export default class CardPreview extends React.PureComponent {
       subtitle,
       description,
       date,
-      renderMedia,
+      media,
       mediaDimensions,
       children,
       isPlaceholder,
@@ -140,7 +140,7 @@ export default class CardPreview extends React.PureComponent {
       <div className={styles.root}>
         <div className={styles.inner}>
           {
-            renderMedia && (
+            media && (
               <div className={styles.media}>
                 <div
                   className={styles.mediaPadding}
@@ -149,7 +149,19 @@ export default class CardPreview extends React.PureComponent {
                   }}
                 />
                 <div className={aspect ? styles.mediaContent : styles.mediaContentRelative}>
-                  {renderMedia(mediaDimensions)}
+                  {
+                    typeof media === 'function' && (
+                      media({dimensions: mediaDimensions, layout: 'default'})
+                    )
+                  }
+                  {
+                    typeof media === 'string' && (
+                      <div className={styles.mediaString}>{media}</div>
+                    )
+                  }
+                  {
+                    typeof media === 'object' && media
+                  }
                 </div>
               </div>
             )

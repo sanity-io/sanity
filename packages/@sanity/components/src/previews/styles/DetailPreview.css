@@ -86,6 +86,13 @@
   }
 }
 
+.mediaString {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  padding: 5px;
+  font-size: var(--font-size-small);
+  color: var(--gray);
+}
+
 .placeholder {
   width: 100%;
 

@@ -63,13 +63,15 @@ export default class DetailPreview extends React.PureComponent {
           media && (
             <div className={styles.media}>
               {
-                typeof media === 'function' && (
-                  media({dimensions: mediaDimensions, layout: 'default'})
-                  || <div className={styles.noMedia} />
+                typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
+              }
+              {
+                typeof media === 'string' && (
+                  <div className={styles.mediaString}>{media}</div>
                 )
               }
               {
-                typeof media !== 'function' && media
+                typeof media === 'object' && media
               }
             </div>
           )

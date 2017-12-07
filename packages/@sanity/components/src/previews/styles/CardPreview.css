@@ -60,12 +60,21 @@
 .media {
   position: relative;
   width: 100%;
+  overflow: hidden;
+  background-image: var(--placeholder-gradient);
 
   @nest & img {
     display: block;
     width: 100%;
     height: auto;
   }
+}
+
+.mediaString {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  padding: 5px;
+  font-size: var(--font-size-small);
+  color: var(--gray);
 }
 
 .mediaPadding {
