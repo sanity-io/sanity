@@ -72,16 +72,23 @@
   }
 }
 
+.touchScroll {
+  -webkit-overflow-scrolling: touch;
+}
+
 .scrollAll {
   overflow: overlay;
+  composes: touchScroll;
 }
 
 .scrollX {
   overflow-y: hidden;
-  overflow-x: auto;
+  overflow-x: overlay;
+  composes: touchScroll;
 }
 
 .scrollY {
   overflow-y: overlay;
   overflow-x: hidden;
+  composes: touchScroll;
 }
