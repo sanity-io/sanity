@@ -123,6 +123,10 @@ class ImageUrlBuilder {
     return this._withOptions({ignoreImageParams: true})
   }
 
+  fit(value) {
+    return this._withOptions({fit: value})
+  }
+
   // Gets the url based on the submitted parameters
   url() {
     return urlForImage(this.options)
