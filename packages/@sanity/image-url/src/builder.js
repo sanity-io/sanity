@@ -45,6 +45,10 @@ class ImageUrlBuilder {
     return this._withOptions({focalPoint: {x, y}})
   }
 
+  fit(fit) {
+    return this._withOptions({fit})
+  }
+
   maxWidth(maxWidth) {
     return this._withOptions({maxWidth})
   }
