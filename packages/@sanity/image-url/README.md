@@ -102,6 +102,10 @@ Make this an url to download the image. Specify the file name that will be sugge
 
 Flips the image.
 
+### `fit(value)`
+
+Configures the fit mode. See the [documentation](https://www.sanity.io/docs/reference/image-urls#fit-object-object) for details.
+
 ### `ignoreImageParams()`
 
 Ignore any specifications from the image record (i.e. crop and hotspot).
