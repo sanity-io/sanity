@@ -1,4 +1,4 @@
-const getUri = require('get-uri')
+const getUri = require('@rexxars/get-uri')
 const simpleConcat = require('simple-concat')
 
 function getBufferForUri(uri) {
