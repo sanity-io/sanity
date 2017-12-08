@@ -30,13 +30,15 @@ export default class LoginWrapper extends React.PureComponent {
       PropTypes.string,
       PropTypes.node
     ]),
-    sanityLogo: PropTypes.node
+    sanityLogo: PropTypes.node,
+    loadingScreen: PropTypes.node,
   }
 
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
     sanityLogo: <SanityStudioLogo />,
+    loadingScreen: <Spinner center fullscreen />
   };
 
   state = {isLoading: true, user: null, error: null}
@@ -60,9 +62,9 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children} = this.props
+    const {children, loadingScreen} = this.props
     if (isLoading) {
-      return <Spinner fullscreen center />
+      return loadingScreen
     }
 
     if (error) {
