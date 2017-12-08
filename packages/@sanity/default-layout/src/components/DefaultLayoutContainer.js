@@ -6,6 +6,7 @@ import NotFound from './NotFound'
 import getOrderedTools from '../util/getOrderedTools'
 import rootRouter from '../defaultLayoutRouter'
 import * as urlStateStore from '../datastores/urlState'
+import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 
 export default class DefaultLayoutContainer extends React.PureComponent {
   state = {}
@@ -52,7 +53,6 @@ export default class DefaultLayoutContainer extends React.PureComponent {
       </RouterProvider>
     )
 
-    return LoginWrapper ? <LoginWrapper>{router}</LoginWrapper> : router
+    return LoginWrapper ? <LoginWrapper loadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper> : router
   }
 }
-
