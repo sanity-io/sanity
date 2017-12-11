@@ -1,6 +1,5 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
-import colorInputType from 'part:@sanity/form-builder/input/color/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 
 import book from './book'
@@ -65,7 +64,6 @@ export default createSchema({
     recursiveArray,
     myObject,
     codeInputType,
-    colorInputType,
     notitle,
     typeWithNoToplevelStrings
   ])

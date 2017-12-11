@@ -13,11 +13,7 @@
       "path": "ColorInput.js"
     },
     {
-      "name": "part:@sanity/form-builder/input/color/schema",
-      "description": "An editor for code in sanity"
-    },
-    {
-      "implements": "part:@sanity/form-builder/input/color/schema",
+      "implements": "part:@sanity/base/schema-type",
       "path": "schema.js"
     }
   ]

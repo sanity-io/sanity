@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import UploadProgressBar from './UploadProgressBar'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import imageUrlBuilder from '@sanity/image-url'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
@@ -39,10 +38,6 @@ export default class SanityDefaultPreview extends React.PureComponent {
     type: PropTypes.shape({
       title: PropTypes.string
     }).isRequired
-  }
-
-  legacyCheck = () => {
-
   }
 
   renderMedia = options => {

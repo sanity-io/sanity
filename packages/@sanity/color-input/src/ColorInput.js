@@ -59,7 +59,7 @@ export default class ColorInput extends PureComponent {
     return (
       <Fieldset legend={type.title} description={type.description}>
         <ColorPicker
-          color={value.rgb || value.hex}
+          color={value.hsl || value.hex}
           onChange={this.handleColorChange}
           onChangeComplete={this.handleColorChangeComplete}
           disableAlpha={type.options && type.options.disableAlpha}
