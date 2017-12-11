@@ -36,7 +36,7 @@ export default class LoginDialog extends React.Component {
       PropTypes.string,
       PropTypes.node
     ]),
-    sanityLogo: PropTypes.node,
+    SanityLogo: PropTypes.element,
     projectId: PropTypes.string
   };
 
@@ -74,14 +74,14 @@ export default class LoginDialog extends React.Component {
   }
 
   renderLoginScreen() {
-    const {title, description, sanityLogo} = this.props
+    const {title, description, SanityLogo} = this.props
     return (
       <div className={styles.root}>
 
         <div className={styles.inner}>
-          { sanityLogo && (
+          { SanityLogo && (
             <div className={styles.sanityLogo}>
-              {sanityLogo}
+              <SanityLogo />
             </div>
           )}
 

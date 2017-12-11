@@ -30,8 +30,8 @@ export default class LoginWrapper extends React.PureComponent {
       PropTypes.string,
       PropTypes.node
     ]),
-    sanityLogo: PropTypes.node,
-    loadingScreen: PropTypes.node,
+    sanityLogo: PropTypes.element,
+    loadingScreen: PropTypes.element,
   }
 
   static defaultProps = {
@@ -62,7 +62,7 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children, loadingScreen} = this.props
+    const {children, loadingScreen, sanityLogo} = this.props
     if (isLoading) {
       return loadingScreen
     }
@@ -77,7 +77,7 @@ export default class LoginWrapper extends React.PureComponent {
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
-            sanityLogo={this.props.sanityLogo}
+            sanityLogo={sanityLogo}
             projectId={projectId}
           />
         </CookieTest>

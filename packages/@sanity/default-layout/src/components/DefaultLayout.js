@@ -40,6 +40,24 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     loaded: false
   }
 
+  componentDidMount() {
+    if (this._loadingScreenElement && this.state.showLoadingScreen) {
+      this._loadingScreenElement.addEventListener('animationend', this.handleAnimationEnd, false)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._loadingScreenElement) {
+      this._loadingScreenElement.removeEventListener('animationend', this.handleAnimationEnd, false)
+    }
+  }
+
+  handleAnimationEnd = event => {
+    this.setState({
+      showLoadingScreen: false
+    })
+  }
+
   componentDidUpdate(prevProps) {
     if (!this.state.loaded) {
       this.setState({
@@ -73,13 +91,7 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
   }
 
   setLoadingScreenElement = element => {
-    if (element && this.state.showLoadingScreen) {
-      element.addEventListener('animationend', event => {
-        this.setState({
-          showLoadingScreen: false
-        })
-      }, false)
-    }
+    this._loadingScreenElement = element
   }
 
   renderContent = () => {
