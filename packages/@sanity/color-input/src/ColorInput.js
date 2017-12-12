@@ -1,8 +1,10 @@
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import PatchEvent, {set, merge} from '@sanity/form-builder/PatchEvent'
+import {PatchEvent, patches} from 'part:@sanity/form-builder'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ColorPicker from './ColorPicker'
+
+const {set} = patches
 
 export default class ColorInput extends PureComponent {
 
@@ -23,7 +25,7 @@ export default class ColorInput extends PureComponent {
   }
 
   state = {
-    value: this.props.value || {hex: '#000000'}
+    value: this.props.value || {hsl: {h: 180, s: 0, l: 0, a: 1}}
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,11 +47,10 @@ export default class ColorInput extends PureComponent {
       console.error('Color missing') //eslint-disable-line
     }
 
-    color._type = 'color'
-    color.alpha = color.rgb.a
+    const value = Object.assign({_type: 'color', alpha: color.rgb.a}, color)
 
     onChange(PatchEvent.from(
-      Object.keys(color).map(key => set(color[key], [key]))
+      Object.keys(value).map(key => set(value[key], [key]))
     ))
   }
 
