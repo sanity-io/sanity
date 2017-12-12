@@ -30,7 +30,7 @@ export default class LoginDialog extends React.Component {
   static propTypes = {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
-    sanityLogo: PropTypes.oneOfType([
+    SanityLogo: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.func
     ]),
@@ -39,7 +39,7 @@ export default class LoginDialog extends React.Component {
 
   static defaultProps = {
     description: null,
-    sanityLogo: null,
+    SanityLogo: null,
     projectId: null
   }
 
@@ -71,14 +71,14 @@ export default class LoginDialog extends React.Component {
   }
 
   renderLoginScreen() {
-    const {title, description, sanityLogo} = this.props
+    const {title, description, SanityLogo} = this.props
     return (
       <div className={styles.root}>
 
         <div className={styles.inner}>
-          { sanityLogo && (
+          { SanityLogo && (
             <div className={styles.sanityLogo}>
-              {typeof sanitylogo === 'function' ? <sanityLogo /> : sanityLogo}
+              {typeof SanityLogo === 'function' ? <SanityLogo /> : SanityLogo}
             </div>
           )}
 

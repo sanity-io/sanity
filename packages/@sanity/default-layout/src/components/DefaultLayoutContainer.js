@@ -53,6 +53,6 @@ export default class DefaultLayoutContainer extends React.PureComponent {
       </RouterProvider>
     )
 
-    return LoginWrapper ? <LoginWrapper loadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper> : router
+    return LoginWrapper ? <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper> : router
   }
 }

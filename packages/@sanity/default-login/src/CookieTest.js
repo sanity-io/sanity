@@ -39,16 +39,14 @@ class CookieTest extends PureComponent {
   }
 
   renderWhiteListForm() { // eslint-disable-line class-methods-use-this
-    const {sanityLogo} = this.props
+    const {SanityLogo} = this.props
     const redirectTo = `${client.clientConfig.url}/auth/whitelist?redirectTo=${encodeURIComponent(window.location.toString())}`
     return (
       <div className={styles.root}>
 
         <div className={styles.inner}>
-
-
           <div className={styles.sanityLogo}>
-            {sanityLogo}
+            {typeof SanityLogo === 'function' ? <SanityLogo /> : SanityLogo}
           </div>
           <div className={styles.branding}>
             <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
@@ -98,7 +96,10 @@ class CookieTest extends PureComponent {
 }
 
 CookieTest.propTypes = {
-  sanityLogo: PropTypes.node.isRequired
+  SanityLogo: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.func
+  ]).isRequired
 }
 
 export default CookieTest
