@@ -1,5 +1,7 @@
 import urlForImage from './urlForImage'
 
+const validFits = ['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']
+
 class ImageUrlBuilder {
   constructor(parent, options) {
     if (parent) {
@@ -120,6 +122,10 @@ class ImageUrlBuilder {
   }
 
   fit(value) {
+    if (validFits.indexOf(value) === -1) {
+      throw new Error(`Invalid fit mode "${value}"`)
+    }
+
     return this._withOptions({fit: value})
   }
 
