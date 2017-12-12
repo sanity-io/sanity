@@ -18,6 +18,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SpaceSwitcher from './SpaceSwitcher'
 import {HAS_SPACES} from '../util/spaces'
+import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -34,7 +35,35 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
 
   state = {
     createMenuIsOpen: false,
-    mobileMenuIsOpen: false
+    mobileMenuIsOpen: false,
+    showLoadingScreen: true,
+    loaded: false
+  }
+
+  componentDidMount() {
+    if (this._loadingScreenElement && this.state.showLoadingScreen) {
+      this._loadingScreenElement.addEventListener('animationend', this.handleAnimationEnd, false)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._loadingScreenElement) {
+      this._loadingScreenElement.removeEventListener('animationend', this.handleAnimationEnd, false)
+    }
+  }
+
+  handleAnimationEnd = event => {
+    this.setState({
+      showLoadingScreen: false
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!this.state.loaded) {
+      this.setState({
+        loaded: true
+      })
+    }
   }
 
   handleCreateButtonClick = () => {
@@ -61,6 +90,10 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
     })
   }
 
+  setLoadingScreenElement = element => {
+    this._loadingScreenElement = element
+  }
+
   renderContent = () => {
     const {tools, router} = this.props
     const {createMenuIsOpen, mobileMenuIsOpen} = this.state
@@ -80,6 +113,16 @@ export default withRouterHOC(class DefaultLayout extends React.Component {
 
     return (
       <div className={`${styles.defaultLayout} ${mobileMenuIsOpen ? styles.mobileMenuIsOpen : ''}`}>
+        {
+          this.state.showLoadingScreen && (
+            <div
+              className={this.state.loaded ? styles.loadingScreenLoaded : styles.loadingScreen}
+              ref={this.setLoadingScreenElement}
+            >
+              <AppLoadingScreen text="Restoring Sanity" />
+            </div>
+          )
+        }
         <div className={styles.secondaryNavigation}>
           <div className={styles.branding}>
             <Branding />

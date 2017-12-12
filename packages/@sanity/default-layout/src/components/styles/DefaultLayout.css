@@ -1,5 +1,15 @@
 @import "part:@sanity/base/theme/variables-style";
 
+@keyframes loadingScreen {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 :global(body) {
   overflow-x: hidden;
 
@@ -38,6 +48,23 @@
   @media (--screen-medium) {
     flex-direction: row;
   }
+}
+
+.loadingScreen {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+  z-index: 5000;
+  animation-name: loadingScreen;
+  animation-duration: 1s;
+  animation-delay: 1s;
+}
+
+.loadingScreenLoaded {
+  display: none;
 }
 
 .navigation {

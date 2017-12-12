@@ -22,21 +22,22 @@ export default class LoginWrapper extends React.PureComponent {
       PropTypes.node,
       PropTypes.func
     ]).isRequired,
-    title: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
-    ]),
-    description: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
-    ]),
-    sanityLogo: PropTypes.node
+    title: PropTypes.node,
+    description: PropTypes.node,
+    sanityLogo: PropTypes.node,
+    SanityLogo: PropTypes.func,
+    LoadingScreen: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func
+    ])
   }
 
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
-    sanityLogo: <SanityStudioLogo />,
+    sanityLogo: null,
+    SanityLogo: SanityStudioLogo,
+    LoadingScreen: Spinner
   };
 
   state = {isLoading: true, user: null, error: null}
@@ -60,9 +61,11 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children} = this.props
+    const {children, LoadingScreen, SanityLogo, sanityLogo} = this.props
     if (isLoading) {
-      return <Spinner fullscreen center />
+      return typeof LoadingScreen === 'function'
+        ? <LoadingScreen center fullscreen />
+        : LoadingScreen
     }
 
     if (error) {
@@ -75,7 +78,8 @@ export default class LoginWrapper extends React.PureComponent {
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
-            sanityLogo={this.props.sanityLogo}
+            SanityLogo={!sanityLogo && SanityLogo}
+            sanityLogo={sanityLogo}
             projectId={projectId}
           />
         </CookieTest>
