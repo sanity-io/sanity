@@ -47,7 +47,7 @@ export default class ScrollContainer extends React.PureComponent {
     return (
       <div
         ref={this.setScrollContainerElement}
-        className={`${styles.scrollContainer} ${this.props.className}`}
+        className={this.props.className || styles.scrollContainer}
       >
         {this.props.children}
       </div>

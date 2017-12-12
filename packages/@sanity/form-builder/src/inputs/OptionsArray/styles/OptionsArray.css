@@ -1,0 +1,16 @@
+.error {
+  font-size: 0.8rem;
+  padding: 1em;
+  margin-bottom: 0.5rem;
+}
+
+.itemWrapperVertical {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.itemWrapperHorizontal {
+  display: inline-block;
+  line-height: 2em;
+  margin-right: 1em;
+}
