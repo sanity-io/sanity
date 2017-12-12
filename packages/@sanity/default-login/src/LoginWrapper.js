@@ -22,23 +22,23 @@ export default class LoginWrapper extends React.PureComponent {
       PropTypes.node,
       PropTypes.func
     ]).isRequired,
-    title: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
+    title: PropTypes.node,
+    description: PropTypes.node,
+    sanityLogo: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func
     ]),
-    description: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
-    ]),
-    sanityLogo: PropTypes.element,
-    loadingScreen: PropTypes.element,
+    loadingScreen: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func
+    ])
   }
 
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
-    sanityLogo: <SanityStudioLogo />,
-    loadingScreen: <Spinner center fullscreen />
+    sanityLogo: SanityStudioLogo,
+    loadingScreen: Spinner
   };
 
   state = {isLoading: true, user: null, error: null}
@@ -64,7 +64,9 @@ export default class LoginWrapper extends React.PureComponent {
     const {error, user, isLoading} = this.state
     const {children, loadingScreen, sanityLogo} = this.props
     if (isLoading) {
-      return loadingScreen
+      return typeof loadingScreen === 'function'
+        ? <loadingScreen center fullscreen />
+        : loadingScreen
     }
 
     if (error) {
