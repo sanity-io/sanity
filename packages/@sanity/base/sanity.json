@@ -38,6 +38,10 @@
       "description": "Function that configures the default sanity client"
     },
     {
+      "implements": "part:@sanity/base/version-checker",
+      "path": "components/VersionChecker.js"
+    },
+    {
       "name": "part:@sanity/base/asset-url-builder-default",
       "implements": "part:@sanity/base/asset-url-builder",
       "description": "Function that generates or modifies asset URLs for display in various contexts",
