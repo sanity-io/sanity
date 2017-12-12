@@ -18,7 +18,7 @@ export default {
     const [targetDataset, targetDestination] = args.argsWithoutOptions
     const {absolutify} = pathTools
 
-    let dataset = targetDataset
+    let dataset = targetDataset ? `${targetDataset}` : null
     if (!dataset) {
       dataset = await chooseDatasetPrompt(context, {message: 'Select dataset to export'})
     }
