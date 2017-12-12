@@ -34,7 +34,7 @@ export default {
     const datasets = await client.datasets.list()
     spinner.succeed('[100%] Fetching available datasets')
 
-    let targetDataset = target
+    let targetDataset = target ? `${target}` : null
     if (!targetDataset) {
       targetDataset = await chooseDatasetPrompt(context, {
         message: 'Select target dataset',

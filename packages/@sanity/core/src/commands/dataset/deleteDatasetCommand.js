@@ -5,10 +5,12 @@ export default {
   description: 'Delete a dataset within your project',
   action: async (args, context) => {
     const {apiClient, prompt, output} = context
-    const [dataset] = args.argsWithoutOptions
-    if (!dataset) {
+    const [ds] = args.argsWithoutOptions
+    if (!ds) {
       throw new Error('Dataset name must be provided')
     }
+
+    const dataset = `${ds}`
 
     await prompt.single({
       type: 'input',
