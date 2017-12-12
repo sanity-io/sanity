@@ -1,54 +1,62 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/inline-style'
-import MediaRender from './common/MediaRender.js'
 
-export default class InlinePreview extends React.Component {
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
+
+export default class InlinePreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
+    title: fieldProp,
+    media: fieldProp,
+    children: PropTypes.node,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
-    }),
-    emptyText: PropTypes.string,
-    children: PropTypes.node
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
+    })
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 40, height: 40},
+    title: undefined,
+    children: undefined,
+    media: undefined,
+    mediaDimensions: {width: 32, height: 32, fit: 'crop', aspect: 1}
   }
 
   render() {
-    const {item, emptyText, assetSize, children} = this.props
+    const {
+      title,
+      media,
+      mediaDimensions,
+      children
+    } = this.props
 
-    if (!item) {
-      return (
-        <span className={styles.empty}>
-          {emptyText}
-        </span>
-      )
+    if (!title && !media) {
+      return <span />
     }
 
     return (
-      <span className={`${styles.root}`}>
+      <span className={styles.root}>
         {
-          (item.media || item.sanityImage || item.imageUrl) && (
-            <span className={`${styles.media}`}>
-              <MediaRender size={assetSize} item={item} />
+          media && (
+            <span className={styles.media}>
+              {
+                typeof media === 'function' && (
+                  media({dimensions: mediaDimensions, layout: 'default'})
+                )
+              }
+              {
+                typeof media !== 'function' && media
+              }
             </span>
           )
         }
         <span className={styles.title}>
-          {item.title || emptyText}
+          {
+            (typeof title === 'function' && title({layout: 'inline'}))
+            || title
+          }
         </span>
         {children && <span>{children}</span>}
       </span>

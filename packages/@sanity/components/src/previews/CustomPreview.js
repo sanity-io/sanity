@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class CustomPreview extends React.Component {
+export default class CustomPreview extends React.PureComponent {
   static propTypes = {
-    emptyText: PropTypes.string,
     children: PropTypes.node
   }
 
