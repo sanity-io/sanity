@@ -8,12 +8,14 @@ import author from './author'
 import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
+import imagePreview from './imagePreview'
 import strings from './strings'
 import objects, {myObject} from './objects'
 import arrays from './arrays'
 import files from './files'
 import uploads from './uploads'
 import code from './code'
+import color from './color'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
 import numbers from './numbers'
@@ -48,7 +50,9 @@ export default createSchema({
     arrays,
     uploads,
     code,
+    color,
     images,
+    imagePreview,
     files,
     references,
     geopoint,

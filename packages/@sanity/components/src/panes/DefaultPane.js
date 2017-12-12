@@ -160,7 +160,7 @@ class Pane extends React.PureComponent {
           />
         </div>
         <div className={styles.main}>
-          <ScrollContainer className={styles.content} onScroll={this.handleContentScroll}>
+          <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
             {children}
           </ScrollContainer>
         </div>

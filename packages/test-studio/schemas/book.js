@@ -76,7 +76,7 @@ export default {
       date: '_updatedAt',
       authorName: 'author.name',
       publicationYear: 'publicationYear',
-      imageUrl: 'coverImage.asset.url'
+      media: 'coverImage'
     },
     prepare(book, options = {}) {
       return Object.assign({}, book, {

@@ -22,6 +22,7 @@
     "@sanity/base": "^0.123.0",
     "@sanity/cli": "^0.123.0",
     "@sanity/code-input": "^0.123.0",
+    "@sanity/color-input": "^0.123.0",
     "@sanity/components": "^0.123.0",
     "@sanity/core": "^0.123.0",
     "@sanity/default-layout": "^0.123.0",

@@ -170,8 +170,9 @@
   }
 }
 
-.content {
+.scrollContainer {
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
   top: -3rem;
   padding-top: 3rem;
@@ -180,9 +181,6 @@
   height: calc(100% + 3rem);
   display: block;
   box-sizing: border-box;
-  overflow: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
 
   @nest .isCollapsed & {
     display: none;

@@ -29,6 +29,13 @@ export default {
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
         {
+          type: 'color',
+          title: 'Color',
+          options: {
+            inline: true
+          }
+        },
+        {
           type: 'object', title: 'Test object', name: 'testObject',
           fields: [{name: 'field1', type: 'string'}]
         },

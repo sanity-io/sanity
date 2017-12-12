@@ -1,0 +1,38 @@
+{
+  "name": "@sanity/color-input",
+  "version": "0.123.0",
+  "description": "Color input",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib",
+    "prepublishOnly": "sanity-check",
+    "test": "eslint ."
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "color-input",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "reactcss": "^1.2.0",
+    "react-color": "^2.13.8"
+  },
+  "devDependencies": {
+    "@sanity/check": "^0.122.4",
+    "rimraf": "^2.6.2"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  }
+}
