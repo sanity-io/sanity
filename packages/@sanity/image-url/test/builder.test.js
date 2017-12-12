@@ -43,4 +43,8 @@ describe('builder', () => {
       should(testCase.url).equal(testCase.expect)
     })
   })
+
+  it('should throw on invalid fit mode', () => {
+    should.throws(() => urlFor.image(croppedImage()).fit('moo'), /Invalid fit mode "moo"/)
+  })
 })
