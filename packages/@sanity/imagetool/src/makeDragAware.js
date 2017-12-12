@@ -5,6 +5,8 @@ import Debug from 'debug'
 import {omit} from 'lodash'
 
 const debug = Debug('sanity-imagetool')
+const win = getWindow()
+const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
 
 // Returns a component that emits `onDragStart, `onDrag` and `onDragEnd` events.
 // It handles mouse/touch events the same way
@@ -20,8 +22,6 @@ export default function makeDragAware(Component) {
     componentDidMount() {
       const {onDragStart, onDrag, onDragEnd} = this.props
       debug('Draggable component did mount')
-      const win = getWindow()
-      const supportsTouch = ('ontouchstart' in window)
       const domNode = this.domNode
 
       const EVENT_NAMES = {
@@ -52,7 +52,7 @@ export default function makeDragAware(Component) {
           return
         }
         if (event.target !== domNode) {
-           // Event happened outside of this dom node
+          // Event happened outside of this dom node
           return
         }
         event.preventDefault()
@@ -122,9 +122,10 @@ function getWindow() {
 }
 
 function getPos(event) {
-  if (event instanceof TouchEvent) {
+  if (supportsTouch) {
     return event.touches.length ? getPos(event.touches[0]) : {x: 0, y: 0}
   }
+
   return {
     x: event.clientX,
     y: event.clientY
