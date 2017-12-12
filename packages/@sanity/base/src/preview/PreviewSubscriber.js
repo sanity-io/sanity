@@ -81,9 +81,9 @@ export default class PreviewSubscriber extends React.PureComponent {
     const {result, isLive, error} = this.state
     const {children: Child, ...props} = this.props
     return (
-      <span ref={this.setElement}>
+      <div ref={this.setElement}>
         <Child snapshot={result.snapshot} type={result.type} isLive={isLive} error={error} {...props} />
-      </span>
+      </div>
     )
   }
 }

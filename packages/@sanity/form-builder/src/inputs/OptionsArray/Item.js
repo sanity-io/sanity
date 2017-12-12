@@ -26,7 +26,7 @@ export default class Item extends React.PureComponent<Props> {
       >
         {isLegacyOptionsItem(value)
           ? value.title
-          : <Preview type={type} value={resolveValueWithLegacyOptionsSupport(value)} />
+          : <Preview layout="inline" type={type} value={resolveValueWithLegacyOptionsSupport(value)} />
         }
       </Checkbox>
     )

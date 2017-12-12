@@ -14,7 +14,7 @@ export const myImage = {
 export default {
   name: 'imagesTest',
   type: 'document',
-  title: 'Images test',
+  title: 'Images test (legacy imageUrl)',
   preview: {
     select: {
       title: 'title',

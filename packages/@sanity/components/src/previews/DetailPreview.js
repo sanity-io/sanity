@@ -1,82 +1,139 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
-import {truncate} from 'lodash'
-import MediaRender from './common/MediaRender.js'
+import TextEllipsis from 'react-text-ellipsis'
 import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
-export default class DetailPreview extends React.Component {
+export default class DetailPreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
+    title: fieldProp,
+    subtitle: fieldProp,
+    description: fieldProp,
+    status: fieldProp,
+    media: fieldProp,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    emptyText: PropTypes.string,
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 80, height: 80},
+    title: 'Untitled…',
+    subtitle: 'No subtitle…',
+    description: 'No description…',
+    media: undefined,
+    status: undefined,
+    children: undefined,
+    isPlaceholder: false,
+    mediaDimensions: {width: 120, height: 120, fit: 'crop', aspect: 1}
   }
 
   index = index++
 
   render() {
-    const {item, emptyText, assetSize, children, isPlaceholder} = this.props
+    const {
+      title,
+      subtitle,
+      description,
+      mediaDimensions,
+      media,
+      status,
+      children,
+      isPlaceholder
+    } = this.props
 
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
-        <div className={`${styles.root}`}>
+        <div className={styles.root}>
           <SvgPlaceholder styles={styles} />
         </div>
       )
     }
 
     return (
-      <div className={`${styles.root}`}>
-        <div className={`${styles.media}`}>
-          <MediaRender size={assetSize} item={item} fallbackText="No media" />
-        </div>
+      <div className={styles.root}>
+        {
+          media && (
+            <div className={styles.media}>
+              {
+                typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
+              }
+              {
+                typeof media === 'string' && (
+                  <div className={styles.mediaString}>{media}</div>
+                )
+              }
+              {
+                typeof media === 'object' && media
+              }
+            </div>
+          )
+        }
         <div className={styles.content}>
-          <div className={styles.heading}>
-            <h2 className={styles.title}>
-              {item.title || emptyText}
-            </h2>
+          <div className={styles.top}>
+            <div className={styles.heading}>
+              <h2 className={styles.title}>
+                {
+                  (typeof title === 'function' && title({layout: 'detail'}))
+                  || title
+                }
+              </h2>
+              {
+                subtitle && (
+                  <h3 className={styles.subtitle}>
+                    {
+                      (typeof subtitle === 'function' && subtitle({layout: 'detail'}))
+                      || subtitle
+                    }
+                  </h3>
+                )
+              }
+            </div>
             {
-              item.subtitle && (
-                <h3 className={styles.subtitle}>
-                  {item.subtitle}
-                </h3>
+              status && (
+                <div className={status}>
+                  {
+                    (typeof status === 'function' && status({layout: 'detail'}))
+                    || status
+                  }
+                </div>
               )
             }
           </div>
           {
-            item.description && (
+            description && (
               <p className={styles.description}>
                 {
-                  truncate(item.description, {
-                    length: 70,
-                    separator: /,? +/
-                  })
+                  typeof description === 'function' && description({layout: 'detail'})
+                }
+                {
+                  typeof description === 'string' && (
+                    <TextEllipsis
+                      lines={2}
+                      tag={'span'}
+                      ellipsisChars={'…'}
+                      tagClass={'className'}
+                      debounceTimeoutOnResize={200}
+                      useJsOnly
+                    >
+                      {description}
+                    </TextEllipsis>
+                  )
+                }
+                {
+                  typeof description === 'object' && description
                 }
               </p>
             )
           }
         </div>
-
         {children}
       </div>
     )

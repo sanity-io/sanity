@@ -1,43 +1,50 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
-import MediaRender from './common/MediaRender'
 import SvgPlaceholder from './common/SvgPlaceholder'
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
-export default class MediaPreview extends React.Component {
+export default class MediaPreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object,
-    }),
-    assetSize: PropTypes.shape({
+    title: fieldProp,
+    subtitle: fieldProp,
+    description: fieldProp,
+    media: fieldProp,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    aspect: PropTypes.number,
-    emptyText: PropTypes.string,
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
   }
 
   static defaultProps = {
-    assetSize: {width: 160, height: 160},
-    aspect: 1,
-    emptyText: 'Untitled…'
+    title: undefined,
+    subtitle: undefined,
+    description: undefined,
+    media: undefined,
+    isPlaceholder: false,
+    children: undefined,
+    mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'}
   }
 
   render() {
-    const {item, emptyText, assetSize, children, aspect, isPlaceholder} = this.props
+    const {
+      title,
+      subtitle,
+      description,
+      media,
+      mediaDimensions,
+      children,
+      isPlaceholder
+    } = this.props
 
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
         <div className={styles.root}>
-          <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
+          <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
           <div className={styles.mediaContainer}>
             <SvgPlaceholder styles={styles} />
           </div>
@@ -46,26 +53,44 @@ export default class MediaPreview extends React.Component {
     }
 
     return (
-      <div className={styles.root} title={item.title || emptyText}>
-        <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
+      <div className={styles.root} title={title}>
+        <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
         <div className={styles.mediaContainer}>
-          <MediaRender size={assetSize} item={item} aspect={aspect} fallbackText={item.title || 'No media'} />
+          {
+            typeof media === 'function' && (
+              media({dimensions: mediaDimensions, layout: 'media'})
+            )
+          }
+          {
+            typeof media === 'string' && (
+              <div className={styles.mediaString}>{media}</div>
+            )
+          }
+          {
+            typeof media === 'object' && media
+          }
         </div>
-        <div className={`${styles.meta}`}>
-          <div className={`${styles.metaInner}`}>
+        <div className={styles.meta}>
+          <div className={styles.metaInner}>
             {
-              item.title && (
+              title && (
                 <h2 className={styles.title}>
-                  {item.title}
+                  {title}
                 </h2>
               )
             }
             {
-              item.subtitle && <h3 className={styles.subtitle}>
-                {item.subtitle}
-              </h3>
+              subtitle && (
+                <h3 className={styles.subtitle}>
+                  {subtitle}
+                </h3>
+              )
             }
-            <p className={styles.description}>{item.description}</p>
+            {
+              description && (
+                <p className={styles.description}>{description}</p>
+              )
+            }
           </div>
         </div>
         {children}

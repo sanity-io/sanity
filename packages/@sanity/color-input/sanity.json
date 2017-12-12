@@ -1,0 +1,20 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/form-builder/input/color",
+      "description": "An editor for code in sanity"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input/color",
+      "path": "ColorInput.js"
+    },
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "schema.js"
+    }
+  ]
+}

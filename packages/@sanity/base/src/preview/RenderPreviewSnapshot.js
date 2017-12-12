@@ -17,10 +17,13 @@ function resolvePreview(type) {
 }
 
 export default function RenderPreviewSnapshot(props) {
-  const {snapshot, type, isLive, layout} = props
+  const {snapshot, type, isLive, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
   const preview = (
     <PreviewComponent
+      // Render media always until we have schema functionality for determing if there is media
+      media={() => undefined}
+      {...rest}
       value={snapshot}
       type={type}
       layout={layout}
