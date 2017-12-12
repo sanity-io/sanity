@@ -44,6 +44,7 @@
     "promise-props": "^1.0.0",
     "react-icons": "^2.2.5",
     "react-intl": "^2.2.2",
+    "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
     "stylelint-config-standard": "^17.0.0"
   },
