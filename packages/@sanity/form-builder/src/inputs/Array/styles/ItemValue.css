@@ -82,6 +82,8 @@
 }
 
 .functions {
+  display: flex;
+  align-items: center;
   flex-grow: 0;
   font-size: 0.9rem;
 }

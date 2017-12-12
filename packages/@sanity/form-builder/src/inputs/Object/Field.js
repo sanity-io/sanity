@@ -5,6 +5,7 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValue'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import styles from './styles/Field.css'
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -53,30 +54,34 @@ export default class Field extends React.Component {
 
       if (expectedType !== actualType && !isCompatible) {
         return (
-          <Fieldset legend={field.type.title} level={level}>
-            <InvalidValue
-              value={value}
-              onChange={this.handleChange}
-              validTypes={[field.type.name]}
-              actualType={actualType}
-            />
-          </Fieldset>
+          <div className={styles.root}>
+            <Fieldset legend={field.type.title} level={level}>
+              <InvalidValue
+                value={value}
+                onChange={this.handleChange}
+                validTypes={[field.type.name]}
+                actualType={actualType}
+              />
+            </Fieldset>
+          </div>
         )
       }
     }
 
     return (
-      <FormBuilderInput
-        value={value}
-        type={field.type}
-        onChange={this.handleChange}
-        path={[field.name]}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        level={level}
-        ref={this.setInput}
-      />
+      <div className={styles.root}>
+        <FormBuilderInput
+          value={value}
+          type={field.type}
+          onChange={this.handleChange}
+          path={[field.name]}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focusPath={focusPath}
+          level={level}
+          ref={this.setInput}
+        />
+      </div>
     )
   }
 }

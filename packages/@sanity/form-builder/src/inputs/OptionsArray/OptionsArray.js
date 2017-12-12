@@ -4,7 +4,7 @@ import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import Item from './Item'
-
+import styles from './styles/OptionsArray.css'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
@@ -88,7 +88,7 @@ export default class OptionsArrayInput extends React.PureComponent {
     const {type, value, level} = this.props
 
     const options = get(type.options, 'list')
-    const direction = get(type.options, 'direction')
+    const direction = get(type.options, 'direction') // vertical and horizontal
 
     return (
       <Fieldset legend={type.title} description={type.description} level={level}>
@@ -98,7 +98,7 @@ export default class OptionsArrayInput extends React.PureComponent {
             const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
             const validTypes = type.of.map(ofType => ofType.name)
             return (
-              <div key={option._key || index}>
+              <div key={option._key || index} className={styles.error}>
                 Invalid option type: Type <code>{actualType}</code> not valid for array
                 of [{validTypes.join(', ')}]. Check
                 the list options of this field
@@ -109,12 +109,10 @@ export default class OptionsArrayInput extends React.PureComponent {
           return (
             <div
               key={option._key || index}
-              style={{
-                display: direction === 'horizontal' ? 'inline-block' : 'block',
-                marginRight: direction === 'horizontal' ? '1em' : '0',
-              }}
+              className={direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal}
             >
               <Item
+                layout="inline"
                 type={optionType}
                 value={option}
                 checked={checked}

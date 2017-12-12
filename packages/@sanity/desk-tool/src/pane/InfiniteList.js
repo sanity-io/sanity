@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import VirtualList from 'react-tiny-virtual-list'
-
 import enhanceWithAvailHeight from './enhanceWithAvailHeight'
 
 
@@ -24,16 +23,37 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   }
 
   state = {
-    triggerUpdate: 0
+    triggerUpdate: 0,
+    itemHeight: 56,
+    itemSize: undefined
   }
 
   componentWillReceiveProps(prevProps) {
+
     if (prevProps.items !== this.props.items) {
       /* This is needed to break equality checks
        in VirtualList's sCU in cases where itemCount has not changed,
        but an elements has been removed or added
        */
       this.setState({triggerUpdate: Math.random()})
+    }
+
+    if (prevProps.layout !== this.props.layout) {
+      this.setState({
+        itemSize: undefined
+      })
+    }
+  }
+
+  getItemHeight = item => {
+    return 56
+  }
+
+  setMeasureElement = element => {
+    if (element && element.offsetHeight) {
+      this.setState({
+        itemSize: element.offsetHeight
+      })
     }
   }
 
@@ -48,8 +68,23 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
   }
 
   render() {
-    const {layout, height, items, className} = this.props
-    const {triggerUpdate} = this.state
+    const {layout, height, items, className, renderItem} = this.props
+    const {triggerUpdate, itemSize} = this.state
+
+    if (!items || items.length === 0) {
+      return (
+        <div />
+      )
+    }
+
+    if (!itemSize && items) {
+      return (
+        <div ref={this.setMeasureElement}>
+          {renderItem(items[0], 0)}
+        </div>
+      )
+    }
+
     return (
       <VirtualList
         onScroll={this.props.onScroll}
@@ -57,7 +92,7 @@ export default enhanceWithAvailHeight(class InfiniteList extends React.PureCompo
         className={className || ''}
         height={height}
         itemCount={items.length}
-        itemSize={layout === 'default' ? 56 : 80}
+        itemSize={itemSize}
         renderItem={this.renderItem}
         overscanCount={50}
         data-trigger-update-hack={triggerUpdate} /* see componentWillReceiveProps above */

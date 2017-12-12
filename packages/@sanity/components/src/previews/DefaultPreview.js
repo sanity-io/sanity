@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
-import MediaRender from './common/MediaRender.js'
 import SvgPlaceholder from './common/SvgPlaceholder'
 import Styleable from '../utilities/Styleable'
+import TextEllipsis from 'react-text-ellipsis'
 
 const PLACEHOLDER = (
   <div className={defaultStyles.root}>
@@ -11,22 +11,20 @@ const PLACEHOLDER = (
   </div>
 )
 
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
+
 class DefaultPreview extends React.PureComponent {
   static propTypes = {
-    item: PropTypes.shape({
-      title: PropTypes.string,
-      subtitle: PropTypes.string,
-      description: PropTypes.string,
-      media: PropTypes.node,
-      imageUrl: PropTypes.string,
-      sanityImage: PropTypes.object
-    }),
-    assetSize: PropTypes.shape({
+    title: fieldProp,
+    subtitle: fieldProp,
+    mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp'])
+      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      aspect: PropTypes.number,
     }),
-    emptyText: PropTypes.string,
+    status: fieldProp,
+    media: fieldProp,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
     styles: PropTypes.object,
@@ -34,57 +32,96 @@ class DefaultPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    emptyText: 'Untitled',
-    assetSize: {width: 40, height: 40},
+    title: 'Untitled…',
+    subtitle: undefined,
     progress: undefined,
-    item: {}
+    media: undefined,
+    mediaDimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'}
   }
 
   render() {
-    const {item, assetSize, emptyText, children, isPlaceholder, progress, styles} = this.props
+    const {
+      title,
+      subtitle,
+      media,
+      children,
+      status,
+      isPlaceholder,
+      progress,
+      mediaDimensions,
+      styles
+    } = this.props
 
-    if (!item || isPlaceholder) {
+    if (isPlaceholder) {
       return (
-        <div>
+        <div className={media ? styles.hasMedia : ''}>
           {PLACEHOLDER}
         </div>
       )
     }
 
-    const hasMedia = item.media || item.sanityImage || item.imageUrl || true
-
     return (
       <div
         className={`
           ${styles.root}
-          ${item.subtitle ? styles.hasSubtitle : ''}
-          ${hasMedia ? styles.hasMedia : ''}
+          ${subtitle ? styles.hasSubtitle : ''}
+          ${media ? styles.hasMedia : ''}
         `}
       >
         {
-          hasMedia && (
+          media && (
             <div className={`${styles.media}`}>
-              <MediaRender size={assetSize} item={item} />
+              {
+                typeof media === 'function' && (
+                  media({dimensions: mediaDimensions, layout: 'default'})
+                )
+              }
+              {
+                typeof media === 'string' && (
+                  <div className={styles.mediaString}>{media}</div>
+                )
+              }
+              {
+                typeof media === 'object' && media
+              }
             </div>
           )
         }
         <div className={styles.heading}>
           <h2 className={styles.title}>
-            {item.title || emptyText}
+            {
+              typeof title !== 'function' && title
+            }
+            {
+              typeof title === 'function' && title({layout: 'default'})
+            }
           </h2>
           {
-            item.subtitle && (
+            subtitle && (
               <h3 className={styles.subtitle}>
-                {item.subtitle}
+                {
+                  (typeof subtitle === 'function' && subtitle({layout: 'default'}))
+                  || subtitle
+                }
               </h3>
             )
           }
         </div>
         {
+          status && (
+            <div className={styles.status}>
+              {
+                (typeof status === 'function' && status({layout: 'default'}))
+                || status
+              }
+            </div>
+          )
+        }
+        {
           children && <div className={styles.children}>{children}</div>
         }
         {
-          progress && (
+          typeof progress === 'number' && progress > -1 && (
             <div className={styles.progress}>
               <div className={styles.progressBar} style={{width: `${progress}%`}} />
             </div>

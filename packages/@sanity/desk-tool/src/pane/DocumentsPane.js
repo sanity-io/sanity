@@ -185,6 +185,23 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     )
   }
 
+  renderStatus = item => {
+    return (
+      <div>
+        {
+          !item.hasPublished && (
+            <i title="Not published"><VisibilityOffIcon /></i>
+          )
+        }
+        {
+          item.hasDraft && item.hasPublished && (
+            <i title="Has changes not yet published"><EditIcon /></i>
+          )
+        }
+      </div>
+    )
+  }
+
   renderDocumentPaneItem = (item, index, options = {}) => {
     const {selectedType, selectedDocumentId} = this.props
     const {settings} = this.state
@@ -214,19 +231,8 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             ordering={ordering}
             layout={settings.listLayout}
             type={type}
+            status={() => this.renderStatus(item)}
           />
-          <div className={styles.itemStatus}>
-            {
-              !item.hasPublished && (
-                <i title="Not published"><VisibilityOffIcon /></i>
-              )
-            }
-            {
-              item.hasDraft && item.hasPublished && (
-                <i title="Has changes not yet published"><EditIcon /></i>
-              )
-            }
-          </div>
         </div>
         <Ink duration={200} opacity={0.20} radius={200} />
       </StateLink>
@@ -298,7 +304,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             const items = removePublishedWithDrafts(result ? result.documents : [])
 
             return (
-              <div className={styles.root}>
+              <div className={styles[`layout__${settings.listLayout}`]}>
                 {loading && (
                   <div className={styles.spinner}>
                     <Spinner center message="Loading items…" />

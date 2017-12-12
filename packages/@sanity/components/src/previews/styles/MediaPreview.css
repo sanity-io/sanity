@@ -35,6 +35,25 @@
   left: 0;
   width: 100%;
   height: 100%;
+  background-image:
+    linear-gradient(
+      90deg,
+      color(var(--text-color) a(10%)),
+      color(var(--text-color) a(5%)) 10%,
+      color(var(--text-color) a(10%))
+    );
+
+  @nest & > img {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.mediaString {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  padding: 5px;
+  font-size: var(--font-size-small);
+  color: var(--gray);
 }
 
 .meta {
@@ -73,6 +92,13 @@
 .placeholder {
   height: 100%;
   width: 100%;
+  background-image:
+    linear-gradient(
+      90deg,
+      color(var(--text-color) a(10%)),
+      color(var(--text-color) a(5%)) 10%,
+      color(var(--text-color) a(10%))
+    );
 
   @nest & .media {
     x: 0;
