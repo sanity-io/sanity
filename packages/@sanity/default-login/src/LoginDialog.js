@@ -28,15 +28,12 @@ const GoogleLogo = () => (
 
 export default class LoginDialog extends React.Component {
   static propTypes = {
-    title: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
-    ]).isRequired,
-    description: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.node
+    title: PropTypes.node.isRequired,
+    description: PropTypes.node,
+    sanityLogo: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func
     ]),
-    sanityLogo: PropTypes.node,
     projectId: PropTypes.string
   };
 
@@ -81,7 +78,7 @@ export default class LoginDialog extends React.Component {
         <div className={styles.inner}>
           { sanityLogo && (
             <div className={styles.sanityLogo}>
-              {sanityLogo}
+              {typeof sanitylogo === 'function' ? <sanityLogo /> : sanityLogo}
             </div>
           )}
 
