@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import {JSDOM} from 'jsdom'
 import blockTools from '../../../src'
+import wgxpath from 'wgxpath'
 
 describe('HtmlDeserializer', () => {
   const tests = fs.readdirSync(__dirname)
@@ -16,7 +17,12 @@ describe('HtmlDeserializer', () => {
       const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json')))
       const fn = require(path.resolve(dir)).default // eslint-disable-line import/no-dynamic-require
       const commonOptions = {
-        parseHtml: html => new JSDOM(html).window.document
+        parseHtml: html => new JSDOM(html, {
+          // Use wgxpath for xpath handling
+          beforeParse: window => {
+            wgxpath.install(window, true)
+          }
+        }).window.document
       }
       const output = fn(input, blockTools, commonOptions)
       assert.deepEqual(output, expected)
