@@ -21,7 +21,7 @@ errorChannel.subscribe(val => {
 
 function fetchInitial() {
   return authenticationFetcher.getCurrentUser()
-    .then(user => userChannel.publish(user))
+    .then(user => setTimeout(() => userChannel.publish(user), 5))
     .catch(err => errorChannel.publish(err))
 }
 
