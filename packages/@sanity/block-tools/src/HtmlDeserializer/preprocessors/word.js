@@ -10,7 +10,10 @@ export default (html, doc) => {
   }
 
   // xPaths for elements that will be removed from the document
-  const unwantedPaths = ["//*[name() = 'o:p']"]
+  const unwantedPaths = [
+    "//*[name() = 'o:p']"
+    // "//span[@style='mso-list:Ignore']",
+  ]
 
   // xPaths for elements that needs to be remapped into other tags
   const mappedPaths = [
@@ -61,8 +64,8 @@ export default (html, doc) => {
   for (let i = mappedElements.snapshotLength - 1; i >= 0; i--) {
     const mappedElm = mappedElements.snapshotItem(i)
     const tags = elementMap[mappedElm.className]
-    const text = new Text(mappedElm.textContent)
-    const parentElement = document.createElement(tags[0])
+    const text = doc.createTextNode(mappedElm.textContent)
+    const parentElement = doc.createElement(tags[0])
     let parent = parentElement
     let child = parentElement
     tags.slice(1).forEach(tag => {
