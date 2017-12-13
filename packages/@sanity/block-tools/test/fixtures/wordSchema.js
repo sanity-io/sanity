@@ -23,20 +23,8 @@ export default Schema.compile({
                 annotations: [
                   {
                     type: 'object',
-                    name: 'link',
-                    title: 'Link',
-                    fields: [
-                      {
-                        name: 'href',
-                        type: 'string',
-                        title: 'Url'
-                      }
-                    ]
-                  },
-                  {
-                    type: 'object',
-                    name: 'note',
-                    title: 'Note',
+                    name: 'blockNote',
+                    title: 'Block note',
                     fields: [
                       {
                         type: 'string',

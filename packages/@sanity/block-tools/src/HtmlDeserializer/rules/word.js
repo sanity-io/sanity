@@ -4,7 +4,7 @@ import {tagName} from '../helpers'
 // https://gist.github.com/webtobesocial/ac9d052595b406d5a5c1
 
 function notesEnabled(options) {
-  return options.enabledBlockAnnotations.includes('note')
+  return options.enabledBlockAnnotations.includes('blockNote')
 }
 
 function getListItemStyle(el) {
@@ -99,7 +99,7 @@ export default function createWordRules(blockContentType, options = {}) {
           }
           const markDef = {
             _key: footnoteId,
-            _type: 'note',
+            _type: 'blockNote',
             style: 'footnote'
           }
           return {
@@ -145,7 +145,7 @@ export default function createWordRules(blockContentType, options = {}) {
           }
           const markDef = {
             _key: endnoteId,
-            _type: 'note',
+            _type: 'blockNote',
             style: 'endnote'
           }
           return {

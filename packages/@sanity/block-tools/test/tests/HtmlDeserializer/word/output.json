@@ -145,7 +145,7 @@
     "markDefs": [
       {
         "_key": "ftn1",
-        "_type": "note",
+        "_type": "blockNote",
         "style": "footnote",
         "content": [
           {
@@ -199,7 +199,7 @@
     "markDefs": [
       {
         "_key": "edn1",
-        "_type": "note",
+        "_type": "blockNote",
         "style": "endnote",
         "content": [
           {
