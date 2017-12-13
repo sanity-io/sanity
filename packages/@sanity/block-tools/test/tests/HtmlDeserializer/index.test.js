@@ -18,7 +18,7 @@ describe('HtmlDeserializer', () => {
       const fn = require(path.resolve(dir)).default // eslint-disable-line import/no-dynamic-require
       const commonOptions = {
         parseHtml: html => new JSDOM(html, {
-          // Use wgxpath for xpath handling
+          // Use wgxpath for document.evaluate (JSDOM's built in one is buggy)
           beforeParse: window => {
             wgxpath.install(window, true)
           }
