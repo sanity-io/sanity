@@ -1,5 +1,4 @@
-import {pick, omit} from 'lodash'
-import assert from 'assert'
+import {pick} from 'lodash'
 import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
@@ -43,29 +42,3 @@ export const ArrayType = {
     }
   }
 }
-const Person = ArrayType.extend({
-  name: 'person',
-  title: 'Person',
-  of: [
-    {type: 'string', name: 'lol'}
-  ]
-}, v => v)
-
-const TypeOfPerson = Person.extend({
-  name: 'typeofperson',
-  title: 'Type Of Person'
-}, v => v)
-
-const TypeOfTypeOfPerson = TypeOfPerson.extend({
-  name: 'typeoftypeofperson',
-  title: 'Type Of Type Of Person'
-}, v => v)
-
-assert.equal(TypeOfTypeOfPerson.get().type, TypeOfPerson.get())
-assert.equal(TypeOfTypeOfPerson.get().type, TypeOfPerson.get())
-assert.equal(TypeOfTypeOfPerson.get().fields, Person.get().fields)
-assert.throws(
-  () => TypeOfTypeOfPerson.extend({name: 'lol', of: []}),
-  /Cannot override `of` property of subtypes of "array"/
-)
-// console.log('TypeOfTypeOfPerson', TypeOfTypeOfPerson.get())
