@@ -150,7 +150,7 @@
     "_type": "block",
     "markDefs": [
       {
-        "_key": "ftn1",
+        "_key": "randomKey0",
         "_type": "blockNote",
         "style": "footnote",
         "content": [
@@ -194,7 +194,7 @@
       {
         "_type": "span",
         "marks": [
-          "ftn1"
+          "randomKey0"
         ],
         "text": "[1]"
       }
@@ -204,7 +204,7 @@
     "_type": "block",
     "markDefs": [
       {
-        "_key": "edn1",
+        "_key": "randomKey1",
         "_type": "blockNote",
         "style": "endnote",
         "content": [
@@ -248,7 +248,7 @@
       {
         "_type": "span",
         "marks": [
-          "edn1"
+          "randomKey1"
         ],
         "text": "[i]"
       }

@@ -1,3 +1,4 @@
+import randomKey from '../../util/randomKey'
 import {DEFAULT_BLOCK} from '../../constants'
 import {tagName} from '../helpers'
 
@@ -124,9 +125,10 @@ export default function createWordRules(blockContentType, options = {}) {
             return undefined
           }
           const markDef = {
-            _key: footnoteId,
+            _key: randomKey(12),
             _type: 'blockNote',
-            style: 'footnote'
+            style: 'footnote',
+            blockNoteId: footnoteId
           }
           return {
             _type: '__annotation',
@@ -148,13 +150,14 @@ export default function createWordRules(blockContentType, options = {}) {
           }
           // Find the block where the footnote occured
           const markDef = blocks
-            .map(blk => blk.markDefs.find(def => def._key === footnoteId))
+            .map(blk => blk.markDefs.find(def => def.blockNoteId === footnoteId))
             .filter(Boolean)[0]
           if (markDef) {
             el.querySelectorAll(`a[name='_${footnoteId}']`).forEach(elm => {
               elm.parentNode.removeChild(elm)
             })
             markDef.content = deserialize(el.childNodes)
+            delete markDef.blockNoteId
           }
           return next([])
         }
@@ -170,9 +173,10 @@ export default function createWordRules(blockContentType, options = {}) {
             return undefined
           }
           const markDef = {
-            _key: endnoteId,
+            _key: randomKey(12),
             _type: 'blockNote',
-            style: 'endnote'
+            style: 'endnote',
+            blockNoteId: endnoteId
           }
           return {
             _type: '__annotation',
@@ -194,13 +198,14 @@ export default function createWordRules(blockContentType, options = {}) {
           }
           // Find the block where the footnote occured
           const markDef = blocks
-            .map(blk => blk.markDefs.find(def => def._key === endnoteId))
+            .map(blk => blk.markDefs.find(def => def.blockNoteId === endnoteId))
             .filter(Boolean)[0]
           if (markDef) {
             el.querySelectorAll(`a[name='_${endnoteId}']`).forEach(elm => {
               elm.parentNode.removeChild(elm)
             })
             markDef.content = deserialize(el.childNodes)
+            delete markDef.blockNoteId
           }
           return next([])
         }
