@@ -7,7 +7,7 @@ import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultImageInput from 'part:@sanity/components/imageinput/default'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-
+import imageUrlBuilder from '@sanity/image-url'
 import Field from '../Object/Field'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
@@ -15,6 +15,16 @@ import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import SelectAsset from './SelectAsset'
+import client from 'part:@sanity/base/client'
+
+let imageBuilder
+const getImageBuilder = () => {
+  if (!imageBuilder) {
+    imageBuilder = imageUrlBuilder(client.config())
+  }
+
+  return imageBuilder
+}
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -232,7 +242,14 @@ export default class ImageInput extends React.PureComponent<*> {
 
     const {uploadingImage, materializedImage} = this.state
 
-    const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
+    const imageUrl
+      = uploadingImage
+        ? uploadingImage.previewUrl
+        : getImageBuilder()
+          .image(value)
+          .width(800)
+          .ignoreImageParams()
+          .url()
     return (
       <div style={{display: 'flex', flexDirection: 'row', width: 800}}>
         <div style={{width: '40%'}}>
