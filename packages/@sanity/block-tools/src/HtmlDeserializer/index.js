@@ -48,6 +48,7 @@ export default class HtmlDeserializer {
       const doc = preprocess(html, parseHtml)
       return doc.body
     }
+    this.blocks = []
   }
 
   /**
@@ -85,6 +86,9 @@ export default class HtmlDeserializer {
           break
         case 'object':
           nodes.push(node)
+          if (node._type === 'block') {
+            this.blocks.push(node)
+          }
           break
         default:
           throw new Error(`Don't know what to do with: ${JSON.stringify(node)}`)
@@ -130,7 +134,7 @@ export default class HtmlDeserializer {
       if (!rule.deserialize) {
         continue
       }
-      const ret = rule.deserialize(element, next)
+      const ret = rule.deserialize(element, next, this.blocks, this.deserializeElements)
       const type = resolveJsType(ret)
 
       if (type != 'array' && type != 'object' && type != 'null' && type != 'undefined') {
