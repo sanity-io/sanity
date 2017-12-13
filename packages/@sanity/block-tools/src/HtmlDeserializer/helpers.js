@@ -104,6 +104,8 @@ export function flattenNestedBlocks(blocks) {
   return flattened
 }
 
+// Trim whitespace from the DOM that is between HTML-elements and
+// become appended to block spans in the wrong places
 export function trimWhitespace(blocks) {
   blocks.forEach(block => {
     const nextSpan = (child, index) => {
@@ -142,6 +144,9 @@ export function trimWhitespace(blocks) {
         block.children.splice(index, 1)
       }
     })
+    if (block.children.length === 0) {
+      block.children.push({_type: 'span', marks: [], text: ''})
+    }
   })
   return blocks
 }
