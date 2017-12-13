@@ -15,7 +15,13 @@
     "_type": "block",
     "markDefs": [],
     "style": "normal",
-    "children": []
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      }
+    ]
   },
   {
     "_type": "block",
@@ -33,7 +39,25 @@
     "_type": "block",
     "markDefs": [],
     "style": "normal",
-    "children": []
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      }
+    ]
   },
   {
     "_type": "block",
@@ -62,12 +86,6 @@
         "text": "This is another bullet list element (level 2)"
       }
     ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": []
   },
   {
     "_type": "block",
@@ -104,12 +122,6 @@
     "_type": "block",
     "markDefs": [],
     "style": "normal",
-    "children": []
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
     "listItem": "number",
     "level": 1,
     "children": [
@@ -133,12 +145,6 @@
         "text": "This is another numbered list item (level 2)"
       }
     ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": []
   },
   {
     "_type": "block",
@@ -247,12 +253,6 @@
         "text": "[i]"
       }
     ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": []
   },
   {
     "_type": "block",

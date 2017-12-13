@@ -7,6 +7,13 @@ function notesEnabled(options) {
   return options.enabledBlockAnnotations.includes('blockNote')
 }
 
+function isNormalEmptyParagraph(el) {
+  return tagName(el) === 'p'
+    && el.textContent === ''
+    && el.textContent === ''
+    && el.className === 'MsoNormal'
+}
+
 function getListItemStyle(el) {
   const symbol = el.textContent.trim()
   if (symbol.match(/\b\./)) {
@@ -72,6 +79,25 @@ function getEndnoteLinkElementId(el) {
 export default function createWordRules(blockContentType, options = {}) {
 
   return [
+    // Fix weird paragraphing within Word (paragraph is more of a line break)
+    // If we see two empty paragraphs after each other, we return an empty block
+    {
+      deserialize(el, next) {
+        if (isNormalEmptyParagraph(el)) {
+          const nextSibling = el.nextElementSibling
+          if (nextSibling && isNormalEmptyParagraph(nextSibling)) {
+            return {
+              ...DEFAULT_BLOCK,
+              style: 'normal',
+              children: [{_type: 'span', marks: [], text: ''}]
+            }
+          }
+          return next([])
+        }
+        return undefined
+      }
+    },
+    // List elements
     {
       deserialize(el, next) {
         if (tagName(el) === 'p' && isListElement(el)) {
