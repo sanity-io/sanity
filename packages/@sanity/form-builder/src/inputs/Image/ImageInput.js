@@ -16,6 +16,7 @@ import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import SelectAsset from './SelectAsset'
 import client from 'part:@sanity/base/client'
+import styles from './ImageInput.css'
 
 let imageBuilder
 const getImageBuilder = () => {
@@ -251,15 +252,15 @@ export default class ImageInput extends React.PureComponent<*> {
           .ignoreImageParams()
           .url()
     return (
-      <div style={{display: 'flex', flexDirection: 'row', width: 800}}>
-        <div style={{width: '40%'}}>
+      <div className={styles.imageTool}>
+        <div className={styles.mainImage}>
           <ImageTool
             value={{hotspot, crop}}
             src={imageUrl}
             onChange={this.handleImageToolChange}
           />
         </div>
-        <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
+        <div className={styles.previews}>
           {ASPECT_RATIOS.map(([title, ratio]) => {
             return (
               <div key={ratio} style={{flexGrow: 1}}>
@@ -307,7 +308,6 @@ export default class ImageInput extends React.PureComponent<*> {
         <div>
           {grouped.other && this.renderFields(grouped.other)}
         </div>
-        <Button onClick={this.handleEditDialogClose}>Close</Button>
       </Dialog>
     )
   }
