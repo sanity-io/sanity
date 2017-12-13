@@ -45,6 +45,7 @@ function getInitialState() {
   return {
     status: 'ready',
     error: null,
+    value: null,
     progress: null,
     uploadingImage: null,
     materializedImage: null,
@@ -208,6 +209,12 @@ export default class ImageInput extends React.PureComponent<*> {
   }
 
   handleImageToolChange = newValue => {
+    this.setState({
+      value: newValue
+    })
+  }
+
+  handleImageToolComplete = newValue => {
     const {onChange, type} = this.props
     onChange(
       PatchEvent.from(
@@ -238,10 +245,11 @@ export default class ImageInput extends React.PureComponent<*> {
 
   renderImageTool() {
     const {value} = this.props
-    const hotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
-    const crop = (value && value.crop) || DEFAULT_CROP
 
-    const {uploadingImage, materializedImage} = this.state
+    const hotspot = (this.state.value && this.state.value.hotspot) || (value && value.hotspot) || DEFAULT_HOTSPOT
+    const crop = (this.state.value && this.state.value.crop) || (value && value.crop) || DEFAULT_CROP
+
+    const {uploadingImage} = this.state
 
     const imageUrl
       = uploadingImage
@@ -258,6 +266,7 @@ export default class ImageInput extends React.PureComponent<*> {
             value={{hotspot, crop}}
             src={imageUrl}
             onChange={this.handleImageToolChange}
+            onComplete={this.handleImageToolComplete}
           />
         </div>
         <div className={styles.previews}>
