@@ -50,7 +50,7 @@ class CookieTest extends PureComponent {
               <SanityLogo />
             </div>
           )}
-          { sanityLogo && (
+          { sanityLogo && !SanityLogo && (
             <div className={styles.sanityLogo}>
               {sanityLogo}
             </div>

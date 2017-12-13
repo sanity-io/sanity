@@ -81,7 +81,7 @@ export default class LoginDialog extends React.Component {
               <SanityLogo />
             </div>
           )}
-          { sanityLogo && (
+          { sanityLogo && !SanityLogo && (
             <div className={styles.sanityLogo}>
               {sanityLogo}
             </div>
