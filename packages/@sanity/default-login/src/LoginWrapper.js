@@ -25,10 +25,7 @@ export default class LoginWrapper extends React.PureComponent {
     title: PropTypes.node,
     description: PropTypes.node,
     sanityLogo: PropTypes.node,
-    SanityLogo: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.func
-    ]),
+    SanityLogo: PropTypes.func,
     LoadingScreen: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.func
@@ -81,7 +78,8 @@ export default class LoginWrapper extends React.PureComponent {
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
-            SanityLogo={sanityLogo || SanityLogo}
+            SanityLogo={!sanityLogo && SanityLogo}
+            sanityLogo={sanityLogo}
             projectId={projectId}
           />
         </CookieTest>
