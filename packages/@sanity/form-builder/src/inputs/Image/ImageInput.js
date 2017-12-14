@@ -251,14 +251,13 @@ export default class ImageInput extends React.PureComponent<*> {
 
     const {uploadingImage} = this.state
 
-    const imageUrl
-      = uploadingImage
-        ? uploadingImage.previewUrl
-        : getImageBuilder()
-          .image(value)
-          .width(800)
-          .ignoreImageParams()
-          .url()
+    const imageUrl = uploadingImage
+      ? uploadingImage.previewUrl
+      : getImageBuilder()
+        .image(value)
+        .width(800)
+        .ignoreImageParams()
+        .url()
     return (
       <div className={styles.imageTool}>
         <div className={styles.mainImage}>
