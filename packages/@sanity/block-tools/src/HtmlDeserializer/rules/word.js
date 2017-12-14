@@ -142,7 +142,7 @@ export default function createWordRules(blockContentType, options = {}) {
     },
     // Footnote content
     {
-      deserialize(el, next, blocks, deserialize) {
+      deserialize(el, next, {blocks, deserialize}) {
         let footnoteId
         if (tagName(el) === 'div' && (footnoteId = getFootnoteContentElementId(el))) {
           if (!notesEnabled(options)) {
@@ -190,7 +190,7 @@ export default function createWordRules(blockContentType, options = {}) {
     },
     // Endnote content
     {
-      deserialize(el, next, blocks, deserialize) {
+      deserialize(el, next, {blocks, deserialize}) {
         let endnoteId
         if (tagName(el) === 'div' && (endnoteId = getEndnoteContentElementId(el))) {
           if (!notesEnabled(options)) {

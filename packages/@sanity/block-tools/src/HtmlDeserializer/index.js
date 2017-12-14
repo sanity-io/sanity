@@ -10,11 +10,6 @@ import {
 import createRules from './rules'
 import resolveJsType from '../util/resolveJsType'
 
-/**
- * A internal variable to keep track of annotation mark definitions within the 'run' of a block
- *
- */
-let _markDefsWithinBlock = []
 
 /**
  * HTML Deserializer
@@ -48,7 +43,9 @@ export default class HtmlDeserializer {
       const doc = preprocess(html, parseHtml)
       return doc.body
     }
-    this.blocks = []
+    this._blocks = []
+    this._currentBlockChildren = []
+    this._currentBlockMarkDefs = []
   }
 
   /**
@@ -87,7 +84,9 @@ export default class HtmlDeserializer {
         case 'object':
           nodes.push(node)
           if (node._type === 'block') {
-            this.blocks.push(node)
+            this._blocks.push(node)
+          } else {
+            this._currentBlockChildren.push(node)
           }
           break
         default:
@@ -134,7 +133,12 @@ export default class HtmlDeserializer {
       if (!rule.deserialize) {
         continue
       }
-      const ret = rule.deserialize(element, next, this.blocks, this.deserializeElements)
+      const ret = rule.deserialize(element, next, {
+        blocks: this._blocks,
+        currentBlockChildren: this._currentBlockChildren,
+        currentBlockMarkDefs: this._currentBlockMarkDefs,
+        deserialize: this.deserializeElements
+      })
       const type = resolveJsType(ret)
 
       if (type != 'array' && type != 'object' && type != 'null' && type != 'undefined') {
@@ -149,9 +153,10 @@ export default class HtmlDeserializer {
         node = this.deserializeDecorator(ret)
       } else if (ret._type === '__annotation') {
         node = this.deserializeAnnotation(ret)
-      } else if (ret._type === 'block' && _markDefsWithinBlock.length) {
-        ret.markDefs = _markDefsWithinBlock
-        _markDefsWithinBlock = [] // Reset here
+      } else if (ret._type === 'block' && this._currentBlockMarkDefs.length) {
+        ret.markDefs = this._currentBlockMarkDefs
+        this._currentBlockMarkDefs = [] // Reset here
+        this._currentBlockChildren = []
         node = ret
       } else {
         node = ret
@@ -223,7 +228,7 @@ export default class HtmlDeserializer {
 
   deserializeAnnotation = annotation => {
     const {markDef} = annotation
-    _markDefsWithinBlock.push(markDef)
+    this._currentBlockMarkDefs.push(markDef)
     const applyAnnotation = node => {
       if (node._type === '__annotation') {
         return this.deserializeAnnotation(node)
