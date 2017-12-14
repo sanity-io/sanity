@@ -7,7 +7,7 @@ import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultImageInput from 'part:@sanity/components/imageinput/default'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-
+import imageUrlBuilder from '@sanity/image-url'
 import Field from '../Object/Field'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
@@ -15,6 +15,17 @@ import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import SelectAsset from './SelectAsset'
+import client from 'part:@sanity/base/client'
+import styles from './ImageInput.css'
+
+let imageBuilder
+const getImageBuilder = () => {
+  if (!imageBuilder) {
+    imageBuilder = imageUrlBuilder(client.config())
+  }
+
+  return imageBuilder
+}
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -34,6 +45,7 @@ function getInitialState() {
   return {
     status: 'ready',
     error: null,
+    value: null,
     progress: null,
     uploadingImage: null,
     materializedImage: null,
@@ -197,6 +209,12 @@ export default class ImageInput extends React.PureComponent<*> {
   }
 
   handleImageToolChange = newValue => {
+    this.setState({
+      value: newValue
+    })
+  }
+
+  handleImageToolComplete = newValue => {
     const {onChange, type} = this.props
     onChange(
       PatchEvent.from(
@@ -227,22 +245,30 @@ export default class ImageInput extends React.PureComponent<*> {
 
   renderImageTool() {
     const {value} = this.props
-    const hotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
-    const crop = (value && value.crop) || DEFAULT_CROP
 
-    const {uploadingImage, materializedImage} = this.state
+    const hotspot = (this.state.value && this.state.value.hotspot) || (value && value.hotspot) || DEFAULT_HOTSPOT
+    const crop = (this.state.value && this.state.value.crop) || (value && value.crop) || DEFAULT_CROP
 
-    const imageUrl = uploadingImage ? uploadingImage.previewUrl : (materializedImage || {}).url
+    const {uploadingImage} = this.state
+
+    const imageUrl = uploadingImage
+      ? uploadingImage.previewUrl
+      : getImageBuilder()
+        .image(value)
+        .width(800)
+        .ignoreImageParams()
+        .url()
     return (
-      <div style={{display: 'flex', flexDirection: 'row', width: 800}}>
-        <div style={{width: '40%'}}>
+      <div className={styles.imageTool}>
+        <div className={styles.mainImage}>
           <ImageTool
             value={{hotspot, crop}}
             src={imageUrl}
             onChange={this.handleImageToolChange}
+            onComplete={this.handleImageToolComplete}
           />
         </div>
-        <div style={{width: '60%', display: 'flex', flexDirection: 'row'}}>
+        <div className={styles.previews}>
           {ASPECT_RATIOS.map(([title, ratio]) => {
             return (
               <div key={ratio} style={{flexGrow: 1}}>
@@ -290,7 +316,6 @@ export default class ImageInput extends React.PureComponent<*> {
         <div>
           {grouped.other && this.renderFields(grouped.other)}
         </div>
-        <Button onClick={this.handleEditDialogClose}>Close</Button>
       </Dialog>
     )
   }
