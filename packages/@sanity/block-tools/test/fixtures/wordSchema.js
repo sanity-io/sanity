@@ -25,6 +25,7 @@ export default Schema.compile({
                     type: 'object',
                     name: 'blockNote',
                     title: 'Block note',
+                    annotationMarker: '*',
                     fields: [
                       {
                         type: 'string',

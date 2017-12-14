@@ -4,10 +4,6 @@ import {tagName} from '../helpers'
 
 // https://gist.github.com/webtobesocial/ac9d052595b406d5a5c1
 
-function notesEnabled(options) {
-  return options.enabledBlockAnnotations.includes('blockNote')
-}
-
 function isNormalEmptyParagraph(el) {
   return tagName(el) === 'p'
     && el.textContent === ''
@@ -79,6 +75,19 @@ function getEndnoteLinkElementId(el) {
 
 export default function createWordRules(blockContentType, options = {}) {
 
+  const blockNotesEnabled = options.enabledBlockAnnotations.includes('blockNote')
+  let blockNoteAnnotationMarker
+
+  if (blockContentType && blockNotesEnabled) {
+    const blockType = blockContentType.of.find(ofType => ofType.name === 'block')
+    const spansType = blockType.fields.find(field => field.name === 'spans').type
+    const annotations = spansType.of.find(ofType => ofType.name === 'span').annotations
+    const blockNoteType = annotations.find(type => type.name === 'blockNote')
+    if (blockNoteType) {
+      blockNoteAnnotationMarker = blockNoteType.annotationMarker
+    }
+  }
+
   return [
     // Fix weird paragraphing within Word (paragraph is more of a line break)
     // If we see two empty paragraphs after each other, we return an empty block
@@ -121,7 +130,7 @@ export default function createWordRules(blockContentType, options = {}) {
       deserialize(el, next) {
         let footnoteId
         if (tagName(el) === 'a' && (footnoteId = getFootnoteLinkElementId(el))) {
-          if (!notesEnabled(options)) {
+          if (!blockNotesEnabled) {
             return undefined
           }
           const markDef = {
@@ -130,12 +139,14 @@ export default function createWordRules(blockContentType, options = {}) {
             style: 'footnote',
             blockNoteId: footnoteId
           }
+          const children = blockNoteAnnotationMarker
+            ? [el.ownerDocument.createTextNode(blockNoteAnnotationMarker)]
+            : el.childNodes
           return {
             _type: '__annotation',
             markDef: markDef,
-            children: next(el.childNodes)
+            children: next(children)
           }
-
         }
         return undefined
       }
@@ -145,7 +156,7 @@ export default function createWordRules(blockContentType, options = {}) {
       deserialize(el, next, {blocks, deserialize}) {
         let footnoteId
         if (tagName(el) === 'div' && (footnoteId = getFootnoteContentElementId(el))) {
-          if (!notesEnabled(options)) {
+          if (!blockNotesEnabled) {
             return undefined
           }
           // Find the block where the footnote occured
@@ -169,7 +180,7 @@ export default function createWordRules(blockContentType, options = {}) {
       deserialize(el, next) {
         let endnoteId
         if (tagName(el) === 'a' && (endnoteId = getEndnoteLinkElementId(el))) {
-          if (!notesEnabled(options)) {
+          if (!blockNotesEnabled) {
             return undefined
           }
           const markDef = {
@@ -178,10 +189,13 @@ export default function createWordRules(blockContentType, options = {}) {
             style: 'endnote',
             blockNoteId: endnoteId
           }
+          const children = blockNoteAnnotationMarker
+            ? [el.ownerDocument.createTextNode(blockNoteAnnotationMarker)]
+            : el.childNodes
           return {
             _type: '__annotation',
             markDef: markDef,
-            children: next(el.childNodes)
+            children: next(children)
           }
 
         }
@@ -193,7 +207,7 @@ export default function createWordRules(blockContentType, options = {}) {
       deserialize(el, next, {blocks, deserialize}) {
         let endnoteId
         if (tagName(el) === 'div' && (endnoteId = getEndnoteContentElementId(el))) {
-          if (!notesEnabled(options)) {
+          if (!blockNotesEnabled) {
             return undefined
           }
           // Find the block where the footnote occured

@@ -196,7 +196,7 @@
         "marks": [
           "randomKey0"
         ],
-        "text": "[1]"
+        "text": "*"
       }
     ]
   },
@@ -250,7 +250,7 @@
         "marks": [
           "randomKey1"
         ],
-        "text": "[i]"
+        "text": "*"
       }
     ]
   },
