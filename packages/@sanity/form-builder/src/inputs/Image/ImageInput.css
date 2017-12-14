@@ -1,0 +1,22 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.imageTool {
+  display: flex;
+  flex-direction: column;
+
+  @media (--screen-medium) {
+    flex-direction: row;
+  }
+}
+
+.mainImage {
+  @media (--screen-medium) {
+    flex-basis: 50%;
+  }
+}
+
+.previews {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}

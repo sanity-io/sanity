@@ -52,7 +52,8 @@ export default class ImageTool extends React.PureComponent {
       height: PropTypes.number,
       width: PropTypes.number,
     }),
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onComplete: PropTypes.func,
   }
 
   static defaultProps = {
@@ -560,11 +561,10 @@ export default class ImageTool extends React.PureComponent {
   }
 
   handleDragEnd = pos => {
-    const {onChange} = this.props
+    const {onComplete} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
     const {hotspot, crop} = this.getClampedValue()
-
-    onChange({
+    onComplete({
       crop: {
         top: crop.top,
         bottom: 1 - crop.bottom,
