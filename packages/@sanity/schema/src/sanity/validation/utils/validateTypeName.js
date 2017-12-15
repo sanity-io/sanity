@@ -14,6 +14,13 @@ export function validateTypeName(typeName: string, visitorContext) {
     ]
   }
 
+  if (typeof typeName !== 'string') {
+    return [
+      error(`Type has an invalid "type"-property - should be a string. Valid types are: ${humanize(possibleTypeNames)}`,
+        HELP_IDS.TYPE_MISSING_TYPE)
+    ]
+  }
+
   const isValid = possibleTypeNames.includes(typeName)
 
   if (!isValid) {
