@@ -15,17 +15,13 @@
   user-select: none;
   position: relative;
   z-index: 1;
-  vertical-align: middle;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
+  display: inline-block;
   box-sizing: border-box;
-  width: 100%;
   height: var(--checkbox-label-height);
   margin: 0;
   padding: 0;
   padding-left: calc(var(--checkbox-button-size) + var(--checkbox-padding));
+  width: auto;
 }
 
 .isChecked {
@@ -134,7 +130,6 @@
 }
 
 .label {
-  flex-grow: 1;
   cursor: default;
   font-size: var(--checkbox-label-font-size);
   line-height: var(--checkbox-label-height);

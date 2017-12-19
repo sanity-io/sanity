@@ -10,7 +10,6 @@ import styles from './styles/Field.css'
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
 export default class Field extends React.Component {
-
   static propTypes = {
     field: FormBuilderPropTypes.field.isRequired,
     value: PropTypes.any,
@@ -19,6 +18,7 @@ export default class Field extends React.Component {
     onBlur: PropTypes.func.isRequired,
     focusPath: PropTypes.array,
     readOnly: PropTypes.bool,
+    markers: PropTypes.array,
     level: PropTypes.number
   }
 
@@ -43,7 +43,7 @@ export default class Field extends React.Component {
   }
 
   render() {
-    const {value, readOnly, field, level, onFocus, onBlur, focusPath} = this.props
+    const {value, readOnly, field, level, onFocus, onBlur, markers, focusPath} = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -80,6 +80,7 @@ export default class Field extends React.Component {
           onBlur={onBlur}
           readOnly={readOnly || field.type.readOnly}
           focusPath={focusPath}
+          markers={markers}
           level={level}
           ref={this.setInput}
         />

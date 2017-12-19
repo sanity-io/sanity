@@ -21,8 +21,6 @@
 .deleteButton {
   flex-grow: 0;
   z-index: 1;
-  font-size: 0.9em;
-  box-sizing: border-box;
 }
 
 .dragHandle {
@@ -33,11 +31,24 @@
   padding: 0.5em;
   border: 1px solid transparent;
   z-index: 1;
-  &:hover {
+
+  @nest &:hover {
     opacity: 1;
   }
 }
 
-.addButton {
-  margin-top: var(--medium-padding);
+.functions {
+  font-size: var(--font-size-small);
+  color: var(--text-color-secondary);
+  display: flex;
+  align-items: center;
+  margin-left: var(--medium-padding);
+
+  @nest & > * {
+    margin-right: var(--small-padding);
+  }
+}
+
+.validationStatus {
+  composes: validationStatus from 'part:@sanity/base/theme/forms/validation-style';
 }

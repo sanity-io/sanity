@@ -9,6 +9,10 @@
   justify-content: space-between;
 }
 
+.innerWithError {
+  composes: inner;
+}
+
 .listItem {
   composes: root;
 }
@@ -46,10 +50,8 @@
 }
 
 .linkToReference {
-  z-index: 1;
-  color: var(--text-color);
+  z-index: 2;
   transition: transform 0.1s linear, opacity 0.1s linear;
-  opacity: 0.6;
   transform: scale(1.2);
 
   @nest &:hover {
@@ -90,11 +92,23 @@
   outline: none;
 }
 
+.previewWrapperHelper:focus {
+  @nest .innerWithError & {
+    box-shadow: var(--input-box-shadow--error-focus);
+  }
+}
+
 .functions {
   display: flex;
   align-items: center;
   flex-grow: 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
+  color: var(--text-color-secondary);
+  margin-left: var(--small-padding);
+
+  @nest & > * {
+    margin-right: var(--small-padding);
+  }
 }
 
 .defaultDialogContent {
@@ -104,4 +118,8 @@
   @media (--screen-medium) {
     min-width: 30rem;
   }
+}
+
+.validationIconError {
+  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
 }

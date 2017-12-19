@@ -17,10 +17,6 @@
   }
 }
 
-.inputOnError {
-  composes: error from 'part:@sanity/base/theme/forms/text-input-style';
-}
-
 .clearButton {
   composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
   position: absolute;

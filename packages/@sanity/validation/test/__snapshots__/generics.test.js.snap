@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generics can customize error messages 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Dude it needs to be a string],
+    "level": "error",
+  },
+]
+`;
+
+exports[`generics can customize warning messages 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Dude it should probably be a string],
+    "level": "warning",
+  },
+]
+`;
+
+exports[`generics can demote errors to warnings 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Expected type "String", got "Number"],
+    "level": "warning",
+  },
+]
+`;
+
+exports[`generics can merge rules 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be at least 5 characters long],
+    "level": "error",
+  },
+]
+`;
+
+exports[`generics returns arrays of errors/warnings by default 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Expected type "String", got "Number"],
+    "level": "error",
+  },
+]
+`;

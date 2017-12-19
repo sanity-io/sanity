@@ -8,10 +8,9 @@ const NOOP = () => {}
 
 export default class DefaultTextInput extends React.PureComponent {
   static propTypes = {
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    markers: PropTypes.array,
+    focusPath: PropTypes.array,
     type: PropTypes.string,
     onClear: PropTypes.func,
     onFocus: PropTypes.func,
@@ -21,6 +20,7 @@ export default class DefaultTextInput extends React.PureComponent {
     disabled: PropTypes.bool,
     autoComplete: PropTypes.string,
     hasError: PropTypes.bool,
+    customValidity: PropTypes.string,
     styles: PropTypes.shape({
       container: PropTypes.string,
       input: PropTypes.string,
@@ -28,7 +28,7 @@ export default class DefaultTextInput extends React.PureComponent {
       clearButton: PropTypes.string,
       inputOnDisabled: PropTypes.string,
       inputOnError: PropTypes.string,
-      containerOnError: PropTypes.string,
+      containerOnError: PropTypes.string
     })
   }
 
@@ -43,7 +43,18 @@ export default class DefaultTextInput extends React.PureComponent {
     onClear: NOOP,
     onFocus: NOOP,
     onBlur: NOOP,
-    styles: {}
+    styles: {},
+    customValidity: ''
+  }
+
+  componentDidMount() {
+    this._input.setCustomValidity(this.props.customValidity)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.customValidity !== this.props.customValidity) {
+      this._input.setCustomValidity(nextProps.customValidity)
+    }
   }
 
   select() {
@@ -69,7 +80,10 @@ export default class DefaultTextInput extends React.PureComponent {
       isClearable,
       isSelected,
       disabled,
+      markers,
       styles: passedStyles,
+      customValidity,
+      focusPath,
       ...rest
     } = this.props
 
@@ -81,7 +95,6 @@ export default class DefaultTextInput extends React.PureComponent {
     return (
       <div
         className={classNames(styles.container, [
-          hasError && styles.containerOnError,
           isClearable && styles.isClearable,
           disabled && styles.isDisabled
         ])}
@@ -89,7 +102,7 @@ export default class DefaultTextInput extends React.PureComponent {
         <input
           ref={this.setInput}
           {...rest}
-          className={classNames(styles.input, [hasError && styles.inputOnError])}
+          className={classNames(styles.input)}
           disabled={disabled}
         />
         {isClearable && (

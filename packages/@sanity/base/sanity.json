@@ -196,6 +196,10 @@
       "description": "Provides pseudo styles for selectable items"
     },
     {
+      "name": "part:@sanity/base/theme/forms/validation-style",
+      "description": "Styles for validation"
+    },
+    {
       "name": "part:@sanity/base/theme/forms/text-input-style",
       "description": "Styling for <input>"
     },
@@ -389,6 +393,10 @@
     {
       "implements": "part:@sanity/base/theme/layout/selectable-style",
       "path": "styles/layout/selectable.css"
+    },
+    {
+      "implements": "part:@sanity/base/theme/forms/validation-style",
+      "path": "styles/forms/validation.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",
@@ -793,6 +801,10 @@
     {
       "implements": "part:@sanity/base/calendar-icon",
       "path": "components/icons/Calendar.js"
+    },
+    {
+      "implements": "part:@sanity/base/chevron-down-icon",
+      "path": "components/icons/ChevronDown.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",

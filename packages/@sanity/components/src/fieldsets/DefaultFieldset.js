@@ -1,9 +1,11 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, complexity*/
 
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
+import ValidationStatus from 'part:@sanity/components/validation/status'
+import ValidationList from 'part:@sanity/components/validation/list'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -22,12 +24,14 @@ export default class Fieldset extends React.Component {
     className: PropTypes.string,
     tabIndex: PropTypes.number,
     transparent: PropTypes.bool,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    markers: PropTypes.array
   }
 
   static defaultProps = {
     level: 1,
     fieldset: {},
+    markers: [],
     className: '',
     isCollapsed: false,
     isCollapsible: false // can collapsing be toggled by user?
@@ -36,7 +40,8 @@ export default class Fieldset extends React.Component {
   constructor(props) {
     super()
     this.state = {
-      isCollapsed: props.isCollapsed
+      isCollapsed: props.isCollapsed,
+      showValidationList: false
     }
   }
 
@@ -59,6 +64,12 @@ export default class Fieldset extends React.Component {
     this._focusElement = el
   }
 
+  handleToggleValidationList = event => {
+    this.setState({
+      showValidationList: !this.state.showValidationList
+    })
+  }
+
   render() {
     const {
       fieldset,
@@ -72,18 +83,23 @@ export default class Fieldset extends React.Component {
       children,
       tabIndex,
       transparent,
+      markers,
       ...rest
     } = this.props
 
-    const {isCollapsed} = this.state
+    const {isCollapsed, showValidationList} = this.state
 
     const styles = {
       ...defaultStyles,
       ...this.props.styles
     }
 
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+
     const rootClassName = [
       styles.root,
+      errors.length > 0 && styles.hasErrors,
       styles[`columns${columns}`],
       styles[`level${level}`],
       transparent && styles.transparent,
@@ -105,22 +121,36 @@ export default class Fieldset extends React.Component {
           <div
             className={styles.inner}
           >
-            <legend
-              className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
-              onClick={isCollapsible && this.handleToggle}
-            >
-              {isCollapsible && (
-                <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
-                  <ArrowDropDown />
+            <div className={styles.header}>
+              <div className={styles.headerMain}>
+                <legend
+                  className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
+                  onClick={isCollapsible && this.handleToggle}
+                >
+                  {isCollapsible && (
+                    <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
+                      <ArrowDropDown />
+                    </div>
+                  )}
+                  {legend || fieldset.legend}
+                </legend>
+                {(description || fieldset.description) && (
+                  <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
+                    {description || fieldset.description}
+                  </p>
+                )}
+              </div>
+              <div className={styles.headerStatus}>
+                <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
+              </div>
+            </div>
+            {
+              showValidationList && (
+                <div className={styles.validationList}>
+                  <ValidationList markers={markers} />
                 </div>
-              )}
-              {legend || fieldset.legend}
-            </legend>
-            {(description || fieldset.description) && (
-              <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
-                {description || fieldset.description}
-              </p>
-            )}
+              )
+            }
             <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
               <div className={styles.fieldWrapper}>
                 {!isCollapsed && children}

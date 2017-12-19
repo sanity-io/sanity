@@ -11,11 +11,12 @@ import PatchEvent, {set, unset} from '../../PatchEvent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import getEmptyValue from './getEmptyValue'
 
+import {startsWith} from '../../utils/pathUtils'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
 import type {ItemValue} from '../Array/typedefs'
 import type {Path} from '../../typedefs/path'
-import type {Type} from '../../typedefs'
+import type {Type, Marker} from '../../typedefs'
 
 function move(arr, from, to) {
   const copy = arr.slice()
@@ -38,7 +39,8 @@ type Props = {
   onChange: (event: PatchEvent) => void,
   onFocus: Path => void,
   onBlur: () => void,
-  focusPath: Path
+  focusPath: Path,
+  markers: Array<Marker>
 }
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
@@ -110,7 +112,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   renderItem = (item, index) => {
-    const {type, level, value, focusPath, onChange, onFocus, readOnly, onBlur} = this.props
+    const {type, level, markers, value, focusPath, onChange, onFocus, readOnly, onBlur} = this.props
 
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
@@ -129,6 +131,8 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
     const isSortable = get(type, 'options.sortable') !== false
     const ListItem = isSortable ? SortableItem : DefaultItem
+    const filteredMarkers = markers.filter(marker => startsWith([index], marker.path))
+
     return (
       <ListItem key={index} index={index} className={styles.item}>
         <Item
@@ -136,6 +140,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           index={index}
           value={item}
           readOnly={readOnly}
+          markers={filteredMarkers}
           isSortable={isSortable}
           type={itemMemberType}
           focusPath={focusPath}
@@ -153,23 +158,18 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   renderList(value) {
     const {type} = this.props
     const isSortable = get(type, 'options.sortable') !== false
-    return isSortable
-      ? (
-        <SortableList
-          className={styles.list}
-          onSortEnd={this.handleSortEnd}
-          movingItemClass={styles.movingItem}
-          useDragHandle
-        >
-          {value.map(this.renderItem)}
-        </SortableList>
-      )
-      : (
-        <DefaultList decoration="divider">
-          {value.map(this.renderItem)}
-        </DefaultList>
-      )
-
+    return isSortable ? (
+      <SortableList
+        className={styles.list}
+        onSortEnd={this.handleSortEnd}
+        movingItemClass={styles.movingItem}
+        useDragHandle
+      >
+        {value.map(this.renderItem)}
+      </SortableList>
+    ) : (
+      <DefaultList decoration="divider">{value.map(this.renderItem)}</DefaultList>
+    )
   }
 
   setElement = (el: ?Fieldset) => {
@@ -207,18 +207,19 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         tabIndex={0}
         onFocus={onFocus}
         ref={this.setElement}
+        markers={this.props.markers}
       >
         <div className={styles.root}>
-          <div className={styles.list}>
-            {value && value.length > 0 && this.renderList(value)}
-          </div>
+          <div className={styles.list}>{value && value.length > 0 && this.renderList(value)}</div>
           {!readOnly && (
             <div className={styles.functions}>
               {type.of.length === 1 ? (
                 <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
                   Add
                 </Button>
-              ) : this.renderSelectType()}
+              ) : (
+                this.renderSelectType()
+              )}
             </div>
           )}
         </div>

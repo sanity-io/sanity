@@ -12,6 +12,7 @@ export default class DefaultTextArea extends React.Component {
     onBlur: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.string,
+    customValidity: PropTypes.string,
     isClearable: PropTypes.bool,
     rows: PropTypes.number,
     hasFocus: PropTypes.bool,
@@ -20,6 +21,7 @@ export default class DefaultTextArea extends React.Component {
 
   static defaultProps = {
     value: '',
+    customValidity: '',
     rows: 10,
     isClearable: false,
     onKeyPress: NOOP,
@@ -49,6 +51,16 @@ export default class DefaultTextArea extends React.Component {
     this._input = element
   }
 
+  componentDidMount() {
+    this._input.setCustomValidity(this.props.customValidity)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.customValidity !== this.props.customValidity) {
+      this._input.setCustomValidity(nextProps.customValidity)
+    }
+  }
+
   render() {
     const {
       value,
@@ -59,6 +71,7 @@ export default class DefaultTextArea extends React.Component {
       onFocus,
       onBlur,
       onClear,
+      customValidity,
       ...rest
     } = this.props
 
@@ -73,7 +86,7 @@ export default class DefaultTextArea extends React.Component {
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete="off"
-          ref={this._setInput}
+          ref={this.setInput}
           {...rest}
         />
         {

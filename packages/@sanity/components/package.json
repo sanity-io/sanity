@@ -53,6 +53,7 @@
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
     "react-text-ellipsis": "^1.2.2",
+    "@sanity/react-tippy": "^1.2.4",
     "scroll": "^2.0.0"
   },
   "devDependencies": {

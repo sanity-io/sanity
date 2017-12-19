@@ -22,6 +22,7 @@
   --input-border-color-hover: var(--gray);
   --input-border-color-focus: var(--brand-primary);
   --input-border-color-active: var(--brand-primary);
+  --input-border-color-invalid: var(--state-danger-color);
   --focus-color: color(var(--brand-primary) alpha(40%));
   --input-color-placeholder: var(--gray-lighter);
   --form-group-margin-bottom: 1em;
@@ -36,21 +37,15 @@
   --form-builder-block-background-hover: var(--gray-lighter);
   --form-builder-block-background-selected: var(--text-selection-color);
   --input-box-shadow-base: var(--gray-base);
-  --input-box-shadow:
-    0 0 2px 0 color(var(--input-box-shadow-base) a(15%)),
-    0 -1px 1px 1px color(var(--input-box-shadow-base) a(5%)),
-    0 2px 3px 0 color(var(--input-box-shadow-base) a(8%)),
-    0 1px 1px 1px color(var(--input-box-shadow-base) a(10%));
-  --input-box-shadow--hover:
-    0 1px 2px 0 color(var(--input-box-shadow-base) a(15%)),
-    0 2px 5px 0 color(var(--input-box-shadow-base) a(17%)),
-    0 1px 1px 1px color(var(--input-box-shadow-base) a(15%));
+  --input-box-shadow: none;
+  --input-box-shadow--hover: none;
   --input-box-shadow--focus:
     0 0 2px 0 color(var(--input-border-color-focus) a(42%)),
     0 2px 5px 0 color(var(--input-border-color-focus) a(45%)),
     0 0 1px 1px color(var(--input-border-color-focus) a(80%));
-  --input-box-shadow--error:
-    0 2px 1px -1px color(var(--state-danger-color) a(100%)),
-    0 1px 1px 0 color(var(--state-danger-color) a(65%)),
-    0 1px 3px 0 color(var(--state-danger-color) a(50%));
+  --input-box-shadow--error: none;
+  --input-box-shadow--error-focus:
+    0 0 2px 0 color(var(--state-danger-color) a(42%)),
+    0 2px 5px 0 color(var(--state-danger-color) a(45%)),
+    0 0 1px 1px color(var(--state-danger-color) a(80%));
 }

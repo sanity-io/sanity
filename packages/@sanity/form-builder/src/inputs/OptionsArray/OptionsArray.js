@@ -53,6 +53,7 @@ export default class OptionsArrayInput extends React.PureComponent {
       description: PropTypes.string,
       of: PropTypes.array
     }),
+    markers: PropTypes.array,
     value: PropTypes.array,
     level: PropTypes.number,
     readOnly: PropTypes.bool,
@@ -70,11 +71,12 @@ export default class OptionsArrayInput extends React.PureComponent {
     }
 
     const nextValue = list
-      .filter(item => (
-        isEqual(optionValue, item)
-          ? isChecked
-          : inArray(value, resolveValueWithLegacyOptionsSupport(item))
-      ))
+      .filter(
+        item =>
+          isEqual(optionValue, item)
+            ? isChecked
+            : inArray(value, resolveValueWithLegacyOptionsSupport(item))
+      )
       .map(resolveValueWithLegacyOptionsSupport)
 
     this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
@@ -82,17 +84,20 @@ export default class OptionsArrayInput extends React.PureComponent {
 
   getMemberTypeOfItem(option) {
     const {type} = this.props
-    return type.of.find(memberType => memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option)))
+    return type.of.find(
+      memberType =>
+        memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
+    )
   }
 
   render() {
-    const {type, value, level, readOnly} = this.props
+    const {type, markers, value, level, readOnly} = this.props
 
     const options = get(type.options, 'list')
     const direction = get(type.options, 'direction') // vertical and horizontal
 
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
+      <Fieldset legend={type.title} description={type.description} markers={markers} level={level}>
         {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
           if (!optionType) {
@@ -100,9 +105,9 @@ export default class OptionsArrayInput extends React.PureComponent {
             const validTypes = type.of.map(ofType => ofType.name)
             return (
               <div key={option._key || index} className={styles.error}>
-                Invalid option type: Type <code>{actualType}</code> not valid for array
-                of [{validTypes.join(', ')}]. Check
-                the list options of this field
+                Invalid option type: Type <code>{actualType}</code> not valid for array of [{validTypes.join(
+                  ', '
+                )}]. Check the list options of this field
               </div>
             )
           }
@@ -110,7 +115,9 @@ export default class OptionsArrayInput extends React.PureComponent {
           return (
             <div
               key={option._key || index}
-              className={direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal}
+              className={
+                direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
+              }
             >
               <Item
                 layout="inline"

@@ -143,7 +143,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       highlightIndex,
       isInputSelected,
       inputValue,
-      readOnly,
       onChange,
       onInputChange,
       onOpen,
@@ -170,87 +169,84 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             value={inputValue || ''}
             selected={isInputSelected}
             disabled={disabled}
-            readOnly={readOnly}
             ref={this.setInput}
             readOnly={readOnly}
           />
           <div className={styles.functions}>
-            {
-              openItemElement && value && (
-                <span className={styles.openItem}>{openItemElement(value)}</span>
-              )
-            }
-            {
-              onClear && value && !readOnly && (
+            {openItemElement &&
+              value && <span className={styles.openItem}>{openItemElement(value)}</span>}
+            {onClear &&
+              value &&
+              !readOnly && (
                 <button type="button" className={styles.clearButton} onClick={onClear}>
                   <CloseIcon color="inherit" />
                 </button>
-              )
-            }
-            {!isLoading && !readOnly && (
-              <div
-                className={styles.arrow}
-                onClick={disabled ? null : this.handleArrowClick}
-                tabIndex={0}
-                onKeyPress={disabled ? null : this.handleArrowKeyPress}
-              >
-                <FaAngleDown color="inherit" />
-              </div>
-            )}
-            {
-              isLoading && (
-                <Spinner />
-              )
-            }
+              )}
+            {!isLoading &&
+              !readOnly && (
+                <div
+                  className={styles.arrow}
+                  onClick={disabled ? null : this.handleArrowClick}
+                  tabIndex={0}
+                  onKeyPress={disabled ? null : this.handleArrowKeyPress}
+                >
+                  <FaAngleDown color="inherit" />
+                </div>
+              )}
+            {isLoading && <Spinner />}
           </div>
         </div>
         <div className={styles.stickyContainer} style={{width: `${this.props.width}px`}}>
-          {
-            isOpen && (
-              <StickyPortal
-                isOpen={isOpen}
-                onResize={onResize}
-                onlyBottomSpace={false}
-                useOverlay={false}
-                addPadding={false}
-                scrollIntoView={false}
-              >
-                <Stacked>
-                  {isActive => (
-                    <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
-                      <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+          {isOpen && (
+            <StickyPortal
+              isOpen={isOpen}
+              onResize={onResize}
+              onlyBottomSpace={false}
+              useOverlay={false}
+              addPadding={false}
+              scrollIntoView={false}
+            >
+              <Stacked>
+                {isActive => (
+                  <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                    <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
 
-                      <div
-                        className={`
+                    <div
+                      className={`
                         ${isOpen ? styles.listContainer : styles.listContainerHidden}
-                        ${dropdownPosition === 'top' ? styles.listContainerTop : styles.listContainerBottom}
+                        ${
+                          dropdownPosition === 'top'
+                            ? styles.listContainerTop
+                            : styles.listContainerBottom
+                        }
                         ${items.length === 0 ? styles.listContainerEmpty : ''}
                       `}
-                        style={{width: `${this.props.width}px`}}
-                        ref={this.setListElement}
-                      >
-                        {
-                          items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
-                        }
-                        {
-                          items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
-                        }
-                        {items.length > 0 && (
-                          <SelectMenu
-                            items={items}
-                            value={value}
-                            onSelect={this.handleSelect}
-                            renderItem={renderItem}
-                            highlightIndex={highlightIndex}
-                          />
+                      style={{width: `${this.props.width}px`}}
+                      ref={this.setListElement}
+                    >
+                      {items.length === 0 &&
+                        !isLoading && <p className={styles.noResultText}>No results</p>}
+                      {items.length === 0 &&
+                        isLoading && (
+                          <div className={styles.listSpinner}>
+                            <Spinner message="Loading items…" />
+                          </div>
                         )}
-                      </div>
-                    </CaptureOutsideClicks>
-                  )}
-                </Stacked>
-              </StickyPortal>
-            )
-          }
+                      {items.length > 0 && (
+                        <SelectMenu
+                          items={items}
+                          value={value}
+                          onSelect={this.handleSelect}
+                          renderItem={renderItem}
+                          highlightIndex={highlightIndex}
+                        />
+                      )}
+                    </div>
+                  </CaptureOutsideClicks>
+                )}
+              </Stacked>
+            </StickyPortal>
+          )}
         </div>
       </div>
     )

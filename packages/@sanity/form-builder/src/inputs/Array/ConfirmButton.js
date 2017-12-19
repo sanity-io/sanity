@@ -60,7 +60,6 @@ export default class ConfirmButton extends React.Component {
         <Button
           {...rest}
           kind="simple"
-          color="danger"
           icon={TrashIcon}
           onClick={this.handleClick}
           ref={this.setButton}

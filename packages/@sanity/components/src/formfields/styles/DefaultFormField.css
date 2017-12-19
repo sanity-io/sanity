@@ -39,6 +39,44 @@
   }
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--small-padding);
+}
+
+.headerMain {
+  flex-grow: 1;
+}
+
+.headerStatus {
+  display: flex;
+  padding: var(--small-padding);
+  align-content: center;
+}
+
+.validationStatus {
+  cursor: default;
+}
+
+.validationIconError {
+  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
+
+  @nest .root:focus-within & {
+    text-shadow: 0 0 5px var(--state-danger-color);
+    color: var(--state-danger-color);
+  }
+}
+
+.validationList {
+  composes: validationList from 'part:@sanity/base/theme/forms/validation-style';
+  margin-bottom: var(--small-padding);
+}
+
+.validationListClosed {
+  composes: validationListClosed from 'part:@sanity/base/theme/forms/validation-style';
+}
+
 .labelAndDescriptionWrapper {
   display: block;
 

@@ -9,5 +9,7 @@ export {default as withDocument} from '../utils/withDocument'
 export {FormBuilderInput} from '../FormBuilderInput'
 export {checkout} from './formBuilderValueStore'
 export {default as PatchEvent} from '../PatchEvent'
+export {default as HashFocusManager} from './focusManagers/HashFocusManager'
+export {default as SimpleFocusManager} from './focusManagers/SimpleFocusManager'
 export {patches}
 export {BlockEditor} from '..'

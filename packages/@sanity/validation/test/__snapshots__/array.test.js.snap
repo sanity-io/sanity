@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`array exact length constraint: exact length: too long 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must have exactly 2 items],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array exact length constraint: exact length: too short 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must have exactly 2 items],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array exact length constraint: exact length: valid 1`] = `Array []`;
+
+exports[`array max length constraint: max length: too long 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must have at most 2 items],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array max length constraint: max length: valid 1`] = `Array []`;
+
+exports[`array min length constraint: min length: too short 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must have at least 2 items],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array min length constraint: min length: valid 1`] = `Array []`;
+
+exports[`array required constraint: required: empty array 1`] = `Array []`;
+
+exports[`array required constraint: required: null 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Expected type "Array", got "null"],
+    "level": "error",
+  },
+  Object {
+    "item": [ValidationError: Required],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array required constraint: required: undefined 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Required],
+    "level": "error",
+  },
+]
+`;
+
+exports[`array required constraint: required: valid 1`] = `Array []`;
+
+exports[`array unique constraint (default, array values): array unique: duplicates 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      0,
+    ],
+  },
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      1,
+    ],
+  },
+]
+`;
+
+exports[`array unique constraint (default, array values): array unique: valid 1`] = `Array []`;
+
+exports[`array unique constraint (default, bool values): boolean unique: duplicates 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      0,
+    ],
+  },
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      2,
+    ],
+  },
+]
+`;
+
+exports[`array unique constraint (default, bool values): boolean unique: valid 1`] = `Array []`;
+
+exports[`array unique constraint (default, numeric values): numeric unique: duplicates 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      0,
+    ],
+  },
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      2,
+    ],
+  },
+]
+`;
+
+exports[`array unique constraint (default, numeric values): numeric unique: valid 1`] = `Array []`;
+
+exports[`array unique constraint (default, object values): object unique: duplicates 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      0,
+    ],
+  },
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      3,
+    ],
+  },
+]
+`;
+
+exports[`array unique constraint (default, object values): object unique: valid 1`] = `Array []`;
+
+exports[`array unique constraint (default, simple values): simple unique: duplicates 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      0,
+    ],
+  },
+  Object {
+    "item": [ValidationError: Can't be a duplicate],
+    "level": "error",
+    "path": Array [
+      3,
+    ],
+  },
+]
+`;
+
+exports[`array unique constraint (default, simple values): simple unique: valid 1`] = `Array []`;

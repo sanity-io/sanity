@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 // @flow
 import React from 'react'
 import type {Path} from './typedefs/path'
@@ -14,6 +15,7 @@ type Props = {
   onBlur: () => void,
   readOnly: boolean,
   focusPath: Path,
+  markers: Array<*>,
   level: number,
   isRoot: boolean,
   path: Array<PathSegment>
@@ -23,6 +25,10 @@ const ENABLE_CONTEXT = () => {}
 
 function getDisplayName(component) {
   return component.displayName || component.name || 'Unknown'
+}
+
+function trimChildPath(path, childPath) {
+  return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : []
 }
 
 export const FormBuilderInput = class FormBuilderInput extends React.PureComponent<Props> {
@@ -39,7 +45,8 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
 
   static defaultProps = {
     focusPath: [],
-    path: []
+    path: [],
+    markers: []
   }
 
   _input: ?FormBuilderInput
@@ -69,6 +76,12 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     }
   }
 
+  componentWillUnmount() {
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout)
+    }
+  }
+
   resolveInputComponent(type: Type) {
     return this.context.formBuilder.resolveInputComponent(type)
   }
@@ -92,10 +105,10 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
           'Missing a required ".focus()" method on input component. Please check the implementation of %s. Read more at %s',
           displayName,
           generateHelpUrl('input-component-missing-required-method')
-        ))
+        )
+      )
       return
     }
-
     this._input.focus()
   }
 
@@ -111,7 +124,8 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     const {path, onFocus, focusPath} = this.props
 
     if (!onFocus) {
-      console.warn( // eslint-disable-line no-console
+      console.warn(
+        // eslint-disable-line no-console
         'FormBuilderInput was used without passing a required onFocus prop. Read more at %s.',
         generateHelpUrl('form-builder-input-missing-required-prop')
       )
@@ -131,7 +145,8 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
   handleBlur = () => {
     const {onBlur} = this.props
     if (!onBlur) {
-      console.warn( // eslint-disable-line no-console
+      console.warn(
+        // eslint-disable-line no-console
         'FormBuilderInput was used without passing a required onBlur prop. Read more at %s.',
         generateHelpUrl('form-builder-input-missing-required-prop')
       )
@@ -146,7 +161,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
 
   getChildFocusPath() {
     const {path, focusPath} = this.props
-    return PathUtils.startsWith(path, focusPath) ? PathUtils.trimLeft(path, focusPath) : []
+    return trimChildPath(path, focusPath)
   }
 
   render() {
@@ -157,6 +172,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
       path,
       readOnly,
       value,
+      markers,
       type,
       level,
       focusPath,
@@ -172,19 +188,30 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
 
     const rootProps = isRoot ? {isRoot} : {}
 
+    let childMarkers = markers
+    if (!isRoot) {
+      childMarkers = markers
+        .filter(marker => PathUtils.startsWith(path, marker.path))
+        .map(marker => ({
+          ...marker,
+          path: trimChildPath(path, marker.path)
+        }))
+    }
+
     const childFocusPath = this.getChildFocusPath()
 
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
     return (
-      <div ref={this.setElement}>
+      <div ref={this.setElement} data-focus-path={PathUtils.toString(path)}>
         <InputComponent
           {...rest}
           {...rootProps}
           {...leafProps}
           value={value}
           readOnly={readOnly || type.readOnly}
+          markers={childMarkers}
           type={type}
           onChange={this.handleChange}
           onFocus={this.handleFocus}

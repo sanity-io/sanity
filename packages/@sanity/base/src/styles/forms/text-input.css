@@ -2,7 +2,7 @@
 
 .root {
   appearance: none;
-  border: none;
+  border: var(--input-border-size) solid var(--input-border-color);
   display: block;
   width: 100%;
   outline: none;
@@ -33,22 +33,23 @@
     @nest &:not(:read-only) {
       @nest &:hover {
         box-shadow: var(--input-box-shadow--hover);
+        border-color: var(--input-border-color-hover);
       }
 
       @nest &:focus, &:focus-within {
-        /* border-color: var(--input-border-color-focus); */
         box-shadow: var(--input-box-shadow--focus);
+        border-color: var(--input-border-color-focus);
       }
 
       @nest &:active {
-        /* border-color: var(--input-border-color-active); */
+        border-color: var(--input-border-color-active);
+      }
+
+      @nest &:invalid {
+        border-color: var(--input-border-color-invalid);
+        background-color: var(--input-bg-error);
+        box-shadow: var(--input-box-shadow--error);
       }
     }
   }
-}
-
-.error {
-  composes: textInput;
-  background-color: var(--input-bg-error);
-  box-shadow: var(--input-box-shadow--error);
 }

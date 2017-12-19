@@ -67,3 +67,23 @@ export function trimRight(suffix, path) {
 
   return path.slice(0, pathLen - i)
 }
+
+export function toString(path) {
+  return path.reduce((target, segment, i) => {
+    const segmentType = typeof segment
+    if (segmentType === 'number') {
+      return `${target}[${segment}]`
+    }
+
+    if (segmentType === 'string') {
+      const separator = i === 0 ? '' : '.'
+      return `${target}${separator}${segment}`
+    }
+
+    if (segment._key) {
+      return `${target}[_key=="${segment._key}"]`
+    }
+
+    throw new Error(`Unsupported path segment "${segment}"`)
+  }, '')
+}
