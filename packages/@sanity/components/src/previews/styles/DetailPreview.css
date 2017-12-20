@@ -34,6 +34,7 @@
   composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
   composes: ellipsis;
   color: inherit;
+  font-weight: 500;
   text-transform: none;
   margin: 0;
   padding: 0;

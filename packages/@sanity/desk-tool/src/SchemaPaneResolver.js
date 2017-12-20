@@ -111,7 +111,13 @@ export default class SchemaPaneResolver extends React.Component {
               </SplitPaneWrapper>
             )
           }
-
+          {
+            !schemaType && !selectedType && (
+              <SplitPaneWrapper>
+                <div />
+              </SplitPaneWrapper>
+            )
+          }
           {
             schemaType && selectedDocumentId && action === 'edit' && (
               <SplitPaneWrapper>
