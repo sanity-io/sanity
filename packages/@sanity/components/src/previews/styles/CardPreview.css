@@ -30,10 +30,12 @@
 .title {
   composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
   composes: ellipsis;
+  text-transform: none;
   color: inherit;
   margin: 0;
   padding: 0 !important;
   min-width: 0;
+  line-height: 1.3em;
 }
 
 .subtitle {
