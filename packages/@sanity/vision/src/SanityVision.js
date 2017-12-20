@@ -1,5 +1,5 @@
 import React from 'react'
-import client from 'part:@sanity/base/client'
+import sanityClient from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema?'
 import Select from './sanity/Select'
@@ -19,6 +19,8 @@ const styles = {
   visionGui,
   jsonInspector
 }
+
+const client = sanityClient.clone()
 
 // Used in Sanity project
 function SanityVision() {
