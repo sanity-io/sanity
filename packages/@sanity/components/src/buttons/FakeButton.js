@@ -4,7 +4,7 @@ import Ink from 'react-ink'
 import styles from 'part:@sanity/components/buttons/default-style'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
-export default class DefaultButton extends React.Component {
+export default class FakeButton extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'simple', 'secondary']),
     color: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
