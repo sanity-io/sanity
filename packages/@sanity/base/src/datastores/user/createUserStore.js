@@ -20,15 +20,17 @@ errorChannel.subscribe(val => {
 })
 
 function fetchInitial() {
-  return authenticationFetcher.getCurrentUser()
-    .then(user => setTimeout(() => userChannel.publish(user), 5))
-    .catch(err => errorChannel.publish(err))
+  return authenticationFetcher.getCurrentUser().then(
+    user => userChannel.publish(user),
+    err => errorChannel.publish(err)
+  )
 }
 
 function logout() {
-  return authenticationFetcher.logout()
-    .then(() => userChannel.publish(null))
-    .catch(err => errorChannel.publish(err))
+  return authenticationFetcher.logout().then(
+    () => userChannel.publish(null),
+    err => errorChannel.publish(err)
+  )
 }
 
 const currentUser = new Observable(observer => {
