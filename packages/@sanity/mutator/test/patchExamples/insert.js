@@ -79,5 +79,38 @@ export default [
     after: {
       scores: [1, "hello", "man", 5]
     }
+  },
+
+  {
+    name: 'Replace single item in array',
+    before: {
+      scores: [1, 2, 3, 4, 5]
+    },
+    patch: {
+      insert: {
+        replace: 'scores[1]',
+        items: [9]
+      }
+    },
+    after: {
+      scores: [1, 9, 3, 4, 5]
+    }
+  },
+
+  {
+    name: 'Replace single object in array',
+    before: {
+      scores: [{a: 1}, {a: 2}, {a: 3}]
+    },
+    patch: {
+      insert: {
+        replace: 'scores[1]',
+        items: [{a: "hello"}]
+      }
+    },
+    after: {
+      scores: [{a: 1}, {a: "hello"}, {a: 3}]
+    }
   }
+
 ]
