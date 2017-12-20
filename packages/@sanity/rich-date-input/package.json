@@ -1,6 +1,6 @@
 {
   "name": "@sanity/rich-date-input",
-  "version": "0.123.0",
+  "version": "0.123.1",
   "description": "Date/time input components for Sanity form builder",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,7 +20,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.123.0",
+    "@sanity/form-builder": "^0.123.1",
     "@sanity/generate-help-url": "^0.123.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
