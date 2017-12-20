@@ -18,8 +18,8 @@
       "description": "Default button"
     },
     {
-      "name": "part:@sanity/components/buttons/false",
-      "description": "Default false button"
+      "name": "part:@sanity/components/buttons/fake",
+      "description": "Default fake button"
     },
     {
       "name": "part:@sanity/components/buttons/anchor",
@@ -404,8 +404,8 @@
       "path": "buttons/DefaultButton.js"
     },
     {
-      "implements": "part:@sanity/components/buttons/false",
-      "path": "buttons/FalseButton.js"
+      "implements": "part:@sanity/components/buttons/fake",
+      "path": "buttons/FakeButton.js"
     },
     {
       "implements": "part:@sanity/components/buttons/anchor",
