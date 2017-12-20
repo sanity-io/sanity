@@ -17,15 +17,13 @@ export default class DefaultButton extends React.Component {
     className: PropTypes.string,
     disabled: PropTypes.bool,
     tabIndex: PropTypes.number,
-    type: PropTypes.string
   }
 
   static defaultProps = {
     ripple: false,
     icon: null,
     onClick() {},
-    kind: 'default',
-    type: 'button'
+    kind: 'default'
   }
 
   constructor(...args) {
