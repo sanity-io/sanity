@@ -14,8 +14,35 @@ export default {
       title: 'Content',
       of: [
         {
-          title: 'Block',
-          type: 'block'
+          type: 'block',
+          marks: {
+            annotations: [
+              {
+                type: 'object',
+                name: 'blockNote',
+                title: 'Block note',
+                annotationMarker: '*',
+                fields: [
+                  {
+                    type: 'string',
+                    name: 'style',
+                    options: {
+                      list: [
+                        {title: 'Footnote', value: 'footnote'},
+                        {title: 'Endnote', value: 'endnote'}
+                      ]
+                    }
+                  },
+                  {
+                    name: 'content',
+                    title: 'Content',
+                    type: 'array',
+                    of: [{type: 'block'}]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           title: 'Image',

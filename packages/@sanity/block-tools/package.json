@@ -41,7 +41,7 @@
     "in-publish": "^2.0.0",
     "jest": "^21.2.1",
     "jest-cli": "^21.2.1",
-    "jsdom": "11.3.0",
+    "jsdom": "^11.3.0",
     "wgxpath": "^1.2.0"
   },
   "directories": {
