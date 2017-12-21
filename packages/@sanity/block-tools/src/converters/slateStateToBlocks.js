@@ -52,7 +52,7 @@ function toSanityBlock(block) {
       ...block.data,
       _type: 'block',
       _key: block.key || block.data._key || randomKey(12),
-      markDefs: block.data.markDefs || []
+      markDefs: []
     }
     let index = 0
     const spanIndex = () => {
