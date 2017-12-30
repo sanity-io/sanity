@@ -29,6 +29,7 @@
   "dependencies": {
     "@sanity/date-input": "^0.123.1",
     "@sanity/imagetool": "^0.120.0",
+    "@sanity/image-url": "^0.123.1",
     "@sanity/observable": "^0.121.0",
     "attr-accept": "^1.1.0",
     "canvas-to-blob": "^0.0.0",

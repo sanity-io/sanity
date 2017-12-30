@@ -17,6 +17,7 @@ export default class DefaultDialog extends React.PureComponent {
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
+    padding: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string.isRequired,
       tooltip: PropTypes.string,
@@ -28,6 +29,7 @@ export default class DefaultDialog extends React.PureComponent {
   static defaultProps = {
     isOpen: false,
     showHeader: false,
+    padding: false,
     onAction() {},
     onOpen() {},
     actions: [],
@@ -62,7 +64,7 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader, kind, onClose, className} = this.props
+    const {title, actions, isOpen, showHeader, kind, onClose, className, padding} = this.props
     const classNames = `
       ${styles[kind]}
       ${isOpen ? styles.isOpen : styles.isClosed}
@@ -71,6 +73,7 @@ export default class DefaultDialog extends React.PureComponent {
       ${className}
     `
 
+    console.log('padding?', padding ? 'yes' : 'no')
     return (
       <StackedEscapable onEscape={onClose}>
         <Portal isOpened={isOpen}>
@@ -94,7 +97,7 @@ export default class DefaultDialog extends React.PureComponent {
                     </div>
                   )
                 }
-                <div className={styles.content}>
+                <div className={padding ? styles.contentWithPadding : styles.content}>
                   {this.props.children}
                 </div>
 

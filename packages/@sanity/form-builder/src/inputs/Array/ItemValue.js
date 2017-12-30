@@ -9,6 +9,7 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 
 import {FormBuilderInput} from '../../FormBuilderInput'
@@ -158,6 +159,24 @@ export default class RenderItemValue extends React.Component<Props> {
           <EditItemFold title={memberType.title} onClose={this.handleEditStop}>
             {content}
           </EditItemFold>
+        </div>
+      )
+    }
+
+    const itemType = type.of.find(i => i.name === item._type)
+
+    if (itemType.fields.length > 1) {
+      return (
+        <div className={styles.popupAnchor}>
+          <DefaultDialog
+            padding={true}
+            isOpen
+            title={item.title}
+            onClose={this.handleEditStop}
+            key={item._key}
+          >
+            {content}
+          </DefaultDialog>
         </div>
       )
     }
