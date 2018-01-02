@@ -14,13 +14,8 @@ export const myImage = {
 export default {
   name: 'imagesTest',
   type: 'document',
-  title: 'Images test (legacy imageUrl)',
-  preview: {
-    select: {
-      title: 'title',
-      imageUrl: 'mainImage.asset.url',
-    },
-  },
+  title: 'Images test',
+  description: 'Different test cases of image fields',
   fields: [
     {
       name: 'title',

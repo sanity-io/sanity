@@ -8,7 +8,6 @@ import author from './author'
 import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
-import imagePreview from './imagePreview'
 import strings from './strings'
 import objects, {myObject} from './objects'
 import arrays from './arrays'
@@ -32,6 +31,8 @@ import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
 import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 import focus from './focus'
+import previewImageUrlTest from './previewImageUrlTest'
+import previewMediaTest from './previewMediaTest'
 
 export default createSchema({
   name: 'test-examples',
@@ -52,7 +53,6 @@ export default createSchema({
     code,
     color,
     images,
-    imagePreview,
     files,
     references,
     geopoint,
@@ -65,6 +65,8 @@ export default createSchema({
     myObject,
     codeInputType,
     notitle,
-    typeWithNoToplevelStrings
+    typeWithNoToplevelStrings,
+    previewImageUrlTest,
+    previewMediaTest
   ])
 })
