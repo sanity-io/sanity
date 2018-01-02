@@ -30,8 +30,10 @@ function toSanitySpan(node, sanityBlock, spanIndex) {
         Object.keys(annotations).forEach(name => {
           const annotation = annotations[name]
           const annotationKey = annotation._key
-          sanityBlock.markDefs.push(annotation)
-          annotationKeys.push(annotationKey)
+          if (annotation) {
+            sanityBlock.markDefs.push(annotation)
+            annotationKeys.push(annotationKey)
+          }
         })
       }
       return nodesNode.ranges
@@ -52,7 +54,7 @@ function toSanityBlock(block) {
       ...block.data,
       _type: 'block',
       _key: block.key || block.data._key || randomKey(12),
-      markDefs: block.data.markDefs || []
+      markDefs: []
     }
     let index = 0
     const spanIndex = () => {
