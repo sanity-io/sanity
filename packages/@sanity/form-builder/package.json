@@ -30,7 +30,7 @@
     "@sanity/block-tools": "^0.123.1",
     "@sanity/generate-help-url": "^0.123.0",
     "@sanity/imagetool": "^0.120.0",
-    "@sanity/image-url": "0.121.0",
+    "@sanity/image-url": "0.123.1",
     "@sanity/mutator": "^0.120.0",
     "@sanity/observable": "^0.121.0",
     "@sanity/schema": "^0.123.1",
