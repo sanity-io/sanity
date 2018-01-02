@@ -79,6 +79,8 @@
   flex-grow: 1;
   outline: none;
   user-select: none;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .functions {

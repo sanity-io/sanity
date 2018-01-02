@@ -2,21 +2,10 @@
 
 .root {
   border: 1px solid transparent;
-  color: var(--input-color);
   display: block;
-  width: 100%;
-  height: 100%;
   outline: none;
-  font-size: inherit;
-  box-sizing: border-box;
-  border-radius: var(--input-border-radius);
-  box-shadow: 0 0 4px color(#000 a(5%));
-  transition: all 0.1s linear;
+
   @nest &:focus {
-    border: 1px solid var(--input-border-color-focus);
-    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
-  }
-  @nest &:active {
-    outline-color: #fffdb9;
+    border: 1px dotted var(--input-border-color-focus);
   }
 }

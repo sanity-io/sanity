@@ -187,6 +187,7 @@ export default class RenderItemValue extends React.Component<Props> {
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           ref={this.setFocusArea}
+          className={styles.preview}
         >
           <Preview
             layout={previewLayout}
