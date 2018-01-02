@@ -81,7 +81,9 @@
 
 .fullscreen {
   composes: center;
+  background-color: color(var(--body-bg) a(90%));
   position: fixed;
+  z-index: var(--zindex-spinner);
 }
 
 .root svg {
