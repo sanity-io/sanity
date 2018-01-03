@@ -7,6 +7,9 @@
   border: none;
   outline: none;
 
+  /* user agent sets min-width this to --webkit-min-content */
+  min-width: 0;
+
   & & {
     /* nested inside itself */
     margin: 0;
