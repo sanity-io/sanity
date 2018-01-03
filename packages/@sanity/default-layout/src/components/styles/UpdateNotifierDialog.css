@@ -1,0 +1,32 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.content {
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  text-align: center;
+}
+
+.versionsTable {
+  border-collapse: collapse;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: calc(var(--large-padding) * 2);
+}
+
+.versionsTable tr td {
+  border-top: 1px solid #ccc;
+}
+
+.versionsTable td,
+.versionsTable th {
+  padding: var(--small-padding);
+  text-align: left;
+}
+
+.upgradeText {
+  margin-bottom: calc(var(--large-padding) * 2);
+}
+
+.code {
+  background: #333;
+  color: #fff;
+  padding: 0.5rem;
+}
