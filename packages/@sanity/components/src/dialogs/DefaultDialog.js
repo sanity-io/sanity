@@ -73,7 +73,6 @@ export default class DefaultDialog extends React.PureComponent {
       ${className}
     `
 
-    console.log('padding?', padding ? 'yes' : 'no')
     return (
       <StackedEscapable onEscape={onClose}>
         <Portal isOpened={isOpen}>
