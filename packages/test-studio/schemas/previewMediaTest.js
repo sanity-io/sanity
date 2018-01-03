@@ -17,7 +17,8 @@ export default {
     {
       name: 'image',
       title: 'Image',
-      type: 'image'
+      type: 'image',
+      options: {hotspot: true} // tweaking the hotspot should be reflected in the preview
     },
     {
       name: 'array',
