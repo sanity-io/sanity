@@ -77,6 +77,34 @@
   border-radius: var(--border-radius-base);
 }
 
+.level2 > .inner > .content {
+  background-color: var(--component-bg);
+  border: 1px solid var(--component-border-color);
+  box-shadow: var(--component-box-shadow);
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
+}
+
+.root:not(.level1):focus > .inner > .content {
+  outline: 1px solid var(--input-border-color-focus);
+}
+
+.root:not(.level2):focus > .inner > .content {
+  outline: 1px solid var(--input-border-color-focus);
+}
+
+.level1:focus > .inner > .content {
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
+  outline: none !important;
+}
+
+.level2:focus > .inner > .content {
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
+  outline: none !important;
+}
+
 .inner {
   display: block;
 }
