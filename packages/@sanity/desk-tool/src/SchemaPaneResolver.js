@@ -98,6 +98,7 @@ export default class SchemaPaneResolver extends React.Component {
                 isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
               >
                 <DocumentsPane
+                  key={selectedType}
                   isCollapsed={!!collapsedPanes.find(pane => pane === 'documentsPane')}
                   selectedType={selectedType}
                   title={dataAspects.getDisplayName(selectedType) || 'Untitled'}
