@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import VersionChecker from 'part:@sanity/base/version-checker'
-import styles from './styles/UpdateNotifier.css'
+import styles from './styles/UpdateNotifierDialog.css'
 
 const upperFirst = str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`
 
@@ -54,7 +55,7 @@ class UpdateNotifierDialog extends Component {
           </tbody>
         </table>
 
-        <p>
+        <p className={styles.upgradeText}>
           To upgrade, run <code className={styles.code}>sanity upgrade</code> in your studio.
         </p>
       </div>
@@ -86,16 +87,21 @@ class UpdateNotifierDialog extends Component {
   }
 
   render() {
-    const {severity} = this.props
+    const {severity, onClose} = this.props
     return (
       <Dialog
         isOpen
-        showHeader
-        onAction={this.props.onClose}
-        actions={[{index: 1, title: 'OK'}]}
-        onClose={this.props.onClose}
-        title={severity === 'low' ? 'New versions available' : 'Studio is outdated'}>
-        {__DEV__ ? this.renderInfo() : this.renderContactDeveloper()}
+        onClose={onClose}
+      >
+        <div className={styles.content}>
+          <div>
+            <h2>
+              {severity === 'low' ? 'New versions available' : 'Studio is outdated'}
+            </h2>
+            {__DEV__ ? this.renderInfo() : this.renderContactDeveloper()}
+            <Button color="primary" onClick={onClose}>Close</Button>
+          </div>
+        </div>
       </Dialog>
     )
   }
