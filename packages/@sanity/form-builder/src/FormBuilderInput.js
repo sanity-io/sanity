@@ -99,8 +99,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     // console.log('Set focus: ', this.props.path)
     this._input.focus()
     scrollIntoViewIfNeeded(this._element, {
-      duration: 200,
-      offset: {bottom: 200}
+      duration: 200
     })
   }
 
