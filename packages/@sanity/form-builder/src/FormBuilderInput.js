@@ -101,8 +101,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     // When this is fixed, we can call this._confirmButton.focus() immediately
     setTimeout(() => this._input.focus(), 0)
     scrollIntoViewIfNeeded(this._element, {
-      duration: 200,
-      offset: {bottom: 200}
+      duration: 200
     })
   }
 
