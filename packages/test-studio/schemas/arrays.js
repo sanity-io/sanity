@@ -1,3 +1,4 @@
+import React from 'react'
 export default {
   name: 'arraysTest',
   type: 'document',
@@ -58,7 +59,26 @@ export default {
               name: 'name',
               type: 'string',
             }
-          ]
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              name: 'name'
+            },
+            prepare({title, name}) {
+              return {
+                title: title,
+                media: () => (
+                  <div
+                    style={{
+                      backgroundColor: name,
+                      position: 'absolute', height: '100%', width: '100%', top: '0', left: '0'
+                    }}
+                  />
+                )
+              }
+            }
+          }
         }
       ],
       options: {
