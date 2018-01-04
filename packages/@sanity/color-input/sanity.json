@@ -6,7 +6,7 @@
   "parts": [
     {
       "name": "part:@sanity/form-builder/input/color",
-      "description": "An editor for code in sanity"
+      "description": "Color input"
     },
     {
       "implements": "part:@sanity/form-builder/input/color",
