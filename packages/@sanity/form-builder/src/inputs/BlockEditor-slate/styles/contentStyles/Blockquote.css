@@ -1,8 +1,8 @@
 .root {
   margin: 0;
   padding: 0;
-  padding: 1em 0;
-  text-indent: 1em;
+  padding: 1em 1em;
+  margin-left: 2em;
 }
 
 .quote {
