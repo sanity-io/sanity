@@ -1,0 +1,36 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.previewsContainer {
+  padding: 1em;
+  width: 50%;
+}
+
+.imageToolContainer {
+  width: 50%;
+  padding: 1em 1em 1em 0;
+  height: 500px;
+}
+
+.previews {
+  display: flex;
+  align-items: center;
+}
+.preview {
+  flex-grow: 1;
+}
+
+.previewImage {
+  margin: 4px;
+  border: 1px dashed #999;
+  background-color: #eee;
+}
+
+.preview h4 {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}

@@ -11,6 +11,7 @@ export default class Fieldset extends React.Component {
     legend: PropTypes.string.isRequired,
     columns: PropTypes.number,
     isCollapsible: PropTypes.bool,
+    onFocus: PropTypes.func,
     isCollapsed: PropTypes.bool,
     fieldset: PropTypes.shape({
       description: PropTypes.string,
@@ -40,6 +41,21 @@ export default class Fieldset extends React.Component {
 
   handleToggle = () => {
     this.setState(prevState => ({isCollapsed: !prevState.isCollapsed}))
+  }
+
+  handleFocus = event => {
+    if (event.target === this._element) {
+      // Make sure we don't trigger onFocus for child elements
+      this.props.onFocus(event)
+    }
+  }
+
+  focus() {
+    this._element.focus()
+  }
+
+  setElement = el => {
+    this._element = el
   }
 
   render() {
@@ -75,9 +91,11 @@ export default class Fieldset extends React.Component {
       .join(' ')
 
     return (
-      <fieldset {...rest} className={rootClassName} data-nesting-level={level}>
+      <fieldset {...rest} className={rootClassName} ref={this.setElement} onFocus={this.handleFocus}>
         <div className={styles.inner}>
-          <legend className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`} onClick={isCollapsible && this.handleToggle}>
+          <legend
+            className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
+            onClick={isCollapsible && this.handleToggle}>
             {isCollapsible && (
               <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
                 <ArrowDropDown />

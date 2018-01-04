@@ -40,6 +40,22 @@ export default {
           }
         },
         {
+          name: 'foo',
+          type: 'string',
+          title: 'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
+          name: 'image',
+          type: 'image',
+          title: 'Image in image',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
           name: 'description',
           type: 'string',
           title: 'Full description'

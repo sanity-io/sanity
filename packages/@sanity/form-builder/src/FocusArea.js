@@ -1,51 +1,23 @@
 // @flow
-import type {Node} from 'react'
 import React from 'react'
+import {createUploadTarget} from './utils/createUploadTarget'
 import cx from 'classnames'
 import styles from './styles/FocusArea.css'
-import type {Path} from './typedefs/path'
 
 type Props = {
-  children: Node,
-  className?: string,
-  onFocus: ?(Path => void)
+  className: string
 }
 
-export class FocusArea extends React.Component<Props> {
-  _element: ?HTMLDivElement
-
+export const FocusArea = createUploadTarget(class FocusArea extends React.Component<Props> {
+  setElement = el => {
+    this._element = el
+  }
   focus() {
-    if (this._element) {
-      this._element.focus()
-    }
+    this._element.focus()
   }
-
-  handleFocus = (event: SyntheticEvent<HTMLDivElement>) => {
-    const {onFocus} = this.props
-    // Ignore events from children
-    if (onFocus && this._element && event.target === this._element) {
-      onFocus(event)
-    }
-  }
-
-  setElement = (element: ?HTMLDivElement) => {
-    // Only care about focus events from children
-    this._element = element
-  }
-
   render() {
-    const {children, className, ...rest} = this.props
-    const classNames = cx(className, styles.root)
-    return (
-      <div
-        tabIndex={0}
-        {...rest}
-        className={classNames}
-        ref={this.setElement}
-        onFocus={this.handleFocus}
-      >
-        {children}
-      </div>
-    )
+    const className = cx(this.props.className, styles.root)
+
+    return <div {...this.props} className={className} tabIndex={0} ref={this.setElement} />
   }
-}
+})

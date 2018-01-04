@@ -42,7 +42,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     .mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION))
     .catch(error => {
       // eslint-disable-next-line no-console
-      console.warn('Image preprocessing failed: ', error)
+      console.warn('Image preprocessing failed for "%s" with the error: %s', file.name, error.message)
       // something went wrong, but continue still
       return Observable.of(null)
     })

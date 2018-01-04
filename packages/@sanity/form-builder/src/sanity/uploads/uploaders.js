@@ -26,7 +26,8 @@ const UPLOAD_TEXT: UploaderDef = {
     }))
 }
 
-// Todo: make it possible to register custom uploaders
+// Todo: promote this to a "first-class" form-builder abstraction
+// and make it possible to register custom uploaders
 const uploaders: Array<Uploader> = [
   UPLOAD_IMAGE,
   UPLOAD_TEXT,

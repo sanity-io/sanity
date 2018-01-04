@@ -4,7 +4,6 @@ import {withKnobs, text, boolean} from 'part:@sanity/storybook/addons/knobs'
 
 import FileInput from 'part:@sanity/components/fileinput/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import DropZone from 'part:@sanity/components/fileinput/dropzone'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('File Input')
@@ -29,30 +28,6 @@ storiesOf('File Input')
         <FileInputButton onSelect={action('onSelect')}>
           Upload file…
         </FileInputButton>
-      </Sanity>
-    )
-  }
-)
-.add(
-  'Drop zone',
-  () => {
-    return (
-      <Sanity part="part:@sanity/components/fileinput/dropzone" propTables={[DropZone]}>
-        <div
-          style={{
-            position: 'absolute',
-            width: '50vw',
-            height: '50vh',
-            transform: 'translate(50%, 50%)'
-          }}
-        >
-          <DropZone
-            onDrop={action('onDrop')}
-            multiple={boolean('multiple (prop)', false)}
-            ghost={boolean('ghost (prop)', false)}
-            accept={text('accept (prop)', 'image/png')}
-          />
-        </div>
       </Sanity>
     )
   }
