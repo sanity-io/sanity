@@ -34,7 +34,7 @@
 
 .root {
   position: fixed;
-  z-index: var(--zindex-modal-background);
+  z-index: var(--zindex-popover-background);
   top: 0;
   left: 0;
   width: 100%;
@@ -72,7 +72,7 @@
 
 .dialog {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
-  z-index: var(--zindex-modal);
+  z-index: var(--zindex-popover);
   position: absolute;
   border: 0;
   border-radius: var(--border-radius-base);
@@ -166,6 +166,11 @@
   @nest .hasFunctions.hasHeader & {
     max-height: calc(100% - var(--dialog-header-height) - var(--dialog-functions-height));
   }
+}
+
+.contentWithPadding {
+  composes: content;
+  padding: var(--medium-padding);
 }
 
 .title {
