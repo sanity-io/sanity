@@ -45,6 +45,7 @@
   font-size: var(--blockquote-font-size);
   font-family: var(--font-family-serif);
   font-style: italic;
+  padding-left: 1.1rem;
 
   @nest &:before {
     content: "“";
@@ -54,6 +55,9 @@
     left: -3rem;
     top: -2rem;
     opacity: 0.5;
+    height: 4rem;
+    width: 4rem;
+    overflow: hidden;
   }
 }
 
