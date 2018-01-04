@@ -63,6 +63,10 @@
   animation-delay: 1s;
 }
 
+.loadingScreenLoaded {
+  display: none;
+}
+
 .navigation {
   border-bottom: 1px solid var(--component-border-color);
 }
