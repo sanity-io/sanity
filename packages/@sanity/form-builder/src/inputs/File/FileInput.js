@@ -167,8 +167,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
     onChange(event
       .prefixAll(field.name)
       .prepend(setIfMissing({
-        _type: type.name,
-        asset: {_type: 'reference'}
+        _type: type.name
       })))
   }
 

@@ -175,8 +175,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     onChange(event
       .prefixAll(field.name)
       .prepend(setIfMissing({
-        _type: type.name,
-        asset: {_type: 'reference'}
+        _type: type.name
       })))
   }
 
@@ -293,6 +292,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
       'type.options.isHighlighted'
     )
 
+    const hasAsset = value && value.asset
+
     return (
       <UploadTargetFieldset
         legend={type.title}
@@ -311,13 +312,11 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value && value.asset
-              ? (
-                <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                  {this.renderMaterializedAsset}
-                </WithMaterializedReference>
-              )
-              : <UploadPlaceholder />}
+            {hasAsset ? (
+              <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                {this.renderMaterializedAsset}
+              </WithMaterializedReference>
+            ) : <UploadPlaceholder />}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>
@@ -330,10 +329,10 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             onSelect={this.handleSelectFile}
             accept={''/* todo build from this.props.resolveUploaders */}
           >
-            {value && value.asset ? 'Replace from disk…' : 'Select from disk…'}
+            {hasAsset ? 'Replace from disk…' : 'Select from disk…'}
           </FileInputButton>
           <Button onClick={this.handleOpenSelectAsset}>
-            {value && value.asset ? 'Replace from library…' : 'Select from library…'}
+            {hasAsset ? 'Replace from library…' : 'Select from library…'}
           </Button>
           {value && otherFields.length > 0 && (
             <Button
@@ -344,7 +343,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               Edit…
             </Button>
           )}
-          {value && value.asset && (
+          {hasAsset && (
             <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
         </div>
