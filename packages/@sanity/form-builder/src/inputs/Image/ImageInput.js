@@ -64,7 +64,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
     this.props.onChange(
-      PatchEvent.from(unset())
+      PatchEvent.from(unset(['asset']))
     )
   }
 
