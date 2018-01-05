@@ -99,7 +99,7 @@ export function navigate(newUrl, options) {
 export const state = locationStore
   .state
   .map(decodeUrlState)
-  .scan(maybeHandleIntent)
+  .scan(maybeHandleIntent, null)
   .filter(Boolean)
   .map(maybeRedirectDefaultState)
   .filter(Boolean)
