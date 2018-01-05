@@ -5,7 +5,6 @@
   padding: 0;
   composes: root from "part:@sanity/components/formfields/default-style";
   border: none;
-  outline: none;
 
   /* user agent sets min-width this to --webkit-min-content */
   min-width: 0;
@@ -85,21 +84,25 @@
   border-radius: var(--border-radius-base);
 }
 
-.root:not(.level1):focus > .inner > .content {
+.inner {
+  outline: none;
+}
+
+.inner:not(.level1):focus > .content {
   outline: 1px solid var(--input-border-color-focus);
 }
 
-.root:not(.level2):focus > .inner > .content {
+.inner:not(.level2):focus > .content {
   outline: 1px solid var(--input-border-color-focus);
 }
 
-.level1:focus > .inner > .content {
+.level1 > .inner:focus > .content {
   border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;
 }
 
-.level2:focus > .inner > .content {
+.level2 > .inner :focus > .content {
   border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;

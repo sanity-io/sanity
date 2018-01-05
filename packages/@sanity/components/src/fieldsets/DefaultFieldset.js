@@ -44,18 +44,18 @@ export default class Fieldset extends React.Component {
   }
 
   handleFocus = event => {
-    if (event.target === this._element) {
+    if (event.target === this._focusElement) {
       // Make sure we don't trigger onFocus for child elements
       this.props.onFocus(event)
     }
   }
 
   focus() {
-    this._element.focus()
+    this._focusElement.focus()
   }
 
-  setElement = el => {
-    this._element = el
+  setFocusElement = el => {
+    this._focusElement = el
   }
 
   render() {
@@ -69,6 +69,7 @@ export default class Fieldset extends React.Component {
       isCollapsible,
       isCollapsed: _ignore,
       children,
+      tabIndex,
       transparent,
       ...rest
     } = this.props
@@ -91,8 +92,13 @@ export default class Fieldset extends React.Component {
       .join(' ')
 
     return (
-      <fieldset {...rest} className={rootClassName} ref={this.setElement} onFocus={this.handleFocus}>
-        <div className={styles.inner}>
+      <fieldset {...rest} className={rootClassName}>
+        <div
+          className={styles.inner}
+          onFocus={this.handleFocus}
+          tabIndex={tabIndex}
+          ref={this.setFocusElement}
+        >
           <legend
             className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
             onClick={isCollapsible && this.handleToggle}>
