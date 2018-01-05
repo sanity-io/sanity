@@ -771,6 +771,10 @@
       "path": "components/icons/Warning.js"
     },
     {
+      "implements": "part:@sanity/base/file-icon",
+      "path": "components/icons/file.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
