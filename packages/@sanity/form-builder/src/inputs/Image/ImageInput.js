@@ -311,7 +311,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value
+            {value && value.asset
               ? (
                 <WithMaterializedReference reference={value.asset} materialize={materialize}>
                   {this.renderMaterializedAsset}

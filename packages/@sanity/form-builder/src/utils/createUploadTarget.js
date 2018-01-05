@@ -9,6 +9,7 @@ import type {Type} from '../typedefs'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
+import styles from '../styles/UploadTarget.css'
 import humanize from 'humanize-list'
 
 type Props = {
@@ -34,12 +35,14 @@ type State = {
 export function createUploadTarget(Component) {
   return class UploadTargetFieldset extends React.Component<Props, State> {
     _element: ?typeof Component
+    dragEnteredEls: Array<Element> = []
 
     static defaultProps = {
       tabIndex: 0
     }
 
     state = {
+      isDraggingOver: false,
       rejected: [],
       ambiguous: []
     }
@@ -68,8 +71,25 @@ export function createUploadTarget(Component) {
       }
     }
 
-    handleDrop = (event: SyntheticDragEvent<*>) => {
+    handleDragEnter = (event: SyntheticDragEvent<*>) => {
+      event.stopPropagation()
+      this.dragEnteredEls.push(event.target)
+      this.setState({isDraggingOver: true})
+    }
 
+    handleDragLeave = (event: SyntheticDragEvent<*>) => {
+      event.stopPropagation()
+      const idx = this.dragEnteredEls.indexOf(event.target)
+      if (idx > -1) {
+        this.dragEnteredEls.splice(idx, 1)
+      }
+      if (this.dragEnteredEls.length === 0) {
+        this.setState({isDraggingOver: false})
+      }
+    }
+
+    handleDrop = (event: SyntheticDragEvent<*>) => {
+      this.setState({isDraggingOver: false})
       if (this.props.onUpload) {
         const items = Array.from(event.dataTransfer.items).map(item => item.getAsFile())
         if (items.length === 0) {
@@ -172,7 +192,8 @@ export function createUploadTarget(Component) {
     }
 
     render() {
-      const {children, onUpload, getUploadOptions, ...rest} = this.props
+      const {children, type, onUpload, getUploadOptions, ...rest} = this.props
+      const {isDraggingOver} = this.state
       return (
         <Component
           {...rest}
@@ -180,8 +201,17 @@ export function createUploadTarget(Component) {
           onFocus={this.handleFocus}
           onPaste={this.handlePaste}
           onDragOver={this.handleDragOver}
+          onDragEnter={this.handleDragEnter}
+          onDragLeave={this.handleDragLeave}
           onDrop={this.handleDrop}
         >
+          {isDraggingOver && (
+            <div className={styles.dragStatus}>
+              <h2 className={styles.dragStatusInner}>
+                Drop to upload
+              </h2>
+            </div>
+          )}
           {children}
           {this.renderSnacks()}
         </Component>
