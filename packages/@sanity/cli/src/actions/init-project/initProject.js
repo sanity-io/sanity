@@ -93,22 +93,20 @@ export default async function initSanity(args, context) {
 
   // Prompt for template to use
   const defaultTemplate = unattended ? flags.template || 'clean' : null
-  const templateName =
-    defaultTemplate ||
-    (await prompt.single({
-      message: 'Select project template',
-      type: 'list',
-      choices: [
-        {
-          value: 'moviedb',
-          name: 'Movie database (schema + sample data)'
-        },
-        {
-          value: 'clean',
-          name: 'Clean, minimal project'
-        }
-      ]
-    }))
+  const templateName = defaultTemplate || (await prompt.single({
+    message: 'Select project template',
+    type: 'list',
+    choices: [
+      {
+        value: 'moviedb',
+        name: 'Movie database (schema + sample data)'
+      },
+      {
+        value: 'clean',
+        name: 'Clean, minimal project'
+      }
+    ]
+  }))
 
   // Build a full set of resolved options
   const initOptions = {
