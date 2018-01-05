@@ -48,7 +48,7 @@ export function createUploadTarget(Component) {
       const {onFocus} = this.props
       event.stopPropagation()
       if (onFocus) {
-        onFocus(event)
+        onFocus(['$'])
       }
     }
 

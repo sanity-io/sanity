@@ -12,7 +12,7 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
-import {FIRST_META_KEY, isExpanded} from '../../utils/pathUtils'
+import {FOCUS_TERMINATOR, isExpanded} from '../../utils/pathUtils'
 import type {Subscription} from '../../typedefs/observable'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 
@@ -84,16 +84,12 @@ export default class ArrayInput extends React.Component<Props, State> {
     this.removeItem(item)
   }
 
-  handleItemEditStop = (item: ItemValue) => {
-    const itemValue = this.getExpandedItem()
-    if (itemValue && isEmpty(itemValue)) {
-      this.removeItem(itemValue)
-    }
-    this.props.onFocus([{_key: item._key}])
+  handleFocus = () => {
+    this.props.onFocus([FOCUS_TERMINATOR])
   }
 
   setItemExpanded(item: ItemValue) {
-    this.props.onFocus([{_key: item._key}, FIRST_META_KEY])
+    this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
   }
 
   handleDropDownAction = (menuItem: { type: Type }) => {
@@ -125,9 +121,9 @@ export default class ArrayInput extends React.Component<Props, State> {
       this.uploadSubscriptions[item._key].unsubscribe()
     }
 
-    if (item === this.getExpandedItem()) {
-      onFocus([])
-    }
+    const idx = value.indexOf(item)
+    const nextItem = value[idx + 1] || value[idx - 1]
+    onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
   }
 
   renderSelectType() {
@@ -318,6 +314,7 @@ export default class ArrayInput extends React.Component<Props, State> {
         level={level}
         className={styles.root}
         onUpload={this.handleUpload}
+        onFocus={this.handleFocus}
         type={type}
         getUploadOptions={this.getUploadOptions}
         ref={this.setElement}

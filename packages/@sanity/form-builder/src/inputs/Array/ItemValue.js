@@ -70,7 +70,7 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleEditStart = event => {
-    this.setFocus([PathUtils.FIRST_META_KEY])
+    this.setFocus([PathUtils.FOCUS_TERMINATOR])
   }
 
   handleFocus = () => {
@@ -84,7 +84,7 @@ export default class RenderItemValue extends React.Component<Props> {
   handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      this.setFocus([PathUtils.FIRST_META_KEY])
+      this.setFocus([PathUtils.FOCUS_TERMINATOR])
     }
   }
 

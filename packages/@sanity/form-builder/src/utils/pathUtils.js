@@ -6,7 +6,7 @@ export function isEqual(path: Path, otherPath: Path) {
     && path.every((segment, i) => isSegmentEqual(segment, otherPath[i]))
 }
 
-export const FIRST_META_KEY = '$first'
+export const FOCUS_TERMINATOR = '$'
 
 export function isSegmentEqual(pathSegment: PathSegment, otherPathSegment: PathSegment) {
   const pathSegmentType = typeof pathSegment
@@ -24,7 +24,7 @@ export function isSegmentEqual(pathSegment: PathSegment, otherPathSegment: PathS
 }
 
 export function hasFocus(focusPath: Path, path: Path): boolean {
-  const _withoutFirst = focusPath[focusPath.length - 1] === FIRST_META_KEY ? focusPath.slice(0, -1) : focusPath
+  const _withoutFirst = focusPath[focusPath.length - 1] === FOCUS_TERMINATOR ? focusPath.slice(0, -1) : focusPath
   return isEqual(_withoutFirst, path)
 }
 
