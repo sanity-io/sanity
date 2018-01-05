@@ -38,7 +38,7 @@
 }
 
 .root + .root {
-  margin-left: var(--extra-small-padding);
+  margin-left: var(--small-padding);
 }
 
 .shadow {
@@ -330,6 +330,11 @@
 
 .icon {
   transform: scale(1.2);
+  margin-right: var(--small-padding);
+}
+
+.onlyIcon .icon {
+  margin-right: 0;
 }
 
 .secondary {
