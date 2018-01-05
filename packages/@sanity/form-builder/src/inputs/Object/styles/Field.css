@@ -7,5 +7,5 @@
 }
 
 .root + .root {
-  margin-top: var(--extra-large-padding);
+  margin-top: var(--medium-padding);
 }

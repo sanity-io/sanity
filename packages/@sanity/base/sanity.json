@@ -772,7 +772,11 @@
     },
     {
       "implements": "part:@sanity/base/file-icon",
-      "path": "components/icons/file.js"
+      "path": "components/icons/File.js"
+    },
+    {
+      "implements": "part:@sanity/base/paste-icon",
+      "path": "components/icons/Paste.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
