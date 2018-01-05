@@ -5,6 +5,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import UploadIcon from 'part:@sanity/base/upload-icon'
 import {get, partition} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
@@ -247,17 +248,19 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     const fieldValue = value && value[field.name]
 
     return (
-      <FormBuilderInput
-        value={fieldValue}
-        type={field.type}
-        onChange={ev => this.handleFieldChange(ev, field)}
-        key={field.name}
-        path={[field.name]}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        level={level}
-      />
+      <div className={styles.field}>
+        <FormBuilderInput
+          value={fieldValue}
+          type={field.type}
+          onChange={ev => this.handleFieldChange(ev, field)}
+          key={field.name}
+          path={[field.name]}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focusPath={focusPath}
+          level={level}
+        />
+      </div>
     )
   }
 
@@ -326,25 +329,27 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         </div>
         <div className={styles.functions}>
           <FileInputButton
+            icon={UploadIcon}
             onSelect={this.handleSelectFile}
             accept={''/* todo build from this.props.resolveUploaders */}
           >
-            {hasAsset ? 'Replace from disk…' : 'Select from disk…'}
+            Upload
           </FileInputButton>
-          <Button onClick={this.handleOpenSelectAsset}>
-            {hasAsset ? 'Replace from library…' : 'Select from library…'}
+          <Button onClick={this.handleOpenSelectAsset} kind="simple">
+            Select from library
           </Button>
           {value && otherFields.length > 0 && (
             <Button
               icon={EditIcon}
+              kind="simple"
               title="Edit details"
               onClick={this.handleStartAdvancedEdit}
             >
-              Edit…
+              Edit
             </Button>
           )}
           {hasAsset && (
-            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
+            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
         </div>
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}

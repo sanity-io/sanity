@@ -12,6 +12,10 @@
   }
 }
 
+.field {
+  composes: root from '../../Object/styles/Field.css';
+}
+
 .assetWrapper {
   min-height: 10rem;
   position: relative;
@@ -48,8 +52,11 @@
   flex-grow: 1;
 }
 
+.content + .functions {
+  margin-top: 1rem;
+}
+
 .functions {
-  line-height: 3em;
   font-size: 0.8rem;
 
   @media (--screen-medium) {

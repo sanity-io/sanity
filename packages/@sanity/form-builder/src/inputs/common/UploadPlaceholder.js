@@ -1,14 +1,14 @@
 // @flow
 import React from 'react'
 import styles from './styles/UploadPlaceholder.css'
-import UploadIcon from 'part:@sanity/base/upload-icon'
+import PasteIcon from 'part:@sanity/base/paste-icon'
 
 export default function UploadPlaceholder() {
   return (
     <div className={styles.root}>
       <div className={styles.inner}>
         <div className={styles.iconContainer}>
-          <UploadIcon />
+          <PasteIcon />
         </div>
         <div>
           <p className={styles.strong}>

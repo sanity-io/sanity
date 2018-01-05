@@ -292,7 +292,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
             onSelect={this.handleSelectFile}
             accept={''/* todo build from this.props.resolveUploaders */}
           >
-            Browse
+            Upload
           </FileInputButton>
           {value && otherFields.length > 0 && (
             <Button
