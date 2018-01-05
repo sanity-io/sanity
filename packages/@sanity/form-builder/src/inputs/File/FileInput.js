@@ -5,6 +5,8 @@ import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import FileIcon from 'part:@sanity/base/file-icon'
+import UploadIcon from 'part:@sanity/base/upload-icon'
 import {get, partition} from 'lodash'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/FileInput.css'
@@ -125,10 +127,15 @@ export default class FileInput extends React.PureComponent<Props, State> {
   renderMaterializedAsset = (assetDocument: Object): Node => {
     return (
       <div className={styles.previewAsset}>
-        <div>{assetDocument.originalFilename} {' '}</div>
-        <a href={assetDocument.url} download>
-          Download
-        </a>
+        <div className={styles.fileIcon}>
+          <FileIcon />
+        </div>
+        <div>
+          {assetDocument.originalFilename} {' '}
+          <a href={assetDocument.url} download>
+            Download
+          </a>
+        </div>
       </div>
     )
   }
@@ -258,26 +265,6 @@ export default class FileInput extends React.PureComponent<Props, State> {
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
       >
-        <div className={styles.functions}>
-          <FileInputButton
-            onSelect={this.handleSelectFile}
-            accept={''/* todo build from this.props.resolveUploaders */}
-          >
-            {value && value.asset ? 'Replace from disk…' : 'Select from disk…'}
-          </FileInputButton>
-          {value && otherFields.length > 0 && (
-            <Button
-              icon={EditIcon}
-              title="Edit details"
-              onClick={this.handleStartAdvancedEdit}
-            >
-              Edit…
-            </Button>
-          )}
-          {value && value.asset && (
-            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
-          )}
-        </div>
         {value && value._upload && (
           <div className={styles.uploadState}>
             {this.renderUploadState(value._upload)}
@@ -299,7 +286,29 @@ export default class FileInput extends React.PureComponent<Props, State> {
             </div>
           )}
         </div>
-        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+        <div className={styles.functions}>
+          <FileInputButton
+            icon={UploadIcon}
+            onSelect={this.handleSelectFile}
+            accept={''/* todo build from this.props.resolveUploaders */}
+          >
+            Browse
+          </FileInputButton>
+          {value && otherFields.length > 0 && (
+            <Button
+              kind="simple"
+              icon={EditIcon}
+              title="Edit details"
+              onClick={this.handleStartAdvancedEdit}
+            >
+              Edit
+            </Button>
+          )}
+          {value && value.asset && (
+            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
+          )}
+          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+        </div>
       </UploadTargetFieldset>
     )
   }
