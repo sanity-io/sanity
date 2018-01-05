@@ -12,6 +12,10 @@
   }
 }
 
+.fileName + .functions {
+  margin-top: var(--medium-padding);
+}
+
 .assetWrapper {
   min-height: 4rem;
   position: relative;
