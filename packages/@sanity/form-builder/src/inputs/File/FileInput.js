@@ -15,7 +15,6 @@ import type {Reference, Type} from '../../typedefs'
 import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {FocusArea} from '../../FocusArea'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'

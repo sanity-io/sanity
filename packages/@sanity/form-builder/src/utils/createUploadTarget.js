@@ -7,12 +7,12 @@ import type {Uploader} from '../sanity/uploads/typedefs'
 import type {Type} from '../typedefs'
 
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import humanize from 'humanize-list'
-import type {ArrayType} from '../inputs/Array/typedefs'
 
 type Props = {
-  type: ArrayType,
+  type: Type,
   children: () => {},
   className?: string,
   onFocus: ?(Path => void),
