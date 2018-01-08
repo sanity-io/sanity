@@ -187,24 +187,25 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               >
                 <Stacked>
                   {isActive => (
-                    <div
-                      className={`
+                    <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                      <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+
+                      <div
+                        className={`
                         ${isOpen ? styles.listContainer : styles.listContainerHidden}
                         ${dropdownPosition === 'top' ? styles.listContainerTop : styles.listContainerBottom}
                         ${items.length === 0 ? styles.listContainerEmpty : ''}
                       `}
-                      style={{width: `${this.props.width}px`}}
-                      ref={this.setListElement}
-                    >
-                      {
-                        items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
-                      }
-                      {
-                        items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
-                      }
-                      {items.length > 0 && (
-                        <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
-                          <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                        style={{width: `${this.props.width}px`}}
+                        ref={this.setListElement}
+                      >
+                        {
+                          items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+                        }
+                        {
+                          items.length === 0 && isLoading && <div className={styles.listSpinner}><Spinner message="Loading items…" /></div>
+                        }
+                        {items.length > 0 && (
                           <SelectMenu
                             items={items}
                             value={value}
@@ -212,9 +213,9 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                             renderItem={renderItem}
                             highlightIndex={highlightIndex}
                           />
-                        </CaptureOutsideClicks>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    </CaptureOutsideClicks>
                   )}
                 </Stacked>
               </StickyPortal>
