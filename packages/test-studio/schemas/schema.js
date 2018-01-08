@@ -9,6 +9,7 @@ import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
 import strings from './strings'
+import texts from './texts'
 import objects, {myObject} from './objects'
 import arrays from './arrays'
 import files from './files'
@@ -41,6 +42,7 @@ export default createSchema({
     author,
     focus,
     strings,
+    texts,
     numbers,
     booleans,
     richDateType,

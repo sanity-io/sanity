@@ -33,6 +33,22 @@ export default class DefaultTextArea extends React.Component {
     this.props.onClear(event)
   }
 
+  select() {
+    if (this._input) {
+      this._input.select()
+    }
+  }
+
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+
+  setInput = element => {
+    this._input = element
+  }
+
   render() {
     const {
       value,
@@ -57,6 +73,7 @@ export default class DefaultTextArea extends React.Component {
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete="off"
+          ref={this._setInput}
           {...rest}
         />
         {
