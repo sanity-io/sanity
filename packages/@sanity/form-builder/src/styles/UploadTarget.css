@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.dragStatus {
+.overlay {
   position: absolute;
   display: flex;
   align-items: center;
@@ -13,6 +13,27 @@
   z-index: 3;
 }
 
+.dragStatus {
+  composes: overlay;
+}
+
 .dragStatusInner {
   text-align: center;
+}
+
+.pasteInput {
+  outline: none;
+  color: transparent;
+  text-shadow: 0 0 0 gray;
+  text-align: center;
+  composes: overlay;
+  width: 100%;
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
+}
+
+.pasteInput * {
+  display: none;
 }

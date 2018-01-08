@@ -1,16 +1,19 @@
 // @flow
 import React from 'react'
-import type {Path} from '../typedefs/path'
+import ReactDOM from 'react-dom'
+import type {Path} from '../../../typedefs/path'
 import {sortBy} from 'lodash'
 
-import type {Uploader} from '../sanity/uploads/typedefs'
-import type {Type} from '../typedefs'
+import type {Uploader} from '../../../sanity/uploads/typedefs'
+import type {Type} from '../../../typedefs/index'
 
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import styles from '../styles/UploadTarget.css'
+import styles from '../../../styles/UploadTarget.css'
 import humanize from 'humanize-list'
+import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
+import {imageUrlToBlob} from './imageUrlToBlob'
 
 type Props = {
   type: Type,
@@ -32,6 +35,30 @@ type State = {
   isMoving: ?boolean
 }
 
+// this is a hack for Safari that reads pasted image(s) from an ContentEditable div instead of the onpaste event
+function convertImagesToFilesAndClearContentEditable(element: HTMLDivElement, targetFormat = 'image/jpeg') : Promise<Array<File>> {
+  if (!element.isContentEditable) {
+    throw new Error(`Expected element to be contentEditable="true". Instead found a non contenteditable ${element.tagName}`)
+  }
+
+  return new Promise(resolve => setTimeout(resolve, 10)) // add a delay so the paste event can finish
+    .then(() => Array.from(element.querySelectorAll('img')))
+    .then(imageElements => {
+      element.innerHTML = '' // clear
+      return imageElements
+    })
+    .then(images => Promise.all(images.map(img => imageUrlToBlob(img.src))))
+    .then(imageBlobs => imageBlobs.map(blob => new File([blob], 'pasted-image.jpg', {type: targetFormat})))
+}
+// needed by Edge
+function select(el) {
+  const range = document.createRange()
+  range.selectNodeContents(el)
+  const sel = window.getSelection()
+  sel.removeAllRanges()
+  sel.addRange(range)
+}
+
 export function createUploadTarget(Component) {
   return class UploadTargetFieldset extends React.Component<Props, State> {
     _element: ?typeof Component
@@ -43,6 +70,7 @@ export function createUploadTarget(Component) {
 
     state = {
       isDraggingOver: false,
+      showPasteInput: false,
       rejected: [],
       ambiguous: []
     }
@@ -55,12 +83,35 @@ export function createUploadTarget(Component) {
       }
     }
 
+    handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
+      if (event.target === ReactDOM.findDOMNode(this) && (event.ctrlKey || event.metaKey) && event.key === 'v') {
+        this.setState({showPasteInput: true})
+      }
+    }
+
     handlePaste = (event: SyntheticClipboardEvent<*>) => {
-      // make sure the event target
-      if (event.currentTarget === document.activeElement && event.clipboardData.files) {
-        event.preventDefault()
-        event.stopPropagation()
-        this.uploadFiles(Array.from(event.clipboardData.files))
+      extractPastedFiles(event.clipboardData).then(files => {
+        return files.length > 0
+          ? files
+          // Invoke Safari hack
+          : convertImagesToFilesAndClearContentEditable(this._pasteInput, 'image/jpeg')
+      })
+        .then(files => {
+          this.uploadFiles(files)
+          this.setState({showPasteInput: false})
+        })
+    }
+
+    handleDrop = (event: SyntheticDragEvent<*>) => {
+      this.setState({isDraggingOver: false})
+      event.preventDefault()
+      event.stopPropagation()
+      if (this.props.onUpload) {
+        extractDroppedFiles(event.nativeEvent.dataTransfer).then(files => {
+          if (files) {
+            this.uploadFiles(files)
+          }
+        })
       }
     }
 
@@ -85,19 +136,6 @@ export function createUploadTarget(Component) {
       }
       if (this.dragEnteredEls.length === 0) {
         this.setState({isDraggingOver: false})
-      }
-    }
-
-    handleDrop = (event: SyntheticDragEvent<*>) => {
-      this.setState({isDraggingOver: false})
-      if (this.props.onUpload) {
-        const items = Array.from(event.dataTransfer.items).map(item => item.getAsFile())
-        if (items.length === 0) {
-          return
-        }
-        event.preventDefault()
-        event.stopPropagation()
-        this.uploadFiles(items)
       }
     }
 
@@ -131,6 +169,20 @@ export function createUploadTarget(Component) {
       const {type, uploader} = uploadOption
 
       onUpload({file, type, uploader})
+    }
+
+    componentDidUpdate(_, prevState) {
+      if (!prevState.showPasteInput && this.state.showPasteInput) {
+        this._pasteInput.focus()
+        select(this._pasteInput) // Needed by Edge
+      } else if (prevState.showPasteInput && !this.state.showPasteInput) {
+        this.focus()
+      }
+    }
+
+    setPasteInput = (element: ?HTMLInputElement) => {
+      // Only care about focus events from children
+      this._pasteInput = element
     }
 
     setElement = (element: ?HTMLDivElement) => {
@@ -193,13 +245,13 @@ export function createUploadTarget(Component) {
 
     render() {
       const {children, type, onUpload, getUploadOptions, ...rest} = this.props
-      const {isDraggingOver} = this.state
+      const {isDraggingOver, showPasteInput} = this.state
       return (
         <Component
           {...rest}
           ref={this.setElement}
           onFocus={this.handleFocus}
-          onPaste={this.handlePaste}
+          onKeyDown={this.handleKeyPress}
           onDragOver={this.handleDragOver}
           onDragEnter={this.handleDragEnter}
           onDragLeave={this.handleDragLeave}
@@ -209,6 +261,19 @@ export function createUploadTarget(Component) {
             <div className={styles.dragStatus}>
               <h2 className={styles.dragStatusInner}>
                 Drop to upload
+              </h2>
+            </div>
+          )}
+          {showPasteInput && (
+            <div className={styles.dragStatus}>
+              <div
+                contentEditable
+                onPaste={this.handlePaste}
+                className={styles.pasteInput}
+                ref={this.setPasteInput}
+              />
+              <h2 className={styles.dragStatusInner}>
+                Paste (Ctrl+V or ⌘+V) to upload
               </h2>
             </div>
           )}

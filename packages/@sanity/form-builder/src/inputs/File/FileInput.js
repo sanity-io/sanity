@@ -20,6 +20,7 @@ import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 type FieldT = {
   name: string,
@@ -56,7 +57,8 @@ export default class FileInput extends React.PureComponent<Props, State> {
   uploadSubscription: any
   state = {
     isUploading: false,
-    isAdvancedEditOpen: false
+    isAdvancedEditOpen: false,
+    uploadError: null
   }
 
   handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
@@ -65,10 +67,14 @@ export default class FileInput extends React.PureComponent<Props, State> {
     )
   }
 
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+  }
+
   cancelUpload() {
     if (this.uploadSubscription) {
       this.uploadSubscription.unsubscribe()
-      this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+      this.clearUploadStatus()
     }
   }
 
@@ -111,6 +117,10 @@ export default class FileInput extends React.PureComponent<Props, State> {
           if (uploadEvent.patches) {
             onChange(PatchEvent.from(uploadEvent.patches))
           }
+        },
+        error: err => {
+          this.setState({uploadError: err})
+          this.clearUploadStatus()
         },
         complete: () => {
           onChange(
@@ -241,30 +251,37 @@ export default class FileInput extends React.PureComponent<Props, State> {
     this.uploadWith(uploader, file)
   }
 
-  handleFocusAsset = () => {
-    this.props.onFocus(['asset'])
-  }
-
   render() {
-    const {type, value, level, materialize} = this.props
+    const {type, value, level, onFocus, materialize} = this.props
 
-    const {isAdvancedEditOpen} = this.state
+    const {isAdvancedEditOpen, uploadError} = this.state
 
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
 
+    const hasAsset = value && value.asset
+
     return (
       <UploadTargetFieldset
         legend={type.title}
         description={type.description}
         level={level}
-        onFocus={this.handleFocusAsset}
+        onFocus={onFocus}
         onUpload={this.handleUpload}
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
       >
+        {uploadError && (
+          <Snackbar
+            kind="error"
+            action={{title: 'OK'}}
+            onAction={() => this.setState({uploadError: null})}
+          >
+            {"We're"} really sorry, but the upload could not be completed.
+          </Snackbar>
+        )}
         {value && value._upload && (
           <div className={styles.uploadState}>
             {this.renderUploadState(value._upload)}
@@ -272,13 +289,11 @@ export default class FileInput extends React.PureComponent<Props, State> {
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value
-              ? (
-                <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                  {this.renderMaterializedAsset}
-                </WithMaterializedReference>
-              )
-              : <UploadPlaceholder />}
+            {hasAsset ? (
+              <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                {this.renderMaterializedAsset}
+              </WithMaterializedReference>
+            ) : <UploadPlaceholder />}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>
@@ -296,19 +311,19 @@ export default class FileInput extends React.PureComponent<Props, State> {
           </FileInputButton>
           {value && otherFields.length > 0 && (
             <Button
-              kind="simple"
               icon={EditIcon}
+              kind="simple"
               title="Edit details"
               onClick={this.handleStartAdvancedEdit}
             >
               Edit
             </Button>
           )}
-          {value && value.asset && (
+          {hasAsset && (
             <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         </div>
+        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
       </UploadTargetFieldset>
     )
   }

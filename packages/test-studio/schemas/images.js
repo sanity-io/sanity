@@ -48,14 +48,6 @@ export default {
           }
         },
         {
-          name: 'image',
-          type: 'image',
-          title: 'Image in image',
-          options: {
-            isHighlighted: true
-          }
-        },
-        {
           name: 'description',
           type: 'string',
           title: 'Full description'
@@ -78,6 +70,51 @@ export default {
         hotspot: true,
         accept: 'image/png'
       }
+    },
+    {
+      name: 'imageWithImage',
+      title: 'Image with image',
+      type: 'image',
+      description: 'This is a weird example of an image that has an image as one of its fields',
+      options: {
+        hotspot: true
+      },
+      fields: [
+        {
+          name: 'caption',
+          type: 'string',
+          title: 'Caption',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
+          name: 'foo',
+          type: 'string',
+          title: 'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
+          name: 'image',
+          type: 'image',
+          title: 'Image in image',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
+          name: 'description',
+          type: 'string',
+          title: 'Full description'
+        },
+        {
+          name: 'extraImage',
+          type: 'image',
+          title: 'Image in image behind edit'
+        }
+      ]
     }
   ]
 }

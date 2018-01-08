@@ -22,6 +22,7 @@ import SelectAsset from './SelectAsset'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 type FieldT = {
   name: string,
@@ -59,6 +60,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   uploadSubscription: any
   state = {
     isUploading: false,
+    uploadError: null,
     isAdvancedEditOpen: false,
     isSelectAssetOpen: false
   }
@@ -69,10 +71,13 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     )
   }
 
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+  }
   cancelUpload() {
     if (this.uploadSubscription) {
       this.uploadSubscription.unsubscribe()
-      this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+      this.clearUploadStatus()
     }
   }
 
@@ -116,6 +121,10 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           if (uploadEvent.patches) {
             onChange(PatchEvent.from(uploadEvent.patches))
           }
+        },
+        error: err => {
+          this.setState({uploadError: err})
+          this.clearUploadStatus()
         },
         complete: () => {
           onChange(
@@ -248,12 +257,14 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     const fieldValue = value && value[field.name]
 
     return (
-      <div className={styles.field}>
+      <div
+        className={styles.field}
+        key={field.name}
+      >
         <FormBuilderInput
           value={fieldValue}
           type={field.type}
           onChange={ev => this.handleFieldChange(ev, field)}
-          key={field.name}
           path={[field.name]}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -288,7 +299,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   render() {
     const {type, value, level, onFocus, materialize} = this.props
 
-    const {isAdvancedEditOpen, isSelectAssetOpen} = this.state
+    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError} = this.state
 
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -308,6 +319,15 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
       >
+        {uploadError && (
+          <Snackbar
+            kind="error"
+            action={{title: 'OK'}}
+            onAction={() => this.setState({uploadError: null})}
+          >
+            {"We're"} really sorry, but the upload could not be completed.
+          </Snackbar>
+        )}
         {value && value._upload && (
           <div className={styles.uploadState}>
             {this.renderUploadState(value._upload)}
