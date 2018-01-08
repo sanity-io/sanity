@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
 import Button from 'part:@sanity/components/buttons/default'
 import FileInput from 'part:@sanity/components/fileinput/default'
 
