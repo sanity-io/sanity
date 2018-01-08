@@ -20,6 +20,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
+    "@sanity/generate-help-url": "^0.123.0",
     "in-publish": "^2.0.0",
     "prop-types": "^15.6.0"
   },

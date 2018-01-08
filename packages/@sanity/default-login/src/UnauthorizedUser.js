@@ -10,7 +10,7 @@ function handleLogout() {
 
 export default function UnauthorizedUser(props) {
   return (
-    <FullscreenDialog kind="danger" title="Unauthorized" isOpen centered>
+    <FullscreenDialog title="Unauthorized" isOpen centered>
       <p>
         You are not authorized to access this studio.
         Maybe you could ask someone to invite you to collaborate on this project?
