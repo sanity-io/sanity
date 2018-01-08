@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {uniqueId} from 'lodash'
 
-export default class FileSelect extends React.PureComponent {
+export default class DefaultFileInput extends React.PureComponent {
   static propTypes = {
     onSelect: PropTypes.func.isRequired,
     children: PropTypes.node,
