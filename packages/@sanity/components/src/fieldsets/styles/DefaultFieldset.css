@@ -1,18 +1,21 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin: 0;
-  padding: 0;
   composes: root from "part:@sanity/components/formfields/default-style";
-  border: none;
-
-  /* user agent sets min-width this to --webkit-min-content */
-  min-width: 0;
 
   & & {
     /* nested inside itself */
     margin: 0;
   }
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+
+  /* user agent sets min-width this to --webkit-min-content */
+  min-width: 0;
 }
 
 @media (--screen-medium) {
@@ -68,7 +71,7 @@
   }
 }
 
-.level1 > .inner > .content {
+.level1 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   border: 1px solid var(--component-border-color);
   box-shadow: var(--component-box-shadow);
@@ -76,7 +79,7 @@
   border-radius: var(--border-radius-base);
 }
 
-.level2 > .inner > .content {
+.level2 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   border: 1px solid var(--component-border-color);
   box-shadow: var(--component-box-shadow);
@@ -84,25 +87,25 @@
   border-radius: var(--border-radius-base);
 }
 
-.inner {
+.root {
   outline: none;
 }
 
-.inner:not(.level1):focus > .content {
+.root:not(.level1):focus > .fieldset > .inner > .content {
   outline: 1px solid var(--input-border-color-focus);
 }
 
-.inner:not(.level2):focus > .content {
+.root:not(.level2):focus > .fieldset > .inner > .content {
   outline: 1px solid var(--input-border-color-focus);
 }
 
-.level1 > .inner:focus > .content {
+.level1:focus > .fieldset > .inner > .content {
   border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;
 }
 
-.level2 > .inner :focus > .content {
+.level2:focus > .fieldset > .inner > .content {
   border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;

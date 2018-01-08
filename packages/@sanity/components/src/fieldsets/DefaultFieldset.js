@@ -20,6 +20,7 @@ export default class Fieldset extends React.Component {
     children: PropTypes.node,
     level: PropTypes.number,
     className: PropTypes.string,
+    tabIndex: PropTypes.number,
     transparent: PropTypes.bool,
     styles: PropTypes.object
   }
@@ -92,35 +93,41 @@ export default class Fieldset extends React.Component {
       .join(' ')
 
     return (
-      <fieldset {...rest} className={rootClassName}>
-        <div
-          className={styles.inner}
-          onFocus={this.handleFocus}
-          tabIndex={tabIndex}
-          ref={this.setFocusElement}
-        >
-          <legend
-            className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
-            onClick={isCollapsible && this.handleToggle}>
-            {isCollapsible && (
-              <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
-                <ArrowDropDown />
-              </div>
+      <div
+        {...rest}
+        onFocus={this.handleFocus}
+        tabIndex={tabIndex}
+        ref={this.setFocusElement}
+        className={rootClassName}
+      >
+        <fieldset className={styles.fieldset}>
+          <div
+            className={styles.inner}
+          >
+            <legend
+              className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
+              onClick={isCollapsible && this.handleToggle}
+            >
+              {isCollapsible && (
+                <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
+                  <ArrowDropDown />
+                </div>
+              )}
+              {legend || fieldset.legend}
+            </legend>
+            {(description || fieldset.description) && (
+              <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
+                {description || fieldset.description}
+              </p>
             )}
-            {legend || fieldset.legend}
-          </legend>
-          {(description || fieldset.description) && (
-            <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
-              {description || fieldset.description}
-            </p>
-          )}
-          <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
-            <div className={styles.fieldWrapper}>
-              {!isCollapsed && children}
+            <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
+              <div className={styles.fieldWrapper}>
+                {!isCollapsed && children}
+              </div>
             </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
     )
   }
 }
