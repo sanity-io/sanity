@@ -53,7 +53,7 @@ function getPathFromHash() {
   return hash ? parseSimplePath(hash) : []
 }
 
-export default class FocusManager extends React.Component<Props, State> {
+export default class HashFocusManager extends React.Component<Props, State> {
   state = {
     focusPath: getPathFromHash()
   }

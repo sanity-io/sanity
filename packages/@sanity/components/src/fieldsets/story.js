@@ -22,6 +22,7 @@ storiesOf('Fieldsets')
           description={text('description (prop)', 'This is the description')}
           level={number('level (prop)', 1)}
           transparent={boolean('transparent (prop)', false)}
+          tabIndex={boolean('tabIndex', false) ? 0 : false}
         >
           {text('children (prop)', 'Put content here')}
         </Fieldset>
@@ -59,11 +60,11 @@ storiesOf('Fieldsets')
   () => {
     return (
       <Sanity part="part:@sanity/components/fieldsets/default" propTables={[Fieldset]}>
-        <Fieldset legend="Dude, I heard you like fieldsets…" description={chance.paragraph()} level={1}>
-          <Fieldset legend="So I put a fieldset in a fieldset…" description={chance.paragraph()} level={2}>
-            <Fieldset legend="In a fieldset…" description={chance.paragraph()} level={3}>
-              <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={4}>
-                <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={5} />
+        <Fieldset legend="Dude, I heard you like fieldsets…" description={chance.paragraph()} level={1} tabIndex="0">
+          <Fieldset legend="So I put a fieldset in a fieldset…" description={chance.paragraph()} level={2} tabIndex="0">
+            <Fieldset legend="In a fieldset…" description={chance.paragraph()} level={3} tabIndex="0">
+              <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={4} tabIndex="0">
+                <Fieldset legend="In a fieldset!" description={chance.paragraph()} level={5} tabIndex="0">Content</Fieldset>
               </Fieldset>
             </Fieldset>
           </Fieldset>

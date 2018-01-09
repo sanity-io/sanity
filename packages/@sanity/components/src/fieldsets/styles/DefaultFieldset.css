@@ -1,14 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin: 0;
-  padding: 0;
   composes: root from "part:@sanity/components/formfields/default-style";
-  border: none;
-  outline: none;
-
-  /* user agent sets min-width this to --webkit-min-content */
-  min-width: 0;
 
   & & {
     /* nested inside itself */
@@ -16,55 +9,32 @@
   }
 }
 
-.inner > .content > .fieldWrapper > * {
-  box-sizing: border-box;
-  lost-column: none;
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
 
-  @nest &:not(:first-child) {
-    margin-top: var(--medium-padding);
+  /* user agent sets min-width this to --webkit-min-content */
+  min-width: 0;
+}
+
+@media (--screen-medium) {
+  .columns4 .fieldWrapper {
+    display: grid;
+    grid-gap: var(--medium-padding);
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  @media (--screen-medium) {
-    @nest &:not(:first-child) {
-      margin-top: 0;
-      margin-top: var(--medium-padding);
-    }
+  .columns3 .fieldWrapper {
+    display: grid;
+    grid-gap: var(--medium-padding);
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-    @nest .columns4 & {
-      lost-column: 1/4;
-
-      @nest &:not(:first-child) {
-        margin-top: 0;
-      }
-
-      @nest &:nth-child(n+5) {
-        margin-top: var(--medium-padding);
-      }
-    }
-
-    @nest .columns3 > & {
-      lost-column: 1/3;
-
-      @nest &:not(:first-child) {
-        margin-top: 0;
-      }
-
-      @nest &:nth-child(n+4) {
-        margin-top: var(--medium-padding);
-      }
-    }
-
-    @nest .columns2 > & {
-      lost-column: 1/2;
-
-      @nest &:not(:first-child) {
-        margin-top: 0;
-      }
-
-      @nest &:nth-child(n+3) {
-        margin-top: var(--medium-padding);
-      }
-    }
+  .columns2 .fieldWrapper {
+    display: grid;
+    grid-gap: var(--medium-padding);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -82,7 +52,6 @@
 
 .content {
   position: relative;
-  lost-utility: clearfix;
   display: none;
   background-color: transparent;
 
@@ -102,12 +71,44 @@
   }
 }
 
-.level1 > .inner > .content {
+.level1 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   border: 1px solid var(--component-border-color);
   box-shadow: var(--component-box-shadow);
   padding: var(--medium-padding);
   border-radius: var(--border-radius-base);
+}
+
+.level2 > .fieldset > .inner > .content {
+  background-color: var(--component-bg);
+  border: 1px solid var(--component-border-color);
+  box-shadow: var(--component-box-shadow);
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
+}
+
+.root {
+  outline: none;
+}
+
+.root:not(.level1):focus > .fieldset > .inner > .content {
+  outline: 1px solid var(--input-border-color-focus);
+}
+
+.root:not(.level2):focus > .fieldset > .inner > .content {
+  outline: 1px solid var(--input-border-color-focus);
+}
+
+.level1:focus > .fieldset > .inner > .content {
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
+  outline: none !important;
+}
+
+.level2:focus > .fieldset > .inner > .content {
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
+  outline: none !important;
 }
 
 .inner {

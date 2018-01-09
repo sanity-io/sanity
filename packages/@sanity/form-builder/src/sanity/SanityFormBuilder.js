@@ -2,7 +2,7 @@
 import React from 'react'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
-import FocusManager from './focusManagers/SimpleFocusManager'
+import SimpleFocusManager from './focusManagers/SimpleFocusManager'
 
 type PatchChannel = {
   subscribe: () => () => {},
@@ -57,7 +57,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
         schema={schema}
         patchChannel={patchChannel}
       >
-        <FocusManager>{this.renderInput}</FocusManager>
+        <SimpleFocusManager>{this.renderInput}</SimpleFocusManager>
       </SanityFormBuilderContext>
     )
   }

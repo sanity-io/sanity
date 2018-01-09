@@ -1,32 +1,51 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  position: relative;
+  display: block;
 }
 
-.progressBar {
-  height: 2.5em;
-  opacity: 1;
-  overflow: hidden;
-  transition: all 0.3s linear;
+.content {
+  display: flex;
+  flex-direction: column;
+
+  @media (--screen-medium) {
+    flex-direction: row;
+  }
 }
 
-.wrapper {
-  padding: 1rem;
-  background-color: var(--component-bg);
-  border: 1px solid var(--gray-light);
-  overflow: hidden;
-  max-width: 100%;
+.fileName + .functions {
+  margin-top: var(--medium-padding);
 }
 
-.progressBarIdle {
-  height: 0;
-  transition-delay: 0;
+.assetWrapper {
+  padding: var(--large-padding);
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
-.progressBarCompleted {
-  composes: progressBar;
-  height: 0;
-  opacity: 0;
-  transition-delay: 2s;
+.fieldsWrapper {
+  flex-basis: 30rem;
+}
+
+.functions {
+  line-height: 3em;
+  font-size: 0.8rem;
+
+  @media (--screen-medium) {
+    font-size: 1rem;
+  }
+}
+
+.previewAsset {
+  text-align: center;
+  display: flex;
+  align-items: center;
+
+  @nest & a {
+    display: block;
+  }
+}
+
+.fileIcon {
+  font-size: 3em;
+  margin-right: var(--medium-padding);
 }

@@ -20,7 +20,6 @@ import {IntentLink} from 'part:@sanity/base/router'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Path} from '../../typedefs/path'
 import type {Type} from '../../typedefs'
-import {FocusArea} from '../../FocusArea'
 import * as PathUtils from '../../utils/pathUtils'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 
@@ -70,7 +69,7 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleEditStart = event => {
-    this.setFocus([PathUtils.FIRST_META_KEY])
+    this.setFocus([PathUtils.FOCUS_TERMINATOR])
   }
 
   handleFocus = () => {
@@ -84,7 +83,7 @@ export default class RenderItemValue extends React.Component<Props> {
   handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      this.setFocus([PathUtils.FIRST_META_KEY])
+      this.setFocus([PathUtils.FOCUS_TERMINATOR])
     }
   }
 
@@ -181,19 +180,20 @@ export default class RenderItemValue extends React.Component<Props> {
     return (
       <div className={styles.inner}>
         {!isGrid && isSortable && <DragHandle />}
-        <FocusArea
+        <div
           tabIndex={0}
           onClick={this.handleEditStart}
           onKeyPress={this.handleKeyPress}
           onFocus={this.handleFocus}
           ref={this.setFocusArea}
+          className={styles.previewWrapper}
         >
           <Preview
             layout={previewLayout}
             value={value}
             type={this.getMemberType()}
           />
-        </FocusArea>
+        </div>
 
         <div className={styles.functions}>
           {

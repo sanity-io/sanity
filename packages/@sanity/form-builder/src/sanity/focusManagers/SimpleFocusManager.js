@@ -14,7 +14,7 @@ type State = {
   focusPath: Array<*>
 }
 
-export default class FocusManager extends React.Component<Props, State> {
+export default class SimpleFocusManager extends React.Component<Props, State> {
   state = {
     focusPath: []
   }

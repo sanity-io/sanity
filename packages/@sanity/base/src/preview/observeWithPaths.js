@@ -39,7 +39,7 @@ const debouncedFetchDocumentSnapshot = debounceCollect(fetchAllDocumentSnapshots
 //     .map(result => result[0])
 // }
 
-export default function observePaths(id, paths) {
+export default function observeWithPaths(id, paths) {
   return debouncedFetchDocumentSnapshot(id, paths)
     .concat(listen(id)
       .debounceTime(1000)
