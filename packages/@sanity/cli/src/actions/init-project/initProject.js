@@ -111,8 +111,8 @@ export default async function initSanity(args, context) {
         name: 'Movie database (schema + sample data)'
       },
       {
-        value: 'clean',
-        name: 'Clean, minimal project'
+        value: 'blog',
+        name: 'Blog (schema)'
       }
     ]
   }))
@@ -172,22 +172,22 @@ export default async function initSanity(args, context) {
     )
   }
 
-  const isCurrentDir = outputPath === process.cwd()
-
-  print(`\n${chalk.green('Success!')} Now what?`)
-
-  if (!isCurrentDir) {
-    print(`▪ ${chalk.cyan(`cd ${outputPath}`)}, then:`)
-  }
-
-  print(`▪ ${chalk.cyan('sanity start')} to run your studio`)
-  print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
-  print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
 
   if (shouldImport) {
     print('')
     print(`If you want to delete the imported data, use ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
   }
+
+  print(`\n${chalk.green('Success!')} Now what?\n`)
+
+  const isCurrentDir = outputPath === process.cwd()
+  if (!isCurrentDir) {
+    print(`▪ ${chalk.cyan(`cd ${outputPath}`)}, then:`)
+  }
+
+  print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
+  print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
+  print(`▪ ${chalk.green('sanity start')} to run your studio\n`)
 
   // See if the template has a success message handler and print it
   const successMessage = template.getSuccessMessage
