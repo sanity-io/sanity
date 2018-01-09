@@ -18,10 +18,6 @@
       "description": "Default button"
     },
     {
-      "name": "part:@sanity/components/buttons/fake",
-      "description": "Default fake button"
-    },
-    {
       "name": "part:@sanity/components/buttons/anchor",
       "description": "Same as default button, but with an <a>. Takes href"
     },
@@ -402,10 +398,6 @@
     {
       "implements": "part:@sanity/components/buttons/default",
       "path": "buttons/DefaultButton.js"
-    },
-    {
-      "implements": "part:@sanity/components/buttons/fake",
-      "path": "buttons/FakeButton.js"
     },
     {
       "implements": "part:@sanity/components/buttons/anchor",
