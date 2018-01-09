@@ -37,10 +37,6 @@ export default class ConfirmButton extends React.Component {
     this.close()
   }
 
-  handleConfirmButtonBlur = () => {
-    this.close()
-  }
-
   setButton = (button: ?Button) => {
     this._button = button
   }
@@ -87,7 +83,6 @@ export default class ConfirmButton extends React.Component {
                   onClick={onConfirm}
                   icon={TrashIcon}
                   ref={this.setConfirmButton}
-                  onBlur={this.handleConfirmButtonBlur}
                 >
                   Confirm remove
                 </Button>
