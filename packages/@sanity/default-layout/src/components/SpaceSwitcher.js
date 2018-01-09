@@ -6,7 +6,7 @@ import styles from './styles/SpaceSwitcher.css'
 import {CONFIGURED_SPACES} from '../util/spaces'
 import {state as urlState} from '../datastores/urlState'
 import {withRouterHOC} from 'part:@sanity/base/router'
-
+import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 const currentSpace$ = urlState
   .map(event => event.state && event.state.space)
   .map(spaceName => CONFIGURED_SPACES.find(sp => sp.name === spaceName))
@@ -52,7 +52,7 @@ class SpaceSwitcher extends React.PureComponent {
     return (
       <div className={styles.root}>
         <div title={title} onClick={this.handleMenuToggle} className={styles.currentSpace}>
-          {title && `${title} ▼`}
+          {title && `${title}`}<span className={styles.arrow}><ArrowDropDown /></span>
         </div>
         {menuOpen && (
           <div className={styles.menu}>
