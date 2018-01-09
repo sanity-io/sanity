@@ -4,7 +4,10 @@ import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
+import {reduceConfig} from '@sanity/util'
+import {loadJson} from '@sanity/util/lib/safeJson'
 import debug from '../../debug'
+import clientWrapper from '../../util/clientWrapper'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import createProject from '../project/createProject'
@@ -12,6 +15,12 @@ import login from '../login/login'
 import dynamicRequire from '../../util/dynamicRequire'
 import promptForDatasetName from './promptForDatasetName'
 import bootstrapTemplate from './bootstrapTemplate'
+import templates from './templates'
+
+/* eslint-disable no-process-env */
+const sanityEnv = process.env.SANITY_ENV
+const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
+/* eslint-enable no-process-env */
 
 export default async function initSanity(args, context) {
   const flags = args.extOptions
@@ -119,8 +128,16 @@ export default async function initSanity(args, context) {
     ...answers
   }
 
+  const template = templates[templateName]
+  if (!template) {
+    throw new Error(`Template "${templateName}" not found`)
+  }
+
+  // If the template has a sample dataset, prompt the user whether or not we should import it
+  const shouldImport = template.datasetUrl && await promptForDatasetImport(template.importPrompt)
+
   // Bootstrap Sanity, creating required project files, manifests etc
-  const template = await bootstrapTemplate(initOptions, context)
+  await bootstrapTemplate(initOptions, context)
 
   // Now for the slow part... installing dependencies
   try {
@@ -139,6 +156,22 @@ export default async function initSanity(args, context) {
     })
   )
 
+  // Prompt for dataset import (if a dataset is defined)
+  if (shouldImport) {
+    const manifestPath = path.join(outputPath, 'sanity.json')
+    const baseManifest = await loadJson(manifestPath)
+    const manifest = reduceConfig(baseManifest || {}, environment)
+
+    const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
+    await importCmd.action(
+      {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
+      Object.assign({}, context, {
+        apiClient: clientWrapper(manifest, manifestPath),
+        workDir: outputPath
+      })
+    )
+  }
+
   const isCurrentDir = outputPath === process.cwd()
 
   print(`\n${chalk.green('Success!')} Now what?`)
@@ -150,6 +183,11 @@ export default async function initSanity(args, context) {
   print(`▪ ${chalk.cyan('sanity start')} to run your studio`)
   print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
   print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
+
+  if (shouldImport) {
+    print('')
+    print(`If you want to delete the imported data, use ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+  }
 
   // See if the template has a success message handler and print it
   const successMessage = template.getSuccessMessage
@@ -278,6 +316,14 @@ export default async function initSanity(args, context) {
 
     debug(`Returning selected dataset (${selected})`)
     return {datasetName: selected}
+  }
+
+  function promptForDatasetImport(message) {
+    return prompt.single({
+      type: 'confirm',
+      message: message || 'This template includes a sample dataset, would you like to import it?',
+      default: true
+    })
   }
 }
 
