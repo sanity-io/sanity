@@ -29,11 +29,8 @@
   border-radius: var(--button-border-radius);
   padding: 0.8em 0.9em;
 
-  @nest &.notRecentlyHovered:focus:not(:hover) {
-    overflow: hidden;
-
+  @nest &.notRecentlyHovered:focus:not(:hover), &.notRecentlyHovered:focus-within:not(:hover) {
     @nest & .inner {
-      overflow: hidden;
       animation-name: focused;
       animation-duration: 0.2s;
     }
@@ -59,7 +56,7 @@
       background-color: color(var(--default-button-color) lightness(- 5%));
     }
 
-    @nest &:focus {
+    @nest &:focus, &:focus-within {
       background-color: color(var(--default-button-color) lightness(- 20%));
     }
 
@@ -82,7 +79,7 @@
       background-color: color(var(--gray-base) a(10%));
     }
 
-    @nest &:focus {
+    @nest &:focus, &:focus-within {
       border-style: dotted;
       background-color: color(var(--gray-base) a(10%));
     }
@@ -99,7 +96,7 @@
   color: var(--brand-primary--text);
 
   @nest &:not(.disabled) {
-    @nest &:hover, &:focus {
+    @nest &:hover, &:focus, &:focus-within {
       background-color: color(var(--brand-primary) lightness(- 5%));
     }
   }
@@ -108,7 +105,7 @@
     color: var(--brand-primary);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--brand-primary) a(2%));
         color: var(--brand-primary);
         border-color: var(--brand-primary);
@@ -122,7 +119,7 @@
     color: var(--brand-primary);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--brand-primary) a(10%));
         border-color: var(--brand-primary);
       }
@@ -138,7 +135,7 @@
         background-color: color(var(--brand-primary) a(10%));
       }
 
-      @nest &:focus {
+      @nest &:focus, &:focus-within {
         border-color: var(--brand-primary);
       }
     }
@@ -151,7 +148,7 @@
   color: var(--state-danger-color--text);
 
   @nest &:not(.disabled) {
-    @nest &:hover, &:focus {
+    @nest &:hover, &:focus, &:focus-within {
       background-color: color(var(--state-danger-color) lightness(- 10%));
     }
   }
@@ -160,7 +157,7 @@
     color: var(--state-danger-color);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--state-danger-color) a(10%));
         color: var(--state-danger-color);
         border-color: var(--state-danger-color);
@@ -179,7 +176,7 @@
         border-color: var(--state-danger-color);
       }
 
-      @nest &:focus {
+      @nest &:focus, &:focus-within {
         background-color: color(var(--state-danger-color) a(10%));
         border-color: var(--state-danger-color);
       }
@@ -195,7 +192,7 @@
         background-color: color(var(--state-danger-color) a(10%));
       }
 
-      @nest &:focus {
+      @nest &:focus, &:focus-within {
         background-color: color(var(--state-danger-color) a(10%));
         border-color: var(--state-danger-color);
       }
@@ -218,7 +215,7 @@
     color: var(--state-success-color);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--state-success-color) a(10%));
         color: var(--state-success-color);
         border-color: var(--state-success-color);
@@ -232,7 +229,7 @@
     color: var(--state-success-color);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--state-success-color) a(10%));
         border-color: var(--state-success-color);
       }
@@ -248,7 +245,7 @@
         background-color: color(var(--state-success-color) a(10%));
       }
 
-      @nest &:focus {
+      @nest &:focus, &:focus-within {
         border-color: var(--state-success-color);
       }
     }
@@ -259,7 +256,7 @@
   background-color: var(--white);
 
   @nest &:not(.disabled) {
-    @nest &:hover, &:focus {
+    @nest &:hover, &:focus, &:focus-within {
       background-color: color(var(--white) lightness(- 5%));
     }
   }
@@ -270,7 +267,7 @@
     color: var(--white);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--white) a(40%));
         color: var(--white);
       }
@@ -283,7 +280,7 @@
     color: var(--white);
 
     @nest &:not(.disabled) {
-      @nest &:hover, &:focus {
+      @nest &:hover, &:focus, &:focus-within {
         background-color: color(var(--white) a(40%));
         color: var(--white);
       }
@@ -331,10 +328,6 @@
   vertical-align: middle;
 }
 
-.contentWithPad {
-  margin-left: 0.5em;
-}
-
 .icon {
   transform: scale(1.2);
 }
@@ -346,7 +339,7 @@
   opacity: 0.6;
 
   @nest &:not(.disabled) {
-    @nest &:hover, &:focus {
+    @nest &:hover, &:focus, &:focus-within {
       opacity: 1;
       background-color: color(var(--black) a(1%));
     }

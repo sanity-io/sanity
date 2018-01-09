@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Button from 'part:@sanity/components/buttons/default'
-import FakeButton from 'part:@sanity/components/buttons/fake'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
@@ -35,27 +34,6 @@ storiesOf('Buttons', module)
           >
             {text('prop: children', 'Touch Me!')}
           </Button>
-        </Sanity>
-      )
-    }
-  )
-  .add(
-    'FakeButton',
-    () => {
-      return (
-        <Sanity part="part:@sanity/components/buttons/fake" propTables={[FakeButton]}>
-          <FakeButton
-            kind={getButtonKinds()}
-            onClick={action('clicked')}
-            disabled={boolean('disabled (prop)', false)}
-            inverted={boolean('inverted (prop)', false)}
-            type={text('type (prop)', undefined)}
-            color={getColorKinds()}
-            loading={boolean('Loading (prop)', false)}
-            icon={boolean('Show test icon', false) ? SanityLogoIcon : false}
-          >
-            {text('prop: children', 'Touch Me!')}
-          </FakeButton>
         </Sanity>
       )
     }
