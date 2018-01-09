@@ -234,7 +234,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
             status={() => this.renderStatus(item)}
           />
         </div>
-        <Ink duration={200} opacity={0.20} radius={200} />
+        <Ink duration={1000} opacity={0.1} radius={200} />
       </StateLink>
     )
   }
