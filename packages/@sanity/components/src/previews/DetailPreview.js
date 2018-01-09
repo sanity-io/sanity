@@ -59,23 +59,19 @@ export default class DetailPreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {
-          media && (
-            <div className={styles.media}>
-              {
-                typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
-              }
-              {
-                typeof media === 'string' && (
-                  <div className={styles.mediaString}>{media}</div>
-                )
-              }
-              {
-                typeof media === 'object' && media
-              }
-            </div>
-          )
-        }
+        <div className={styles.media}>
+          {
+            typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
+          }
+          {
+            typeof media === 'string' && (
+              <div className={styles.mediaString}>{media}</div>
+            )
+          }
+          {
+            typeof media === 'object' && media
+          }
+        </div>
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.heading}>

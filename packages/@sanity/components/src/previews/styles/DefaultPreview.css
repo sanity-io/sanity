@@ -76,6 +76,7 @@
   margin-right: var(--small-padding);
   font-size: 0.5em;
   overflow: hidden;
+  border: 1px solid color(var(--gray-lighter) lightness(-3%));
 
   @nest .placeholder & {
     width: 2.5rem;

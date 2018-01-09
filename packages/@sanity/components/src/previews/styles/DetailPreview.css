@@ -72,13 +72,9 @@
   overflow: hidden;
   position: relative;
   margin-right: var(--small-padding);
-  background-image:
-    linear-gradient(
-      90deg,
-      color(var(--text-color) a(10%)),
-      color(var(--text-color) a(5%)) 10%,
-      color(var(--text-color) a(10%))
-    );
+  box-sizing: border-box;
+  background-color: var(--gray-lighter);
+  border: 1px solid color(var(--gray-lighter) lightness(-3%));
 
   @nest & > img {
     display: block;
