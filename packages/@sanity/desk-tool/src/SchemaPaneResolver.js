@@ -115,7 +115,9 @@ export default class SchemaPaneResolver extends React.Component {
           {
             !schemaType && !selectedType && (
               <SplitPaneWrapper>
-                <div />
+                <div className={styles.selectContentType}>
+                  Select content type
+                </div>
               </SplitPaneWrapper>
             )
           }
