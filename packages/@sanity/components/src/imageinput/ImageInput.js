@@ -11,7 +11,6 @@ import {DEFAULT_CROP} from '@sanity/imagetool/constants'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import FakeButton from 'part:@sanity/components/buttons/fake'
 
 const DEFAULT_HOTSPOT = {
   height: 1,
@@ -172,12 +171,12 @@ export default class ImageInput extends React.PureComponent {
             {
               (status != 'error' && status != 'pending') && hotspotImage && hotspotImage.imageUrl && (
                 <div className={styles.functions}>
-                  <FakeButton icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
+                  <Button icon={UploadIcon} ripple={false} className={styles.replaceImageButton} title="Replace image">
                     {
                       showContent ? '' : 'Replace'
                     }
                     <ImageSelect name={fieldName} onSelect={this.props.onSelect} className={styles.replaceImageSelect} />
-                  </FakeButton>
+                  </Button>
                   {
                     onEdit && (
                       <Button icon={EditIcon} className={styles.replaceImageButton} title="Edit image" onClick={onEdit}>
