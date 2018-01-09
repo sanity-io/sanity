@@ -7,7 +7,7 @@ import SortIcon from 'part:@sanity/base/sort-icon'
 import Ink from 'react-ink'
 
 import ListView from './ListView'
-import {partition, uniqBy} from 'lodash'
+import {partition, uniqBy, get} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import QueryContainer from 'part:@sanity/base/query-container'
@@ -267,7 +267,6 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     const {settings} = this.state
     const currentOrderingOption = this.getOrderingOptions(schemaType.name)
       .find(option => option.name === settings.ordering) || DEFAULT_SELECTED_ORDERING_OPTION
-
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
     const query = `*[_type == $type] | order(${toGradientOrderClause(currentOrderingOption.by)}) [0...10000] {_id, _type}`
     return (
@@ -303,6 +302,25 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
             const items = removePublishedWithDrafts(result ? result.documents : [])
 
+            if (!loading && (!items || items.length === 0)) {
+              return (
+                <div className={styles.empty}>
+                  <div>
+                    <h3>
+                      There are no documents of type <strong>{type.title}</strong> yet.
+                    </h3>
+                    {
+                      get(this.props, 'router.state.action') !== 'edit' && (
+                        <Button color="primary" icon={PlusIcon} onClick={this.handleGoToCreateNew}>
+                          New {type.title}
+                        </Button>
+                      )
+                    }
+                  </div>
+                </div>
+              )
+            }
+
             return (
               <div className={styles[`layout__${settings.listLayout}`]}>
                 {loading && (
@@ -311,20 +329,6 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
                   </div>
                 )
                 }
-
-                {!loading && !items && (
-                  <div className={styles.empty}>
-                    <h3>Nothing here. Yet…</h3>
-                    <IntentLink
-                      className={styles.emptyCreateNew}
-                      title={`Create new ${type.title}`}
-                      intent="create"
-                      params={{type: type.name}}
-                    >
-                      Create new {type.title}
-                    </IntentLink>
-                  </div>
-                )}
 
                 {items && (
                   <ListView
