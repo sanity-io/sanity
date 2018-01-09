@@ -1,7 +1,25 @@
-import * as ImageInput from '../../inputs/Image'
-import {uploadImageAsset, materializeReference} from './client-adapters/assets'
+import React from 'react'
+import {ImageInput} from '../..'
+import {materializeReference} from './client-adapters/assets'
+import resolveUploader from '../uploads/resolveUploader'
 
-export default ImageInput.create({
-  upload: uploadImageAsset,
-  materializeReference
-})
+export default class SanityImageInput extends React.Component {
+  focus() {
+    if (this._input) {
+      this._input.focus()
+    }
+  }
+  setInput = input => {
+    this._input = input
+  }
+  render() {
+    return (
+      <ImageInput
+        {...this.props}
+        resolveUploader={resolveUploader}
+        materialize={materializeReference}
+        ref={this.setInput}
+      />
+    )
+  }
+}

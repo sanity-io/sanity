@@ -1,2 +1,1 @@
-export {default} from './Placeholder'
-export {default as create} from './createFileInput'
+export {default} from './FileInput'

@@ -13,7 +13,6 @@ import getEmptyValue from './getEmptyValue'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
-import {FocusArea} from '../../FocusArea'
 import type {ItemValue} from '../Array/typedefs'
 import type {Path} from '../../typedefs/path'
 import type {Type} from '../../typedefs'
@@ -37,8 +36,7 @@ type Props = {
 }
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
-  _focusArea: ?FocusArea
-
+  _element: ?Fieldset
 
   set(nextValue: any[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
@@ -140,13 +138,16 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   }
 
-  _setFocusArea = (el: ?FocusArea) => {
-    this._focusArea = el
+  handleFocus = (ev: SyntheticEvent<*>) => {
+
+  }
+  setElement = (el: ?Fieldset) => {
+    this._element = el
   }
 
   focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
+    if (this._element) {
+      this._element.focus()
     }
   }
 
@@ -166,15 +167,20 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, onFocus, level} = this.props
+    const {type, value, level} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        level={level}
+        tabIndex={0}
+        onFocus={this.handleFocus}
+        ref={this.setElement}
+      >
         <div className={styles.root}>
-          <FocusArea onFocus={onFocus} ref={this._setFocusArea}>
-            <div className={styles.list}>
-              {value && value.length > 0 && this.renderList(value)}
-            </div>
-          </FocusArea>
+          <div className={styles.list}>
+            {value && value.length > 0 && this.renderList(value)}
+          </div>
           <div className={styles.functions}>
             {type.of.length === 1 ? (
               <Button onClick={this.handleAddBtnClick} className={styles.addButton}>

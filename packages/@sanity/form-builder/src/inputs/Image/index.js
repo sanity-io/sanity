@@ -1,2 +1,1 @@
-export {default} from './Placeholder'
-export {default as create} from './createImageInput'
+export {default} from './ImageInput'

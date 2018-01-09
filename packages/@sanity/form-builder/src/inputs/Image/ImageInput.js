@@ -1,344 +1,200 @@
-import PropTypes from 'prop-types'
+import type {Node} from 'react'
+// @flow
 import React from 'react'
-import {omit, groupBy, get} from 'lodash'
-
 import Button from 'part:@sanity/components/buttons/default'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import DefaultImageInput from 'part:@sanity/components/imageinput/default'
-import ImageLoader from 'part:@sanity/components/utilities/image-loader'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import imageUrlBuilder from '@sanity/image-url'
-import Field from '../Object/Field'
-import ImageTool from '@sanity/imagetool'
-import HotspotImage from '@sanity/imagetool/HotspotImage'
-import {DEFAULT_CROP} from '@sanity/imagetool/constants'
-import subscriptionManager from '../../utils/subscriptionManager'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
+import ProgressBar from 'part:@sanity/components/progress/bar'
+import EditIcon from 'part:@sanity/base/edit-icon'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import {get, partition} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import styles from './styles/ImageInput.css'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import {ObservableI} from '../../typedefs/observable'
+
+import type {Reference, Type} from '../../typedefs'
+import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+
+import WithMaterializedReference from '../../utils/WithMaterializedReference'
+import ImageToolInput from '../ImageTool'
+import HotspotImage from '@sanity/imagetool/HotspotImage'
 import SelectAsset from './SelectAsset'
-import client from 'part:@sanity/base/client'
-import styles from './ImageInput.css'
+import {FormBuilderInput} from '../../FormBuilderInput'
+import UploadPlaceholder from '../common/UploadPlaceholder'
+import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
-let imageBuilder
-const getImageBuilder = () => {
-  if (!imageBuilder) {
-    imageBuilder = imageUrlBuilder(client.config())
-  }
-
-  return imageBuilder
+type FieldT = {
+  name: string,
+  type: Type
 }
 
-const DEFAULT_HOTSPOT = {
-  height: 1,
-  width: 1,
-  x: 0.5,
-  y: 0.5
+type Value = {
+  _upload?: any,
+  asset?: Reference,
+  hotspot?: Object,
+  crop?: Object
 }
 
-const ASPECT_RATIOS = [
-  ['Landscape', 16 / 9],
-  ['Portrait', 9 / 16],
-  ['Square', 1],
-  ['Panorama', 4]
-]
+type Props = {
+  value?: Value,
+  type: Type,
+  level: number,
+  onChange: (PatchEvent) => void,
+  resolveUploader: UploaderResolver,
+  materialize: (string) => ObservableI<Object>,
+  onBlur: () => void,
+  onFocus: () => void,
+  focusPath: Array<*>
+}
 
-function getInitialState() {
-  return {
-    status: 'ready',
-    error: null,
-    value: null,
-    progress: null,
-    uploadingImage: null,
-    materializedImage: null,
+type State = {
+  isAdvancedEditOpen: boolean,
+  isUploading: boolean,
+  isSelectAssetOpen: boolean
+}
+
+const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
+
+export default class ImageInput extends React.PureComponent<Props, State> {
+  uploadSubscription: any
+  state = {
+    isUploading: false,
+    uploadError: null,
     isAdvancedEditOpen: false,
     isSelectAssetOpen: false
   }
-}
 
-export default class ImageInput extends React.PureComponent<*> {
-  _unmounted: boolean
-
-  static propTypes = {
-    type: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      fields: PropTypes.array
-    }),
-    value: PropTypes.object,
-    onChange: PropTypes.func,
-    uploadFn: PropTypes.func.isRequired,
-    materializeReferenceFn: PropTypes.func.isRequired,
-    level: PropTypes.number
+  handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
+    this.props.onChange(
+      PatchEvent.from(unset(['asset']))
+    )
   }
 
-  state = getInitialState()
-
-  subscriptions = subscriptionManager('upload', 'materialize')
-
-  componentDidMount() {
-    const {value} = this.props
-    if (value) {
-      this.syncImageRef(value.asset)
-    }
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
   }
-
-  componentWillReceiveProps(nextProps) {
-    const currentRef = get(this.props, 'value.asset')
-    const nextRef = get(nextProps, 'value.asset')
-
-    const shouldUpdate = currentRef !== nextRef || get(currentRef, '_ref') !== get(nextRef, '_ref')
-
-    if (shouldUpdate) {
-      this.setState(omit(getInitialState(), 'materializedImage', 'uploadingImage'))
-      this.cancelUpload()
-      this.syncImageRef(nextRef)
-    }
-  }
-
-  upload(image) {
-    this.cancelUpload()
-    this.setState({uploadingImage: image})
-
-    this.subscriptions.replace('upload', this.props.uploadFn(image.file).subscribe({
-      next: this.handleUploadProgress,
-      error: this.handleUploadError
-    }))
-  }
-
-  syncImageRef(reference) {
-    if (!reference) {
-      this.setState({materializedImage: null})
-      return
-    }
-    const {materializeReferenceFn} = this.props
-    this.subscriptions.replace('materialize', materializeReferenceFn(reference._ref).subscribe(materialized => {
-      this.setState({materializedImage: materialized})
-    }))
-  }
-
-  componentWillUnmount() {
-    this.subscriptions.unsubscribe('materialize')
-    // todo: fix this properly by unsubscribing to upload observable without cancelling it
-    this._unmounted = true
-  }
-
   cancelUpload() {
-    this.subscriptions.unsubscribe('upload')
-  }
-
-  hasField(fieldName) {
-    return this.props.type.fields.find(field => field.name === fieldName)
-  }
-
-  setStateIfMounted(...args) {
-    if (!this._unmounted) {
-      this.setState(...args)
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe()
+      this.clearUploadStatus()
     }
   }
 
-  handleUploadProgress = event => {
-    if (event.type === 'progress' && event.stage === 'upload') {
-      this.setStateIfMounted({
-        status: 'pending',
-        progress: {percent: event.percent}
-      })
-    }
-
-    if (event.type === 'complete') {
-      const {onChange, type} = this.props
-      this.setStateIfMounted({
-        uploadingImage: null,
-        status: 'complete',
-        materializedImage: event.asset
-      }, () => {
-        // Important: needs to be emitted after the state is updated
-        // or else materializing on the next componentWillReceiveProps may not
-        // be able to compare with current materialized image
-        onChange(PatchEvent.from(
-          setIfMissing({
-            _type: type.name,
-            asset: {_type: 'reference'}
-          }),
-          set({_type: 'reference', _ref: event.id}, ['asset'])
-        ))
-      })
-    }
-  }
-
-  handleUploadError = error => {
-    this.setState({
-      status: 'error'
-    })
-  }
-
-  handleSelect = images => {
-    this.upload(images[0])
-  }
-
-  handleClearValue = event => {
-    event.preventDefault()
-    const {onChange} = this.props
-    onChange(PatchEvent.from(unset()))
-    this.setState({status: 'ready'})
-  }
-
-  handleCancel = () => {
+  handleCancelUpload = () => {
     this.cancelUpload()
-    this.setState({
-      status: 'ready',
-      progress: null,
-      uploadingImage: null
-    })
   }
 
-  handleFieldChange = (event: PatchEvent, field) => {
+  handleSelectFile = (files: FileList) => {
+    this.uploadFirstAccepted(files)
+  }
+
+  uploadFirstAccepted(fileList: FileList) {
+    const {resolveUploader, type} = this.props
+
+    let match: ?{ uploader: Uploader, file: File }
+
+    Array.from(fileList).some(file => {
+      const uploader = resolveUploader(type, file)
+      if (uploader) {
+        match = {file, uploader}
+        return true
+      }
+      return false
+    })
+
+    if (match) {
+      this.uploadWith(match.uploader, match.file)
+    }
+
+  }
+
+  uploadWith(uploader: Uploader, file: File) {
+    const {type, onChange} = this.props
+    this.cancelUpload()
+    this.setState({isUploading: true})
+    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
+
+    this.uploadSubscription = uploader.upload(file, type)
+      .subscribe({
+        next: uploadEvent => {
+          if (uploadEvent.patches) {
+            onChange(PatchEvent.from(uploadEvent.patches))
+          }
+        },
+        error: err => {
+          this.setState({uploadError: err})
+          this.clearUploadStatus()
+        },
+        complete: () => {
+          onChange(
+            PatchEvent.from([
+              unset(['hotspot']),
+              unset(['crop'])
+            ])
+          )
+          this.setState({isUploading: false})
+        }
+      })
+  }
+
+  renderMaterializedAsset = (assetDocument: Object): Node => {
+    const {value = {}} = this.props
+    return (
+      <HotspotImage
+        aspectRatio="auto"
+        src={assetDocument.url}
+        srcAspectRatio={assetDocument.metadata.dimensions.aspectRatio}
+        hotspot={value.hotspot}
+        crop={value.crop}
+      />
+    )
+  }
+
+  renderUploadState(uploadState: any) {
+    const {isUploading} = this.state
+    const isComplete = uploadState.progress === 100
+    const filename = get(uploadState, 'file.name')
+    return (
+      <div>
+        <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
+          <ProgressBar
+            percent={status === 'complete' ? 100 : uploadState.progress}
+            text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
+            completed={isComplete}
+            showPercent
+            animation
+          />
+        </div>
+        {isUploading && (
+          <Button
+            kind="simple"
+            color="danger"
+            onClick={this.handleCancelUpload}
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
+    )
+  }
+
+  handleFieldChange = (event: PatchEvent, field: FieldT) => {
     const {onChange, type} = this.props
 
     onChange(event
       .prefixAll(field.name)
       .prepend(setIfMissing({
-        _type: type.name,
-        asset: {_type: 'reference'}
+        _type: type.name
       })))
   }
 
-  handleEditDialogClose = event => {
+  handleStartAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: true})
+  }
+
+  handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
-  }
-
-  renderFields(fields) {
-    return fields.map(field => this.renderField(field))
-  }
-
-  handleImageToolChange = newValue => {
-    this.setState({
-      value: newValue
-    })
-  }
-
-  handleImageToolComplete = newValue => {
-    const {onChange, type} = this.props
-    onChange(
-      PatchEvent.from(
-        setIfMissing({
-          _type: type.name,
-          asset: {_type: 'reference'}
-        }),
-        set(newValue.crop, ['crop']),
-        set(newValue.hotspot, ['hotspot'])
-      )
-    )
-  }
-
-  getImageUrl() {
-    const {uploadingImage, materializedImage} = this.state
-    if (uploadingImage) {
-      return uploadingImage.previewUrl
-    }
-    if (materializedImage && materializedImage.url) {
-      return `${materializedImage.url}`
-    }
-    return null
-  }
-
-  isImageToolEnabled() {
-    return this.hasField('hotspot') && this.hasField('crop')
-  }
-
-  renderImageTool() {
-    const {value} = this.props
-
-    const hotspot = (this.state.value && this.state.value.hotspot) || (value && value.hotspot) || DEFAULT_HOTSPOT
-    const crop = (this.state.value && this.state.value.crop) || (value && value.crop) || DEFAULT_CROP
-
-    const {uploadingImage} = this.state
-
-    const imageUrl = uploadingImage
-      ? uploadingImage.previewUrl
-      : getImageBuilder()
-        .image(value)
-        .width(800)
-        .ignoreImageParams()
-        .url()
-    return (
-      <div className={styles.imageTool}>
-        <div className={styles.mainImage}>
-          <ImageTool
-            value={{hotspot, crop}}
-            src={imageUrl}
-            onChange={this.handleImageToolChange}
-            onComplete={this.handleImageToolComplete}
-          />
-        </div>
-        <div className={styles.previews}>
-          {ASPECT_RATIOS.map(([title, ratio]) => {
-            return (
-              <div key={ratio} style={{flexGrow: 1}}>
-                <h4>{title}</h4>
-                <ImageLoader src={imageUrl}>
-                  {({image, error}) => {
-                    return (
-                      <div style={{margin: 4, border: '1px dashed #999', backgroundColor: '#eee'}}>
-                        <HotspotImage
-                          aspectRatio={ratio}
-                          src={image.src}
-                          srcAspectRatio={image.width / image.height}
-                          hotspot={hotspot}
-                          crop={crop}
-                        />
-                      </div>
-                    )
-                  }}
-                </ImageLoader>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
-
-  renderAdvancedEdit(fields) {
-    const grouped = groupBy(fields, field => {
-      if (field.name === 'hotspot' || field.name === 'crop') {
-        return 'imagetool'
-      }
-      return 'other'
-    })
-    return (
-      <Dialog title="Edit details" onClose={this.handleEditDialogClose} isOpen>
-        {grouped.imagetool && (
-          <div>
-            <h2>Hotspot/crop</h2>
-            <div>
-              {grouped.imagetool && this.renderImageTool()}
-            </div>
-          </div>
-        )}
-        <div>
-          {grouped.other && this.renderFields(grouped.other)}
-        </div>
-      </Dialog>
-    )
-  }
-
-  renderField(field) {
-    const {value, level} = this.props
-    const fieldValue = value && value[field.name]
-
-    return (
-      <Field
-        key={field.name}
-        field={field}
-        value={fieldValue}
-        onChange={this.handleFieldChange}
-        level={level + 1}
-      />
-    )
-  }
-
-  handleOpenAdvancedEdit = () => {
-    this.setState({
-      isAdvancedEditOpen: true
-    })
   }
 
   handleOpenSelectAsset = () => {
@@ -353,12 +209,14 @@ export default class ImageInput extends React.PureComponent<*> {
     })
   }
 
-  handleSelectAsset = asset => {
+  handleSelectAsset = (asset: Object) => {
     const {onChange, type} = this.props
     onChange(PatchEvent.from([
       setIfMissing({
         _type: type.name
       }),
+      unset(['hotspot']),
+      unset(['crop']),
       set({
         _type: 'reference',
         _ref: asset._id
@@ -370,63 +228,157 @@ export default class ImageInput extends React.PureComponent<*> {
     })
   }
 
-  render() {
-    const {status, progress, isAdvancedEditOpen, isSelectAssetOpen} = this.state
-    const {
-      type,
-      level,
-      value
-    } = this.props
+  renderAdvancedEdit(fields: Array<FieldT>) {
+    const {value, level, onChange, type, materialize} = this.props
 
-    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
-      if (field.name === 'asset') {
-        return 'asset'
-      }
-      const options = field.type.options || {}
-      if (options.isHighlighted) {
-        return 'highlighted'
-      }
-      return 'other'
-    }))
+    const isImageToolEnabled = get(type, 'options.hotspot') === true
 
-    const imageUrl = this.getImageUrl()
-
-    const isImageToolEnabled = this.isImageToolEnabled()
-
-    const accept = get(type, 'options.accept')
-
-    const hasAdvancedFields = fieldGroups.other.length > 0
-    const onEdit = hasAdvancedFields ? this.handleOpenAdvancedEdit : null
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
-        <DefaultImageInput
-          status={status}
-          legend={type.title}
+      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
+        {isImageToolEnabled && value && value.asset && (
+          <WithMaterializedReference materialize={materialize} reference={value.asset}>
+            {imageAsset => <ImageToolInput level={level} imageUrl={imageAsset.url} value={value} onChange={onChange} />}
+          </WithMaterializedReference>
+        )}
+        <div>
+          {this.renderFields(fields)}
+        </div>
+        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
+      </Dialog>
+    )
+  }
+
+  renderFields(fields: Array<FieldT>) {
+    return fields.map(field => this.renderField(field))
+  }
+
+  renderField(field: FieldT) {
+    const {value, level, onBlur, focusPath, onFocus} = this.props
+    const fieldValue = value && value[field.name]
+
+    return (
+      <div
+        className={styles.field}
+        key={field.name}
+      >
+        <FormBuilderInput
+          value={fieldValue}
+          type={field.type}
+          onChange={ev => this.handleFieldChange(ev, field)}
+          path={[field.name]}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focusPath={focusPath}
           level={level}
-          percent={progress && progress.percent}
-          onSelect={this.handleSelect}
-          onCancel={this.handleCancel}
-          onClear={this.handleClearValue}
-          onEdit={onEdit}
-          showContent={fieldGroups.highlighted.length > 0}
-          multiple={false}
-          accept={accept || 'image/*'}
-          hotspotImage={{
-            hotspot: isImageToolEnabled ? (value && value.hotspot) : DEFAULT_HOTSPOT,
-            crop: isImageToolEnabled ? (value && value.crop) : DEFAULT_CROP,
-            imageUrl: imageUrl
-          }}
-        >
-          {fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
-          {isSelectAssetOpen && (
-            <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
-              <SelectAsset onSelect={this.handleSelectAsset} />
-            </Dialog>
+        />
+      </div>
+    )
+  }
+
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
+    }
+  }
+
+  setFocusArea = (el: ?FocusArea) => {
+    this._focusArea = el
+  }
+
+  getUploadOptions = (file: File): Array<UploadOption> => {
+    const {type, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(type, file)
+    return uploader ? [{type: type, uploader}] : []
+  }
+
+  handleUpload = ({file, uploader}) => {
+
+    this.uploadWith(uploader, file)
+  }
+
+  render() {
+    const {type, value, level, onFocus, materialize} = this.props
+
+    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError} = this.state
+
+    const [highlightedFields, otherFields] = partition(
+      type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
+      'type.options.isHighlighted'
+    )
+
+    const hasAsset = value && value.asset
+
+    return (
+      <UploadTargetFieldset
+        legend={type.title}
+        description={type.description}
+        level={level}
+        onFocus={onFocus}
+        className={styles.root}
+        onUpload={this.handleUpload}
+        getUploadOptions={this.getUploadOptions}
+        ref={this.setFocusArea}
+      >
+        {uploadError && (
+          <Snackbar
+            kind="error"
+            action={{title: 'OK'}}
+            onAction={() => this.setState({uploadError: null})}
+          >
+            {"We're"} really sorry, but the upload could not be completed.
+          </Snackbar>
+        )}
+        {value && value._upload && (
+          <div className={styles.uploadState}>
+            {this.renderUploadState(value._upload)}
+          </div>
+        )}
+        <div className={styles.content}>
+          <div className={styles.assetWrapper}>
+            {hasAsset ? (
+              <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                {this.renderMaterializedAsset}
+              </WithMaterializedReference>
+            ) : <UploadPlaceholder />}
+          </div>
+          {highlightedFields.length > 0 && (
+            <div className={styles.fieldsWrapper}>
+              {this.renderFields(highlightedFields)}
+            </div>
           )}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
-        </DefaultImageInput>
-        <Button onClick={this.handleOpenSelectAsset}>Select from library…</Button>
-      </Fieldset>
+        </div>
+        <div className={styles.functions}>
+          <FileInputButton
+            icon={UploadIcon}
+            onSelect={this.handleSelectFile}
+            accept={''/* todo build from this.props.resolveUploaders */}
+          >
+            Upload
+          </FileInputButton>
+          <Button onClick={this.handleOpenSelectAsset} kind="simple">
+            Select from library
+          </Button>
+          {value && otherFields.length > 0 && (
+            <Button
+              icon={EditIcon}
+              kind="simple"
+              title="Edit details"
+              onClick={this.handleStartAdvancedEdit}
+            >
+              Edit
+            </Button>
+          )}
+          {hasAsset && (
+            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
+          )}
+        </div>
+        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+        {isSelectAssetOpen && (
+          <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
+            <SelectAsset onSelect={this.handleSelectAsset} />
+          </Dialog>
+        )}
+      </UploadTargetFieldset>
     )
   }
 }

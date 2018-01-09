@@ -123,30 +123,33 @@ export default class ImageTool extends React.PureComponent {
   }
 
   applyHotspotMoveBy(value, delta) {
+    const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
     return Object.assign({}, value, {
       hotspot: Object.assign({}, value.hotspot, {
-        x: value.hotspot.x + delta.x,
-        y: value.hotspot.y + delta.y
+        x: currentHotspot.x + delta.x,
+        y: currentHotspot.y + delta.y
       })
     })
   }
 
   applyHotspotResizeBy(value, delta) {
+    const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
     return Object.assign({}, value, {
-      hotspot: Object.assign({}, value.hotspot, {
-        height: value.hotspot.height + delta.height,
-        width: value.hotspot.width + delta.width
+      hotspot: Object.assign({}, currentHotspot, {
+        height: currentHotspot.height + delta.height,
+        width: currentHotspot.width + delta.width
       })
     })
   }
 
   applyCropMoveBy(value, delta) {
+    const currentCrop = (value && value.crop) || DEFAULT_CROP
     return Object.assign({}, value, {
       crop: Object.assign({}, value.crop, {
-        left: value.crop.left + (delta.left || 0),
-        right: value.crop.right + (delta.right || 0),
-        top: value.crop.top + (delta.top || 0),
-        bottom: value.crop.bottom + (delta.bottom || 0)
+        left: currentCrop.left + (delta.left || 0),
+        right: currentCrop.right + (delta.right || 0),
+        top: currentCrop.top + (delta.top || 0),
+        bottom: currentCrop.bottom + (delta.bottom || 0)
       })
     })
   }

@@ -2,7 +2,7 @@
 import React from 'react'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
-import styles from './SelectAsset.css'
+import styles from './styles/SelectAsset.css'
 import {get} from 'lodash'
 
 const PER_PAGE = 200
@@ -48,11 +48,22 @@ export default class SelectAsset extends React.Component<Props, State> {
     this.fetchPage(this.pageNo)
   }
 
-  handleSelectItem = (event: SyntheticEvent<*>) => {
-    const assetId = event.currentTarget.getAttribute('data-id')
-    const selected = this.state.assets.find(doc => doc._id === assetId)
+  select(id) {
+    const selected = this.state.assets.find(doc => doc._id === id)
     if (selected) {
       this.props.onSelect(selected)
+    }
+  }
+
+  handleItemClick = (event: SyntheticEvent<*>) => {
+    event.preventDefault()
+    this.select(event.currentTarget.getAttribute('data-id'))
+  }
+
+  handleItemKeyPress = (event: SyntheticEvent<*>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      this.select(event.currentTarget.getAttribute('data-id'))
     }
   }
   handleFetchNextPage = () => {
@@ -69,16 +80,18 @@ export default class SelectAsset extends React.Component<Props, State> {
             const width = get(asset, 'metadata.dimensions.width') || 100
             const height = get(asset, 'metadata.dimensions.height') || 100
             return (
-              <div
+              <a
                 key={asset._id}
                 className={styles.item}
                 data-id={asset._id}
-                onClick={this.handleSelectItem}
+                onClick={this.handleItemClick}
+                onKeyPress={this.handleItemKeyPress}
+                tabIndex={0}
                 style={{width: `${(width * size) / height}px`, flexGrow: `${(width * size) / height}`}}
               >
                 <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
                 <img src={`${asset.url}?w=100`} className={styles.image} />
-              </div>
+              </a>
             )
           })}
         </div>

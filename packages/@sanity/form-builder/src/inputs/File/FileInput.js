@@ -1,178 +1,202 @@
-import AnchorButton from 'part:@sanity/components/buttons/anchor'
+import type {Node} from 'react'
+// @flow
+import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import {get, uniqueId, omit, groupBy} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
 import ProgressBar from 'part:@sanity/components/progress/bar'
-import PropTypes from 'prop-types'
-import React from 'react'
-import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import styles from './styles/FileInput.css'
-import subscriptionManager from '../../utils/subscriptionManager'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import Field from '../Object/Field'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import FileIcon from 'part:@sanity/base/file-icon'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import {get, partition} from 'lodash'
+import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
+import styles from './styles/FileInput.css'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import {ObservableI} from '../../typedefs/observable'
 
-function getInitialState() {
-  return {
-    status: 'ready',
-    error: null,
-    progress: null,
-    uploadingFile: null,
-    materializedFile: null,
-    isAdvancedEditOpen: false
-  }
+import type {Reference, Type} from '../../typedefs'
+import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+
+import WithMaterializedReference from '../../utils/WithMaterializedReference'
+import {FormBuilderInput} from '../../FormBuilderInput'
+import UploadPlaceholder from '../common/UploadPlaceholder'
+import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import Snackbar from 'part:@sanity/components/snackbar/default'
+
+type FieldT = {
+  name: string,
+  type: Type
 }
 
-export default class FileInput extends React.PureComponent {
-  _unmounted: boolean
-  static propTypes = {
-    value: PropTypes.object,
-    type: PropTypes.object.isRequired,
-    level: PropTypes.number,
-    onChange: PropTypes.func,
-    materializeReference: PropTypes.func.isRequired,
-    upload: PropTypes.func.isRequired,
+type Value = {
+  _upload?: any,
+  asset?: Reference,
+  hotspot?: Object,
+  crop?: Object
+}
+
+type Props = {
+  value?: Value,
+  type: Type,
+  level: number,
+  onChange: (PatchEvent) => void,
+  resolveUploader: UploaderResolver,
+  materialize: (string) => ObservableI<Object>,
+  onBlur: () => void,
+  onFocus: () => void,
+  focusPath: Array<*>
+}
+
+type State = {
+  isAdvancedEditOpen: boolean,
+  isUploading: boolean
+}
+
+const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
+
+export default class FileInput extends React.PureComponent<Props, State> {
+  uploadSubscription: any
+  state = {
+    isUploading: false,
+    isAdvancedEditOpen: false,
+    uploadError: null
   }
 
-  state = getInitialState()
+  handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
+    this.props.onChange(
+      PatchEvent.from(unset(['asset']))
+    )
+  }
 
-  subscriptions = subscriptionManager('upload', 'materialize')
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+  }
 
-  _inputId = uniqueId('FileInput')
-
-  componentDidMount() {
-    const {value} = this.props
-    if (value) {
-      this.syncFileRef(value.asset)
+  cancelUpload() {
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe()
+      this.clearUploadStatus()
     }
   }
 
-  componentWillUnmount() {
-    this.subscriptions.unsubscribe('materialize')
-    // todo: fix this properly by unsubscribing to upload observable without cancelling it
-    this._unmounted = true
+  handleCancelUpload = () => {
+    this.cancelUpload()
   }
 
-  componentWillReceiveProps(nextProps) {
-    const currentRef = get(this.props, 'value.asset')
-    const nextRef = get(nextProps, 'value.asset')
-
-    const shouldUpdate = currentRef !== nextRef && get(currentRef, '_ref') !== get(nextRef, '_ref')
-
-    if (shouldUpdate) {
-      this.setState(omit(getInitialState(), 'materializedFile', 'uploadingFile'))
-      this.cancelCurrent()
-      this.syncFileRef(nextRef)
-    }
+  handleSelectFile = (files: FileList) => {
+    this.uploadFirstAccepted(files)
   }
 
-  upload(file) {
-    this.cancelCurrent()
-    this.setState({uploadingFile: file})
+  uploadFirstAccepted(fileList: FileList) {
+    const {resolveUploader, type} = this.props
 
-    this.subscription = this.props.upload(file).subscribe({
-      next: this.handleUploadProgress,
-      error: this.handleUploadError
+    let match: ?{ uploader: Uploader, file: File }
+
+    Array.from(fileList).some(file => {
+      const uploader = resolveUploader(type, file)
+      if (uploader) {
+        match = {file, uploader}
+        return true
+      }
+      return false
     })
-  }
 
-  cancelCurrent() {
-    this.subscriptions.unsubscribe('upload')
-  }
-
-  syncFileRef(reference) {
-    if (!reference) {
-      this.setState({materializedFile: null})
-      return
+    if (match) {
+      this.uploadWith(match.uploader, match.file)
     }
-    if (this.state.materializedFile && this.state.materializedFile._id === reference._id) {
-      return
-    }
-    const {materializeReference} = this.props
-    this.subscriptions.replace('materialize', materializeReference(reference._ref).subscribe(materialized => {
-      this.setState({materializedFile: materialized})
-    }))
   }
 
-  setRef(id) {
-    this.props.onChange(PatchEvent.from(
-      setIfMissing({
-        _type: this.props.type.name
-      }),
-      set({
-        _ref: id,
-        _type: 'reference'
-      }, ['asset'])
-    ))
-  }
+  uploadWith(uploader: Uploader, file: File) {
+    const {type, onChange} = this.props
+    this.cancelUpload()
+    this.setState({isUploading: true})
+    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
 
-  handleUploadProgress = event => {
-    if (event.type === 'progress' && event.stage === 'upload') {
-      this.setState({
-        status: 'pending',
-        progress: {percent: event.percent}
+    this.uploadSubscription = uploader.upload(file, type)
+      .subscribe({
+        next: uploadEvent => {
+          if (uploadEvent.patches) {
+            onChange(PatchEvent.from(uploadEvent.patches))
+          }
+        },
+        error: err => {
+          this.setState({uploadError: err})
+          this.clearUploadStatus()
+        },
+        complete: () => {
+          onChange(
+            PatchEvent.from([
+              unset(['hotspot']),
+              unset(['crop'])
+            ])
+          )
+          this.setState({isUploading: false})
+        }
       })
-    }
-
-    if (event.type === 'complete') {
-      this.setRef(event.id)
-      this.setState({
-        uploadingFile: null,
-        status: 'complete'
-      })
-    }
   }
 
-  handleUploadError = error => {
-    this.setState({
-      status: 'error'
-    })
+  renderMaterializedAsset = (assetDocument: Object): Node => {
+    return (
+      <div className={styles.previewAsset}>
+        <div className={styles.fileIcon}>
+          <FileIcon />
+        </div>
+        <div>
+          {assetDocument.originalFilename} {' '}
+          <a href={assetDocument.url} download>
+            Download
+          </a>
+        </div>
+      </div>
+    )
   }
 
-  handleUploadComplete = () => {
-    this.setState({
-      status: 'complete'
-    })
+  renderUploadState(uploadState: any) {
+    const {isUploading} = this.state
+    const isComplete = uploadState.progress === 100
+    const filename = get(uploadState, 'file.name')
+    return (
+      <div>
+        <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
+          <ProgressBar
+            percent={status === 'complete' ? 100 : uploadState.progress}
+            text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
+            completed={isComplete}
+            showPercent
+            animation
+          />
+        </div>
+        {isUploading && (
+          <Button
+            kind="simple"
+            color="danger"
+            onClick={this.handleCancelUpload}
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
+    )
   }
 
-  handleSelect = files => {
-    this.upload(files[0])
-  }
-
-  handleCancel = () => {
-    this.cancelCurrent()
-    this.setState({
-      status: 'cancelled',
-      progress: {},
-      uploadingFile: null
-    })
-  }
-  handleStartAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: true})
-  }
-  handleStopAdvancedEdit = event => {
-    this.setState({isAdvancedEditOpen: false})
-  }
-
-  handleFieldChange = (event: PatchEvent, field) => {
+  handleFieldChange = (event: PatchEvent, field: FieldT) => {
     const {onChange, type} = this.props
 
     onChange(event
       .prefixAll(field.name)
       .prepend(setIfMissing({
-        _type: type.name,
-        asset: {_type: 'reference'}
+        _type: type.name
       })))
   }
 
-  handleRemoveButtonClick = event => {
-    this.props.onChange(
-      PatchEvent.from(unset())
-    )
+  handleStartAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: true})
   }
 
-  renderAdvancedEdit(fields) {
+  handleStopAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: false})
+  }
+
+  renderAdvancedEdit(fields: Array<FieldT>) {
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
         <div>
@@ -183,118 +207,124 @@ export default class FileInput extends React.PureComponent {
     )
   }
 
-  renderFields(fields) {
-    return (
-      <div className={styles.fields}>
-        {fields.map(field => this.renderField(field))}
-      </div>
-    )
+  renderFields(fields: Array<FieldT>) {
+    return fields.map(field => this.renderField(field))
   }
 
-  renderField(field) {
-    const {value, level} = this.props
+  renderField(field: FieldT) {
+    const {value, level, onBlur, focusPath, onFocus} = this.props
     const fieldValue = value && value[field.name]
 
     return (
-      <Field
+      <FormBuilderInput
         key={field.name}
-        field={field}
         value={fieldValue}
-        onChange={this.handleFieldChange}
-        level={level + 1}
+        type={field.type}
+        onChange={ev => this.handleFieldChange(ev, field)}
+        path={[field.name]}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
+        level={level}
       />
     )
   }
 
-  render() {
-    // TODO: Render additional fields
-    const {status, progress, uploadingFile, materializedFile, isAdvancedEditOpen} = this.state
-    const {
-      type,
-      level,
-      value
-    } = this.props
-
-    let progressClasses = ''
-
-    if (status === 'complete') {
-      progressClasses = styles.progressBarCompleted
-    } else if (status === 'pending') {
-      progressClasses = styles.progressBar
-    } else {
-      progressClasses = styles.progressBarIdle
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
     }
+  }
 
-    const fieldGroups = Object.assign({asset: [], highlighted: [], other: []}, groupBy(type.fields, field => {
-      if (field.name === 'asset') {
-        return 'asset'
-      }
-      const options = field.type.options || {}
-      if (options.isHighlighted) {
-        return 'highlighted'
-      }
-      return 'other'
-    }))
+  setFocusArea = (el: ?FocusArea) => {
+    this._focusArea = el
+  }
+
+  getUploadOptions = (file: File): Array<UploadOption> => {
+    const {type, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(type, file)
+    return uploader ? [{type: type, uploader}] : []
+  }
+
+  handleUpload = ({file, uploader}) => {
+
+    this.uploadWith(uploader, file)
+  }
+
+  render() {
+    const {type, value, level, onFocus, materialize} = this.props
+
+    const {isAdvancedEditOpen, uploadError} = this.state
+
+    const [highlightedFields, otherFields] = partition(
+      type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
+      'type.options.isHighlighted'
+    )
+
+    const hasAsset = value && value.asset
 
     return (
-      <FormField label={type.title} labelFor={this._inputId} level={level}>
-        <div className={styles.wrapper}>
-          <div className={progressClasses}>
-            {
-              ((progress && uploadingFile) || (status === 'complete')) && (
-                <ProgressBar
-                  percent={status === 'complete' ? 100 : progress.percent}
-                  text={status === 'complete' ? 'Complete' : `Uploading "${uploadingFile.name}"`}
-                  showPercent
-                  animation
-                  completed={status === 'complete'}
-                />
-              )
-            }
-          </div>
-
-          {value && fieldGroups.highlighted.length > 0 && this.renderFields(fieldGroups.highlighted)}
-
-          {materializedFile && (
-            <div>{materializedFile.originalFilename}</div>
-          )}
-          {materializedFile && (
-            <AnchorButton href={materializedFile.url} download>
-              Download
-            </AnchorButton>
-          )}
-
-          <FileInputButton
-            onSelect={this.handleSelect}
+      <UploadTargetFieldset
+        legend={type.title}
+        description={type.description}
+        level={level}
+        onFocus={onFocus}
+        onUpload={this.handleUpload}
+        getUploadOptions={this.getUploadOptions}
+        ref={this.setFocusArea}
+      >
+        {uploadError && (
+          <Snackbar
+            kind="error"
+            action={{title: 'OK'}}
+            onAction={() => this.setState({uploadError: null})}
           >
-            {materializedFile ? 'Replace file…' : 'Select file…'}
+            {"We're"} really sorry, but the upload could not be completed.
+          </Snackbar>
+        )}
+        {value && value._upload && (
+          <div className={styles.uploadState}>
+            {this.renderUploadState(value._upload)}
+          </div>
+        )}
+        <div className={styles.content}>
+          <div className={styles.assetWrapper}>
+            {hasAsset ? (
+              <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                {this.renderMaterializedAsset}
+              </WithMaterializedReference>
+            ) : <UploadPlaceholder />}
+          </div>
+          {highlightedFields.length > 0 && (
+            <div className={styles.fieldsWrapper}>
+              {this.renderFields(highlightedFields)}
+            </div>
+          )}
+        </div>
+        <div className={styles.functions}>
+          <FileInputButton
+            icon={UploadIcon}
+            onSelect={this.handleSelectFile}
+            accept={''/* todo build from this.props.resolveUploaders */}
+          >
+            Upload
           </FileInputButton>
-
-          {value && fieldGroups.other.length > 0 && (
+          {value && otherFields.length > 0 && (
             <Button
               icon={EditIcon}
+              kind="simple"
               title="Edit details"
               onClick={this.handleStartAdvancedEdit}
             >
-              Edit…
+              Edit
             </Button>
           )}
-
-          {value && value.asset && (
-            <Button color="danger" onClick={this.handleRemoveButtonClick}>Remove</Button>
+          {hasAsset && (
+            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
-          {uploadingFile && (
-            <Button
-              kind="simple"
-              color="danger"
-              onClick={this.handleCancel}
-            >
-              Cancel
-            </Button>
-          )}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(fieldGroups.highlighted.concat(fieldGroups.other))}
         </div>
-      </FormField>
+        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+      </UploadTargetFieldset>
     )
   }
 }

@@ -18,12 +18,16 @@ export default class Checkbox extends React.Component {
 
   handleFocus = event => {
     this.setState({hasFocus: true})
-    this.props.onFocus(event)
+    if (this.props.onFocus) {
+      this.props.onFocus(event)
+    }
   }
 
   handleBlur = event => {
     this.setState({hasFocus: false})
-    this.props.onBlur(event)
+    if (this.props.onBlur) {
+      this.props.onBlur(event)
+    }
   }
 
   focus() {

@@ -75,10 +75,17 @@
   }
 }
 
-.preview {
+.previewWrapper {
   flex-grow: 1;
   outline: none;
   user-select: none;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  @nest &:focus {
+    border: 1px solid var(--input-border-color-focus);
+    box-shadow: var(--component-box-shadow--focus);
+  }
 }
 
 .functions {

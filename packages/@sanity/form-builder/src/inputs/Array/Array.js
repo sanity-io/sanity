@@ -2,14 +2,9 @@
 import type {ArrayType, ItemValue} from './typedefs'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import Dialog from 'part:@sanity/components/dialogs/default'
-import {sortBy} from 'lodash'
 import Button from 'part:@sanity/components/buttons/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import RenderItemValue from './ItemValue'
 import styles from './styles/Array.css'
-import humanize from 'humanize-list'
 import randomKey from './randomKey'
 import PatchEvent, {insert, set, setIfMissing, unset} from '../../PatchEvent'
 import resolveListComponents from './resolveListComponents'
@@ -17,8 +12,9 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
-import {FocusArea} from '../../FocusArea'
-import {FIRST_META_KEY, isExpanded} from '../../utils/pathUtils'
+import {FOCUS_TERMINATOR, isExpanded} from '../../utils/pathUtils'
+import type {Subscription} from '../../typedefs/observable'
+import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 
 function hasKeys(object, exclude = []) {
   for (const key in object) {
@@ -44,16 +40,6 @@ function createProtoValue(type: Type): ItemValue {
   }
 }
 
-type UploadOption = {
-  type: Type,
-  uploader: Uploader
-}
-
-type UploadTask = {
-  file: File,
-  uploaderCandidates: Array<UploadOption>
-}
-
 type Props = {
   type: ArrayType,
   value: Array<ItemValue>,
@@ -65,26 +51,18 @@ type Props = {
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
-type State = {
-  rejected: Array<UploadTask>,
-  ambiguous: Array<UploadTask>,
-  isMoving: ?boolean
-}
-
 export default class ArrayInput extends React.Component<Props, State> {
-  _focusArea: ?FocusArea
+  _element: ?UploadTargetFieldset
+
+  uploadSubscriptions: { [string]: Subscription }
+  uploadSubscriptions = {}
 
   static defaultProps = {
     focusPath: []
   }
   state = {
-    rejected: [],
-    ambiguous: [],
     isMoving: false
   }
-
-  uploadSubscriptions: {}
-  uploadSubscriptions = {}
 
   insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
     const {onChange} = this.props
@@ -106,16 +84,12 @@ export default class ArrayInput extends React.Component<Props, State> {
     this.removeItem(item)
   }
 
-  handleItemEditStop = (item: ItemValue) => {
-    const itemValue = this.getExpandedItem()
-    if (itemValue && isEmpty(itemValue)) {
-      this.removeItem(itemValue)
-    }
-    this.props.onFocus([{_key: item._key}])
+  handleFocus = () => {
+    this.props.onFocus([FOCUS_TERMINATOR])
   }
 
   setItemExpanded(item: ItemValue) {
-    this.props.onFocus([{_key: item._key}, FIRST_META_KEY])
+    this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
   }
 
   handleDropDownAction = (menuItem: { type: Type }) => {
@@ -147,9 +121,9 @@ export default class ArrayInput extends React.Component<Props, State> {
       this.uploadSubscriptions[item._key].unsubscribe()
     }
 
-    if (item === this.getExpandedItem()) {
-      onFocus([])
-    }
+    const idx = value.indexOf(item)
+    const nextItem = value[idx + 1] || value[idx - 1]
+    onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
   }
 
   renderSelectType() {
@@ -167,90 +141,6 @@ export default class ArrayInput extends React.Component<Props, State> {
         New {this.props.type.title}
       </DropDownButton>
     )
-  }
-
-  handlePaste = (ev: SyntheticClipboardEvent<*>) => {
-    if (ev.clipboardData.files) {
-      ev.preventDefault()
-      ev.stopPropagation()
-      if (this.props.resolveUploader) {
-        this.uploadFiles(Array.from(ev.clipboardData.files))
-      }
-    }
-  }
-
-  handleDragOver = (ev: SyntheticDragEvent<*>) => {
-    if (this.props.resolveUploader) {
-      ev.preventDefault()
-      ev.stopPropagation()
-    }
-  }
-
-  handleDrop = (ev: SyntheticDragEvent<*>) => {
-    if (this.props.resolveUploader && ev.dataTransfer.files) {
-      // todo: support folders with webkitGetAsEntry
-      ev.preventDefault()
-      ev.stopPropagation()
-      this.uploadFiles(Array.from(ev.dataTransfer.files))
-    }
-  }
-
-  getUploadOptions = (file: File): Array<UploadOption> => {
-    const {type, resolveUploader} = this.props
-    if (!resolveUploader) {
-      return []
-    }
-    return type.of
-      .map(memberType => {
-        const uploader = resolveUploader(memberType, file)
-        return uploader && {
-          type: memberType,
-          uploader
-        }
-      })
-      .filter(Boolean)
-  }
-
-  uploadFiles(files: Array<File>) {
-    const tasks = files.map(file => ({
-      file,
-      uploaderCandidates: this.getUploadOptions(file)
-    }))
-
-    const ready = tasks
-      .filter(task => task.uploaderCandidates.length > 0)
-
-    const rejected = tasks
-      .filter(task => task.uploaderCandidates.length === 0)
-    this.setState({rejected})
-
-    // todo: consider if we need to ask the user
-    // the list of candidates is sorted by their priority and the first one is selected
-    // const ambiguous = tasks
-    //   .filter(task => task.uploaderCandidates.length > 1)
-
-    ready
-      .forEach(task => {
-        this.uploadFile(task.file, sortBy(task.uploaderCandidates, cand => cand.uploader.priority)[0])
-      })
-  }
-
-  uploadFile(file: File, uploadOption: UploadOption) {
-    const {onChange} = this.props
-
-    const {type, uploader} = uploadOption
-    const item = createProtoValue(type)
-
-    const key = item._key
-    this.append(item)
-
-    const events$ = uploader.upload(file, type)
-      .map(uploadEvent => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key}))
-
-    this.uploadSubscriptions = {
-      ...this.uploadSubscriptions,
-      [key]: events$.subscribe(onChange)
-    }
   }
 
   handleItemChange = (event: PatchEvent, item: ItemValue) => {
@@ -354,8 +244,6 @@ export default class ArrayInput extends React.Component<Props, State> {
               }
               {...itemProps}
             >
-              {/*{JSON.stringify({item, focusPath})}*/}
-              {/*{isExpanded(item, focusPath) && 'EXPANDED'}*/}
               <RenderItemValue
                 type={type}
                 value={item}
@@ -374,43 +262,64 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
+    if (this._element) {
+      this._element.focus()
     }
   }
 
-  setFocusArea = (el: ?FocusArea) => {
-    this._focusArea = el
+  setElement = (el: ?UploadTargetFieldset) => {
+    this._element = el
+  }
+
+  getUploadOptions = (file: File): Array<UploadOption> => {
+    const {type, resolveUploader} = this.props
+    if (!resolveUploader) {
+      return []
+    }
+    return type.of
+      .map(memberType => {
+        const uploader = resolveUploader(memberType, file)
+        return uploader && {
+          type: memberType,
+          uploader
+        }
+      })
+      .filter(Boolean)
+  }
+
+  handleUpload = ({file, type, uploader}) => {
+    const {onChange} = this.props
+    const item = createProtoValue(type)
+
+    const key = item._key
+    this.append(item)
+
+    const events$ = uploader.upload(file, type)
+      .map(uploadEvent => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key}))
+
+    this.uploadSubscriptions = {
+      ...this.uploadSubscriptions,
+      [key]: events$.subscribe(onChange)
+    }
   }
 
   render() {
-    const {type, level, value, onFocus, focusPath} = this.props
-    const {rejected, ambiguous} = this.state
+    const {type, level, value} = this.props
 
-    const isSomeExpanded = value && !value.some(item => isExpanded(item, focusPath))
     return (
-      <Fieldset
+      <UploadTargetFieldset
+        tabIndex={0}
         legend={type.title}
         description={type.description}
         level={level}
         className={styles.root}
+        onUpload={this.handleUpload}
+        onFocus={this.handleFocus}
+        type={type}
+        getUploadOptions={this.getUploadOptions}
+        ref={this.setElement}
       >
-        <FocusArea
-          className={styles.focusArea}
-          onPaste={this.handlePaste}
-          onDragOver={this.handleDragOver}
-          onDrop={this.handleDrop}
-          onFocus={isSomeExpanded && onFocus}
-          ref={this.setFocusArea}
-        >
-          {
-            value && value.length > 0 && (
-              <div className={styles.list}>
-                {this.renderList()}
-              </div>
-            )
-          }
-        </FocusArea>
+        {value && value.length > 0 && this.renderList()}
         {!type.readOnly && (
           <div className={styles.functions}>
             {this.props.type.of.length === 1 && (
@@ -421,46 +330,7 @@ export default class ArrayInput extends React.Component<Props, State> {
             {this.props.type.of.length > 1 && this.renderSelectType()}
           </div>
         )}
-        {ambiguous.length > 0 && ( // not in use right now as we just pick the first uploader
-          <Dialog
-            isOpen
-            title="Select how to represent"
-            actions={[{title: 'Cancel'}]}
-            onAction={() => this.setState({ambiguous: []})}
-          >
-            {ambiguous.map(task => (
-              <div key={task.file.name}>
-                The file {task.file.name} can be converted to several types of content.
-                Please select how you want to represent it:
-                <ul>
-                  {task.uploaderCandidates.map(uploaderCandidate => (
-                    <li key={uploaderCandidate.type.name}>
-                      <Button
-                        onClick={() => {
-                          this.uploadFile(task.file, uploaderCandidate)
-                          this.setState({ambiguous: ambiguous.filter(t => t !== task)})
-                        }}
-                      >
-                        Represent as {uploaderCandidate.type.name}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </Dialog>
-        )}
-        {rejected.length > 0 && (
-          <Snackbar
-            kind="warning"
-            action={{title: 'OK'}}
-            onAction={() => this.setState({rejected: []})}
-          >
-            File(s) not accepted:
-            {humanize(rejected.map(task => task.file.name))}
-          </Snackbar>
-        )}
-      </Fieldset>
+      </UploadTargetFieldset>
     )
   }
 }
