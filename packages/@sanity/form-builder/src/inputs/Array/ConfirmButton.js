@@ -61,15 +61,16 @@ export default class ConfirmButton extends React.Component {
     const {showConfirmDialog} = this.state
     const {onConfirm, ...rest} = this.props
     return (
-      <Button
-        {...rest}
-        tabIndex={0}
-        kind="simple"
-        color="danger"
-        icon={TrashIcon}
-        onClick={this.handleClick}
-        ref={this.setButton}
-      >
+      <div className={styles.root}>
+        <Button
+          {...rest}
+          tabIndex={0}
+          kind="simple"
+          color="danger"
+          icon={TrashIcon}
+          onClick={this.handleClick}
+          ref={this.setButton}
+        />
         <div className={styles.popoverAnchor}>
           {
             showConfirmDialog && (
@@ -90,7 +91,7 @@ export default class ConfirmButton extends React.Component {
             )
           }
         </div>
-      </Button>
+      </div>
     )
   }
 }
