@@ -31,7 +31,7 @@
 }
 
 :root {
-  --tool-switcher-width: 5rem;
+  --tool-switcher-width: 6rem;
   --secondary-menu-background-color: var(--main-navigation-background-color);
 }
 
