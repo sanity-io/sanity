@@ -52,13 +52,43 @@ export default class DefaultDialog extends React.PureComponent {
     event.stopPropagation()
   }
 
-  handleActionClick = event => {
-    const actionIndex = event.currentTarget.getAttribute('data-action-index')
-    this.props.onAction(this.props.actions[actionIndex])
-  }
+  // handleActionClick = event => {
+  //   const actionIndex = event.currentTarget.getAttribute('data-action-index')
+  //   this.props.onAction(this.props.actions[actionIndex])
+  // }
 
   setDialogElement = element => {
     this.dialog = element
+  }
+
+  renderActions = actions => {
+    if (!actions || actions.length < 1) {
+      return undefined
+    }
+
+    return (
+      <div className={styles.actions}>
+        {
+          actions.map((action, i) => {
+            const isSecondary = action.kind === 'secondary'
+            return (
+              <Button
+                key={i}
+                onClick={() => this.props.onAction(action)}
+                data-action-index={i}
+                color={action.color}
+                disabled={action.disabled}
+                kind={action.kind}
+                autoFocus={action.autoFocus}
+                className={isSecondary ? styles.actionSecondary : ''}
+              >
+                {action.title}
+              </Button>
+            )
+          })
+        }
+      </div>
+    )
   }
 
   render() {
@@ -97,34 +127,8 @@ export default class DefaultDialog extends React.PureComponent {
                 <div className={styles.content}>
                   {this.props.children}
                 </div>
-
                 <div className={styles.footer}>
-                  {
-                    actions.length > 0 && <div className={styles.functions}>
-                      {
-                        actions.map((action, i) => {
-                          return (
-                            <Button
-                              key={i}
-                              onClick={this.handleActionClick}
-                              data-action-index={i}
-                              color={action.color}
-                              disabled={action.disabled}
-                              kind={action.kind}
-                              autoFocus={action.autoFocus}
-                              className={`
-                              ${styles.button}
-                              ${styles[`button_${action.kind}`] || styles.button}
-                            `
-                              }
-                            >
-                              {action.title}
-                            </Button>
-                          )
-                        })
-                      }
-                    </div>
-                  }
+                  {this.renderActions(actions)}
                 </div>
               </div>
             </div>
