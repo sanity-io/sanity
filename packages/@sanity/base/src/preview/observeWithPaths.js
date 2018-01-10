@@ -1,4 +1,4 @@
-import {keyBy} from 'lodash'
+import {sortBy, identity} from 'lodash'
 import client from 'part:@sanity/base/client'
 import Observable from '@sanity/observable'
 import debounceCollect from './utils/debounceCollect'
@@ -19,40 +19,50 @@ function listen(id) {
     .filter(event => event.documentId === id)
 }
 
-function fetchAllDocumentSnapshots(selections) {
-  let prevPaths
-  let canBeCombined = true
-
-  const ids = []
-  const optimizedParams = {}
-  const queryParts = selections.map(([id, paths], queryIndex) => {
-    // While we're iterating, see if there are differing paths requested
-    const currentPaths = paths.join(',')
-    if (canBeCombined && prevPaths && currentPaths !== prevPaths) {
-      canBeCombined = false
+function combineSelections(selections) {
+  return Object.values(selections.reduce((output, [id, paths], index) => {
+    const key = sortBy(paths.join(','), identity)
+    if (!output[key]) {
+      output[key] = {paths, ids: [], map: []}
     }
+    const idx = output[key].ids.length
+    output[key].ids[idx] = id
+    output[key].map[idx] = index
+    return output
+  }, {}))
+}
 
-    ids.push(id)
-    prevPaths = currentPaths
-    optimizedParams[[`id_${queryIndex}`]] = id
-    return `*[_id==$id_${queryIndex}]{_id,_type,${currentPaths}}`
-  })
+function stringifyId(id) {
+  return JSON.stringify(id)
+}
+function toSubQuery({ids, paths}) {
+  const stringifiedIds = ids.map(stringifyId)
+  const filter = stringifiedIds.length === 1
+    ? `*[_id == ${stringifiedIds[0]}]`
+    : `*[_id in [${stringifiedIds.join(',')}]]`
+  return `${filter}{_id,_type,${paths.join(',')}}`
+}
 
-  // If we have different paths (fields selected), we can't combine the queries, so do an array selection
-  if (!canBeCombined) {
-    const optimizedQuery = `[${queryParts.join(',\n')}]`
-    return client.observable
-      .fetch(optimizedQuery, optimizedParams)
-      .map(result => result.map(res => res[0]))
-  }
+function toGradientQuery(combinedSelections) {
+  const subQueries = combinedSelections.map(toSubQuery)
+  return `[${subQueries.join(',')}]`
+}
 
-  // All paths (fields selected) are the same, so we can create a simpler, faster query
-  // Note that we have to reassemble results into same order as the input, however
-  const query = `*[_id in [${ids.map(id => JSON.stringify(id)).join(',')}]]{_id,_type,${prevPaths}}`
-  return client.observable.fetch(query).map(result => {
-    const byId = keyBy(result, '_id')
-    return selections.map(([id]) => byId[id])
-  })
+function reproject(queryResult, combinedSelections) {
+  return queryResult.reduce((mapped, subResult, index) => {
+    const map = combinedSelections[index].map
+    map.forEach((resultIdx, i) => {
+      mapped[resultIdx] = subResult[i]
+    })
+    return mapped
+  }, [])
+}
+
+function fetchAllDocumentSnapshots(selections) {
+  const combinedSelections = combineSelections(selections)
+  return client.observable
+    .fetch(toGradientQuery(combinedSelections))
+    .map(result => reproject(result, combinedSelections))
 }
 
 const debouncedFetchDocumentSnapshot = debounceCollect(fetchAllDocumentSnapshots, 50)
