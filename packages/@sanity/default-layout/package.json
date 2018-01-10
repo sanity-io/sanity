@@ -30,6 +30,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
+    "@sanity/observable": "^0.121.0",
     "lodash": "^4.17.4",
     "react-click-outside": "^2.3.1",
     "react-ink": "^6.1.0"
@@ -40,13 +41,12 @@
     "@sanity/cli": "^0.124.4",
     "@sanity/components": "^0.124.6",
     "@sanity/core": "^0.124.5",
-    "@sanity/form-builder": "^0.124.6",
     "@sanity/generate-help-url": "^0.123.0",
     "@sanity/observable": "^0.121.0",
     "@sanity/schema": "^0.124.0",
     "babel-plugin-lodash": "^3.2.11",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "in-publish": "^2.0.0",
     "mocha": "^3.2.0",
     "nyc": "^11.0.3",

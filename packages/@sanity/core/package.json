@@ -33,7 +33,7 @@
     "babel-preset-stage-2": "^6.22.0",
     "babel-register": "^6.26.0",
     "batch-stream-operation": "^1.0.2",
-    "debug": "^2.6.3",
+    "debug": "^3.1.0",
     "deep-sort-object": "^1.0.1",
     "filesize": "^3.5.6",
     "fs-extra": "^4.0.2",
@@ -54,13 +54,13 @@
     "tar-fs": "^1.15.2",
     "thenify": "^3.3.0",
     "through2": "^2.0.3",
-    "uglify-js": "3.1.10"
+    "uglify-js": "^3.1.10"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "eslint": "^4.9.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^4.11.0",
     "mocha": "^3.2.0"
   },
   "repository": {
