@@ -3,6 +3,10 @@
 
 :root {
   --text-color: var(--gray-darkest);
+  --text-color-secondary: var(--gray-dark);
+  --text-muted: var(--gray-light);
+  --abbr-border-color: var(--gray-light);
+  --headings-small-color: var(--gray-light);
   --link-color: var(--brand-primary);
   --link-hover-color: color(var(--brand-primary) lightness(+ 25%));
   --link-hover-decoration: underline;
@@ -44,9 +48,6 @@
   --line-height-large: 1.3333333;
   --line-height-small: 1.5;
   --component-offset-horizontal: 180px;
-  --text-muted: var(--gray-light);
-  --abbr-border-color: var(--gray-light);
-  --headings-small-color: var(--gray-light);
   --blockquote-color: var(--gray);
   --blockquote-font-size: 1.25em;
   --blockquote-border-color: var(---gray-light);

@@ -40,7 +40,7 @@
 .top {
   display: flex;
   margin: 0 var(--medium-padding);
-  color: #aaaaaa;
+  color: var(--text-color-secondary);
 }
 
 .dates {
