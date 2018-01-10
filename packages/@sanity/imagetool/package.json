@@ -14,7 +14,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "debug": "^2.6.3",
+    "debug": "^3.1.0",
     "dom-event": "1.0.0",
     "lodash": "^4.17.4"
   },
