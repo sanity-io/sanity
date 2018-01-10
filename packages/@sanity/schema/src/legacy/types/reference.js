@@ -1,5 +1,4 @@
 import {pick} from 'lodash'
-import assert from 'assert'
 import arrify from 'arrify'
 import {lazyGetter} from './utils'
 
@@ -66,28 +65,3 @@ export const ReferenceType = {
     }
   }
 }
-
-const CustomRef = ReferenceType.extend({
-  name: 'customRef',
-  title: 'Custom ref',
-  to: []
-})
-
-const TypeOfCustomStr = CustomRef.extend({
-  name: 'typeOfCustomRef',
-  title: 'Type Of CustomRef'
-})
-
-const TypeOfTypeOfCustomStr = TypeOfCustomStr.extend({
-  name: 'typeOfTypeOfCustomRef',
-  title: 'Type Of Type Of CustomRef'
-})
-
-assert.equal(TypeOfTypeOfCustomStr.get().type, TypeOfCustomStr.get())
-assert.equal(TypeOfTypeOfCustomStr.get().type, TypeOfCustomStr.get())
-assert.equal(TypeOfTypeOfCustomStr.get().name, 'typeOfTypeOfCustomRef')
-assert.equal(TypeOfTypeOfCustomStr.get().type.name, 'typeOfCustomRef')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.name, 'customRef')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.type.name, 'reference')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.type.jsonType, 'object')
-assert.equal(TypeOfTypeOfCustomStr.get().to, CustomRef.get().to)
