@@ -1,4 +1,4 @@
-import {sortBy, identity} from 'lodash'
+import {values, sortBy, identity} from 'lodash'
 import client from 'part:@sanity/base/client'
 import Observable from '@sanity/observable'
 import debounceCollect from './utils/debounceCollect'
@@ -20,7 +20,7 @@ function listen(id) {
 }
 
 function combineSelections(selections) {
-  return Object.values(selections.reduce((output, [id, paths], index) => {
+  return values(selections.reduce((output, [id, paths], index) => {
     const key = sortBy(paths.join(','), identity)
     if (!output[key]) {
       output[key] = {paths, ids: [], map: []}
