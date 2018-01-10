@@ -94,7 +94,7 @@ export default class DetailPreview extends React.PureComponent {
             </div>
             {
               status && (
-                <div className={status}>
+                <div className={styles.status}>
                   {
                     (typeof status === 'function' && status({layout: 'detail'}))
                     || status

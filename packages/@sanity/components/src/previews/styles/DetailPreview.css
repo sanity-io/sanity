@@ -83,6 +83,10 @@
   }
 }
 
+.status {
+  color: var(--gray-darker-transparent);
+}
+
 .mediaString {
   composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
   padding: 5px;
