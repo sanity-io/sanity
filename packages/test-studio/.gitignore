@@ -10,3 +10,7 @@ node_modules
 
 # Built assets
 dist
+
+# Plugin config
+config/@sanity/default-login.json
+config/.checksums
