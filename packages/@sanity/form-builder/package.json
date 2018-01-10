@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.124.1",
+  "version": "0.124.2",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -62,10 +62,10 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.124.0",
+    "@sanity/base": "^0.124.2",
     "@sanity/check": "^0.123.0",
     "@sanity/cli": "^0.124.0",
-    "@sanity/components": "^0.124.1",
+    "@sanity/components": "^0.124.2",
     "@sanity/core": "^0.124.0",
     "@sanity/plugin-loader": "^0.123.0",
     "@sanity/server": "^0.123.0",
