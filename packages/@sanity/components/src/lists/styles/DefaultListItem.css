@@ -9,6 +9,7 @@
 .lineBetween {
   composes: root;
   border-bottom: var(--list-border);
+  padding: var(--medium-padding) 0;
 
   @nest &:first-child {
     border-top: var(--list-border);
