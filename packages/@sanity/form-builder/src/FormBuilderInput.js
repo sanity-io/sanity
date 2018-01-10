@@ -4,7 +4,6 @@ import type {Path} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from './utils/pathUtils'
-import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed'
 import type {Type} from './typedefs'
 
 type Props = {
@@ -61,7 +60,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
     if (!hadFocus && hasFocus) {
@@ -77,7 +76,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     this._input = component
   }
 
-  _withInputDisplayName(cb) {
+  _withInputDisplayName(cb: (str: string) => void) {
     cb(getDisplayName(this.resolveInputComponent(this.props.type)))
   }
 
@@ -96,13 +95,13 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
       return
     }
 
-    this._input.focus()
     // This is a hack needed because popovers doesn't render its children immediately.
     // When this is fixed, we can call this._confirmButton.focus() immediately
-    setTimeout(() => this._input.focus(), 0)
-    scrollIntoViewIfNeeded(this._element, {
-      duration: 200
-    })
+    setTimeout(() => {
+      if (this._input) {
+        this._input.focus()
+      }
+    }, 0)
   }
 
   handleChange = patchEvent => {
