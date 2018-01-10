@@ -21,7 +21,6 @@
     "code-editor"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.124.11",
     "lodash": "^4.17.4",
     "react-ace": "^5.0.1"
   },
