@@ -44,11 +44,8 @@ export default class ListItem extends React.Component {
         selected={listFormat.active}
         onClick={onClick}
         title={listFormat.title}
-      >
-        <div className={styles.iconContainer}>
-          <Icon />
-        </div>
-      </ToggleButton>
+        icon={Icon}
+      />
     )
   }
 
