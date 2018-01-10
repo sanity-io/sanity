@@ -10,6 +10,7 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
@@ -118,6 +119,19 @@ export default class RenderItemValue extends React.Component<Props> {
     this._focusArea = el
   }
 
+  handleDialogAction = action => {
+    if (!action) {
+      console.error('no action')
+    }
+    if (action.name === 'close') {
+      this.handleEditStop()
+    }
+    if (action.name === 'delete') {
+      //this.handleRemove
+      console.log('delete')
+    }
+  }
+
   renderEditItemForm(item: ItemValue): Node {
     const {type, focusPath, onFocus, onBlur} = this.props
     const options = type.options || {}
@@ -125,12 +139,12 @@ export default class RenderItemValue extends React.Component<Props> {
     const memberType = this.getMemberType() || {}
 
     // Reset level if a full screen modal
-    const level = options.editModal === 'fullscreen' ? 1 : this.props.level + 1
+    const level = options.editModal === 'fullscreen' ? 0 : 2
 
     const content = (
       <FormBuilderInput
         type={memberType}
-        level={level}
+        level={1}
         value={item}
         onChange={this.handleChange}
         onFocus={onFocus}
@@ -161,11 +175,42 @@ export default class RenderItemValue extends React.Component<Props> {
       )
     }
 
+    if (options.editModal === 'popover') {
+      return (
+        <div className={styles.popupAnchor}>
+          <EditItemPopOver onClose={this.handleEditStop} key={item._key}>
+            {content}
+          </EditItemPopOver>
+        </div>
+      )
+    }
+
     return (
       <div className={styles.popupAnchor}>
-        <EditItemPopOver onClose={this.handleEditStop} key={item._key}>
-          {content}
-        </EditItemPopOver>
+        <DefaultDialog
+          isOpen
+          onClose={this.handleEditStop}
+          key={item._key}
+          title="Edit"
+          onAction={this.handleDialogAction}
+          actions={[{
+            index: '1',
+            name: 'close',
+            title: 'Close'
+          },
+          {
+            index: '2',
+            name: 'delete',
+            kind: 'simple',
+            title: 'Delete',
+            color: 'danger'
+          }
+          ]}
+        >
+          <div className={styles.defaultDialogContent}>
+            {content}
+          </div>
+        </DefaultDialog>
       </div>
     )
   }
