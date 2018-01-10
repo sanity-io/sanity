@@ -1,5 +1,4 @@
 import {pick} from 'lodash'
-import assert from 'assert'
 import primitivePreview from '../preview/primitivePreview'
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
@@ -35,26 +34,3 @@ export const StringType = {
     }
   }
 }
-const CustomString = StringType.extend({
-  name: 'someStr',
-  title: 'Custom String'
-})
-
-const TypeOfCustomStr = CustomString.extend({
-  name: 'typeOfSomeStr',
-  title: 'Type Of CustomString'
-}, v => v)
-
-const TypeOfTypeOfCustomStr = TypeOfCustomStr.extend({
-  name: 'typeoftypeofcustomstr',
-  title: 'Type Of Type Of CustomString'
-}, v => v)
-
-assert.equal(TypeOfTypeOfCustomStr.get().type, TypeOfCustomStr.get())
-assert.equal(TypeOfTypeOfCustomStr.get().type, TypeOfCustomStr.get())
-assert.equal(TypeOfTypeOfCustomStr.get().name, 'typeoftypeofcustomstr')
-assert.equal(TypeOfTypeOfCustomStr.get().type.name, 'typeOfSomeStr')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.name, 'someStr')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.type.name, 'string')
-assert.equal(TypeOfTypeOfCustomStr.get().type.type.type.jsonType, 'string')
-assert.equal(TypeOfTypeOfCustomStr.get().fields, CustomString.get().fields)
