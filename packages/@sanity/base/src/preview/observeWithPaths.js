@@ -49,12 +49,13 @@ function toGradientQuery(combinedSelections) {
 }
 
 function reproject(queryResult, combinedSelections) {
-  return queryResult.reduce((mapped, subResult, index) => {
+  return queryResult.reduce((reprojected, subResult, index) => {
     const map = combinedSelections[index].map
     map.forEach((resultIdx, i) => {
-      mapped[resultIdx] = subResult[i]
+      const id = combinedSelections[index].ids[i]
+      reprojected[resultIdx] = subResult.find(doc => doc._id === id)
     })
-    return mapped
+    return reprojected
   }, [])
 }
 
