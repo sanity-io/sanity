@@ -2,18 +2,20 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/block-style'
 
+const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
+
 export default class BlockPreview extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
     subtitle: PropTypes.string,
     description: PropTypes.string,
-    me: PropTypes.func,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
       aspect: PropTypes.number,
     }),
+    media: fieldProp,
     children: PropTypes.func,
     type: PropTypes.shape({
       title: PropTypes.string,
@@ -35,7 +37,7 @@ export default class BlockPreview extends React.PureComponent {
       subtitle,
       description,
       mediaDimensions,
-      renderMedia,
+      media,
       children,
       type
     } = this.props
@@ -48,9 +50,21 @@ export default class BlockPreview extends React.PureComponent {
           {type.title || type.name}
         </div>
         {
-          renderMedia && (
-            <div className={styles.media}>
-              {renderMedia(mediaDimensions)}
+          media && (
+            <div className={`${styles.media}`}>
+              {
+                typeof media === 'function' && (
+                  media({dimensions: mediaDimensions, layout: 'default'})
+                )
+              }
+              {
+                typeof media === 'string' && (
+                  <div className={styles.mediaString}>{media}</div>
+                )
+              }
+              {
+                typeof media === 'object' && media
+              }
             </div>
           )
         }
