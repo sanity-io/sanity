@@ -115,7 +115,15 @@
   display: block;
 }
 
+.legend + .description {
+  margin-top: calc(var(--small-padding) / 3);
+}
+
 .legend + .content {
+  margin-top: var(--small-padding);
+}
+
+.description + .content {
   margin-top: var(--small-padding);
 }
 
@@ -127,11 +135,6 @@
   padding: 0;
   user-select: none;
   cursor: default;
-
-  @nest .level1 & {
-    font-size: var(--font-size-base);
-    text-transform: none;
-  }
 
   @nest .level2 & {
     font-size: var(--font-size-base);
@@ -193,10 +196,8 @@
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin-top: 0;
-  padding-top: 0;
-  margin-bottom: var(--small-padding);
-  padding-bottom: 0;
+  margin: 0;
+  padding: 0;
   display: none;
 
   @nest &.isOpen {
