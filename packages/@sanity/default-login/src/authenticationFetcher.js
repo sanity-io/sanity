@@ -1,10 +1,8 @@
 import client from 'part:@sanity/base/client'
+import getProviders from './util/getProviders'
 
 export default {
-  getProviders: () => client.request({
-    uri: '/auth/providers',
-    withCredentials: true
-  }).then(res => res.providers),
+  getProviders,
 
   getCurrentUser: () => client.request({
     uri: '/users/me',
