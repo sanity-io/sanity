@@ -7,11 +7,8 @@ import compressJavascript from './compressJavascript'
 import getConfig from '@sanity/util/lib/getConfig'
 import sortModulesBySize from '../../stats/sortModulesBySize'
 import checkReactCompatibility from '../../util/checkReactCompatibility'
-import {
-  getWebpackCompiler,
-  getDocumentElement,
-  ReactDOM
-} from '@sanity/server'
+import {tryInitializePluginConfigs} from '../config/reinitializePluginConfigs'
+import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 
 const rimraf = thenify(rimTheRaf)
 const absoluteMatch = /^https?:\/\//i
@@ -31,6 +28,8 @@ export default async (args, context) => {
     skipMinify: flags['skip-minify'] || false,
     profile: flags.profile || false
   }
+
+  await tryInitializePluginConfigs({workDir, output})
 
   checkReactCompatibility(workDir)
 
