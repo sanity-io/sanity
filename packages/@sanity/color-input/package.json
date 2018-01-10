@@ -24,7 +24,7 @@
     "reactcss": "^1.2.0"
   },
   "devDependencies": {
-    "@sanity/check": "^0.122.4",
+    "@sanity/check": "^0.123.0",
     "rimraf": "^2.6.2"
   },
   "bugs": {
