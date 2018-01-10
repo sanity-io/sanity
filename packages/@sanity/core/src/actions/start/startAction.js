@@ -1,11 +1,10 @@
 import path from 'path'
-import fse from 'fs-extra'
 import chalk from 'chalk'
 import thenify from 'thenify'
 import {getProdServer, getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
 import isProduction from '../../util/isProduction'
-import reinitializePluginConfigs from '../../actions/config/reinitializePluginConfigs'
+import {tryInitializePluginConfigs} from '../../actions/config/reinitializePluginConfigs'
 import checkReactCompatibility from '../../util/checkReactCompatibility'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
 
@@ -32,25 +31,7 @@ export default async (args, context) => {
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
-  try {
-    await reinitializePluginConfigs({workDir, output})
-  } catch (err) {
-    if (err.code !== 'PluginNotFound') {
-      throw err
-    }
-
-    const manifest = await fse.readJson(path.join(workDir, 'package.json')).catch(() => ({}))
-    const dependencies = Object.keys(Object.assign({}, manifest.dependencies, manifest.devDependencies))
-    const depName = err.plugin[0] === '@' ? err.plugin : `sanity-plugin-${err.plugin}`
-    if (dependencies.includes(depName)) {
-      err.message = `${err.message}\n\nTry running "sanity install"?`
-    } else {
-      err.message = `${err.message}\n\nTry running "sanity install ${depName}"?`
-    }
-
-    throw err
-  }
-
+  await tryInitializePluginConfigs({workDir, output})
   configSpinner.succeed()
 
   const server = getServer(serverOptions)
