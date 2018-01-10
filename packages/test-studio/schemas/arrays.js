@@ -201,6 +201,29 @@ export default {
       ]
     },
     {
+      name: 'polymorphicGridArray',
+      title: 'Polymorphic grid array',
+      description: 'An array of multiple types. options: {layout: "grid"}',
+      type: 'array',
+      options: {
+        layout: 'grid'
+      },
+      of: [
+        {
+          title: 'A book',
+          type: 'book'
+        },
+        {
+          title: 'An author',
+          type: 'author'
+        },
+        {
+          title: 'An image',
+          type: 'image'
+        }
+      ]
+    },
+    {
       name: 'imageArrayNotSortable',
       title: 'Image array in grid, *not* sortable',
       description: 'Images here should be append-only',

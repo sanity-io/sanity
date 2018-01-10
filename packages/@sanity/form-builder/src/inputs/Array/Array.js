@@ -224,7 +224,7 @@ export default class ArrayInput extends React.Component<Props, State> {
         onSortEnd: this.handleSortEnd,
         onSortStart: this.handleSortStart,
         lockToContainerEdges: true,
-        useDragHandle: isGrid
+        useDragHandle: !isGrid
       }
       : {}
     const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
