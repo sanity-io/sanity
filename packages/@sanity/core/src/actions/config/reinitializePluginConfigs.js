@@ -6,7 +6,7 @@ import normalizePluginName from '../../util/normalizePluginName'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
-export default async function reinitializePluginConfigs(options, flags = {}) {
+async function reinitializePluginConfigs(options, flags = {}) {
   const {workDir, output} = options
 
   const localChecksums = await getChecksums(workDir)
@@ -67,6 +67,34 @@ export default async function reinitializePluginConfigs(options, flags = {}) {
     return setChecksums(workDir, sums)
   }
 }
+
+export async function tryInitializePluginConfigs(options, flags = {}) {
+  try {
+    await reinitializePluginConfigs(options, flags)
+  } catch (err) {
+    if (err.code !== 'PluginNotFound') {
+      throw err
+    }
+
+    const manifest = await fse
+      .readJson(path.join(options.workDir, 'package.json'))
+      .catch(() => ({}))
+
+    const dependencies = Object.keys(
+      Object.assign({}, manifest.dependencies, manifest.devDependencies)
+    )
+    const depName = err.plugin[0] === '@' ? err.plugin : `sanity-plugin-${err.plugin}`
+    if (dependencies.includes(depName)) {
+      err.message = `${err.message}\n\nTry running "sanity install"?`
+    } else {
+      err.message = `${err.message}\n\nTry running "sanity install ${depName}"?`
+    }
+
+    throw err
+  }
+}
+
+export default reinitializePluginConfigs
 
 function getPluginConfigPath(plugin) {
   return path.join(plugin.path, 'config.dist.json')
