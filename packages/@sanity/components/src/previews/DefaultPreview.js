@@ -32,7 +32,7 @@ class DefaultPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled…',
+    title: 'Untitled',
     subtitle: undefined,
     progress: undefined,
     media: undefined,

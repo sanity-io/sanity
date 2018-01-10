@@ -25,7 +25,7 @@ export default class DetailPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled…',
+    title: 'Untitled',
     subtitle: 'No subtitle…',
     description: 'No description…',
     media: undefined,
