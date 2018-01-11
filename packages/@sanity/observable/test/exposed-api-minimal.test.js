@@ -31,15 +31,17 @@ function run(t) {
     const instance = new Observable(() => {
     })
     t.same(getInheritedAndOwnProperties(instance), [
-      '_isScalar', // added by rxjs
-      '_subscribe', // added by rxjs
+      '_isScalar', // rxjs internals
+      '_subscribe', // rxjs internals
       'lift',
       'map',
       'filter',
       'reduce',
       'toPromise',
       'subscribe',
-      'forEach' // spec
+      '_trySubscribe', // rxjs internals
+      'forEach', // spec
+      'pipe'
     ])
 
     ;[
@@ -48,6 +50,7 @@ function run(t) {
       'reduce',
       'toPromise',
       'lift',
+      'pipe',
       'subscribe',
       'forEach'
     ]
