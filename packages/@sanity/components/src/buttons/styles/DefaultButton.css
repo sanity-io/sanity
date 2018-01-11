@@ -6,7 +6,7 @@
   }
 
   50% {
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
 
   100% {
@@ -14,7 +14,7 @@
   }
 }
 
-.root {
+:root {
   --focus-shadow:
     0 0 2px 1px color(var(--input-border-color-focus)),
     0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
@@ -31,7 +31,9 @@
     0 0 2px 1px color(var(--white)),
     0 0 4px 0 color(var(--white) a(60%)),
     0 0 10px 5px color(var(--white) a(10%));
+}
 
+.root {
   position: relative;
   display: inline-block;
   outline: none;
@@ -124,7 +126,7 @@
   composes: default;
 
   @nest &:not(.disabled):hover {
-    background-color: color(--default-button-color a(30%));
+    background-color: color(var(--default-button-color) a(30%));
   }
 
   @nest &.root:focus {
