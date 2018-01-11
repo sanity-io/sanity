@@ -67,6 +67,12 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     }
   }
 
+  handleArrowKeyPress = event => {
+    if (event.key === 'Enter') {
+      this.handleArrowClick()
+    }
+  }
+
   handleInputChange = event => {
     this.props.onInputChange(event.target.value)
   }
@@ -169,7 +175,12 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               )
             }
             {!isLoading && (
-              <div className={styles.arrow} onClick={disabled ? null : this.handleArrowClick}>
+              <div
+                className={styles.arrow}
+                onClick={disabled ? null : this.handleArrowClick}
+                tabIndex={0}
+                onKeyPress={disabled ? null : this.handleArrowKeyPress}
+              >
                 <FaAngleDown color="inherit" />
               </div>
             )}
