@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/photo-library'
+
 export const myImage = {
   name: 'myImage',
   title: 'Some image type',
   type: 'image',
+  icon,
   fields: [
     {
       name: 'caption',

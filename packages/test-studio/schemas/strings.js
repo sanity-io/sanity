@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/text-format'
+
 export default {
   name: 'stringsTest',
   type: 'document',
   title: 'Strings test',
+  icon,
   fields: [
     {
       name: 'title',

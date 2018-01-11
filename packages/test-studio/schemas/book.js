@@ -1,3 +1,5 @@
+import BookIcon from 'react-icons/lib/fa/book'
+
 function formatSubtitle(book) {
   if (book.authorName && book.publicationYear) {
     return `By ${book.authorName} (${book.publicationYear})`
@@ -10,6 +12,7 @@ export default {
   type: 'document',
   title: 'Book',
   description: 'This is just a simple type for generating some test data',
+  icon: BookIcon,
   fields: [
     {
       name: 'title',

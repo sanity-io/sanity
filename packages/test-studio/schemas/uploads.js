@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/file-upload'
+
 export default {
   name: 'uploadsTest',
   type: 'document',
   title: 'Uploads test',
+  icon,
   fields: [
     {
       name: 'title',

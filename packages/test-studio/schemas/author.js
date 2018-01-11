@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/person'
+
 export default {
   name: 'author',
   type: 'document',
   title: 'Author',
+  icon,
   description: 'This represents an author',
   preview: {
     select: {
