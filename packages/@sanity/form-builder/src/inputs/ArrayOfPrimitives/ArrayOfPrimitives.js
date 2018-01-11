@@ -25,6 +25,12 @@ function move(arr, from, to) {
   return copy
 }
 
+function insertAt(arr, index, item) {
+  const copy = arr.slice()
+  copy.splice(index + 1, 0, item)
+  return copy
+}
+
 type Props = {
   type: Type,
   value: Array<ItemValue>,
@@ -37,18 +43,27 @@ type Props = {
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: ?Fieldset
+  _lastAddedIndex = -1
 
   set(nextValue: any[]) {
+    this._lastAddedIndex = -1
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
   }
 
   removeAt(index: number) {
     this.set(this.props.value.filter((_, i) => i !== index))
+    this.props.onFocus([Math.max(0, index - 1)])
   }
 
   append(type) {
     this.set((this.props.value || []).concat(getEmptyValue(type)))
+    this.props.onFocus([this.props.value.length])
+  }
+
+  insertAt(index, type) {
+    this.set(insertAt(this.props.value || [], index, getEmptyValue(type)))
+    this.props.onFocus([index + 1])
   }
 
   handleRemoveItem = (index: number) => {
@@ -64,10 +79,23 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   handleItemChange = event => {
+    this._lastAddedIndex = -1
     this.props.onChange(event)
   }
 
-  handleSort = event => {
+  handleItemEnterKey = index => {
+    this.insertAt(index, this.props.type.of[0])
+    this._lastAddedIndex = index + 1
+  }
+
+  handleItemEscapeKey = index => {
+    const {value} = this.props
+    if (index === this._lastAddedIndex && value[index] === '') {
+      this.removeAt(index)
+    }
+  }
+
+  handleSortEnd = event => {
     const {value} = this.props
     const {oldIndex, newIndex} = event
     this.set(move(value, oldIndex, newIndex))
@@ -109,6 +137,8 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           focusPath={focusPath}
           onFocus={onFocus}
           onBlur={onBlur}
+          onEnterKey={this.handleItemEnterKey}
+          onEscapeKey={this.handleItemEscapeKey}
           onChange={this.handleItemChange}
           onRemove={this.handleRemoveItem}
         />
@@ -123,7 +153,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       ? (
         <SortableList
           className={styles.list}
-          onSort={this.handleSort}
+          onSortEnd={this.handleSortEnd}
           movingItemClass={styles.movingItem}
           useDragHandle
         >
@@ -138,9 +168,6 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   }
 
-  handleFocus = (ev: SyntheticEvent<*>) => {
-
-  }
   setElement = (el: ?Fieldset) => {
     this._element = el
   }
@@ -167,14 +194,14 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level} = this.props
+    const {type, value, level, onFocus} = this.props
     return (
       <Fieldset
         legend={type.title}
         description={type.description}
         level={level}
         tabIndex={0}
-        onFocus={this.handleFocus}
+        onFocus={onFocus}
         ref={this.setElement}
       >
         <div className={styles.root}>
