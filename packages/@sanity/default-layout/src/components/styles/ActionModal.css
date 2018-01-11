@@ -5,26 +5,59 @@
 }
 
 .content {
-  columns: 3;
+  background-color: var(--main-navigation-background-color);
+  color: #fff;
+  padding: var(--large-padding);
+  padding-bottom: calc(var(--large-padding) * 4);
+  min-width: 80vw;
+  box-sizing: border-box;
+
+  @nest & > h1 {
+    margin: 0;
+    padding: 0;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    font-weight: 100;
+    text-align: center;
+    color: inherit;
+    font-size: 3em;
+  }
 }
 
 .list {
-  display: block;
+  display: grid;
+  grid-gap: var(--large-padding);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   padding: 0;
   margin: 0;
-  font-size: 1.2em;
+  font-size: 1em;
+  color: inherit;
+  max-width: 100%;
 }
 
 .listItem {
   display: block;
+  color: inherit;
+}
+
+.icon {
+  flex-basis: 4rem;
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 .actionLink {
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.8;
+  text-align: center;
+  font-weight: 300;
 
   @nest &:hover {
+    opacity: 1;
     color: var(--brand-primary);
   }
 }
