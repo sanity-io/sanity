@@ -39,9 +39,10 @@ export default function createPreviewObserver(observeWithPaths) {
 
       if (isReference(value) || isDocument(value)) {
         const id = isReference(value) ? value._ref : value._id
-        return observeWithPaths(id, nextHeads).switchMap(snapshot => {
-          return follow({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
-        })
+        return observeWithPaths(id, nextHeads)
+          .switchMap(snapshot => {
+            return follow({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
+          })
       }
     }
 
