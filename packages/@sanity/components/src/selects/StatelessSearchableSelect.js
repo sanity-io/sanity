@@ -155,24 +155,30 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             disabled={disabled}
             ref={this.setInput}
           />
-          {
-            onClear && inputValue && (
-              <button className={styles.clearButton} onClick={onClear}>
-                <CloseIcon color="inherit" />
-              </button>
-            )
-          }
-          {isLoading && <div className={styles.spinner}><Spinner /></div>}
-          {
-            openItemElement && value && (
-              <span className={styles.openItem}>{openItemElement(value)}</span>
-            )
-          }
-          {!isLoading && (
-            <div className={styles.arrow} onClick={disabled ? null : this.handleArrowClick}>
-              <FaAngleDown color="inherit" />
-            </div>
-          )}
+          <div className={styles.functions}>
+            {
+              openItemElement && value && (
+                <span className={styles.openItem}>{openItemElement(value)}</span>
+              )
+            }
+            {
+              onClear && inputValue && (
+                <button className={styles.clearButton} onClick={onClear}>
+                  <CloseIcon color="inherit" />
+                </button>
+              )
+            }
+            {!isLoading && (
+              <div className={styles.arrow} onClick={disabled ? null : this.handleArrowClick}>
+                <FaAngleDown color="inherit" />
+              </div>
+            )}
+            {
+              isLoading && (
+                <Spinner />
+              )
+            }
+          </div>
         </div>
         <div className={styles.stickyContainer} style={{width: `${this.props.width}px`}}>
           {
