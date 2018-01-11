@@ -52,6 +52,11 @@
 
 .root:focus {
   box-shadow: var(--focus-shadow);
+
+  @nest & .content {
+    animation-name: focused;
+    animation-duration: 0.2s;
+  }
 }
 
 /* Handles fileupload buttons with focus-within */
@@ -73,12 +78,12 @@
   }
 
   @nest .onlyIcon & {
-    padding: 0.7em 0.8em;
+    padding: 0.7em 0.45em;
   }
 }
 
 .content {
-  display: block;
+  display: flex;
 }
 
 .shadow {
