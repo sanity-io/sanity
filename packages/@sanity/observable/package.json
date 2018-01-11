@@ -19,13 +19,13 @@
   "license": "MIT",
   "dependencies": {
     "object-assign": "^4.1.1",
-    "rxjs": "5.0.x"
+    "rxjs": "^5.5.6"
   },
   "devDependencies": {
-    "is-observable": "^0.2.0",
+    "is-observable": "^1.1.0",
     "rimraf": "^2.6.2",
-    "tap": "^10.3.0",
-    "zen-observable": "^0.4.0"
+    "tap": "^11.0.1",
+    "zen-observable": "^0.7.1"
   },
   "runkitExampleFilename": "./example.js",
   "repository": {
