@@ -5,7 +5,7 @@ import styles from './styles/Item.css'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 
-import PatchEvent, {set, unset} from '../../PatchEvent'
+import PatchEvent, {set} from '../../PatchEvent'
 import getEmptyValue from './getEmptyValue'
 
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
@@ -20,6 +20,7 @@ type Props = {
   onChange: PatchEvent => void,
   onRemove: number => void,
   onEnterKey: number => void,
+  onEscapeKey: number => void,
   onFocus: (Path) => void,
   onBlur: () => void,
   focusPath: Path,
@@ -43,9 +44,12 @@ export default class Item extends React.PureComponent<Props> {
   }
 
   handleKeyUp = (event: SyntheticKeyEvent<*>) => {
-    const {index, onRemove, value} = this.props
+    const {index, onRemove, onEscapeKey, value} = this.props
     if (event.shiftKey && event.key === 'Backspace' && value === '') {
       onRemove(index)
+    }
+    if (event.key === 'Escape') {
+      onEscapeKey(index)
     }
   }
 

@@ -43,8 +43,10 @@ type Props = {
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: ?Fieldset
+  _lastAddedIndex = -1
 
   set(nextValue: any[]) {
+    this._lastAddedIndex = -1
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
   }
@@ -77,11 +79,20 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   handleItemChange = event => {
+    this._lastAddedIndex = -1
     this.props.onChange(event)
   }
 
   handleItemEnterKey = index => {
     this.insertAt(index, this.props.type.of[0])
+    this._lastAddedIndex = index + 1
+  }
+
+  handleItemEscapeKey = index => {
+    const {value} = this.props
+    if (index === this._lastAddedIndex && value[index] === '') {
+      this.removeAt(index)
+    }
   }
 
   handleSortEnd = event => {
@@ -127,6 +138,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           onFocus={onFocus}
           onBlur={onBlur}
           onEnterKey={this.handleItemEnterKey}
+          onEscapeKey={this.handleItemEscapeKey}
           onChange={this.handleItemChange}
           onRemove={this.handleRemoveItem}
         />
