@@ -18,6 +18,8 @@ const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><D
 type Props = {
   type: Type,
   onChange: PatchEvent => void,
+  onRemove: number => void,
+  onEnterKey: number => void,
   onFocus: (Path) => void,
   onBlur: () => void,
   focusPath: Path,
@@ -29,8 +31,22 @@ type Props = {
 export default class Item extends React.PureComponent<Props> {
 
   handleRemove = () => {
-    const {index, onChange} = this.props
-    onChange(PatchEvent.from(unset([index])))
+    const {index, onRemove} = this.props
+    onRemove(index)
+  }
+
+  handleKeyPress = event => {
+    const {index, onEnterKey} = this.props
+    if (event.key === 'Enter') {
+      onEnterKey(index)
+    }
+  }
+
+  handleKeyUp = (event: SyntheticKeyEvent<*>) => {
+    const {index, onRemove, value} = this.props
+    if (event.shiftKey && event.key === 'Backspace' && value === '') {
+      onRemove(index)
+    }
   }
 
   handleChange = (patchEvent: PatchEvent) => {
@@ -56,6 +72,8 @@ export default class Item extends React.PureComponent<Props> {
             onFocus={onFocus}
             onBlur={onBlur}
             type={type}
+            onKeyUp={this.handleKeyUp}
+            onKeyPress={this.handleKeyPress}
             onChange={this.handleChange}
             level={level}
           />
