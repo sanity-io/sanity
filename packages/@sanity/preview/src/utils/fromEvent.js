@@ -4,6 +4,7 @@ let supportsPassive = () => {
   supportsPassive = () => false
   try {
     const options = Object.defineProperty({}, 'passive', {
+      // eslint-disable-next-line getter-return
       get() {
         supportsPassive = () => true
       }
