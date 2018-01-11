@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Observable from '@sanity/observable'
-import observeForPreview from './observeForPreview'
+import observeForPreview from '../observeForPreview'
 import shallowEquals from 'shallow-equals'
-import intersectionObservableFor from './streams/intersectionObservableFor'
-import visibilityChange$ from './streams/visibilityChange'
+import intersectionObservableFor from '../streams/intersectionObservableFor'
+import visibilityChange$ from '../streams/visibilityChange'
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
