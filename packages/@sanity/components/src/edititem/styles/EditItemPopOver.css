@@ -139,7 +139,6 @@
   padding: 1em;
   max-height: 100%;
   box-sizing: border-box;
-  overflow: overlay;
 
   @media (--max-screen-medium) {
     max-height: calc(100vh - var(--header-height)) !important;
