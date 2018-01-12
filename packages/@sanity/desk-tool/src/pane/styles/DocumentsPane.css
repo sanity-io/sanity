@@ -39,15 +39,26 @@
 }
 
 .empty {
+  display: block;
+  height: 100%;
+  border-top: 1px solid var(--component-border-color);
   text-align: center;
-  position: absolute;
-  top: 13%;
-  left: 0;
-  width: 100%;
-}
+  position: relative;
 
-.emptyCreateNew {
-  color: var(--link-color);
+  @nest & > div {
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+  }
+
+  @nest & h3 {
+    padding: var(--medium-padding);
+    font-size: var(--font-size-large);
+    opacity: 0.8;
+    font-weight: 300;
+  }
 }
 
 .link {

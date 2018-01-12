@@ -11,6 +11,10 @@
 
     @media (--screen-medium) {
       width: var(--defaultScrollBarWidth);
+
+      @nest &:not(:hover) {
+        width: 0;
+      }
     }
   }
 

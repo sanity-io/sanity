@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .headingLevel_1 {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-large);
   font-weight: 400;
 }
 
