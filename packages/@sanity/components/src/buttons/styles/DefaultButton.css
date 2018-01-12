@@ -112,6 +112,7 @@
 
 .simple {
   composes: root;
+  background-color: transparent;
 
   @nest &:not(.disabled):hover {
     background-color: color(var(--default-button-color) a(90%));
