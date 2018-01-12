@@ -34,7 +34,7 @@
 
 .root {
   position: fixed;
-  z-index: var(--zindex-modal-background);
+  z-index: var(--zindex-portal);
   top: 0;
   left: 0;
   width: 100%;
@@ -72,7 +72,6 @@
 
 .dialog {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
-  z-index: var(--zindex-modal);
   position: absolute;
   border: 0;
   border-radius: var(--border-radius-base);
@@ -87,6 +86,7 @@
   left: 0;
   box-sizing: border-box;
   background-color: var(--body-bg);
+  transition: all 0.3s linear;
 
   @nest .danger & {
     background-color: var(--state-danger-color);
@@ -112,12 +112,8 @@
     display: block;
     top: 50%;
     left: 50%;
-    height: 100%;
-    width: 100%;
-    min-width: 50%;
-    min-height: 30%;
-    max-width: 80%;
-    max-height: 80%;
+    height: auto;
+    width: auto;
     transform: translateX(-50%) translateY(-50%) scale(1);
   }
 }
@@ -142,29 +138,26 @@
 }
 
 .inner {
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  box-sizing: border-box;
+  display: block;
 }
 
 .content {
   box-sizing: border-box;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  overflow-y: auto;
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  max-height: 90vh;
+  max-width: 80vw;
 
   @nest .hasFunctions & {
-    max-height: calc(100% - var(--dialog-functions-height));
+    max-height: calc(90vh - var(--dialog-functions-height));
   }
 
   @nest .hasHeader & {
-    max-height: calc(100% - var(--dialog-header-height));
+    max-height: calc(90vh - var(--dialog-header-height));
   }
 
   @nest .hasFunctions.hasHeader & {
-    max-height: calc(100% - var(--dialog-header-height) - var(--dialog-functions-height));
+    max-height: calc(90vh - var(--dialog-header-height) - var(--dialog-functions-height));
   }
 }
 
@@ -212,23 +205,26 @@
   right: -3.5rem;
 }
 
-.functions {
+.actions {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.actionSecondary {
+  margin-right: auto;
+  order: -1;
+  border: 3px solid red;
+}
+
+.footer {
   font-size: var(--font-size-small);
   box-sizing: border-box;
   padding: var(--dialog-padding);
-  background-color: var(--gray-lightest);
-  border-top: 1px solid var(--gray-lighter);
+  background-color: var(--body-bg);
+  border-top: 1px solid var(--component-border-color);
   height: var(--dialog-functions-height);
 
   @nest .danger & {
     background-color: color(var(--white) a(60%));
   }
-}
-
-.button {
-  float: right;
-}
-
-.button_secondary {
-  float: left;
 }
