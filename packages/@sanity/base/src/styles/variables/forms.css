@@ -8,6 +8,7 @@
   --default-button-color--active: var(--gray);
   --button-border-radius: var(--border-radius-base);
   --input-bg: var(--component-bg);
+  --input-bg-error: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);
   --input-border-color: color(var(--component-border-color));
