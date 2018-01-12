@@ -26,19 +26,21 @@
   z-index: 10;
   cursor: pointer;
   color: #fff;
+  padding: var(--medium-padding);
+
+  @media (--screen-medium) {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+  }
 
   @nest & svg {
     fill: #fff;
     height: 1rem;
-    margin-top: var(--medium-padding);
-    margin-left: var(--small-padding);
     width: auto;
 
     @media (--screen-medium) {
-      width: 4rem;
       height: auto;
-      margin-top: 1rem;
-      margin-left: 0.5rem;
     }
   }
 }
