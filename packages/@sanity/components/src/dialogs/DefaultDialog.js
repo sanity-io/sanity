@@ -52,11 +52,6 @@ export default class DefaultDialog extends React.PureComponent {
     event.stopPropagation()
   }
 
-  // handleActionClick = event => {
-  //   const actionIndex = event.currentTarget.getAttribute('data-action-index')
-  //   this.props.onAction(this.props.actions[actionIndex])
-  // }
-
   setDialogElement = element => {
     this.dialog = element
   }
