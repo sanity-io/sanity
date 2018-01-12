@@ -22,8 +22,8 @@
   position: relative;
   text-align: center;
   box-sizing: border-box;
-  color: color(var(--white) a(30%));
-  width: 50vw;
+  color: color(var(--white) a(40%));
+  width: 50vw; /* mobile size */
   height: 50vw;
   overflow: hidden;
 
@@ -37,6 +37,7 @@
 .activeItem {
   composes: item;
   color: color(var(--white) a(100%));
+  background-color: color(var(--white) a(10%));
 }
 
 .iconContainer {
@@ -59,7 +60,7 @@
   margin-top: 60%;
 
   @media (--screen-medium) {
-    margin-top: 0;
+    margin-top: 0.5em;
   }
 }
 
@@ -74,7 +75,7 @@
 
   @nest &:hover {
     color: color(var(--white) a(80%));
-    background-color: color(var(--white) a(10%));
+    background-color: color(var(--white) a(2%));
   }
 
   @nest &:active {

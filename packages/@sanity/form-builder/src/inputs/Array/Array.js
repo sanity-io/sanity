@@ -137,7 +137,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     })
 
     return (
-      <DropDownButton items={items} color="primary" onAction={this.handleDropDownAction}>
+      <DropDownButton items={items} onAction={this.handleDropDownAction}>
         New {this.props.type.title}
       </DropDownButton>
     )
@@ -230,7 +230,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
     return (
       <List
-        className={isGrid ? null : styles.list}
+        className={styles.list}
         {...listProps}
       >
         {value.map((item, index) => {

@@ -66,3 +66,15 @@
     opacity: 0.5;
   }
 }
+
+.selectContentType {
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  display: none;
+
+  @media (--screen-medium) {
+    display: flex;
+    font-weight: 300;
+    opacity: 0.5;
+    font-size: var(--font-size-huge);
+  }
+}

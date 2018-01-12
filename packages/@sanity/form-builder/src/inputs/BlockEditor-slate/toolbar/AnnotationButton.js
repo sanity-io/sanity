@@ -26,11 +26,8 @@ export default class AnnotationButton extends React.Component {
         disabled={annotation.disabled}
         selected={annotation.active}
         className={styles.button}
-      >
-        <div className={styles.iconContainer}>
-          <LinkIcon />
-        </div>
-      </ToggleButton>
+        icon={LinkIcon}
+      />
     )
   }
 }
