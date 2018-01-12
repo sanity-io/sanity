@@ -122,9 +122,13 @@ export default class DefaultDialog extends React.PureComponent {
                 <div className={styles.content}>
                   {this.props.children}
                 </div>
-                <div className={styles.footer}>
-                  {this.renderActions(actions)}
-                </div>
+                {
+                  actions && actions.length > 0 && (
+                    <div className={styles.footer}>
+                      {this.renderActions(actions)}
+                    </div>
+                  )
+                }
               </div>
             </div>
           </div>
