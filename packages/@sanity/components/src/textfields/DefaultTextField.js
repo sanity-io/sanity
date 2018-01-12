@@ -17,7 +17,7 @@ export default class DefaultTextField extends React.Component {
     onClear: PropTypes.func,
     onKeyPress: PropTypes.func,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    error: PropTypes.bool,
+    hasError: PropTypes.bool,
     level: PropTypes.number,
     placeholder: PropTypes.string,
     isClearable: PropTypes.bool,
@@ -48,7 +48,7 @@ export default class DefaultTextField extends React.Component {
     const {
       label,
       placeholder,
-      error,
+      hasError,
       isClearable,
       type,
       className,
@@ -64,14 +64,14 @@ export default class DefaultTextField extends React.Component {
 
     return (
       <FormField
-        className={`${error ? styles.error : styles.root} ${className || ''}`}
+        className={`${hasError ? styles.hasError : styles.root} ${className || ''}`}
         level={level}
         labelFor={this._inputId}
         label={label}
         description={description}
       >
         <DefaultTextInput
-          className={`${error ? styles.inputError : styles.input}`}
+          className={styles.input}
           id={this._inputId}
           type={type}
           onChange={onChange}
@@ -82,6 +82,7 @@ export default class DefaultTextField extends React.Component {
           onBlur={onBlur}
           onClear={this.handleClear}
           isClearable={isClearable}
+          hasError={hasError}
           hasFocus={hasFocus}
         />
       </FormField>

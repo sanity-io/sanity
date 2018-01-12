@@ -73,7 +73,6 @@
 
 .level1 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
-  border: 1px solid var(--component-border-color);
   box-shadow: var(--component-box-shadow);
   padding: var(--medium-padding);
   border-radius: var(--border-radius-base);
@@ -81,7 +80,6 @@
 
 .level2 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
-  border: 1px solid var(--component-border-color);
   box-shadow: var(--component-box-shadow);
   padding: var(--medium-padding);
   border-radius: var(--border-radius-base);
@@ -100,13 +98,11 @@
 }
 
 .level1:focus > .fieldset > .inner > .content {
-  border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;
 }
 
 .level2:focus > .fieldset > .inner > .content {
-  border: 1px solid var(--input-border-color-focus);
   box-shadow: var(--component-box-shadow--focus);
   outline: none !important;
 }
