@@ -120,15 +120,13 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleDialogAction = action => {
-    if (!action) {
-      console.error('no action')
-    }
     if (action.name === 'close') {
       this.handleEditStop()
     }
     if (action.name === 'delete') {
-      //this.handleRemove
-      console.log('delete')
+      if (window.confirm("Do you really want to delete?")) {
+        this.handleRemove()
+      }
     }
   }
 

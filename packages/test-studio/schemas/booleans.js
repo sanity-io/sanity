@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/check-box'
+
 export default {
   name: 'booleansTest',
   type: 'document',
   title: 'Booleans test',
+  icon,
   fields: [
     {
       name: 'title',

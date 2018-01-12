@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/go/puzzle'
+
 export const myObject = {
   type: 'object',
   name: 'myObject',
   title: 'My object',
+  icon,
   fields: [
     {
       name: 'first',

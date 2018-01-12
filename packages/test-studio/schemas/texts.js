@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/format-align-left'
+
 export default {
   name: 'textsTest',
   type: 'document',
   title: 'Texts tests',
+  icon,
   fields: [
     {
       name: 'title',
