@@ -127,8 +127,9 @@ export default class RenderItemValue extends React.Component<Props> {
       this.handleEditStop()
     }
     if (action.name === 'delete') {
-      //this.handleRemove
-      console.log('delete')
+      if (window.confirm("Do you really want to delete?")) {
+        this.handleRemove()
+      }
     }
   }
 
