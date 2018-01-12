@@ -1,11 +1,13 @@
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
+import icon from 'react-icons/lib/md/extension'
 
 export default {
   name: 'customInputsTest',
   title: 'Custom input tests',
   type: 'document',
+  icon,
   fields: [
     {
       name: 'title',
