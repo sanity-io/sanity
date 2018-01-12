@@ -8,6 +8,10 @@
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   position: relative;
 
+  @nest .isClearable & {
+    padding-right: 2em;
+  }
+
   @nest &:disabled {
     background-color: transparent;
   }
@@ -17,16 +21,14 @@
   composes: error from 'part:@sanity/base/theme/forms/text-input-style';
 }
 
-.isClearable {
-  padding-right: 2em;
-}
-
 .clearButton {
   composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
   position: absolute;
-  z-index: 1;
-  top: 0.5em;
-  right: 0.1em;
+  top: 0;
+  right: 0.5em;
+  display: flex;
+  height: 100%;
+  align-items: center;
 
   @nest & svg {
     color: inherit;
