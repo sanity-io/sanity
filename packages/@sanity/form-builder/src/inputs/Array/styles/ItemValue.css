@@ -82,6 +82,7 @@
   min-width: 0;
   box-sizing: border-box;
   border: 1px solid transparent;
+
   @nest &:focus {
     border: 1px solid var(--input-border-color-focus);
     box-shadow: var(--component-box-shadow--focus);
@@ -93,4 +94,8 @@
   align-items: center;
   flex-grow: 0;
   font-size: 0.9rem;
+}
+
+.defaultDialogContent {
+  padding: var(--medium-padding);
 }
