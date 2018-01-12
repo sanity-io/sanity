@@ -135,7 +135,6 @@
   padding: var(--small-padding);
   max-height: 100%;
   box-sizing: border-box;
-  overflow: overlay;
 }
 
 .paddingDummy {
