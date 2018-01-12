@@ -14,5 +14,6 @@
 .link {
   composes: link from './DocumentsPane.css';
   margin: 0;
-  padding: var(--small-padding) var(--medium-padding);
+  padding: 0 var(--medium-padding);
+  line-height: 2.75rem;
 }

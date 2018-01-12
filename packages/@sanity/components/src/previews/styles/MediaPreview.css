@@ -51,9 +51,14 @@
 
 .mediaString {
   composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
-  padding: 5px;
+  padding: var(--small-padding);
   font-size: var(--font-size-small);
   color: var(--gray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-obx;
 }
 
 .meta {

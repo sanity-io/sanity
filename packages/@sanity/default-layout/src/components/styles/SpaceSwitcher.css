@@ -1,17 +1,39 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: block;
+  display: flex;
+  align-items: center;
+  height: 100%;
   text-align: center;
+  position: relative;
+  cursor: default;
+  user-select: none;
+
+  @media (--screen-medium) {
+    height: 2rem;
+    width: 100%;
+  }
 }
 
 .currentSpace {
   white-space: nowrap;
   color: #fff;
+  vertical-align: middle;
+
+  @media (--screen-medium) {
+    width: 100%;
+  }
+}
+
+.arrow {
+  line-height: 0.5em;
+  font-size: 2em;
+  vertical-align: text-top;
 }
 
 .menu {
   position: absolute;
+  top: var(--medium-padding);
   left: 0;
   z-index: 10;
 }

@@ -54,11 +54,8 @@ export default class Decorators extends React.Component {
         onClick={onClick}
         title={title}
         className={styles.button}
-      >
-        <div className={styles.iconContainer}>
-          <Icon />
-        </div>
-      </ToggleButton>
+        icon={Icon}
+      />
     )
   }
 
