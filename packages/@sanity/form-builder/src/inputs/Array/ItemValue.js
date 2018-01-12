@@ -120,9 +120,6 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleDialogAction = action => {
-    if (!action) {
-      console.error('no action')
-    }
     if (action.name === 'close') {
       this.handleEditStop()
     }
