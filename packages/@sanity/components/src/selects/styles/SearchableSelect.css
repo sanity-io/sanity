@@ -13,9 +13,22 @@
 }
 
 .arrow {
-  composes: icon from 'part:@sanity/components/selects/default-style';
-  pointer-events: auto;
-  z-index: 2;
+  transition: transform 0.1s linear, opacity 0.1s linear;
+  outline: none;
+
+  @nest &:hover, &:focus {
+    opacity: 1;
+    transform: scale(1.3);
+    color: var(--link-color);
+
+    @nest & svg {
+      color: var(--link-color);
+    }
+  }
+}
+
+.functions {
+  composes: functions from 'part:@sanity/components/selects/default-style';
 }
 
 .stickyContainer {
@@ -62,22 +75,20 @@
 }
 
 .spinner {
-  position: absolute;
-  top: 0.5em;
-  right: 0.75em;
-  z-index: 2;
+  display: block;
 }
 
 .openItem {
-  position: absolute;
-  top: 0.5em;
-  right: 3.25em;
-  z-index: 2;
-  color: var(--text-color);
   transition: transform 0.1s linear, opacity 0.1s linear;
   opacity: 0.6;
+  cursor: pointer;
+  outline: none;
 
-  @nest &:hover {
+  @nest & a, & button {
+    outline: none;
+  }
+
+  @nest &:hover, &:focus, &:focus-within {
     opacity: 1;
     transform: scale(1.3);
     color: var(--link-color);
@@ -102,14 +113,9 @@
 }
 
 .listSpinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   opacity: 0.5;
 }
 
 .clearButton {
-  composes: clearButton from 'part:@sanity/components/textinputs/default-style';
-  right: 1.5em;
+  composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
 }
