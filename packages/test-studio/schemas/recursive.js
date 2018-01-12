@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/ti/infinity-outline'
+
 export default {
   name: 'recursiveDocument',
   type: 'document',
   title: 'Recursive madness',
+  icon,
   fieldsets: [
     {name: 'recursive', title: 'Recursive madness', options: {collapsable: true}}
   ],

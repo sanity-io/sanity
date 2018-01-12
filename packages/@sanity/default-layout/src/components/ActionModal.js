@@ -1,29 +1,39 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
-import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import Dialog from 'part:@sanity/components/dialogs/default'
 import styles from './styles/ActionModal.css'
+import QuestionIcon from 'part:@sanity/base/question-icon'
 
 function ActionModal(props) {
   return (
-    <FullScreenDialog className={styles.modal} title={props.title} onClose={props.onClose} isOpen>
+    <Dialog className={styles.modal} title={props.title} onClose={props.onClose} isOpen>
       <div className={styles.content}>
+        <h1>Create new item</h1>
         <ul className={styles.list}>
-          {props.actions.map(action =>
-            <li className={styles.listItem} key={action.title}>
-              <IntentLink
-                onClick={props.onClose}
-                className={styles.actionLink}
-                intent="create"
-                params={action.params}
-              >
-                {action.title}
-              </IntentLink>
-            </li>
-          )}
+          {
+            props.actions.map(action => {
+              const Icon = action.params && action.params.icon
+              return (
+                <li className={styles.listItem} key={action.title}>
+                  <IntentLink
+                    onClick={props.onClose}
+                    className={styles.actionLink}
+                    intent="create"
+                    params={action.params}
+                  >
+                    <span className={styles.icon}>
+                      {Icon ? <Icon /> : <QuestionIcon />}
+                    </span>
+                    <span>{action.title}</span>
+                  </IntentLink>
+                </li>
+              )
+            })
+          }
         </ul>
       </div>
-    </FullScreenDialog>
+    </Dialog>
   )
 }
 

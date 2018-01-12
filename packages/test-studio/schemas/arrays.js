@@ -1,8 +1,10 @@
 import React from 'react'
+import icon from 'react-icons/lib/md/format-list-numbered'
 export default {
   name: 'arraysTest',
   type: 'document',
   title: 'Arrays test',
+  icon,
   fields: [
     {
       name: 'title',

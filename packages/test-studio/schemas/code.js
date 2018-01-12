@@ -1,8 +1,10 @@
+import icon from 'react-icons/lib/md/code'
 
 export default {
   name: 'codeTest',
   type: 'document',
   title: 'Code test',
+  icon,
   fields: [
     {
       name: 'title',
