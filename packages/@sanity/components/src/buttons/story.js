@@ -64,7 +64,7 @@ storiesOf('Buttons', module)
     () => {
       const disabled = boolean('Disabled', false)
       return (
-        <form>
+        <form style={{padding: '2rem'}}>
           <h2>Default</h2>
           <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
             Default
@@ -75,10 +75,6 @@ storiesOf('Buttons', module)
           <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" disabled={disabled}>
             Simple
           </Button>
-          <Button onClick={action('clicked')} kind="secondary" icon={SanityLogoIcon} disabled={disabled}>
-            Secondary
-          </Button>
-
 
           <h2>Colors</h2>
           <Button onClick={action('clicked')} disabled={disabled}>
@@ -93,21 +89,6 @@ storiesOf('Buttons', module)
           <Button onClick={action('clicked')} color="success" disabled={disabled}>
             Success
           </Button>
-
-          <h2>Colors (secondary)</h2>
-          <Button onClick={action('clicked')} kind="simple" disabled={disabled}>
-            Undefined
-          </Button>
-          <Button onClick={action('clicked')} kind="secondary" color="primary" disabled={disabled}>
-            Primary
-          </Button>
-          <Button onClick={action('clicked')} kind="secondary" color="danger" disabled={disabled}>
-            Danger
-          </Button>
-          <Button onClick={action('clicked')} kind="secondary" color="success" disabled={disabled}>
-            Success
-          </Button>
-
 
           <h2>Colors (inverted)</h2>
           <Button onClick={action('clicked')} inverted disabled={disabled}>
@@ -135,18 +116,6 @@ storiesOf('Buttons', module)
           </Button>
           <Button onClick={action('clicked')} kind="simple" color="success" disabled={disabled}>
             Success
-          </Button>
-
-          <h2>Secondary</h2>
-          <Button onClick={action('clicked')} inverted disabled={disabled}>
-            Inverted
-          </Button>
-          <Button onClick={action('clicked')} color="danger" inverted disabled={disabled}>
-            Inverted color:danger
-          </Button>
-
-          <Button onClick={action('clicked')} color="danger" disabled={disabled}>
-            Color:danger
           </Button>
 
           <h2>With icons</h2>

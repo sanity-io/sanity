@@ -46,13 +46,7 @@ export default class DefaultSelect extends React.Component {
   render() {
     const {hasError, items, value, disabled, hasFocus, ...rest} = this.props
     return (
-      <div
-        className={`
-        ${disabled ? styles.selectContainerDisabled : styles.selectContainer}
-        ${hasFocus ? styles.hasFocus : ''}
-        ${hasError ? styles.hasError : ''}
-      `}
-      >
+      <div className={disabled ? styles.disabled : styles.root}>
         <select
           {...rest}
           className={styles.select}
@@ -71,8 +65,10 @@ export default class DefaultSelect extends React.Component {
             })
           }
         </select>
-        <div className={styles.icon}>
-          <FaAngleDown color="inherit" />
+        <div className={styles.functions}>
+          <span className={styles.arrow}>
+            <FaAngleDown color="inherit" />
+          </span>
         </div>
       </div>
     )
