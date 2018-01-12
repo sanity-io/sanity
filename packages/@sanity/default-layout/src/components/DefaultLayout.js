@@ -109,15 +109,17 @@ export default withRouterHOC(
       const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
         key: typeName,
         name: typeName,
-        title: dataAspects.getDisplayName(typeName)
+        title: dataAspects.getDisplayName(typeName),
+        icon: dataAspects.getIcon(typeName)
       }))
 
       const modalActions = TYPE_ITEMS.map(item => {
         return {
           title: item.title,
-          params: {type: item.name}
+          params: {type: item.name, icon: item.icon}
         }
       })
+
 
       return (
         <div

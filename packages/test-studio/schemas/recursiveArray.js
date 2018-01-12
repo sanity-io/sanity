@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/ti/infinity'
+
 export default {
   name: 'recursiveArraysTest',
   type: 'document',
   title: 'Recursive Arrays test',
+  icon,
   fields: [
     {
       name: 'title',
