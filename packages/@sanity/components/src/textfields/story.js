@@ -16,7 +16,7 @@ storiesOf('Textfields')
           label={text('label (prop)', 'This is the label')}
           placeholder={text('placeholder (prop)', 'This is the placeholder')}
           value={text('value (prop)')}
-          error={boolean('error (prop)', false)}
+          hasError={boolean('hasError (prop)', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onClear={action('onClear')}
