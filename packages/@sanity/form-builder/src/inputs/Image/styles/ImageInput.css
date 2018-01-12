@@ -56,6 +56,10 @@
   margin-top: 1rem;
 }
 
+.advancedEditFields {
+  margin-bottom: var(--medium-padding);
+}
+
 .functions {
   font-size: 0.8rem;
 
