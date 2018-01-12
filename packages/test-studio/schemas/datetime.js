@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/fa/calendar'
+
 export default {
   name: 'datetimeTest',
   type: 'document',
   title: 'Datetime test',
+  icon,
   fields: [
     {
       name: 'title',

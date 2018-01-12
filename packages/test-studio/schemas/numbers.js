@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/ti/sort-numerically'
+
 export default {
   name: 'numbersTest',
   type: 'document',
   title: 'Numbers test',
+  icon,
   fields: [
     {
       name: 'title',
