@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.deletedDocument {
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+}
+
+.deletedDocumentInner {
+  padding: var(--medium-padding);
+}

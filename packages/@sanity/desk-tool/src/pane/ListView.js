@@ -59,6 +59,7 @@ export default class ListView extends React.PureComponent {
       default: {
         return (
           <InfiniteList
+            className={styles.scroll}
             onScroll={this.props.onScroll}
             items={items}
             getItemKey={getItemKey}

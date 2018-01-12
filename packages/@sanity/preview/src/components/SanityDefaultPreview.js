@@ -47,7 +47,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
     const {value} = this.props
 
     if (!value) {
-      return false
+      return undefined
     }
     const {media} = value
 
@@ -59,13 +59,14 @@ export default class SanityDefaultPreview extends React.PureComponent {
     }
 
     if (!media) {
-      return value._type
+      return undefined
     }
 
     // Handle sanity image
-    if (media._type === 'image') {
+    if (media._type === 'image' && media.asset) {
       return (
         <img
+          alt={value.title}
           src={
             imageBuilder.image(media)
               .width(dimensions.width || 100)
@@ -119,8 +120,8 @@ export default class SanityDefaultPreview extends React.PureComponent {
         />
       )
     }
-    const {type} = this.props
-    const media = this.resolveMedia() || type.title || type.name
+
+    const media = this.resolveMedia()
 
     return (
       <PreviewComponent

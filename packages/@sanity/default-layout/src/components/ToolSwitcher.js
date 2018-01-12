@@ -27,7 +27,7 @@ function ToolSwitcher(props) {
                 <div className={styles.toolName}>
                   {tool.title || tool.name}
                 </div>
-                <Ink duration={200} opacity={0.10} radius={200} />
+                <Ink duration={1000} opacity={0.10} radius={200} />
               </StateLink>
             </li>
           )
