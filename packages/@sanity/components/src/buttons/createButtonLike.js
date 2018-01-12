@@ -10,7 +10,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
     static displayName = displayName || `ButtonLike(${typeof Component === 'string' ? Component : (Component.displayName || Component.name)})`
 
     static propTypes = {
-      kind: PropTypes.oneOf(['default', 'simple', 'secondary']),
+      kind: PropTypes.oneOf(['default', 'simple']),
       color: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
       onClick: PropTypes.func,
       children: PropTypes.node,
@@ -86,13 +86,17 @@ export default function createButtonLike(Component, {displayName, defaultProps =
           className={style}
           onClick={this.handleClick}
           ref={this.setRootElement}
+          tabIndex={0}
+
         >
-          <div className={styles.inner}>
-            {loading && <span className={styles.spinner}><Spinner inline /></span>}
-            {Icon && <Icon className={styles.icon} />}
-            {children && <span className={styles.content}>{children}</span>}
-            {ripple && !disabled && <Ink duration={1000} opacity={0.10} radius={200} />}
-          </div>
+          <span className={styles.inner} tabIndex={-1}>
+            <span className={styles.content}>
+              {loading && <span className={styles.spinner}><Spinner inline /></span>}
+              {Icon && <Icon className={styles.icon} />}
+              {children && <span className={styles.content}>{children}</span>}
+              {ripple && !disabled && <Ink duration={1000} opacity={0.10} radius={200} />}
+            </span>
+          </span>
         </Component>
       )
     }
