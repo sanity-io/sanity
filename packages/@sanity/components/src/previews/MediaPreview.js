@@ -57,6 +57,11 @@ export default class MediaPreview extends React.PureComponent {
         <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
         <div className={styles.mediaContainer}>
           {
+            typeof media === 'undefined' && (
+              <div className={styles.mediaString}>{title}</div>
+            )
+          }
+          {
             typeof media === 'function' && (
               media({dimensions: mediaDimensions, layout: 'media'})
             )

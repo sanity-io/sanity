@@ -25,6 +25,7 @@ import richDateTest from './richDate'
 import slugs from './slugs'
 import geopoint from './geopoint'
 import fieldsets from './fieldsets'
+import empty from './empty'
 
 import customInputs from './customInputs'
 import notitle from './notitle'
@@ -69,6 +70,7 @@ export default createSchema({
     notitle,
     typeWithNoToplevelStrings,
     previewImageUrlTest,
-    previewMediaTest
+    previewMediaTest,
+    empty
   ])
 })

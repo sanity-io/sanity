@@ -25,7 +25,7 @@ export default class DetailPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled…',
+    title: 'Untitled',
     subtitle: 'No subtitle…',
     description: 'No description…',
     media: undefined,
@@ -59,23 +59,19 @@ export default class DetailPreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {
-          media && (
-            <div className={styles.media}>
-              {
-                typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
-              }
-              {
-                typeof media === 'string' && (
-                  <div className={styles.mediaString}>{media}</div>
-                )
-              }
-              {
-                typeof media === 'object' && media
-              }
-            </div>
-          )
-        }
+        <div className={styles.media}>
+          {
+            typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})
+          }
+          {
+            typeof media === 'string' && (
+              <div className={styles.mediaString}>{media}</div>
+            )
+          }
+          {
+            typeof media === 'object' && media
+          }
+        </div>
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.heading}>
@@ -98,7 +94,7 @@ export default class DetailPreview extends React.PureComponent {
             </div>
             {
               status && (
-                <div className={status}>
+                <div className={styles.status}>
                   {
                     (typeof status === 'function' && status({layout: 'detail'}))
                     || status

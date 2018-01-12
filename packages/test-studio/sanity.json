@@ -37,7 +37,7 @@
     "@sanity/desk-tool",
     "@sanity/storybook",
     "@sanity/google-maps-input",
-    "vision"
+    "@sanity/vision"
   ],
   "parts": [
     {

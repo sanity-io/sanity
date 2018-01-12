@@ -27,7 +27,7 @@ export default class TypePaneItem extends React.Component {
           className={styles.link}
         >
           {type.title}
-          <Ink duration={200} opacity={0.20} radius={200} />
+          <Ink duration={1000} opacity={0.1} radius={200} />
         </StateLink>
       </div>
     )

@@ -17,13 +17,22 @@
 
 .label {
   display: block;
-  font-size: 1rem;
-  margin-bottom: var(--small-padding);
+}
+
+.label + .description {
+  margin-top: calc(var(--small-padding) / 3);
+}
+
+.label + .content {
+  margin-top: var(--small-padding);
+}
+
+.description + .content {
+  margin-top: var(--small-padding);
 }
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin-top: calc(var(--small-padding) * -1);
 
   @nest .inline & {
     font-size: var(--font-size-tiny);

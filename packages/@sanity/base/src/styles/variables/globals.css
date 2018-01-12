@@ -3,8 +3,8 @@
   --body-bg: var(--gray-lightest);
   --body-text: #111;
   --component-bg: #fff;
-  --component-border-color: var(--gray-light);
-  --component-box-shadow: 0 1px 3px color(var(--component-border-color) a(50%));
+  --component-border-color: color(var(--gray) lightness(+ 30%));
+  --component-box-shadow: 0 1px 3px color(var(--component-border-color) lightness(- 10%) a(50%));
   --component-box-shadow--focus: 0 1px 5px color(var(--input-border-color-focus) a(70%));
   --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
   --main-navigation-background-color: color(var(--brand-primary) shade(70%) saturation(20%));
