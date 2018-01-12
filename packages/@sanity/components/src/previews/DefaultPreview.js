@@ -32,7 +32,7 @@ class DefaultPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled…',
+    title: 'Untitled',
     subtitle: undefined,
     progress: undefined,
     media: undefined,
@@ -60,6 +60,7 @@ class DefaultPreview extends React.PureComponent {
       )
     }
 
+
     return (
       <div
         className={`
@@ -68,25 +69,23 @@ class DefaultPreview extends React.PureComponent {
           ${media ? styles.hasMedia : ''}
         `}
       >
-        {
-          media && (
-            <div className={`${styles.media}`}>
-              {
-                typeof media === 'function' && (
-                  media({dimensions: mediaDimensions, layout: 'default'})
-                )
-              }
-              {
-                typeof media === 'string' && (
-                  <div className={styles.mediaString}>{media}</div>
-                )
-              }
-              {
-                typeof media === 'object' && media
-              }
-            </div>
-          )
-        }
+
+        <div className={`${styles.media}`}>
+          {
+            typeof media === 'function' && (
+              media({dimensions: mediaDimensions, layout: 'default'})
+            )
+          }
+          {
+            typeof media === 'string' && (
+              <div className={styles.mediaString}>{media}</div>
+            )
+          }
+          {
+            typeof media === 'object' && media
+          }
+        </div>
+
         <div className={styles.heading}>
           <h2 className={styles.title}>
             {

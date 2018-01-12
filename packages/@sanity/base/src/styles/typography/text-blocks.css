@@ -30,8 +30,7 @@
 
 .description {
   composes: small;
-  color: var(--text-muted);
-  padding-bottom: var(--small-padding);
+  color: var(--text-color-secondary);
 }
 
 .paragraph {

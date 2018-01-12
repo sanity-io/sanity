@@ -32,6 +32,7 @@
     "@sanity/google-maps-input": "^0.124.6",
     "@sanity/rich-date-input": "^0.124.6",
     "@sanity/storybook": "^0.123.0",
+    "@sanity/vision": "^0.123.1",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.29.0",
     "fetch": "^1.1.0",
@@ -40,8 +41,7 @@
     "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-icons": "^2.2.5",
-    "sanity-plugin-vision": "^0.116.2"
+    "react-icons": "^2.2.5"
   },
   "devDependencies": {
     "rimraf": "^2.6.2"

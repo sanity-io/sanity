@@ -9,6 +9,7 @@ import Editor from './Editor'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
+import styles from './styles/EditorWrapper.css'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -280,10 +281,12 @@ export default class EditorPane extends React.Component {
 
   renderDeleted() {
     return (
-      <div>
-        <h3>This document just got deleted</h3>
-        <p>You can undo deleting it until you close this window/tab</p>
-        <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
+      <div className={styles.deletedDocument}>
+        <div className={styles.deletedDocumentInner}>
+          <h3>This document just got deleted</h3>
+          <p>You can undo deleting it until you close this window/tab</p>
+          <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
+        </div>
       </div>
     )
   }
