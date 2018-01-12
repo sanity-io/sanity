@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/link'
+
 export default {
   name: 'urlsTest',
   type: 'document',
   title: 'URLs test',
+  icon,
   fields: [
     {
       name: 'title',

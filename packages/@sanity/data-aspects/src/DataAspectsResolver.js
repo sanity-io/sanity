@@ -88,6 +88,10 @@ class DataAspectsResolver {
     return typeOption.displayName || type.title || startCase(typeName)
   }
 
+  getIcon(typeName) {
+    return this.getType(typeName).icon
+  }
+
   // TODO: limit and offset is not yet implemented i gradient and only works partly because of a fluke
   // fix this when gql support limit, offset and order
   getListConstraints(typeName) {
