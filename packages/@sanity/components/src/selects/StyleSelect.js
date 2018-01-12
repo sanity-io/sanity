@@ -82,7 +82,7 @@ class StyleSelect extends React.Component {
   }
 
   render() {
-    const {value, transparent, items, className, placeholder} = this.props
+    const {value, transparent, items, className, placeholder, renderItem} = this.props
     const {showList} = this.state
 
     return (
@@ -132,7 +132,7 @@ class StyleSelect extends React.Component {
                       }
                     </div>
                     <div className={styles.itemContent}>
-                      {this.props.renderItem(item)}
+                      {renderItem(item)}
                     </div>
                   </Item>
                 )
