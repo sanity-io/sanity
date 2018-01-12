@@ -53,18 +53,18 @@ export default class ImageTool extends React.PureComponent {
       width: PropTypes.number,
     }),
     onChange: PropTypes.func,
-    onComplete: PropTypes.func,
+    onChangeEnd: PropTypes.func,
   }
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    onChangeEnd() {}
   }
 
   state = {
     devicePixelVsBackingStoreRatio: null,
     cropping: false,
     cropMoving: false,
-    dragging: false,
     moving: false
   }
 
@@ -73,22 +73,22 @@ export default class ImageTool extends React.PureComponent {
 
     const hotspot = value.hotspot || DEFAULT_HOTSPOT
     const hotspotRect = new Rect()
-        .setSize(hotspot.width, hotspot.height)
-        .setCenter(hotspot.x, hotspot.y)
+      .setSize(hotspot.width, hotspot.height)
+      .setCenter(hotspot.x, hotspot.y)
 
     return new Rect()
-        .setSize(image.width, image.height)
-        .shrink(MARGIN_PX * this.getScale())
-        .multiply(hotspotRect)
+      .setSize(image.width, image.height)
+      .shrink(MARGIN_PX * this.getScale())
+      .multiply(hotspotRect)
   }
 
   getCropRect() {
     const {value, image} = this.props
 
     return new Rect()
-        .setSize(image.width, image.height)
-        .shrink(MARGIN_PX * this.getScale())
-        .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
+      .setSize(image.width, image.height)
+      .shrink(MARGIN_PX * this.getScale())
+      .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
   }
 
   getCropHandles() {
@@ -225,7 +225,7 @@ export default class ImageTool extends React.PureComponent {
     const value = this.props.value
 
     const crop = Rect.fromEdges(value.crop || DEFAULT_CROP)
-        .clamp(new Rect(0, 0, 1, 1))
+      .clamp(new Rect(0, 0, 1, 1))
 
     const hotspot = value.hotspot || DEFAULT_HOTSPOT
     const hotspotRect = new Rect(0, 0, 1, 1)
@@ -259,8 +259,8 @@ export default class ImageTool extends React.PureComponent {
       context.save()
 
       const dest = imageRect
-          .shrink(margin)
-          .multiply(hotspot)
+        .shrink(margin)
+        .multiply(hotspot)
 
       const scaleY = dest.height / dest.width
 
@@ -287,8 +287,8 @@ export default class ImageTool extends React.PureComponent {
       const src = imageRect.multiply(hotspot)
 
       const dest = imageRect
-          .shrink(margin)
-          .multiply(hotspot)
+        .shrink(margin)
+        .multiply(hotspot)
 
       drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height)
     }
@@ -296,11 +296,11 @@ export default class ImageTool extends React.PureComponent {
     function drawBackdrop() {
 
       const src = imageRect
-          .cropRelative(crop)
+        .cropRelative(crop)
 
       const dest = imageRect
-          .shrink(margin)
-          .cropRelative(crop)
+        .shrink(margin)
+        .cropRelative(crop)
 
       context.save()
       drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height)
@@ -315,8 +315,8 @@ export default class ImageTool extends React.PureComponent {
 
       const radius = HOTSPOT_HANDLE_SIZE * scale
       const dest = imageRect
-          .shrink(margin)
-          .multiply(hotspot)
+        .shrink(margin)
+        .multiply(hotspot)
 
       const point = utils2d.getPointAtCircumference(radians, dest)
 
@@ -408,8 +408,8 @@ export default class ImageTool extends React.PureComponent {
   paintBackground(context) {
     const {image} = this.props
     const inner = new Rect()
-        .setSize(image.width, image.height)
-        .shrink(MARGIN_PX * this.getScale())
+      .setSize(image.width, image.height)
+      .shrink(MARGIN_PX * this.getScale())
 
     context.save()
     context.fillStyle = 'white'
@@ -564,10 +564,11 @@ export default class ImageTool extends React.PureComponent {
   }
 
   handleDragEnd = pos => {
-    const {onComplete} = this.props
+    const {onChange, onChangeEnd} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
     const {hotspot, crop} = this.getClampedValue()
-    onComplete({
+
+    const finalValue = {
       crop: {
         top: crop.top,
         bottom: 1 - crop.bottom,
@@ -580,7 +581,11 @@ export default class ImageTool extends React.PureComponent {
         height: Math.abs(hotspot.height),
         width: Math.abs(hotspot.width)
       }
-    })
+    }
+    onChange(finalValue)
+    if (onChangeEnd) {
+      onChangeEnd()
+    }
   }
 
   handleMouseOut = () => {
