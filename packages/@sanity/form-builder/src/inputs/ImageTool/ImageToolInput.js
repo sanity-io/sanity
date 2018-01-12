@@ -36,6 +36,10 @@ type Props = {
   level: number
 }
 
+type State = {
+  value?: Value // cache value for moar fps
+}
+
 const PREVIEW_ASPECT_RATIOS = [
   ['Landscape', 16 / 9],
   ['Portrait', 9 / 16],
@@ -43,17 +47,34 @@ const PREVIEW_ASPECT_RATIOS = [
   ['Panorama', 4]
 ]
 
-export default class ImageToolInput extends React.Component<Props> {
-  handleChange = (nextValue: Value) => {
+export default class ImageToolInput extends React.Component<Props, State> {
+  constructor(props) {
+    super()
+    this.state = {
+      value: props.value
+    }
+  }
+
+  handleChangeEnd = () => {
     const {onChange} = this.props
+    const {value} = this.state
     onChange(PatchEvent.from([
-      set(nextValue.crop, ['crop']),
-      set(nextValue.hotspot, ['hotspot'])
+      set(value.crop, ['crop']),
+      set(value.hotspot, ['hotspot'])
     ]))
   }
 
+  handleChange = (nextValue: Value) => {
+    this.setState({value: nextValue})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({value: nextProps.value})
+  }
+
   render() {
-    const {value = {}, imageUrl, level} = this.props
+    const {imageUrl, level} = this.props
+    const {value} = this.state
 
     return (
       <FormField
@@ -65,6 +86,7 @@ export default class ImageToolInput extends React.Component<Props> {
             <ImageTool
               value={value}
               src={imageUrl}
+              onChangeEnd={this.handleChangeEnd}
               onChange={this.handleChange}
             />
           </div>
