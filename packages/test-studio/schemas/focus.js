@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/center-focus-weak'
+
 export default {
   name: 'focusTest',
   type: 'document',
   title: 'Focus test',
+  icon,
   fields: [
     {
       name: 'first',

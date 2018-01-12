@@ -1,8 +1,11 @@
+import icon from 'react-icons/lib/fa/recycle'
+
 export default {
   name: 'referenceTest',
   type: 'document',
   title: 'Reference test',
   description: 'Test cases for references',
+  icon,
   fields: [
     {name: 'title', type: 'string'},
     {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},

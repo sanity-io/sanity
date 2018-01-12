@@ -1,8 +1,10 @@
+import icon from 'react-icons/lib/fa/file-o'
 
 export default {
   name: 'filesTest',
   type: 'document',
   title: 'Files test',
+  icon,
   fields: [
     {
       name: 'title',
