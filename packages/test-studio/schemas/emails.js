@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/email'
+
 export default {
   name: 'emailsTest',
   type: 'document',
   title: 'Emails test',
+  icon,
   fields: [
     {
       name: 'title',

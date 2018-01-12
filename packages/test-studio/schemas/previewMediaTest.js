@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/tv'
+
 export default {
   name: 'previewMediaTest',
   type: 'document',
   title: 'Preview: Using media in preview',
+  icon,
   preview: {
     select: {
       title: 'title',

@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/fa/tasks'
+
 export default {
   name: 'fieldsetsTest',
   type: 'document',
   title: 'Fieldsets test',
+  icon,
   preview: {
     select: {
       title: 'myObject.first'

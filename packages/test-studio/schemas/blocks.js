@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/rate-review'
+
 export default {
   name: 'blocksTest',
   title: 'Blocks test',
   type: 'document',
+  icon,
   fields: [
     {
       name: 'title',

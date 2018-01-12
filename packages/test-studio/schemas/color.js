@@ -1,10 +1,12 @@
 /* eslint-disable react/display-name */
 import React from 'react'
+import icon from 'react-icons/lib/md/format-color-fill'
 
 export default {
   name: 'colorTest',
   type: 'document',
   title: 'Color',
+  icon,
   preview: {
     select: {
       title: 'title',
