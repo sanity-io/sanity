@@ -187,7 +187,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     }))
 
     return (
-      <DropDownButton items={items} color="primary" onAction={this.handleDropDownAction}>
+      <DropDownButton items={items} onAction={this.handleDropDownAction}>
         New {this.props.type.title}
       </DropDownButton>
     )

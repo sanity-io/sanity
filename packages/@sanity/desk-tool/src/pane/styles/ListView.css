@@ -24,3 +24,9 @@
 .mediaListItem {
   composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
 }
+
+.scroll {
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  overflow: overlay !important; /* VirtualList sets this with inline style */
+}

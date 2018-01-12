@@ -1,3 +1,8 @@
+.root {
+  display: inline-block;
+  position: relative;
+}
+
 .popoverAnchor {
   position: absolute;
   width: 1px;

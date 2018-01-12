@@ -34,7 +34,7 @@ export default class CardPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled…',
+    title: 'Untitled',
     subtitle: undefined,
     description: undefined,
     date: undefined,
