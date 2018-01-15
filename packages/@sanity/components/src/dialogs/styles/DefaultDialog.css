@@ -207,12 +207,12 @@
 
 .actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
 }
 
 .actionSecondary {
   margin-right: auto;
-  order: -1;
+  order: 1;
 }
 
 .footer {

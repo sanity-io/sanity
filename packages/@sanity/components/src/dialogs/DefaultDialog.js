@@ -10,7 +10,7 @@ export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     children: PropTypes.node,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
@@ -111,7 +111,7 @@ export default class DefaultDialog extends React.PureComponent {
               }
               <div className={styles.inner}>
                 {
-                  showHeader && onClose && (
+                  showHeader && onClose && title && (
                     <div className={styles.header}>
                       <h1 className={styles.title}>{title}</h1>
                       <button className={styles.closeButton} onClick={onClose}>
