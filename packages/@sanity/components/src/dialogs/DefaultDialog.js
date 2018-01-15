@@ -17,6 +17,7 @@ export default class DefaultDialog extends React.PureComponent {
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
+    showCloseButton: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string.isRequired,
       tooltip: PropTypes.string,
@@ -28,6 +29,7 @@ export default class DefaultDialog extends React.PureComponent {
   static defaultProps = {
     isOpen: false,
     showHeader: false,
+    showCloseButton: true,
     onAction() {},
     onOpen() {},
     actions: [],
@@ -65,7 +67,6 @@ export default class DefaultDialog extends React.PureComponent {
       <div className={styles.actions}>
         {
           actions.map((action, i) => {
-            const isSecondary = action.kind === 'secondary'
             return (
               <Button
                 key={i}
@@ -75,7 +76,7 @@ export default class DefaultDialog extends React.PureComponent {
                 disabled={action.disabled}
                 kind={action.kind}
                 autoFocus={action.autoFocus}
-                className={isSecondary ? styles.actionSecondary : ''}
+                className={action.secondary ? styles.actionSecondary : ''}
               >
                 {action.title}
               </Button>
@@ -87,7 +88,7 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader, kind, onClose, className} = this.props
+    const {title, actions, isOpen, showHeader, kind, onClose, className, showCloseButton} = this.props
     const classNames = `
       ${styles[kind]}
       ${isOpen ? styles.isOpen : styles.isClosed}
@@ -102,7 +103,7 @@ export default class DefaultDialog extends React.PureComponent {
           <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
             <div className={styles.dialog} onClick={this.handleDialogClick}>
               {
-                !showHeader && onClose && (
+                !showHeader && onClose && showCloseButton && (
                   <button className={styles.closeButtonOutside} onClick={onClose}>
                     <CloseIcon color="inherit" />
                   </button>
