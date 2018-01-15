@@ -228,15 +228,20 @@ export default class RenderItemValue extends React.Component<Props> {
           tabIndex={0}
           onClick={this.handleEditStart}
           onKeyPress={this.handleKeyPress}
-          onFocus={this.handleFocus}
-          ref={this.setFocusArea}
           className={styles.previewWrapper}
         >
-          <Preview
-            layout={previewLayout}
-            value={value}
-            type={this.getMemberType()}
-          />
+          <div
+            tabIndex={-1}
+            ref={this.setFocusArea}
+            className={styles.previewWrapperHelper}
+            onFocus={this.handleFocus}
+          >
+            <Preview
+              layout={previewLayout}
+              value={value}
+              type={this.getMemberType()}
+            />
+          </div>
         </div>
 
         <div className={styles.functions}>
