@@ -38,17 +38,21 @@ export default class BlockPreview extends React.PureComponent {
       description,
       mediaDimensions,
       media,
-      children,
-      type
+      children
     } = this.props
 
     return (
-      <div
-        className={styles.root}
-      >
-        <div className={styles.type}>
-          {type.title || type.name}
-        </div>
+      <div className={description ? styles.hasDescription : styles.root}>
+        {
+          status && (
+            <div className={styles.status}>
+              {
+                (typeof status === 'function' && status({layout: 'default'}))
+                || status
+              }
+            </div>
+          )
+        }
         {
           media && (
             <div className={`${styles.media}`}>
