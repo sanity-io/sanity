@@ -23,16 +23,16 @@
   composes: root;
   color: var(--input-color);
   background-color: var(--input-bg);
-  box-shadow: var(--component-box-shadow);
+  box-shadow: var(--input-box-shadow);
 
   @nest &:not(:disabled) {
     @nest &:hover {
-      box-shadow: var(--component-box-shadow--hover);
+      box-shadow: var(--input-box-shadow--hover);
     }
 
     @nest &:focus {
       /* border-color: var(--input-border-color-focus); */
-      box-shadow: var(--component-box-shadow--focus);
+      box-shadow: var(--input-box-shadow--focus);
     }
 
     @nest &:active {
@@ -44,5 +44,5 @@
 .error {
   composes: textInput;
   background-color: var(--input-bg-error);
-  box-shadow: var(--component-box-shadow--error);
+  box-shadow: var(--input-box-shadow--error);
 }
