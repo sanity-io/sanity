@@ -71,10 +71,10 @@
 }
 
 .dialog {
-  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   position: absolute;
   border: 0;
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
@@ -222,7 +222,7 @@
   background-color: var(--body-bg);
   border-top: 1px solid var(--component-border-color);
   height: var(--dialog-functions-height);
-  border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+  border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
 
   @nest .danger & {
     background-color: color(var(--white) a(60%));
