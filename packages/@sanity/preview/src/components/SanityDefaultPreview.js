@@ -8,7 +8,7 @@ import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import PreviewComponentBlock from 'part:@sanity/components/previews/block'
-
+import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-image'
 import sanityClient from 'part:@sanity/base/client'
 
 const imageBuilder = imageUrlBuilder(sanityClient)
@@ -100,9 +100,14 @@ export default class SanityDefaultPreview extends React.PureComponent {
   render() {
     const {layout, ...rest} = this.props
 
-    const PreviewComponent = previewComponentMap.hasOwnProperty(layout)
+    let PreviewComponent = previewComponentMap.hasOwnProperty(layout)
       ? previewComponentMap[layout]
       : previewComponentMap.default
+
+    // TODO: Bjoerge: Check for image type with "is()"
+    if (this.props.type && this.props.type.name === 'image') {
+      PreviewComponent = PreviewComponentBlockImage
+    }
 
     const {_upload, value} = extractUploadState(this.props.value)
 
