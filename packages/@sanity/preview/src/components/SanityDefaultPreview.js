@@ -116,7 +116,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
       : previewComponentMap.default
 
     // TODO: Bjoerge: Check for image type with "is()"
-    if (this.props.type && this.props.type.name === 'image') {
+    if (layout === 'block' && this.props.type && this.props.type.name === 'image') {
       PreviewComponent = PreviewComponentBlockImage
     }
 
