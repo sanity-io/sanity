@@ -6,7 +6,7 @@
   }
 
   50% {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   100% {
@@ -22,11 +22,11 @@
   --focus-shadow--danger:
     0 0 2px 1px color(var(--state-danger-color)),
     0 0 4px 0 color(var(--state-danger-color) a(60%)),
-    0 0 13px 5px color(var(--state-danger-color) a(30%));
+    0 0 10px 5px color(var(--state-danger-color) a(10%));
   --focus-shadow--success:
     0 0 2px 1px color(var(--state-success-color)),
     0 0 4px 0 color(var(--state-success-color) a(60%)),
-    0 0 13px 5px color(var(--state-success-color) a(30%));
+    0 0 10px 5px color(var(--state-success-color) a(10%));
   --focus-shadow-white:
     0 0 2px 1px color(var(--white)),
     0 0 4px 0 color(var(--white) a(60%)),
@@ -46,6 +46,7 @@
   user-select: none;
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
   border-radius: var(--button-border-radius);
+  text-transform: uppercase;
 }
 
 .root + .root {

@@ -76,6 +76,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         inverted && styles.inverted,
         color && styles[`color__${color}`],
         disabled && styles.disabled,
+        !children && styles.onlyIcon,
         recentlyHovered && styles.recentlyHovered,
         !children && styles.onlyIcon
       ])
