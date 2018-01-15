@@ -4,7 +4,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import Portal from 'react-portal'
-import StackedEscapable from '../utilities/StackedEscapable'
+import Escapable from '../utilities/Escapable'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
+import Stacked from '../utilities/Stacked'
 
 export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
@@ -98,43 +100,48 @@ export default class DefaultDialog extends React.PureComponent {
     `
 
     return (
-      <StackedEscapable onEscape={onClose}>
-        <Portal isOpened={isOpen}>
-          <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
-            <div className={styles.dialog} onClick={this.handleDialogClick}>
-              {
-                !showHeader && onClose && showCloseButton && (
-                  <button className={styles.closeButtonOutside} onClick={onClose}>
-                    <CloseIcon color="inherit" />
-                  </button>
-                )
-              }
-              <div className={styles.inner}>
+      <Stacked>
+        {isActive => (
+          <Portal isOpened={isOpen}>
+            <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
+              <div className={styles.dialog} onClick={this.handleDialogClick}>
                 {
-                  showHeader && onClose && title && (
-                    <div className={styles.header}>
-                      <h1 className={styles.title}>{title}</h1>
-                      <button className={styles.closeButton} onClick={onClose}>
-                        <CloseIcon color="inherit" />
-                      </button>
-                    </div>
+                  !showHeader && onClose && showCloseButton && (
+                    <button className={styles.closeButtonOutside} onClick={onClose}>
+                      <CloseIcon color="inherit" />
+                    </button>
                   )
                 }
-                <div className={styles.content}>
-                  {this.props.children}
-                </div>
-                {
-                  actions && actions.length > 0 && (
-                    <div className={styles.footer}>
-                      {this.renderActions(actions)}
+                <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                <CaptureOutsideClicks onClickOutside={isActive ? onClose : false}>
+                  <div className={styles.inner}>
+                    {
+                      showHeader && onClose && title && (
+                        <div className={styles.header}>
+                          <h1 className={styles.title}>{title}</h1>
+                          <button className={styles.closeButton} onClick={onClose}>
+                            <CloseIcon color="inherit" />
+                          </button>
+                        </div>
+                      )
+                    }
+                    <div className={styles.content}>
+                      {this.props.children}
                     </div>
-                  )
-                }
+                    {
+                      actions && actions.length > 0 && (
+                        <div className={styles.footer}>
+                          {this.renderActions(actions)}
+                        </div>
+                      )
+                    }
+                  </div>
+                </CaptureOutsideClicks>
               </div>
             </div>
-          </div>
-        </Portal>
-      </StackedEscapable>
+          </Portal>
+        )}
+      </Stacked>
     )
   }
 }
