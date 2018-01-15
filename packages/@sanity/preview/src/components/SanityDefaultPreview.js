@@ -79,6 +79,17 @@ export default class SanityDefaultPreview extends React.PureComponent {
     }
   }
 
+  renderIcon = options => {
+    const {type} = this.props
+    const Icon = type.icon
+    if (Icon) {
+      // const Icon = dataAspects.getIcon(type.name)
+      // console.log(Icon)
+      return <Icon />
+    }
+    return undefined
+  }
+
   resolveMedia = () => {
     const {value} = this.props
     const {media} = value
@@ -93,7 +104,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
       return this.renderMedia
     }
 
-    return media
+    return this.renderIcon
 
   }
 
