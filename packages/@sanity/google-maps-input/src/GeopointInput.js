@@ -137,15 +137,17 @@ class GeopointInput extends React.Component {
             message="Select location by dragging the marker or search for a place"
             isOpen={this.state.modalOpen}
           >
-            <GoogleMapsLoadProxy
-              value={value}
-              apiKey={config.apiKey}
-              onChange={this.handleChange}
-              defaultLocation={config.defaultLocation}
-              defaultZoom={config.defaultZoom}
-              locale={getLocale(this.context)}
-              component={GeopointSelect}
-            />
+            <div className={styles.dialogInner}>
+              <GoogleMapsLoadProxy
+                value={value}
+                apiKey={config.apiKey}
+                onChange={this.handleChange}
+                defaultLocation={config.defaultLocation}
+                defaultZoom={config.defaultZoom}
+                locale={getLocale(this.context)}
+                component={GeopointSelect}
+              />
+            </div>
           </Dialog>
         )}
       </Fieldset>

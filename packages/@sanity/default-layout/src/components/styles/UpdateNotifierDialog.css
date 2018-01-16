@@ -1,8 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .content {
-  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
   text-align: center;
+  margin: var(--large-padding);
 }
 
 .versionsTable {
