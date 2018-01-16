@@ -52,18 +52,21 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   removeAt(index: number) {
-    this.set(this.props.value.filter((_, i) => i !== index))
+    const {value = []} = this.props
+    this.set(value.filter((_, i) => i !== index))
     this.props.onFocus([Math.max(0, index - 1)])
   }
 
   append(type) {
-    this.set((this.props.value || []).concat(getEmptyValue(type)))
-    this.props.onFocus([this.props.value.length])
+    const {value = [], onFocus} = this.props
+    this.set(value.concat(getEmptyValue(type)))
+    onFocus([value.length])
   }
 
   insertAt(index, type) {
-    this.set(insertAt(this.props.value || [], index, getEmptyValue(type)))
-    this.props.onFocus([index + 1])
+    const {value = [], onFocus} = this.props
+    this.set(insertAt(value, index, getEmptyValue(type)))
+    onFocus([index + 1])
   }
 
   handleRemoveItem = (index: number) => {
