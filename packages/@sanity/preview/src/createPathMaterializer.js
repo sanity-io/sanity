@@ -1,12 +1,8 @@
-import {uniq, isObject, isArray} from 'lodash'
+import {isArray, isObject, uniq} from 'lodash'
 import Observable from '@sanity/observable'
 import {configure} from 'observable-props'
 
 const props = configure({Observable})
-
-function resolveMissingHeads(value, paths) {
-  return paths.filter(path => !(path[0] in value))
-}
 
 function isReference(value) {
   return '_ref' in value
@@ -23,9 +19,12 @@ function createEmpty(keys) {
   }, {})
 }
 
-export default function createPreviewObserver(observeWithPaths) {
+function resolveMissingHeads(value, paths) {
+  return paths.filter(path => !(path[0] in value))
+}
 
-  function follow(value, paths) {
+export default function createPathMaterializer(observeWithPaths) {
+  return function materializePaths(value, paths) {
     if (!isArray(value) && !isObject(value)) {
       // Reached a leaf. Don't blow up
       return Observable.of(value)
@@ -41,7 +40,7 @@ export default function createPreviewObserver(observeWithPaths) {
         const id = isReference(value) ? value._ref : value._id
         return observeWithPaths(id, nextHeads)
           .switchMap(snapshot => {
-            return follow({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
+            return materializePaths({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
           })
       }
     }
@@ -60,13 +59,11 @@ export default function createPreviewObserver(observeWithPaths) {
       if (tails.every(tail => tail.length === 0)) {
         res[head] = value[head]
       } else {
-        res[head] = follow(value[head], tails)
+        res[head] = materializePaths(value[head], tails)
       }
       return res
     }, {...value})
 
     return props(Observable.of(next), {wait: true})
   }
-
-  return follow
 }
