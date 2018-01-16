@@ -71,6 +71,12 @@
   }
 }
 
+.canFocus > .fieldset > .inner > .content {
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--component-box-shadow);
+}
+
 .level1 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   box-shadow: var(--component-box-shadow);
@@ -90,21 +96,19 @@
 }
 
 .root:not(.level1):focus > .fieldset > .inner > .content {
-  outline: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
 }
 
 .root:not(.level2):focus > .fieldset > .inner > .content {
-  outline: 1px solid var(--input-border-color-focus);
+  box-shadow: var(--component-box-shadow--focus);
 }
 
 .level1:focus > .fieldset > .inner > .content {
   box-shadow: var(--component-box-shadow--focus);
-  outline: none !important;
 }
 
 .level2:focus > .fieldset > .inner > .content {
   box-shadow: var(--component-box-shadow--focus);
-  outline: none !important;
 }
 
 .inner {
