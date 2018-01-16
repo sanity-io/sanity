@@ -31,8 +31,8 @@
   top: var(--small-padding);
   right: var(--small-padding);
   z-index: 1;
-  color: var(--gray);
-  background-color: color(var(--component-bg) a(10%));
+  color: var(--gray-darker);
+  background-color: color(var(--component-bg) a(70%));
   border-radius: var(--border-radius-base);
 }
 
